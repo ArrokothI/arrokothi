@@ -6,6 +6,9 @@ does not represent an internal Runtime promise. This page is the single owner of
 eligibility, wait retirement, batch selection and the wait clock (K0.1 B-1–B-8,
 CL-1–CL-3 and W-1–W-9).
 
+**Status:** Required Kernel contract. Introduced by K1.3. This is target specification, not
+shipped behavior.
+
 ## Declare what can wake the Execution
 
 A wait contains two finite lists: **dependency alternatives** and **declared input

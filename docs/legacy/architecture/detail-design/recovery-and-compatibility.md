@@ -1,5 +1,7 @@
 # Recovery, uncertainty and compatibility
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Kernel accepted truth, Runtime/Driver native continuation, deployment storage/processes.
 **Status:** target K0/R1/K3/K5/S1. [Execution](../execution.md#progress-and-native-recovery) owns the
 checkpoint meaning. This page defines failure obligations; it does not select a persistence engine.
@@ -55,9 +57,9 @@ advance ahead of accepted progress. Never resume both revisions against a shared
 Use an exclusive native owner, immutable branchable checkpoints with controlled actions, or explicit
 refusal. Native fork alone does not make duplicated external tool calls safe.
 
-Dify [pause persistence](../../../dify/api/core/app/layers/pause_state_persist_layer.py),
+Dify [pause persistence](../../../../../dify/api/core/app/layers/pause_state_persist_layer.py),
 `WorkflowResumptionContext`, includes graph state and the actual response-stream filter. CrewAI
-[SQLite persistence](../../../crewAI/lib/crewai/src/crewai/flow/persistence/sqlite.py),
+[SQLite persistence](../../../../../crewAI/lib/crewai/src/crewai/flow/persistence/sqlite.py),
 `save_pending_feedback`, saves flow state and pending feedback together. Preserve those native owners;
 neither example proves atomicity with an unrelated external side effect.
 
@@ -92,8 +94,8 @@ rollback/refusal without dispatching actions during migration. Do not rewrite ap
 a new schema; reapproval or old compatible code is required. Quiesce incompatible writers before
 schema rollout. Credentials are rebound through current secret services, not stored inside checkpoints.
 
-CrewAI [state runtime](../../../crewAI/lib/crewai/src/crewai/state/runtime.py) restores runtime
-associations as well as data. Its [MemoryScope.bind](../../../crewAI/lib/crewai/src/crewai/memory/memory_scope.py)
+CrewAI [state runtime](../../../../../crewAI/lib/crewai/src/crewai/state/runtime.py) restores runtime
+associations as well as data. Its [MemoryScope.bind](../../../../../crewAI/lib/crewai/src/crewai/memory/memory_scope.py)
 requires rebinding a live memory dependency after deserialization. Persisted configuration is not an
 executable client. Preserve that lesson without importing its state schema into Kernel progress.
 
@@ -104,7 +106,7 @@ interrupt, physical termination, child cancellation, compensation and reconcilia
 A terminal Execution can therefore have unresolved external work and cleanup pending. The operator
 view must show both; no extra lifecycle called “successfully cancelled everything” is implied.
 
-Hermes [recover_abandoned_delegations](../../../hermes-agent/tools/async_delegation.py) preserves recorded
+Hermes [recover_abandoned_delegations](../../../../../hermes-agent/tools/async_delegation.py) preserves recorded
 partial child results and marks missing work unknown when its owner disappears. Its bookkeeping is
 best-effort; use it as evidence for truthful uncertainty, not as proof of durable all-child completion.
 Process IDs/start time are useful on one host, not distributed ownership fencing.

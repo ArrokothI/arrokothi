@@ -1,6 +1,6 @@
 # Development documentation
 
-> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../../development/001-current-status-and-roadmap.md) and [findings register](../../../development/003-evidence-and-findings.md) for current decisions.
 
 This directory is the engineering router for the **ArrokothI agent-kernel 0.8.x development
 line**. It records what the repository implements and what framework work comes next; it does not
@@ -11,7 +11,7 @@ own architecture semantics.
 | Question | Read |
 |---|---|
 | What is canonical? | [`../README.md`](../../../README.md), then the canonical concept owner it names. |
-| What does the current kernel demonstrably implement? | [`002-implemented-kernel-baseline.md`](../../002-implemented-kernel-baseline.md) |
+| What does the current kernel demonstrably implement? | [`002-implemented-kernel-baseline.md`](../../../development/002-implemented-kernel-baseline.md) |
 | What is the active architecture roadmap? | [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) |
 | How should Agent effectiveness/quality work be evaluated? | [`003-agent-effectiveness-guidance.md`](003-agent-effectiveness-guidance.md) |
 | What performance and developer-ergonomics constraints apply? | [`004-efficiency-and-developer-ergonomics.md`](004-efficiency-and-developer-ergonomics.md) |
@@ -44,7 +44,7 @@ cross-framework benchmark design and execution → ArrokothI/benchmark (separate
 For ordinary coding or review work:
 
 1. start at [`../README.md`](../../../README.md) and read the relevant canonical owner;
-2. read [`002-implemented-kernel-baseline.md`](../../002-implemented-kernel-baseline.md) for current
+2. read [`002-implemented-kernel-baseline.md`](../../../development/002-implemented-kernel-baseline.md) for current
    implementation evidence;
 3. read [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) for current and
    next architecture work;

@@ -5,6 +5,9 @@ become additional Kernel lifecycle writers. This page defines mapping obligation
 not a blanket MCP/A2A standards-support claim. The current implemented proof is the
 narrow [MCP importer](../../packages/interoperability/mcp/src/import/importer.ts).
 
+**Status:** Adapter obligation, demand-gated. No broad protocol parity before S1 states the
+tested subset. This is target specification, not shipped behavior.
+
 ## Import and export
 
 Import authenticates endpoint/account, obtains metadata within allowed discovery,
@@ -32,7 +35,8 @@ model prose. Preserve rich blocks through references or explicitly refuse them.
 A lossless mapping preserves value meaning and equivalent accepted input sets. A
 narrower model-facing schema is a documented restriction, not a replacement for actual
 action validation. Unknown-property defaults can change acceptance even when property
-types match. Unknown keywords need explicit supported/ignored/refused policy;
+types match: two schemas can declare the same fields and still disagree about whether
+`{"name": "a", "extra": 1}` is valid, so one side accepts what the other refuses. Unknown keywords need explicit supported/ignored/refused policy;
 security constraints cannot be ignored. New operation versions cannot reinterpret approval.
 
 HTTP success is transport evidence, not semantic completion. A malformed response

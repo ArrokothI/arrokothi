@@ -76,7 +76,7 @@ address prerequisite ordering, overloaded words, competing rules and weak exampl
 | Children and communication | [Communication](mechanisms/communication.md) |
 | Runtime composition | [Local composition](mechanisms/composition.md) |
 | Memory/state | [State concepts](concepts/state.md), [state mechanisms](mechanisms/state.md) |
-| Context/projections | [Runtime concepts](concepts/runtime.md), [context construction](mechanisms/context.md) |
+| Context/projections | [Authoring concepts](concepts/authoring.md), [context construction](mechanisms/context.md) |
 | Recovery/compatibility and Driver fidelity | [Recovery](mechanisms/recovery.md), [integration](mechanisms/integration.md) |
 | Resource/isolation and evidence | [Operational terms](concepts/operations.md), [resources](mechanisms/resources.md), [evidence](mechanisms/evidence.md) |
 

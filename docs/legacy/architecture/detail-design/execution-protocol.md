@@ -1,5 +1,7 @@
 # Execution protocol and accepted state
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Kernel. **Status:** target contract for K0/K1, extended by K2/K4; not implemented by this
 review. [Kernel](../kernel.md) owns the lifecycle. This page defines acceptance, input accounting and
 race outcomes without selecting a wire encoding, database schema or scheduler.
@@ -132,4 +134,4 @@ Also enumerate two concurrent Outcomes, conflicting duplicates, malformed propos
 human input, unmatched backlog, stale timers, terminal input, missing checkpoint versions and an
 Execution with an unknown action attempting completion. E1 captures these schedules; E4 repeats the
 same boundaries under actual process death. Existing 0.8.x serialization/exclusion tests do not
-establish this protocol. Implementation references are in [the baseline](../development/002-implemented-kernel-baseline.md).
+establish this protocol. Implementation references are in [the baseline](../../../development/002-implemented-kernel-baseline.md).

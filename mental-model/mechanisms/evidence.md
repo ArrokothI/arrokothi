@@ -5,6 +5,9 @@ Native traces, application state and host observations have their own owners. Th
 page owns inspection, retention and evidence attribution, including the accepted
 K1.0 structural preparation limits.
 
+**Status:** Inspection and attribution obligation. Minimum at K1, operating depth at K5.
+This is target specification, not shipped behavior.
+
 ## What evidence proves
 
 | Record | Establishes | Does not establish by itself |
@@ -70,18 +73,17 @@ earn E1. The live [ownership inventory](../../docs/development/work/K1.0/ownersh
 relates documented zones/roots, exports, measured dependencies and deferred owners
 to enforced source/configuration. Candidate measurements are not base measurements.
 
-The accepted inventory check discovers actual supported Markdown tables, validates
-their complete schemas/rows and decodes whole cells. Unrecognized or malformed
-content must fail closed rather than be ignored as decoration. Real body rows are
-not headers merely because one cell resembles a column title. Dependency evidence
-uses language-aware resolution and representative forbidden/permitted controls.
+**Moving code is not migrating it.** A new directory, a new package name or a renamed
+file decides where future work lands. It changes nothing about what the code does. Only
+an accepted packet that implements the protocol does that. Say which of the two a change
+was, and never report a move as progress against a protocol gate.
 
-Collection-valued relations compare exact cardinality and members, allowing reordering;
-they must not compare joined renderings. Counts, sentinels, publishability and scalar
-path/disposition/owner tuples retain their actual semantics. A documentation rewrite
-must preserve agreement checks and fixed machine-consumed inventory schema, not
-rewrite measured facts to make a parser pass. [Collection identity](../concepts/values.md#collection-identity-is-a-different-comparison)
-explains the correction without turning Markdown formatting into architecture.
+Two rules about that inventory are architecture, not tooling. A written boundary and an
+executable one must be checked against each other, so a documentation change can never
+quietly widen what the code may import. And a check that cannot read part of its input
+must fail, not skip it: silently ignored evidence is indistinguishable from evidence that
+passed. How the inventory is parsed and compared is owned by
+[structural evidence rules](../../docs/development/015-structural-evidence-rules.md).
 
 ## Attribution and gates
 

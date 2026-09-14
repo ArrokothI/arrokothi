@@ -6,7 +6,7 @@
 >
 > This note records a post-1.0 architectural hypothesis. It does **not** change current kernel
 > semantics, does not authorize a 1.x implementation rewrite, and does not supersede the canonical
-> owners in [`../README.md`](../README.md).
+> owners in the [reference index](../../mental-model/reference.md).
 >
 > The intended sequencing is deliberate: first make the 1.0 line coherent, usable, testable, and
 > practically successful; then use that working system plus benchmark evidence to redesign the core

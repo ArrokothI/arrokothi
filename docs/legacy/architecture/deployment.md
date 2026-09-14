@@ -1,5 +1,7 @@
 # Deployment
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../mental-model/README.md) and its [reference index](../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../README.md).
+
 This document owns processes, trust, containment, transport placement and physical operating claims.
 The [Kernel contract](kernel.md) defines accepted state; [Execution](execution.md) defines Runtime and
 Driver behavior. Deployments implement those contracts with explicitly tested limits.
@@ -91,9 +93,9 @@ by another run/application, and be safe after retries and partial allocation. Al
 loss requires provider query/idempotency or scoped reconciliation. Cleanup debt has an owner; deletion
 that removes required recovery data must explicitly narrow the supported guarantee.
 
-Prior art: Dify's [binding backend](../../dify/dify-agent/src/dify_agent/runtime_backend/protocols.py)
+Prior art: Dify's [binding backend](../../../../dify/dify-agent/src/dify_agent/runtime_backend/protocols.py)
 separates stable bindings, immutable home snapshots and invocation-local leases, and explicitly
-rejects lost resources. Hermes' [environment backends](../../hermes-agent/tools/environments/base.py)
+rejects lost resources. Hermes' [environment backends](../../../../hermes-agent/tools/environments/base.py)
 retain native shell/environment lifecycle. Reuse a native backend or service when needed; these
 examples do not justify a mandatory Kernel environment hierarchy.
 
@@ -108,8 +110,8 @@ Executions needs authenticated scoped application APIs; it must not publish arbi
 Keep native session and channel delivery in systems that already own them. ArrokothI can durably
 accept a result while delivery to a user remains pending elsewhere. The transport adapter owns
 send acknowledgment, retries, expiry and reconciliation; it cannot convert a timeout into a definite
-non-delivery. OpenClaw's [task records](../../openclaw/src/tasks/task-registry.types.ts) and
-[delivery reconciliation](../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts) are practical
+non-delivery. OpenClaw's [task records](../../../../openclaw/src/tasks/task-registry.types.ts) and
+[delivery reconciliation](../../../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts) are practical
 references. Add a separate delivery service only if the application needs one.
 
 ## Evidence and support
@@ -123,7 +125,7 @@ Kernel History records its own decisions. Native traces, model usage, stdout, fi
 host telemetry help diagnosis, but do not prove prevention. A benchmark's gateway/container protects
 the laboratory and must not be attributed to the subject's Kernel or isolation profile.
 
-The [roadmap](development/001-current-status-and-roadmap.md) makes persistent operation mandatory for
+The [roadmap](../../development/001-current-status-and-roadmap.md) makes persistent operation mandatory for
 the proposed durable 1.0 and isolation conditional on demand. If a mature substrate makes the custom
 scheduler unnecessary, adopt it and remove that work. No custom database, sandbox, channel gateway,
 consensus layer or hosting fleet is a default release obligation.

@@ -1,5 +1,7 @@
 # Principals, authority and exact consent
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Kernel admission and application identity/policy; Runtime exposure is linked below.
 **Status:** target for K0/K2/K4/K5. [Kernel](../kernel.md) owns authority; [action lifecycle](action-lifecycle.md)
 owns attempts/settlement. This page does not prescribe a grant language or policy backend.
@@ -24,7 +26,7 @@ Ownership lineage is not the application's relationship graph. May message, insp
 delegate, read, write and impersonate are independent powers. Return a scoped refusal rather than
 using unauthorized object resolution as an existence oracle.
 
-Prior art: OpenClaw [task-owner-access.ts](../../../openclaw/src/tasks/task-owner-access.ts),
+Prior art: OpenClaw [task-owner-access.ts](../../../../../openclaw/src/tasks/task-owner-access.ts),
 `canOwnerAccessTask`, checks owner scope **and** trusted Agent identity because bare owner keys can
 collide across stores. Preserve namespace and principal binding across restore; a single job ID is
 insufficient.
@@ -135,8 +137,8 @@ principal/account substitution and late settlement after cancellation. K4 adds t
 revocation and separate messaging/inspection powers. K5 adds policy/credential rotation and restore.
 Use an independent dispatch sink; an LLM refusing a tool is not proof of the boundary.
 
-CrewAI's [tool hooks](../../../crewAI/lib/crewai/src/crewai/hooks/tool_hooks.py) can mutate inputs and
+CrewAI's [tool hooks](../../../../../crewAI/lib/crewai/src/crewai/hooks/tool_hooks.py) can mutate inputs and
 shape returned text. Audit hook ordering: all semantic input mutation precedes exact admission; raw
 result evidence survives presentation changes. OpenClaw's
-[approval policy snapshot](../../../openclaw/src/infra/exec-approval-policy-snapshot.ts) provides a
+[approval policy snapshot](../../../../../openclaw/src/infra/exec-approval-policy-snapshot.ts) provides a
 concrete canonicalization reference. Neither mechanism alone proves the ArrokothI contract.

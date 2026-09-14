@@ -1,5 +1,7 @@
 # History, inspection and evidence
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Kernel accepted facts; Runtime native traces; application/domain evidence; deployment
 physical observations. **Status:** required boundary evidence starts at K0/K1, operating depth at K5.
 [Kernel](../kernel.md#history-and-retention) owns History; this page specifies useful projections and
@@ -56,9 +58,9 @@ Prefer concise state and scoped source references; capture content only under th
 access policy. If a provider hides request scaffolding, exact tokenization or cost, record unavailable
 or estimated, not zero. Sampling and redaction constrain reproducibility and must be disclosed.
 
-Hermes' [context engine](../../../hermes-agent/agent/context_engine.py) notes that turn-completion hooks
+Hermes' [context engine](../../../../../hermes-agent/agent/context_engine.py) notes that turn-completion hooks
 are best-effort and may be skipped on abnormal exits. Such hooks are useful diagnostics but cannot
-be the sole durable commit record. CrewAI's [tool hooks](../../../crewAI/lib/crewai/src/crewai/hooks/tool_hooks.py)
+be the sole durable commit record. CrewAI's [tool hooks](../../../../../crewAI/lib/crewai/src/crewai/hooks/tool_hooks.py)
 retain raw results separately from modified presentation; preserve that distinction when instrumenting.
 
 ## Retention, deletion and cursors
@@ -80,7 +82,7 @@ and omission/retention limits; they cannot replace exact action arguments or con
 
 ## Failure attribution and evidence loop
 
-Use the [benchmark methodology](../../../benchmark/docs/methodology.md) owner ledger. Distinguish Kernel,
+Use the [benchmark methodology](../../../../../benchmark/docs/methodology.md) owner ledger. Distinguish Kernel,
 Agent Runtime, Workflow Runtime, Driver, application, isolation, laboratory, provider and evaluator.
 A lab denial can keep the world safe while still recording the subject's unauthorized attempted send.
 A lab checkpoint cannot earn subject recovery credit. A native form's reliable resume belongs to the

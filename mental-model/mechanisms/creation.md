@@ -4,6 +4,9 @@ The application needs to distinguish a repeated request from a second intentiona
 Use a [caller-scoped creation key](../concepts/identity.md#request-key-and-input-id)
 and immutable creation content. This page owns creation and input ingress semantics.
 
+**Status:** Required Kernel contract. Introduced by K1.1. This is target specification, not
+shipped behavior.
+
 ## One atomic creation
 
 Authenticate the caller and authorize its scope. Creation binds an Execution ID,

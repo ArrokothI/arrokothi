@@ -1,5 +1,7 @@
 # State, memory, artifacts and provenance
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** application/resource services for shared truth; Runtime for continuation, memory and scratch;
 Kernel for accepted progress and History only. **Status:** optional Runtime/service design for R2,
 with authority/recovery requirements in K2/K3/K5. Foreign Runtimes do not adopt this taxonomy.
@@ -90,8 +92,8 @@ freshness contract and final resource reads must recheck permission. Revocation 
 already disclosed; retention and model-provider data handling are separately declared.
 
 Lexical, embedding, graph, temporal and hybrid ranking are replaceable. CrewAI's
-[MemoryScope/MemorySlice](../../../crewAI/lib/crewai/src/crewai/memory/memory_scope.py) demonstrate scoped
-views and runtime rebinding; [memory types/scoring](../../../crewAI/lib/crewai/src/crewai/memory/types.py)
+[MemoryScope/MemorySlice](../../../../../crewAI/lib/crewai/src/crewai/memory/memory_scope.py) demonstrate scoped
+views and runtime rebinding; [memory types/scoring](../../../../../crewAI/lib/crewai/src/crewai/memory/types.py)
 combine semantic relevance, recency and importance. Those are useful Runtime mechanisms, not proof
 of a security boundary or one correct retrieval strategy. Test native memory fidelity before imposing
 ArrokothI's terms on an integrated Crew.
@@ -110,7 +112,7 @@ A retained snapshot need not be copied into every model request or Activation tr
 
 If notes are recovery-critical, the Runtime includes them in its native checkpoint contract; otherwise
 losing them is an explicit quality limitation, not loss of Kernel truth. Hermes'
-[memory tool](../../../hermes-agent/tools/memory_tool.py) distinguishes persistent file writes from a
+[memory tool](../../../../../hermes-agent/tools/memory_tool.py) distinguishes persistent file writes from a
 frozen session-start prompt snapshot. Learn the lifetime distinction; ArrokothI should not require
 that particular prompt-cache strategy or adopt those files as asserted policy state.
 

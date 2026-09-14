@@ -1,5 +1,7 @@
 # Context compilation and model-facing projections
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Execution Runtime and provider adapters. **Status:** optional reference design R2; admission
 and disclosure constraints apply in K2/R1/K5. [Memory/state](memory-and-state.md) owns retained data;
 [authority](authority-and-actions.md) owns permissions. These are two selection branches sharing a
@@ -52,7 +54,7 @@ hidden tokenization may be unobservable; record the actual API request/config an
 rather than claiming exact final prompt reconstruction.
 
 Request-only context selection differs from destructive transcript compaction. Hermes'
-[ContextEngine.select_context](../../../hermes-agent/agent/context_engine.py) explicitly returns a
+[ContextEngine.select_context](../../../../../hermes-agent/agent/context_engine.py) explicitly returns a
 request-only replacement, leaves session history untouched and runs before cache-control/sanitizers.
 Its session hooks occur at real session boundaries, not every turn. Preserve those native semantics
 when wrapping Hermes; do not infer session end from an ArrokothI Activation ending.
@@ -86,8 +88,8 @@ search/describe/call with native deferred tools before adding a hierarchy or a s
 controls discoverable. Category paths are views over stable target identities, not a new identity or
 permission scheme. Search itself must stay within permitted metadata and scope.
 
-Hermes [tool search](../../../hermes-agent/tools/tool_search.py) rebuilds its catalog from live tool
-definitions and bounds bridge queries. [Dispatch](../../../hermes-agent/model_tools.py),
+Hermes [tool search](../../../../../hermes-agent/tools/tool_search.py) rebuilds its catalog from live tool
+definitions and bounds bridge queries. [Dispatch](../../../../../hermes-agent/model_tools.py),
 `handle_function_call`, resolves the bridge to the underlying tool before middleware. Reuse the native
 mechanism when it meets the workload; verify indirect paths before claiming mediation.
 
@@ -107,4 +109,4 @@ owns stale-result policy: re-evaluate, reject or merge under a stated contract.
 Quality experiments hold Kernel fixed and compare task success, wrong-tool rate, omitted evidence,
 extra turns, cost, latency and warm/cold caching. Trace what was actually sent without requiring raw
 prompt retention in production. A token reduction with poorer outcomes does not pass. Detailed research
-questions and deletion branches are in [future plan](../future-plan.md).
+questions and deletion branches are in [future plan](../../../future-plan.md).

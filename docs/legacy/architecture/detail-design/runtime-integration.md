@@ -1,5 +1,7 @@
 # Runtime integration and Driver fidelity
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Execution Runtime/Driver. **Status:** R1 design and support criteria; K1/K2 supply the
 boundary, K3 tests recovery, S1 freezes supported versions. [Execution](../execution.md) owns the
 contract. A Driver is an adapter, potentially an ordinary function, not a second execution engine.
@@ -80,11 +82,11 @@ unaccepted Activation. Prefer an outer artifact/approval/action handoff when dee
 native quality or cannot resume honestly. Any future alternate streaming action protocol requires its
 own atomicity/fencing design and evidence; it is not silently permitted by this page.
 
-OpenClaw's [host capabilities](../../../openclaw/src/agents/harness/host-capability-types.ts) bind current
+OpenClaw's [host capabilities](../../../../../openclaw/src/agents/harness/host-capability-types.ts) bind current
 activity, prepared tools and approval to the admitted host context. CrewAI's
-[executor tool path](../../../crewAI/lib/crewai/src/crewai/experimental/agent_executor.py) uses mutable
+[executor tool path](../../../../../crewAI/lib/crewai/src/crewai/experimental/agent_executor.py) uses mutable
 before-hooks, raw results and presentation hooks. Hermes'
-[handle_function_call](../../../hermes-agent/model_tools.py) resolves indirect bridge targets before
+[handle_function_call](../../../../../hermes-agent/model_tools.py) resolves indirect bridge targets before
 middleware. These are specific integration seams to inspect, not proof that the same adapter works
 across all their tool paths or versions.
 
@@ -95,12 +97,12 @@ correlation/subscription or a native job contract that can safely be queried; po
 RUNNING without inventing a second user request. A native human answer is feedback unless it satisfies
 the exact consent binding in [authority](authority-and-actions.md).
 
-Dify's [runner](../../../dify/dify-agent/src/dify_agent/runtime/runner.py) emits `run_succeeded` with either
+Dify's [runner](../../../../../dify/dify-agent/src/dify_agent/runtime/runner.py) emits `run_succeeded` with either
 final output or `deferred_tool_call` plus session snapshot. The latter is not Kernel completion.
-Its [human-input service](../../../dify/api/services/human_input_service.py) checks form state and routes
+Its [human-input service](../../../../../dify/api/services/human_input_service.py) checks form state and routes
 resumption to the owning Workflow or Agent application. Preserve those mappings, and independently
 test the submit-to-resume enqueue gap rather than inferring durability from an API status. CrewAI
-[human feedback](../../../crewAI/lib/crewai/src/crewai/flow/human_feedback.py) likewise owns native routing.
+[human feedback](../../../../../crewAI/lib/crewai/src/crewai/flow/human_feedback.py) likewise owns native routing.
 
 ## Fidelity experiment and adoption decision
 

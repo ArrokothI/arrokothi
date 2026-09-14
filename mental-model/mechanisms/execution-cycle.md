@@ -5,6 +5,9 @@ A [Runtime attempt](../concepts/identity.md#runtime-attempt) performs it.
 An [Outcome](../concepts/core.md#outcome) proposes the next accepted state.
 This page owns dispatch and acceptance; [waits](waits.md) owns input selection.
 
+**Status:** Required Kernel contract. Introduced by K1.1–K1.2; Effect intents by K2.1. This
+is target specification, not shipped behavior.
+
 ## Before sending
 
 The Kernel atomically reserves the exact Event batch and records dispatch intent,
@@ -107,6 +110,7 @@ The [action mechanism](actions.md) handles reconciliation.
 | Action settlement | Evidence, action observation, Event and applicable readiness | [Actions](actions.md) |
 | Child/message operation | Creation/routing responsibility, correlation, applicable budget | [Communication](communication.md) |
 
-A transaction, journal or mature durable substrate may implement these decisions.
+A transaction, journal or mature durable substrate may implement these decisions; check
+first [what that substrate re-runs on its own](../deployment.md#check-what-a-durable-substrate-retries-on-its-own).
 Derived queues are allowed; no second source of accepted truth is required. Cross-shard
 atomicity and exactly-once external effects are not implied.

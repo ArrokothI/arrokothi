@@ -266,7 +266,7 @@ Selected stock Runtime migration. Expected Layer-3 owners:
 - [composition](mechanisms/composition.md)
 - [state](mechanisms/state.md)
 - [context](mechanisms/context.md)
-- [runtime](concepts/runtime.md)
+- [authoring](concepts/authoring.md)
 - [state](concepts/state.md)
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#r21--selected-stock-runtime-migration).

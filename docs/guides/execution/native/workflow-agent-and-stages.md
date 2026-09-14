@@ -1,6 +1,6 @@
 # Choose control and Stages
 
-[Guide home](README.md). Current target semantics are owned by [Execution](../../../../mental-model/runtime.md), with
+[Guide home](README.md). Current target semantics are owned by [Runtime](../../../../mental-model/runtime.md), with
 [target Runtime composition](../../../../mental-model/mechanisms/composition.md). This page describes
 the implemented 0.8.x Agent/Workflow/Stage authoring surface.
 

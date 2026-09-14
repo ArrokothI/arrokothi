@@ -1,5 +1,7 @@
 # Mental model
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../mental-model/README.md) and its [reference index](../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../README.md).
+
 ArrokothI coordinates **Executions** whose work is performed by opaque **Execution Runtimes**.
 Its product hypothesis is that a shared execution and action boundary reduces coordination failures
 across independently useful runtimes. That advantage remains to be demonstrated.
@@ -91,19 +93,19 @@ removing Stage semantics does not permit terminal completion to silently discard
 
 The [detail-design layer](detail-design/README.md) expands protocol races, action obligations, native
 recovery, composition, memory/context, resources and evidence. Optional Runtime concepts have useful
-current homes there without becoming mandatory Kernel types. [Future questions](future-plan.md)
-remain hypotheses; only [development](development/README.md) owns implementation sequence.
+current homes there without becoming mandatory Kernel types. [Future questions](../../future-plan.md)
+remain hypotheses; only [development](../../development/README.md) owns implementation sequence.
 
 ## Evidence and scope
 
 [Execution](execution.md#prior-art-navigation) links the concrete CrewAI, OpenClaw, Hermes and Dify
 mechanisms behind these decisions. Their code is prior art, not evidence that an ArrokothI Driver
-already exists. [The review](development/004-architecture-review.md) records changes and counterexamples.
+already exists. [The review](../../development/004-architecture-review.md) records changes and counterexamples.
 
-The [development roadmap](development/001-current-status-and-roadmap.md) tests Kernel correctness
+The [development roadmap](../../development/001-current-status-and-roadmap.md) tests Kernel correctness
 with deterministic Runtimes, then native fidelity, process failure, and application value. Agent and
 Workflow quality hold the Kernel fixed. Driver, application, deployment and laboratory failures get
 separate attribution. No benchmark should credit ArrokothI for protection supplied by the laboratory.
 
-These documents define a target. The [implemented baseline](development/002-implemented-kernel-baseline.md)
+These documents define a target. The [implemented baseline](../../development/002-implemented-kernel-baseline.md)
 still has the 0.8.x `Harness`, synchronous controller invocation and live-promise resumptions.

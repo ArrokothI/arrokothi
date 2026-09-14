@@ -21,7 +21,7 @@ target Kernel. The zones and the deferred extraction owners are recorded in
 [K1.0's ownership inventory](work/K1.0/ownership-inventory.md). No behaviour below changed.
 
 This document answers one question: **What does the current ArrokothI kernel demonstrably
-implement?** Canonical meaning remains in the documents indexed by [`../README.md`](../README.md).
+implement?** Canonical meaning remains with the owners in the [reference index](../../mental-model/reference.md).
 Paths below are representative rather than exhaustive; the conformance suite is the executable
 evidence.
 
@@ -35,7 +35,7 @@ results; cancellation; transactional runtime-store operations; deterministic tes
 distinct. Only independent runtime identity creates an Execution boundary. One Execution has one
 active controller-state writer even when independent work is in flight.
 
-**Target owner.** [`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `packages/core/src/execution/context.ts`, `execution/lifecycle.ts`,
 `runtime/harness.ts`, `runtime/activation.ts`, `ports/runtime-store.ts`,
@@ -60,8 +60,8 @@ interleaving; dependency-set waits over Events plus multiple resumptions.
 PendingOperation ≠ ControllerResumption. A model call does not become an Effect merely because it
 is slow. A dependency wait keeps Event and resumption members typed and separate.
 
-**Target owner.** [`../kernel.md`](../../mental-model/kernel.md), with confirmation and
-authority consequences in [`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Kernel](../../mental-model/kernel.md), with confirmation and
+authority consequences in [Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `interaction/events.ts`, `effects/types.ts`, `effects/pending.ts`,
 `effects/journal.ts`, `execution/resumption.ts`, `runtime/effect-processor.ts`,
@@ -93,7 +93,7 @@ Controller-local model controls do not cross an Execution/runtime boundary and a
 outside this authority-governed action chain; their origin remains explicit when provider callables
 are merged.
 
-**Target owner.** [`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `operations/authority.ts`, `operations/active-view.ts`,
 `operations/model-action-view.ts`, `operations/projection.ts`,
@@ -116,8 +116,8 @@ Agent-executor integration outside core.
 **Non-obvious invariant.** Controllers depend on ArrokothI ports and portable features, never a
 vendor client. Provider-native tools/errors/caching do not define kernel semantics.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md) and
-[`../deployment.md`](../../mental-model/deployment.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md) and
+[Deployment](../../mental-model/deployment.md).
 
 **Representative source.** `packages/core/src/ports/model-provider.ts`, `model-resolver.ts`,
 `reference/static-model-resolver.ts`, `packages/models/gemini/src/index.ts`,
@@ -142,7 +142,7 @@ Memory actions; local Working Notes control; recursive composition through runti
 authority source. Information compilation is separate from action exposure. Re-entry uses the
 persisted invocation snapshot rather than rebuilding views or context.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md), with runtime, authority, and memory
+**Target owner.** [Runtime](../../mental-model/runtime.md), with runtime, authority, and memory
 details owned by their respective canonical documents.
 
 **Representative source.** `agent/spec.ts`, `agent/control-state.ts`,
@@ -166,8 +166,8 @@ barriers; provider resumptions; child calls; terminal results; bounded topology/
 Execution's progress are different artifacts. Effects remain Harness-mediated regardless of Stage
 kind.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md), with execution mechanics in
-[`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md), with execution mechanics in
+[Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `workflow/spec.ts`, `workflow/control-state.ts`,
 `controllers/workflow/controller.ts`, `controllers/workflow/llm-stage.ts`,
@@ -191,8 +191,8 @@ terminal-dependency abandonment; explicit Working Notes handoff.
 merely from ancestry; the child receives only explicit attenuation/transfer. A Stage remains
 same-Execution composition unless it explicitly calls a child.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md) and
-[`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md) and
+[Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `effects/types.ts`, `execution/child-link.ts`,
 `execution/structural-budget.ts`, `runtime/effect-processor.ts`,
@@ -216,8 +216,8 @@ resolution; safe decline/deny/reject settlement across Agent and Workflow contro
 Confirmation verifies consent to one exact proposal; it is not authorization and does not widen
 authority. User input, peer reply, and child result remain distinct interactions.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md),
-[`../kernel.md`](../../mental-model/kernel.md), and [`../deployment.md`](../../mental-model/deployment.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md),
+[Kernel](../../mental-model/kernel.md), and [Deployment](../../mental-model/deployment.md).
 
 **Representative source.** `execution/peer-request-link.ts`, `execution/user-input-request.ts`,
 `execution/confirmation-request.ts`, `confirmation/resolver.ts`, `runtime/effect-processor.ts`.
@@ -241,8 +241,8 @@ Semantic Memory.
 authorization are independent. Whole-view revision is runtime/concurrency data and is not exposed
 to a field-limited model reader. A stale versioned write conflicts; it never silently overwrites.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md), with Effect/authorization rules in
-[`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md), with Effect/authorization rules in
+[Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `execution/structured-memory.ts`,
 `execution/structured-memory-read.ts`, `execution/structured-memory-write-view.ts`,
@@ -265,7 +265,7 @@ parent→child handoff; immutable inherited handoff plus independent child-owned
 authority evidence, or ambient shared memory. Semantic retention of the inherited handoff does not
 require it to be rendered or transported on every hot-path step.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md).
 
 **Representative source.** `execution/working-notes.ts`, `agent/control-state.ts`,
 `operations/local-model-control.ts`, `operations/model-invocation-interface.ts`,
@@ -288,8 +288,8 @@ bounded Agent information view; persisted invocation snapshot; explicit promotio
 They are not authority evidence and never promote automatically. Reference lexical ranking and the
 claim shape are implementation evidence, not universal semantics.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md) and
-[`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md) and
+[Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `execution/derived-semantic-memory.ts`,
 `ports/derived-memory-extractor.ts`, `ports/derived-semantic-memory-provider.ts`,
@@ -315,7 +315,7 @@ independent work overlaps. Fork, branch completion, join, and downstream Stage e
 distinct. An unversioned branch memory write fails before the Harness; a conflict is an observation
 for the branch, not an automatic retry or merge.
 
-**Target owner.** [`../execution.md`](../../mental-model/runtime.md) with boundary acceptance in [`../kernel.md`](../../mental-model/kernel.md).
+**Target owner.** [Runtime](../../mental-model/runtime.md) with boundary acceptance in [Kernel](../../mental-model/kernel.md).
 
 **Representative source.** `workflow/control-state.ts`, `workflow/resumption-keys.ts`,
 `controllers/workflow/controller.ts`, `runtime/harness.ts`, `runtime/resumption-processor.ts`.
@@ -339,8 +339,8 @@ normalization; consequential outcome-certainty protection.
 authority. Import/export must preserve the accepted input set and honest `success | failure |
 unknown` certainty.
 
-**Target owner.** [`../deployment.md`](../../mental-model/deployment.md), with retained proof
-constraints in [`005`](legacy/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md).
+**Target owner.** [Deployment](../../mental-model/deployment.md), with retained proof
+constraints in [`005`](../legacy/development/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md).
 
 **Representative source.** `packages/interoperability/mcp/src/import/importer.ts`,
 `import/identity.ts`, `import/result.ts`, `schema/from-json-schema.ts`, `export/tools.ts`.
@@ -362,7 +362,7 @@ integration.
 mechanisms canonical. No durable implementation of the complete Execution-kernel `RuntimeStore`
 ships in this repository.
 
-**Target owner.** The port's relevant concept owner through [`../README.md`](../README.md).
+**Target owner.** The port's relevant concept owner in the [reference index](../../mental-model/reference.md).
 
 **Representative source.** `packages/core/src/reference/`, `packages/retrieval/local/src/`,
 `packages/models/gemini/src/`, `packages/agents/strands/src/`.
@@ -384,8 +384,8 @@ canaries. Cross-framework benchmark subjects and their evaluation live in the st
 measurement ≠ live integration health. A passing category cannot substitute for another.
 
 **Target owner.** No architecture concept is created here; the owning docs define the
-invariants being tested. Historical engineering guidance is in [`003`](legacy/2026-09-baseline/003-agent-effectiveness-guidance.md)
-and [`004`](legacy/2026-09-baseline/004-efficiency-and-developer-ergonomics.md).
+invariants being tested. Historical engineering guidance is in [`003`](../legacy/development/2026-09-baseline/003-agent-effectiveness-guidance.md)
+and [`004`](../legacy/development/2026-09-baseline/004-efficiency-and-developer-ergonomics.md).
 
 **Representative commands.** `npm test`, `npm run test:conformance`, `npm run test:mcp`,
 `npm run test:evals`, `npm run typecheck`.
@@ -404,7 +404,7 @@ requirements or catalogs. Core remains directly available.
 
 **Evidence.** `packages/sdk/src/`, `packages/sdk/tests/`, the SDK-backed
 `examples/execution-kernel-minimal/`, and `scripts/check-builder-docs.ts`.
-The [SDK design/findings note](legacy/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
+The [SDK design/findings note](../legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
 constructor-validation and operation-index bug repairs, and unresolved architectural concerns.
 
 **Boundaries.** This is application composition, not new kernel semantics. Preflight is advisory for

@@ -1,6 +1,6 @@
 # External validation gates
 
-> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../../development/001-current-status-and-roadmap.md) and [findings register](../../../development/003-evidence-and-findings.md) for current decisions.
 
 > **Status:** active external-validation checkpoint for the ArrokothI agent-kernel 0.8.x line.
 > **Role:** engineering coordination only; canonical runtime semantics remain owned by the documents indexed from [`../README.md`](../../../README.md).

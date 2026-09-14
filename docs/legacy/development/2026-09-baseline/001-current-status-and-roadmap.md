@@ -1,14 +1,14 @@
 # Current status and roadmap
 
-> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../../development/001-current-status-and-roadmap.md) and [findings register](../../../development/003-evidence-and-findings.md) for current decisions.
 
 > **Status:** primary active development plan for the ArrokothI agent-kernel 0.8.x line.
 > **Kernel baseline:** the capability baseline summarized in
-> [`002-implemented-kernel-baseline.md`](../../002-implemented-kernel-baseline.md).
+> [`002-implemented-kernel-baseline.md`](../../../development/002-implemented-kernel-baseline.md).
 > **Role:** engineering roadmap, not canonical architecture.
 
 Canonical semantics remain in the documents indexed by [`../README.md`](../../../README.md). This plan
-starts from the implementation evidenced in [`002-implemented-kernel-baseline.md`](../../002-implemented-kernel-baseline.md)
+starts from the implementation evidenced in [`002-implemented-kernel-baseline.md`](../../../development/002-implemented-kernel-baseline.md)
 and converts unresolved work into dependency-ordered vertical proofs.
 
 ## 1. Version and release-gate convention
@@ -62,7 +62,7 @@ The optional `@arrokothi/sdk` application bootstrap now composes this baseline; 
 architecture-completion sequence or deployment claims.
 
 The exact implementation/test map and intentional deferrals are in
-[`002`](../../002-implemented-kernel-baseline.md).
+[`002`](../../../development/002-implemented-kernel-baseline.md).
 
 ## 3. Dependency order
 
@@ -503,7 +503,7 @@ identify contradictions but must not resolve them by silently editing one owner.
 
 ### Existing substrate
 
-Everything accepted in H–M plus the baseline in [`002`](../../002-implemented-kernel-baseline.md), the
+Everything accepted in H–M plus the baseline in [`002`](../../../development/002-implemented-kernel-baseline.md), the
 quality discipline in [`003`](003-agent-effectiveness-guidance.md), and the efficiency/ergonomics
 checks in [`004`](004-efficiency-and-developer-ergonomics.md).
 

@@ -5,6 +5,9 @@ what the Kernel accepted, then establish whether native work can continue safely
 This page owns that composition. Other mechanisms supply their accepted facts rather
 than inventing independent retry policies.
 
+**Status:** Required Kernel contract plus a per-Driver obligation. Introduced by K3; R1
+supplies the Driver evidence. This is target specification, not shipped behavior.
+
 ## Decide permission before replacing work
 
 1. Reconstruct accepted Kernel records, including readiness and unresolved obligations.
@@ -94,6 +97,7 @@ checkpoints and routes retain the evidence their supported recovery period needs
 Deletion that breaks that guarantee records recovery as unavailable. [Resource cleanup](resources.md)
 and [retention](evidence.md#retention-and-deletion) own those policies.
 
-K3 compares a transactional candidate with a mature substrate using real process kills;
+K3 compares a transactional candidate with a mature substrate using real process kills,
+including [what that substrate retries on its own](../deployment.md#check-what-a-durable-substrate-retries-on-its-own);
 K5 adds retention/rotation/upgrades; S1 pins supported versions. No universal exactly-once
 external action, automatic native migration or custom consensus layer follows.

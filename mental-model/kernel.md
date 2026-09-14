@@ -69,4 +69,6 @@ can continue. [Recovery](mechanisms/recovery.md) composes these two responsibili
 
 The [roadmap mapping](roadmap.md) locates the implementation gates. The Kernel may use
 a mature durable substrate; owning these semantics does not require a custom database,
-queue, scheduler or consensus layer.
+queue, scheduler or consensus layer. Check what such a substrate
+[re-runs on its own](deployment.md#check-what-a-durable-substrate-retries-on-its-own)
+before letting it drive a step that performs an external action.

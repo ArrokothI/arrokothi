@@ -1,12 +1,12 @@
 # Historical development material
 
-Use the [active roadmap](../001-current-status-and-roadmap.md) for work and the
-[findings register](../003-evidence-and-findings.md) for unresolved issues. Archived status/next-step
+Use the [active roadmap](../../development/001-current-status-and-roadmap.md) for work and the
+[findings register](../../development/003-evidence-and-findings.md) for unresolved issues. Archived status/next-step
 language is checkpoint history, not current authority.
 
 ## Pre-redesign roadmap
 
-[2026-09 P1–P7/B1–B3](2026-09-pre-redesign-roadmap.md) preserves the plan preceding the asynchronous Kernel review. Its [disposition](../004-architecture-review.md#previous-roadmap-disposition) maps requirements to the current sequence.
+[2026-09 P1–P7/B1–B3](2026-09-pre-redesign-roadmap.md) preserves the plan preceding the asynchronous Kernel review. Its [disposition](../../development/004-architecture-review.md#previous-roadmap-disposition) maps requirements to the current sequence.
 
 ## September 2026 baseline
 

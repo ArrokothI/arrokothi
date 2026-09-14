@@ -51,10 +51,12 @@ Sending the Activation does not require the Kernel to wait for the computation t
    accepted observation addressed to this Execution. A later Activation supplies it
    to the Runtime, which can account for the result and complete the report.
 
-This example deliberately uses the full target design. K1 initially refuses Effects;
-K2 introduces them. A UI can also observe accepted output without publishing it to an
-external destination. The [worked protocol trace](mechanisms/execution-cycle.md#worked-trace)
-adds identities, lost replies and retries when you need those details.
+This example deliberately uses the full target design, including parts that are planned
+rather than built: the first Kernel milestone rejects any Outcome that proposes an Effect,
+and the milestone after it introduces them. A UI can also observe accepted output without
+publishing it to an external destination. The
+[worked protocol trace](mechanisms/execution-cycle.md#worked-trace) adds identities, lost
+replies and retries when you need those details.
 
 ## What this arrangement guarantees
 
@@ -102,8 +104,36 @@ live under `concepts/`; interacting rules live under `mechanisms/`. You do not y
 to know the identity fields, wait selector grammar or checkpoint publication protocol.
 Those pages teach them where they become useful.
 
-These are target specifications, not a declaration that the target has shipped. K0.1
-settled protocol decisions, K0.2 supplied public controls, and K1.0 prepared a private,
-refusal-only target package. See the [implemented baseline](../docs/development/002-implemented-kernel-baseline.md)
-for actual APIs and the [status ledger](../docs/development/007-work-packets.md) for acceptance
-and release. Current application users start from the [guides](../docs/guides/README.md).
+## How these pages are organized
+
+Three layers, from least to most detail. Other documents refer to them by number.
+
+| Layer | Pages | What it does | Change it when |
+|---|---|---|---|
+| 1 | this page | One deliberately incomplete picture of the whole system | The whole-system model changes |
+| 2 | [kernel](kernel.md), [runtime](runtime.md), [driver](driver.md), [deployment](deployment.md) | One major abstraction each, at reading depth | A major abstraction changes |
+| 3 | everything under `concepts/` and `mechanisms/` | Each term defined once; each interaction specified once | Accepted work changes a rule |
+
+Layers 1 and 2 summarize Layer 3. They are not second places to state a rule, so when
+they disagree with a Layer-3 page, the Layer-3 page is right and the summary is the defect.
+
+Three pages sit outside the layers because they are navigation rather than specification:
+the [reference index](reference.md) points at owners, [sources](sources.md) records where
+the rules came from and what is still undecided, and the [roadmap mapping](roadmap.md)
+says which Layer-3 pages a given piece of accepted work is expected to maintain.
+
+## Target, not shipped
+
+Everything in these pages is specification. Each Layer-3 mechanism page opens with a
+**Status** line saying whether it is a required Kernel contract, a per-Driver obligation
+or an optional Runtime design, and which development gate introduces it. Those gates —
+K1, K2, R1 and so on — are the milestones in the
+[development roadmap](../docs/development/001-current-status-and-roadmap.md). Only K0 is
+complete, so a page naming any later gate describes work that has not been built yet.
+
+So far K0.1 settled the protocol decisions, K0.2 supplied public controls, and K1.0
+prepared a private, refusal-only target package that implements none of the protocol.
+See the [implemented baseline](../docs/development/002-implemented-kernel-baseline.md)
+for the APIs that actually exist and the [status ledger](../docs/development/007-work-packets.md)
+for acceptance and release. Current application users start from the
+[guides](../docs/guides/README.md).

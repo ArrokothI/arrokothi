@@ -1,6 +1,6 @@
 # Building context and preserving callable meaning
 
-[Context and projection](../concepts/runtime.md#context) are two selection tasks that
+[Context and projection](../concepts/authoring.md#context) are two selection tasks that
 can share one Runtime module. Neither grants authority. Native frameworks may own
 both without recompilation into an ArrokothI format.
 
@@ -10,6 +10,9 @@ permitted operations  → narrow/rank/project              → callable bindings
 enabled local controls → typed local bindings
                          ↓ one native model request
 ```
+
+**Status:** Optional Runtime design, R2. Its disclosure and binding limits are required at
+K2/R1/K5. This is target specification, not shipped behavior.
 
 ## Fix bindings for each invocation
 

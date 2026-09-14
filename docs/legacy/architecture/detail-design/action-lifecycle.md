@@ -1,5 +1,7 @@
 # Action admission, settlement and delivery
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Kernel for mediated action records; trusted adapters for external evidence; application
 transports for delivery. **Status:** target K2/K3/K4/K5. [Authority](authority-and-actions.md) owns consent
 and policy. This is not a new universal PendingOperation hierarchy.
@@ -148,8 +150,8 @@ External delivery additionally authorizes destination/account selection at admis
 batching/rendering has its own immutable prepared payload identity; a retry must not silently send a
 newly rendered message to a newly resolved destination.
 
-Prior art: OpenClaw's [task records](../../../openclaw/src/tasks/task-registry.types.ts) separate task
-status and delivery status. [Unknown-send reconciliation](../../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts)
+Prior art: OpenClaw's [task records](../../../../../openclaw/src/tasks/task-registry.types.ts) separate task
+status and delivery status. [Unknown-send reconciliation](../../../../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts)
 passes exact prepared payloads, destination, account and send-start evidence to a channel-specific
 adapter. Prefer its channel service where it already owns delivery; copying a generic retry loop
 would discard the mechanism that makes its certainty meaningful.
@@ -160,7 +162,7 @@ K2/E2: denied/declined/invalid input yields zero sink attempts; concurrent appro
 malformed consequential output is not definite failure; same payload with a fresh intentional key
 remains a distinct action. K3/E4: kill after admission, after remote success, after settlement and
 before wake; query/retry only under the tested operation contract. K4/E4 adds the child-output disconnect/replay versus explicit-message fixture in the
-[roadmap](../development/001-current-status-and-roadmap.md#k4--addressed-interaction-and-independent-children).
+[roadmap](../../../development/001-current-status-and-roadmap.md#k4--addressed-interaction-and-independent-children).
 K5: slow subscribers, bounded buffers, revoked reads, replay/live handoff, capacity refusal and
 post-completion retention; reconcile after cancellation,
 expire idempotency windows, replay output cursors and lose the delivery receipt. Retain independent

@@ -1,5 +1,7 @@
 # Resource lifetime, hosts and isolation
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** deployment and native/application resource services; Kernel owns admitted requests and
 references only. **Status:** R1/K3/K5 resource contract; D1 physical containment only when claimed.
 [Deployment](../deployment.md) owns topology and the two trust modes.
@@ -32,12 +34,12 @@ idempotency/query by precommitted allocation identity, or a scoped reconciliatio
 An adapter may clean only resources it can prove it owns; broad prefix deletion is not a recovery
 mechanism. A cleanup failure remains an observable obligation and resource-cost risk.
 
-Dify's [ExecutionBindingBackend](../../../dify/dify-agent/src/dify_agent/runtime_backend/protocols.py)
+Dify's [ExecutionBindingBackend](../../../../../dify/dify-agent/src/dify_agent/runtime_backend/protocols.py)
 separates create/acquire/release/destroy and prohibits replacing a lost binding or deleting a preserved
 workspace. Its `RuntimeLease` is explicitly invocation-local and never persisted. Reuse the actual
 backend/service if suitable; preserve these contracts rather than adopting Dify's whole logical schema.
-Hermes [environment base](../../../hermes-agent/tools/environments/base.py) supplies native command/
-environment lifecycle, and its [checkpoint manager](../../../hermes-agent/tools/checkpoint_manager.py)
+Hermes [environment base](../../../../../hermes-agent/tools/environments/base.py) supplies native command/
+environment lifecycle, and its [checkpoint manager](../../../../../hermes-agent/tools/checkpoint_manager.py)
 provides workspace file undo. Neither supplies general remote-action rollback.
 
 ## Shared mutation and takeover

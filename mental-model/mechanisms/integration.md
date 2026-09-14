@@ -4,6 +4,9 @@ The [Driver](../concepts/core.md#execution-driver) translates selected contracts
 the native system keeps its algorithms and state. This page owns integration support
 claims; [recovery](recovery.md) owns the common continuation protocol.
 
+**Status:** Per-Driver obligation, not Kernel semantics. Introduced by R1; supported
+versions frozen at S1. This is target specification, not shipped behavior.
+
 ## Select the smallest useful integration
 
 | Integration shape | Kernel can manage | Native system retains |
@@ -65,7 +68,8 @@ action protocol needs its own explicit atomicity/fencing design.
 Preserve native pause/form routing with one resume owner. Kernel waiting requires a
 durable correlation/subscription or queryable job contract; native polling can remain
 inside `RUNNING`. A native “run succeeded” with deferred human work is not necessarily
-Kernel completion. Forward authenticated bound replies; feedback is consent only
+Kernel completion: an engine can report success together with a form still waiting for a
+person, which is a pause, not a result. Forward authenticated bound replies; feedback is consent only
 when it satisfies the exact action contract.
 
 Cancellation signaling is separate from immutable Activation input. A late correct

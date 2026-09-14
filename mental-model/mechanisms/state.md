@@ -4,6 +4,9 @@
 Kernel History, asserted application state, inferred claims, scratch notes and artifacts.
 This page specifies optional Runtime/service behavior, not a Kernel memory product.
 
+**Status:** Optional Runtime and service design, R2. Its authority, recovery and retention
+limits are required at K2/K3/K5. This is target specification, not shipped behavior.
+
 ## State service contract
 
 A supported operation declares schema/version, readable/writable fields, owner,

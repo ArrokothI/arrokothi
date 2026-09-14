@@ -448,14 +448,14 @@ there is no second editable “done” checkbox in 001.
 |---|---|---|
 | K0 | K0.1–K0.2 | K0.2 ACCEPTED, including E0 |
 | K1 | K1.0–K1.4 | K1.4 ACCEPTED, structural obligations plus full E1 |
-| K2 | [authority](../../mental-model/mechanisms/authority.md), [actions](../../mental-model/mechanisms/actions.md), [communication](../../mental-model/mechanisms/communication.md), [interoperability](../../mental-model/mechanisms/interoperability.md) | K2.4 ACCEPTED, full E2 |
-| R1 | [integration](../../mental-model/mechanisms/integration.md), [recovery](../../mental-model/mechanisms/recovery.md), [resources](../../mental-model/mechanisms/resources.md), [context](../../mental-model/mechanisms/context.md) | R1.2 unlocks K3; R1.3 is separately required for shipped Driver claims |
-| K3 | [recovery](../../mental-model/mechanisms/recovery.md), [resources](../../mental-model/mechanisms/resources.md), [actions](../../mental-model/mechanisms/actions.md) | K3.4 ACCEPTED, full E4 core and owner substrate decision |
-| K4 | [communication](../../mental-model/mechanisms/communication.md), [authority](../../mental-model/mechanisms/authority.md), [output](../../mental-model/mechanisms/output.md), [waits](../../mental-model/mechanisms/waits.md) | K4.5 ACCEPTED, full E4 composition |
-| R2 | [composition](../../mental-model/mechanisms/composition.md), [state](../../mental-model/mechanisms/state.md), [context](../../mental-model/mechanisms/context.md) | R2.3 if selected stock surfaces ship |
-| K5 | [resources](../../mental-model/mechanisms/resources.md), [evidence](../../mental-model/mechanisms/evidence.md), [recovery](../../mental-model/mechanisms/recovery.md), [output](../../mental-model/mechanisms/output.md) | K5.4 ACCEPTED, E4 operations and E5 positive value decision |
-| D1 | [resources](../../mental-model/mechanisms/resources.md), [evidence](../../mental-model/mechanisms/evidence.md) | D1.2 only for an isolation claim |
-| S1 | [interoperability](../../mental-model/mechanisms/interoperability.md), [integration](../../mental-model/mechanisms/integration.md), [recovery](../../mental-model/mechanisms/recovery.md), [evidence](../../mental-model/mechanisms/evidence.md) | S1.3 ACCEPTED, E6 on final candidate and all shipped claims |
+| K2 | K2.1–K2.4 | K2.4 ACCEPTED, full E2 |
+| R1 | R1.1–R1.2 initial; R1.3 supported profile | R1.2 unlocks K3; R1.3 is separately required for shipped Driver claims |
+| K3 | K3.1–K3.4 | K3.4 ACCEPTED, full E4 core and owner substrate decision |
+| K4 | K4.1–K4.5 | K4.5 ACCEPTED, full E4 composition |
+| R2 | R2.1–R2.3 | R2.3 if selected stock surfaces ship |
+| K5 | K5.1–K5.4 | K5.4 ACCEPTED, E4 operations and E5 positive value decision |
+| D1 | D1.1–D1.2 | D1.2 only for an isolation claim |
+| S1 | S1.1–S1.3 | S1.3 ACCEPTED, E6 on final candidate and all shipped claims |
 
 R2 and D1 start PLANNED with conditional entry; absence of demand does not pretend completion.
 The owner may DEFER them with a corresponding unsupported feature declaration. If E5 selects an

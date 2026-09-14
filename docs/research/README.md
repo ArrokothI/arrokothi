@@ -6,7 +6,7 @@ implementation sequence.
 These notes are **non-canonical working material**. They may compare external systems, inventory a
 protocol surface, record hypotheses, or frame experiments. They do not change ArrokothI semantics,
 commit a roadmap item, or authorize implementation. Canonical ownership remains with the documents
-listed in [`../README.md`](../README.md); accepted implementation decisions remain under
+listed in the [reference index](../../mental-model/reference.md); accepted implementation decisions remain under
 [`../development/`](../development/).
 
 ## Status vocabulary

@@ -1,7 +1,7 @@
 # Children, data flow, and concurrency
 
 [Guide home](README.md). Current target semantics are owned by [Kernel](../../../../mental-model/kernel.md) and
-[Execution](../../../../mental-model/runtime.md), with [composition detail](../../../../mental-model/mechanisms/communication.md),
+[Runtime](../../../../mental-model/runtime.md), with [composition detail](../../../../mental-model/mechanisms/communication.md),
 [authority detail](../../../../mental-model/mechanisms/authority.md), and [memory/state detail](../../../../mental-model/mechanisms/state.md).
 This page describes the implemented 0.8.x authoring surface.
 

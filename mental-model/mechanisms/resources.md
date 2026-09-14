@@ -5,6 +5,9 @@ separate a persistent resource from a temporary connection. Deployment/native se
 own the backing resource; Kernel owns accepted requests and references. No mandatory
 Home/Workspace/Machine hierarchy is introduced.
 
+**Status:** Deployment and resource-service obligation. Introduced by R1/K3/K5; physical
+containment only under D1. This is target specification, not shipped behavior.
+
 ## Resource operations
 
 | Operation | Contract |
@@ -15,6 +18,10 @@ Home/Workspace/Machine hierarchy is introduced.
 | Snapshot/publish | Identify immutable content; state whether processes/jobs are included |
 | Destroy | Explicit ownership/target; idempotence; respect preservation and retention pins |
 | Resource lost | Distinguish confirmed loss from temporary unavailability; refuse empty fake restoration |
+
+Release and destroy are the pair most often confused. Closing a workspace client at the
+end of an Activation releases a connection; it must not delete the workspace, which the
+next Activation still needs.
 
 Allocation success before handle recording creates an orphan risk. Use provider
 idempotency/query by precommitted allocation identity or scoped reconciliation/cleanup

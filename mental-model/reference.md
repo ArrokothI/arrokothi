@@ -5,6 +5,24 @@ Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtim
 definition or the mechanism that composes it. Layer 3 is precise target/reference
 material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
 
+## How pages are named
+
+Three conventions, so a path tells you what you are opening.
+
+- **`concepts/` defines, `mechanisms/` composes.** Where both exist for one subject —
+  `actions` and `state` — the concept page is the sole definition of the terms and the
+  mechanism page is the sole specification of how they interact. The shared name is
+  deliberate; the directory says which half you are in.
+- **Layer-2 files use the short names.** `runtime.md` and `driver.md` cover the
+  *Execution Runtime* and *Execution Driver*, whose formal names and shorthands are
+  fixed in [core vocabulary](concepts/core.md#execution-runtime). Authoring vocabulary
+  for Agents, Workflows and Stages is [`concepts/authoring.md`](concepts/authoring.md),
+  a different subject from the Layer-2 `runtime.md`.
+- **Each mechanism page opens with a Status line** naming whether it is a required
+  Kernel contract, a per-Driver obligation or an optional Runtime design, and which
+  development gate introduces it. Concept pages carry no Status line: they define
+  vocabulary, and a term is not a commitment to build anything.
+
 ## Find a mechanism
 
 | Question | Owning page |
@@ -85,16 +103,16 @@ reminders elsewhere do not own another definition.
 
 ### Runtime authoring and context vocabulary
 
-- [Agent](concepts/runtime.md#agent)
-- [Workflow](concepts/runtime.md#workflow)
-- [Stage and local branch](concepts/runtime.md#stage-and-local-branch)
-- [Local worker](concepts/runtime.md#local-worker)
-- [Context](concepts/runtime.md#context)
-- [Projection and invocation binding](concepts/runtime.md#projection-and-invocation-binding)
-- [Invocation snapshot and cache](concepts/runtime.md#invocation-snapshot-and-cache)
-- [View and disclosure](concepts/runtime.md#view-and-disclosure)
-- [Skill and package](concepts/runtime.md#skill-and-package)
-- [Service and interaction template](concepts/runtime.md#service-and-interaction-template)
+- [Agent](concepts/authoring.md#agent)
+- [Workflow](concepts/authoring.md#workflow)
+- [Stage and local branch](concepts/authoring.md#stage-and-local-branch)
+- [Local worker](concepts/authoring.md#local-worker)
+- [Context](concepts/authoring.md#context)
+- [Projection and invocation binding](concepts/authoring.md#projection-and-invocation-binding)
+- [Invocation snapshot and cache](concepts/authoring.md#invocation-snapshot-and-cache)
+- [View and disclosure](concepts/authoring.md#view-and-disclosure)
+- [Skill and package](concepts/authoring.md#skill-and-package)
+- [Service and interaction template](concepts/authoring.md#service-and-interaction-template)
 
 ### Continuation, retained information and resources
 
@@ -115,7 +133,7 @@ reminders elsewhere do not own another definition.
 - [Boundary value and root](concepts/values.md#boundary-value-and-root)
 - [Canonical form](concepts/values.md#canonical-form)
 - [Fixed semantic limits](concepts/values.md#fixed-semantic-limits)
-- [Collection identity is a different comparison](concepts/values.md#collection-identity-is-a-different-comparison)
+- [What these rules do not cover](concepts/values.md#what-these-rules-do-not-cover)
 
 ## Former names and common search terms
 
@@ -127,7 +145,8 @@ reminders elsewhere do not own another definition.
 | publication intent, output subscription | [Output obligation](concepts/actions.md#emission-result-and-output-obligation), [replay](mechanisms/output.md) |
 | Structured Memory | [Structured state](concepts/state.md#structured-state) |
 | boundary, receipt, acceptance position | [Acceptance and receipt](concepts/identity.md#acceptance-boundary-and-receipt) |
-| worker, runtime, host | [Runtime](concepts/core.md#execution-runtime), [local worker](concepts/runtime.md#local-worker), [host roles](concepts/operations.md) |
+| worker, runtime, host | [Runtime](concepts/core.md#execution-runtime), [local worker](concepts/authoring.md#local-worker), [host roles](concepts/operations.md) |
+| Agent, Workflow, Stage, Skill, "runtime concepts" | [Authoring vocabulary](concepts/authoring.md) |
 | ControllerResumption, interleave, closed Agent/Workflow union | Legacy implementation vocabulary; [baseline](../docs/development/002-implemented-kernel-baseline.md) and [target separation](mechanisms/evidence.md#structural-evidence) |
 
 Ordinary words such as process, queue, model, database and transport retain their

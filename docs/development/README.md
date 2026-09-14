@@ -23,6 +23,20 @@ paths remain valid evidence locators and are not mass-renamed.
 | [Findings](003-evidence-and-findings.md) | Existing implementation defects, historical results and current disposition |
 | [Architecture review](004-architecture-review.md) | 2026-09-08 decisions, inspected prior art, unresolved questions and old-plan disposition |
 | [Detail-design review](005-detail-design-review.md) | Preserved legacy knowledge, refined contracts, future-question disposition and implementation gates |
+| [Structural evidence rules](015-structural-evidence-rules.md) | How the K1.0 ownership inventory is read and compared; what a structural pass does not prove |
+
+Retired development material moved to [`docs/legacy/development/`](../legacy/development/README.md),
+alongside the retired architecture pages. The two reviews above cite the four-page architecture that
+replaced; their links now reach the preserved copy under [`docs/legacy/`](../legacy/README.md), with
+the link target repaired and no historical wording changed.
+
+Sealed packet records under `work/` are left exactly as accepted, including their links. The
+[K0.1 worksheet](work/K0.1/protocol-worksheet.md) is checked byte-for-byte by
+[cited-decisions.test.ts](../../tests/conformance/k0/cited-decisions.test.ts), so editing it — even
+to repair a path — breaks the seal that proves the accepted text has not moved. Where such a record
+points at `docs/kernel.md`, `docs/execution.md`, `docs/deployment.md` or `docs/detail-design/`, read
+the preserved page at the matching name under
+[`docs/legacy/architecture/`](../legacy/README.md#what-is-here). Nothing there is current authority.
 
 The target uses asynchronous Activation/Outcome exchange with opaque Runtime progress. Current code
 still uses `Harness`, synchronous controller invocation, Agent/Workflow progress kinds and

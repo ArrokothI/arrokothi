@@ -5,6 +5,9 @@ immutable input. [Admission](../concepts/actions.md#admission-and-physical-actio
 authorizes a physical attempt; [settlement](../concepts/actions.md#settlement-and-reconciliation)
 records what is known. K2 introduces these mechanisms; K1 refuses Effects at Outcome validation.
 
+**Status:** Required Kernel contract. Introduced by K2.1–K2.3. K1 refuses Effects. This is
+target specification, not shipped behavior.
+
 ## Admission and sending
 
 ```text

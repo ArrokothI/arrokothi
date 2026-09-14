@@ -4,6 +4,9 @@
 answer different questions. This page owns accepted-output availability and replay.
 Sending a message or publishing through an external channel is separately authorized work.
 
+**Status:** Required Kernel contract. Introduced by K4.4; retention hardened by K5.1. This
+is target specification, not shipped behavior.
+
 ## Acceptance makes output observable
 
 Outcome acceptance commits each accepted Emission and terminal result with its stable

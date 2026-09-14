@@ -85,11 +85,11 @@ exceeds 1 MiB. No sum of roots or transport-byte guarantee is implied. Deploymen
 impose tighter transport limits, but cannot silently redefine these semantic limits.
 Changing them requires an explicit versioned protocol amendment.
 
-## Collection identity is a different comparison
+## What these rules do not cover
 
-A declared **collection-valued relation**, such as a set of package export subpaths in
-the ownership inventory, compares cardinality and exact members while allowing reordering.
-It is not an arbitrary boundary-value array: array order above remains meaningful.
-One member `"a,b"` is different from two members `"a"` and `"b"`, even when joining them
-would print the same text. Documented duplicate members are rejected, not collapsed.
-See [structural evidence](../mechanisms/evidence.md#structural-evidence) for K1.0's use.
+The rules above compare **boundary values**: the protocol's arrays and objects, where
+`[1,2]` and `[2,1]` are different values. Other things in this repository are compared
+other ways. A schema may declare a field to be a set, in which case membership matters
+and order does not; that is a property of that schema, not a second equality rule here.
+Comparing such a field by its printed text rather than its members is a known defect —
+see [structural evidence rules](../../docs/development/015-structural-evidence-rules.md#comparing-a-set-is-not-comparing-a-string).

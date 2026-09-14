@@ -1,6 +1,6 @@
 # Agent effectiveness guidance
 
-> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../../development/001-current-status-and-roadmap.md) and [findings register](../../../development/003-evidence-and-findings.md) for current decisions.
 
 > **Status:** active engineering/evaluation guidance for the ArrokothI 0.8.x line.
 > **Role:** replaceable Agent/ACI/context/retrieval/model-engineering strategy, not canonical

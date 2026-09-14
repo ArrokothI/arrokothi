@@ -19,6 +19,9 @@ can remain visibly recovery-held. `WAITING` exists only for an accepted Runtime-
 Kernel dependency. [Wait registration](waits.md#registering-a-wait) determines whether
 an `await` instead immediately yields `READY`.
 
+**Status:** Required Kernel contract. Introduced by K1.2–K1.3; completion accounting bites
+from K2.3. This is target specification, not shipped behavior.
+
 ## Cancellation order
 
 Cancellation is a Kernel control operation independent of the Runtime mailbox. Its

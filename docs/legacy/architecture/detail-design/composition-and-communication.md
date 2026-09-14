@@ -1,5 +1,7 @@
 # Child Executions and addressed communication
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Kernel relationships, routing and obligations; application supervision policy.
 **Status:** target K4, with K2 action foundations and K5 output-retention hardening; [protocol](execution-protocol.md) and [authority](authority-and-actions.md) are
 prerequisites. Local graphs, branches, Agents and Skills live in [Runtime composition](runtime-composition.md).
@@ -186,11 +188,11 @@ live. Preserve receipts, cleanup and unknown obligations after terminal cancella
 
 ## Prior art and K4 proof
 
-Hermes [async delegation](../../../hermes-agent/tools/async_delegation.py) separates child completion,
+Hermes [async delegation](../../../../../hermes-agent/tools/async_delegation.py) separates child completion,
 parent-turn delivery and owner-loss uncertainty. Its
-[restored ownership tests](../../../hermes-agent/tests/tools/test_restored_delegation_ownership.py)
+[restored ownership tests](../../../../../hermes-agent/tests/tools/test_restored_delegation_ownership.py)
 are concrete counterexamples to routing by a remembered session string alone. OpenClaw
-[task records](../../../openclaw/src/tasks/task-registry.types.ts) similarly distinguish owner,
+[task records](../../../../../openclaw/src/tasks/task-registry.types.ts) similarly distinguish owner,
 requester, run identity and delivery status. Preserve native routing when integrating those products.
 
 K4/E4 tests crash between intent and child fulfillment, completion before parent wait, clarification

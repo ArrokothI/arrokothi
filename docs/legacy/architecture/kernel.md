@@ -1,8 +1,10 @@
 # Kernel
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../mental-model/README.md) and its [reference index](../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../README.md).
+
 The Kernel owns the acceptance of Execution state, addressed inputs and mediated actions. It does
 not implement Agent reasoning or Workflow progression. This is the **target contract**, not a claim
-that the current 0.8.x Harness implements it. See the [migration roadmap](development/001-current-status-and-roadmap.md).
+that the current 0.8.x Harness implements it. See the [migration roadmap](../../development/001-current-status-and-roadmap.md).
 
 Implementation-level acceptance and race rules live in [Execution protocol](detail-design/execution-protocol.md).
 [Authority](detail-design/authority-and-actions.md), [action lifecycle](detail-design/action-lifecycle.md),
@@ -185,9 +187,9 @@ unknown work appends a new evidence revision/Event rather than editing an alread
 Stopping retries or abandoning responsibility is not proof of external failure. Compensating
 an action is a new authorized action, not automatic rollback.
 
-Prior art: OpenClaw's [unknown-send reconciliation](../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts)
+Prior art: OpenClaw's [unknown-send reconciliation](../../../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts)
 uses transport-specific evidence and exact prepared delivery information. Reuse that boundary lesson,
-not its entire messaging control plane. The supporting [review](development/004-architecture-review.md)
+not its entire messaging control plane. The supporting [review](../../development/004-architecture-review.md)
 pins the inspected checkout.
 
 ## Recovery and cancellation
@@ -234,8 +236,8 @@ the Runtime unless every relevant call crosses an enforced metering boundary.
 
 Completion versus delivery is deliberately separate. Internal child/result delivery is a durable
 Kernel routing obligation; user-facing channel delivery belongs to an application/transport adapter.
-See OpenClaw's [task versus delivery status](../../openclaw/src/tasks/task-registry.types.ts) and Hermes'
-[restored result ownership tests](../../hermes-agent/tests/tools/test_restored_delegation_ownership.py).
+See OpenClaw's [task versus delivery status](../../../../openclaw/src/tasks/task-registry.types.ts) and Hermes'
+[restored result ownership tests](../../../../hermes-agent/tests/tools/test_restored_delegation_ownership.py).
 No universal channel/session subsystem is implied.
 
 ## Implementation boundary
@@ -249,5 +251,5 @@ Current migration touchpoints are `packages/core/src/runtime/{harness,effect-pro
 `execution/context.ts` and `ports/{runtime-store,scheduler}.ts`. In particular, current `applyOutcome`
 dispatches Effects before later progress commit; its catch comment does not establish whole-Outcome
 rollback. The existing tests preserve useful behavior but do not prove the target acceptance protocol.
-[The baseline](development/002-implemented-kernel-baseline.md) and [review](development/004-architecture-review.md)
+[The baseline](../../development/002-implemented-kernel-baseline.md) and [review](../../development/004-architecture-review.md)
 track that gap; this documentation revision implements no runtime change.

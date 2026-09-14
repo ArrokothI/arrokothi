@@ -1,8 +1,11 @@
 # Composing work inside a Runtime
 
-[Agent, Workflow, Stage and local branch](../concepts/runtime.md) are optional Runtime
+[Agent, Workflow, Stage and local branch](../concepts/authoring.md) are optional Runtime
 authoring concepts. They do not introduce Kernel schedulers or kind unions. A native
 Crew/Flow or ordinary code may supply this composition more simply.
+
+**Status:** Optional Runtime design, R2. Foreign Runtimes keep their own composition. This
+is target specification, not shipped behavior.
 
 ## Typed work and completion barriers
 
@@ -21,8 +24,8 @@ No memory write, JSON-as-text convention or extra model call is needed just to t
 that object. Keep Stage completion barriers inside the Workflow: finish required local
 work, account for required action/child results, finish transforms and commit selected
 output before transition. A late callback cannot mutate a later Stage's assumptions.
-Nonblocking work needs an explicit continuation/result owner. A returned function
-is not evidence that every required task finished.
+Nonblocking work needs an explicit continuation/result owner. A function returning is
+not evidence that every task it started has finished.
 
 Independent Effects may share an Outcome. Dependent actions follow evidence in later
 Activations. Native async work stays inside an unresolved Activation until yielding
@@ -57,7 +60,7 @@ data travels through results/state, not a hidden ever-growing ancestry notes sta
 operations, even under one provider tool namespace. Model-based transforms still cost
 money even when they perform no external business action.
 
-A [Skill](../concepts/runtime.md#skill-and-package) can load instructions into the
+A [Skill](../concepts/authoring.md#skill-and-package) can load instructions into the
 current Runtime or invoke a composition through a function/child according to lifetime
 needs. Pin source/publisher/version, entry points, input/default bindings, requested
 operations/resources and supported Runtime/isolation requirements where used. These

@@ -1,5 +1,7 @@
 # Protocol and service mappings
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** application/Driver/operation adapters, under [Execution](../execution.md) and
 [Deployment](../deployment.md). **Status:** integration design; only the narrow 0.8.x MCP Tool proof
 is implemented. Broader protocol support is demand-gated, not a standards-compliance claim.
@@ -52,10 +54,10 @@ Malformed response after possible execution preserves unknown certainty, or know
 plus invalid result where distinguishable. HTTP success is transport evidence, not semantic completion.
 Native completion words are translated by meaning rather than copied as Kernel states.
 
-The existing [MCP importer](../../packages/interoperability/mcp/src/import/importer.ts),
-[schema translator](../../packages/interoperability/mcp/src/schema/from-json-schema.ts) and
-[result normalizer](../../packages/interoperability/mcp/src/import/result.ts) are narrow implementation
-evidence, indexed in [the baseline](../development/002-implemented-kernel-baseline.md#13-current-mcp-proof).
+The existing [MCP importer](../../../../packages/interoperability/mcp/src/import/importer.ts),
+[schema translator](../../../../packages/interoperability/mcp/src/schema/from-json-schema.ts) and
+[result normalizer](../../../../packages/interoperability/mcp/src/import/result.ts) are narrow implementation
+evidence, indexed in [the baseline](../../../development/002-implemented-kernel-baseline.md#13-current-mcp-proof).
 Keep their refusal and certainty regressions during migration; they do not prove broader Task support.
 
 ## Mapping worksheet
@@ -108,4 +110,4 @@ Before a new binding is supported: round-trip actual values; test malformed/unsu
 non-object outputs, duplicate/out-of-order callbacks, wrong-owner handles, late/expired human replies,
 reconnect/retention gaps, task-versus-final-result mapping and one version upgrade. MCP/A2A parity is
 not a K1–K5 dependency. R1 uses whatever native boundary best preserves behavior; S1 states the tested
-subset. Broader descriptors/protocols remain questions in [future plan](../future-plan.md).
+subset. Broader descriptors/protocols remain questions in [future plan](../../../future-plan.md).

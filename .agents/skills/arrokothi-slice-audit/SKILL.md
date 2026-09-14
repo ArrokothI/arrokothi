@@ -20,7 +20,7 @@ overrides canonical architecture.
 ## Source of truth
 
 This skill defines workflow, not architecture. Resolve the current concept owner through
-`docs/README.md` before relying on architecture-specific wording or examples here; the canonical
+`mental-model/reference.md` before relying on architecture-specific wording or examples here; the canonical
 owner overrides stale skill text. Using this skill does not justify editing it. Update it only when
 an accepted architecture or workflow change makes it materially false, obsolete, misleading, or
 incomplete, and never infer permanent policy from implementation observations.
@@ -32,7 +32,7 @@ incomplete, and never infer permanent policy from implementation observations.
    explicitly deferred, and required for acceptance. Do not infer current scope from a superseded
    milestone record merely because its header once said “accepted”.
 2. **Identify authoritative contracts.** Map semantic acceptance criteria to the canonical doc
-   that owns the concept (`docs/README.md` table), then identify the code contract and existing test
+   that owns the concept (`mental-model/reference.md`), then identify the code contract and existing test
    coverage where implementation is in scope.
 3. **Inspect implementation and tests.** Read the relevant modules under `packages/` and the tests
    under `tests/conformance/` and `packages/*/tests/` that already pin behaviour in this area.

@@ -1,5 +1,7 @@
 # Agent and Workflow Runtime design
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 **Owner:** Execution Runtime/SDK. **Status:** optional ArrokothI Runtime design for R2; foreign Runtimes
 retain their own authoring model. [Execution](../execution.md) owns the boundary, and
 [child composition](composition-and-communication.md) owns independent Kernel management.
@@ -11,8 +13,8 @@ including branches/loops that models may select. Neither call count nor use of f
 category. A planner, evaluator, router or retriever is a role in an application, not an Execution kind.
 Both styles can share context handling, tool adapters, typed values, retry policies and native storage.
 
-CrewAI's [AgentExecutor](../../../crewAI/lib/crewai/src/crewai/experimental/agent_executor.py) subclasses
-`Flow[AgentExecutorState]`; its [Flow runtime](../../../crewAI/lib/crewai/src/crewai/flow/runtime/__init__.py)
+CrewAI's [AgentExecutor](../../../../../crewAI/lib/crewai/src/crewai/experimental/agent_executor.py) subclasses
+`Flow[AgentExecutorState]`; its [Flow runtime](../../../../../crewAI/lib/crewai/src/crewai/flow/runtime/__init__.py)
 is concrete evidence for shared machinery. Reuse Crew/Flow as a whole when its authoring model fits.
 This does not justify a universal IR or translating every foreign graph into ArrokothI nodes.
 
@@ -122,6 +124,6 @@ ACI wording, observation shaping, retrieval, planning and context separately fro
 Count failed attempts, repeated native billing and evaluator cost; verify outcomes in the environment.
 An LLM self-evaluation is not exact consent or independent validation.
 
-[Future plan](../future-plan.md) preserves context IR, code-mediated operations, richer joins and
+[Future plan](../../../future-plan.md) preserves context IR, code-mediated operations, richer joins and
 multi-Agent strategy experiments with simpler comparison arms. A native Flow/graph or ordinary code
 that meets the application more simply is a reason to retire the corresponding ArrokothI machinery.

@@ -2,7 +2,7 @@
 
 **Status:** unresolved thinking, not accepted architecture or a second roadmap. The active sequence
 is [K0–K5/R1/R2/D1/S1](development/001-current-status-and-roadmap.md). Current contracts live in the
-[architecture map](README.md) and [detail design](../mental-model/reference.md). This file replaces the old
+[mental model](../mental-model/README.md) and its [reference index](../mental-model/reference.md). This file replaces the old
 feature inventory with questions that can change an investment decision.
 
 A question can be investigated cheaply before a release if its prerequisites exist. “Future” does

@@ -1,6 +1,6 @@
 # State, memory, and context
 
-[Guide home](README.md). Current target semantics are owned by [Execution](../../../../mental-model/runtime.md), with
+[Guide home](README.md). Current target semantics are owned by [Runtime](../../../../mental-model/runtime.md), with
 [current memory/state detail](../../../../mental-model/mechanisms/state.md). This page describes the
 implemented 0.8.x storage/context surface; use [the wiring reference](current-authoring-surface.md#structured-memory-wiring) to implement it.
 

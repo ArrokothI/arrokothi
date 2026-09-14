@@ -14,5 +14,5 @@ For a runnable application, start with [SDK quick start](deployment/quick-start.
 
 Pages describing current behavior explicitly refer to 0.8.x. An empty planned topic is intentional:
 write its procedure with the implementation and executable example, rather than inventing target APIs.
-Keep guides here, semantic contracts in [detail design](../../mental-model/reference.md), and implementation
+Keep guides here, semantic contracts in [the reference index](../../mental-model/reference.md), and implementation
 sequence in [development](../development/README.md).

@@ -52,6 +52,26 @@ Persistent resources can outlive host connections. Closing a client should not d
 a workspace needed for recovery. Missing state is an explicit loss, not permission to
 silently attach an empty replacement.
 
+## Check what a durable substrate retries on its own
+
+Using a mature durable engine for storage, timers and dispatch is encouraged. Doing so
+hands it one decision worth checking first: most of them re-run a step by themselves when
+the reply is lost.
+
+That is safe when the step only computes. It is not safe when the step already charged a
+card or sent a message, because the engine cannot tell "never ran" apart from "ran, and
+the answer went missing" — and re-running it does the thing twice.
+
+So before adopting one, find out exactly which steps it retries without being asked, and
+keep that behavior away from any step whose action may already have happened. Those steps
+follow [the action rules](mechanisms/actions.md#retrying-an-action) instead: retry only
+with provider-enforced idempotency or proof it did not run, and otherwise record the work
+as unknown. [Temporal's activity contract](https://docs.temporal.io/activity-definition)
+and [Restate's durable steps](https://docs.restate.dev/develop/ts/durable-steps) both
+document this behavior and are worth reading. Neither of them decides which of your steps
+are safe to repeat; the action rules do. These are references, not tested integrations or
+selected dependencies — K3 picks the substrate from a failure experiment.
+
 ## What a supported profile publishes
 
 Publish tested versions, surviving storage assumptions, recovery restrictions,

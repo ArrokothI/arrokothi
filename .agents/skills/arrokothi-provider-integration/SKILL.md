@@ -17,7 +17,7 @@ become kernel semantics. Dependencies point inward toward current core-owned con
 ## Source of truth
 
 This skill defines workflow, not architecture. Resolve the current concept owner through
-`docs/README.md` before relying on architecture-specific wording or examples here; the canonical
+`mental-model/reference.md` before relying on architecture-specific wording or examples here; the canonical
 owner overrides stale skill text. Using this skill does not justify editing it. Update it only when
 an accepted architecture or workflow change makes it materially false, obsolete, misleading, or
 incomplete, and never infer permanent policy from implementation observations.
@@ -25,8 +25,8 @@ incomplete, and never infer permanent policy from implementation observations.
 ## Procedure
 
 1. **Find the exact contract first.** Locate the current port or projection the integration
-   implements, then use `docs/README.md` to find and read its canonical owner and any adjacent
-   owners the map identifies. Read `docs/development/002-implemented-kernel-baseline.md` for current evidence;
+   implements, then use `mental-model/reference.md` to find and read its canonical owner and any
+   adjacent owners it names. Read `docs/development/002-implemented-kernel-baseline.md` for current evidence;
    consult `docs/development/001-current-status-and-roadmap.md` for planned work.
    Use `mental-model/mechanisms/integration.md` for Driver assurance,
    `mental-model/mechanisms/interoperability.md` for protocol/schema mapping and `mental-model/mechanisms/recovery.md` for native

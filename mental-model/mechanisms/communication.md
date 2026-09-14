@@ -9,6 +9,9 @@ Keep ownership, communication and waits distinct. An ownership tree can contain 
 messages and cyclic waits. None of those edges replaces authenticated application
 relationships or grants every permission.
 
+**Status:** Required Kernel contract. Introduced by K4.1–K4.3. This is target specification,
+not shipped behavior.
+
 ## Children
 
 Child creation is an immutable Effect binding Runtime/Definition, explicit input,

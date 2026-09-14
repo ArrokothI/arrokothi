@@ -9,8 +9,8 @@ const example = "examples/execution-kernel-minimal";
 const sources = [
   "docs/development/README.md",
   "README.md", "AGENTS.md", "docs/README.md",
-  "packages/sdk/README.md", "docs/development/legacy/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md",
-  "docs/development/legacy/2026-09-baseline/007-application-builder-ergonomics-findings.md",
+  "packages/sdk/README.md", "docs/legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md",
+  "docs/legacy/development/2026-09-baseline/007-application-builder-ergonomics-findings.md",
   ".agents/skills/arrokothi-agent-builder/SKILL.md",
   ...(await readdir(join(root, guide), { recursive: true })).filter((name) => name.endsWith(".md")).sort().map((name) => `${guide}/${name}`),
   `${example}/README.md`,

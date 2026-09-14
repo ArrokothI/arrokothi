@@ -1,5 +1,7 @@
 # Execution Runtime
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../mental-model/README.md) and its [reference index](../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../README.md).
+
 An Execution Runtime performs the work of an Execution. It may be ordinary code, an ArrokothI
 Agent or Workflow, or a native Hermes, OpenClaw, Dify or CrewAI runtime. It owns algorithms, local
 state, tools, internal asynchronous work and the meaning of its continuation data. The [Kernel](kernel.md)
@@ -127,19 +129,19 @@ as estimates. Moving cost tracking out of the Kernel does not make unobserved co
 
 ## Prior-art navigation
 
-These are observations of the sibling checkouts pinned in [the architecture review](development/004-architecture-review.md).
+These are observations of the sibling checkouts pinned in [the architecture review](../../development/004-architecture-review.md).
 Selected tests were inspected, not executed. Paths are practical entry points, not adopted dependencies.
 
 | System and source | Lesson and reuse decision |
 |---|---|
-| CrewAI [AgentExecutor](../../crewAI/lib/crewai/src/crewai/experimental/agent_executor.py), [Flow runtime](../../crewAI/lib/crewai/src/crewai/flow/runtime/__init__.py) | `AgentExecutor` subclasses Flow. Share machinery if it simplifies native Agent/Workflow implementation; do not force foreign graphs into a common IR. Use the Crew/Flow API before extracting its executor. |
-| CrewAI [SQLite persistence](../../crewAI/lib/crewai/src/crewai/flow/persistence/sqlite.py), [checkpoint runtime](../../crewAI/lib/crewai/src/crewai/state/runtime.py) | State and pending feedback are saved together; checkpoint restoration includes runtime associations/version migration. Reuse native persistence and feedback. A saved snapshot alone does not prove atomic external side effects. |
-| OpenClaw [harness types](../../openclaw/src/agents/harness/types.ts), [host capabilities](../../openclaw/src/agents/harness/host-capability-types.ts) | Native model/auth ownership can coexist with host-fixed tool/approval facilities and compatibility refusal. Treat this as a reference for a scoped bridge, not a portable Kernel ABI. |
-| OpenClaw [task access](../../openclaw/src/tasks/task-owner-access.ts), [delivery recovery](../../openclaw/src/infra/outbound/delivery-queue-recovery.ts) | Preserve the gateway's session/channel ownership. Integrate a scoped task/service and correlate results instead of mirroring its control plane. |
-| Hermes [context engine](../../hermes-agent/agent/context_engine.py), [Agent](../../hermes-agent/run_agent.py), [tool dispatch](../../hermes-agent/model_tools.py) | Session lifecycle and request-only context selection differ from transcript mutation. Tool middleware resolves underlying bridge calls. Preserve native context/tools; audit indirect paths before claiming mediation. |
-| Hermes [async delegation](../../hermes-agent/tools/async_delegation.py), [filesystem checkpoints](../../hermes-agent/tools/checkpoint_manager.py) | Abandoned delegates can be unknown while recorded partial results survive. A shadow Git workspace snapshot is file undo, not general Execution recovery. Use native jobs and their explicit limits. |
-| Dify [pause persistence](../../dify/api/core/app/layers/pause_state_persist_layer.py), [human-input service](../../dify/api/services/human_input_service.py) | Persist graph and response-stream filter together; map engine pause IDs to application-owned forms. Preserve published application/graph and form semantics. |
-| Dify [Agent runner](../../dify/dify-agent/src/dify_agent/runtime/runner.py), [dependencies](../../dify/dify-agent/pyproject.toml) | A successful run can return deferred human work plus a snapshot, rather than final output. Translate meaning, not a status string. Dify itself reuses Pydantic AI; investigate the independent library before recreating cognition. |
+| CrewAI [AgentExecutor](../../../../crewAI/lib/crewai/src/crewai/experimental/agent_executor.py), [Flow runtime](../../../../crewAI/lib/crewai/src/crewai/flow/runtime/__init__.py) | `AgentExecutor` subclasses Flow. Share machinery if it simplifies native Agent/Workflow implementation; do not force foreign graphs into a common IR. Use the Crew/Flow API before extracting its executor. |
+| CrewAI [SQLite persistence](../../../../crewAI/lib/crewai/src/crewai/flow/persistence/sqlite.py), [checkpoint runtime](../../../../crewAI/lib/crewai/src/crewai/state/runtime.py) | State and pending feedback are saved together; checkpoint restoration includes runtime associations/version migration. Reuse native persistence and feedback. A saved snapshot alone does not prove atomic external side effects. |
+| OpenClaw [harness types](../../../../openclaw/src/agents/harness/types.ts), [host capabilities](../../../../openclaw/src/agents/harness/host-capability-types.ts) | Native model/auth ownership can coexist with host-fixed tool/approval facilities and compatibility refusal. Treat this as a reference for a scoped bridge, not a portable Kernel ABI. |
+| OpenClaw [task access](../../../../openclaw/src/tasks/task-owner-access.ts), [delivery recovery](../../../../openclaw/src/infra/outbound/delivery-queue-recovery.ts) | Preserve the gateway's session/channel ownership. Integrate a scoped task/service and correlate results instead of mirroring its control plane. |
+| Hermes [context engine](../../../../hermes-agent/agent/context_engine.py), [Agent](../../../../hermes-agent/run_agent.py), [tool dispatch](../../../../hermes-agent/model_tools.py) | Session lifecycle and request-only context selection differ from transcript mutation. Tool middleware resolves underlying bridge calls. Preserve native context/tools; audit indirect paths before claiming mediation. |
+| Hermes [async delegation](../../../../hermes-agent/tools/async_delegation.py), [filesystem checkpoints](../../../../hermes-agent/tools/checkpoint_manager.py) | Abandoned delegates can be unknown while recorded partial results survive. A shadow Git workspace snapshot is file undo, not general Execution recovery. Use native jobs and their explicit limits. |
+| Dify [pause persistence](../../../../dify/api/core/app/layers/pause_state_persist_layer.py), [human-input service](../../../../dify/api/services/human_input_service.py) | Persist graph and response-stream filter together; map engine pause IDs to application-owned forms. Preserve published application/graph and form semantics. |
+| Dify [Agent runner](../../../../dify/dify-agent/src/dify_agent/runtime/runner.py), [dependencies](../../../../dify/dify-agent/pyproject.toml) | A successful run can return deferred human work plus a snapshot, rather than final output. Translate meaning, not a status string. Dify itself reuses Pydantic AI; investigate the independent library before recreating cognition. |
 
 ## Migration and tests
 
@@ -152,5 +154,5 @@ Do not rename files and call that an asynchronous migration.
 Kernel tests use fakes. Runtime tests check reasoning/graph behavior with Kernel contracts fixed.
 Driver tests compare native input/output/pause/cancellation before and after translation and inject
 lost acknowledgments and stale native writers. Test tool fallback/delegation and one upstream upgrade
-for every strong supported claim. The [roadmap](development/001-current-status-and-roadmap.md) sets
+for every strong supported claim. The [roadmap](../../development/001-current-status-and-roadmap.md) sets
 when a native comparison should delete unnecessary ArrokothI machinery.

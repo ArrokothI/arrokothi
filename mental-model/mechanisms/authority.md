@@ -5,6 +5,9 @@ separate authenticated identity, a permission ceiling and a decision about a con
 action. This page owns their ordering; [actions](actions.md) owns attempts/results.
 The target does not select a universal token format, grant language or remote policy backend.
 
+**Status:** Required Kernel contract. Introduced by K2.2; extended by K4 and K5. This is
+target specification, not shipped behavior.
+
 ## Establish identity at trusted ingress
 
 The application supplies service/acting-on-behalf-of principal, tenant/application
@@ -25,9 +28,11 @@ delegability and policy provenance. Trusted records can suffice in one trust dom
 signatures authenticate origin but do not prove current permission.
 
 Delegate only the intersection of requested power, the parent's delegable bound and
-current policy. Retain the delegating dependency through grandchildren so revocation
-or narrowing affects future admissions. An explicitly surviving grant can outlive
-parent termination; its lifetime must be declared. Child budgets do not grant permission.
+current policy. A parent that may email one address cannot give a child the power to
+email any address by asking for it: the child gets that one address, or nothing. Retain
+the delegating dependency through grandchildren so revocation or narrowing affects
+future admissions. An explicitly surviving grant can outlive parent termination; its
+lifetime must be declared. Child budgets do not grant permission.
 
 Overlapping policy rules need explicit semantics: additive allows combine only under
 the same policy contract; attenuation constraints intersect; explicit denies cannot
@@ -79,9 +84,11 @@ Use a versioned decision checked at commit, serialize changes through an admissi
 authority, or refuse the stronger ordering claim. Do not hold a database transaction
 across a remote policy call. K2 declares actual remote freshness; K0/K1 promises none.
 
-A correction message does not retract an action. To promise retraction, the application
-must withdraw the named pending action or invalidate its consent/resource binding
-before admission under this ordering. After admission, report “may have acted” and
+For example, a user typing "wait, not that recipient" changes nothing on its own: it is
+ordinary input the Runtime may not read for another second, and the send may already be
+admitted. A correction message does not retract an action. To promise retraction, the
+application must withdraw the named pending action or invalidate its consent/resource
+binding before admission under this ordering. After admission, report “may have acted” and
 use reconciliation or compensation. Revoking action permission does not erase evidence;
 reconciliation reads require their own service authorization.
 

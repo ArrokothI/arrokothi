@@ -1,4 +1,4 @@
-> **Historical P1–P7/B1–B3 plan. Superseded by the [active roadmap](../001-current-status-and-roadmap.md) on 2026-09-08.**
+> **Historical P1–P7/B1–B3 plan. Superseded by the [active roadmap](../../development/001-current-status-and-roadmap.md) on 2026-09-08.**
 
 # Development roadmap
 
@@ -6,8 +6,8 @@
 > Planning authority only: this adopts the work and its gates, not proposed semantic/API changes.
 > Implementation starting point: `agent-kernel` commit `e96e513`; benchmark commit `04148be`.
 
-Read the [implemented baseline](../002-implemented-kernel-baseline.md) for shipped behavior and the
-[evidence and findings register](../003-evidence-and-findings.md) for source links, benchmark status,
+Read the [implemented baseline](../../development/002-implemented-kernel-baseline.md) for shipped behavior and the
+[evidence and findings register](../../development/003-evidence-and-findings.md) for source links, benchmark status,
 known defects and disposition. [Canonical ownership](../../README.md) continues to decide meaning.
 The [architecture strategy study](../../architecture-strategy-study/README.md) remains research.
 Its R1–R11 findings inform this plan; its stage sequence and numerical experiment margins are not
@@ -295,7 +295,7 @@ framework safety/recovery comparison claims cannot.
 ## B2 — Complete only the construction and execution path the campaign needs
 
 **Purpose/dependency:** B1, P5, P6 for final freeze; read-only comparator review and host preparation
-may proceed earlier. Detailed current status is in the [benchmark register](../003-evidence-and-findings.md#benchmark-current-state).
+may proceed earlier. Detailed current status is in the [benchmark register](../../development/003-evidence-and-findings.md#benchmark-current-state).
 
 **Work:** obtain the canonical Linux/AppArmor rerun of the exact v3 canary if retaining that claim.
 Its non-canonical success is already real; do not repeat Desktop runs to seek a stronger label.

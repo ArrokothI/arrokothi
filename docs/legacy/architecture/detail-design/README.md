@@ -1,14 +1,16 @@
 # Detail design
 
+> **Superseded architecture, retired 2026-09-14.** The current architecture is the [mental model](../../../../mental-model/README.md) and its [reference index](../../../../mental-model/reference.md). Phrases below such as "target contract", "current design" or "this page owns" describe this document as it stood then, not current authority; some rules here were later corrected. [What replaced it](../../README.md).
+
 This is the current implementation-oriented design beneath [Kernel](../kernel.md),
 [Execution](../execution.md) and [Deployment](../deployment.md). Read [the mental model](../mental-model.md)
 first. The top-level owners define meaning; each page below owns the detailed rules for its topic.
 If they disagree, fix the conflict in the same change rather than maintaining competing contracts.
 
 **All pages describe targets or optional designs, not newly implemented APIs.** Current 0.8.x behavior,
-source/tests and migration gaps are in [development](../development/README.md). K0–K5, R1/R2, D1 and S1
+source/tests and migration gaps are in [development](../../../development/README.md). K0–K5, R1/R2, D1 and S1
 remain the only active implementation sequence. More design depth does not add every documented
-facility to 1.0. [Future plan](../future-plan.md) holds unresolved hypotheses and experiment gates.
+facility to 1.0. [Future plan](../../../future-plan.md) holds unresolved hypotheses and experiment gates.
 
 ## Design map
 
@@ -40,7 +42,7 @@ record is justified where it prevents a concrete ambiguity; no requirement force
 to adopt the reference Runtime's memory, graph or package vocabulary.
 
 Cross-repository links are source-inspection prior art, pinned in the
-[detail-design review](../development/005-detail-design-review.md). They indicate mechanisms worth
+[detail-design review](../../../development/005-detail-design-review.md). They indicate mechanisms worth
 learning from, not installed dependencies or passed upstream tests. Current design is self-contained:
 future engineers do not need the legacy mental-model directory to recover intended semantics.
 The review records retained, relocated and rejected legacy ideas by topic and source section.
