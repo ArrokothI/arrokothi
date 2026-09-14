@@ -557,3 +557,175 @@ describe("K1.1-C3 the four semantic limits, at the limit and one over", () => {
     assert.equal(result.value.canonicalBytes, 4, "but e-acute is two UTF-8 bytes");
   });
 });
+
+describe("K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)", () => {
+  test("an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot", () => {
+    const previous = (Object.prototype as Record<string, unknown>).toJSON;
+    (Object.prototype as Record<string, unknown>).toJSON = () => 42;
+    try {
+      const result = canonicalize({ a: 1 });
+      assert.ok(result.ok, "a plain object stays acceptable under ambient pollution");
+      assert.equal(result.value.canonical, '{"a":1}', "bytes describe the snapshot, not the hook's return");
+      assert.deepEqual(result.value.value, { a: 1 });
+      const again = canonicalize(result.value.value);
+      assert.ok(again.ok);
+      assert.equal(again.value.canonical, result.value.canonical, "retained state re-canonicalizes to its identity");
+    } finally {
+      if (previous === undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
+      else (Object.prototype as Record<string, unknown>).toJSON = previous;
+    }
+  });
+
+  test("an inherited Array.prototype.toJSON cannot divert canonical bytes either", () => {
+    const previous = (Array.prototype as unknown as Record<string, unknown>).toJSON;
+    (Array.prototype as unknown as Record<string, unknown>).toJSON = function () {
+      return 99;
+    };
+    try {
+      const result = canonicalize([1, 2]);
+      assert.ok(result.ok);
+      assert.equal(result.value.canonical, "[1,2]");
+      assert.deepEqual(result.value.value, [1, 2]);
+    } finally {
+      if (previous === undefined) delete (Array.prototype as unknown as Record<string, unknown>).toJSON;
+      else (Array.prototype as unknown as Record<string, unknown>).toJSON = previous;
+    }
+  });
+
+  test("a capture-time side effect installing Object.prototype.toJSON still binds the observed structure", () => {
+    const previous = (Object.prototype as Record<string, unknown>).toJSON;
+    if (previous !== undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
+    // Owns 1 and reads 1, so capture accepts — but the ordinary read installs the hook as a side
+    // effect before the serializer runs. Review-03's witness produced canonical `42` here.
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Object.prototype as Record<string, unknown>).toJSON = () => 42;
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    assert.equal(Object.getOwnPropertyDescriptor(sneaky, "a")?.value, 1, "owns 1");
+    let result: ReturnType<typeof canonicalize>;
+    try {
+      result = canonicalize(sneaky);
+    } finally {
+      const installed = (Object.prototype as Record<string, unknown>).toJSON;
+      assert.equal(typeof installed, "function", "the side effect really installed the hook");
+      if (previous === undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
+      else (Object.prototype as Record<string, unknown>).toJSON = previous;
+    }
+    assert.ok(result!.ok, "the coherent reading is still acceptable");
+    assert.equal(result!.ok && result!.value.canonical, '{"a":1}');
+    assert.deepEqual(result!.ok && result!.value.value, { a: 1 });
+  });
+
+  test("a legitimate own toJSON data member is still content, not a hook", () => {
+    const result = canonicalize({ toJSON: 1, a: 2 });
+    assert.ok(result.ok);
+    assert.equal(result.value.canonical, '{"a":2,"toJSON":1}');
+  });
+
+  test("an own-name listing reporting a canonical index outside length with no backing property is refused", () => {
+    // Supplement witness: extensible empty-array target, length 0, ownKeys reports '10', no
+    // descriptor behind it. The old partition dropped it into an accepted [].
+    const proxy = new Proxy([] as unknown[], {
+      ownKeys(): string[] {
+        return ["length", "10"];
+      },
+      getOwnPropertyDescriptor(target, property): PropertyDescriptor | undefined {
+        if (property === "length") return { value: 0, writable: true, enumerable: false, configurable: false };
+        if (property === "10") return undefined;
+        return Reflect.getOwnPropertyDescriptor(target, property);
+      },
+      get(target, property, receiver): unknown {
+        if (property === "length") return 0;
+        return Reflect.get(target, property, receiver);
+      },
+    });
+    assert.equal(Array.isArray(proxy), true);
+    assert.equal(Object.getPrototypeOf(proxy), Array.prototype);
+    assert.deepEqual(Object.getOwnPropertyNames(proxy), ["length", "10"]);
+    assert.equal(Object.getOwnPropertyDescriptor(proxy, "10"), undefined);
+    const issues = boundaryValueIssues(proxy);
+    assert.ok(issues.length > 0, "refused, not accepted as []");
+    assert.ok(
+      issues.some((issue) => issue.path === "[10]" && issue.code === "unstable_representation"),
+      `located unstable listing, got ${JSON.stringify(issues)}`,
+    );
+    assert.equal(canonicalize(proxy).ok, false);
+  });
+
+  test("a backed canonical index outside length is also refused rather than silently dropped", () => {
+    const proxy = new Proxy([] as unknown[], {
+      ownKeys(): string[] {
+        return ["length", "5"];
+      },
+      getOwnPropertyDescriptor(target, property): PropertyDescriptor | undefined {
+        if (property === "length") return { value: 0, writable: true, enumerable: false, configurable: false };
+        if (property === "5") return { value: 7, writable: true, enumerable: true, configurable: true };
+        return Reflect.getOwnPropertyDescriptor(target, property);
+      },
+      get(target, property, receiver): unknown {
+        if (property === "length") return 0;
+        return Reflect.get(target, property, receiver);
+      },
+    });
+    const issues = boundaryValueIssues(proxy);
+    assert.ok(issues.length > 0);
+    assert.ok(
+      issues.some((issue) => issue.path === "[5]"),
+      `the outside index is located, got ${JSON.stringify(issues)}`,
+    );
+    assert.equal(canonicalize(proxy).ok, false);
+  });
+
+  test("a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal", () => {
+    const hostileError = new Proxy(
+      {},
+      {
+        get(_target, property): unknown {
+          if (property === "constructor") throw new Error("constructor boom");
+          return undefined;
+        },
+      },
+    );
+    const hostile = new Proxy({ a: 1 }, {
+      getOwnPropertyDescriptor(): PropertyDescriptor {
+        throw hostileError;
+      },
+    });
+    let issues: ReturnType<typeof boundaryValueIssues> = [];
+    assert.doesNotThrow(() => {
+      issues = boundaryValueIssues(hostile);
+    }, "the Kernel boundary refuses; it does not propagate the caller's exception or the formatter's");
+    assert.deepEqual(issues.map((issue) => issue.code), ["unstable_representation"]);
+  });
+});
+
+describe("K11-R3-LIMIT-01 over-limit arrays refuse without work proportional to the declared length", () => {
+  test("exactly-at-limit passes and one-over refuses", () => {
+    const atLimit = Array.from({ length: BOUNDARY_LIMITS.containerEntries }, () => 0);
+    assert.deepEqual(issueCodes(atLimit), []);
+    assert.deepEqual(issueCodes([...atLimit, 0]), ["too_many_entries"]);
+  });
+
+  test("a deliberately huge sparse length refuses bounded without traversing its extent", () => {
+    const HUGE = 20_000_000;
+    const target: unknown[] = [];
+    target.length = HUGE;
+    let indexReads = 0;
+    const counting = new Proxy(target, {
+      getOwnPropertyDescriptor(inner, property): PropertyDescriptor | undefined {
+        if (typeof property === "string" && property !== "length" && /^(0|[1-9]\d*)$/.test(property)) indexReads += 1;
+        return Reflect.getOwnPropertyDescriptor(inner, property);
+      },
+    });
+    const issues = boundaryValueIssues(counting);
+    assert.deepEqual(issues.map((issue) => issue.code), ["too_many_entries"]);
+    assert.ok(indexReads < 100, `rejection traversed no index extent (saw ${indexReads} index descriptor reads for length ${HUGE})`);
+    // And the plain huge sparse array itself refuses the same way.
+    assert.deepEqual(issueCodes(target), ["too_many_entries"]);
+  });
+});

@@ -220,8 +220,26 @@ const DEFAULT_MAILBOX_CAPACITY = 1_024;
  */
 const QUEUED: MailboxDisposition = Object.freeze({ kind: "queued" });
 
-const describeFailure = (reason: unknown): string =>
-  reason instanceof Error ? `${reason.name}: ${reason.message}` : String(reason);
+const describeFailure = (reason: unknown): string => {
+  try {
+    if (reason instanceof Error) {
+      // A hostile rejection reason can throw again when `name`/`message` is read. Delivery
+      // bookkeeping must never let that second error escape the Kernel boundary.
+      let name: unknown;
+      let message: unknown;
+      try {
+        name = reason.name;
+        message = reason.message;
+      } catch {
+        return "delivery failed with an uninspectable reason";
+      }
+      return `${typeof name === "string" ? name : "Error"}: ${typeof message === "string" ? message : String(message)}`;
+    }
+    return String(reason);
+  } catch {
+    return "delivery failed with an uninspectable reason";
+  }
+};
 
 const isThenable = (value: unknown): value is PromiseLike<unknown> =>
   typeof value === "object" && value !== null && typeof (value as { then?: unknown }).then === "function";
@@ -293,26 +311,34 @@ function acceptIdentityText(value: unknown, label: string, issues: ValueIssue[])
 
 function acceptInputContent(content: InputContent, prefix: string): Result<AcceptedInput, ValueIssue[]> {
   const issues: ValueIssue[] = [];
+  // The request envelope is caller-owned state: observe each field once and reuse that same
+  // observation for validation, retention and identity. Re-reading `content.kind` for validation
+  // and again for packing would let a shifting envelope validate as one kind and bind as another.
+  const kindObserved: unknown = (content as { kind?: unknown }).kind;
+  const payloadObserved: unknown = (content as { payload?: unknown }).payload;
+  const subscriptionObserved: unknown = (content as { subscriptionClass?: unknown }).subscriptionClass;
+  const hasSubscription = subscriptionObserved !== undefined;
   // `kind` and `subscriptionClass` are packed into this input's content identity, so they are held
   // to the identity-text rule rather than only to the boundary-value rules.
-  const kindOk = acceptIdentityText(content.kind, `${prefix}kind`, issues);
-  const payload = canonicalize(content.payload);
+  const kindOk = acceptIdentityText(kindObserved, `${prefix}kind`, issues);
+  const payload = canonicalize(payloadObserved);
   if (!payload.ok) issues.push(...located(payload.issues, `${prefix}payload`));
 
   let subscriptionClass: string | null = null;
-  if (content.subscriptionClass !== undefined) {
-    if (acceptIdentityText(content.subscriptionClass, `${prefix}subscriptionClass`, issues)) {
-      subscriptionClass = content.subscriptionClass;
+  if (hasSubscription) {
+    if (acceptIdentityText(subscriptionObserved, `${prefix}subscriptionClass`, issues)) {
+      subscriptionClass = subscriptionObserved as string;
     }
   }
 
   if (!kindOk || !payload.ok || issues.length > 0) return err(issues);
+  const kind = kindObserved as string;
   return ok({
-    kind: content.kind,
+    kind,
     payload: payload.value,
     subscriptionClass,
     identity: packIdentity([
-      content.kind,
+      kind,
       payload.value.canonical,
       subscriptionClass === null ? "absent" : "present",
       subscriptionClass ?? "",
@@ -322,38 +348,64 @@ function acceptInputContent(content: InputContent, prefix: string): Result<Accep
 
 /** The complete creation content a caller-scoped creation key binds. */
 interface AcceptedCreation {
+  readonly scope: string;
+  readonly definitionRevision: string;
+  readonly runtimeContractRevision: string;
+  readonly progressCodec: string;
   readonly authorityContext: CanonicalValue;
   readonly initialInput: AcceptedInput;
   readonly identity: string;
 }
 
-function acceptCreationContent(request: CreateExecutionRequest): Result<AcceptedCreation, ValueIssue[]> {
+function acceptCreationContent(
+  request: CreateExecutionRequest,
+  validatedScope: string,
+): Result<AcceptedCreation, ValueIssue[]> {
   const issues: ValueIssue[] = [];
   // Each of these is packed into the creation content identity, so each is identity text.
+  // Observed once: `request.scope` itself is the caller-supplied `validatedScope` (checked before
+  // authorization in `createExecution` and reused here so auth and binding cannot see two scopes).
+  const definitionObserved: unknown = (request as { definitionRevision?: unknown }).definitionRevision;
+  const runtimeObserved: unknown = (request as { runtimeContractRevision?: unknown }).runtimeContractRevision;
+  const codecObserved: unknown = (request as { progressCodec?: unknown }).progressCodec;
   const scalars: [string, unknown][] = [
-    ["scope", request.scope],
-    ["definitionRevision", request.definitionRevision],
-    ["runtimeContractRevision", request.runtimeContractRevision],
-    ["progressCodec", request.progressCodec],
+    ["definitionRevision", definitionObserved],
+    ["runtimeContractRevision", runtimeObserved],
+    ["progressCodec", codecObserved],
   ];
   let scalarsOk = true;
   for (const [label, value] of scalars) {
     if (!acceptIdentityText(value, label, issues)) scalarsOk = false;
   }
-  const authorityContext = canonicalize(request.authorityContext);
+  const authorityObserved: unknown = (request as { authorityContext?: unknown }).authorityContext;
+  const initialObserved: unknown = (request as { initialInput?: unknown }).initialInput;
+  const authorityContext = canonicalize(authorityObserved);
   if (!authorityContext.ok) issues.push(...located(authorityContext.issues, "authorityContext"));
-  const initialInput = acceptInputContent(request.initialInput, "initialInput.");
+  const initialInput =
+    initialObserved !== undefined && initialObserved !== null && typeof initialObserved === "object"
+      ? acceptInputContent(initialObserved as InputContent, "initialInput.")
+      : (() => {
+          issues.push({ path: "initialInput", code: "unsupported_form", message: "expected input content" });
+          return err([] as ValueIssue[]) as Result<AcceptedInput, ValueIssue[]>;
+        })();
   if (!initialInput.ok) issues.push(...initialInput.error);
 
   if (!scalarsOk || !authorityContext.ok || !initialInput.ok || issues.length > 0) return err(issues);
+  const definitionRevision = definitionObserved as string;
+  const runtimeContractRevision = runtimeObserved as string;
+  const progressCodec = codecObserved as string;
   return ok({
+    scope: validatedScope,
+    definitionRevision,
+    runtimeContractRevision,
+    progressCodec,
     authorityContext: authorityContext.value,
     initialInput: initialInput.value,
     identity: packIdentity([
-      request.scope,
-      request.definitionRevision,
-      request.runtimeContractRevision,
-      request.progressCodec,
+      validatedScope,
+      definitionRevision,
+      runtimeContractRevision,
+      progressCodec,
       authorityContext.value.canonical,
       initialInput.value.identity,
     ]),
@@ -397,28 +449,45 @@ export class ExecutionCoordinator {
    * strictly more informative than reporting a conflict.
    */
   createExecution(caller: AuthenticatedCaller, request: CreateExecutionRequest): Result<CreationAccepted, RefusalRecord> {
-    // Authorization precedes the key lookup, following `execution-cycle.md`'s acceptance step 1:
-    // scope access before inspecting or disclosing anything. A caller whose scope was revoked after
-    // it created an Execution is refused here rather than handed back the retained decision.
-    if (!mayReachScope(caller, request.scope)) {
-      return err(this.#refusal("unauthorized_scope", `caller cannot create an Execution in authority scope "${request.scope}"`, null));
+    // K11-R3-ID-03: contract revision 4 requires every request-naming field, including `scope`,
+    // to be text before it is packed into an identity. A non-text or malformed-Unicode scope is
+    // `malformed_value` naming `scope`, even when the caller is also unauthorized for it — so scope
+    // text validation precedes authorization. Only scope moves before auth: the remaining identity
+    // fields stay after auth so an unauthorized caller receives no field-validity oracle beyond the
+    // scope it named. Authorization still precedes the key lookup, following
+    // `execution-cycle.md`'s acceptance step 1: scope access before inspecting or disclosing
+    // anything. A caller whose scope was revoked after it created an Execution is refused here
+    // rather than handed back the retained decision. The envelope is caller-owned state, so `scope`
+    // is observed once here and that same observation is reused for validation, authorization,
+    // binding and the record below — never re-read.
+    const scopeObserved: unknown = (request as { scope?: unknown }).scope;
+    const scopeIssues: ValueIssue[] = [];
+    if (!acceptIdentityText(scopeObserved, "scope", scopeIssues)) {
+      return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(scopeIssues)}`, null));
+    }
+    const scope = scopeObserved as string;
+    if (!mayReachScope(caller, scope)) {
+      return err(this.#refusal("unauthorized_scope", `caller cannot create an Execution in authority scope "${scope}"`, null));
     }
 
     // The creation key is not content — it never joins the content identity — but it is the text
     // the caller-scoped key is packed from, so it is held to the same identity-text rule. Both are
     // checked before either is reported, so one call names every reason the request was refused.
+    // Observed once and reused for the lookup/binding below for the same single-observation reason.
+    const creationKeyObserved: unknown = (request as { creationKey?: unknown }).creationKey;
     const keyIssues: ValueIssue[] = [];
-    const keyOk = acceptIdentityText(request.creationKey, "creationKey", keyIssues);
-    const content = acceptCreationContent(request);
+    const keyOk = acceptIdentityText(creationKeyObserved, "creationKey", keyIssues);
+    const content = acceptCreationContent(request, scope);
     if (!keyOk || !content.ok) {
       const issues = [...keyIssues, ...(content.ok ? [] : content.error)];
       return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(issues)}`, null));
     }
+    const creationKeyText = creationKeyObserved as string;
 
     const creationKey: CreationKeyId = {
       producerNamespace: caller.namespace,
-      scope: request.scope,
-      requestKey: request.creationKey,
+      scope,
+      requestKey: creationKeyText,
     };
     const existing = this.#byCreationKey.get(creationKeyIdKey(creationKey));
     if (existing !== undefined) {
@@ -433,7 +502,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "duplicate_conflict",
-          `creation key "${request.creationKey}" already names Execution ${existing.executionId} with different content; a second intentional run needs a fresh key`,
+          `creation key "${creationKeyText}" already names Execution ${existing.executionId} with different content; a second intentional run needs a fresh key`,
           existing,
         ),
       );
@@ -452,7 +521,7 @@ export class ExecutionCoordinator {
 
     const entry: MailboxEntry = {
       eventId,
-      inputId: { producerNamespace: caller.namespace, destination: executionId, requestKey: request.creationKey },
+      inputId: { producerNamespace: caller.namespace, destination: executionId, requestKey: creationKeyText },
       contentIdentity: initial.identity,
       kind: initial.kind,
       payload: initial.payload.value,
@@ -466,11 +535,11 @@ export class ExecutionCoordinator {
 
     const record: ExecutionRecord = {
       executionId,
-      scope: request.scope,
+      scope: content.value.scope,
       creationKey,
-      definitionRevision: request.definitionRevision,
-      runtimeContractRevision: request.runtimeContractRevision,
-      progressCodec: request.progressCodec,
+      definitionRevision: content.value.definitionRevision,
+      runtimeContractRevision: content.value.runtimeContractRevision,
+      progressCodec: content.value.progressCodec,
       authorityContext: content.value.authorityContext.value,
       creationIdentity: content.value.identity,
       creationReceipt: receipt,
@@ -516,19 +585,22 @@ export class ExecutionCoordinator {
     // The producer request key is the third member of the Input ID triple, so it is identity text
     // for the same reason the creation key is. `destination` needs no such check: a non-text
     // destination simply matches no minted Execution ID and has already been answered above as an
-    // unknown destination, which discloses nothing.
+    // unknown destination, which discloses nothing. Observed once and reused below so validation
+    // and binding cannot see two keys.
+    const requestKeyObserved: unknown = (request as { requestKey?: unknown }).requestKey;
     const keyIssues: ValueIssue[] = [];
-    const keyOk = acceptIdentityText(request.requestKey, "requestKey", keyIssues);
+    const keyOk = acceptIdentityText(requestKeyObserved, "requestKey", keyIssues);
     const content = acceptInputContent(request, "");
     if (!keyOk || !content.ok) {
       const issues = [...keyIssues, ...(content.ok ? [] : content.error)];
       return err(this.#refusal("malformed_value", `input content is not an acceptable boundary value: ${explain(issues)}`, record));
     }
+    const requestKey = requestKeyObserved as string;
 
     const inputId: InputId = {
       producerNamespace: caller.namespace,
       destination: record.executionId,
-      requestKey: request.requestKey,
+      requestKey,
     };
     const existing = record.byInputId.get(inputIdKey(inputId));
     if (existing !== undefined) {
@@ -544,7 +616,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "duplicate_conflict",
-          `input key "${request.requestKey}" from this producer already names Event ${existing.eventId} with different content; input identity is immutable`,
+          `input key "${requestKey}" from this producer already names Event ${existing.eventId} with different content; input identity is immutable`,
           record,
         ),
       );

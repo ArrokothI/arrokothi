@@ -291,6 +291,59 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.deepEqual(kernel.visibleExecutions(author), []);
   });
 
+  test("K11-R3-ID-03 malformed scope is refused before authorization, well-formed unauthorized scope after", () => {
+    const kernel = coordinator();
+    // Ordering is explicit: a non-text scope is malformed even when the caller is also
+    // unauthorized for it (the old code returned unauthorized_scope first and never validated).
+    const outsider = caller("app-a", "tenant-b");
+    const nonText = refused(kernel.createExecution(outsider, createRequest({ scope: 17 as never })));
+    assert.equal(nonText.classification, "malformed_value", "non-text scope is malformed, not unauthorized");
+    assert.match(nonText.reason, /scope unsupported_form/);
+    assert.equal(nonText.executionId, null);
+
+    const malformedUnicode = refused(
+      kernel.createExecution(outsider, createRequest({ scope: "bad\ud800scope" as never })),
+    );
+    assert.equal(malformedUnicode.classification, "malformed_value");
+    assert.match(malformedUnicode.reason, /scope lone_surrogate/);
+
+    // A well-formed scope the caller does not hold is still unauthorized — validation passed, so
+    // authorization is what refuses it. This is the other half of the ordering.
+    const unauthorized = refused(kernel.createExecution(outsider, createRequest({ scope: "tenant-a" })));
+    assert.equal(unauthorized.classification, "unauthorized_scope");
+    assert.deepEqual(kernel.visibleExecutions(outsider), []);
+    assert.deepEqual(kernel.visibleExecutions(caller("app-a", "tenant-a")), [], "nothing was created by the refused calls");
+  });
+
+  test("K11-R2-VAL-02 creation under ambient toJSON still binds the retained payload and its replay", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const previous = (Object.prototype as Record<string, unknown>).toJSON;
+    (Object.prototype as Record<string, unknown>).toJSON = () => 42;
+    try {
+      const created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "ambient-1", initialInput: { kind: "k", payload: { a: 1 } as never } }),
+        ),
+      );
+      assert.equal(created.replayed, false);
+      const view = accepted(kernel.inspect(author, created.executionId));
+      assert.deepEqual(view.mailbox[0]?.payload, { a: 1 }, "retained content is the snapshot, not 42");
+      const replay = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "ambient-1", initialInput: { kind: "k", payload: { a: 1 } as never } }),
+        ),
+      );
+      assert.equal(replay.replayed, true, "exact replay still finds the same Execution by canonical identity");
+      assert.equal(replay.executionId, created.executionId);
+    } finally {
+      if (previous === undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
+      else (Object.prototype as Record<string, unknown>).toJSON = previous;
+    }
+  });
+
   test("the payload cannot supply or change the producer namespace", () => {
     const kernel = coordinator();
     const impersonating = {

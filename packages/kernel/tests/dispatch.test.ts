@@ -433,4 +433,34 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     assert.equal(refusal.classification, "malformed_value");
     assert.deepEqual(driver.seen, [], "no Activation was built from a value with two readings");
   });
+
+  test("K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const previous = (Object.prototype as Record<string, unknown>).toJSON;
+    (Object.prototype as Record<string, unknown>).toJSON = () => 42;
+    try {
+      const created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "ambient-dispatch", initialInput: { kind: "k", payload: { a: 1 } as never } }),
+        ),
+      );
+      accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+      const redelivered = accepted(kernel.redeliver(author, created.executionId));
+      assert.equal(redelivered.redelivered, true);
+      const first = driver.seen[0];
+      const second = driver.seen[1];
+      const inspected = accepted(kernel.inspect(author, created.executionId));
+      assert.equal(second, first, "redelivery re-sends the same Activation object");
+      assert.deepEqual(first?.events[0]?.payload, { a: 1 });
+      assert.equal(first?.events[0]?.payload, inspected.mailbox[0]?.payload, "Activation and inspection share the retained structure");
+      const again = canonicalize(first?.events[0]?.payload);
+      assert.ok(again.ok);
+      assert.equal(again.value.canonical, '{"a":1}', "identity still describes the retained payload, not 42");
+    } finally {
+      if (previous === undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
+      else (Object.prototype as Record<string, unknown>).toJSON = previous;
+    }
+  });
 });

@@ -16,8 +16,9 @@
  * than answering with a no-op. The boundary this package is held to is recorded in
  * `docs/development/work/K1.0/ownership-inventory.md` and enforced by
  * `tests/conformance/architecture/kernel-landing-zone.test.ts`: nothing here may import
- * `@arrokothi/core`, any provider or Runtime integration, the SDK, or any third-party package.
- * `node:` builtins are the only external dependency permitted.
+ * `@arrokothi/core`, any provider or Runtime integration, or the SDK. External reach is `node:`
+ * builtins plus exactly the single owner-approved third-party specifier `canonicalize` (exact
+ * `canonicalize@3.0.0`, K11-R1-JCS-01) — no other third-party package is permitted.
  *
  * The current, supported, explicitly legacy implementation remains `@arrokothi/core`. Nothing here
  * replaces it, and no existing consumer is routed through this package.

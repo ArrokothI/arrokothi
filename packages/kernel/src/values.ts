@@ -56,12 +56,29 @@
  * K1.1's contract revision 3 (K11-R1-JCS-01); the AGENTS.md third-party record (source, version,
  * license, reuse method, obligations) lives in `implementation-03.md`. ArrokothI boundary
  * validation, the four semantic limits, per-root measurement and the capture pass below remain this
- * module's own: the dependency is called only with an already-captured immutable snapshot of plain
- * data, and only to serialize it — never to decide validity, and never on caller-owned state.
+ * module's own: the dependency is called only with a serialization-safe clone built solely from the
+ * already-captured immutable snapshot's own data (null-prototype objects; arrays with own
+ * non-enumerable `toJSON`/`map` shadows), and only to serialize it — never to decide validity,
+ * and never on caller-owned state, nor directly on a snapshot whose prototype chain could carry an
+ * ambient `toJSON`/`map` hook into the dependency's ordinary property reads (K11-R2-VAL-02).
  */
 
 import canonicalizeJcs from "canonicalize";
 import { Buffer } from "node:buffer";
+
+/**
+ * Primordials captured before any caller code runs.
+ *
+ * A capture-time side effect can install `Object.prototype.toJSON` (or overwrite a global)
+ * while `capture` is observing a hostile value. The serialization clone below must be built
+ * from the snapshot's own data with functions that predate that side effect, so the references
+ * it uses are captured here at module load rather than looked up again after capture.
+ */
+const PrimordialObjectKeys = Object.keys;
+const PrimordialGetOwnPropertyNames = Object.getOwnPropertyNames;
+const PrimordialGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+const PrimordialDefineProperty = Object.defineProperty;
+const PrimordialGetPrototypeOf = Object.getPrototypeOf;
 
 /** A value that may cross a Kernel boundary. `values.md`: "Boundary value and root". */
 export type BoundaryValue = null | boolean | number | string | BoundaryValue[] | { [key: string]: BoundaryValue };
@@ -125,13 +142,30 @@ export interface CanonicalValue {
 }
 
 const describe = (value: unknown): string => {
-  if (value === null) return "null";
-  if (Array.isArray(value)) return "array";
-  if (typeof value === "object") {
-    const name = (value as object).constructor?.name;
-    return name !== undefined && name !== "Object" ? `${name} instance` : "object";
+  try {
+    if (value === null) return "null";
+    if (Array.isArray(value)) return "array";
+    if (typeof value === "object") {
+      // A hostile thrown value can throw again when its `constructor` (or `constructor.name`)
+      // is read. This formatter must never let that second error escape the Kernel boundary:
+      // it names refusals, never canonical bytes, so any inspection failure degrades to a
+      // generic label rather than a raw exception (K11-R2-VAL-02).
+      let constructorName: unknown;
+      try {
+        constructorName = (value as { constructor?: unknown }).constructor;
+        if (constructorName !== undefined && constructorName !== null) {
+          const name = (constructorName as { name?: unknown }).name;
+          if (typeof name === "string" && name !== "Object") return `${name} instance`;
+        }
+        return "object";
+      } catch {
+        return "uninspectable value";
+      }
+    }
+    return typeof value;
+  } catch {
+    return "uninspectable value";
   }
-  return typeof value;
 };
 
 const child = (path: string, key: string): string => (path === "" ? key : `${path}.${key}`);
@@ -331,14 +365,14 @@ function capture(value: unknown, path: string, level: number, state: CaptureStat
 function captureArray(container: readonly unknown[] & object, path: string, entered: number, state: CaptureState): Captured {
   // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
   // canonicalize as a plain array and lose its exotic identity, so refuse it instead.
-  if (Object.getPrototypeOf(container) !== Array.prototype) {
+  if (PrimordialGetPrototypeOf(container) !== Array.prototype) {
     state.issues.push({ path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
     return REFUSED;
   }
 
   // `length` decides which positions exist, so it is held to the same one-stable-structure rule as
   // any other member before it is trusted to bound the loop.
-  const lengthDescriptor = Object.getOwnPropertyDescriptor(container, "length");
+  const lengthDescriptor = PrimordialGetOwnPropertyDescriptor(container, "length");
   const lengthRead: unknown = (container as { length: unknown }).length;
   if (
     lengthDescriptor === undefined ||
@@ -355,30 +389,68 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   }
   const length = lengthRead;
 
-  let refused = false;
-
-  // An array carrying extra own properties (`a = [1]; a.tag = "x"`, or `a["01"] = 1`)
-  // would canonicalize as if they were not there. Reject it rather than drop them.
-  // Only canonical indices count; numeric-looking non-indices such as `"01"` are extra.
-  const extra = Object.getOwnPropertyNames(container).filter((name) => name !== "length" && !isArrayIndex(name));
-  if (extra.length > 0 || Object.getOwnPropertySymbols(container).length > 0) {
-    state.issues.push({ path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
-    refused = true;
-  }
+  // K11-R3-LIMIT-01: the trusted observed length has already decided this root cannot be
+  // accepted, so refuse without allocating or traversing proportional to that invalid extent.
+  // A declared sparse length can be as large as 2**32 - 1; allocating `new Array(length)` and
+  // looping to `length - 1` would turn a known over-limit root into effectively unbounded work.
+  // Exactly-at-limit still proceeds below; one-over refuses here with no traversal.
   if (length > BOUNDARY_LIMITS.containerEntries) {
     state.issues.push({
       path,
       code: "too_many_entries",
       message: `array has ${length} entries, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
     });
+    return REFUSED;
+  }
+
+  let refused = false;
+
+  // An array carrying extra own properties (`a = [1]; a.tag = "x"`, or `a["01"] = 1`)
+  // would canonicalize as if they were not there. Reject it rather than drop them.
+  // Only canonical indices count; numeric-looking non-indices such as `"01"` are extra.
+  // Structural reads below use the primordials captured at module load so a capture-time side
+  // effect that overwrites a global cannot steer the rest of this observation.
+  const names = PrimordialGetOwnPropertyNames(container) as string[];
+  const extra = names.filter((name) => name !== "length" && !isArrayIndex(name));
+  if (extra.length > 0 || Object.getOwnPropertySymbols(container).length > 0) {
+    state.issues.push({ path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
     refused = true;
+  }
+
+  // K11-R2-VAL-02 supplement: a canonical-index own name at or beyond the stable observed
+  // length is neither `extra` above nor visited by the position loop below, so without this
+  // check it would disappear into an accepted `[]`. Every observed own name must either cohere
+  // with accepted array content or refuse. A listed index with no backing descriptor has no
+  // property behind the listing (`unstable_representation`, like the object half); a backed
+  // index outside `length` is state canonical array form would silently drop
+  // (`unrepresentable_member`). Both refuse; neither is normalized.
+  for (const name of names) {
+    if (name === "length" || !isArrayIndex(name)) continue;
+    const numeric = Number(name);
+    if (numeric >= length) {
+      const backing = PrimordialGetOwnPropertyDescriptor(container, name);
+      if (backing === undefined) {
+        state.issues.push({
+          path: element(path, numeric),
+          code: "unstable_representation",
+          message: "array lists an own index it does not own, so its structure has no single reading",
+        });
+      } else {
+        state.issues.push({
+          path: element(path, numeric),
+          code: "unrepresentable_member",
+          message: "array has an own index outside its length, which canonical form would silently drop",
+        });
+      }
+      refused = true;
+    }
   }
 
   const captured: Captured[] = new Array<Captured>(length);
   for (let index = 0; index < length; index += 1) {
     const where = element(path, index);
     const key = String(index);
-    const member = describedValue(container, key, Object.getOwnPropertyDescriptor(container, key), where, state);
+    const member = describedValue(container, key, PrimordialGetOwnPropertyDescriptor(container, key), where, state);
     if (!member.ok) {
       refused = true;
       continue;
@@ -401,14 +473,14 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   for (let index = 0; index < length; index += 1) {
     // `defineProperty`, never assignment, for the same reason the object half uses it: the key is
     // installed as own data whatever it spells.
-    Object.defineProperty(out, String(index), { value: captured[index] as BoundaryValue, writable: false, enumerable: true, configurable: false });
+    PrimordialDefineProperty(out, String(index), { value: captured[index] as BoundaryValue, writable: false, enumerable: true, configurable: false });
   }
   return Object.freeze(out) as unknown as BoundaryValue[];
 }
 
 /** The object half of `capture`. Members come from own enumerable string-keyed data properties. */
 function captureObject(container: object, path: string, entered: number, state: CaptureState): Captured {
-  const prototype = Object.getPrototypeOf(container) as object | null;
+  const prototype = PrimordialGetPrototypeOf(container) as object | null;
   if (prototype !== Object.prototype && prototype !== null) {
     state.issues.push({ path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
     return REFUSED;
@@ -423,11 +495,11 @@ function captureObject(container: object, path: string, entered: number, state: 
   // One own-names observation and one descriptor per name. The same descriptor answers "is this
   // member enumerable?" and "what does this member own?", so those two questions cannot be settled
   // from different readings of the same object.
-  const names = Object.getOwnPropertyNames(container);
+  const names = PrimordialGetOwnPropertyNames(container) as string[];
   const enumerable: [string, PropertyDescriptor][] = [];
   let nonEnumerable = false;
   for (const name of names) {
-    const descriptor = Object.getOwnPropertyDescriptor(container, name);
+    const descriptor = PrimordialGetOwnPropertyDescriptor(container, name);
     if (descriptor === undefined) {
       // The object listed an own name it does not own. There is no content behind it to accept.
       state.issues.push({
@@ -504,7 +576,7 @@ function captureObject(container: object, path: string, entered: number, state: 
   // special treatment.
   const snapshot = Object.create(prototype) as Record<string, BoundaryValue>;
   for (const [name, member] of captured) {
-    Object.defineProperty(snapshot, name, { value: member, writable: false, enumerable: true, configurable: false });
+    PrimordialDefineProperty(snapshot, name, { value: member, writable: false, enumerable: true, configurable: false });
   }
   return Object.freeze(snapshot);
 }
@@ -521,9 +593,100 @@ function captureObject(container: object, path: string, entered: number, state: 
  * measured here from its output. Verified byte-identical to `values.md` rules 1–6 on the accepted
  * space (key UTF-16 order, shortest round-trip numbers with `-0` as `0`, rule-4 escapes with
  * `/`/DEL/direct Unicode passthrough), including own `"__proto__"` members and null-prototype objects.
+ *
+ * ## The serializer boundary (K11-R2-VAL-02 reconstruction)
+ *
+ * The snapshot alone is not enough: the approved JCS implementation observes its input through
+ * ordinary property reads — `object.toJSON` (including inherited members), `object.map` and
+ * `object[key]` — before its array/object serialization. `Object.freeze(snapshot)` freezes the
+ * snapshot's own state, not its prototype chain, so passing the snapshot directly would let an
+ * ambient or capture-time-installed `Object.prototype.toJSON` / `Array.prototype.toJSON` (or a
+ * polluted `Array.prototype.map`) decide canonical bytes describing a different value from the
+ * retained one. Re-canonicalizing the retained snapshot through the same direct call is not an
+ * independent oracle either: it would inherit the same hook and reproduce the same wrong bytes.
+ *
+ * `encode` therefore never hands the snapshot itself to the dependency. It first builds a
+ * serialization-safe clone from the snapshot's own data only (own descriptors via the primordials
+ * above, never an ordinary read that could reach a prototype or trap):
+ *
+ * - objects become `Object.create(null)` clones carrying the same own enumerable members, so an
+ *   `Object.prototype.toJSON` hook is not on the lookup path at all;
+ * - arrays become fresh arrays carrying the same indices plus two own non-enumerable shadows:
+ *   `toJSON: undefined` (so an inherited `toJSON` never diverts the JCS `toJSON` branch) and a
+ *   minimal `map` that iterates only this clone's own indices via primordials (so a polluted
+ *   `Array.prototype.map` is never called). Both shadows are non-enumerable, so `Object.keys`
+ *   and the JCS array/object serialization ignore them; valid snapshots never carry own
+ *   enumerable `toJSON`/`map` (array extras are refused), so the shadows cannot collide with
+ *   logical content. A legitimate own enumerable `"toJSON"` data member (for example
+ *   `{"toJSON":1}`) is preserved as ordinary content and, being non-function data, already keeps
+ *   the JCS `toJSON` branch off.
+ *
+ * The clone derives solely from the accepted logical snapshot, and the unmodified dependency sees
+ * only the clone. Canonical bytes therefore cannot be derived from inherited/ambient hooks or any
+ * other state outside the snapshot, while the dependency itself is used exactly as published.
  */
+function toSerializationSafe(value: BoundaryValue): BoundaryValue {
+  if (value === null) return null;
+  const kind = typeof value;
+  if (kind === "boolean" || kind === "number" || kind === "string") return value;
+  if (Array.isArray(value)) {
+    const lengthDescriptor = PrimordialGetOwnPropertyDescriptor(value, "length");
+    const length =
+      lengthDescriptor !== undefined && "value" in lengthDescriptor && typeof lengthDescriptor.value === "number"
+        ? lengthDescriptor.value
+        : (value as unknown[]).length;
+    const out: unknown[] = new Array(length);
+    for (let index = 0; index < length; index += 1) {
+      const descriptor = PrimordialGetOwnPropertyDescriptor(value, String(index));
+      // Snapshots are dense own-data by construction; a missing descriptor here is unreachable.
+      // Fall back to `undefined` rather than an ordinary read so no prototype is ever consulted.
+      const child: BoundaryValue =
+        descriptor !== undefined && "value" in descriptor ? (descriptor.value as BoundaryValue) : (undefined as unknown as BoundaryValue);
+      PrimordialDefineProperty(out, String(index), {
+        value: toSerializationSafe(child),
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+    }
+    PrimordialDefineProperty(out, "toJSON", { value: undefined, writable: true, enumerable: false, configurable: true });
+    const safeMap = function (
+      this: unknown[],
+      callback: (item: unknown, index: number, array: unknown[]) => unknown,
+    ): unknown[] {
+      const self = this as unknown[];
+      const lengthDescriptorInner = PrimordialGetOwnPropertyDescriptor(self, "length");
+      const innerLength =
+        lengthDescriptorInner !== undefined && "value" in lengthDescriptorInner && typeof lengthDescriptorInner.value === "number"
+          ? lengthDescriptorInner.value
+          : self.length;
+      const result: unknown[] = new Array(innerLength);
+      for (let innerIndex = 0; innerIndex < innerLength; innerIndex += 1) {
+        const innerDescriptor = PrimordialGetOwnPropertyDescriptor(self, String(innerIndex));
+        const innerValue = innerDescriptor !== undefined && "value" in innerDescriptor ? innerDescriptor.value : undefined;
+        result[innerIndex] = callback(innerValue, innerIndex, self);
+      }
+      return result;
+    };
+    PrimordialDefineProperty(out, "map", { value: safeMap, writable: true, enumerable: false, configurable: true });
+    return out as unknown as BoundaryValue;
+  }
+  const out: Record<string, BoundaryValue> = Object.create(null);
+  for (const key of PrimordialObjectKeys(value) as string[]) {
+    const descriptor = PrimordialGetOwnPropertyDescriptor(value, key);
+    if (descriptor === undefined || !("value" in descriptor)) continue;
+    PrimordialDefineProperty(out, key, {
+      value: toSerializationSafe(descriptor.value as BoundaryValue),
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+  }
+  return out as unknown as BoundaryValue;
+}
+
 function encode(value: BoundaryValue): string {
-  const canonical = canonicalizeJcs(value) as string | undefined;
+  const canonical = canonicalizeJcs(toSerializationSafe(value)) as string | undefined;
   if (typeof canonical !== "string") throw new Error("JCS implementation returned no canonical form for a validated boundary value");
   return canonical;
 }
