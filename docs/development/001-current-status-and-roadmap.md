@@ -6,19 +6,7 @@ status and dependencies. K0.1, the post-K0.1 process review and K0.2 are accepte
 owner-closed. The [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure, with the accepted
 benchmark E0 evidence; this establishes the contract/fixture gate, not a working target Kernel.
 The owner released **K1.0** on 2026-09-13 against built-but-unaccepted E1 preparation.
-Round-16 H `f3aa29d7ecba2a23aa85788b7efdebdd383cab24` received independent ACCEPT, preserved in
-[review-17](work/K1.0/review-17.md). Final cleanup then found C4 defect K10-CLEANUP-01:
-whole-cell inventory meaning can be lost while the guard stays green. **Cleanup is REOPENED;
-C4 claims and integration are ON HOLD**, and [K1.0-correction-01](work/K1.0-correction-01/contract.md)
-closed K10-CLEANUP-01 in round 1 by decoding every governed cell
-whole instead of reading a prefix, a substring or a subset of it — but round-1 review
-([review-01](work/K1.0-correction-01/review-01.md), CHANGES REQUIRED) found the same fail-open shape
-one level up as K10-CORR1-R1-01: excess was measured against the document's own header. Round 2 now
-has a `WAITING_FOR_REVIEW` candidate that gives every governed table an independent schema, so no
-document-controlled width is trusted. It is accepted by nobody and the
-hold stands until a fresh independent review of the cumulative interval returns ACCEPT. See
-[cleanup-01](work/K1.0/cleanup-01.md) and the ledger row.
-No E1 result, K1 closure, merge or successor release is claimed (`next_release: none`).
+K1.0 and correction-01 received historical independent ACCEPTs, preserved in their review records. Correction-01 round-2 H `1295c68b03ae5d8eb0bbb86e974353402ff9a518` was accepted by [review-02](work/K1.0-correction-01/review-02.md); subsequent delegated cleanup reproduced K10-CORR1-CLEANUP-01, a collision in inventory collection comparison. **Cleanup is REOPENED; C4 claims and integration are ON HOLD.** [Cleanup/invalidation](work/K1.0-correction-01/cleanup-01.md) links the evidence and [K1.0-correction-02 fixing handoff](work/K1.0-correction-02/handoff-01.md). New C/H and fresh cumulative independent review are required. No E1 result, K1 closure, merge or successor release is claimed (`next_release: none`).
 Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the

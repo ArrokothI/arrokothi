@@ -1,6 +1,18 @@
 # ArrokothI and benchmark: completed foundations and the next step
 
-## Current owner update — K1.0 cleanup reopened, 2026-09-13
+## Current owner update — correction-01 cleanup reopened, 2026-09-13
+
+**Do not merge K1.0 yet.** Correction-01 fixed whole-cell decoding and table-schema ownership and received independent ACCEPT at H `1295c68b03ae5d8eb0bbb86e974353402ff9a518`. Final cleanup found a further defect after decoding: the comparator joins list elements with commas, so one invented comma-containing export subpath can pass as five real subpaths. The same issue affects zone roots; a fresh probe reproduced 22 false accepted relations.
+
+All 2,051 tests passed again, with zero failures/skips; typecheck and builder-doc checks passed too. The actual inventory is correct, but the guard's rejection claim remains incomplete. Historical ACCEPTs are preserved; **C4 claims and integration stay on hold**. [Cleanup finding and evidence](work/K1.0-correction-01/cleanup-01.md); [authoritative ledger](007-work-packets.md).
+
+**Next owner action:** give a coding session the [K1.0-correction-02 fixing prompt](work/K1.0-correction-02/handoff-01.md) and pushed cleanup head. It targets complete relation equality and fresh cumulative independent review. The earlier corrections made substantive progress; assess further work by whether it fixes the governing invariant rather than by turn count or a growing list of regex cases. Universal Prompt B/C changes remain pending under the owner's “if accept” condition; the immediate handoff is copy-ready with ordinary paragraph breaks.
+
+The private target zone and legacy quarantine remain on the branch, unmerged. No asynchronous protocol or E1 result is established. K0 stays closed, K1 stays open, benchmark E1 preparation stays unaccepted, and `next_release: none`.
+
+## Earlier owner update — K1.0 cleanup reopened, 2026-09-13
+
+The following update describes the first cleanup and is superseded by the current update above.
 
 **Do not merge K1.0 yet.** The owner released it against already-built but unaccepted benchmark E1
 preparation. Round 16 received an authentic independent ACCEPT at

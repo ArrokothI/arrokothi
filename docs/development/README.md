@@ -46,17 +46,5 @@ candidates; their earlier holds do not override the ledger and subsequent owner 
 The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
 a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
-E1 dependency be treated as the already-built but unaccepted preparation. Its round-16 H
-`f3aa29d7ecba2a23aa85788b7efdebdd383cab24` received independent ACCEPT in
-[review-17](work/K1.0/review-17.md). That historical verdict is preserved, but delegated final cleanup
-reproduced C4 defect **K10-CLEANUP-01**. **Cleanup is REOPENED; C4 claims and integration are ON HOLD.**
-The [cleanup record](work/K1.0/cleanup-01.md) links the evidence and
-[K1.0-correction-01 fixing handoff](work/K1.0-correction-01/handoff-01.md). That corrective packet's round 1 closed the decoder defects but its review
-([review-01](work/K1.0-correction-01/review-01.md)) required changes on K10-CORR1-R1-01, the same
-silent-discard shape one level up in header/arity handling. Round 2 now
-has a `WAITING_FOR_REVIEW` candidate — every governed table carries an independent schema, so every
-governed inventory cell is both decoded whole and owned by a position no document-controlled width
-can widen — which is accepted by nobody; the hold stands until a fresh independent
-review of the cumulative interval returns ACCEPT. No successor is released:
-`next_release: none`. The [status ledger](007-work-packets.md) remains authoritative.
+E1 dependency be treated as the already-built but unaccepted preparation. Its historical ACCEPT and first cleanup hold are preserved. Correction-01 round-2 H `1295c68b03ae5d8eb0bbb86e974353402ff9a518` subsequently received independent ACCEPT in [review-02](work/K1.0-correction-01/review-02.md). Delegated cleanup reproduced K10-CORR1-CLEANUP-01: comma-joined comparison silently equates distinct root/export collections. **Cleanup is REOPENED; C4 claims and integration remain ON HOLD.** The [cleanup/invalidation record](work/K1.0-correction-01/cleanup-01.md) and [K1.0-correction-02 fixing handoff](work/K1.0-correction-02/handoff-01.md) identify the required correction and new cumulative review. No successor is released: `next_release: none`. The [status ledger](007-work-packets.md) remains authoritative.
 Benchmark owns its evidence preparation and release decisions separately.
