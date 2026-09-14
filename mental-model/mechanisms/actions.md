@@ -78,7 +78,7 @@ or responsibility, not external truth. Acknowledged unknown evidence cannot sati
 
 Late authenticated evidence after failure/cancellation updates the original ledger
 and responsible owner, without reopening the Execution. Without a reliable query, the
-application must retain the result as unknown; elapsed time, Agent prose or weakly
-consistent absence cannot establish success or failure. Refusing arbitrary detachment
-is compatible with
+ledger retains the result as unknown and escalates to the application; elapsed time,
+Agent prose or weakly consistent absence cannot establish success or failure. Refusing
+arbitrary detachment is compatible with
 the minimal release, but failures still need an application reconciliation owner.
