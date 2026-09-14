@@ -1,4 +1,4 @@
-# Runtime authoring and context vocabulary
+# Runtime roles and context vocabulary
 
 These concepts describe optional reference Runtime facilities. Native frameworks may
 use their own names and representations. They do not add Kernel lifecycle types.
