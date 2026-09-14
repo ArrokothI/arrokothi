@@ -1,0 +1,96 @@
+# 01 tree and environment (validation-02, clean payload C2)
+## identities
+payload C2: 6b7e5fb0eb3cb323788f97889b84db845a7b3f9f
+base:      777b9955fb3a443f700b4f3d1f4f2aef1869345b
+reviewed payload C: 8cd9e269b1c08f166dec1b567aedf7d1b4810b34
+reviewed H: 0f345b3c9ab49f6c5d9e09b162641cda78f96356
+review record: 1489227b4c80a2d059e8e71f92b233ed76bff8d5 (docs/development/work/K1.1/review-01.md preserved)
+branch:    codex/k1.1-create-reserve-async-dispatch
+remote:    https://github.com/ArrokothI/arrokothi.git
+date: 2026-09-14T18:45:14Z
+
+## environment
+v25.2.1
+11.6.2
+Version 5.9.3
+arm64
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+
+## ancestry
+base is an ancestor of C2: yes
+K1.0+corrections integration 4f02e6c ancestor of C2: yes
+payload commits base..C2:
+6b7e5fb fix(K1.1): reconstruct value acceptance, scoped lookup, remove K1.3 cancellation, correct support prose
+1489227 review(K1.1): round-1 independent review
+0f345b3 report(K1.1): round-1 report, status transcription and clean-C validation
+8cd9e26 test(K1.1): close two coverage gaps the ablation pass found
+b5f6328 feat(K1.1): implement create, reserve and asynchronous dispatch
+
+## working tree status at C2 (validation-02 directory itself is written by this run)
+
+## cumulative diffstat base..C2
+ .../development/002-implemented-kernel-baseline.md |   11 +
+ docs/development/007-work-packets.md               |   11 +-
+ docs/development/work/K1.0/ownership-inventory.md  |   50 +-
+ docs/development/work/K1.1/contract.md             |  306 +++
+ docs/development/work/K1.1/implementation-01.md    |  403 +++
+ docs/development/work/K1.1/review-01.md            |  194 ++
+ .../K1.1/validation-01/01-tree-and-environment.log |  165 ++
+ .../work/K1.1/validation-01/02-typecheck.log       |    6 +
+ .../work/K1.1/validation-01/03-test-full.log       | 2824 ++++++++++++++++++++
+ .../K1.1/validation-01/04-test-conformance.log     | 2528 ++++++++++++++++++
+ .../K1.1/validation-01/05-check-builder-docs.log   |    7 +
+ .../work/K1.1/validation-01/06-test-kernel.log     |  163 ++
+ .../work/K1.1/validation-01/07-test-sdk.log        |   36 +
+ .../K1.1/validation-01/08-architecture-suite.log   |   26 +
+ .../K1.1/validation-01/09-k1.1-case-inventory.log  |  134 +
+ .../validation-01/09b-distinguishing-ablations.log |  177 ++
+ .../work/K1.1/validation-01/MANIFEST.md            |   49 +
+ mental-model/README.md                             |    6 +-
+ mental-model/mechanisms/evidence.md                |   11 +-
+ packages/kernel/package.json                       |    2 +-
+ packages/kernel/src/coordinator.ts                 |  864 ++++++
+ packages/kernel/src/driver.ts                      |   79 +
+ packages/kernel/src/identity.ts                    |  122 +
+ packages/kernel/src/index.ts                       |   65 +-
+ packages/kernel/src/inspection.ts                  |   97 +
+ packages/kernel/src/lifecycle.ts                   |   21 +
+ packages/kernel/src/refusal.ts                     |   61 +
+ packages/kernel/src/result.ts                      |   22 +
+ packages/kernel/src/unsupported.ts                 |   13 +-
+ packages/kernel/src/values.ts                      |  434 +++
+ packages/kernel/tests/boundary.test.ts             |  102 +
+ packages/kernel/tests/creation.test.ts             |  306 +++
+ packages/kernel/tests/dispatch.test.ts             |  381 +++
+ packages/kernel/tests/harness.ts                   |  101 +
+ packages/kernel/tests/ingress.test.ts              |  398 +++
+ packages/kernel/tests/inspection.test.ts           |  131 +
+ packages/kernel/tests/receipts.test.ts             |  263 ++
+ packages/kernel/tests/refusals.test.ts             |   79 +
+ packages/kernel/tests/unsupported.test.ts          |   43 +-
+ packages/kernel/tests/values.test.ts               |  393 +++
+ .../architecture/kernel-landing-zone.test.ts       |   96 +-
+ 41 files changed, 11111 insertions(+), 69 deletions(-)
+
+## correction delta H..C2 (reviewed H 0f345b3..C2, includes preserved review-01 plus payload correction)
+ .../development/002-implemented-kernel-baseline.md |  15 +-
+ docs/development/work/K1.1/contract.md             |  54 +++---
+ docs/development/work/K1.1/review-01.md            | 194 +++++++++++++++++++++
+ packages/kernel/package.json                       |   2 +-
+ packages/kernel/src/coordinator.ts                 | 100 +++++------
+ packages/kernel/src/identity.ts                    |  28 ++-
+ packages/kernel/src/index.ts                       |  19 +-
+ packages/kernel/src/inspection.ts                  |  20 +--
+ packages/kernel/src/lifecycle.ts                   |  10 +-
+ packages/kernel/src/unsupported.ts                 |  13 +-
+ packages/kernel/src/values.ts                      |  74 +++++++-
+ packages/kernel/tests/cancellation.test.ts         | 122 -------------
+ packages/kernel/tests/creation.test.ts             |  43 +++++
+ packages/kernel/tests/dispatch.test.ts             |  37 ++--
+ packages/kernel/tests/ingress.test.ts              |  94 +++++-----
+ packages/kernel/tests/inspection.test.ts           |  15 ++
+ packages/kernel/tests/receipts.test.ts             | 129 +++++++++++++-
+ packages/kernel/tests/refusals.test.ts             |  22 ++-
+ packages/kernel/tests/values.test.ts               | 109 +++++++++++-
+ .../architecture/kernel-landing-zone.test.ts       |   8 +-
+ 20 files changed, 790 insertions(+), 318 deletions(-)

@@ -1,0 +1,90 @@
+# 09b round-2 distinguishing ablations of clean C2
+
+Payload C2: 6b7e5fb0eb3cb323788f97889b84db845a7b3f9f. Each ablation changes exactly one behaviour in a detached worktree, runs packages/kernel/tests against it, and is reverted before the next. Worktree: /tmp/k11-c2-ablation (detached HEAD C2).
+
+
+=== ablation: seal via assignment instead of defineProperty (reintroduces K11-R1-VAL-01 __proto__ loss) ===
+packages/kernel/src/values.ts | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+    ✖ K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection (0.450959ms)
+    ✖ K1.1-C1 the key is scoped, and the scope comes from authentication (4.937333ms)
+    ✖ K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value (0.421ms)
+    ✖ K1.1-C5 ordinary redelivery is the same exchange (1.261083ms)
+    ✖ K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection (3.056083ms)
+    ✖ K1.1-C2 ingress does not depend on what the Execution is doing (6.8015ms)
+    ✖ K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound (4.644ms)
+    ✖ K1.1-C9 what a reader can see (10.281ms)
+    ✖ a valid own __proto__ member is accepted and sealed as own data, not a prototype (0.76625ms)
+    ✖ nested and array-embedded __proto__ members survive at depth (2.357833ms)
+    ✖ a null-prototype object keeps its prototype and its members (0.49875ms)
+    ✖ sealBoundaryValue detaches and freezes without invoking getters (0.215834ms)
+    ✖ K11-R1-VAL-01 value-preserving acceptance over the full key space (4.2575ms)
+    ✖ K1.1-C3 boundary values are validated, never repaired (8.185ms)
+    ✖ failing tests:
+    ✖ K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection (0.450959ms)
+    ✖ K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value (0.421ms)
+    ✖ K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection (3.056083ms)
+    ✖ K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound (4.644ms)
+    ✖ a valid own __proto__ member is accepted and sealed as own data, not a prototype (0.76625ms)
+    ✖ nested and array-embedded __proto__ members survive at depth (2.357833ms)
+    ✖ a null-prototype object keeps its prototype and its members (0.49875ms)
+    ✖ sealBoundaryValue detaches and freezes without invoking getters (0.215834ms)
+116 tests total; fail count in lines above (each ablation rejected)
+
+=== ablation: array index test as /^\d+$/ so own 01 escapes extra-member rejection (reintroduces K11-R1-VAL-01 array gap) ===
+packages/kernel/src/values.ts | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+    ✖ K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation (0.383292ms)
+    ✖ K1.1-C1 the key is scoped, and the scope comes from authentication (22.834667ms)
+    ✖ K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing (0.14175ms)
+    ✖ K1.1-C2 ingress does not depend on what the Execution is doing (0.861959ms)
+    ✖ numeric-looking non-index array members are refused, never silently dropped (0.70475ms)
+    ✖ K11-R1-VAL-01 value-preserving acceptance over the full key space (1.764208ms)
+    ✖ K1.1-C3 boundary values are validated, never repaired (5.357042ms)
+    ✖ failing tests:
+    ✖ K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation (0.383292ms)
+    ✖ K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing (0.14175ms)
+    ✖ numeric-looking non-index array members are refused, never silently dropped (0.70475ms)
+116 tests total; fail count in lines above (each ablation rejected)
+
+=== ablation: missing ID returns before the scope scan (reintroduces K11-R1-ID-01 fast path) ===
+packages/kernel/src/coordinator.ts | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+    ✖ inspect performs the same scope work for hidden and missing (0.804542ms)
+    ✖ equal work holds with many legitimate scopes and in both orders (0.329125ms)
+    ✖ single-ID lookup work does not depend on hidden-record population (1.752959ms)
+    ✖ ingress, dispatch and redelivery share the same normalized lookup (0.249958ms)
+    ✖ K11-R1-ID-01 hidden and missing lookups do equal work (3.754375ms)
+    ✖ K1.1-C6 reads are authenticated and scoped first (4.351541ms)
+    ✖ failing tests:
+    ✖ inspect performs the same scope work for hidden and missing (0.804542ms)
+    ✖ equal work holds with many legitimate scopes and in both orders (0.329125ms)
+    ✖ single-ID lookup work does not depend on hidden-record population (1.752959ms)
+    ✖ ingress, dispatch and redelivery share the same normalized lookup (0.249958ms)
+116 tests total; fail count in lines above (each ablation rejected)
+
+=== ablation: scope check via includes with early exit (reintroduces K11-R1-ID-01 match-position leak) ===
+packages/kernel/src/identity.ts | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+    ✖ scope work does not depend on where the match sits (0.711917ms)
+    ✖ K11-R1-ID-01 hidden and missing lookups do equal work (4.846666ms)
+    ✖ K1.1-C6 reads are authenticated and scoped first (5.632708ms)
+    ✖ failing tests:
+    ✖ scope work does not depend on where the match sits (0.711917ms)
+116 tests total; fail count in lines above (each ablation rejected)
+
+=== ablation: cancelExecution accepts and transitions to CANCELLED (reintroduces K11-R1-SCOPE-01 K1.3 ownership violation) ===
+packages/kernel/src/coordinator.ts | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+    ✖ each refuses, names its owner packet, and returns nothing (0.9755ms)
+    ✖ calling them leaves the whole observable state untouched (1.281458ms)
+    ✖ K11-R1-SCOPE-01 cancellation is K1.3-owned and changes no accepted state (0.233792ms)
+    ✖ K1.1-C7 unlanded surfaces (3.04475ms)
+    ✖ failing tests:
+    ✖ each refuses, names its owner packet, and returns nothing (0.9755ms)
+    ✖ calling them leaves the whole observable state untouched (1.281458ms)
+    ✖ K11-R1-SCOPE-01 cancellation is K1.3-owned and changes no accepted state (0.233792ms)
+116 tests total; fail count in lines above (each ablation rejected)
+
+## worktree status after every revert
+?? node_modules
