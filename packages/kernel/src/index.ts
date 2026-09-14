@@ -1,20 +1,62 @@
 /**
- * `@arrokothi/kernel` - the target Kernel landing zone.
+ * `@arrokothi/kernel` - the target Kernel.
  *
- * This package is the enforced location for new Kernel work under the target
- * [Activation/Outcome protocol](../../../mental-model/mechanisms/execution-cycle.md). At this revision it
- * implements none of that protocol. It exists so that the first protocol packet cannot quietly
- * inherit the current 0.8.x `Harness`/controller vocabulary, and so that the dependency rule which
- * prevents that inheritance is executable rather than aspirational.
+ * This package is the enforced location for Kernel work under the target
+ * [Activation/Outcome protocol](../../../mental-model/mechanisms/execution-cycle.md). K1.0 created it
+ * as a refusal-only landing zone; K1.1 implements its first protocol boundaries: atomic creation
+ * with initial input, post-creation input ingress under the Input ID triple, batch reservation and
+ * asynchronous Driver dispatch, ordinary redelivery, accepted cancellation with terminal
+ * dispositions, and the inspection that makes those facts observable.
  *
- * What the boundary means is recorded in `README.md` and enforced by
- * `tests/conformance/architecture/kernel-landing-zone.test.ts`. In short: nothing in this package
- * may import `@arrokothi/core`, any provider or Runtime integration, the SDK, or any third-party
- * package. `node:` builtins are the only external dependency permitted, and the list of approved
- * portable leaves from the legacy tree is currently empty by decision.
+ * **It is not a working Kernel yet.** Outcome acceptance is K1.2's, so nothing here installs
+ * progress, acknowledges an Event or ends an Execution with a result; waits and deadlines are
+ * K1.3's; Effects are K2's; the legacy bridge, the SDK host entry and the E1 gate are K1.4's. Every
+ * surface those packets own refuses by name rather than answering with a no-op. The boundary this
+ * package is held to is recorded in `docs/development/work/K1.0/ownership-inventory.md` and enforced
+ * by `tests/conformance/architecture/kernel-landing-zone.test.ts`: nothing here may import
+ * `@arrokothi/core`, any provider or Runtime integration, the SDK, or any third-party package.
+ * `node:` builtins are the only external dependency permitted.
  *
  * The current, supported, explicitly legacy implementation remains `@arrokothi/core`. Nothing here
  * replaces it, and no existing consumer is routed through this package.
  */
 
 export { UnsupportedKernelSurfaceError, refuseUnsupportedSurface } from "./unsupported.ts";
+
+export { ExecutionCoordinator } from "./coordinator.ts";
+export type {
+  CancellationAccepted,
+  CoordinatorOptions,
+  CreateExecutionRequest,
+  CreationAccepted,
+  DispatchAccepted,
+  DispatchOptions,
+  InputAccepted,
+  InputContent,
+  SubmitInputRequest,
+} from "./coordinator.ts";
+
+export type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+
+export { creationKeyIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
+export type { AuthenticatedCaller, CreationKeyId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";
+
+export type {
+  ActivationView,
+  DeliveryAttemptView,
+  ExecutionView,
+  MailboxDisposition,
+  MailboxEntryView,
+} from "./inspection.ts";
+
+export { TERMINAL_STATES, isTerminal } from "./lifecycle.ts";
+export type { ExecutionState } from "./lifecycle.ts";
+
+export { UNKNOWN_DESTINATION_REASON } from "./refusal.ts";
+export type { RefusalClassification, RefusalRecord } from "./refusal.ts";
+
+export { err, ok } from "./result.ts";
+export type { Err, Ok, Result } from "./result.ts";
+
+export { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, sealBoundaryValue } from "./values.ts";
+export type { BoundaryValue, CanonicalValue, ValueIssue, ValueIssueCode } from "./values.ts";

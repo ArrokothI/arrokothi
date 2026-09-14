@@ -141,7 +141,21 @@ describe("K1.0 target Kernel landing zone", () => {
   test("that result is not vacuous: the graph has real files and a real internal edge", async () => {
     const graph = await realGraph();
     const files = [...graph.files].sort();
-    assert.deepEqual(files, ["packages/kernel/src/index.ts", "packages/kernel/src/unsupported.ts"]);
+    // The exact reachable set, so a module that quietly stops being reachable from the entry point -
+    // and therefore stops being guarded - is a failure rather than a silently smaller walk. K1.1
+    // added the eight protocol modules; K1.0's two remain.
+    assert.deepEqual(files, [
+      "packages/kernel/src/coordinator.ts",
+      "packages/kernel/src/driver.ts",
+      "packages/kernel/src/identity.ts",
+      "packages/kernel/src/index.ts",
+      "packages/kernel/src/inspection.ts",
+      "packages/kernel/src/lifecycle.ts",
+      "packages/kernel/src/refusal.ts",
+      "packages/kernel/src/result.ts",
+      "packages/kernel/src/unsupported.ts",
+      "packages/kernel/src/values.ts",
+    ]);
 
     const internalEdges = graph.edges.filter((edge) => edge.resolution.kind === "internal");
     assert.ok(internalEdges.length >= 1, "the walk actually traversed an edge rather than reading one leaf file");
@@ -153,17 +167,43 @@ describe("K1.0 target Kernel landing zone", () => {
 
   test("the zone refuses unimplemented surfaces rather than answering with a no-op", async () => {
     const kernel = await import("@arrokothi/kernel");
-    assert.deepEqual(Object.keys(kernel).sort(), ["UnsupportedKernelSurfaceError", "refuseUnsupportedSurface"]);
+    // K1.1 implements creation, ingress, reservation, dispatch, redelivery, cancellation and
+    // inspection, so the refusal example moved to a surface a later packet still owns. The mechanism
+    // is unchanged, and `packages/kernel/tests/refusals.test.ts` holds the coordinator's own
+    // K1.2-owned surfaces to it.
     assert.throws(
-      () => kernel.refuseUnsupportedSurface("createExecution", "K1.1"),
+      () => kernel.refuseUnsupportedSurface("acceptOutcome", "K1.2"),
       (error: unknown) => {
         assert.ok(error instanceof kernel.UnsupportedKernelSurfaceError);
-        assert.equal(error.surface, "createExecution");
-        assert.equal(error.owner, "K1.1");
-        assert.match(error.message, /K1\.1 owns this surface/);
+        assert.equal(error.surface, "acceptOutcome");
+        assert.equal(error.owner, "K1.2");
+        assert.match(error.message, /K1\.2 owns this surface/);
         return true;
       },
     );
+
+    // The exported surface is still exact, so advertising a boundary no accepted packet has built is
+    // a deliberate edit rather than drift.
+    assert.deepEqual(Object.keys(kernel).sort(), [
+      "BOUNDARY_LIMITS",
+      "ExecutionCoordinator",
+      "TERMINAL_STATES",
+      "UNKNOWN_DESTINATION_REASON",
+      "UnsupportedKernelSurfaceError",
+      "boundaryValueIssues",
+      "canonicalize",
+      "creationKeyIdKey",
+      "err",
+      "inputIdKey",
+      "isBoundaryValue",
+      "isTerminal",
+      "mayReachScope",
+      "mintReceipt",
+      "ok",
+      "refuseUnsupportedSurface",
+      "sameLogicalValue",
+      "sealBoundaryValue",
+    ]);
   });
 });
 
@@ -792,7 +832,7 @@ describe("K1.0 policy and inventory agree", () => {
     // ever considered, so it vanished: no duplicate, no unreadable row, and the correct row made
     // recomputation green. Both orders are exercised because the old code skipped it either way.
     const real = await realInventory();
-    const correct = "| `target-kernel` | 2 | nothing | nothing |";
+    const correct = "| `target-kernel` | 10 | nothing | nothing |";
     const malformed = "| `target-kernel` | not-a-count | `@arrokothi/core` | nothing |";
 
     for (const [position, replacement] of [
@@ -813,7 +853,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("a dependency row with no recognisable key fails closed (K10-R4-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 2 | nothing | nothing |";
+    const correct = "| `target-kernel` | 10 | nothing | nothing |";
     const { unreadable } = parseDependencyTable(mutate(real, [[correct, `| not-a-zone | 2 | nothing | nothing |\n${correct}`]]));
     assert.ok(
       unreadable.some((message) => /Dependency row has no recognisable key/.test(message)),
@@ -852,7 +892,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("duplicate cross-boundary dependency rows fail closed (K10-R3-01)", async () => {
     const real = await realInventory();
-    const anchor = "| `target-kernel` | 2 | nothing | nothing |";
+    const anchor = "| `target-kernel` | 10 | nothing | nothing |";
     const stale = "| `target-kernel` | 999 | nothing | nothing |";
     const variants = [
       mutate(real, [[anchor, `${stale}\n${anchor}`]]),
@@ -876,7 +916,7 @@ describe("K1.0 policy and inventory agree", () => {
     const real = await realInventory();
     const workspace = await loadWorkspace(REPO_ROOT);
     const correct =
-      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |";
     const badByEdge: Record<string, string> = {
       "omitted trailing pipe":
         "| `target-kernel` | `packages/core/src` | stale contradictory duplicate",
@@ -955,7 +995,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 2 | nothing | nothing |";
+    const correct = "| `target-kernel` | 10 | nothing | nothing |";
     const badByEdge: Record<string, string> = {
       "omitted trailing pipe": "| `target-kernel` | 999 | `@arrokothi/core` | nothing",
       "omitted leading pipe": "`target-kernel` | 999 | `@arrokothi/core` | nothing |",
@@ -985,7 +1025,7 @@ describe("K1.0 policy and inventory agree", () => {
     // before the shared reader. The previous `tableRows` ignored every line without an edge pipe.
     const real = await realInventory();
     const correct =
-      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |";
     const pipeless = "`target-kernel`";
     for (const position of ["before", "after"] as const) {
       const mutated =
@@ -1035,7 +1075,7 @@ describe("K1.0 policy and inventory agree", () => {
     assert.equal(edgelessParsed.zones.size, ZONES.length);
 
     const correct =
-      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |";
     const bad = "`target-kernel` | `packages/core/src` | stale contradictory duplicate";
     const disagreements = inventoryDisagreements(
       parseInventory(mutate(alignedDoc, [[correct, `${bad}\n${correct}`]])),
@@ -1076,7 +1116,7 @@ describe("K1.0 policy and inventory agree", () => {
       {
         table: "Zones",
         correct:
-          "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |",
+          "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |",
         badByEdge: {
           "full edge pipes": "| Zone id | `packages/core/src` | stale contradictory body row |",
           "omitted both edge pipes": "Zone id | `packages/core/src` | stale contradictory body row",
@@ -1133,7 +1173,7 @@ describe("K1.0 policy and inventory agree", () => {
       for (const position of ["before", "after"] as const) {
         test(`a Dependency body row beginning with the header label is accounted for, ${position} the correct row, with ${edge}`, async () => {
           const real = await realInventory();
-          const correct = "| `target-kernel` | 2 | nothing | nothing |";
+          const correct = "| `target-kernel` | 10 | nothing | nothing |";
           const mutated =
             position === "before"
               ? mutate(real, [[correct, `${bad}\n${correct}`]])
@@ -2906,11 +2946,11 @@ describe("K1.0 policy and inventory agree", () => {
     // contradictory spellings that must be reported, and the permitted spellings beside them that
     // must still parse — so a decoder that is merely stricter about the four reported strings would
     // fail the first half, and one that is stricter about everything would fail the second.
-    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 2 | nothing | nothing |";
+    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 10 | nothing | nothing |";
     const REAL_HOST_SDK_ROW =
       "| `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |";
     const REAL_ZONE_ROW =
-      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |";
     const REAL_PRIVATE_PACKAGE_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
     const REAL_PUBLISHED_PACKAGE_ROW = "| `@arrokothi/sdk` | `.` | Yes |";
     const REAL_DX1_ROW =
@@ -2936,10 +2976,10 @@ describe("K1.0 policy and inventory agree", () => {
       // same count, same empty edge sets, nothing unreadable, so the measured-tree comparison
       // downstream could not distinguish it from the truth it accepts.
       for (const [name, replacement] of [
-        ["a fractional count", "| `target-kernel` | 2.5 | nothing | nothing |"],
-        ["a count with a junk suffix", "| `target-kernel` | 2oops | nothing | nothing |"],
-        ["an empty claim that then names a workspace edge", "| `target-kernel` | 2 | nothing, `@arrokothi/core` | nothing |"],
-        ["an empty claim that then names a third-party edge", "| `target-kernel` | 2 | nothing | nothing, `evil-package` |"],
+        ["a fractional count", "| `target-kernel` | 10.5 | nothing | nothing |"],
+        ["a count with a junk suffix", "| `target-kernel` | 10oops | nothing | nothing |"],
+        ["an empty claim that then names a workspace edge", "| `target-kernel` | 10 | nothing, `@arrokothi/core` | nothing |"],
+        ["an empty claim that then names a third-party edge", "| `target-kernel` | 10 | nothing | nothing, `evil-package` |"],
       ] as const) {
         const unreadable = await dependencyUnreadable(REAL_DEPENDENCY_ROW, replacement);
         assert.ok(
@@ -3018,7 +3058,7 @@ describe("K1.0 policy and inventory agree", () => {
       // and belongs only to the workspace column. In the third-party column it previously produced
       // an empty set through the token extractor, which is the same silent denial in another
       // spelling.
-      const emDash = await dependencyUnreadable(REAL_DEPENDENCY_ROW, "| `target-kernel` | 2 | nothing | — |");
+      const emDash = await dependencyUnreadable(REAL_DEPENDENCY_ROW, "| `target-kernel` | 10 | nothing | — |");
       assert.ok(
         emDash.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
         `an em dash is not a third-party claim; got: ${JSON.stringify(emDash)}`,
@@ -3284,11 +3324,11 @@ describe("K1.0 policy and inventory agree", () => {
     // the short-row and correct-body twins.
     const DEP_HEADER = "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |";
     const DEP_DELIM = "|---|---|---|---|";
-    const DEP_ROW = "| `target-kernel` | 2 | nothing | nothing |";
+    const DEP_ROW = "| `target-kernel` | 10 | nothing | nothing |";
     const ZONES_HEADER = "| Zone id | Roots | Owner and status |";
     const ZONES_DELIM = "|---|---|---|";
     const ZONES_ROW =
-      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |";
     const EXPORT_HEADER = "| Package | Exported subpaths | Published? |";
     const EXPORT_DELIM = "|---|---|---|";
     const EXPORT_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
@@ -3318,7 +3358,7 @@ describe("K1.0 policy and inventory agree", () => {
       const baseline = parseDependencyTable(real);
       const mutated = await depResult([
         [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER} Extra claim |\n${DEP_DELIM}---|`],
-        [DEP_ROW, "| `target-kernel` | 2 | nothing | nothing | `evil-package` |"],
+        [DEP_ROW, "| `target-kernel` | 10 | nothing | nothing | `evil-package` |"],
       ]);
       assert.ok(
         mutated.unreadable.some((message) =>
@@ -3461,7 +3501,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         renamedMiddle.rows.get("target-kernel")?.files,
-        2,
+        10,
         "schema-correct bodies still decode when only the header is wrong",
       );
       const reordered = await depResult([
@@ -3505,7 +3545,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         narrowed.rows.get("target-kernel")?.files,
-        2,
+        10,
         "a narrowed header must not turn a schema-correct body into excess",
       );
       const widenedHeaderOnly = await depResult([
@@ -3522,7 +3562,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         widenedHeaderOnly.rows.get("target-kernel")?.files,
-        2,
+        10,
         "the relation survives a header-only widening; the header report carries the loudness",
       );
     });

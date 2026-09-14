@@ -135,8 +135,10 @@ gate is complete (accepted K1.0 work is structural preparation, not a K1 gate), 
 naming any later gate describes protocol behavior that has not been built yet.
 
 So far K0.1 settled the protocol decisions, K0.2 supplied public controls, and K1.0
-prepared a private, refusal-only target package that implements none of the protocol.
+prepared a private target package that implemented none of the protocol. The first
+protocol boundaries to land in it — creation, input ingress, reservation and dispatch —
+belong to K1.1; Outcome acceptance to K1.2 and waits to K1.3.
 See the [implemented baseline](../docs/development/002-implemented-kernel-baseline.md)
 for the APIs that actually exist and the [status ledger](../docs/development/007-work-packets.md)
-for acceptance and release. Current application users start from the
+for what has actually been accepted and integrated. Current application users start from the
 [guides](../docs/guides/README.md).

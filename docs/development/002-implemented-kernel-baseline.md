@@ -20,6 +20,16 @@ with its assertions retained, because the graph it guards is this implementation
 target Kernel. The zones and the deferred extraction owners are recorded in
 [K1.0's ownership inventory](work/K1.0/ownership-inventory.md). No behaviour below changed.
 
+Structural note, K1.1 (2026-09-14): `packages/kernel` is no longer refusal-only. It now implements
+the first target protocol boundaries — atomic creation with initial input, post-creation input
+ingress under the Input ID triple, batch reservation, asynchronous Driver dispatch, ordinary
+redelivery, accepted cancellation with terminal dispositions, and the inspection that makes those
+facts observable — in memory, behind an `ExecutionCoordinator`. Outcome acceptance, waits, deadlines
+and Effects are not implemented and refuse by name. Nothing below changed: the package is still
+`private`, no consumer is routed through it, and every path in the legacy map keeps its exports,
+behaviour and regression suite. This note describes the packet's candidate tree; whether it is
+accepted and integrated is recorded in [the status ledger](007-work-packets.md), never here.
+
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains with the owners in the [reference index](../../mental-model/reference.md).
 Paths below are representative rather than exhaustive; the conformance suite is the executable

@@ -1,9 +1,12 @@
 /**
- * The target Kernel landing zone refuses; it does not pretend.
+ * The target Kernel refuses what it has not built; it does not pretend.
  *
- * K1.0 ships no protocol, so the only behaviour this package can correctly have is an explicit
- * refusal. These cases exist to catch the failure mode 007 warns about - scaffolding that answers a
- * caller with a silent no-op, which a later packet could mistake for working behaviour.
+ * K1.0 introduced this mechanism when the package shipped no protocol at all. K1.1 keeps it for the
+ * surfaces later packets own, which is the failure 007 warns about in its other form: scaffolding
+ * that answers a caller with a silent no-op a later packet could mistake for working behaviour.
+ *
+ * The example surface changed with K1.1: `createExecution` is implemented now, so the refusal cases
+ * name `acceptOutcome`/`submitOutcome`, which K1.2 owns.
  */
 
 import { test, describe } from "node:test";
@@ -15,7 +18,7 @@ describe("target Kernel scaffolding", () => {
   test("an unimplemented surface throws rather than returning anything", () => {
     let returned: unknown = "sentinel";
     assert.throws(() => {
-      returned = refuseUnsupportedSurface("activate", "K1.1");
+      returned = refuseUnsupportedSurface("acceptOutcome", "K1.2");
     }, UnsupportedKernelSurfaceError);
     assert.equal(returned, "sentinel", "the refusal never produced a value a caller could act on");
   });
@@ -35,12 +38,36 @@ describe("target Kernel scaffolding", () => {
   });
 
   test("the refusal points at the supported implementation instead of leaving a dead end", () => {
-    const error = new UnsupportedKernelSurfaceError("createExecution", "K1.1");
+    const error = new UnsupportedKernelSurfaceError("registerWait", "K1.3");
     assert.match(error.message, /@arrokothi\/core, which is explicitly legacy/);
   });
 
-  test("the package exports the refusal and nothing that could look like a protocol", async () => {
+  test("the package exports exactly the K1.1 surface and nothing that could look like a later packet's", async () => {
     const surface = await import("../src/index.ts");
-    assert.deepEqual(Object.keys(surface).sort(), ["UnsupportedKernelSurfaceError", "refuseUnsupportedSurface"]);
+    assert.deepEqual(Object.keys(surface).sort(), [
+      "BOUNDARY_LIMITS",
+      "ExecutionCoordinator",
+      "TERMINAL_STATES",
+      "UNKNOWN_DESTINATION_REASON",
+      "UnsupportedKernelSurfaceError",
+      "boundaryValueIssues",
+      "canonicalize",
+      "creationKeyIdKey",
+      "err",
+      "inputIdKey",
+      "isBoundaryValue",
+      "isTerminal",
+      "mayReachScope",
+      "mintReceipt",
+      "ok",
+      "refuseUnsupportedSurface",
+      "sameLogicalValue",
+      "sealBoundaryValue",
+    ]);
+    // Nothing named for a boundary no accepted packet has built. The list above is exact so adding
+    // one is a deliberate, reviewed change rather than a drift.
+    for (const name of Object.keys(surface)) {
+      assert.doesNotMatch(name, /outcome|effect|wait|deadline|child|takeover/i, `${name} would advertise an unbuilt boundary`);
+    }
   });
 });
