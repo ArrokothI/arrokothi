@@ -10,8 +10,14 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
+import { execFileSync } from "node:child_process";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
 import { inheritedIndexIsLive, recordOwn, trapInheritedIndices, type InheritedIndexTrap } from "./harness.ts";
+
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 /** A dense genuine array built without `push`, so these fixtures are own data whatever is installed. */
 const copyForTest = (elements: readonly unknown[]): unknown[] => {
@@ -1030,5 +1036,64 @@ describe("K11-R6-VAL-05 canonical bytes do not depend on what the prototypes car
       trap.restore();
       delete (Array.prototype as unknown as Record<string, unknown>).hostMarker;
     }
+  });
+});
+
+describe("K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never to wrong bytes", () => {
+  /**
+   * The one claim in the serializer window that cannot be made in this process.
+   *
+   * `inheritedIndexShadows` borrows both prototypes for the exact JCS call and hands them back. If a
+   * caller has made one of those positions non-configurable, the window cannot remove it, and the
+   * rule `values.md` implies is that the boundary refuses rather than serializing into an
+   * environment it does not control. Installing a non-configurable accessor on `Array.prototype` is
+   * permanent by definition, so this runs in a child process rather than poisoning the suite.
+   *
+   * The also-non-writable *data* variant is deliberately not asserted: Node's own internals assign to
+   * index positions of ordinary arrays, so that host dies inside the runtime before any Kernel
+   * boundary is reached. It is not a behaviour this Kernel can answer for, and claiming otherwise
+   * would be the kind of unbacked claim these rounds keep finding.
+   */
+  test("the refusal is located, the bytes are never wrong, and the borrowed slots are handed back", () => {
+    const probe = `
+      const { canonicalize } = await import("./packages/kernel/src/index.ts");
+      const clean = canonicalize({ a: 1 });
+      Object.defineProperty(Array.prototype, "0", {
+        configurable: false,
+        get() { return String.fromCharCode(34) + "HIJACKED" + String.fromCharCode(34); },
+        set(_value) {},
+      });
+      let polluted;
+      try { polluted = canonicalize({ a: 1 }); } catch (error) { polluted = { escaped: String(error && error.name) }; }
+      console.log(JSON.stringify({
+        cleanCanonical: clean.ok ? clean.value.canonical : null,
+        ok: polluted.ok,
+        escaped: polluted.escaped ?? null,
+        code: polluted.ok === false ? polluted.issues[0].code : null,
+        canonical: polluted.ok === true ? polluted.value.canonical : null,
+        slotsRestored: typeof JSON.stringify === "function" && typeof Object.keys === "function" && typeof Object.getOwnPropertyDescriptor(Object, "keys").value === "function",
+      }));
+    `;
+    const result = execFileSync(
+      process.execPath,
+      ["--experimental-strip-types", "--input-type=module", "-e", probe],
+      { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+    );
+    const observed = JSON.parse(result.trim().split("\n").pop() as string) as {
+      cleanCanonical: string | null;
+      ok: boolean | undefined;
+      escaped: string | null;
+      code: string | null;
+      canonical: string | null;
+      slotsRestored: boolean;
+    };
+
+    // Not vacuous: the same call answers correctly in the same process before the shadow is pinned.
+    assert.equal(observed.cleanCanonical, '{"a":1}');
+    assert.equal(observed.escaped, null, "no ambient exception escaped the Kernel boundary");
+    assert.equal(observed.ok, false, "an environment the window cannot control is refused");
+    assert.equal(observed.code, "unstable_representation");
+    assert.equal(observed.canonical, null, "and no canonical bytes were produced at all");
+    assert.equal(observed.slotsRestored, true, "the named slots the window did install were handed back");
   });
 });

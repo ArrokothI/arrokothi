@@ -995,9 +995,14 @@ type SavedSlot = {
  * array's `[[Set]]` walks the whole chain.
  *
  * No conforming host installs an own index-named property on either prototype, so in an undisturbed
- * process this finds nothing and changes nothing. If an attacker made one non-configurable, the
- * `delete` throws and `accept` contains it as a located refusal: degraded availability, never wrong
- * bytes.
+ * process this finds nothing and changes nothing.
+ *
+ * If an attacker made such a position **non-configurable**, the `delete` throws and `accept`
+ * contains it as a located `unstable_representation` refusal, with the named slots still handed back:
+ * degraded availability, never wrong bytes. That is a committed case, run in a child process because
+ * the pollution it installs is by definition permanent. The variant of it that is also non-writable
+ * *data* is not the Kernel's to answer at all: Node's own internals assign to index positions of
+ * ordinary arrays, so such a host is already broken before any Kernel boundary is reached.
  */
 const inheritedIndexShadows = (): SavedSlot[] => {
   const shadows: SavedSlot[] = [];
