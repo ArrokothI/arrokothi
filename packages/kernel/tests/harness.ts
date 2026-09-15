@@ -123,9 +123,84 @@ export const recordOwn = <T>(list: T[], item: T): void => {
   defineAt(list, list.length, item);
 };
 
+/**
+ * A caller-owned value whose every observation throws, for totality cases (K11-R16-ID-01).
+ *
+ * `Array.isArray` on this value throws `TypeError`, and any property read throws as well, so a
+ * diagnostic that classifies it without containment lets the exception escape the boundary
+ * instead of returning the located refusal.
+ */
+export function revokedProxy(): unknown {
+  const { proxy, revoke } = Proxy.revocable({}, {});
+  revoke();
+  return proxy;
+}
+
+/** Hostile ambient Promise-construction state, and the handle that restores it (K11-R16-DISP-01). */
+export interface SpeciesPollution {
+  /** Restores the exact descriptor that was there before, including absence. */
+  restore(): void;
+}
+
+/**
+ * Installs `getter` as `Promise[Symbol.species]`.
+ *
+ * A native `then` runs `SpeciesConstructor` before attaching continuations, so a throwing getter
+ * here makes the attach itself throw before any rejection handler exists. Always restore in a
+ * `finally`: the slot is process-wide while installed.
+ */
+export function pollutePromiseSpecies(getter: () => unknown): SpeciesPollution {
+  const saved = Object.getOwnPropertyDescriptor(Promise, Symbol.species);
+  Object.defineProperty(Promise, Symbol.species, { get: getter, configurable: true });
+  return {
+    restore(): void {
+      if (saved === undefined) delete (Promise as unknown as Record<symbol, unknown>)[Symbol.species];
+      else Object.defineProperty(Promise, Symbol.species, saved);
+    },
+  };
+}
+
+/** Installs `value` as an own `constructor` on `Promise.prototype` (K11-R16-DISP-01). */
+export function pollutePromiseConstructor(value: unknown): SpeciesPollution {
+  const saved = Object.getOwnPropertyDescriptor(Promise.prototype, "constructor");
+  Object.defineProperty(Promise.prototype, "constructor", { value, writable: true, enumerable: false, configurable: true });
+  return {
+    restore(): void {
+      if (saved === undefined) delete (Promise.prototype as unknown as Record<string, unknown>)["constructor"];
+      else Object.defineProperty(Promise.prototype, "constructor", saved);
+    },
+  };
+}
+
+/** Installs `value` as an own `Symbol.species` on `Object.prototype` (K11-R16-DISP-01). */
+export function polluteObjectSpecies(value: unknown): SpeciesPollution {
+  const saved = Object.getOwnPropertyDescriptor(Object.prototype, Symbol.species);
+  Object.defineProperty(Object.prototype, Symbol.species, { value, writable: true, enumerable: false, configurable: true });
+  return {
+    restore(): void {
+      if (saved === undefined) delete (Object.prototype as unknown as Record<symbol, unknown>)[Symbol.species];
+      else Object.defineProperty(Object.prototype, Symbol.species, saved);
+    },
+  };
+}
+
+/**
+ * Whether the throwing species getter is really live right now.
+ *
+ * Every case that installs one asserts this, so a green result cannot come from pollution that
+ * was never installed or was restored too early.
+ */
+export function promiseSpeciesIsHostile(): boolean {
+  try {
+    void (Promise as unknown as Record<symbol, unknown>)[Symbol.species];
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 /** A live inherited-indexed-accessor trap on `Array.prototype`, and the handle that removes it. */
-export interface InheritedIndexTrap {
-  /** Every value the inherited setter swallowed, in the order it received them. */
+export interface InheritedIndexTrap {  /** Every value the inherited setter swallowed, in the order it received them. */
   readonly swallowed: unknown[];
   /** What the inherited getter answers for a position the list does not own. */
   readonly substitute: unknown;
@@ -266,6 +341,63 @@ export const rejectingDriver = (driverId = "fake-rejecting"): ExecutionDriver =>
     return Promise.reject(new Error("native submit lost"));
   },
 });
+
+/** The holder of the Array iterator `next` the exact JCS call reads (K11-R16-VAL-01). */
+export const arrayIteratorPrototype = (): object => Object.getPrototypeOf([][Symbol.iterator]()) as object;
+
+/** A hostile `next` installed on the Array iterator prototype, and the handle that removes it. */
+export interface IteratorNextPollution {
+  /** Restores the exact descriptor that was there before, including absence. */
+  restore(): void;
+}
+
+/**
+ * Installs `next` as an own data property of the Array iterator prototype.
+ *
+ * The exact JCS implementation iterates `Object.keys(object).sort()` with `for...of`, so every
+ * step reads this method. That is the shape a caller can install from inside a boundary
+ * observation, and it is what makes restoring only `Array.prototype[Symbol.iterator]` leave the
+ * serializer steerable. Always restore in a `finally`: the method is process-wide while installed.
+ */
+export function polluteIteratorNext(next: unknown): IteratorNextPollution {
+  const holder = arrayIteratorPrototype();
+  const saved = Object.getOwnPropertyDescriptor(holder, "next");
+  Object.defineProperty(holder, "next", { value: next, writable: true, enumerable: false, configurable: true });
+  return {
+    restore(): void {
+      if (saved === undefined) delete (holder as Record<string, unknown>).next;
+      else Object.defineProperty(holder, "next", saved);
+    },
+  };
+}
+
+/**
+ * Whether the hostile iterator `next` is really live right now.
+ *
+ * Every case that installs one asserts this, so a green result cannot come from pollution that was
+ * never installed or was restored too early. The probe iterates a fresh one-element array: under
+ * an omit-all `next` it yields nothing.
+ */
+export function iteratorNextIsHostile(): boolean {
+  const seen: string[] = [];
+  for (const key of ["probe"]) recordOwn(seen, key);
+  return seen.length === 0;
+}
+
+/**
+ * Installs an own data property on `Object.prototype`, for the iterator-result shadows
+ * (`next`/`value`/`done`) the serializer window must also borrow (K11-R16-VAL-01).
+ */
+export function polluteObjectField(key: string, value: unknown): IteratorNextPollution {
+  const saved = Object.getOwnPropertyDescriptor(Object.prototype, key);
+  Object.defineProperty(Object.prototype, key, { value, writable: true, enumerable: false, configurable: true });
+  return {
+    restore(): void {
+      if (saved === undefined) delete (Object.prototype as Record<string, unknown>)[key];
+      else Object.defineProperty(Object.prototype, key, saved);
+    },
+  };
+}
 
 /** Unwraps an accepted result, failing loudly with the refusal when it was refused instead. */
 export function accepted<T>(result: { ok: true; value: T } | { ok: false; error: { classification: string; reason: string } }): T {

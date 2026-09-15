@@ -129,6 +129,24 @@ const PrimordialArrayIterator = Array.prototype[Symbol.iterator];
 const PrimordialSetHas = Set.prototype.has;
 const PrimordialSetAdd = Set.prototype.add;
 const PrimordialSetDelete = Set.prototype.delete;
+/**
+ * The holder of the `next` method the exact JCS call reads, and its own prototype.
+ *
+ * `canonicalize@3.0.0` iterates `for (const key of Object.keys(object).sort())`. That is a
+ * two-step ambient read, not one: `GetMethod(sorted, Symbol.iterator)` — covered by the
+ * `Array.prototype[Symbol.iterator]` slot — followed by `GetV(iterator, "next")` on every step,
+ * which resolves through this prototype, and then `GetV(result, "done"/"value")` on each
+ * iteration result, which resolves through `Object.prototype`. Restoring the iterator-producing
+ * function while leaving a caller-mutated `next` in place lets an observation-time side effect
+ * choose which keys the serializer sees — omit, substitute, duplicate — so canonical bytes and
+ * byte size describe a different logical value than the retained snapshot (K11-R16-VAL-01).
+ * Captured at load, before any caller code runs.
+ */
+const PrimordialArrayIteratorPrototype: object = PrimordialGetPrototypeOf(
+  PrimordialReflectApply(PrimordialArrayIterator, [], []) as object,
+) as object;
+const PrimordialArrayIteratorNext: unknown = (PrimordialArrayIteratorPrototype as { readonly next: unknown }).next;
+const PrimordialIteratorPrototype: object = PrimordialGetPrototypeOf(PrimordialArrayIteratorPrototype) as object;
 const PrimordialStringCharCodeAt = String.prototype.charCodeAt;
 /**
  * Own-property existence without consulting the prototype chain.
@@ -909,6 +927,8 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
  * | `Object.keys(object)` (object branch) | `globalThis.Object`, then `.keys` | global `Object` + `Object.keys` |
  * | `new Set()` (default `seen` param) | `globalThis.Set` at call time | global `Set` |
  * | `for (const key of ...sort())` iteration | `globalThis.Symbol`, then `Symbol.iterator` | global `Symbol` |
+ * | `for (const key of ...)` step | `GetV(iterator, "next")` on every step, resolving through the Array iterator prototype | `next` on the Array iterator prototype, restored to primordial |
+ * | `for (const key of ...)` result | `GetV(result, "done")` / `GetV(result, "value")` on each iteration result, resolving through `Object.prototype` | own `next`/`value`/`done` removed from the iterator prototype and `Object.prototype` for the window |
  * | `object.toJSON` (own or inherited) | ordinary read on the input | neutralized structurally: the input is always the safe clone (null-prototype objects; arrays with an own non-enumerable `toJSON: undefined` shadow), never caller state and never a bare snapshot |
  * | `object.map(...)` (array branch) | ordinary read on the input | neutralized structurally: the clone's own non-enumerable `map` shadow (iterates own indices via primordials) |
  * | `object[key]` (object branch) | ordinary read on the input | neutralized structurally: the clone holds only own data copied from the snapshot's own descriptors |
@@ -917,8 +937,11 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
  * | `Object.keys(object).sort()` | `Array.prototype` at call time | `Array.prototype.sort` slot |
  * | `typeof`, `===`, template-literal spelling | language operators, not lookups | no slot needed |
  * | `parts.push(...)` / `values`/`parts` element reads behind `join` | `[[Set]]` and `[[Get]]` on the dependency's own scratch arrays, which consult `Array.prototype` then `Object.prototype` for positions those arrays do not own | neutralized structurally: `inheritedIndexShadows` removes every own index-named property from both prototypes for the call window (K11-R6-VAL-04) |
+ * | iterator-protocol shadows above the holders the window restores | an own `next` on the iterator prototype or on `Object.prototype` would answer if the restored holder slot were ever deleted; own `value`/`done` on `Object.prototype` would answer the result reads directly | neutralized structurally: `prototypeNamedShadows` removes those own properties for the call window (K11-R16-VAL-01) |
  *
- * Anything not in this table is not read by the dependency. In particular it never reads
+ * The table above names every ambient read the published implementation performs, including the
+ * full iterator protocol (`GetMethod` for the iterator function, `GetV(iterator, "next")` per
+ * step, `GetV(result, "done"/"value")` per result). In particular it never reads
  * `Number`, `String`, `Reflect`, `Buffer`, `Map`, `Object.getOwnProperty*` or `Array.from`, so
  * those need no sandbox slot (the adapter's own uses of them are primordial-hardened above).
  */
@@ -952,6 +975,7 @@ const serializerSlots = (): SandboxSlot[] => {
   slot(PrimordialArrayPrototype, "sort", PrimordialArraySort);
   slot(PrimordialArrayPrototype, "push", PrimordialArrayPush);
   slot(PrimordialArrayPrototype, PrimordialSymbol.iterator, PrimordialArrayIterator);
+  slot(PrimordialArrayIteratorPrototype, "next", PrimordialArrayIteratorNext);
   slot(PrimordialSetPrototype, "has", PrimordialSetHas);
   slot(PrimordialSetPrototype, "add", PrimordialSetAdd);
   slot(PrimordialSetPrototype, "delete", PrimordialSetDelete);
@@ -1013,18 +1037,51 @@ const inheritedIndexShadows = (): SavedSlot[] => {
 };
 
 /**
+ * Own iterator-protocol shadows above the holders the serializer window restores.
+ *
+ * Restoring the primordial `next` on the Array iterator prototype wins every `GetV(iterator,
+ * "next")` lookup — unless that own slot were deleted, in which case an own `next` on the
+ * iterator prototype or on `Object.prototype` would answer instead. And the per-result
+ * `GetV(result, "done"/"value")` reads resolve through `Object.prototype` directly. No
+ * conforming host installs own `next`/`value`/`done` on either of these prototypes, so in an
+ * undisturbed process this finds nothing and changes nothing (K11-R16-VAL-01).
+ *
+ * An own `next` on `Array.prototype` itself needs no slot: nothing on the dependency's path
+ * reads `GetV(arrayLike, "next")`, so it is never consulted.
+ */
+const prototypeNamedShadows = (): SavedSlot[] => {
+  const shadows: SavedSlot[] = [];
+  const holders: object[] = [PrimordialIteratorPrototype, PrimordialObjectPrototype];
+  const names: string[] = ["next", "value", "done"];
+  for (let holderIndex = 0; holderIndex < holders.length; holderIndex += 1) {
+    const holder = holders[holderIndex] as object;
+    for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+      const name = names[nameIndex] as string;
+      const descriptor = PrimordialGetOwnPropertyDescriptor(holder, name);
+      if (descriptor !== undefined) appendOwn(shadows, { holder, key: name, descriptor });
+    }
+  }
+  return shadows;
+};
+
+/**
  * Runs `work` with the serializer execution environment restored to load-time primordials.
  *
  * A capture-time side effect can replace any slot above between the start of `capture` and this
  * call, and can additionally install an indexed accessor on `Array.prototype`/`Object.prototype`
  * that steers the dependency's own `parts.push(...)`/`join` without replacing any named intrinsic
- * (K11-R6-VAL-04). This window closes both: it reinstalls the load-time primordial for every named
- * slot and removes every own index-named property from both prototypes. Saving and restoring
- * through own-property descriptors (never through reads that would invoke an installed
- * getter/setter) keeps the swap itself from executing attacker code, and no caller code runs while
- * the environment is installed: the safe clone holds only frozen plain data with no traps, and the
- * dependency calls no caller function. Canonical bytes produced inside are therefore a function
- * only of the clone — which is a function only of the snapshot — never of the ambient mutation.
+ * (K11-R6-VAL-04), or replace the Array iterator prototype's `next` (or shadow the iterator
+ * result's `done`/`value`) to steer the dependency's key iteration without replacing the
+ * iterator-producing function (K11-R16-VAL-01). This window closes all three: it reinstalls the
+ * load-time primordial for every named slot and removes every own index-named property from both
+ * prototypes as well as the own iterator-protocol shadows above the restored holders. Saving and
+ * restoring through own-property descriptors (never through reads that would invoke an installed
+ * getter/setter) keeps the swap itself from executing attacker code, and no caller-installed code
+ * runs while the environment is installed: the safe clone holds only frozen plain data with no
+ * traps, the restored `next` is the primordial one, and the prototype shadows that could answer
+ * above or beside it are absent for the call. Canonical bytes produced inside are therefore a
+ * function only of the clone — which is a function only of the snapshot — never of the ambient
+ * mutation.
  *
  * The swap is temporary: the previously observed descriptors are reinstalled afterwards, so host
  * polyfills or unrelated host state outside these positions are left exactly as found. If the swap
@@ -1035,6 +1092,10 @@ const inheritedIndexShadows = (): SavedSlot[] => {
 function withSerializerEnvironment<T>(work: () => T): T {
   const slots = serializerSlots();
   const shadows = inheritedIndexShadows();
+  const named = prototypeNamedShadows();
+  for (let namedIndex = 0; namedIndex < named.length; namedIndex += 1) {
+    appendOwn(shadows, readAt(named, namedIndex) as SavedSlot);
+  }
   const saved: SavedSlot[] = [];
   // Observation first, and only through own-property descriptors: reading what is currently
   // installed cannot itself execute an installed getter. Nothing is changed yet, so this loop has

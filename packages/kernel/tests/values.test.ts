@@ -16,10 +16,14 @@ import { fileURLToPath } from "node:url";
 
 import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
 import {
+  arrayIteratorPrototype,
   descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  iteratorNextIsHostile,
   polluteDescriptorFields,
   polluteDescriptorGetter,
+  polluteIteratorNext,
+  polluteObjectField,
   recordOwn,
   trapInheritedIndices,
   type DescriptorPollution,
@@ -1045,6 +1049,182 @@ describe("K11-R6-VAL-05 canonical bytes do not depend on what the prototypes car
       trap.restore();
       delete (Array.prototype as unknown as Record<string, unknown>).hostMarker;
     }
+  });
+});
+
+describe("K11-R16-VAL-01 canonical bytes do not depend on the iterator protocol the caller can reach", () => {
+  /**
+   * Restoring `Array.prototype[Symbol.iterator]` is not the whole iterator protocol.
+   *
+   * The approved JCS implementation iterates `Object.keys(object).sort()` with `for...of`: every
+   * step reads `next` from the Array iterator prototype, and every result reads `done`/`value`
+   * through `Object.prototype`. A caller-observation side effect can mutate that `next` between
+   * the allowed observation and canonicalization, so the serializer window restores the primordial
+   * `next` and borrows the prototype shadows above and beside it. The dependency is used exactly
+   * as published and is not patched.
+   *
+   * Self-found while writing these cases, and load-bearing for every oracle below: while a hostile
+   * `next` is installed, no test code may use `assert.ok` (or destructuring, `for...of`, or
+   * spread). Node's `assert.ok` delegates through a rest-args spread, so under an omit-all `next`
+   * it receives zero arguments and fails even for `assert.ok(true)` — and symmetrically, a
+   * substitute-all `next` could make it pass vacuously. `assert.equal` takes fixed parameters and
+   * stays genuine, so every oracle here is `assert.equal(actual, expected)`, and every list read is
+   * indexed. A green result that depended on `assert.ok` under this pollution would prove nothing.
+   */
+  const CASES: readonly [string, unknown, string][] = [
+    ["one member", { a: 1 }, '{"a":1}'],
+    ["several members in canonical order", { b: 1, a: 2 }, '{"a":2,"b":1}'],
+    ["an array root", [7, 8], "[7,8]"],
+    ["a nested mixture", { outer: { inner: [1, { z: null }] } }, '{"outer":{"inner":[1,{"z":null}]}}'],
+  ];
+
+  /** A hostile `next` that ends iteration immediately, omitting every key. */
+  const omitNext = (): unknown => ({ done: true });
+  /** A hostile `next` that substitutes a key the object does not own. */
+  const substituteNext = (): (() => unknown) => {
+    let calls = 0;
+    return (): unknown => {
+      calls += 1;
+      return calls === 1 ? { value: "zzz", done: false } : { value: undefined, done: true };
+    };
+  };
+  /** A hostile `next` that yields the first key twice, duplicating it. */
+  const duplicateNext = (): (() => unknown) => {
+    let calls = 0;
+    return (): unknown => {
+      calls += 1;
+      return calls <= 2 ? { value: "a", done: false } : { value: undefined, done: true };
+    };
+  };
+  /** A hostile `next` that yields sorted keys back to front, reordering them. */
+  const reverseNext = (keys: readonly string[]): (() => unknown) => {
+    let position = keys.length - 1;
+    return (): unknown => {
+      if (position < 0) return { value: undefined, done: true };
+      const value = keys[position] as string;
+      position -= 1;
+      return { value, done: false };
+    };
+  };
+
+  test("a caller-mutated iterator next cannot omit, substitute, duplicate or reorder the keys", () => {
+    const attacks: readonly [string, () => unknown][] = [
+      ["omit", omitNext],
+      ["substitute", substituteNext()],
+      ["duplicate", duplicateNext()],
+      ["reorder", reverseNext(["a", "b"])],
+    ];
+    for (let attackIndex = 0; attackIndex < attacks.length; attackIndex += 1) {
+      // Indexed reads only: destructuring or `for...of` here would itself iterate through the
+      // hostile `next` installed below and observe nothing.
+      const row = attacks[attackIndex] as [string, () => unknown];
+      const attack = row[0] as string;
+      const next = row[1] as () => unknown;
+      const pollution = polluteIteratorNext(next);
+      try {
+        assert.equal(
+          Object.getOwnPropertyDescriptor(arrayIteratorPrototype(), "next")?.value,
+          next,
+          `${attack}: hostile next installed, so a green result cannot come from missing pollution`,
+        );
+        for (let caseIndex = 0; caseIndex < CASES.length; caseIndex += 1) {
+          const crow = CASES[caseIndex] as [string, unknown, string];
+          const label = crow[0] as string;
+          const value = crow[1] as unknown;
+          const expected = crow[2] as string;
+          const result = canonicalize(value);
+          assert.equal(result.ok, true, `${attack}: ${label} was refused`);
+          assert.equal(result.ok === true ? result.value.canonical : null, expected, `${attack}: ${label}`);
+        }
+        assert.equal(
+          Object.getOwnPropertyDescriptor(arrayIteratorPrototype(), "next")?.value,
+          next,
+          `${attack}: the window handed the hostile method back`,
+        );
+      } finally {
+        pollution.restore();
+      }
+    }
+  });
+
+  test("an iterator result without its own done cannot be ended early through Object.prototype", () => {
+    // The primordial `next` always answers results with own `done`, so this combines two hostile
+    // halves: a `next` returning bare results plus an Object.prototype `done` shadow answering
+    // them. Either half alone is contained by the restored holder slot; the window must close both.
+    let calls = 0;
+    const bareNext = (): unknown => {
+      calls += 1;
+      return calls <= 2 ? { value: calls === 1 ? "a" : "b" } : { value: undefined, done: true };
+    };
+    const nextPollution = polluteIteratorNext(bareNext);
+    const doneShadow = polluteObjectField("done", true);
+    try {
+      const result = canonicalize({ a: 1, b: 2 });
+      assert.equal(result.ok, true, "refused under combined pollution");
+      assert.equal(result.ok === true ? result.value.canonical : null, '{"a":1,"b":2}');
+      assert.equal(
+        Object.getOwnPropertyDescriptor(Object.prototype, "done")?.value,
+        true,
+        "the shadow was handed back",
+      );
+    } finally {
+      doneShadow.restore();
+      nextPollution.restore();
+    }
+  });
+
+  test("a deleted holder next plus an Object.prototype next shadow still binds the snapshot", () => {
+    const holder = arrayIteratorPrototype();
+    const savedNext = Object.getOwnPropertyDescriptor(holder, "next");
+    assert.ok(savedNext, "the holder owns next before this case");
+    delete (holder as Record<string, unknown>).next;
+    const shadow = polluteObjectField("next", omitNext);
+    try {
+      const result = canonicalize({ a: 1 });
+      assert.equal(result.ok, true, "refused under deleted-holder pollution");
+      assert.equal(result.ok === true ? result.value.canonical : null, '{"a":1}');
+    } finally {
+      shadow.restore();
+      if (savedNext === undefined) delete (holder as Record<string, unknown>)["next"];
+      else Object.defineProperty(holder, "next", savedNext);
+    }
+    assert.equal(typeof (Object.getOwnPropertyDescriptor(holder, "next")?.value ?? Object.getOwnPropertyDescriptor(holder, "next")?.get), "function", "holder next restored");
+  });
+
+  test("the byte limit is enforced on the snapshot bytes, not on bytes the pollution chose", () => {
+    // 1000 members of 2000 chars each: ~2 MiB canonical, within every other limit. Under an
+    // omit-all `next` the uncontained serializer would bind `{}` and wrongly accept.
+    const big: Record<string, string> = {};
+    for (let index = 0; index < 1000; index += 1) big[`member-${index}`] = "x".repeat(2000);
+    const clean = boundaryValueIssues(big).map((issue) => issue.code);
+    assert.deepEqual(clean, ["too_many_bytes"], "the control refuses without pollution");
+    const pollution = polluteIteratorNext(omitNext);
+    // Indexed reads: nothing here may iterate while the hostile `next` is installed.
+    let codes: string[] = [];
+    try {
+      const issues = boundaryValueIssues(big);
+      for (let index = 0; index < issues.length; index += 1) codes[codes.length] = (issues[index] as { code: string }).code;
+    } finally {
+      pollution.restore();
+    }
+    assert.equal(codes.length, 1, "exactly one reason");
+    assert.equal(codes[0], "too_many_bytes", "omitting the keys cannot shrink the measured bytes");
+  });
+
+  test("retained content accepted under pollution re-canonicalizes to the accepting bytes", () => {
+    const pollution = polluteIteratorNext(omitNext);
+    let retained: unknown;
+    let accepting: string | null = null;
+    try {
+      const result = canonicalize({ a: 1, b: [2] });
+      assert.equal(result.ok, true, "refused under pollution");
+      accepting = result.ok === true ? result.value.canonical : null;
+      retained = result.ok === true ? result.value.value : null;
+    } finally {
+      pollution.restore();
+    }
+    assert.equal(accepting, '{"a":1,"b":[2]}');
+    assert.equal(canonicalOf(retained), '{"a":1,"b":[2]}', "clean re-canonicalization reproduces the accepting bytes");
   });
 });
 

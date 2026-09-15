@@ -12,6 +12,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { ExecutionCoordinator, canonicalize } from "../src/index.ts";
 import type { DispatchOptions } from "../src/index.ts";
@@ -22,8 +25,14 @@ import {
   delayedDriver,
   descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  iteratorNextIsHostile,
   polluteDescriptorFields,
   polluteDescriptorGetter,
+  polluteIteratorNext,
+  polluteObjectSpecies,
+  pollutePromiseConstructor,
+  pollutePromiseSpecies,
+  promiseSpeciesIsHostile,
   recordingDriver,
   refused,
   rejectingDriver,
@@ -31,7 +40,10 @@ import {
   trapInheritedIndices,
   type DescriptorPollution,
   type InheritedIndexTrap,
+  type SpeciesPollution,
 } from "./harness.ts";
+
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 const author = caller("app-a", "tenant-a");
 const settle = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
@@ -981,5 +993,269 @@ describe("K11-R7-STATE-03 dispatch under inherited descriptor-field pollution", 
       driver.seen[0]!.events.map((event) => event.eventId),
       [created.initialEventId],
     );
+  });
+});
+
+describe("K11-R16-VAL-01 dispatch and redelivery project the snapshot while the iterator next is hostile", () => {
+  // Oracle discipline as in the values suite: `assert.equal` with indexed reads only while the
+  // hostile `next` is installed (`assert.ok` delegates through a rest-args spread and any
+  // destructuring, `for...of` or spread would itself iterate through the hostile method).
+  test("batch, Activation payload and redelivery are stable under an omit-all next", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const created = started(kernel);
+    const second = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "k2", kind: "application.correction", payload: { k: "k2" } }),
+    );
+
+    const pollution = polluteIteratorNext(() => ({ done: true }));
+    try {
+      assert.equal(iteratorNextIsHostile(), true, "omit-all next live across these calls");
+
+      const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
+      assert.equal(dispatched.batch.length, 2);
+      assert.equal(dispatched.batch[0], created.initialEventId);
+      assert.equal(dispatched.batch[1], second.eventId);
+      assert.equal(dispatched.writerEpoch, 1);
+      assert.equal(dispatched.receipt.boundary, "dispatch_intent");
+
+      const carried = driver.seen[0]?.events;
+      assert.equal(carried === undefined, false);
+      assert.equal(carried?.length, 2);
+      assert.equal(carried?.[0]?.eventId, created.initialEventId);
+      assert.equal(carried?.[1]?.eventId, second.eventId);
+      assert.equal((carried?.[1]?.payload as { k?: unknown }).k, "k2", "the Activation carries the retained payload");
+
+      const late = accepted(
+        kernel.submitInput(author, { destination: created.executionId, requestKey: "k3", kind: "application.correction", payload: { k: "k3" } }),
+      );
+      const redelivered = accepted(kernel.redeliver(author, created.executionId));
+      assert.equal(redelivered.redelivered, true);
+      assert.equal(redelivered.batch.length, 2);
+      assert.equal(redelivered.batch[0], created.initialEventId);
+      assert.equal(redelivered.batch[1], second.eventId, "the late arrival stays out of the reserved batch");
+      assert.equal(late.replayed, false);
+    } finally {
+      pollution.restore();
+    }
+  });
+});
+
+describe("K11-R16-DISP-01 delivery observes rejection under hostile Promise machinery", () => {
+  /**
+   * Capturing `Promise.resolve`/`Promise.prototype.then` is not the whole observation: a native
+   * `then` runs `SpeciesConstructor` before attaching continuations, so a throwing
+   * `Promise[Symbol.species]` getter installed by an earlier caller observation makes the attach
+   * itself throw before the rejection handler exists — and the already-rejected Driver promise
+   * escapes as process-level unhandled rejection. The delivery window reinstalls the primordial
+   * construction slots for the synchronous attach and hands them back afterwards.
+   *
+   * Test discipline: `await` itself depends on the species machinery, so no `await` may run while
+   * the throwing species is installed. Each case dispatches synchronously under pollution,
+   * restores host state, and only then drains microtasks and asserts. The attach under test
+   * happens synchronously inside `dispatch`; the drain merely lets the already-attached handler
+   * run. (An earlier revision of these cases awaited while polluted and measured the test
+   * harness's own broken `await` instead of the Kernel — the failure below would have been
+   * misattributed without this ordering.)
+   */
+  const drain = async (): Promise<void> => {
+    await settle();
+    await new Promise<void>((resolve) => setTimeout(resolve, 25));
+  };
+
+  const collectUnhandled = (): { readonly reasons: unknown[]; stop(): void } => {
+    const reasons: unknown[] = [];
+    const handler = (reason: unknown): void => {
+      reasons.push(reason);
+    };
+    process.on("unhandledRejection", handler);
+    return {
+      reasons,
+      stop: (): void => {
+        process.off("unhandledRejection", handler);
+      },
+    };
+  };
+
+  test("a rejected Driver under a throwing species stays an operational failure with no unhandled rejection", async () => {
+    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+    const created = started(kernel);
+    const species = pollutePromiseSpecies(() => {
+      throw new Error("species boom");
+    });
+    const tap = collectUnhandled();
+    let dispatched: { receipt: { boundary: string; token: string } };
+    try {
+      assert.equal(promiseSpeciesIsHostile(), true, "throwing species live across the call");
+      dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+      assert.equal(dispatched.receipt.boundary, "dispatch_intent", "the intent was recorded before the send");
+    } finally {
+      species.restore();
+    }
+    try {
+      await drain();
+      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
+      const after = accepted(kernel.inspect(author, created.executionId));
+      assert.equal(after.state, "RUNNING", "a rejection changes no accepted state");
+      const deliveries = after.activation?.deliveries ?? [];
+      assert.equal(deliveries.length, 1);
+      assert.equal(deliveries[0]?.status, "failed");
+      assert.equal(after.acknowledged.length, 0, "a failure acknowledges nothing");
+      assert.equal(after.activation?.receipt.token, dispatched!.receipt.token, "the intent receipt is intact");
+      assert.deepEqual(after.activation?.batch, [created.initialEventId], "the reserved batch is intact");
+    } finally {
+      tap.stop();
+    }
+    assert.equal(promiseSpeciesIsHostile(), false, "host state restored");
+  });
+
+  test("redelivery under a throwing species stays operational with no unhandled rejection", async () => {
+    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+    const created = started(kernel);
+    const first = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    await drain();
+
+    const species = pollutePromiseSpecies(() => {
+      throw new Error("species boom");
+    });
+    const tap = collectUnhandled();
+    let redelivered: { activationId: string; receipt: { token: string } };
+    try {
+      redelivered = accepted(kernel.redeliver(author, created.executionId));
+      assert.equal(redelivered.activationId, first.activationId);
+      assert.equal(redelivered.receipt.token, first.receipt.token);
+    } finally {
+      species.restore();
+    }
+    try {
+      await drain();
+      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
+      const after = accepted(kernel.inspect(author, created.executionId));
+      const deliveries = after.activation?.deliveries ?? [];
+      assert.equal(deliveries.length, 2, "the redelivery attempt was recorded");
+      assert.equal(deliveries[1]?.status, "failed");
+      assert.deepEqual(after.activation?.batch, [created.initialEventId], "nothing was re-selected");
+    } finally {
+      tap.stop();
+    }
+  });
+
+  test("a hostile constructor with a non-constructor species cannot divert the rejection", async () => {
+    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+    const created = started(kernel);
+    const Evil = function Evil(this: unknown): void {};
+    (Evil as unknown as Record<symbol, unknown>)[Symbol.species] = 42;
+    const ctor = pollutePromiseConstructor(Evil);
+    const tap = collectUnhandled();
+    let dispatched: { writerEpoch: number };
+    try {
+      dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    } finally {
+      ctor.restore();
+    }
+    try {
+      await drain();
+      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
+      const after = accepted(kernel.inspect(author, created.executionId));
+      assert.equal(after.state, "RUNNING");
+      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
+      assert.equal(dispatched!.writerEpoch, 1, "epoch untouched");
+    } finally {
+      tap.stop();
+    }
+    assert.deepEqual(Object.getOwnPropertyDescriptor(Promise.prototype, "constructor")?.value, Promise);
+  });
+
+  test("a deleted Promise species plus an Object.prototype species shadow still attaches", async () => {
+    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+    const created = started(kernel);
+    const savedSpecies = Object.getOwnPropertyDescriptor(Promise, Symbol.species);
+    delete (Promise as unknown as Record<symbol, unknown>)[Symbol.species];
+    const shadow = polluteObjectSpecies({});
+    const tap = collectUnhandled();
+    let dispatched: { receipt: { boundary: string } };
+    try {
+      dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    } finally {
+      shadow.restore();
+      if (savedSpecies === undefined) delete (Promise as unknown as Record<symbol, unknown>)[Symbol.species];
+      else Object.defineProperty(Promise, Symbol.species, savedSpecies);
+    }
+    try {
+      await drain();
+      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
+      const after = accepted(kernel.inspect(author, created.executionId));
+      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
+      assert.equal(dispatched!.receipt.boundary, "dispatch_intent");
+    } finally {
+      tap.stop();
+    }
+    assert.equal(Object.getOwnPropertyDescriptor(Object.prototype, Symbol.species), undefined, "shadow handed back absent");
+  });
+
+  test("a pending Driver under a throwing species still delivers once released", async () => {
+    let release: () => void = () => {};
+    const pendingDriver = {
+      driverId: "fake-pending-species",
+      deliver(): Promise<void> {
+        return new Promise<void>((resolve) => {
+          release = resolve;
+        });
+      },
+    };
+    const kernel = new ExecutionCoordinator({ driver: pendingDriver });
+    const created = started(kernel);
+    const species = pollutePromiseSpecies(() => {
+      throw new Error("species boom");
+    });
+    const tap = collectUnhandled();
+    try {
+      accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    } finally {
+      species.restore();
+    }
+    try {
+      await drain();
+      const waiting = accepted(kernel.inspect(author, created.executionId));
+      assert.equal((waiting.activation?.deliveries ?? [])[0]?.status, "pending", "no false evidence while unsettled");
+      release();
+      await drain();
+      assert.equal(tap.reasons.length, 0);
+      const after = accepted(kernel.inspect(author, created.executionId));
+      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "delivered");
+    } finally {
+      tap.stop();
+    }
+  });
+
+  test("a rejected Driver under a throwing species never escapes as unhandled (subprocess oracle)", () => {
+    const probe = `
+      const { ExecutionCoordinator } = await import("./packages/kernel/src/index.ts");
+      const harness = await import("./packages/kernel/tests/harness.ts");
+      const savedSpecies = Object.getOwnPropertyDescriptor(Promise, Symbol.species);
+      Object.defineProperty(Promise, Symbol.species, { configurable: true, get() { throw new Error("species boom"); } });
+      const kernel = new ExecutionCoordinator({ driver: { driverId: "probe", deliver() { return Promise.reject(new Error("native submit lost")); } } });
+      const author = harness.caller("app-a", "tenant-a");
+      const created = kernel.createExecution(author, harness.createRequest());
+      if (!created.ok) { console.log("SETUP FAILED"); process.exit(2); }
+      const dispatched = kernel.dispatch(author, created.value.executionId, { bound: 1 });
+      if (!dispatched.ok) { console.log("DISPATCH REFUSED"); process.exit(3); }
+      // Restoring before the first await matters: await itself runs SpeciesConstructor, so
+      // awaiting while polluted would measure the probe's own broken suspension, not the Kernel.
+      // The attach under test already happened synchronously inside dispatch.
+      if (savedSpecies !== undefined) Object.defineProperty(Promise, Symbol.species, savedSpecies);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const view = kernel.inspect(author, created.value.executionId);
+      const status = view.ok && view.value.activation !== null ? view.value.activation.deliveries[0].status : "missing";
+      console.log("SURVIVED " + status);
+    `;
+    // `--unhandled-rejections=strict`: any Driver rejection that escapes the Kernel's handling
+    // crashes the child with a non-zero exit instead of passing silently.
+    const result = execFileSync(
+      process.execPath,
+      ["--unhandled-rejections=strict", "--experimental-strip-types", "--input-type=module", "-e", probe],
+      { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+    );
+    assert.match(result, /SURVIVED failed/, "the child recorded the operational failure and nothing escaped");
   });
 });
