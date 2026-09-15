@@ -1,0 +1,72 @@
+Distinguishing ablation battery on exact C2 fa8e092555c3835155d76b9ced5dc34c58bf4d70
+Each mutation is applied, the mapped oracle is run (expected RED = fail > 0), then reverted.
+Four reporting-boundary mutations (decision-01) plus five retained family ablations.
+
+=== M1 normal-return-implies-delivered ===
+mutation: coordinator.ts edit (M1 normal-return-implies-delivered)
+oracle: packages/kernel/tests/dispatch.test.ts --test-name-pattern="return misuse"
+ℹ tests 50
+ℹ pass 42
+ℹ fail 8
+RESULT: RED (rejected, 8 failing) as required
+
+=== M2 second-report-overwrites-first ===
+mutation: coordinator.ts edit (M2 second-report-overwrites-first)
+oracle: packages/kernel/tests/dispatch.test.ts --test-name-pattern="duplicate and conflicting"
+ℹ tests 50
+ℹ pass 48
+ℹ fail 2
+RESULT: RED (rejected, 2 failing) as required
+
+=== M3 capability-targets-latest-attempt ===
+mutation: coordinator.ts edit (M3 capability-targets-latest-attempt)
+oracle: packages/kernel/tests/dispatch.test.ts --test-name-pattern="redelivery overlap"
+ℹ tests 50
+ℹ pass 48
+ℹ fail 2
+RESULT: RED (rejected, 2 failing) as required
+
+=== M4 observe-returned-thenable ===
+mutation: coordinator.ts edit (M4 observe-returned-thenable)
+oracle: packages/kernel/tests/dispatch.test.ts --test-name-pattern="return misuse"
+ℹ tests 50
+ℹ pass 49
+ℹ fail 1
+RESULT: RED (rejected, 1 failing) as required
+
+=== R1 creation-event-in-ingress-domain ===
+mutation: coordinator.ts seeds the initial Event into byInputId (reintroduces K11-R15-ID-01)
+oracle: node --test packages/kernel/tests/creation.test.ts packages/kernel/tests/ingress.test.ts
+tests 71
+pass 68
+fail 3
+RESULT: RED (rejected, 3 failing) as required
+
+=== R2 inherited-envelope-read ===
+oracle: packages/kernel/tests/dispatch.test.ts --test-name-pattern="cannot answer a missing bound"
+ℹ tests 50
+ℹ pass 47
+ℹ fail 3
+RESULT: RED (rejected, 3 failing) as required
+
+=== R3 uncontained-identity-classification ===
+oracle: packages/kernel/tests/creation.test.ts --test-name-pattern="revoked"
+ℹ tests 1
+ℹ pass 0
+ℹ fail 1
+RESULT: RED (rejected, 1 failing) as required
+
+=== R4 iterator-next-left-hostile ===
+oracle: packages/kernel/tests/values.test.ts --test-name-pattern="iterator"
+ℹ tests 74
+ℹ pass 70
+ℹ fail 4
+RESULT: RED (rejected, 4 failing) as required
+
+=== R5 unfrozen-receipt ===
+oracle: packages/kernel/tests/evidence.test.ts --test-name-pattern="."
+ℹ tests 13
+ℹ pass 7
+ℹ fail 6
+RESULT: RED (rejected, 6 failing) as required
+
