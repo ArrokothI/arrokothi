@@ -1,0 +1,19 @@
+## 01 tree and environment
+HEAD: b898ae12f51917c48fef92496ca179773c7744d9
+?? node_modules
+node: v25.2.1
+npm: 11.6.2
+tsc: Version 5.9.3
+uname: Darwin 25.6.0 arm64
+--- kernel zone files ---
+      11
+--- canonicalize pin ---
+    "canonicalize": "3.0.0"
+    "node_modules/canonicalize": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/canonicalize/-/canonicalize-3.0.0.tgz",
+installed: 3.0.0
+--- evals exclusion proof (no Agent/model/eval diff B..C) ---
+       0
+--- exports surface ---
+BOUNDARY_LIMITS,ExecutionCoordinator,TERMINAL_STATES,UNKNOWN_DESTINATION_REASON,UnsupportedKernelSurfaceError,boundaryValueIssues,canonicalize,creationKeyIdKey,err,inputIdKey,isBoundaryValue,isTerminal,mayReachScope,mintReceipt,ok,refuseUnsupportedSurface,sameLogicalValue

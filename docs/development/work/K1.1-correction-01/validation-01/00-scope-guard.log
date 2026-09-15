@@ -1,0 +1,61 @@
+## 00 scope guard — K1.1-correction-01 payload C
+C=b898ae12f51917c48fef92496ca179773c7744d9
+HEAD == C
+B is ancestor of C
+H17 is ancestor of C
+--- status (only node_modules symlink allowed) ---
+?? node_modules
+--- B..C mental-model paths (must be empty) ---
+(empty)
+--- B..C path summary ---
+  36 docs/development/work/K1.1
+  12 packages/kernel/tests
+  12 docs/development/work/K1.1/validation-17
+  12 docs/development/work/K1.1/validation-16
+  12 docs/development/work/K1.1/validation-15
+  11 packages/kernel/src
+  11 docs/development/work/K1.1/validation-14
+  11 docs/development/work/K1.1/validation-13
+  11 docs/development/work/K1.1/validation-12
+  11 docs/development/work/K1.1/validation-11
+  11 docs/development/work/K1.1/validation-10
+  11 docs/development/work/K1.1/validation-09
+  11 docs/development/work/K1.1/validation-08
+  11 docs/development/work/K1.1/validation-07
+  11 docs/development/work/K1.1/validation-06
+  11 docs/development/work/K1.1/validation-05
+  11 docs/development/work/K1.1/validation-03
+  11 docs/development/work/K1.1/validation-02
+  11 docs/development/work/K1.1/validation-01
+   2 tests/conformance/architecture
+   2 docs/development/work/K1.0
+   2 docs/development
+   1 scripts
+   1 packages/kernel
+   1 package-lock.json
+   1 docs/development/work/K1.1/validation-04
+   1 docs/development/work/K1.1-correction-01
+   1 docs/development/work/K1.0-correction-02
+--- B..C non-record doc paths ---
+docs/development/002-implemented-kernel-baseline.md
+docs/development/007-work-packets.md
+docs/development/work/K1.0-correction-02/integration-01.md
+docs/development/work/K1.0/integration-01.md
+docs/development/work/K1.0/ownership-inventory.md
+docs/development/work/K1.1-correction-01/contract.md
+--- K1.1 packet interval paths present (expected: work/K1.1 tree) ---
+docs/development/work/K1.1/contract.md
+docs/development/work/K1.1/implementation-01.md
+docs/development/work/K1.1/implementation-02.md
+docs/development/work/K1.1/implementation-03.md
+docs/development/work/K1.1/implementation-04.md
+...(     216 paths)
+--- packages/tests/scripts delta stat ---
+ packages/kernel/tests/values.test.ts               | 1570 ++++++++++++++++++++
+ scripts/check-builder-docs.ts                      |    7 +-
+ tests/conformance/architecture/boundary-policy.ts  |   22 +-
+ .../architecture/kernel-landing-zone.test.ts       |  142 +-
+ 27 files changed, 11038 insertions(+), 69 deletions(-)
+--- no K1.2 branch ---
+(no k1.2 branch)
+PASS: scope guard
