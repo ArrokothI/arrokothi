@@ -1,0 +1,68 @@
+# 09b round-7 distinguishing ablations of clean payload C7
+
+Payload C7: e59bd312373ca7afacd507a73717b16dfaa0a8f0.
+Each ablation changes exactly one behaviour in a detached worktree at C7, runs
+packages/kernel/tests/*.test.ts against it, and is reverted before the next.
+An ablation is REJECTED when named packet cases fail; that is what makes those cases
+distinguishing rather than merely green.
+
+Three ablations are new for the two round-5-review findings. S1 restores the live
+`Map.prototype.set` commit path (K11-R5-STATE-01 Map witness); S2 restores live
+`Object.freeze` in coordinator construction (K11-R5-STATE-01 freeze witness, with the
+replacement live through the later dispatch, as the witness requires); V3 restores the
+live-`Object.prototype` plain-object comparison (K11-R5-VAL-03). The remaining six re-prove
+representative prior guards still discriminate after the reconstruction; N1/P6 keep their
+round-6 contrast (environment vs clone as two independent layers).
+
+=== control: unmodified C7 ===
+exit 0; 176 tests, 0 failing
+
+=== ablation [K11-R5-STATE-01 S1]: creation commit uses live Map.prototype.set ===
+packages/kernel/src/coordinator.ts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+    176 tests, 1 failing -> REJECTED by the capture-time Map.set no-op case (dropped commit mints a second Execution on replay instead of returning the retained decision).
+
+=== ablation [K11-R5-STATE-01 S2]: coordinator construction uses live Object.freeze ===
+packages/kernel/src/coordinator.ts | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+    176 tests, 1 failing -> REJECTED by the freeze-replacement case (replacement live through the later dispatch; the Activation, batch and carried Events stay mutable and Driver edits stick).
+
+=== ablation [K11-R5-VAL-03 V3]: plain-object check compares against live Object.prototype ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    176 tests, 2 failing -> REJECTED by both VAL-03 cases (direct value refusal and creation-boundary refusal); the swapped binding passes the foreign prototype as plain.
+
+=== ablation [K11-R2-VAL-02 round-6 N1]: serializer runs with live ambient intrinsics (no restored environment; safe clone kept) ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    176 tests, 5 failing -> REJECTED (the five round-6 environment cases; round-5 toJSON cases still pass)
+
+=== ablation [K11-R4-DISP-01 N3]: options.bound read three times (H5 shape) ===
+packages/kernel/src/coordinator.ts | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+    176 tests, 2 failing -> REJECTED by the 1,1,0 shifting-getter case and the non-object-envelope case.
+
+=== ablation [K11-R2-VAL-02]: member value taken from an ordinary read instead of its own descriptor (no agreement check) ===
+packages/kernel/src/values.ts | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+    176 tests, 6 failing -> REJECTED
+
+=== ablation [K11-R1-JCS-01]: JSON.stringify substituted for the approved JCS substrate ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    176 tests, 10 failing -> REJECTED
+
+=== ablation [K11-R2-VAL-02 round-5]: serializer sees the snapshot directly without the safe clone (environment kept) ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    176 tests, 4 failing -> REJECTED by exactly the round-5 inherited/side-effect toJSON cases. The round-6/round-7 environment cases still pass, proving the restored environment and the safe clone are two independent layers (contrast N1 above).
+
+=== ablation [K11-R3-LIMIT-01]: over-limit length traverses its full extent before refusing ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    124 tests, 1 failing -> REJECTED (unbounded work proved: values.test.ts aborted after ~16s on the 20M traversal; the corrected payload refuses the same root in ~1ms with no index traversal)
+
+=== summary ===
+control clean (176/0); 9 of 9 ablations rejected by named cases.
+Prior-guard ablations for K11-R2-EVID-01 (unfrozen mint) and K11-R3-ID-03 (scope ordering) were demonstrated rejected on C5/C6 against unchanged code in those files and are not rerun here; their guards (primordial mint freezing, scope-before-auth ordering) are byte-identical in C7.
+HEAD still e59bd312373ca7afacd507a73717b16dfaa0a8f0; worktree reverted via git checkout (status shows only ?? node_modules).
