@@ -35,8 +35,9 @@ accepted and integrated is recorded in [the status ledger](007-work-packets.md),
 
 Target decision, 2026-09-15: [K1.1-correction-01 decision-01](work/K1.1-correction-01/decision-01.md)
 selects Kernel-owned delivery reporting and an undefined-only Driver return. The current
-candidate source still uses `void | Promise<void>` and Promise observation. Migration and
-fresh acceptance remain outstanding; this documentation decision changes no executable behavior.
+correction candidate implements that boundary (`ExecutionDriver.deliver` returns only
+`undefined`; the Kernel never observes a Driver-returned Promise); independent acceptance
+and integration remain pending. The decision record itself changes no executable behavior.
 
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains with the owners in the [reference index](../../mental-model/reference.md).

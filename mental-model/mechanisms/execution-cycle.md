@@ -27,7 +27,7 @@ next:       continue | await(wait) | complete(result) | fail(error)
 
 ## Delivery reporting boundary
 
-**Target revision:** selected for K1.1-correction-01; the current Promise-returning implementation must migrate before this contract is claimed as implemented.
+**Target revision:** selected for K1.1-correction-01 and implemented by the correction candidate (undefined-only `deliver`; no Driver-returned Promise observation). Independent acceptance/integration remain pending before this contract is claimed as accepted.
 
 The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability and returns only `undefined`:
 
