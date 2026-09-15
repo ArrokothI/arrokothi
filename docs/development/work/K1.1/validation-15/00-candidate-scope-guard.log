@@ -1,0 +1,123 @@
+K11-R14-PROC-01 scope guard: transcript of the guard script, then its live run.
+
+$ cat /tmp/k11-c15-scope-guard.sh
+#!/usr/bin/env bash
+# K11-R14-PROC-01 candidate-contamination guard (round 15).
+# Verifies, against live Git state (not prose), that the scoped K1.1 candidate lineage
+# contains no undeclared substantive files between the declared payload C11 and the
+# candidate. Fail-closed under set -euo pipefail: any violation aborts nonzero with no PASS.
+#
+# Timing: runs AFTER `git add` of the H15 attachments but BEFORE the H15 commit, in the
+# scoped-branch worktree. It checks (a) the committed C11..HEAD range equals exactly the 14
+# known H13/review-12 admin files, and (b) the staged set is a subset of the H15 attachment
+# allowlist (which already names this guard's own log path). After PASS, staging the guard
+# log itself can only add one allowlisted path, so compliance is preserved by construction;
+# the post-commit handoff re-verifies C11..HEAD mechanically.
+set -euo pipefail
+C11="f117e6b47c4930af6735aaa3668b8b4c242fd76d"
+REVIEW12="9d5256ebabf218a5ba11552326d0ec93bce10858"
+REPO="/tmp/k11-c15-main"
+
+echo "$ git -C REPO rev-parse HEAD (pre-commit tip must be review-12)"
+TIP="$(git -C "$REPO" rev-parse HEAD)"
+echo "$TIP"
+test "$TIP" = "$REVIEW12" || { echo "GUARD FAIL: tip is not review-12"; exit 1; }
+
+echo "$ git -C REPO diff --name-only C11 HEAD (must equal exactly the 14 known admin files)"
+git -C "$REPO" diff --name-only "$C11" HEAD | sort > /tmp/k11-c15-guard-committed.txt
+cat /tmp/k11-c15-guard-committed.txt
+cat > /tmp/k11-c15-guard-committed-expected.txt <<'EOF'
+docs/development/007-work-packets.md
+docs/development/work/K1.1/implementation-13.md
+docs/development/work/K1.1/review-12.md
+docs/development/work/K1.1/validation-13/01-tree-and-environment.log
+docs/development/work/K1.1/validation-13/02-typecheck.log
+docs/development/work/K1.1/validation-13/03-test-full.log
+docs/development/work/K1.1/validation-13/04-test-conformance.log
+docs/development/work/K1.1/validation-13/05-check-builder-docs.log
+docs/development/work/K1.1/validation-13/06-test-kernel.log
+docs/development/work/K1.1/validation-13/07-test-sdk.log
+docs/development/work/K1.1/validation-13/08-architecture-suite.log
+docs/development/work/K1.1/validation-13/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-13/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-13/MANIFEST.md
+EOF
+diff /tmp/k11-c15-guard-committed-expected.txt /tmp/k11-c15-guard-committed.txt \
+  || { echo "GUARD FAIL: committed C11..HEAD range differs from the known admin set"; exit 1; }
+echo "committed range is exactly the 14 known admin files"
+
+echo "$ git -C REPO diff --cached --name-only (staged H15 attachments; must be allowlist subset)"
+git -C "$REPO" diff --cached --name-only | sort > /tmp/k11-c15-guard-staged.txt
+cat /tmp/k11-c15-guard-staged.txt
+test -s /tmp/k11-c15-guard-staged.txt || { echo "GUARD FAIL: nothing staged"; exit 1; }
+while IFS= read -r f; do
+  case "$f" in
+    docs/development/007-work-packets.md|\
+    docs/development/work/K1.1/implementation-15.md|\
+    docs/development/work/K1.1/validation-15/00-candidate-scope-guard.log|\
+    docs/development/work/K1.1/validation-15/01-tree-and-environment.log|\
+    docs/development/work/K1.1/validation-15/02-typecheck.log|\
+    docs/development/work/K1.1/validation-15/03-test-full.log|\
+    docs/development/work/K1.1/validation-15/04-test-conformance.log|\
+    docs/development/work/K1.1/validation-15/05-check-builder-docs.log|\
+    docs/development/work/K1.1/validation-15/06-test-kernel.log|\
+    docs/development/work/K1.1/validation-15/07-test-sdk.log|\
+    docs/development/work/K1.1/validation-15/08-architecture-suite.log|\
+    docs/development/work/K1.1/validation-15/09-k1.1-case-inventory.log|\
+    docs/development/work/K1.1/validation-15/09b-distinguishing-ablations.log|\
+    docs/development/work/K1.1/validation-15/MANIFEST.md) ;;
+    *) echo "GUARD FAIL: staged file outside H15 attachment allowlist: $f"; exit 1 ;;
+  esac
+done < /tmp/k11-c15-guard-staged.txt
+echo "staged set is an allowlist subset"
+
+echo "$ negative probes: no mental-model / packages / other substantive prefix in range or staged"
+if grep -E '^(mental-model/|packages/|tests/|src/|scripts/|benchmarks/)' /tmp/k11-c15-guard-committed.txt /tmp/k11-c15-guard-staged.txt; then
+  echo "GUARD FAIL: substantive prefix present"; exit 1
+else
+  echo "no substantive prefix in committed range or staged set"
+fi
+
+echo "$ git -C REPO status --porcelain=v1 (only staged entries + node_modules link + this guard's own pending log)"
+git -C "$REPO" status --porcelain=v1
+if git -C "$REPO" status --porcelain=v1 | grep -v '^?? node_modules$' | grep -v '^?? docs/development/work/K1.1/validation-15/00-candidate-scope-guard.log$' | grep -E '^( [MD]|UU|AA|DD)|^\?\? '; then
+  echo "GUARD FAIL: unexpected worktree state (unstaged or extra untracked files)"; exit 1
+else
+  echo "worktree holds only staged entries plus the node_modules symlink and the pending guard log"
+fi
+
+echo "SCOPE GUARD: PASS — C11..HEAD is the 14 known admin files and staged is H15 attachments only"
+
+=== live run ===
+$ git -C REPO rev-parse HEAD (pre-commit tip must be review-12)
+9d5256ebabf218a5ba11552326d0ec93bce10858
+$ git -C REPO diff --name-only C11 HEAD (must equal exactly the 14 known admin files)
+docs/development/007-work-packets.md
+docs/development/work/K1.1/implementation-13.md
+docs/development/work/K1.1/review-12.md
+docs/development/work/K1.1/validation-13/01-tree-and-environment.log
+docs/development/work/K1.1/validation-13/02-typecheck.log
+docs/development/work/K1.1/validation-13/03-test-full.log
+docs/development/work/K1.1/validation-13/04-test-conformance.log
+docs/development/work/K1.1/validation-13/05-check-builder-docs.log
+docs/development/work/K1.1/validation-13/06-test-kernel.log
+docs/development/work/K1.1/validation-13/07-test-sdk.log
+docs/development/work/K1.1/validation-13/08-architecture-suite.log
+docs/development/work/K1.1/validation-13/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-13/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-13/MANIFEST.md
+committed range is exactly the 14 known admin files
+$ git -C REPO diff --cached --name-only (staged H15 attachments; must be allowlist subset)
+docs/development/007-work-packets.md
+docs/development/work/K1.1/implementation-15.md
+docs/development/work/K1.1/validation-15/MANIFEST.md
+staged set is an allowlist subset
+$ negative probes: no mental-model / packages / other substantive prefix in range or staged
+no substantive prefix in committed range or staged set
+$ git -C REPO status --porcelain=v1 (only staged entries + node_modules link + this guard's own pending log)
+M  docs/development/007-work-packets.md
+A  docs/development/work/K1.1/implementation-15.md
+A  docs/development/work/K1.1/validation-15/MANIFEST.md
+?? node_modules
+worktree holds only staged entries plus the node_modules symlink and the pending guard log
+SCOPE GUARD: PASS — C11..HEAD is the 14 known admin files and staged is H15 attachments only
