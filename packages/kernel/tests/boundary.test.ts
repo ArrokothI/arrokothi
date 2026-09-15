@@ -154,6 +154,40 @@ describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () =
     assert.ok(all.length > 0, "the pattern really does match this zone's prose");
   });
 
+  test("K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner", async () => {
+    // Capturing `Object.defineProperty` does not close the class: before the target's
+    // `[[DefineOwnProperty]]` runs, `ToPropertyDescriptor` reads the descriptor's fields through
+    // ordinary `[[Get]]`, so an ordinary descriptor literal is steerable through an inherited
+    // `get`/`set` (and runs an inherited getter inside the operation). No `defineProperty` call
+    // may therefore take an ordinary object anywhere in the zone: `own-array.ts` owns the two
+    // hardened forms — `defineData` for fresh data and `restoreDescriptor` for saved descriptors,
+    // both null-prototype — and every other module reaches definition through them. This control
+    // states that ownership as a property of the zone's executable text. It cannot see the
+    // descriptor's prototype on its own (the previous round's lesson about spelling checks), so it
+    // is paired with runtime cases that install the pollution and require the defined result; an
+    // ablation moving either hardened form back to a literal is rejected by those cases.
+    const files = await sourceFiles();
+    // `defineProperty` and `defineProperties` (including via `Reflect`): every one of them
+    // converts its descriptor argument before the target operation runs.
+    const all = occurrences(files, /[Dd]efinePropert(y|ies)\s*\(/);
+    const inCode = all.filter((hit) => !isCommentLine(hit.line));
+    const outside = inCode.filter((hit) => !hit.path.endsWith("own-array.ts"));
+    assert.deepEqual(
+      outside.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`),
+      [],
+      `a raw defineProperty call outside the owner takes an ordinary descriptor: ${outside.map((hit) => hit.line.trim()).join(" | ")}`,
+    );
+    // Not vacuous: the owned primitive really exists and really is called.
+    assert.ok(
+      inCode.length > 0,
+      "the pattern matches the owned primitive this rule is about",
+    );
+    assert.ok(
+      files.some((file) => file.path.endsWith("own-array.ts")),
+      "the zone has one owner for hardened property definition",
+    );
+  });
+
   test("every import in the zone is internal, a node: builtin, or the approved JCS dependency", async () => {
     const files = await sourceFiles();
     const specifiers = files.flatMap((file) => [...file.text.matchAll(/from "([^"]+)"/g)].map((match) => match[1] as string));

@@ -15,7 +15,16 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
-import { inheritedIndexIsLive, recordOwn, trapInheritedIndices, type InheritedIndexTrap } from "./harness.ts";
+import {
+  descriptorConversionIsHostile,
+  inheritedIndexIsLive,
+  polluteDescriptorFields,
+  polluteDescriptorGetter,
+  recordOwn,
+  trapInheritedIndices,
+  type DescriptorPollution,
+  type InheritedIndexTrap,
+} from "./harness.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -1095,5 +1104,109 @@ describe("K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never
     assert.equal(observed.code, "unstable_representation");
     assert.equal(observed.canonical, null, "and no canonical bytes were produced at all");
     assert.equal(observed.slotsRestored, true, "the named slots the window did install were handed back");
+  });
+});
+
+describe("K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution", () => {
+  /**
+   * H9 moved list growth to the captured `Object.defineProperty` but kept ordinary descriptor
+   * literals, so `ToPropertyDescriptor` still consults `Object.prototype` before the target's
+   * `[[DefineOwnProperty]]` runs. These cases pollute each descriptor-field combination directly —
+   * persistent ambient state, no caller observation needed — and require the exact clean bytes on
+   * every root shape the packet accepts, plus exact host restoration.
+   */
+  const ROOTS: [string, unknown][] = [
+    ["object", { a: 1 }],
+    ["array", [1, 2]],
+    ["nested", { a: [{ b: "x" }] }],
+  ];
+
+  test("every hostile data-field combination still yields the exact clean bytes", () => {
+    const clean = new Map<string, string>();
+    for (const [label, value] of ROOTS) clean.set(label, canonicalOf(value));
+    const pollutions: [string, Record<string, unknown>][] = [
+      ["get", { get: 1 }],
+      ["set", { set: () => {} }],
+      ["get+set", { get: 1, set: () => {} }],
+    ];
+    for (const [plabel, fields] of pollutions) {
+      const pollution = polluteDescriptorFields(fields);
+      try {
+        assert.equal(descriptorConversionIsHostile(), true, `${plabel}: the probe really throws while live`);
+        for (const [label, value] of ROOTS) {
+          const result = canonicalize(value);
+          assert.ok(result.ok, `${plabel}/${label} was refused instead of accepted`);
+          assert.equal(result.value.canonical, clean.get(label), `${plabel}/${label} bytes`);
+        }
+      } finally {
+        pollution.restore();
+      }
+      for (const key of Object.keys(fields)) {
+        assert.equal(
+          Object.prototype.hasOwnProperty.call(Object.prototype, key),
+          false,
+          `${plabel}: no ${key} pollution left behind`,
+        );
+      }
+    }
+  });
+
+  test("an inherited descriptor getter never runs inside capture, cloning or the serializer window", () => {
+    const clean = canonicalOf({ a: [1, { b: "x" }] });
+    assert.equal(clean, '{"a":[1,{"b":"x"}]}');
+    const observed = { count: 0 };
+    const pollution = polluteDescriptorGetter("get", observed);
+    try {
+      assert.equal(observed.count, 0, "the installation itself consulted no prototype");
+      const result = canonicalize({ a: [1, { b: "x" }] });
+      assert.ok(result.ok, "a valid value is accepted, not refused");
+      assert.equal(result.value.canonical, clean);
+      assert.equal(observed.count, 0, "no Kernel definition executed caller behavior");
+      assert.equal(descriptorConversionIsHostile(), true, "the getter field was hostile throughout");
+    } finally {
+      pollution.restore();
+    }
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
+  });
+
+  test("an own __proto__ member still installs while conversion is hostile", () => {
+    const input = JSON.parse('{"__proto__":{"x":1},"safe":2}');
+    const pollution = polluteDescriptorFields({ get: 1, set: () => {} });
+    try {
+      assert.equal(descriptorConversionIsHostile(), true);
+      const result = canonicalize(input);
+      assert.ok(result.ok, "a valid member is retained, not refused");
+      assert.equal(result.value.canonical, '{"__proto__":{"x":1},"safe":2}');
+    } finally {
+      pollution.restore();
+    }
+  });
+
+  test("restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host", () => {
+    // The serializer window borrows every own index-named property of both prototypes for the exact
+    // JCS call and hands each one back afterwards. An accessor shadow makes the saved descriptor an
+    // accessor one, so reinstalling it while `Object.prototype` carries an inherited `value` field
+    // throws out of an ordinary literal — the symmetric half of the install direction. The data
+    // installs themselves are unaffected by `value` pollution (the own field shadows it), so this
+    // case isolates the restoration: it passes with only the install direction ablated and fails
+    // with only the restore direction ablated.
+    const trap = trapInheritedIndices(["7"], "shadow-substitute");
+    const pollution = polluteDescriptorFields({ value: "polluted", writable: false });
+    try {
+      assert.equal(inheritedIndexIsLive(7), true, "the accessor shadow is live for this call");
+      const result = canonicalize({ a: 1 });
+      assert.ok(result.ok, "a valid value is accepted, not refused for a restorable environment");
+      assert.equal(result.value.canonical, '{"a":1}');
+      const during = Object.getOwnPropertyDescriptor(Array.prototype, "7");
+      assert.equal(typeof during?.get, "function", "the borrowed accessor shadow is handed back, not kept");
+      assert.equal(during?.get?.(), "shadow-substitute", "it is the same getter");
+    } finally {
+      // Pollution first: a weakened restore reads the saved descriptor through live ambient state.
+      pollution.restore();
+      trap.restore();
+    }
+    assert.equal(Object.getOwnPropertyDescriptor(Array.prototype, "7"), undefined, "the trap itself is gone");
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "value"), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "writable"), false);
   });
 });

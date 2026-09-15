@@ -20,10 +20,13 @@ import {
   accepted,
   caller,
   createRequest,
+  descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  polluteDescriptorFields,
   recordingDriver,
   refused,
   trapInheritedIndices,
+  type DescriptorPollution,
   type InheritedIndexTrap,
 } from "./harness.ts";
 
@@ -637,5 +640,93 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
     assert.deepEqual(view.mailbox[0]?.payload, { n: 1 });
     assert.deepEqual(view.receipts.length, 1);
     assert.deepEqual(kernel.visibleExecutions(author), [created!.executionId]);
+  });
+});
+
+describe("K11-R7-STATE-03 ingress under inherited descriptor-field pollution", () => {
+  /**
+   * The ingress half of the same class: the payload observation installs inherited `get`/`set`
+   * fields and then presents a valid object, and everything the Kernel defines afterwards —
+   * snapshot, clone, serializer swap, mailbox entry, receipt — must not consult the prototype.
+   * The handler is null-prototype so its own trap lookups cannot be what breaks (see the
+   * creation suite for why that distinction matters); any failure here would be the Kernel's.
+   */
+  const polluteOnRead = (
+    payload: Record<string, unknown>,
+    onPollution: (pollution: DescriptorPollution) => void,
+    seen: { hostile: boolean },
+  ): BoundaryValue => {
+    let installed = false;
+    const handler: ProxyHandler<Record<string, unknown>> = {
+      getPrototypeOf(target): object | null {
+        if (!installed) {
+          installed = true;
+          onPollution(polluteDescriptorFields({ get: 1, set: () => {} }));
+          seen.hostile = descriptorConversionIsHostile();
+        }
+        return Reflect.getPrototypeOf(target);
+      },
+    };
+    return new Proxy(payload, Object.assign(Object.create(null), handler)) as unknown as BoundaryValue;
+  };
+
+  test("a payload observation that installs get/set still retains the accepted Event", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+    const created = accepted(kernel.createExecution(author, createRequest()));
+
+    let pollution: DescriptorPollution | undefined;
+    const seen = { hostile: false };
+    let submitted: { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
+    try {
+      submitted = accepted(
+        kernel.submitInput(author, {
+          destination: created.executionId,
+          requestKey: "descriptor-pollution",
+          kind: "application.request",
+          payload: polluteOnRead({ n: 2 }, (installed) => {
+            pollution = installed;
+          }, seen),
+        }),
+      ) as { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
+    } finally {
+      pollution?.restore();
+    }
+
+    assert.equal(seen.hostile, true, "descriptor conversion threw for the whole ingress call");
+    assert.equal(submitted!.replayed, false);
+    assert.equal(submitted!.acceptancePosition, 2);
+
+    // The returned acceptance has a retained decision behind it, at every place that decision lives.
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.equal(view.mailbox.length, 2, "the Event is in the mailbox");
+    assert.deepEqual(view.mailbox[1]?.payload, { n: 2 }, "the retained payload is the observed value");
+    assert.deepEqual(view.queued, [created.initialEventId, submitted!.eventId]);
+    assert.deepEqual(
+      view.receipts.map((receipt) => receipt.token),
+      [created.receipt.token, submitted!.receipt.token],
+      "the ingress receipt joined the Execution's retained evidence",
+    );
+
+    // Exact replay finds the retained entry and returns the original receipt.
+    const replay = accepted(
+      kernel.submitInput(author, {
+        destination: created.executionId,
+        requestKey: "descriptor-pollution",
+        kind: "application.request",
+        payload: { n: 2 },
+      }),
+    );
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.eventId, submitted!.eventId);
+    assert.equal(replay.receipt, submitted!.receipt);
+
+    // And the retained Event is selectable: reservation sees it in acceptance order.
+    const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
+    assert.deepEqual(dispatched.batch, [created.initialEventId, submitted!.eventId]);
+
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
   });
 });

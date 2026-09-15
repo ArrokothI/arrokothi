@@ -16,10 +16,13 @@ import {
   accepted,
   caller,
   createRequest,
+  descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  polluteDescriptorFields,
   recordingDriver,
   refused,
   trapInheritedIndices,
+  type DescriptorPollution,
   type InheritedIndexTrap,
 } from "./harness.ts";
 
@@ -680,5 +683,191 @@ describe("K11-R6-VAL-04 the one observed value is what creation binds, retains a
     // The Activation carries that same retained structure to the Driver.
     accepted(kernel.dispatch(author, created!.executionId, { bound: 1 }));
     assert.deepEqual(driver.seen[0]?.events[0]?.payload, ["zero", "kept"]);
+  });
+});
+
+describe("K11-R7-STATE-03 creation under inherited descriptor-field pollution", () => {
+  /**
+   * The snapshot/safe-clone/serializer-window half of the same defect class.
+   *
+   * A payload's `getPrototypeOf` observation installs inherited `get`/`set` fields on
+   * `Object.prototype` and then presents a perfectly valid object. Every definition the Kernel
+   * performs afterwards — snapshot members, the serialization-safe clone, the serializer
+   * environment swap, the mailbox and receipt lists, the refusal list — converts a descriptor, so
+   * an ordinary literal anywhere in that chain throws a raw ambient `TypeError` instead of the one
+   * atomic creation decision the contract requires.
+   */
+  /**
+   * The handler's own prototype matters. A Proxy trap lookup (`handler.get`, `handler.ownKeys`,
+   * …) consults the handler's prototype chain, so an ordinary handler breaks under the very
+   * pollution its own observation installed: every later trap lookup finds the inherited field and
+   * the observation throws. That shape is refused as `unstable_representation` — the contract's
+   * defined answer for "a structure whose observation throws" — and these cases assert exactly
+   * that containment too. To isolate the *Kernel-side* closure (everything after a successful
+   * observation), the accepted-content cases below use a null-prototype handler, whose trap
+   * lookups never consult `Object.prototype`, so any failure would be the Kernel's own definition
+   * throwing rather than the caller's handler breaking.
+   */
+  const polluteOnPrototype = (
+    payload: Record<string, unknown>,
+    onPollution: (pollution: DescriptorPollution) => void,
+    seen: { hostile: boolean },
+    nullPrototypeHandler: boolean,
+  ): unknown => {
+    let installed = false;
+    const handler: ProxyHandler<Record<string, unknown>> = {
+      getPrototypeOf(target): object | null {
+        if (!installed) {
+          installed = true;
+          onPollution(polluteDescriptorFields({ get: 1, set: () => {} }));
+          seen.hostile = descriptorConversionIsHostile();
+        }
+        return Reflect.getPrototypeOf(target);
+      },
+    };
+    const effective = nullPrototypeHandler ? Object.assign(Object.create(null), handler) : handler;
+    return new Proxy(payload, effective);
+  };
+
+  const cleanCanonical = (value: unknown): string => {
+    const checked = canonicalize(value);
+    assert.ok(checked.ok, "the twin is an acceptable boundary value");
+    return checked.value.canonical;
+  };
+
+  test("a payload observation that installs get/set still creates the exact Execution", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+    const expected = cleanCanonical({ text: "report for week 37" });
+
+    let pollution: DescriptorPollution | undefined;
+    const seen = { hostile: false };
+    let created: { executionId: string; receipt: { token: string; boundary: string }; replayed: boolean; initialEventId: string };
+    try {
+      created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({
+            creationKey: "descriptor-pollution",
+            initialInput: {
+              kind: "application.request",
+              payload: polluteOnPrototype(
+                { text: "report for week 37" },
+                (installed) => {
+                  pollution = installed;
+                },
+                seen,
+                true,
+              ) as { text: string },
+            },
+          }),
+        ),
+      ) as { executionId: string; receipt: { token: string; boundary: string }; replayed: boolean; initialEventId: string };
+    } finally {
+      pollution?.restore();
+    }
+
+    // Not vacuous: the observation really ran and conversion really was hostile for the call.
+    assert.equal(seen.hostile, true, "descriptor conversion threw for the whole creation call");
+
+    assert.equal(created!.replayed, false);
+    assert.equal(created!.receipt.boundary, "creation");
+    const view = accepted(kernel.inspect(author, created!.executionId));
+    assert.equal(view.state, "READY");
+    assert.deepEqual(view.mailbox[0]?.payload, { text: "report for week 37" }, "retained content is the observed value");
+    assert.equal(
+      cleanCanonical(view.mailbox[0]?.payload),
+      expected,
+      "re-canonicalizing the retained structure reproduces the accepting bytes",
+    );
+
+    // Identity proves it as well: the caller's own plain retry of the same logical value replays.
+    const replay = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({
+          creationKey: "descriptor-pollution",
+          initialInput: { kind: "application.request", payload: { text: "report for week 37" } },
+        }),
+      ),
+    );
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.executionId, created!.executionId);
+    assert.equal(replay.receipt, created!.receipt);
+
+    // And a genuinely different value under that key is still a conflict.
+    const conflict = refused(
+      kernel.createExecution(
+        author,
+        createRequest({
+          creationKey: "descriptor-pollution",
+          initialInput: { kind: "application.request", payload: { text: "something else" } },
+        }),
+      ),
+    );
+    assert.equal(conflict.classification, "duplicate_conflict");
+
+    // The Activation carries that same retained structure to the Driver.
+    accepted(kernel.dispatch(author, created!.executionId, { bound: 1 }));
+    assert.deepEqual(driver.seen[0]?.events[0]?.payload, { text: "report for week 37" });
+
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
+  });
+
+  test("an ordinary handler broken by its own pollution is refused, never accepted or leaked", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+
+    let pollution: DescriptorPollution | undefined;
+    const seen = { hostile: false };
+    let refusal: { classification: string; reason: string };
+    try {
+      refusal = refused(
+        kernel.createExecution(
+          author,
+          createRequest({
+            creationKey: "descriptor-pollution",
+            initialInput: {
+              kind: "application.request",
+              payload: polluteOnPrototype(
+                { text: "report for week 37" },
+                (installed) => {
+                  pollution = installed;
+                },
+                seen,
+                false,
+              ) as { text: string },
+            },
+          }),
+        ),
+      ) as { classification: string; reason: string };
+    } finally {
+      pollution?.restore();
+    }
+
+    // The observation genuinely threw: after installing `get`, the handler's own `get` trap lookup
+    // finds the inherited field. The contract's answer for an unobservable structure is refusal.
+    assert.equal(seen.hostile, true);
+    assert.equal(refusal!.classification, "malformed_value");
+
+    // Nothing was committed behind the refusal: the same key with a plain twin creates cleanly.
+    const created = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({
+          creationKey: "descriptor-pollution",
+          initialInput: { kind: "application.request", payload: { text: "report for week 37" } },
+        }),
+      ),
+    );
+    assert.equal(created.replayed, false);
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.mailbox[0]?.payload, { text: "report for week 37" });
+
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
   });
 });

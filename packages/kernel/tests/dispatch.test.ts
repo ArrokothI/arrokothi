@@ -20,12 +20,16 @@ import {
   caller,
   createRequest,
   delayedDriver,
+  descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  polluteDescriptorFields,
+  polluteDescriptorGetter,
   recordingDriver,
   refused,
   rejectingDriver,
   throwingDriver,
   trapInheritedIndices,
+  type DescriptorPollution,
   type InheritedIndexTrap,
 } from "./harness.ts";
 
@@ -747,5 +751,231 @@ describe("K11-R6-STATE-02 batch reservation is own data, not an ambient write", 
     const again = accepted(kernel.redeliver(author, created.executionId));
     assert.deepEqual(again.batch, dispatched!.batch);
     assert.equal(driver.seen[1], driver.seen[0], "the same frozen Activation object, not a rebuild");
+  });
+});
+
+describe("K11-R7-STATE-03 dispatch under inherited descriptor-field pollution", () => {
+  /**
+   * The review's witness is not another indexed `[[Set]]` problem. H9's `defineAt` calls the
+   * captured `Object.defineProperty`, but the descriptor it passes is an ordinary object, so
+   * `ToPropertyDescriptor` reads inherited `get`/`set` fields before the target's
+   * `[[DefineOwnProperty]]` runs. A valid `bound` getter installs that pollution and returns `1`;
+   * the batch selection then throws a raw ambient `TypeError` instead of producing the
+   * contract-defined dispatch decision.
+   *
+   * These cases treat that witness as one member of the class: every installation below returns an
+   * otherwise valid bound, and each asserts the whole observable result — one observation, the
+   * accepted batch, Driver delivery, inspection, and exact host restoration.
+   */
+  const descriptorTrappingOptions = (
+    bound: number,
+    install: () => DescriptorPollution,
+    onPollution: (pollution: DescriptorPollution) => void,
+    reads: { count: number },
+  ): DispatchOptions => {
+    let installed: DescriptorPollution | undefined;
+    return {
+      get bound(): number {
+        reads.count += 1;
+        if (installed === undefined) {
+          installed = install();
+          onPollution(installed);
+        }
+        return bound;
+      },
+    } as DispatchOptions;
+  };
+
+  test("a bound getter that installs Object.prototype.get still reserves the exact prefix", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const second = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "later", kind: "k", payload: { n: 2 } }),
+    );
+
+    const reads = { count: 0 };
+    let pollution: DescriptorPollution | undefined;
+    let hostileAcrossTheCall = false;
+    let dispatched: { batch: readonly string[]; receipt: { boundary: string }; writerEpoch: number; redelivered: boolean };
+    try {
+      dispatched = accepted(
+        kernel.dispatch(
+          author,
+          created.executionId,
+          descriptorTrappingOptions(
+            1,
+            () => polluteDescriptorFields({ get: 1 }),
+            (installed) => {
+              pollution = installed;
+            },
+            reads,
+          ),
+        ),
+      ) as { batch: readonly string[]; receipt: { boundary: string }; writerEpoch: number; redelivered: boolean };
+      hostileAcrossTheCall = descriptorConversionIsHostile();
+    } finally {
+      pollution?.restore();
+    }
+
+    // Not vacuous: the bound was observed exactly once, and ordinary descriptor conversion really
+    // did throw for the whole boundary call — the Kernel simply never performs one.
+    assert.equal(reads.count, 1, "the validated bound is the one observation");
+    assert.equal(hostileAcrossTheCall, true, "conversion was hostile while the Kernel committed");
+
+    assert.deepEqual(dispatched!.batch, [created.initialEventId], "the exact acceptance-order prefix under bound 1");
+    assert.equal(dispatched!.receipt.boundary, "dispatch_intent");
+    assert.equal(dispatched!.writerEpoch, 1);
+    assert.equal(dispatched!.redelivered, false);
+    assert.equal(driver.seen.length, 1);
+    assert.deepEqual(
+      driver.seen[0]!.events.map((event) => event.eventId),
+      [created.initialEventId],
+      "the Activation carries the reserved batch, not a steered one",
+    );
+
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.equal(view.state, "RUNNING");
+    assert.deepEqual(view.activation?.batch, [created.initialEventId]);
+    assert.deepEqual(view.queued, [created.initialEventId, second.eventId]);
+    assert.deepEqual(
+      view.mailbox.map((entry) => entry.reserved),
+      [true, false],
+    );
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(Object.prototype, "get"),
+      false,
+      "the test's own pollution left nothing behind",
+    );
+  });
+
+  test("an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const second = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "b", kind: "k", payload: { n: 2 } }),
+    );
+
+    const reads = { count: 0 };
+    let pollution: DescriptorPollution | undefined;
+    let dispatched: { batch: readonly string[] };
+    try {
+      dispatched = accepted(
+        kernel.dispatch(
+          author,
+          created.executionId,
+          descriptorTrappingOptions(
+            2,
+            () => polluteDescriptorFields({ set: () => {} }),
+            (installed) => {
+              pollution = installed;
+            },
+            reads,
+          ),
+        ),
+      ) as { batch: readonly string[] };
+      assert.equal(descriptorConversionIsHostile(), true, "the set field was hostile across the call");
+    } finally {
+      pollution?.restore();
+    }
+
+    assert.equal(reads.count, 1);
+    assert.deepEqual(dispatched!.batch, [created.initialEventId, second.eventId]);
+    assert.deepEqual(
+      driver.seen[0]!.events.map((event) => event.eventId),
+      [created.initialEventId, second.eventId],
+    );
+    const again = accepted(kernel.redeliver(author, created.executionId));
+    assert.deepEqual(again.batch, dispatched!.batch, "redelivery re-sends the retained batch, not a reselection");
+    assert.equal(driver.seen[1], driver.seen[0], "the same frozen Activation object, not a rebuild");
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(Object.prototype, "set"),
+      false,
+      "the test's own pollution left nothing behind",
+    );
+  });
+
+  test("an inherited descriptor getter runs zero times inside the hardened operation", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+
+    const observed = { count: 0 };
+    const reads = { count: 0 };
+    let pollution: DescriptorPollution | undefined;
+    let dispatched: { batch: readonly string[] };
+    try {
+      dispatched = accepted(
+        kernel.dispatch(
+          author,
+          created.executionId,
+          descriptorTrappingOptions(
+            1,
+            () => polluteDescriptorGetter("get", observed),
+            (installed) => {
+              pollution = installed;
+            },
+            reads,
+          ),
+        ),
+      ) as { batch: readonly string[] };
+      // The installation itself converts only a null-prototype descriptor, so it cannot have run
+      // the getter; if the Kernel then consulted the prototype at any point, the count would move.
+      assert.equal(observed.count, 0, "no Kernel definition consulted the polluted prototype");
+      assert.equal(descriptorConversionIsHostile(), true, "the getter field was hostile across the call");
+    } finally {
+      pollution?.restore();
+    }
+
+    assert.equal(reads.count, 1);
+    assert.deepEqual(dispatched!.batch, [created.initialEventId]);
+    assert.equal(driver.seen.length, 1);
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(Object.prototype, "get"),
+      false,
+      "the test's own pollution left nothing behind",
+    );
+  });
+
+  test("descriptor pollution and an inherited indexed trap together still commit the exact batch", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+
+    const reads = { count: 0 };
+    let pollution: DescriptorPollution | undefined;
+    let trap: InheritedIndexTrap | undefined;
+    let installed = false;
+    const options = {
+      get bound(): number {
+        reads.count += 1;
+        if (!installed) {
+          installed = true;
+          pollution = polluteDescriptorFields({ get: 1, set: () => {} });
+          trap = trapInheritedIndices(["0", "1"]);
+        }
+        return 1;
+      },
+    } as DispatchOptions;
+
+    let dispatched: { batch: readonly string[] };
+    try {
+      dispatched = accepted(kernel.dispatch(author, created.executionId, options)) as { batch: readonly string[] };
+      assert.equal(descriptorConversionIsHostile(), true, "descriptor conversion was hostile across the call");
+      assert.equal(inheritedIndexIsLive(0), true, "the indexed trap was live across the call");
+    } finally {
+      // Pollution first: a weakened restore reads the saved descriptor through live ambient state.
+      pollution?.restore();
+      trap?.restore();
+    }
+
+    assert.equal(reads.count, 1);
+    assert.deepEqual(trap!.swallowed, ["control-write"], "only the probe reached the setter; no Kernel element did");
+    assert.deepEqual(dispatched!.batch, [created.initialEventId]);
+    assert.deepEqual(
+      driver.seen[0]!.events.map((event) => event.eventId),
+      [created.initialEventId],
+    );
   });
 });

@@ -15,7 +15,9 @@ import {
   accepted,
   caller,
   createRequest,
+  descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  polluteDescriptorFields,
   recordingDriver,
   refused,
   trapInheritedIndices,
@@ -234,5 +236,36 @@ describe("K11-R6-STATE-02 a projection describes retained truth under persistent
     );
     assert.equal(view.refusals[0], refusal!, "and it is the same retained object that was returned");
     assert.equal(view.mailbox.length, 2, "the conflict mutated nothing");
+  });
+});
+
+describe("K11-R7-STATE-03 projection under residual descriptor-field pollution", () => {
+  /**
+   * The projection half of the same class. The pollution was left behind by an earlier supported
+   * observation; this call takes no caller value of its own. Every list a fresh view is assembled
+   * from must still be built as own data with descriptors that consult no prototype, or inspection
+   * throws a raw ambient `TypeError` instead of reporting retained truth.
+   */
+  test("inspect, redelivery and listings under live get/set pollution equal the unpolluted views", () => {
+    const { kernel, executionId } = exercised();
+    const clean = accepted(kernel.inspect(author, executionId));
+    const cleanVisible = kernel.visibleExecutions(author);
+
+    const pollution = polluteDescriptorFields({ get: 1, set: () => {} });
+    try {
+      assert.equal(descriptorConversionIsHostile(), true, "conversion is hostile for these reads");
+      const view = accepted(kernel.inspect(author, executionId));
+      assert.deepEqual(view, clean, "a fresh projection describes retained truth exactly");
+      const again = accepted(kernel.inspect(author, executionId));
+      assert.deepEqual(again, clean, "reading still acknowledges and mutates nothing");
+      assert.deepEqual(kernel.visibleExecutions(author), cleanVisible, "the listing is complete");
+      const redelivered = accepted(kernel.redeliver(author, executionId));
+      assert.deepEqual(redelivered.batch, clean.activation?.batch, "redelivery re-sends the retained batch");
+    } finally {
+      pollution.restore();
+    }
+
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
   });
 });

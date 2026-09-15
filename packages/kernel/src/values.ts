@@ -75,7 +75,7 @@
 import canonicalizeJcs from "canonicalize";
 import { Buffer } from "node:buffer";
 
-import { appendOwn, defineAt, readAt, sizedList, truncateOwn } from "./own-array.ts";
+import { appendOwn, defineAt, defineData, readAt, restoreDescriptor, sizedList, truncateOwn } from "./own-array.ts";
 
 /**
  * Primordials captured before any caller code runs.
@@ -100,7 +100,6 @@ const PrimordialIsFinite = isFinite;
 const PrimordialObjectKeys = Object.keys;
 const PrimordialGetOwnPropertyNames = Object.getOwnPropertyNames;
 const PrimordialGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-const PrimordialDefineProperty = Object.defineProperty;
 const PrimordialGetPrototypeOf = Object.getPrototypeOf;
 const PrimordialObjectCreate = Object.create;
 const PrimordialObjectFreeze = Object.freeze;
@@ -764,16 +763,18 @@ function captureObject(container: object, path: string, entered: number, state: 
 
   if (refused) return REFUSED;
   // The snapshot preserves the validated prototype (`Object.prototype` or `null`) and installs every
-  // member with `defineProperty`, never assignment. Plain assignment `snapshot[name] = ...` invokes
-  // the inherited legacy `__proto__` setter for that one key instead of creating an own data
-  // property: a valid own `"__proto__"` member would vanish from the record, its value would
-  // silently become the snapshot's prototype, and the retained structure would stop matching the
-  // canonical bytes taken from it (K02-R2-02, K11-R1-VAL-01). `defineProperty` gives no member name
-  // special treatment.
+  // member with `defineData` (`own-array.ts`), never assignment and never a descriptor literal.
+  // Plain assignment `snapshot[name] = ...` invokes the inherited legacy `__proto__` setter for
+  // that one key instead of creating an own data property: a valid own `"__proto__"` member would
+  // vanish from the record, its value would silently become the snapshot's prototype, and the
+  // retained structure would stop matching the canonical bytes taken from it (K02-R2-02,
+  // K11-R1-VAL-01). `defineProperty` gives no member name special treatment — but an ordinary
+  // descriptor literal would let inherited `get`/`set` pollution throw out of the installation, so
+  // the descriptor is null-prototype (K11-R7-STATE-03).
   const snapshot = PrimordialObjectCreate(prototype) as Record<string, BoundaryValue>;
   for (let entryIndex = 0; entryIndex < captured.length; entryIndex += 1) {
     const pair = readAt(captured, entryIndex) as [string, BoundaryValue];
-    PrimordialDefineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });
+    defineData(snapshot, pair[0], pair[1], false, true, false);
   }
   return PrimordialObjectFreeze(snapshot);
 }
@@ -851,14 +852,9 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
       // Fall back to `undefined` rather than an ordinary read so no prototype is ever consulted.
       const child: BoundaryValue =
         descriptor !== undefined && hasOwnValue(descriptor) ? (descriptor.value as BoundaryValue) : (undefined as unknown as BoundaryValue);
-      PrimordialDefineProperty(out, `${index}`, {
-        value: toSerializationSafe(child),
-        writable: true,
-        enumerable: true,
-        configurable: true,
-      });
+      defineAt(out, index, toSerializationSafe(child));
     }
-    PrimordialDefineProperty(out, "toJSON", { value: undefined, writable: true, enumerable: false, configurable: true });
+    defineData(out, "toJSON", undefined, true, false, true);
     const safeMap = function (
       this: unknown[],
       callback: (item: unknown, index: number, array: unknown[]) => unknown,
@@ -882,7 +878,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
       }
       return result;
     };
-    PrimordialDefineProperty(out, "map", { value: safeMap, writable: true, enumerable: false, configurable: true });
+    defineData(out, "map", safeMap, true, false, true);
     return out as unknown as BoundaryValue;
   }
   const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);
@@ -892,12 +888,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
     const key = keys[keyIndex] as string;
     const descriptor = PrimordialGetOwnPropertyDescriptor(value, key);
     if (descriptor === undefined || !hasOwnValue(descriptor)) continue;
-    PrimordialDefineProperty(out, key, {
-      value: toSerializationSafe(descriptor.value as BoundaryValue),
-      writable: true,
-      enumerable: true,
-      configurable: true,
-    });
+    defineData(out, key, toSerializationSafe(descriptor.value as BoundaryValue), true, true, true);
   }
   return out as unknown as BoundaryValue;
 }
@@ -1063,12 +1054,11 @@ function withSerializerEnvironment<T>(work: () => T): T {
   try {
     for (let index = 0; index < slots.length; index += 1) {
       const entry = readAt(slots, index) as SandboxSlot;
-      PrimordialDefineProperty(entry.holder, entry.key, {
-        value: entry.primordial,
-        writable: true,
-        enumerable: false,
-        configurable: true,
-      });
+      // `defineData`, not a descriptor literal: this installation runs after caller observation in
+      // the same tick, so an inherited `get`/`set` on `Object.prototype` installed by that
+      // observation would otherwise throw out of the swap itself (K11-R7-STATE-03). A
+      // non-configurable slot still throws here, which `accept` contains as a refusal.
+      defineData(entry.holder, entry.key, entry.primordial, true, false, true);
     }
     // The index shadows are removed after the named slots are installed and restored before them,
     // so the window in which the dependency runs has neither a replaced intrinsic nor an inherited
@@ -1081,7 +1071,11 @@ function withSerializerEnvironment<T>(work: () => T): T {
   } finally {
     for (let index = shadows.length - 1; index >= 0; index -= 1) {
       const entry = readAt(shadows, index) as SavedSlot;
-      if (entry.descriptor !== undefined) PrimordialDefineProperty(entry.holder, entry.key, entry.descriptor);
+      // `restoreDescriptor`, not the saved descriptor object itself: that object is ordinary, so an
+      // inherited `value`/`writable` (against a saved accessor shadow) or `get`/`set` (against a
+      // saved data shadow) on `Object.prototype` would otherwise throw out of the restoration and
+      // leave the window unrestored behind the throw (K11-R7-STATE-03).
+      if (entry.descriptor !== undefined) restoreDescriptor(entry.holder, entry.key, entry.descriptor);
     }
     for (let index = saved.length - 1; index >= 0; index -= 1) {
       const entry = readAt(saved, index) as SavedSlot;
@@ -1090,7 +1084,7 @@ function withSerializerEnvironment<T>(work: () => T): T {
         // primordial again rather than inventing a property the host did not have.
         delete (entry.holder as Record<string | symbol, unknown>)[entry.key];
       } else {
-        PrimordialDefineProperty(entry.holder, entry.key, entry.descriptor);
+        restoreDescriptor(entry.holder, entry.key, entry.descriptor);
       }
     }
   }

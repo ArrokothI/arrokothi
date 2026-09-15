@@ -10,6 +10,96 @@
  */
 
 import type { Activation, AuthenticatedCaller, CreateExecutionRequest, ExecutionDriver } from "../src/index.ts";
+import { defineAt, restoreDescriptor } from "../src/own-array.ts";
+
+/**
+ * The `Object.prototype` state before descriptor-field pollution, so it can be restored exactly.
+ *
+ * `Object.prototype` normally owns none of the six descriptor fields; the saved descriptors make
+ * that expectation checkable rather than assumed, and `restore` hands back exactly what was there.
+ */
+export interface DescriptorPollution {
+  /** Restores every installed field to the descriptor it had before, including absence. */
+  restore(): void;
+}
+
+/**
+ * Installs inherited property-descriptor fields on `Object.prototype` (K11-R7-STATE-03).
+ *
+ * Each entry becomes an own data property of `Object.prototype`, so every ordinary descriptor
+ * literal converted while the pollution is live observes both data and accessor fields and the
+ * captured `Object.defineProperty` throws — unless the Kernel under test converts only
+ * null-prototype descriptors. Plain assignment is the installer because `Object.prototype` has a
+ * null prototype itself: the write creates own data with no chain to consult, and it works even
+ * while earlier pollution from the same helper is already live (which a descriptor literal could
+ * not survive). Always restore in a `finally`: the pollution is process-wide while installed.
+ */
+export function polluteDescriptorFields(fields: Record<string, unknown>): DescriptorPollution {
+  const saved: { key: string; descriptor: PropertyDescriptor | undefined }[] = [];
+  const names = Object.keys(fields);
+  // All observations first, all mutations second. Installing `get` and then observing `set` would
+  // read through the just-installed pollution; worse, an observer that cannot survive it would
+  // throw mid-installation and leak the fields it already installed with no handle to remove them.
+  for (let index = 0; index < names.length; index += 1) {
+    const key = names[index] as string;
+    recordOwn(saved, { key, descriptor: Object.getOwnPropertyDescriptor(Object.prototype, key) });
+  }
+  for (let index = 0; index < names.length; index += 1) {
+    const key = names[index] as string;
+    (Object.prototype as Record<string, unknown>)[key] = fields[key];
+  }
+  return {
+    restore(): void {
+      for (let index = saved.length - 1; index >= 0; index -= 1) {
+        const entry = saved[index] as { key: string; descriptor: PropertyDescriptor | undefined };
+        restoreDescriptor(Object.prototype, entry.key, entry.descriptor);
+      }
+    },
+  };
+}
+
+/**
+ * Installs one inherited descriptor field as an accessor, counting its executions (K11-R7-STATE-03).
+ *
+ * A data-descriptor installation that converts an ordinary literal must `[[Get]]` the inherited
+ * field, which runs this getter. A Kernel that converts only null-prototype descriptors never
+ * consults the prototype, so the count stays at zero across the whole boundary call.
+ */
+export function polluteDescriptorGetter(key: string, observed: { count: number }): DescriptorPollution {
+  const descriptor: PropertyDescriptor | undefined = Object.getOwnPropertyDescriptor(Object.prototype, key);
+  // Installed through a null-prototype descriptor so this helper itself works even while other
+  // descriptor-field pollution from the same suite is already live (an ordinary literal would
+  // throw out of its own conversion there).
+  const installer = Object.create(null) as { get: unknown; configurable: boolean };
+  installer.get = (): unknown => {
+    observed.count += 1;
+    return undefined;
+  };
+  installer.configurable = true;
+  Object.defineProperty(Object.prototype, key, installer as PropertyDescriptor);
+  return {
+    restore(): void {
+      restoreDescriptor(Object.prototype, key, descriptor);
+    },
+  };
+}
+
+/**
+ * Whether descriptor conversion is genuinely hostile right now.
+ *
+ * Every case that installs descriptor-field pollution asserts this, so a green result cannot come
+ * from pollution that was never installed or was restored too early. The probe is the exact H9
+ * operation — a captured `defineProperty` with an ordinary data-descriptor literal — which must
+ * throw while the pollution is live.
+ */
+export function descriptorConversionIsHostile(): boolean {
+  try {
+    Object.defineProperty([], "0", { value: "control-write", writable: true, enumerable: true, configurable: true });
+    return false;
+  } catch {
+    return true;
+  }
+}
 
 /**
  * Appends to a list as the list's **own** data.
@@ -22,9 +112,15 @@ import type { Activation, AuthenticatedCaller, CreateExecutionRequest, Execution
  *
  * This is test instrumentation, not a second copy of the rule under test. The subject is
  * `packages/kernel/src/own-array.ts`; this only keeps the observers honest while it is exercised.
+ *
+ * K11-R7-STATE-03: the same instruments must also survive inherited *descriptor-field* pollution
+ * on `Object.prototype`, which makes an ordinary descriptor literal throw out of `defineProperty`.
+ * `recordOwn` therefore goes through the Kernel's own hardened `defineAt` (null-prototype
+ * descriptor) rather than spelling its own literal — including inside trap setters that run while
+ * that pollution is live.
  */
 export const recordOwn = <T>(list: T[], item: T): void => {
-  Object.defineProperty(list, `${list.length}`, { value: item, writable: true, enumerable: true, configurable: true });
+  defineAt(list, list.length, item);
 };
 
 /** A live inherited-indexed-accessor trap on `Array.prototype`, and the handle that removes it. */
@@ -52,15 +148,20 @@ export function trapInheritedIndices(indices: readonly string[], substitute: unk
   for (let position = 0; position < indices.length; position += 1) {
     const index = indices[position] as string;
     recordOwn(saved, { index, descriptor: Object.getOwnPropertyDescriptor(Array.prototype, index) });
-    Object.defineProperty(Array.prototype, index, {
-      configurable: true,
-      set(value: unknown) {
-        recordOwn(swallowed, value);
-      },
-      get() {
-        return substitute;
-      },
-    });
+    // Installed through a null-prototype descriptor: a case may install this trap while
+    // descriptor-field pollution on `Object.prototype` is already live, under which an ordinary
+    // accessor literal throws out of its own conversion (K11-R7-STATE-03).
+    const installer = Object.create(null) as {
+      configurable: boolean;
+      set: (value: unknown) => void;
+      get: () => unknown;
+    };
+    installer.configurable = true;
+    installer.set = (value: unknown): void => {
+      recordOwn(swallowed, value);
+    };
+    installer.get = (): unknown => substitute;
+    Object.defineProperty(Array.prototype, index, installer as PropertyDescriptor);
   }
   return {
     swallowed,
@@ -68,8 +169,9 @@ export function trapInheritedIndices(indices: readonly string[], substitute: unk
     restore(): void {
       for (let position = saved.length - 1; position >= 0; position -= 1) {
         const entry = saved[position] as { index: string; descriptor: PropertyDescriptor | undefined };
-        if (entry.descriptor === undefined) delete (Array.prototype as unknown as Record<string, unknown>)[entry.index];
-        else Object.defineProperty(Array.prototype, entry.index, entry.descriptor);
+        // Hardened restore: a case may combine this trap with descriptor-field pollution on
+        // `Object.prototype`, under which an ordinary descriptor literal throws (K11-R7-STATE-03).
+        restoreDescriptor(Array.prototype, entry.index, entry.descriptor);
       }
     },
   };

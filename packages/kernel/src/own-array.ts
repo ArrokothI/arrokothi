@@ -44,11 +44,34 @@
  * own data over `[0, length)`. `readAt` does not depend on that invariant — it reads the own
  * descriptor directly and answers `undefined` for a position the list does not own, which is a
  * fact about the list rather than about the ambient prototype chain.
+ *
+ * ## The descriptor supplied to `defineProperty` is itself ambient state (K11-R7-STATE-03)
+ *
+ * Capturing `Object.defineProperty` is not enough. Before the target's `[[DefineOwnProperty]]`
+ * runs, the call converts its descriptor argument with `ToPropertyDescriptor`, and that conversion
+ * reads the descriptor's `value`/`writable`/`enumerable`/`configurable`/`get`/`set` fields through
+ * ordinary `[[Get]]` — which walks the descriptor's prototype chain. Every descriptor literal in
+ * this module used to be an ordinary object, so a caller that installs an inherited `get` or `set`
+ * field on `Object.prototype` from inside a boundary observation (a payload getter, the dispatch
+ * `options.bound` getter) makes the next `defineAt` throw `TypeError: Cannot both specify
+ * accessors and a value or writable attribute` — and an inherited getter *runs* inside the
+ * supposedly hardened operation even when it does not throw. The symmetric half fails the same
+ * way: reinstalling a saved accessor descriptor while `Object.prototype` carries an inherited
+ * `value`/`writable` field throws as well.
+ *
+ * So no `defineProperty` call in this zone is ever handed an ordinary object. `defineData` builds
+ * its descriptor on a null-prototype object, and `restoreDescriptor` copies a saved descriptor's
+ * exactly-owned fields onto one, so conversion consults no prototype at all. The null-prototype
+ * objects are bootstrapped with plain dot assignment, which on a null-prototype object creates own
+ * data without consulting any chain (there is none), and descriptor fields are *read* only through
+ * `getOwnPropertyDescriptor`, which reports own state without invoking any getter — never through a
+ * direct property read that could execute an inherited (or own) accessor.
  */
 
 const PrimordialArray = Array;
 const PrimordialDefineProperty = Object.defineProperty;
 const PrimordialGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+const PrimordialObjectCreate = Object.create;
 const PrimordialReflectApply = Reflect.apply;
 const PrimordialHasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -63,6 +86,92 @@ const PrimordialHasOwnProperty = Object.prototype.hasOwnProperty;
  */
 const hasOwnValue = (holder: object): boolean =>
   PrimordialReflectApply(PrimordialHasOwnProperty, holder, ["value"]) as boolean;
+
+/** Own-property existence without consulting the prototype chain, for any field name. */
+const hasOwnField = (holder: object, key: string): boolean =>
+  PrimordialReflectApply(PrimordialHasOwnProperty, holder, [key]) as boolean;
+
+/**
+ * One descriptor field's value, read without invoking any getter.
+ *
+ * The caller has already established with `hasOwnField` that `holder` owns `key`, but a direct
+ * read (`holder[key]`) would still execute an own accessor if the owned property were one — and
+ * would execute an inherited accessor if the own-check were ever wrong. `getOwnPropertyDescriptor`
+ * only *reports* own state, so reading the reported `value` executes nothing. The reported object
+ * itself is engine-built (own data by construction), so its own `.value` read reaches no
+ * prototype either.
+ */
+const ownFieldValue = (holder: object, key: string): unknown => {
+  const fieldDescriptor = PrimordialGetOwnPropertyDescriptor(holder, key);
+  return fieldDescriptor === undefined ? undefined : (fieldDescriptor as { readonly value?: unknown }).value;
+};
+
+/**
+ * A property descriptor no prototype can steer (K11-R7-STATE-03).
+ *
+ * A fresh null-prototype object carrying exactly the data-descriptor fields given. Dot assignment
+ * on a null-prototype object is an own-data creation with no chain to consult, and the later
+ * `ToPropertyDescriptor` conversion of this object finds every field it reads as own (or absent,
+ * with no prototype to supply it), so inherited `get`/`set`/`value`/`writable`/`enumerable`/
+ * `configurable` pollution neither throws nor runs inside the definition.
+ */
+export const defineData = (
+  target: object,
+  key: string | symbol,
+  value: unknown,
+  writable: boolean,
+  enumerable: boolean,
+  configurable: boolean,
+): void => {
+  const descriptor = PrimordialObjectCreate(null) as {
+    value: unknown;
+    writable: boolean;
+    enumerable: boolean;
+    configurable: boolean;
+  };
+  descriptor.value = value;
+  descriptor.writable = writable;
+  descriptor.enumerable = enumerable;
+  descriptor.configurable = configurable;
+  PrimordialDefineProperty(target, key, descriptor as PropertyDescriptor);
+};
+
+/**
+ * Reinstalls a previously saved descriptor without consulting ambient state (K11-R7-STATE-03).
+ *
+ * The saved descriptor is an ordinary object, so handing it back to `defineProperty` directly
+ * would re-expose the conversion to inherited pollution: a saved *data* descriptor plus an
+ * inherited `get`/`set` throws, and a saved *accessor* descriptor plus an inherited
+ * `value`/`writable` throws. Only the exactly-owned fields (among the six descriptor fields) are
+ * therefore copied onto a null-prototype object first; absent fields stay absent rather than being
+ * supplied by a prototype. An `undefined` descriptor means the property did not exist when saved,
+ * so the installed value is removed rather than inventing host state.
+ */
+export const restoreDescriptor = (
+  holder: object,
+  key: string | symbol,
+  descriptor: PropertyDescriptor | undefined,
+): void => {
+  if (descriptor === undefined) {
+    delete (holder as Record<string | symbol, unknown>)[key];
+    return;
+  }
+  const safe = PrimordialObjectCreate(null) as {
+    value?: unknown;
+    writable?: unknown;
+    enumerable?: unknown;
+    configurable?: unknown;
+    get?: unknown;
+    set?: unknown;
+  };
+  if (hasOwnField(descriptor, "value")) safe.value = ownFieldValue(descriptor, "value");
+  if (hasOwnField(descriptor, "writable")) safe.writable = ownFieldValue(descriptor, "writable");
+  if (hasOwnField(descriptor, "enumerable")) safe.enumerable = ownFieldValue(descriptor, "enumerable");
+  if (hasOwnField(descriptor, "configurable")) safe.configurable = ownFieldValue(descriptor, "configurable");
+  if (hasOwnField(descriptor, "get")) safe.get = ownFieldValue(descriptor, "get");
+  if (hasOwnField(descriptor, "set")) safe.set = ownFieldValue(descriptor, "set");
+  PrimordialDefineProperty(holder, key, safe as PropertyDescriptor);
+};
 
 /**
  * A fresh list with `length` positions and no elements yet.
@@ -79,12 +188,16 @@ export const sizedList = <T>(length: number): T[] => new PrimordialArray<T>(leng
  * path at all. Defining at `index === list.length` extends the array through its own exotic
  * `[[DefineOwnProperty]]`, so this is also how a list grows.
  *
+ * The descriptor itself is null-prototype (see `defineData`): an ordinary descriptor literal would
+ * let inherited `get`/`set` pollution installed by the very observation this list is being built
+ * after throw out of the definition (K11-R7-STATE-03).
+ *
  * The attributes are the ordinary mutable ones. Lists that must end up immutable are frozen by
  * their owner once they are complete, which reduces every element to the same non-writable,
  * non-configurable form the previous explicit attributes produced.
  */
 export const defineAt = <T>(list: T[], index: number, value: T): void => {
-  PrimordialDefineProperty(list, `${index}`, { value, writable: true, enumerable: true, configurable: true });
+  defineData(list, `${index}`, value, true, true, true);
 };
 
 /**
