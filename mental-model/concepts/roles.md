@@ -4,15 +4,15 @@ These concepts describe optional reference Runtime facilities. Native frameworks
 
 ## Agent
 
-An **Agent** chooses substantial progression through a model or policy at runtime. Planner, evaluator, router and retriever are application roles, not separate Kernel kinds.
+An **Agent** lets a model or policy dynamically direct its own control flow. Planner, evaluator, router and retriever are application roles, not separate Kernel kinds.
 
 ## Workflow
 
-A **Workflow** primarily follows an authored, allowed progression, which can include branches and loops that models select. Agent and Workflow can share implementation machinery and coexist within one Runtime.
+A **Workflow** primarily follows a predefined control flow, which can include branches and loops that models select. Agent and Workflow can share implementation machinery and coexist within one Runtime.
 
 ## Stage and local branch
 
-A **Stage** or local node is an authored unit of input, computation, output and transition inside a Workflow Runtime. It has no independent Kernel mailbox, authority or lifecycle. A **local branch** owns its intermediate progression and result within the enclosing Runtime. [Composition](../mechanisms/composition.md) owns joins and barriers.
+A **Stage** or local node is a defined unit of input, computation, output and transition inside a Workflow Runtime. It has no independent Kernel mailbox, authority or lifecycle. A **local branch** owns its intermediate control flow and result within the enclosing Runtime. [Composition](../mechanisms/composition.md) owns joins and barriers.
 
 ## Local worker
 
@@ -42,4 +42,4 @@ A runtime **Skill** packages instructions, references, assets/scripts and option
 
 ## Service and interaction template
 
-A **service** exposes selected input, result and interaction contracts while keeping its implementation private. An **interaction template** supplies parameterized authoring/context input. An **async handle** correlates native external work. None implies a new mandatory Kernel entity or portable descriptor hierarchy.
+A **service** exposes selected input, result and interaction contracts while keeping its implementation private. An **interaction template** supplies parameterized predefined/context input. An **async handle** correlates native external work. None implies a new mandatory Kernel entity or portable descriptor hierarchy.
