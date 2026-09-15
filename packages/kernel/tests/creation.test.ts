@@ -12,7 +12,16 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, canonicalize } from "../src/index.ts";
-import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
+import {
+  accepted,
+  caller,
+  createRequest,
+  inheritedIndexIsLive,
+  recordingDriver,
+  refused,
+  trapInheritedIndices,
+  type InheritedIndexTrap,
+} from "./harness.ts";
 
 const coordinator = (): ExecutionCoordinator => new ExecutionCoordinator({ driver: recordingDriver() });
 
@@ -597,5 +606,79 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.equal(refusal.classification, "malformed_value");
     assert.match(refusal.reason, /unrepresentable_member/);
     assert.deepEqual(kernel.visibleExecutions(author), []);
+  });
+});
+
+describe("K11-R6-VAL-04 the one observed value is what creation binds, retains and replays", () => {
+  /**
+   * The same coherent-array counterexample, driven through a real acceptance boundary rather than
+   * `canonicalize` alone.
+   *
+   * If the capture pass could be steered into retaining `["zero", <substitute>]` for a caller whose
+   * value read `["zero", "kept"]`, then the creation key would be bound to bytes the caller never
+   * sent: the caller's own honest retry would arrive as a `duplicate_conflict`, and inspection and
+   * the Activation would both describe the attacker's value. Closure has to hold here, not only at
+   * the value module's own entry point.
+   */
+  test("a coherent array whose prototype observation installs an indexed accessor binds its own value", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+
+    const elements: unknown[] = [];
+    Object.defineProperty(elements, "0", { value: "zero", writable: true, enumerable: true, configurable: true });
+    Object.defineProperty(elements, "1", { value: "kept", writable: true, enumerable: true, configurable: true });
+
+    let trap: InheritedIndexTrap | undefined;
+    const sneaky = new Proxy(elements, {
+      getPrototypeOf(inner): object | null {
+        trap = trapInheritedIndices(["0", "1"]);
+        return Reflect.getPrototypeOf(inner);
+      },
+    });
+
+    let created: { executionId: string; initialEventId: string; replayed: boolean; receipt: { token: string } };
+    try {
+      created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "indexed-accessor", initialInput: { kind: "k", payload: sneaky as never } }),
+        ),
+      );
+      assert.ok(trap !== undefined, "the prototype observation really installed the accessor");
+      assert.equal(inheritedIndexIsLive(1), true, "and it was live across the creation call");
+    } finally {
+      trap?.restore();
+    }
+
+    assert.equal(created!.replayed, false);
+    const view = accepted(kernel.inspect(author, created!.executionId));
+    assert.deepEqual(view.mailbox[0]?.payload, ["zero", "kept"], "retained content is the observed value");
+
+    // Identity proves it as well: the caller's own plain retry of the same logical value replays,
+    // which it could not do if the key had been bound to the substitute's bytes.
+    const replay = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({ creationKey: "indexed-accessor", initialInput: { kind: "k", payload: ["zero", "kept"] } }),
+      ),
+    );
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.executionId, created!.executionId);
+    assert.equal(replay.receipt, created!.receipt);
+
+    // And a genuinely different value under that key is still a conflict, so the replay above is
+    // not simply a key that matches anything.
+    const conflict = refused(
+      kernel.createExecution(
+        author,
+        createRequest({ creationKey: "indexed-accessor", initialInput: { kind: "k", payload: ["zero", "changed"] } }),
+      ),
+    );
+    assert.equal(conflict.classification, "duplicate_conflict");
+
+    // The Activation carries that same retained structure to the Driver.
+    accepted(kernel.dispatch(author, created!.executionId, { bound: 1 }));
+    assert.deepEqual(driver.seen[0]?.events[0]?.payload, ["zero", "kept"]);
   });
 });

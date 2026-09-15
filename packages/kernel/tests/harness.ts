@@ -11,6 +11,83 @@
 
 import type { Activation, AuthenticatedCaller, CreateExecutionRequest, ExecutionDriver } from "../src/index.ts";
 
+/**
+ * Appends to a list as the list's **own** data.
+ *
+ * The K11-R6-STATE-02 and K11-R6-VAL-04 cases deliberately install an inherited indexed accessor on
+ * `Array.prototype` and leave it live across a Kernel call. A fake or a recorder that used `push`
+ * or `list[list.length] = item` inside that window would have its own writes swallowed by the
+ * accessor — and a setter that recorded with `push` would recurse into itself — so the instruments
+ * could not report what the Kernel actually did.
+ *
+ * This is test instrumentation, not a second copy of the rule under test. The subject is
+ * `packages/kernel/src/own-array.ts`; this only keeps the observers honest while it is exercised.
+ */
+export const recordOwn = <T>(list: T[], item: T): void => {
+  Object.defineProperty(list, `${list.length}`, { value: item, writable: true, enumerable: true, configurable: true });
+};
+
+/** A live inherited-indexed-accessor trap on `Array.prototype`, and the handle that removes it. */
+export interface InheritedIndexTrap {
+  /** Every value the inherited setter swallowed, in the order it received them. */
+  readonly swallowed: unknown[];
+  /** What the inherited getter answers for a position the list does not own. */
+  readonly substitute: unknown;
+  /** Restores the exact descriptors that were there before, including their absence. */
+  restore(): void;
+}
+
+/**
+ * Installs an inherited accessor at each named index of `Array.prototype`.
+ *
+ * The setter drops the write and records it; the getter answers `substitute`. That is the exact
+ * shape a caller can install from inside a boundary observation, and it is what makes
+ * `list[list.length] = item` and `push` lose the Kernel's element while a later read of the same
+ * position answers from the attacker. Always restore in a `finally`: the accessor is process-wide
+ * while it is installed.
+ */
+export function trapInheritedIndices(indices: readonly string[], substitute: unknown = "inherited-substitute"): InheritedIndexTrap {
+  const swallowed: unknown[] = [];
+  const saved: { index: string; descriptor: PropertyDescriptor | undefined }[] = [];
+  for (let position = 0; position < indices.length; position += 1) {
+    const index = indices[position] as string;
+    recordOwn(saved, { index, descriptor: Object.getOwnPropertyDescriptor(Array.prototype, index) });
+    Object.defineProperty(Array.prototype, index, {
+      configurable: true,
+      set(value: unknown) {
+        recordOwn(swallowed, value);
+      },
+      get() {
+        return substitute;
+      },
+    });
+  }
+  return {
+    swallowed,
+    substitute,
+    restore(): void {
+      for (let position = saved.length - 1; position >= 0; position -= 1) {
+        const entry = saved[position] as { index: string; descriptor: PropertyDescriptor | undefined };
+        if (entry.descriptor === undefined) delete (Array.prototype as unknown as Record<string, unknown>)[entry.index];
+        else Object.defineProperty(Array.prototype, entry.index, entry.descriptor);
+      }
+    },
+  };
+}
+
+/**
+ * Whether an inherited indexed accessor is really live right now.
+ *
+ * Every case that installs one asserts this, so a green result cannot come from a trap that was
+ * never installed or was restored too early. The probe is an ordinary indexed write into a fresh
+ * list: under a live setter it lands nowhere and leaves the list empty.
+ */
+export function inheritedIndexIsLive(index: number): boolean {
+  const probe: unknown[] = [];
+  probe[index] = "control-write";
+  return probe.length === 0 || !Object.prototype.hasOwnProperty.call(probe, `${index}`);
+}
+
 export const caller = (namespace: string, ...scopes: string[]): AuthenticatedCaller => ({
   namespace,
   scopes: scopes.length > 0 ? scopes : ["tenant-a"],
@@ -39,7 +116,7 @@ export function recordingDriver(driverId = "fake-recording"): RecordingDriver {
     driverId,
     seen,
     deliver(activation: Activation): void {
-      seen.push(activation);
+      recordOwn(seen, activation);
     },
   };
 }
@@ -63,8 +140,8 @@ export function delayedDriver(driverId = "fake-delayed"): DelayedDriver {
     driverId,
     seen,
     deliver(activation: Activation): Promise<void> {
-      seen.push(activation);
-      return new Promise<void>((resolve) => pending.push(resolve));
+      recordOwn(seen, activation);
+      return new Promise<void>((resolve) => recordOwn(pending, resolve));
     },
     release(): void {
       while (pending.length > 0) (pending.pop() as () => void)();

@@ -11,6 +11,14 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
+import { inheritedIndexIsLive, recordOwn, trapInheritedIndices, type InheritedIndexTrap } from "./harness.ts";
+
+/** A dense genuine array built without `push`, so these fixtures are own data whatever is installed. */
+const copyForTest = (elements: readonly unknown[]): unknown[] => {
+  const out: unknown[] = [];
+  for (let index = 0; index < elements.length; index += 1) recordOwn(out, elements[index]);
+  return out;
+};
 
 const canonicalOf = (value: unknown): string => {
   const result = canonicalize(value);
@@ -844,5 +852,183 @@ describe("K11-R2-VAL-02 serializer execution environment is caller-independent (
     );
     assert.equal(secondOk, false, "it produces no canonical identity");
     assert.equal(Object.prototype, realProto, "the live binding is restored for later tests");
+  });
+});
+
+describe("K11-R6-VAL-04 one observation survives an indexed accessor installed while observing it", () => {
+  /**
+   * The caller here is entirely coherent, which is the point.
+   *
+   * `captureArray` observes the prototype first, and that observation is caller code. A genuine
+   * array behind a `Proxy` whose `getPrototypeOf` trap installs an inherited accessor at one of its
+   * own index names, and then returns the genuine `Array.prototype`, passes the plain-array check
+   * legitimately. Its own descriptor and its ordinary read still agree, so the one observation the
+   * pass takes is unambiguous.
+   *
+   * The previous shape then put that observed element into a holey scratch array with an ordinary
+   * indexed write and read it back to build the snapshot. Both halves went through the accessor:
+   * the write was swallowed, and the read of the still-unowned position answered from the getter.
+   * A caller whose value read `"kept"` could therefore be retained and canonicalized as the
+   * attacker's substitute — the boundary accepting a value nobody sent. `values.md` allows exactly
+   * two answers for a representation like this, and "some third value" is neither of them.
+   */
+  const coherentArrayTrapping = (
+    elements: readonly unknown[],
+    indices: readonly string[],
+    onInstall: (trap: InheritedIndexTrap) => void,
+  ): unknown => {
+    const target = copyForTest(elements);
+    return new Proxy(target, {
+      getPrototypeOf(inner): object | null {
+        onInstall(trapInheritedIndices(indices));
+        return Reflect.getPrototypeOf(inner);
+      },
+    });
+  };
+
+  const withTrap = <T>(work: (onInstall: (trap: InheritedIndexTrap) => void) => T): { result: T; trap: InheritedIndexTrap } => {
+    let trap: InheritedIndexTrap | undefined;
+    try {
+      const result = work((installed) => {
+        trap = installed;
+      });
+      assert.ok(trap !== undefined, "the trap was installed by the observation under test");
+      return { result, trap };
+    } finally {
+      trap?.restore();
+    }
+  };
+
+  test("the retained structure and the canonical bytes are exactly the one value observed", () => {
+    const { result, trap } = withTrap((onInstall) =>
+      canonicalize(coherentArrayTrapping(["zero", "kept"], ["1"], onInstall)),
+    );
+    assert.ok(result.ok, `expected acceptance, got ${result.ok ? "" : JSON.stringify(result.issues)}`);
+    assert.deepEqual(result.value.value, ["zero", "kept"], "the retained snapshot is the observed value");
+    assert.equal(result.value.canonical, '["zero","kept"]', "and its bytes describe that same structure");
+    assert.notDeepEqual(result.value.value, ["zero", trap.substitute]);
+    // Re-canonicalizing what was retained reproduces the bytes that accepted it.
+    const again = canonicalize(result.value.value);
+    assert.ok(again.ok);
+    assert.equal(again.value.canonical, result.value.canonical);
+  });
+
+  test("the index the accessor picks is not special: position zero and a nested array behave the same", () => {
+    const first = withTrap((onInstall) => canonicalize(coherentArrayTrapping(["only"], ["0"], onInstall)));
+    assert.ok(first.result.ok);
+    assert.deepEqual(first.result.value.value, ["only"]);
+    assert.equal(first.result.value.canonical, '["only"]');
+
+    const nested = withTrap((onInstall) =>
+      canonicalize({ outer: coherentArrayTrapping([1, 2, 3], ["0", "1", "2"], onInstall) }),
+    );
+    assert.ok(nested.result.ok);
+    assert.deepEqual(nested.result.value.value, { outer: [1, 2, 3] });
+    assert.equal(nested.result.value.canonical, '{"outer":[1,2,3]}');
+  });
+
+  test("a value the rules do refuse is still refused with the accessor live, not normalized", () => {
+    // Coherence is what made the case above acceptable. Remove it — an own data descriptor and an
+    // ordinary read that disagree — and the answer is the refusal `values.md` requires, with the
+    // accessor still live and still unable to supply a third reading.
+    const target = copyForTest([0, 0]);
+    let trap: InheritedIndexTrap | undefined;
+    let issues: ReturnType<typeof boundaryValueIssues>;
+    const shifting = new Proxy(target, {
+      getPrototypeOf(inner): object | null {
+        trap = trapInheritedIndices(["1"]);
+        return Reflect.getPrototypeOf(inner);
+      },
+      get(inner, property, receiver): unknown {
+        if (property === "1") return 99;
+        return Reflect.get(inner, property, receiver) as unknown;
+      },
+    });
+    try {
+      issues = boundaryValueIssues(shifting);
+    } finally {
+      trap?.restore();
+    }
+    assert.deepEqual(
+      issues!.map((issue) => `${issue.path} ${issue.code}`),
+      ["[1] unstable_representation"],
+    );
+  });
+});
+
+describe("K11-R6-VAL-05 canonical bytes do not depend on what the prototypes carry", () => {
+  /**
+   * Self-found while reconstructing the path above, and a defect of the same family that no
+   * adapter-side change can reach.
+   *
+   * The approved JCS implementation builds its object branch as `const parts = []` grown with
+   * `parts.push(...)` and then read back by `parts.join(',')`. Both are ordinary property
+   * operations on a position `parts` does not own yet, so an inherited accessor at
+   * `Array.prototype["0"]` receives the push and answers the join — with the primordial `push` and
+   * `join` reinstalled, because the defect is in `[[Set]]`/`[[Get]]` rather than in which function
+   * performs them. Measured against the unmodified dependency, `canonicalize({a: 1})` returns
+   * whatever the getter says. Canonical bytes are the identity this Kernel binds, so that is a
+   * caller choosing another request's identity.
+   *
+   * The dependency is used exactly as published and is not patched. What the Kernel controls is the
+   * environment it calls into, so the serializer window removes every own index-named property from
+   * `Array.prototype` and `Object.prototype` for the exact call and puts them back afterwards.
+   */
+  const CASES: readonly [string, unknown, string][] = [
+    ["an object member", { a: 1 }, '{"a":1}'],
+    ["several object members in canonical order", { b: 2, a: 1 }, '{"a":1,"b":2}'],
+    ["an array root", [7, 8], "[7,8]"],
+    ["a nested mixture", { outer: { inner: [1, { z: null }] } }, '{"outer":{"inner":[1,{"z":null}]}}'],
+  ];
+
+  test("an inherited accessor at the indices the serializer writes cannot choose the bytes", () => {
+    const trap = trapInheritedIndices(["0", "1", "2"], '"HIJACKED":"YES"');
+    try {
+      assert.equal(inheritedIndexIsLive(0), true, "the accessor is live for these calls");
+      for (let index = 0; index < CASES.length; index += 1) {
+        const [label, value, expected] = CASES[index] as [string, unknown, string];
+        const result = canonicalize(value);
+        assert.ok(result.ok, `${label} was refused`);
+        assert.equal(result.value.canonical, expected, label);
+      }
+      assert.equal(inheritedIndexIsLive(0), true, "the window restored the accessor it borrowed");
+    } finally {
+      trap.restore();
+    }
+  });
+
+  test("an inherited data property at those indices cannot either, and equality still follows the bytes", () => {
+    const saved = Object.getOwnPropertyDescriptor(Array.prototype, "0");
+    Object.defineProperty(Array.prototype, "0", { value: '"NO":"NO"', writable: true, enumerable: false, configurable: true });
+    let left: ReturnType<typeof canonicalize>;
+    let right: ReturnType<typeof canonicalize>;
+    try {
+      left = canonicalize({ a: 1, b: [2] });
+      right = canonicalize({ b: [2], a: 1 });
+      assert.equal((Array.prototype as unknown as Record<string, unknown>)["0"], '"NO":"NO"', "still installed after the call");
+    } finally {
+      if (saved === undefined) delete (Array.prototype as unknown as Record<string, unknown>)["0"];
+      else Object.defineProperty(Array.prototype, "0", saved);
+    }
+    assert.ok(left!.ok);
+    assert.ok(right!.ok);
+    assert.equal(left!.value.canonical, '{"a":1,"b":[2]}');
+    assert.equal(sameLogicalValue(left!.value, right!.value), true, "key order is still not semantic");
+  });
+
+  test("the prototypes are left exactly as found, including properties the Kernel never installed", () => {
+    const marker = { note: "host state outside the index names" };
+    Object.defineProperty(Array.prototype, "hostMarker", { value: marker, writable: false, enumerable: false, configurable: true });
+    const trap = trapInheritedIndices(["0"]);
+    try {
+      assert.ok(canonicalize({ a: [1, 2] }).ok);
+      const restored = Object.getOwnPropertyDescriptor(Array.prototype, "hostMarker");
+      assert.equal(restored?.value, marker, "untouched host state is untouched");
+      assert.equal(restored?.writable, false);
+      assert.equal(restored?.enumerable, false);
+    } finally {
+      trap.restore();
+      delete (Array.prototype as unknown as Record<string, unknown>).hostMarker;
+    }
   });
 });

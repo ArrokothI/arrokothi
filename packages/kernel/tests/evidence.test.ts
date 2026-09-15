@@ -21,7 +21,16 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type Receipt, type RefusalRecord } from "../src/index.ts";
+import {
+  BOUNDARY_LIMITS,
+  ExecutionCoordinator,
+  TERMINAL_STATES,
+  boundaryValueIssues,
+  isTerminal,
+  type ExecutionState,
+  type Receipt,
+  type RefusalRecord,
+} from "../src/index.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
@@ -276,5 +285,67 @@ describe("K11-R2-EVID-01 the ownership rule, not one call site", () => {
     assert.equal(view.receipts[0], created.receipt);
     assert.equal(view.mailbox[0]?.receipt, created.receipt);
     assert.ok(Object.isFrozen(created.receipt));
+  });
+});
+
+describe("the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)", () => {
+  /**
+   * Found while auditing caller-mutable ambient state for K11-R6-STATE-02, not reported by a
+   * reviewer. Same family, different mechanism: these are not prototype positions but exported
+   * objects the Kernel reads *at decision time*, and `readonly` / `as const` are erased at run time.
+   *
+   * `isTerminal` scans `TERMINAL_STATES` on every ingress and every dispatch, and each boundary
+   * value is measured against `BOUNDARY_LIMITS` as it is checked. An ordinary caller holding either
+   * exported object could therefore decide which destinations refuse input and how large a value
+   * the Kernel accepts. Both are frozen where they are defined, for the same reason receipts and
+   * refusals are frozen where they are minted: one construction site rather than every reader.
+   */
+  test("the terminal vocabulary cannot be extended, emptied or re-spelled", () => {
+    const mutable = TERMINAL_STATES as ExecutionState[];
+    assert.equal(Object.isFrozen(TERMINAL_STATES), true);
+    assert.throws(() => {
+      mutable[mutable.length] = "READY";
+    }, TypeError);
+    assert.throws(() => {
+      mutable[0] = "READY";
+    }, TypeError);
+    assert.throws(() => {
+      mutable.length = 0;
+    }, TypeError);
+    assert.deepEqual(TERMINAL_STATES, ["COMPLETED", "FAILED", "CANCELLED"]);
+    assert.equal(isTerminal("READY"), false, "a live Execution is still not terminal");
+    assert.equal(isTerminal("COMPLETED"), true);
+
+    // And the decision that reads it is unchanged: ordinary input to a live Execution is accepted,
+    // not refused as `terminal_destination`.
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const submitted = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "after", kind: "k", payload: { a: 1 } }),
+    );
+    assert.equal(submitted.replayed, false);
+  });
+
+  test("the published limits cannot be raised or lowered by a caller", () => {
+    const mutable = BOUNDARY_LIMITS as unknown as Record<string, number>;
+    assert.equal(Object.isFrozen(BOUNDARY_LIMITS), true);
+    assert.throws(() => {
+      mutable.containerEntries = 1;
+    }, TypeError);
+    assert.throws(() => {
+      mutable.canonicalBytes = 8;
+    }, TypeError);
+    assert.equal(BOUNDARY_LIMITS.containerEntries, 4_096);
+    assert.equal(BOUNDARY_LIMITS.canonicalBytes, 1_048_576);
+
+    // The check that reads them is unchanged: at the limit passes, one over is refused.
+    const atLimit: Record<string, number> = {};
+    for (let index = 0; index < BOUNDARY_LIMITS.containerEntries; index += 1) atLimit[`k${index}`] = index;
+    assert.equal(boundaryValueIssues(atLimit).length, 0);
+    atLimit.oneMore = 1;
+    assert.deepEqual(
+      boundaryValueIssues(atLimit).map((issue) => issue.code),
+      ["too_many_entries"],
+    );
   });
 });

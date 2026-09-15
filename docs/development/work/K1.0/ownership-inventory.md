@@ -36,8 +36,10 @@ This table is maintained by whichever packet changes the tree it measures; it is
 historical record. K1.0 created the `target-kernel` row, which did not exist at its base
 `c9a9ed7e6e538ab0542fc6a999426264abb6212a`, and left the other three unchanged from it. **K1.1**
 raised `target-kernel` from 2 `.ts` files to 10 by implementing creation, input ingress, reservation
-and dispatch in that zone; its base is `777b9955fb3a443f700b4f3d1f4f2aef1869345b` and its own row is
-true only of its candidate tree. The other three zones are unchanged by K1.1 as well: it moves and
+and dispatch in that zone, and to 11 in its round-8 correction, which gives the rule for building and
+reading a Kernel-owned list one owning module (`own-array.ts`, K11-R6-STATE-02); that module is
+internal to the zone and adds no exported name. Its base is `777b9955fb3a443f700b4f3d1f4f2aef1869345b`
+and its own row is true only of its candidate tree. The other three zones are unchanged by K1.1 as well: it moves and
 edits no source in them (base→payload touches none of their files, verified by
 `git diff --name-only`), so those rows reproduce at either tree. What has **not** changed across
 either packet is the target zone's legacy column: it still reaches no legacy code. Its third-party
@@ -46,7 +48,7 @@ column gains exactly one entry in K1.1 round 3: the owner-approved JCS implement
 
 | Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |
 |---|---|---|---|
-| `target-kernel` | 10 | nothing | `canonicalize` |
+| `target-kernel` | 11 | nothing | `canonicalize` |
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
 | `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |

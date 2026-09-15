@@ -14,7 +14,20 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, canonicalize } from "../src/index.ts";
-import { accepted, caller, createRequest, delayedDriver, recordingDriver, refused, rejectingDriver, throwingDriver } from "./harness.ts";
+import type { DispatchOptions } from "../src/index.ts";
+import {
+  accepted,
+  caller,
+  createRequest,
+  delayedDriver,
+  inheritedIndexIsLive,
+  recordingDriver,
+  refused,
+  rejectingDriver,
+  throwingDriver,
+  trapInheritedIndices,
+  type InheritedIndexTrap,
+} from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 const settle = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
@@ -606,5 +619,133 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
       if (previous === undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
       else (Object.prototype as Record<string, unknown>).toJSON = previous;
     }
+  });
+});
+
+describe("K11-R6-STATE-02 batch reservation is own data, not an ambient write", () => {
+  /**
+   * The counterexample needs no boundary value at all.
+   *
+   * `dispatch`'s `options` envelope is caller-owned state, and the `bound` getter runs inside the
+   * boundary call. A getter that returns a perfectly valid `1` and installs an inherited setter at
+   * `Array.prototype["0"]` leaves the selection loop's ordinary write with nowhere to land: the
+   * setter receives it, no element is created, `selected.length` stays at zero, and the Kernel
+   * accepts a dispatch intent whose reserved batch is empty while a queued Event was available
+   * under the bound it had just validated. That is a different defect from the round-5 shifting
+   * getter (which was fixed by observing the bound once) and it survives every captured-method
+   * hardening, because the defect is in `[[Set]]` rather than in which function performs it.
+   */
+  const trappingOptions = (bound: number, indices: readonly string[], onInstall: (trap: InheritedIndexTrap) => void): DispatchOptions => {
+    // Installed at most once even if the envelope is read more than once. A correct implementation
+    // observes `bound` exactly once (K11-R4-DISP-01), but this fixture must not leave a stacked,
+    // partly-restorable accessor on `Array.prototype` when it is run against an implementation that
+    // does not — which is exactly what an ablation of that earlier fix produces.
+    let installed: InheritedIndexTrap | undefined;
+    return {
+      get bound(): number {
+        if (installed === undefined) {
+          installed = trapInheritedIndices(indices);
+          onInstall(installed);
+        }
+        return bound;
+      },
+    } as DispatchOptions;
+  };
+
+  test("a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const second = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "later", kind: "k", payload: { n: 2 } }),
+    );
+
+    let trap: InheritedIndexTrap | undefined;
+    let liveAcrossTheCall = false;
+    let dispatched: ReturnType<typeof accepted<{ batch: readonly string[]; activationId: string }>>;
+    try {
+      dispatched = accepted(
+        kernel.dispatch(
+          author,
+          created.executionId,
+          trappingOptions(1, ["0", "1"], (installed) => {
+            trap = installed;
+          }),
+        ),
+      ) as { batch: readonly string[]; activationId: string };
+      liveAcrossTheCall = inheritedIndexIsLive(0);
+    } finally {
+      trap?.restore();
+    }
+
+    // Not vacuous: the setter really was installed for the whole boundary call, and it really did
+    // swallow the test's own ordinary write — it simply never saw one from the Kernel.
+    assert.equal(liveAcrossTheCall, true, "the inherited setter was live across the dispatch call");
+    assert.deepEqual(trap!.swallowed, ["control-write"], "only the probe reached the setter; no Kernel element did");
+
+    assert.deepEqual(dispatched!.batch, [created.initialEventId], "the exact acceptance-order prefix under bound 1");
+    assert.equal(driver.seen.length, 1);
+    assert.deepEqual(
+      driver.seen[0]!.events.map((event) => event.eventId),
+      [created.initialEventId],
+      "the Activation carries the reserved batch, not an empty one",
+    );
+
+    // Reservation acknowledged nothing, and the Event accepted before it that the bound excluded is
+    // still queued and still out of the batch.
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.equal(view.state, "RUNNING");
+    assert.deepEqual(view.activation?.batch, [created.initialEventId]);
+    assert.deepEqual(view.queued, [created.initialEventId, second.eventId]);
+    assert.deepEqual(
+      view.mailbox.map((entry) => entry.reserved),
+      [true, false],
+    );
+  });
+
+  test("the same trap at every reserved index cannot shorten a larger batch either", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const second = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "b", kind: "k", payload: { n: 2 } }),
+    );
+    const third = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "c", kind: "k", payload: { n: 3 } }),
+    );
+
+    let trap: InheritedIndexTrap | undefined;
+    let dispatched: { batch: readonly string[] };
+    try {
+      dispatched = accepted(
+        kernel.dispatch(
+          author,
+          created.executionId,
+          trappingOptions(3, ["0", "1", "2"], (installed) => {
+            trap = installed;
+          }),
+        ),
+      ) as { batch: readonly string[] };
+      assert.equal(inheritedIndexIsLive(2), true, "the trap covered every position the batch needed");
+    } finally {
+      trap?.restore();
+    }
+
+    assert.deepEqual(dispatched!.batch, [created.initialEventId, second.eventId, third.eventId]);
+    assert.deepEqual(
+      driver.seen[0]!.events.map((event) => event.eventId),
+      [created.initialEventId, second.eventId, third.eventId],
+    );
+    // The carried Events are the accepted content, not the getter's substitute.
+    assert.deepEqual(
+      driver.seen[0]!.events.map((event) => event.payload),
+      [{ text: "report for week 37" }, { n: 2 }, { n: 3 }],
+    );
+    // Redelivery re-sends that same exchange, so a batch built under the trap survives it.
+    const again = accepted(kernel.redeliver(author, created.executionId));
+    assert.deepEqual(again.batch, dispatched!.batch);
+    assert.equal(driver.seen[1], driver.seen[0], "the same frozen Activation object, not a rebuild");
   });
 });

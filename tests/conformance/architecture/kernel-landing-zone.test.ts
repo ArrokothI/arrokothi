@@ -151,7 +151,9 @@ describe("K1.0 target Kernel landing zone", () => {
     const files = [...graph.files].sort();
     // The exact reachable set, so a module that quietly stops being reachable from the entry point -
     // and therefore stops being guarded - is a failure rather than a silently smaller walk. K1.1
-    // added the eight protocol modules; K1.0's two remain.
+    // added the eight protocol modules; K1.0's two remain. Its round-8 correction added a ninth,
+    // `own-array.ts`, which owns how a Kernel-owned list is built and read (K11-R6-STATE-02); it is
+    // internal and is reached through `values.ts`/`coordinator.ts`, not re-exported.
     assert.deepEqual(files, [
       "packages/kernel/src/coordinator.ts",
       "packages/kernel/src/driver.ts",
@@ -159,6 +161,7 @@ describe("K1.0 target Kernel landing zone", () => {
       "packages/kernel/src/index.ts",
       "packages/kernel/src/inspection.ts",
       "packages/kernel/src/lifecycle.ts",
+      "packages/kernel/src/own-array.ts",
       "packages/kernel/src/refusal.ts",
       "packages/kernel/src/result.ts",
       "packages/kernel/src/unsupported.ts",
@@ -855,7 +858,7 @@ describe("K1.0 policy and inventory agree", () => {
     // ever considered, so it vanished: no duplicate, no unreadable row, and the correct row made
     // recomputation green. Both orders are exercised because the old code skipped it either way.
     const real = await realInventory();
-    const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+    const correct = "| `target-kernel` | 11 | nothing | `canonicalize` |";
     const malformed = "| `target-kernel` | not-a-count | `@arrokothi/core` | nothing |";
 
     for (const [position, replacement] of [
@@ -876,7 +879,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("a dependency row with no recognisable key fails closed (K10-R4-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+    const correct = "| `target-kernel` | 11 | nothing | `canonicalize` |";
     const { unreadable } = parseDependencyTable(mutate(real, [[correct, `| not-a-zone | 2 | nothing | nothing |\n${correct}`]]));
     assert.ok(
       unreadable.some((message) => /Dependency row has no recognisable key/.test(message)),
@@ -915,7 +918,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("duplicate cross-boundary dependency rows fail closed (K10-R3-01)", async () => {
     const real = await realInventory();
-    const anchor = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+    const anchor = "| `target-kernel` | 11 | nothing | `canonicalize` |";
     const stale = "| `target-kernel` | 999 | nothing | `canonicalize` |";
     const variants = [
       mutate(real, [[anchor, `${stale}\n${anchor}`]]),
@@ -1018,7 +1021,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+    const correct = "| `target-kernel` | 11 | nothing | `canonicalize` |";
     const badByEdge: Record<string, string> = {
       "omitted trailing pipe": "| `target-kernel` | 999 | `@arrokothi/core` | `canonicalize`",
       "omitted leading pipe": "`target-kernel` | 999 | `@arrokothi/core` | `canonicalize` |",
@@ -1196,7 +1199,7 @@ describe("K1.0 policy and inventory agree", () => {
       for (const position of ["before", "after"] as const) {
         test(`a Dependency body row beginning with the header label is accounted for, ${position} the correct row, with ${edge}`, async () => {
           const real = await realInventory();
-          const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+          const correct = "| `target-kernel` | 11 | nothing | `canonicalize` |";
           const mutated =
             position === "before"
               ? mutate(real, [[correct, `${bad}\n${correct}`]])
@@ -2969,7 +2972,7 @@ describe("K1.0 policy and inventory agree", () => {
     // contradictory spellings that must be reported, and the permitted spellings beside them that
     // must still parse — so a decoder that is merely stricter about the four reported strings would
     // fail the first half, and one that is stricter about everything would fail the second.
-    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 11 | nothing | `canonicalize` |";
     const REAL_HOST_SDK_ROW =
       "| `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |";
     const REAL_ZONE_ROW =
@@ -2999,10 +3002,10 @@ describe("K1.0 policy and inventory agree", () => {
       // same count, same empty edge sets, nothing unreadable, so the measured-tree comparison
       // downstream could not distinguish it from the truth it accepts.
       for (const [name, replacement] of [
-        ["a fractional count", "| `target-kernel` | 10.5 | nothing | nothing |"],
-        ["a count with a junk suffix", "| `target-kernel` | 10oops | nothing | nothing |"],
-        ["an empty claim that then names a workspace edge", "| `target-kernel` | 10 | nothing, `@arrokothi/core` | nothing |"],
-        ["an empty claim that then names a third-party edge", "| `target-kernel` | 10 | nothing | nothing, `evil-package` |"],
+        ["a fractional count", "| `target-kernel` | 11.5 | nothing | nothing |"],
+        ["a count with a junk suffix", "| `target-kernel` | 11oops | nothing | nothing |"],
+        ["an empty claim that then names a workspace edge", "| `target-kernel` | 11 | nothing, `@arrokothi/core` | nothing |"],
+        ["an empty claim that then names a third-party edge", "| `target-kernel` | 11 | nothing | nothing, `evil-package` |"],
       ] as const) {
         const unreadable = await dependencyUnreadable(REAL_DEPENDENCY_ROW, replacement);
         assert.ok(
@@ -3081,7 +3084,7 @@ describe("K1.0 policy and inventory agree", () => {
       // and belongs only to the workspace column. In the third-party column it previously produced
       // an empty set through the token extractor, which is the same silent denial in another
       // spelling.
-      const emDash = await dependencyUnreadable(REAL_DEPENDENCY_ROW, "| `target-kernel` | 10 | nothing | — |");
+      const emDash = await dependencyUnreadable(REAL_DEPENDENCY_ROW, "| `target-kernel` | 11 | nothing | — |");
       assert.ok(
         emDash.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
         `an em dash is not a third-party claim; got: ${JSON.stringify(emDash)}`,
@@ -3347,7 +3350,7 @@ describe("K1.0 policy and inventory agree", () => {
     // the short-row and correct-body twins.
     const DEP_HEADER = "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |";
     const DEP_DELIM = "|---|---|---|---|";
-    const DEP_ROW = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+    const DEP_ROW = "| `target-kernel` | 11 | nothing | `canonicalize` |";
     const ZONES_HEADER = "| Zone id | Roots | Owner and status |";
     const ZONES_DELIM = "|---|---|---|";
     const ZONES_ROW =
@@ -3381,7 +3384,7 @@ describe("K1.0 policy and inventory agree", () => {
       const baseline = parseDependencyTable(real);
       const mutated = await depResult([
         [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER} Extra claim |\n${DEP_DELIM}---|`],
-        [DEP_ROW, "| `target-kernel` | 10 | nothing | `canonicalize` | `evil-package` |"],
+        [DEP_ROW, "| `target-kernel` | 11 | nothing | `canonicalize` | `evil-package` |"],
       ]);
       assert.ok(
         mutated.unreadable.some((message) =>
@@ -3524,7 +3527,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         renamedMiddle.rows.get("target-kernel")?.files,
-        10,
+        11,
         "schema-correct bodies still decode when only the header is wrong",
       );
       const reordered = await depResult([
@@ -3568,7 +3571,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         narrowed.rows.get("target-kernel")?.files,
-        10,
+        11,
         "a narrowed header must not turn a schema-correct body into excess",
       );
       const widenedHeaderOnly = await depResult([
@@ -3585,7 +3588,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         widenedHeaderOnly.rows.get("target-kernel")?.files,
-        10,
+        11,
         "the relation survives a header-only widening; the header report carries the loudness",
       );
     });

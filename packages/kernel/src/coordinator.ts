@@ -58,6 +58,7 @@ import type {
   MailboxEntryView,
 } from "./inspection.ts";
 import { isTerminal, type ExecutionState } from "./lifecycle.ts";
+import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts";
 import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
 import { err, ok, type Result } from "./result.ts";
 import { refuseUnsupportedSurface } from "./unsupported.ts";
@@ -78,12 +79,30 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue 
  * observation until the atomic decision is completely recorded — and on every replay, redelivery
  * and inspection projection of that decision — this module consults **no live global, no live
  * prototype method, no iteration protocol and no promise machinery**. Everything below comes from
- * these load-time references, index loops and index assignment. Completeness is verifiable by
- * inspection: no `new Map/Set`, no `.get/.set/.has/.push/.map/.filter/.slice`, no `for...of`, no
- * array/object-iterator spread and no bare `Object.freeze`/`Promise` remains on these paths.
- * (Object *spread* of plain Kernel records copies own data without an iterator and is kept;
- * Driver-supplied values and the host-authenticated caller are trusted inputs, not caller
- * observations, and are documented where used.)
+ * these load-time references and index loops.
+ *
+ * K11-R6-STATE-02: *index assignment is not part of that answer.* The previous round replaced the
+ * prototype methods with `list[list.length] = item`, on the reading that an index loop plus an
+ * ordinary indexed write is an ambient-independent primitive. It is not. An indexed write into a
+ * position the list does not own yet is `[[Set]]`, which walks the prototype chain, so an inherited
+ * accessor at `Array.prototype["0"]` — installable from the very `options.bound` getter or payload
+ * trap this boundary is observing — swallows the write and answers a later read from its own
+ * getter. A captured `Array.prototype.push` performs the same `[[Set]]` and then raises `length`
+ * anyway, so it is worse rather than better. Dispatch could accept a reserved batch the validated
+ * bound did not name, ingress could return an accepted Event with nothing retained behind it, and a
+ * freshly built view could describe something the Kernel never recorded.
+ *
+ * Every Kernel-owned list is therefore built and read as own data through
+ * [`own-array.ts`](./own-array.ts), which owns that rule and explains it. Completeness is
+ * verifiable mechanically, not by inspection alone: no `new Map/Set`, no
+ * `.get/.set/.has/.push/.map/.filter/.slice`, no `for...of`, no array/object-iterator spread, no
+ * bare `Object.freeze`/`Promise` and **no ordinary indexed assignment** remains anywhere in this
+ * zone outside `own-array.ts`, and `boundary.test.ts` enforces the last two over the zone's
+ * executable text. (Object *spread* of plain Kernel records copies own data with
+ * `CreateDataPropertyOrThrow` rather than `[[Set]]`, and consults no iterator, so it is kept;
+ * array literals are own data at construction for the same reason; Driver-supplied values and the
+ * host-authenticated caller are trusted inputs, not caller observations, and are documented where
+ * used.)
  */
 const PrimordialNumberIsInteger = Number.isInteger;
 const PrimordialArrayIsArray = Array.isArray;
@@ -96,6 +115,20 @@ const PrimordialMapSet = Map.prototype.set;
 const PrimordialMapForEach = Map.prototype.forEach;
 const PrimordialPromiseResolve = Promise.resolve;
 const PrimordialPromiseThen = Promise.prototype.then;
+/**
+ * Error constructors and `String`, from load time.
+ *
+ * `describeFailure` runs inside `#deliver`, which the dispatch tick reaches *after* the caller's
+ * `options.bound` getter has run, so a live `Error`/`String` read there is exactly the ambient
+ * dependency the rule above forbids: `instanceof Error` consults `globalThis.Error` and then its
+ * `Symbol.hasInstance`, and `String(x)` consults `globalThis.String`. Both failures are already
+ * contained by `describeFailure`'s own guard, so this is closing the stated rule rather than a
+ * reachable wrong-answer path — but the rule should be true as written (self-found, separate
+ * provenance from K11-R6-STATE-02).
+ */
+const PrimordialErrorConstructor = Error;
+const PrimordialRangeError = RangeError;
+const PrimordialString = String;
 
 /** `Map.get` without consulting the (possibly replaced) live prototype method. */
 const mapGet = <K, V>(map: Map<K, V>, key: K): V | undefined =>
@@ -106,30 +139,14 @@ const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
   PrimordialReflectApply(PrimordialMapSet, map, [key, value]);
 };
 
-/** Copies an array without spread iteration, `slice`, or any other prototype method. */
-const copyArray = <T>(source: readonly T[]): T[] => {
-  const out: T[] = [];
-  for (let index = 0; index < source.length; index += 1) out[out.length] = source[index] as T;
-  return out;
-};
-
-/** Projects an array with an index loop instead of `Array.prototype.map`. */
-const copyMapped = <T, U>(source: readonly T[], project: (item: T) => U): U[] => {
-  const out: U[] = [];
-  for (let index = 0; index < source.length; index += 1) out[out.length] = project(source[index] as T);
-  return out;
-};
-
-/** Single-observation append for refusal issue lists (see the note above). */
+/** One refusal issue, appended as own data (see the note above). */
 const appendIssue = (target: ValueIssue[], issue: ValueIssue): void => {
-  target[target.length] = issue;
+  appendOwn(target, issue);
 };
 
-/** Multi-append without spread iteration or `push` (both consult ambient state). */
+/** Every issue of another list, appended as own data and in order. */
 const appendIssues = (target: ValueIssue[], extra: readonly ValueIssue[]): void => {
-  for (let index = 0; index < extra.length; index += 1) {
-    target[target.length] = extra[index] as ValueIssue;
-  }
+  appendAllOwn(target, extra);
 };
 
 // -- Requests and accepted answers -------------------------------------------
@@ -291,7 +308,7 @@ const QUEUED: MailboxDisposition = PrimordialObjectFreeze({ kind: "queued" });
 
 const describeFailure = (reason: unknown): string => {
   try {
-    if (reason instanceof Error) {
+    if (reason instanceof PrimordialErrorConstructor) {
       // A hostile rejection reason can throw again when `name`/`message` is read. Delivery
       // bookkeeping must never let that second error escape the Kernel boundary.
       let name: unknown;
@@ -302,9 +319,9 @@ const describeFailure = (reason: unknown): string => {
       } catch {
         return "delivery failed with an uninspectable reason";
       }
-      return `${typeof name === "string" ? name : "Error"}: ${typeof message === "string" ? message : String(message)}`;
+      return `${typeof name === "string" ? name : "Error"}: ${typeof message === "string" ? message : PrimordialString(message)}`;
     }
-    return String(reason);
+    return PrimordialString(reason);
   } catch {
     return "delivery failed with an uninspectable reason";
   }
@@ -340,12 +357,14 @@ interface AcceptedInput {
 const located = (issues: readonly ValueIssue[], label: string): ValueIssue[] => {
   const out: ValueIssue[] = [];
   for (let index = 0; index < issues.length; index += 1) {
-    const issue = issues[index] as ValueIssue;
+    const issue = readAt(issues, index) as ValueIssue;
     // Index read, not `String.prototype.startsWith`: refusal formatting runs after caller
-    // observation in the same tick, and the method is caller-replaceable.
+    // observation in the same tick, and the method is caller-replaceable. String indexing is a
+    // read of the string's own character position, not an array position, so no prototype is
+    // consulted for it.
     const bracketed = issue.path.length > 0 && (issue.path[0] as string) === "[";
     const path = issue.path === "" ? label : bracketed ? `${label}${issue.path}` : `${label}.${issue.path}`;
-    out[out.length] = { ...issue, path };
+    appendOwn(out, { ...issue, path });
   }
   return out;
 };
@@ -354,7 +373,7 @@ const located = (issues: readonly ValueIssue[], label: string): ValueIssue[] => 
 const explain = (issues: readonly ValueIssue[]): string => {
   let out = "";
   for (let index = 0; index < issues.length; index += 1) {
-    const issue = issues[index] as ValueIssue;
+    const issue = readAt(issues, index) as ValueIssue;
     if (index > 0) out += "; ";
     out += `${issue.path} ${issue.code}`;
   }
@@ -460,6 +479,8 @@ function acceptCreationContent(
   let scalarsOk = true;
   // Index loop, not destructuring iteration: `for...of` consults the ambient `Symbol.iterator`.
   for (let scalarIndex = 0; scalarIndex < scalars.length; scalarIndex += 1) {
+    // `scalars` is complete at its literal construction above, so this is an own read; array
+    // literals install their elements with `CreateDataPropertyOrThrow`, never `[[Set]]`.
     const scalar = scalars[scalarIndex] as [string, unknown];
     if (!acceptIdentityText(scalar[1], scalar[0], issues)) scalarsOk = false;
   }
@@ -515,7 +536,7 @@ export class ExecutionCoordinator {
       // A configuration error, not a protocol refusal: creation accepts its initial input as part of
       // one atomic decision, so a capacity below one would declare a limit the first Execution
       // necessarily breaks.
-      throw new RangeError(`mailboxCapacity must be an integer of at least 1, received ${typeof capacity === "number" ? `${capacity}` : typeof capacity}`);
+      throw new PrimordialRangeError(`mailboxCapacity must be an integer of at least 1, received ${typeof capacity === "number" ? `${capacity}` : typeof capacity}`);
     }
     this.#driver = options.driver;
     this.#mailboxCapacity = capacity;
@@ -735,7 +756,7 @@ export class ExecutionCoordinator {
     // which can replace `Array.prototype.filter` before this line runs.
     let unacknowledged = 0;
     for (let index = 0; index < record.mailbox.length; index += 1) {
-      if ((record.mailbox[index] as MailboxEntry).disposition.kind === "queued") unacknowledged += 1;
+      if ((readAt(record.mailbox, index) as MailboxEntry).disposition.kind === "queued") unacknowledged += 1;
     }
     if (unacknowledged >= this.#mailboxCapacity) {
       return err(
@@ -762,10 +783,15 @@ export class ExecutionCoordinator {
       disposition: QUEUED,
     };
     record.nextAcceptancePosition += 1;
-    // Index assignment, not `.push`: same-tick capture side effects may have replaced the method.
-    record.mailbox[record.mailbox.length] = entry;
+    // `appendOwn`, not `.push` and not `mailbox[mailbox.length] = entry`: both are `[[Set]]` on a
+    // position the mailbox does not own yet, and the payload capture above ran caller traps in this
+    // tick that may have installed an inherited accessor at exactly that index name. A swallowed
+    // write would return an accepted Event ID and receipt with nothing behind them — the same
+    // acceptance-without-retention shape as the round-6 `Map.set` drop, reached without touching
+    // any method (K11-R6-STATE-02).
+    appendOwn(record.mailbox, entry);
     mapSet(record.byInputId, inputIdKey(inputId), entry);
-    record.receipts[record.receipts.length] = receipt;
+    appendOwn(record.receipts, receipt);
 
     return ok({
       eventId,
@@ -831,11 +857,20 @@ export class ExecutionCoordinator {
     // observation that passed validation selects, with no second read of the envelope. The prefix
     // is built with an index loop rather than `filter`/`slice` so a getter side effect that
     // replaced an `Array.prototype` method before selection runs cannot change which Events the
-    // validated bound names.
+    // validated bound names — and each selected entry is installed as the list's own data
+    // (`appendOwn`), not written with `selected[selected.length] = entry`.
+    //
+    // K11-R6-STATE-02: that last part is the whole counterexample, and it needs no payload at all.
+    // A `bound` getter that returns `1` and installs an inherited setter at `Array.prototype["0"]`
+    // leaves this loop's ordinary write with nowhere to land: the setter runs, no element is
+    // created, `selected.length` stays at zero, and the loop keeps re-selecting into the same
+    // swallowed position. The Kernel then accepts a dispatch intent whose reserved batch is empty
+    // while a queued Event was available under a validated bound of one. `appendOwn` is
+    // `[[DefineOwnProperty]]`, so the accessor is not on the path.
     const selected: MailboxEntry[] = [];
     for (let index = 0; index < record.mailbox.length && selected.length < bound; index += 1) {
-      const entry = record.mailbox[index] as MailboxEntry;
-      if (entry.disposition.kind === "queued") selected[selected.length] = entry;
+      const entry = readAt(record.mailbox, index) as MailboxEntry;
+      if (entry.disposition.kind === "queued") appendOwn(selected, entry);
     }
     record.activationsMinted += 1;
     const activationId = `${record.executionId}/activation-${record.activationsMinted}`;
@@ -845,14 +880,8 @@ export class ExecutionCoordinator {
     // index loops: a capture-time (or bound-getter) side effect may have replaced live
     // `Object.freeze`/`Array.prototype.map` before these lines run, which would hand the Driver a
     // mutable exchange whose later mutation reappears on redelivery (K11-R5-STATE-01).
-    const carriedEvents: ActivationEvent[] = [];
-    for (let index = 0; index < selected.length; index += 1) {
-      carriedEvents[carriedEvents.length] = toActivationEvent(selected[index] as MailboxEntry);
-    }
-    const batchIds: string[] = [];
-    for (let index = 0; index < selected.length; index += 1) {
-      batchIds[batchIds.length] = (selected[index] as MailboxEntry).eventId;
-    }
+    const carriedEvents: ActivationEvent[] = mapOwn(selected, toActivationEvent);
+    const batchIds: string[] = mapOwn(selected, (entry: MailboxEntry) => entry.eventId);
     const activation: Activation = PrimordialObjectFreeze({
       executionId: record.executionId,
       activationId,
@@ -877,7 +906,7 @@ export class ExecutionCoordinator {
     };
     record.activation = intent;
     record.state = "RUNNING";
-    record.receipts[record.receipts.length] = receipt;
+    appendOwn(record.receipts, receipt);
 
     this.#deliver(intent);
 
@@ -948,11 +977,13 @@ export class ExecutionCoordinator {
   visibleExecutions(caller: AuthenticatedCaller): readonly string[] {
     const visible: string[] = [];
     // `Map.forEach` through the load-time reference: neither the `values()` iterator protocol
-    // (`Symbol.iterator`) nor `Array.prototype.push` is consulted, so persistent ambient pollution
-    // from an earlier boundary observation cannot hide or duplicate listed IDs.
+    // (`Symbol.iterator`) nor `Array.prototype.push` is consulted, and each visible ID is installed
+    // as this list's own data, so persistent ambient pollution left behind by an earlier boundary
+    // observation cannot hide or duplicate listed IDs (K11-R6-STATE-02: this path takes no caller
+    // value of its own, so the pollution it has to survive is the residue of an earlier call).
     PrimordialReflectApply(PrimordialMapForEach, this.#executions, [
       (record: ExecutionRecord) => {
-        if (mayReachScope(caller, record.scope)) visible[visible.length] = record.executionId;
+        if (mayReachScope(caller, record.scope)) appendOwn(visible, record.executionId);
       },
     ]);
     return visible;
@@ -1028,7 +1059,7 @@ export class ExecutionCoordinator {
   #refusal(classification: RefusalClassification, reason: string, record: ExecutionRecord | null): RefusalRecord {
     this.#acceptancePosition += 1;
     const refusal = mintRefusal(classification, reason, this.#acceptancePosition, record === null ? null : record.executionId);
-    if (record !== null) record.refusals[record.refusals.length] = refusal;
+    if (record !== null) appendOwn(record.refusals, refusal);
     return refusal;
   }
 
@@ -1041,7 +1072,7 @@ export class ExecutionCoordinator {
    */
   #deliver(intent: ActivationRecord): void {
     const attempt: DeliveryAttempt = { attempt: intent.deliveries.length + 1, status: "pending", failure: null };
-    intent.deliveries[intent.deliveries.length] = attempt;
+    appendOwn(intent.deliveries, attempt);
     try {
       const settled: unknown = this.#driver.deliver(intent.activation);
       if (isThenable(settled)) {
@@ -1106,9 +1137,9 @@ const toActivationView = (intent: ActivationRecord): ActivationView => ({
   activationId: intent.activation.activationId,
   writerEpoch: intent.activation.writerEpoch,
   baseProgressRevision: intent.activation.baseProgressRevision,
-  batch: copyArray(intent.batch),
+  batch: copyOwn(intent.batch),
   receipt: intent.receipt,
-  deliveries: copyMapped(intent.deliveries, toDeliveryView),
+  deliveries: mapOwn(intent.deliveries, toDeliveryView),
 });
 
 const toMailboxView = (entry: MailboxEntry, isReserved: (eventId: string) => boolean): MailboxEntryView => ({
@@ -1132,18 +1163,21 @@ function viewOf(record: ExecutionRecord): ExecutionView {
   const isReserved = (eventId: string): boolean => {
     if (batch === null) return false;
     for (let index = 0; index < batch.length; index += 1) {
-      if ((batch[index] as string) === eventId) return true;
+      if ((readAt(batch, index) as string) === eventId) return true;
     }
     return false;
   };
+  // Every list this view is assembled from is built as own data. A view is the Kernel's own answer
+  // about retained truth, so a fresh projection must not be droppable or substitutable through
+  // ambient pollution an earlier boundary observation left installed (K11-R6-STATE-02).
   const mailbox: MailboxEntryView[] = [];
   const queued: string[] = [];
   const terminalDispositions: string[] = [];
   for (let index = 0; index < record.mailbox.length; index += 1) {
-    const entry = record.mailbox[index] as MailboxEntry;
-    mailbox[mailbox.length] = toMailboxView(entry, isReserved);
-    if (entry.disposition.kind === "queued") queued[queued.length] = entry.eventId;
-    else if (entry.disposition.kind === "terminal") terminalDispositions[terminalDispositions.length] = entry.eventId;
+    const entry = readAt(record.mailbox, index) as MailboxEntry;
+    appendOwn(mailbox, toMailboxView(entry, isReserved));
+    if (entry.disposition.kind === "queued") appendOwn(queued, entry.eventId);
+    else if (entry.disposition.kind === "terminal") appendOwn(terminalDispositions, entry.eventId);
   }
   return {
     executionId: record.executionId,
@@ -1163,7 +1197,7 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     // and reporting an empty list is the truthful answer rather than an omitted field.
     acknowledged: [],
     terminalDispositions,
-    refusals: copyArray(record.refusals),
-    receipts: copyArray(record.receipts),
+    refusals: copyOwn(record.refusals),
+    receipts: copyOwn(record.receipts),
   };
 }

@@ -54,6 +54,13 @@ export interface CreationKeyId {
 const PrimordialObjectFreeze = Object.freeze;
 
 /**
+ * Load-time `TypeError`: `packIdentity` raises on a non-text part *after* caller-owned values have
+ * been observed in the same tick, so reading the live constructor there would let a capture-time
+ * side effect decide what the boundary throws (self-found alongside K11-R6-STATE-02).
+ */
+const PrimordialTypeError = TypeError;
+
+/**
  * Keys for the Kernel's own lookup tables, and for comparing multi-part content identities.
  *
  * Each part is length-prefixed rather than joined with a separator, so no choice of caller text can
@@ -64,6 +71,11 @@ const PrimordialObjectFreeze = Object.freeze;
  * Built with an index loop and string concatenation, not `Array.prototype.map`/`join`: identity
  * is packed after caller observation in the same tick, and a capture-time side effect can replace
  * those prototype methods before packing runs. Packing must be a function only of the parts.
+ *
+ * `parts` is always a list the Kernel builds as an array literal at the call site, so its elements
+ * are own data installed with `CreateDataPropertyOrThrow` rather than `[[Set]]`, and these reads
+ * reach no prototype. That is why packing needs no `own-array.ts` read here; a list the Kernel
+ * *grows* after construction does (K11-R6-STATE-02).
  */
 export const packIdentity = (parts: readonly string[]): string => {
   let out = "";
@@ -77,7 +89,7 @@ export const packIdentity = (parts: readonly string[]): string => {
     // text is a programming error at that boundary, and is raised as one rather than silently
     // producing a colliding key (K11-R3-ID-02).
     if (typeof part !== "string") {
-      throw new TypeError(`identity parts must be text; received ${part === null ? "null" : typeof part}`);
+      throw new PrimordialTypeError(`identity parts must be text; received ${part === null ? "null" : typeof part}`);
     }
     out += `${part.length}:${part}`;
   }
@@ -144,6 +156,9 @@ export const mintReceipt = (boundary: ReceiptBoundary, position: number): Receip
   });
 
 /** Whether the caller may reach Executions bound to `scope`.
+ *
+ * `caller` arrives from the host's authentication boundary, not from a request payload, so its
+ * scope list is a trusted input rather than caller-observed state; these are ordinary reads of it.
  *
  * Full scan with no early exit: work depends only on `caller.scopes.length`, never on where a
  * match sits. `Array.prototype.includes` would return early on a match, so a hidden record whose

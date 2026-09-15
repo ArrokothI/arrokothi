@@ -16,7 +16,16 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { BOUNDARY_LIMITS, ExecutionCoordinator, canonicalize, isTerminal, type BoundaryValue, type ExecutionView } from "../src/index.ts";
-import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
+import {
+  accepted,
+  caller,
+  createRequest,
+  inheritedIndexIsLive,
+  recordingDriver,
+  refused,
+  trapInheritedIndices,
+  type InheritedIndexTrap,
+} from "./harness.ts";
 
 const coordinator = (mailboxCapacity?: number): ExecutionCoordinator =>
   new ExecutionCoordinator(mailboxCapacity === undefined ? { driver: recordingDriver() } : { driver: recordingDriver(), mailboxCapacity });
@@ -505,5 +514,128 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
     assert.equal(refusal.classification, "malformed_value");
     assert.match(refusal.reason, /unrepresentable_member/);
     assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox);
+  });
+});
+
+describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
+  /**
+   * The accepted-state half of the same defect.
+   *
+   * The payload observation runs caller code inside the boundary call, so the caller can install an
+   * inherited setter at exactly the index name the mailbox and the receipt list are about to write
+   * to. Under the previous shape both writes were `[[Set]]` into positions those lists did not own
+   * yet, so both were swallowed: `submitInput` would still answer with an Event ID, an acceptance
+   * position and a receipt, while inspection, the replay lookup and the next dispatch saw nothing
+   * behind them. That is acceptance without retention, reached without replacing any method.
+   */
+  const trapOnRead = (payload: Record<string, unknown>, indices: readonly string[], onInstall: (trap: InheritedIndexTrap) => void): BoundaryValue =>
+    new Proxy(payload, {
+      get(target, property, receiver): unknown {
+        if (property === "n") {
+          onInstall(trapInheritedIndices(indices));
+          return Reflect.get(target, property, receiver) as unknown;
+        }
+        return Reflect.get(target, property, receiver) as unknown;
+      },
+    }) as unknown as BoundaryValue;
+
+  test("an inherited setter at the next mailbox index cannot make an accepted Event go unretained", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+    const created = accepted(kernel.createExecution(author, createRequest()));
+
+    let trap: InheritedIndexTrap | undefined;
+    let submitted: { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
+    try {
+      submitted = accepted(
+        kernel.submitInput(author, {
+          destination: created.executionId,
+          requestKey: "traps-its-own-slot",
+          kind: "application.request",
+          payload: trapOnRead({ n: 2 }, ["1", "2"], (installed) => {
+            trap = installed;
+          }),
+        }),
+      ) as { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
+      assert.equal(inheritedIndexIsLive(1), true, "the inherited setter was live across the ingress call");
+    } finally {
+      trap?.restore();
+    }
+
+    assert.equal(submitted!.replayed, false);
+    assert.equal(submitted!.acceptancePosition, 2);
+    assert.deepEqual(trap!.swallowed, ["control-write"], "no Kernel element reached the setter");
+
+    // The returned acceptance has a retained decision behind it, at every place that decision lives.
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.equal(view.mailbox.length, 2, "the Event is in the mailbox, not lost to the setter");
+    assert.deepEqual(
+      view.mailbox.map((entry) => entry.eventId),
+      [created.initialEventId, submitted!.eventId],
+    );
+    assert.deepEqual(view.mailbox[1]?.payload, { n: 2 }, "the retained payload is the observed value");
+    assert.deepEqual(view.queued, [created.initialEventId, submitted!.eventId]);
+    assert.deepEqual(
+      view.receipts.map((receipt) => receipt.token),
+      [created.receipt.token, submitted!.receipt.token],
+      "the ingress receipt joined the Execution's retained evidence",
+    );
+
+    // Exact replay finds the retained entry and returns the original receipt rather than minting a
+    // second Event: a dropped mailbox write would have made this a fresh acceptance at position 3.
+    const replay = accepted(
+      kernel.submitInput(author, {
+        destination: created.executionId,
+        requestKey: "traps-its-own-slot",
+        kind: "application.request",
+        payload: { n: 2 },
+      }),
+    );
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.eventId, submitted!.eventId);
+    assert.equal(replay.acceptancePosition, 2);
+    assert.equal(replay.receipt, submitted!.receipt);
+
+    // And the retained Event is selectable: reservation sees it in acceptance order.
+    const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
+    assert.deepEqual(dispatched.batch, [created.initialEventId, submitted!.eventId]);
+  });
+
+  test("a creation whose payload traps the first mailbox index still binds its initial Event", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const author = caller("app-a", "tenant-a");
+
+    let trap: InheritedIndexTrap | undefined;
+    let created: { executionId: string; initialEventId: string; replayed: boolean };
+    try {
+      created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({
+            creationKey: "traps-the-first-slot",
+            initialInput: {
+              kind: "application.request",
+              payload: trapOnRead({ n: 1 }, ["0", "1"], (installed) => {
+                trap = installed;
+              }),
+            },
+          }),
+        ),
+      );
+      assert.equal(inheritedIndexIsLive(0), true, "the inherited setter was live across the creation call");
+    } finally {
+      trap?.restore();
+    }
+
+    assert.equal(created!.replayed, false);
+    const view = accepted(kernel.inspect(author, created!.executionId));
+    assert.equal(view.state, "READY");
+    assert.equal(view.mailbox.length, 1, "creation's own atomic Event is retained");
+    assert.equal(view.mailbox[0]?.eventId, created!.initialEventId);
+    assert.deepEqual(view.mailbox[0]?.payload, { n: 1 });
+    assert.deepEqual(view.receipts.length, 1);
+    assert.deepEqual(kernel.visibleExecutions(author), [created!.executionId]);
   });
 });

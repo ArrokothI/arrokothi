@@ -11,7 +11,15 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, canonicalize, type BoundaryValue, type ExecutionView } from "../src/index.ts";
-import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
+import {
+  accepted,
+  caller,
+  createRequest,
+  inheritedIndexIsLive,
+  recordingDriver,
+  refused,
+  trapInheritedIndices,
+} from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -147,5 +155,84 @@ describe("K1.1-C9 what a reader can see", () => {
     assert.deepEqual(kernel.visibleExecutions(caller("app-b", "tenant-b")), [inB.executionId]);
     assert.deepEqual(kernel.visibleExecutions(caller("app-c", "tenant-a", "tenant-b")), [inA.executionId, inB.executionId]);
     assert.deepEqual(kernel.visibleExecutions(caller("app-d", "tenant-z")), []);
+  });
+});
+
+describe("K11-R6-STATE-02 a projection describes retained truth under persistent ambient pollution", () => {
+  /**
+   * The projection half of the same defect, and the case that shows why "observe the caller once"
+   * is not the whole answer.
+   *
+   * These calls take no caller value at all. The pollution is residue: an inherited indexed
+   * accessor that some earlier boundary observation installed and left on `Array.prototype`. Every
+   * list a view is assembled from — the mailbox entries, the queued IDs, the reserved batch copy,
+   * the delivery attempts, the recorded refusals, the receipts, and the visible-Execution listing —
+   * was previously grown with `list[list.length] = item`, so under that residue a freshly built
+   * view could report an empty mailbox, an empty batch and no evidence for an Execution that holds
+   * all three.
+   */
+  test("inspect and visibleExecutions report the same facts with the accessor live as without it", () => {
+    const { kernel, executionId } = exercised();
+    const clean = accepted(kernel.inspect(author, executionId));
+    const cleanList = kernel.visibleExecutions(author);
+
+    let polluted: ExecutionView;
+    let pollutedList: readonly string[];
+    let secondRead: ExecutionView;
+    const trap = trapInheritedIndices(["0", "1", "2", "3"]);
+    try {
+      assert.equal(inheritedIndexIsLive(0), true, "the inherited setter is live for these reads");
+      polluted = accepted(kernel.inspect(author, executionId));
+      secondRead = accepted(kernel.inspect(author, executionId));
+      pollutedList = kernel.visibleExecutions(author);
+    } finally {
+      trap.restore();
+    }
+
+    assert.deepEqual(polluted!, clean, "the view is the retained truth, not what the accessor allowed through");
+    assert.deepEqual(secondRead!, polluted!, "and reading twice under the accessor is still inert");
+    assert.deepEqual(pollutedList!, cleanList);
+    assert.equal(polluted!.mailbox.length, 3);
+    assert.equal(polluted!.queued.length, 3);
+    assert.equal(polluted!.activation?.batch.length, 2);
+    assert.equal(polluted!.activation?.deliveries.length, 1);
+    assert.equal(polluted!.refusals.length, 1);
+    assert.equal(polluted!.receipts.length, 4);
+    assert.deepEqual(trap.swallowed, ["control-write"], "no Kernel element reached the setter");
+
+    // Reading under pollution acknowledged nothing and changed nothing either.
+    assert.deepEqual(accepted(kernel.inspect(author, executionId)), clean);
+  });
+
+  test("a refusal recorded under the accessor is still retained evidence a later read reports", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    accepted(kernel.submitInput(author, { destination: created.executionId, requestKey: "k", kind: "k", payload: { a: 1 } }));
+
+    const trap = trapInheritedIndices(["0", "1"]);
+    let refusal: { classification: string; position: number };
+    try {
+      assert.equal(inheritedIndexIsLive(0), true, "the refusal list's first position is trapped");
+      refusal = refused(
+        kernel.submitInput(author, { destination: created.executionId, requestKey: "k", kind: "k", payload: { a: 2 } }),
+      );
+      // The serializer window borrows both prototypes for the exact JCS call and must hand them
+      // back exactly as it found them, including a hostile accessor it did not install.
+      const still = Object.getOwnPropertyDescriptor(Array.prototype, "0");
+      assert.equal(typeof still?.get, "function", "the window restored the descriptor it borrowed");
+      assert.equal(inheritedIndexIsLive(0), true);
+    } finally {
+      trap.restore();
+    }
+
+    assert.equal(refusal!.classification, "duplicate_conflict");
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(
+      view.refusals.map((record) => record.classification),
+      ["duplicate_conflict"],
+      "the refusal reached the Execution's retained evidence",
+    );
+    assert.equal(view.refusals[0], refusal!, "and it is the same retained object that was returned");
+    assert.equal(view.mailbox.length, 2, "the conflict mutated nothing");
   });
 });

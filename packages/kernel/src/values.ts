@@ -24,6 +24,15 @@
  * not one example of it: after the capture pass there is no second reading of caller-owned state to
  * disagree with.
  *
+ * One observation is also not enough on its own: the pass has to be able to *hold* what it observed.
+ * An ordinary indexed write into a position a list does not own yet is `[[Set]]`, which consults the
+ * prototype chain, so a caller-installed accessor at `Array.prototype["20"]` could swallow the
+ * element the pass had just accepted and answer the read that built the snapshot from its own
+ * getter — a coherent caller array reading `20` at that position could be retained and canonicalized
+ * as `999`. Every internal list between the observation and the frozen snapshot is therefore built
+ * and read as own data through `own-array.ts`, and the array half installs each accepted element
+ * directly into the snapshot rather than into a scratch array it reads back (K11-R6-VAL-04).
+ *
  * Coherence alone would still let an exotic representation be *normalized* into a plain snapshot, and
  * `values.md` says to reject unsupported values rather than repair them. So the capture pass also
  * refuses any container whose own data descriptor and ordinary property read disagree, whose array
@@ -65,6 +74,8 @@
 
 import canonicalizeJcs from "canonicalize";
 import { Buffer } from "node:buffer";
+
+import { appendOwn, defineAt, readAt, sizedList, truncateOwn } from "./own-array.ts";
 
 /**
  * Primordials captured before any caller code runs.
@@ -138,8 +149,17 @@ const PrimordialGlobalThis = globalThis;
 /** A value that may cross a Kernel boundary. `values.md`: "Boundary value and root". */
 export type BoundaryValue = null | boolean | number | string | BoundaryValue[] | { [key: string]: BoundaryValue };
 
-/** `values.md`, "Fixed semantic limits". All four apply together. */
-export const BOUNDARY_LIMITS = {
+/**
+ * `values.md`, "Fixed semantic limits". All four apply together.
+ *
+ * Frozen at load time, through the load-time reference. `as const` is a compile-time claim only,
+ * and every limit below is read from this object at the moment a value is checked — so without the
+ * freeze an ordinary caller could raise `containerEntries` or `canonicalBytes` on the exported
+ * object and the next boundary call would enforce the caller's limit instead of the published one.
+ * Self-found while auditing caller-mutable ambient state for K11-R6-STATE-02/VAL-04; it is the same
+ * family (a Kernel decision that reads mutable state a caller can reach), not a reviewer finding.
+ */
+export const BOUNDARY_LIMITS = PrimordialObjectFreeze({
   /** Unicode scalar values per individual decoded string value or object member name. */
   stringScalarValues: 65_536,
   /** Direct children of one array or one object. */
@@ -148,7 +168,7 @@ export const BOUNDARY_LIMITS = {
   containerDepth: 32,
   /** Canonical UTF-8 bytes of each root, measured independently of its siblings. */
   canonicalBytes: 1_048_576,
-} as const;
+} as const);
 
 export type ValueIssueCode =
   /** Not one of the six boundary forms: `undefined`, a symbol, a function, a class instance, … */
@@ -263,19 +283,17 @@ const scalarValueCount = (input: string): number => {
 };
 
 /**
- * Appends without consulting `Array.prototype.push`.
+ * Records one located reason this value is not acceptable.
  *
- * Issue and capture lists are built while caller traps are still running: an earlier trap in the
- * same capture pass can replace `Array.prototype.push`, so `list.push(item)` would invoke
- * attacker code (or throw out of the boundary). The load-time `push` is applied directly through
- * the load-time `Reflect.apply`, so neither call consults any mutable prototype or global.
+ * Through `appendOwn`, not `push` and not `list[list.length] = issue`. Issue lists are built while
+ * caller traps are still running, and both of those are `[[Set]]` on a position the list does not
+ * own yet: an inherited `Array.prototype` indexed setter installed by an earlier trap in the same
+ * pass swallows the issue and leaves a hole that a later read answers from the attacker's getter,
+ * so the reason a value was refused would be the attacker's text (K11-R6-VAL-04). `own-array.ts`
+ * owns why the replacement is structural rather than another captured method.
  */
-const appendItem = <T>(list: T[], item: T): void => {
-  PrimordialReflectApply(PrimordialArrayPush, list, [item]);
-};
-
 const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
-  appendItem(issues, issue);
+  appendOwn(issues, issue);
 };
 
 /**
@@ -303,20 +321,24 @@ interface CaptureState {
 
 const isOpen = (state: CaptureState, container: object): boolean => {
   for (let index = 0; index < state.open.length; index += 1) {
-    if (state.open[index] === container) return true;
+    if (readAt(state.open, index) === container) return true;
   }
   return false;
 };
 
 const openContainer = (state: CaptureState, container: object): void => {
-  appendItem(state.open, container);
+  appendOwn(state.open, container);
 };
 
+// The swap-with-last removal is an own write at a position the stack already owns, and the
+// truncation is an own `length` write; neither reaches a prototype. It is still routed through
+// `own-array.ts` so the whole stack — push, read and removal — obeys one rule rather than three
+// separately argued ones (K11-R6-VAL-04).
 const closeContainer = (state: CaptureState, container: object): void => {
   for (let index = 0; index < state.open.length; index += 1) {
-    if (state.open[index] === container) {
-      state.open[index] = state.open[state.open.length - 1] as object;
-      state.open.length -= 1;
+    if (readAt(state.open, index) === container) {
+      defineAt(state.open, index, readAt(state.open, state.open.length - 1) as object);
+      truncateOwn(state.open, state.open.length - 1);
       return;
     }
   }
@@ -548,8 +570,9 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   // Only canonical indices count; numeric-looking non-indices such as `"01"` are extra.
   // Structural reads below use the primordials captured at module load so a capture-time side
   // effect that overwrites a global cannot steer the rest of this observation. The scan below
-  // uses index loops and `appendItem` rather than `filter`/`for...of`/`push`, because
-  // `Array.prototype` methods and `Symbol.iterator` are themselves mutable mid-pass.
+  // uses index loops rather than `filter`/`for...of`/`push`, because `Array.prototype` methods
+  // and `Symbol.iterator` are themselves mutable mid-pass. `names` is an engine-built list
+  // (`CreateArrayFromList`, own data, dense), so its element reads are own reads.
   const names = PrimordialGetOwnPropertyNames(container) as string[];
   let hasExtra = false;
   for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
@@ -594,7 +617,21 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
     }
   }
 
-  const captured: Captured[] = new PrimordialArray<Captured>(length);
+  // K11-R6-VAL-04: there is no scratch array between the one caller observation and the snapshot.
+  //
+  // The previous shape captured each accepted element into a holey `new Array(length)` with
+  // ordinary assignment and read it back to build the snapshot. Both halves are ambient: the
+  // assignment is `[[Set]]` into a position the scratch does not own, so an inherited
+  // `Array.prototype` indexed setter installed during this value's own prototype observation
+  // swallowed it, and the later read of that still-unowned position answered from the attacker's
+  // getter. A coherent caller array whose element read *and* own descriptor both said `20` could
+  // therefore be retained and canonicalized as `999`.
+  //
+  // Each accepted element is now installed directly into the snapshot as own data at the moment it
+  // is captured. `defineAt` is `[[DefineOwnProperty]]`, so no prototype is consulted, and there is
+  // no second reading of anything to disagree with the first. A refused position stops
+  // contributing and the whole partially built array is discarded, exactly as before.
+  const out: BoundaryValue[] = sizedList<BoundaryValue>(length);
   for (let index = 0; index < length; index += 1) {
     const where = element(path, index);
     const key = `${index}`;
@@ -613,16 +650,12 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
       refused = true;
       continue;
     }
-    captured[index] = item;
+    defineAt(out, index, item as BoundaryValue);
   }
 
   if (refused) return REFUSED;
-  const out: BoundaryValue[] = new PrimordialArray<BoundaryValue>(length);
-  for (let index = 0; index < length; index += 1) {
-    // `defineProperty`, never assignment, for the same reason the object half uses it: the key is
-    // installed as own data whatever it spells.
-    PrimordialDefineProperty(out, `${index}`, { value: captured[index] as BoundaryValue, writable: false, enumerable: true, configurable: false });
-  }
+  // Freezing reduces every element installed above to the non-writable, non-configurable own data
+  // the snapshot contract requires, and fixes `length` with it.
   return PrimordialObjectFreeze(out) as unknown as BoundaryValue[];
 }
 
@@ -649,7 +682,9 @@ function captureObject(container: object, path: string, entered: number, state: 
   // One own-names observation and one descriptor per name. The same descriptor answers "is this
   // member enumerable?" and "what does this member own?", so those two questions cannot be settled
   // from different readings of the same object. Index loops, not `for...of`: the iterator lookup
-  // is ambient and mutable mid-pass.
+  // is ambient and mutable mid-pass. `names` is engine-built (`CreateArrayFromList`), so it is
+  // dense own data and its element reads consult no prototype; `enumerable` and `captured` below
+  // are Kernel-grown and therefore go through `own-array.ts` in both directions.
   const names = PrimordialGetOwnPropertyNames(container) as string[];
   const enumerable: [string, PropertyDescriptor][] = [];
   let nonEnumerable = false;
@@ -666,7 +701,7 @@ function captureObject(container: object, path: string, entered: number, state: 
       refused = true;
       continue;
     }
-    if (descriptor.enumerable) appendItem(enumerable, [name, descriptor]);
+    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor]);
     else nonEnumerable = true;
   }
   if (nonEnumerable) {
@@ -686,7 +721,7 @@ function captureObject(container: object, path: string, entered: number, state: 
   for (let entryIndex = 0; entryIndex < enumerable.length; entryIndex += 1) {
     // Index access, not destructuring iteration: `for...of` over the pair would consult the
     // ambient `Symbol.iterator`.
-    const pair = enumerable[entryIndex] as [string, PropertyDescriptor];
+    const pair = readAt(enumerable, entryIndex) as [string, PropertyDescriptor];
     const key = pair[0];
     const descriptor = pair[1];
     const where = child(path, key);
@@ -724,7 +759,7 @@ function captureObject(container: object, path: string, entered: number, state: 
       refused = true;
       continue;
     }
-    appendItem(captured, [key, item]);
+    appendOwn(captured, [key, item]);
   }
 
   if (refused) return REFUSED;
@@ -737,7 +772,7 @@ function captureObject(container: object, path: string, entered: number, state: 
   // special treatment.
   const snapshot = PrimordialObjectCreate(prototype) as Record<string, BoundaryValue>;
   for (let entryIndex = 0; entryIndex < captured.length; entryIndex += 1) {
-    const pair = captured[entryIndex] as [string, BoundaryValue];
+    const pair = readAt(captured, entryIndex) as [string, BoundaryValue];
     PrimordialDefineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });
   }
   return PrimordialObjectFreeze(snapshot);
@@ -809,7 +844,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
       lengthDescriptor !== undefined && hasOwnValue(lengthDescriptor) && typeof lengthDescriptor.value === "number"
         ? lengthDescriptor.value
         : (value as unknown[]).length;
-    const out: unknown[] = new PrimordialArray(length);
+    const out: unknown[] = sizedList<unknown>(length);
     for (let index = 0; index < length; index += 1) {
       const descriptor = PrimordialGetOwnPropertyDescriptor(value, `${index}`);
       // Snapshots are dense own-data by construction; a missing descriptor here is unreachable.
@@ -834,11 +869,16 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
         lengthDescriptorInner !== undefined && hasOwnValue(lengthDescriptorInner) && typeof lengthDescriptorInner.value === "number"
           ? lengthDescriptorInner.value
           : self.length;
-      const result: unknown[] = new PrimordialArray(innerLength);
+      // `defineAt`, not `result[innerIndex] = ...`: this shadow runs while the JCS call is in
+      // progress, and an ordinary indexed assignment into a not-yet-owned position of a fresh
+      // array is `[[Set]]` — steerable by an inherited `Array.prototype` indexed accessor
+      // (K11-R6-VAL-04). The surrounding window already removes those, so this is the second of
+      // two independent layers rather than the only one.
+      const result: unknown[] = sizedList<unknown>(innerLength);
       for (let innerIndex = 0; innerIndex < innerLength; innerIndex += 1) {
         const innerDescriptor = PrimordialGetOwnPropertyDescriptor(self, `${innerIndex}`);
         const innerValue = innerDescriptor !== undefined && hasOwnValue(innerDescriptor) ? innerDescriptor.value : undefined;
-        result[innerIndex] = callback(innerValue, innerIndex, self);
+        defineAt(result, innerIndex, callback(innerValue, innerIndex, self));
       }
       return result;
     };
@@ -846,6 +886,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
     return out as unknown as BoundaryValue;
   }
   const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);
+  // Engine-built list: dense own data, so these element reads reach no prototype.
   const keys = PrimordialReflectApply(PrimordialObjectKeys, PrimordialObject, [value]) as string[];
   for (let keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
     const key = keys[keyIndex] as string;
@@ -884,6 +925,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
  * | `values.join(',')`, `parts.join(',')`, `parts.push(...)` | `Array.prototype` at call time (`values`/`parts` are arrays the dependency creates) | `Array.prototype.join/push` slots |
  * | `Object.keys(object).sort()` | `Array.prototype` at call time | `Array.prototype.sort` slot |
  * | `typeof`, `===`, template-literal spelling | language operators, not lookups | no slot needed |
+ * | `parts.push(...)` / `values`/`parts` element reads behind `join` | `[[Set]]` and `[[Get]]` on the dependency's own scratch arrays, which consult `Array.prototype` then `Object.prototype` for positions those arrays do not own | neutralized structurally: `inheritedIndexShadows` removes every own index-named property from both prototypes for the call window (K11-R6-VAL-04) |
  *
  * Anything not in this table is not read by the dependency. In particular it never reads
  * `Number`, `String`, `Reflect`, `Buffer`, `Map`, `Object.getOwnProperty*` or `Array.from`, so
@@ -901,7 +943,7 @@ type SandboxSlot = {
 const serializerSlots = (): SandboxSlot[] => {
   const slots: SandboxSlot[] = [];
   const slot = (holder: object, key: string | symbol, primordial: unknown): void => {
-    appendItem(slots, { holder, key, primordial });
+    appendOwn(slots, { holder, key, primordial });
   };
   slot(PrimordialGlobalThis, "isNaN", PrimordialIsNaN);
   slot(PrimordialGlobalThis, "isFinite", PrimordialIsFinite);
@@ -925,48 +967,119 @@ const serializerSlots = (): SandboxSlot[] => {
   return slots;
 };
 
+/** One observed property position, with the descriptor that must be reinstalled after the call. */
+type SavedSlot = {
+  readonly holder: object;
+  readonly key: string | symbol;
+  readonly descriptor: PropertyDescriptor | undefined;
+};
+
+/**
+ * Own index-named properties currently installed on the prototypes the dependency's own scratch
+ * arrays inherit from, so the call window can run without them (K11-R6-VAL-04).
+ *
+ * The slot table above neutralizes every *named* ambient read the dependency performs. It cannot
+ * neutralize this one, because this one is not a read of a named intrinsic at all. The exact
+ * published implementation builds `const parts = []` and grows it with `parts.push(...)` before
+ * `parts.join(',')`. `push` is `[[Set]]` on a position `parts` does not own yet, so an inherited
+ * accessor at `Array.prototype["0"]` receives the write, leaves no element, and answers the
+ * following `join` from its own getter — even with the primordial `push` and `join` reinstalled,
+ * because the defect is the operation rather than which function performs it. A caller that
+ * installs such an accessor from inside a boundary observation can therefore choose the canonical
+ * bytes of an already-accepted snapshot outright, which is the identity the Kernel binds.
+ *
+ * Nothing about the adapter can fix that: the writes happen inside the unmodified dependency, which
+ * is used exactly as published. What the Kernel controls is the environment it calls into, so the
+ * window removes these positions and reinstalls them afterwards, the same save/neutralize/restore
+ * discipline the named slots use. Both `Array.prototype` and `Object.prototype` are covered: an
+ * array's `[[Set]]` walks the whole chain.
+ *
+ * No conforming host installs an own index-named property on either prototype, so in an undisturbed
+ * process this finds nothing and changes nothing. If an attacker made one non-configurable, the
+ * `delete` throws and `accept` contains it as a located refusal: degraded availability, never wrong
+ * bytes.
+ */
+const inheritedIndexShadows = (): SavedSlot[] => {
+  const shadows: SavedSlot[] = [];
+  // A literal and an engine-built names list: both are own data at construction, so the reads below
+  // are own reads. `shadows` is grown, so it goes through `own-array.ts`.
+  const holders: object[] = [PrimordialArrayPrototype, PrimordialObjectPrototype];
+  for (let holderIndex = 0; holderIndex < holders.length; holderIndex += 1) {
+    const holder = holders[holderIndex] as object;
+    const names = PrimordialGetOwnPropertyNames(holder) as string[];
+    for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+      const name = names[nameIndex] as string;
+      if (!isArrayIndex(name)) continue;
+      appendOwn(shadows, { holder, key: name, descriptor: PrimordialGetOwnPropertyDescriptor(holder, name) });
+    }
+  }
+  return shadows;
+};
+
 /**
  * Runs `work` with the serializer execution environment restored to load-time primordials.
  *
  * A capture-time side effect can replace any slot above between the start of `capture` and this
- * call. Saving and restoring through own-property descriptors (never through reads that would
- * invoke an installed getter/setter) keeps the swap itself from executing attacker code, and no
- * caller code runs while the primordials are installed: the safe clone holds only frozen plain
- * data with no traps, and the dependency calls no caller function. Canonical bytes produced
- * inside are therefore a function only of the clone — which is a function only of the snapshot —
- * never of the ambient mutation.
+ * call, and can additionally install an indexed accessor on `Array.prototype`/`Object.prototype`
+ * that steers the dependency's own `parts.push(...)`/`join` without replacing any named intrinsic
+ * (K11-R6-VAL-04). This window closes both: it reinstalls the load-time primordial for every named
+ * slot and removes every own index-named property from both prototypes. Saving and restoring
+ * through own-property descriptors (never through reads that would invoke an installed
+ * getter/setter) keeps the swap itself from executing attacker code, and no caller code runs while
+ * the environment is installed: the safe clone holds only frozen plain data with no traps, and the
+ * dependency calls no caller function. Canonical bytes produced inside are therefore a function
+ * only of the clone — which is a function only of the snapshot — never of the ambient mutation.
  *
  * The swap is temporary: the previously observed descriptors are reinstalled afterwards, so host
- * polyfills or unrelated host state outside these slots are left exactly as found. If the swap
- * itself fails (for example an attacker redefined a slot as non-configurable), the throw
- * propagates to `accept`, which contains it as a refusal: degraded availability, never wrong
- * bytes and never a leaked ambient exception.
+ * polyfills or unrelated host state outside these positions are left exactly as found. If the swap
+ * itself fails (for example an attacker redefined a slot as non-configurable, or made an index
+ * shadow non-configurable so removing it throws), the throw propagates to `accept`, which contains
+ * it as a refusal: degraded availability, never wrong bytes and never a leaked ambient exception.
  */
 function withSerializerEnvironment<T>(work: () => T): T {
   const slots = serializerSlots();
-  const saved: { readonly holder: object; readonly key: string | symbol; readonly descriptor: PropertyDescriptor | undefined }[] = [];
+  const shadows = inheritedIndexShadows();
+  const saved: SavedSlot[] = [];
+  // Observation first, and only through own-property descriptors: reading what is currently
+  // installed cannot itself execute an installed getter. Nothing is changed yet, so this loop has
+  // nothing to undo.
   for (let index = 0; index < slots.length; index += 1) {
-    const entry = slots[index] as SandboxSlot;
-    appendItem(saved, {
+    const entry = readAt(slots, index) as SandboxSlot;
+    appendOwn(saved, {
       holder: entry.holder,
       key: entry.key,
       descriptor: PrimordialGetOwnPropertyDescriptor(entry.holder, entry.key),
     });
   }
-  for (let index = 0; index < slots.length; index += 1) {
-    const entry = slots[index] as SandboxSlot;
-    PrimordialDefineProperty(entry.holder, entry.key, {
-      value: entry.primordial,
-      writable: true,
-      enumerable: false,
-      configurable: true,
-    });
-  }
+  // Both mutations live inside the `try`, so a swap that fails part-way — an attacker who made one
+  // slot or one index shadow non-configurable — still restores everything this call had changed
+  // instead of leaving the process in the swapped state. The failure then propagates to `accept`
+  // as a located refusal.
   try {
+    for (let index = 0; index < slots.length; index += 1) {
+      const entry = readAt(slots, index) as SandboxSlot;
+      PrimordialDefineProperty(entry.holder, entry.key, {
+        value: entry.primordial,
+        writable: true,
+        enumerable: false,
+        configurable: true,
+      });
+    }
+    // The index shadows are removed after the named slots are installed and restored before them,
+    // so the window in which the dependency runs has neither a replaced intrinsic nor an inherited
+    // indexed accessor on the prototypes its own scratch arrays are built on.
+    for (let index = 0; index < shadows.length; index += 1) {
+      const entry = readAt(shadows, index) as SavedSlot;
+      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];
+    }
     return work();
   } finally {
+    for (let index = shadows.length - 1; index >= 0; index -= 1) {
+      const entry = readAt(shadows, index) as SavedSlot;
+      if (entry.descriptor !== undefined) PrimordialDefineProperty(entry.holder, entry.key, entry.descriptor);
+    }
     for (let index = saved.length - 1; index >= 0; index -= 1) {
-      const entry = saved[index] as { readonly holder: object; readonly key: string | symbol; readonly descriptor: PropertyDescriptor | undefined };
+      const entry = readAt(saved, index) as SavedSlot;
       if (entry.descriptor === undefined) {
         // The slot did not exist when saved (an attacker deleted it): remove the installed
         // primordial again rather than inventing a property the host did not have.

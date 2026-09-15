@@ -98,6 +98,62 @@ describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () =
     }
   });
 
+  test("K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts", async () => {
+    // The round-7 reconstruction replaced the zone's live prototype methods with
+    // `list[list.length] = item` and argued completeness by inspection. That argument was the
+    // defect: an ordinary indexed write into a position a list does not own yet is `[[Set]]`, so it
+    // consults the prototype chain and a caller-installed inherited accessor receives it instead.
+    //
+    // This control states the replacement as a property of the zone's executable text rather than
+    // as a claim in a comment. `own-array.ts` is the one place `[[DefineOwnProperty]]` is applied to
+    // a list position; every other module must reach a list through it. The pattern requires a
+    // non-empty subscript immediately after an identifier, so `const out: ValueIssue[] = []`
+    // (an empty type-position bracket) and `const [a, b] = pair` (a destructuring pattern, which
+    // has whitespace before its bracket) are not assignments and are not matched.
+    const files = await sourceFiles();
+    const assignments = occurrences(files, /[A-Za-z0-9_$)\]]\[[^\]\n]+\][ \t]*=(?!=)/).filter(
+      (hit) => !isCommentLine(hit.line) && !hit.path.endsWith("own-array.ts"),
+    );
+    assert.deepEqual(
+      assignments.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`),
+      [],
+      `an ordinary indexed write is caller-steerable through an inherited accessor: ${assignments.map((hit) => hit.line.trim()).join(" | ")}`,
+    );
+
+    // Not vacuous: the pattern really does match this spelling where it is still discussed, and the
+    // module that owns the rule really exists.
+    assert.ok(
+      occurrences(files, /[A-Za-z0-9_$)\]]\[[^\]\n]+\][ \t]*=(?!=)/).length > 0,
+      "the pattern matches the spelling this rule is about",
+    );
+    assert.ok(
+      files.some((file) => file.path.endsWith("own-array.ts")),
+      "the zone has one owner for building and reading Kernel-owned lists",
+    );
+  });
+
+  test("K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list", async () => {
+    // `push`/`pop`/`shift`/`unshift`/`splice`/`fill`/`copyWithin` all perform `[[Set]]` or
+    // `[[Delete]]` on positions through the ordinary property path, so capturing the primordial
+    // function does not make them independent of an inherited indexed accessor. The zone builds
+    // lists with `own-array.ts` instead. `sort`/`join`/`map` are named here as well because the
+    // previous rounds' reason for avoiding them — a live, replaceable prototype method — still
+    // stands; the serializer sandbox restores them for the dependency's own use, which is a
+    // different thing from this zone calling them.
+    const files = await sourceFiles();
+    const pattern = /\.(push|pop|shift|unshift|splice|fill|copyWithin|sort|reverse|map|filter|slice|concat|includes|indexOf|forEach|flat|flatMap)\(/;
+    const all = occurrences(files, pattern);
+    const inCode = all.filter((hit) => !isCommentLine(hit.line));
+    assert.deepEqual(
+      inCode.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`),
+      [],
+      `an array prototype method reached executable code: ${inCode.map((hit) => hit.line.trim()).join(" | ")}`,
+    );
+    // Not vacuous: these spellings do occur in the zone, in the documentation explaining why the
+    // implementation does not use them.
+    assert.ok(all.length > 0, "the pattern really does match this zone's prose");
+  });
+
   test("every import in the zone is internal, a node: builtin, or the approved JCS dependency", async () => {
     const files = await sourceFiles();
     const specifiers = files.flatMap((file) => [...file.text.matchAll(/from "([^"]+)"/g)].map((match) => match[1] as string));

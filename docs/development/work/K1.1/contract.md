@@ -12,11 +12,14 @@ including 006/007/008/012 as they stand there).
 by `main` PR #26 / `05f48c204d1eae021b3464c206e5c11e84bb3505`. See
 [Entry and owner release](#entry-and-owner-release).
 **Base commit:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b`.
-**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 4 (round-4: value acceptance
-reconstructed around one capture (K11-R2-VAL-02); retained evidence immutable at its single mint
-(K11-R2-EVID-01); identity fields required to be text (self-found K11-R3-ID-02). Revision 3 closed
-OPEN-1 by the 05f48c2/87ee39c main-merge ancestry and OPEN-2 by the owner-approved canonicalize@3.0.0
-substrate; both stand unchanged.)**
+**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 5 (round-8: additive only —
+five coverage-map rows and one decision record (K1.1-DEC-6) for the inherited-indexed-accessor
+counterexamples in K11-R6-STATE-02 and K11-R6-VAL-04. No criterion, limit, refusal, evidence
+obligation or prior decision is relaxed, and every revision-4 requirement stands verbatim.
+Revision 4 (round-4): value acceptance reconstructed around one capture (K11-R2-VAL-02); retained
+evidence immutable at its single mint (K11-R2-EVID-01); identity fields required to be text
+(self-found K11-R3-ID-02). Revision 3 closed OPEN-1 by the 05f48c2/87ee39c main-merge ancestry and
+OPEN-2 by the owner-approved canonicalize@3.0.0 substrate; both stand unchanged.)**
 **Implementer:** Muse Spark, 2026-09-14 correction round. The `codex/` branch
 prefix is 006's naming convention for a packet branch, not a claim about which agent wrote it.
 
@@ -246,6 +249,11 @@ weakened and no schema relaxed.
 | C1/C2/C6/C9 retained evidence is immutable (identity.md) | cast away `readonly` and mutate every returned receipt and refusal, then replay and inspect | the retained token, boundary, position, classification, reason and Execution are unchanged; every exposed evidence object is frozen; **forbidden:** a replay or inspection reporting an edited value | `evidence.test.ts` |
 | C1/C2 identity fields are text (identity.md) | non-text creation key, scope, revisions, codec, input kind, subscription class, request key; a non-text destination | each refused as `malformed_value` naming the field; a non-text destination answers as an unknown destination; `packIdentity` raises on a non-text part; **forbidden:** two different requests packing to one identity, or a different request answered as a replay | `creation.test.ts`, `ingress.test.ts`, `receipts.test.ts` |
 | C2 capacity is a declared limit (creation.md) | construct a coordinator with capacity 0 or 2.5 | refused as a configuration error, not discovered as a runtime refusal | `ingress.test.ts` |
+| C4 the reserved batch is the Kernel's own record (execution-cycle.md, B-1/B-2) | a `dispatch` `bound` getter that returns a valid bound and installs an inherited `Array.prototype` indexed setter at the positions the batch is about to occupy | the exact acceptance-order prefix under the validated bound is reserved, carried and inspectable; **forbidden:** an accepted intent whose batch is empty or short because a selection write was intercepted | `dispatch.test.ts` |
+| C1/C2/C6 accepted content and evidence are retained as own data (creation.md, identity.ts ID-6) | a payload observation that installs an inherited indexed setter at the next mailbox, receipt or refusal position | the accepted Event, its receipt and any recorded refusal are readable through replay, inspection and the next reservation; **forbidden:** an accepted answer with no retained decision behind it | `ingress.test.ts`, `creation.test.ts`, `inspection.test.ts` |
+| C9 a projection describes retained truth under residual pollution (core.md) | inherited indexed accessors left installed by an earlier call, then `inspect` twice and `visibleExecutions` | every view equals the unpolluted view exactly, and reading still acknowledges and mutates nothing; **forbidden:** a freshly built view or listing that omits or substitutes what the Kernel retains | `inspection.test.ts` |
+| C3 one observation survives the pass that took it (values.md) | a coherent genuine array whose prototype observation installs an inherited indexed accessor covering its own positions, at more than one index and nested | retained structure and canonical bytes are exactly the one observed value, and re-canonicalizing the retained structure reproduces them; an incoherent representation is still refused; **forbidden:** a third value supplied by the accessor | `values.test.ts`, `creation.test.ts` |
+| C3 canonical bytes do not depend on the prototypes (values.md, K11-R1-JCS-01) | an inherited accessor or data property installed at `Array.prototype`/`Object.prototype` index names across the exact JCS call, for object, array and nested roots | the published RFC 8785 bytes for the accepted snapshot, and both prototypes restored exactly as found; **forbidden:** bytes chosen by the ambient prototype chain, or host state altered by the call | `values.test.ts` |
 
 ## Command plan
 
@@ -327,6 +335,21 @@ should be able to rule on them rather than infer them.
   it returns, which is what lets an exact replay return *the original* receipt rather than an
   equal-looking reconstruction. The rejected alternative — detaching a copy at each exit — would put
   the invariant in every current and future exit path instead of in the two constructors.
+- **K1.1-DEC-6 — a Kernel-owned list is built and read as own data, from one owning module.**
+  Round 8 corrects K11-R6-STATE-02 and K11-R6-VAL-04 by replacing the *operation*, not another set
+  of captured method references. `list[index] = value` is `[[Set]]` and consults the prototype
+  chain; `Array.prototype.push` performs the same `[[Set]]` and raises `length` regardless. Both are
+  therefore steerable by an inherited indexed accessor a caller installs from inside a boundary
+  observation. `packages/kernel/src/own-array.ts` is the single place a list position is installed
+  (`[[DefineOwnProperty]]`) and read (own descriptor), every other module reaches lists through it,
+  and `boundary.test.ts` enforces that mechanically over the zone's executable text rather than by
+  inspection. Two consequences are recorded rather than assumed: lists that are complete at their
+  literal construction (and engine-built lists such as `Object.getOwnPropertyNames` results) are own
+  data already and are read ordinarily; and the exact JCS call runs with every own index-named
+  property removed from `Array.prototype`/`Object.prototype`, because the unmodified dependency's
+  own `parts.push(...)`/`join` is a `[[Set]]`/`[[Get]]` pair no adapter-side change can reach. The
+  rejected alternative — auditing each call site again for one more unsafe spelling — is the
+  approach that produced this defect twice.
 - **K1.1-DEC-5 — a non-text identity field is a refusal; a non-text `packIdentity` part is a
   raised error.** Caller-supplied request fields are data crossing a boundary, so a non-text creation
   key, scope, revision, codec, kind, subscription class or request key is refused as
