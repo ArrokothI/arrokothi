@@ -29,7 +29,8 @@ For example: the application creates an Execution for “prepare the weekly repo
 
 `WAITING` and `RUNNING` both describe the Kernel's own bookkeeping, not the Runtime's process. An Execution enters `WAITING` only when an Outcome proposes `await` for something the Kernel can observe — it just means the Kernel will not send another Activation until that observation arrives; the Runtime itself does not need to stay running in the meantime, much like a shop that takes your number and calls you back when your order is ready, rather than keeping a clerk standing at the counter the whole time.
 
-A Runtime awaiting an internal model API, by contrast, remains `RUNNING`: that model API call is not a mediated action, so the Kernel was never asked to coordinate it and has no record of it at all. `RUNNING` can therefore mean two very different things — an Execution actively being worked on, or one stuck after a crash, waiting for a recovery decision (see [Recovering after a crash](#recovering-after-a-crash) below). Either way, **the Kernel does not relabel a stuck Execution as `WAITING`** (as if the Runtime had asked to pause) or as completed (as if the work had finished); it reports the actual, unresolved situation. The exact [lifecycle and cancellation rules](mechanisms/lifecycle.md) own transitions.
+A Runtime awaiting an internal model API, by contrast, remains `RUNNING`: that model API call is not a mediated action, so the Kernel was never asked to coordinate it and has no record of it at all. `RUNNING` can therefore mean two very different things — an Execution actively being worked on, or one stuck after a crash, waiting for a recovery decision (see [Recovering after a crash](#recovering-after-a-crash) below). Either way, **the Kernel does not relabel a stuck Execution as `WAITING`** (as if the Runtime had asked to pause) or as completed (as if the work had finished); it reports the actual, unresolved situation.
+The exact [lifecycle and cancellation rules](mechanisms/lifecycle.md) own transitions.
 
 ## Why acceptance matters
 
@@ -37,7 +38,8 @@ An Outcome is a proposal until the Kernel accepts it. Acceptance installs progre
 
 An Effect asks for a mediated operation, such as publishing a file or creating a child Execution. Accepting it records an action intent — an accepted obligation to perform the work later, not proof that it already has — which is distinct from admitting the concrete action and from observing its result. That separation lets the Kernel report “the request exists, but approval is pending” or “the service may have acted.” It also makes lost acknowledgments recoverable without inventing another request.
 
-Acceptance is also what makes durability possible: because the Kernel commits progress, output and action intents as one atomic decision, there is always a well-defined, durable state to reconstruct after a crash — which is exactly what recovery does next.
+Acceptance is also what makes durability possible: because the Kernel commits progress, output and action intents as one atomic decision, there is always a well-defined, durable
+state to reconstruct after a crash — which is exactly what recovery does next.
 
 ## Recovering after a crash
 
