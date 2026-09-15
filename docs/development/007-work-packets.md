@@ -170,22 +170,35 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 ### K1.1-correction-01 — Accepted-work correction for K1.1 review findings
 
 **Layer-3 maintenance:** decision-01 authorizes delivery-boundary changes in execution-cycle
-and an integration obligation link, plus roadmap/sources navigation. Other mental-model files
-must be at B in C2; decision-01 identifies the existing deployment-page deviation to restore. K1.1's related owners remain ([creation](../../mental-model/mechanisms/creation.md),
+and an integration obligation link, plus roadmap/sources navigation. Every `mental-model/**`
+path must be byte-identical to the documentation anchor D
+`0ee13f8138af52107d86967043bcc460faba8893` in the payload commit — contract revision 3,
+`KC1-DEC-7`, which supersedes `KC1-DEC-2` and withdraws decision-01's deployment-page
+restoration item. The owner's completed Layer-1/2 rewrite at D is authorized retained payload;
+the scope guard is `git diff --name-only D HEAD -- mental-model/` and only empty output passes. K1.1's related owners remain ([creation](../../mental-model/mechanisms/creation.md),
 [execution-cycle](../../mental-model/mechanisms/execution-cycle.md), [core](../../mental-model/concepts/core.md),
 [identity](../../mental-model/concepts/identity.md), [state](../../mental-model/concepts/state.md),
-[values](../../mental-model/concepts/values.md)); also inspect affected dependencies. No Layer-1/2 change.
+[values](../../mental-model/concepts/values.md)); also inspect affected dependencies. The
+Layer-1/2 rewrite this packet carries is the owner's own completed work at D, authorized by
+`KC1-DEC-7`; this packet originates no Layer-1/2 change of its own. `concepts/` and `mechanisms/`
+are unrewritten and, outside decision-01's four paths, are word-identical between B and D.
 
 **Dependencies:** K1.0 as integrated, including corrections 01–02. **Scope:** Corrective record under
 006 for [review-16](work/K1.1/review-16.md). Reconstruct the affected semantic families (creation vs
 ingress identity, JCS abstract-operation closure, total malformed-identity diagnostics, delivery
-reporting under [decision-01](work/K1.1-correction-01/decision-01.md)), revert undeclared cumulative documentation payload to base, retain mechanical
+reporting under [decision-01](work/K1.1-correction-01/decision-01.md)), account for cumulative
+documentation payload against the anchors the contract names — reverting what is undeclared and
+holding the rest byte-identical to D — retain mechanical
 mental-model link/anchor validation, and repair C/H/A/status discipline — revalidating cumulative
 K1.1-C1–C10 without weakening them. [Bounded scope, authority and preserved identities](work/K1.1-correction-01/contract.md).
 The criteria are K1.1-C1 … C10 exactly as [K1.1's contract](work/K1.1/contract.md) states them;
 revision 2 explicitly replaces the Promise-specific correction requirement for C4/C5 with
-Kernel-owned delivery reporting. Historical K1.1 review-14 ACCEPT and reviews 15/16 remain
-preserved. No successor release follows from this correction.
+Kernel-owned delivery reporting, and revision 3 changes documentation scope only — no criterion,
+limit, refusal, receipt boundary or delivery rule moves. Historical K1.1 review-14 ACCEPT and
+reviews 15/16 remain preserved, as do this packet's [review-04](work/K1.1-correction-01/review-04.md)
+(`ACCEPT`) and [review-05](work/K1.1-correction-01/review-05.md) (`CHANGES REQUIRED`), which bind
+the same H3 and disagree; acceptance follows one accountable fresh cumulative review, never a
+count of verdicts. No successor release follows from this correction.
 
 ### K1.2 — Outcome acceptance and receipts
 

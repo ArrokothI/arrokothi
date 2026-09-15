@@ -10,7 +10,15 @@ accepted-work invalidation and this corrective handoff), preserved at
 correction closure is reviewed over the cumulative base-to-H interval, not over the
 correction delta alone).
 **Base commit:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b` (K1.1's original base B).
-**Branch:** `codex/k1.1-correction-01-review-findings`. **Revision 2.**
+**Documentation anchor D:** `0ee13f8138af52107d86967043bcc460faba8893` (see
+[KC1-DEC-7](#decisions-taken-within-this-contract)).
+**Branch:** `codex/k1.1-correction-01-review-findings`. **Revision 3 (round-5: the owner's
+completed Layer-1/2 documentation rewrite becomes authorized retained payload under KC1-DEC-7,
+which supersedes KC1-DEC-2 and decision-01's deployment-page restoration item; the documentation
+scope guard is re-anchored from B to D and strengthened from a four-path allowlist to
+whole-tree byte identity. No acceptance criterion, limit, refusal, receipt boundary, evidence
+obligation or delivery-boundary rule changes, and every revision-2 requirement other than the
+two named above stands verbatim.)**
 
 ## What this packet is, and what it is not
 
@@ -18,6 +26,13 @@ It corrects K1.1 and releases no successor. [Decision 01](decision-01.md), autho
 the owner on 2026-09-15, changes the delivery API and replaces revision 1's absolute
 Promise-observation obligation with explicit operational reporting. This is a deliberate
 contract change, not a claim that H1 satisfied revision 1.
+
+Revision 3 is a second deliberate contract change, of the same kind and for the same reason:
+the owner completed a Layer-1/2 documentation rewrite on this branch after H2, and revision 2
+required that tree to be reverted. Rather than leave the delivered candidate contradicting its
+own contract — the defect [review-05](review-05.md) records as `KC1-R4-PROC-01` — the contract
+now states the rule the owner actually decided. It is not a claim that H3 satisfied revision 2,
+and it relaxes no acceptance criterion.
 
 The acceptance criteria are **K1.1-C1 … K1.1-C10 exactly as
 [K1.1's contract](../K1.1/contract.md#acceptance-criteria) states them**, at revision 5. This
@@ -49,11 +64,19 @@ resumes in this correction only. No K1.2 release is authorized.
 | Reconciliation review | [review-16](../K1.1/review-16.md) | `CHANGES REQUIRED`; invalidation + handoff |
 | Correction starting point | `a8ac787b2a766d897c7bd85311c1b2aee53a1ca8` | Preserved history containing review-16 |
 | K1.1 contract at correction | revision 5 | Historical text preserved; C4/C5 correction mapping governed by revision 2 and decision-01 |
+| Round-4 payload C3 / candidate H3 | `90dec32040aeaf067dcaadca8f918dce6bdb86c4` / `b883f291d83060b360b419e2a58b771f9abbc74b` | Preserved; the executable tree this packet still carries |
+| Round-4 reviews of exact H3 | [review-04](review-04.md) `ACCEPT` at `484beb07fe150646631985d5e9ce7b2754da7475`; [review-05](review-05.md) `CHANGES REQUIRED` | Both preserved byte-unchanged; neither edited to agree with the other |
+| Documentation anchor D | `0ee13f8138af52107d86967043bcc460faba8893` | Owner's frozen Layer-1/2 rewrite; KC1-DEC-7 scope-guard anchor |
 
 Review records 14, 15 and 16 are immutable and are not edited. Post-H17 documentation commits
 on the preserved line (`9893376`, `1aa2de1`, `7af27bd`) are treated as declared payload in this
 correction — reverted, not smuggled into any administrative window — and remain in history
 untouched.
+
+Two independent reviews reached opposite verdicts on exact H3 and both stand. 006 requires one
+accountable full cumulative review for acceptance, not a majority: the disagreement is resolved
+by correcting the defect review-05 found and obtaining a fresh review, not by counting verdicts.
+Review-05's author implemented revision 3, so that session cannot supply acceptance for it.
 
 ## Finding coverage
 
@@ -78,12 +101,22 @@ one Proxy spelling, one link, or one historical diff window:
    (R15-DOC-02, R16-DOC-01);
 7. accepted-work invalidation and C/H/status/evidence process discipline (R15-PROC-01).
 
+Later rounds added findings against this correction's own candidates. Open at revision 3, all
+from [review-05](review-05.md) against exact H3, all in family 5 or 7 and none semantic:
+`KC1-R4-PROC-01` (the contract's documentation scope guard was disabled with no artifact
+authorizing it), `KC1-R4-PROC-02` (007's packet scope section contradicted its own ledger row),
+`KC1-R4-DOC-01` (the report did not enumerate or classify the cumulative documentation change it
+carried). `KC1-R2-PROC-01` is reopened as `KC1-R4-PROC-02`: same family, new location.
+Review-05 also records K1.1-C1…C10 PASS on exact H3 under independent rerun, reproduced
+ablations and reviewer-authored counterexamples; revision 3 changes nothing those criteria
+depend on.
+
 ## Scope
 
 **In scope.** The seven families above with all dependent producer/consumer paths; distinguishing
 regressions for each concrete counterexample plus nearby-family cases; the decision-01 reporting mutations and retained unrelated
 ablations proving oracle sensitivity; cumulative B→new-C documentation accounting with the
-mechanical scope guard anchored at B; the mental-model link/anchor check; truthful 007
+mechanical scope guard anchored at D; the mental-model link/anchor check; truthful 007
 status/provenance repair; full 006/008/012/015 validation and evidence. Any defect of the same
 family found while reconstructing those paths, recorded with its own self-found provenance.
 
@@ -115,13 +148,14 @@ Derived from the criteria's own obligations, not from probe strings:
    Activation, epoch, base, batch, receipt and no-acknowledgment guarantees. Remove the
    Promise-return path and replace the counted-unhandled oracle; no compatibility fallback.
 5. **Cumulative documentation/provenance (006/008).** Every non-record documentation path B→new-C is
-   enumerated and classified; undeclared Layer-1/2/3 payload is reverted to base rather than
-   justified after the fact (KC1-DEC-2). Post-H17 documentation is payload, reverted here. The
-   mental-model tree retains a mechanical link/anchor check covering the class, not one string.
-   Decision-01's four enumerated mental-model paths are now authorized payload; all other
-   mental-model paths must be byte-identical to B in C2. Decision-01 identifies the current
-   pre-existing deployment-page deviation and authorizes its restoration in C2. No historical
-   drift is reinstated.
+   enumerated and classified in the report, by path, layer and disposition (authorized payload,
+   owner-retained, or reverted), stating for each whether any K1.1 governing semantics moved.
+   Undeclared payload is still reverted rather than justified after the fact; what counts as
+   declared is now fixed by KC1-DEC-7 rather than KC1-DEC-2. The mental-model tree retains a
+   mechanical link/anchor check covering the class, not one string. **Every `mental-model/**`
+   path must be byte-identical to D in the payload commit** — no allowlist, no exception, no
+   per-path argument. A change any later packet needs there is a fresh owner decision that moves
+   D, recorded in this contract before the payload, never an edit justified inside a report.
 6. **Status/process discipline (006/007/008).** 007 truthfully records the historical ACCEPT, its
    invalidation/hold, and this corrective packet. C/H/A scope rules hold: docs are payload in C,
    never in H..A; H carries only the report, status transcription and declared C-outputs.
@@ -134,13 +168,41 @@ Derived from the criteria's own obligations, not from probe strings:
   The rejected alternative — reserving the creation-key text inside the producer's ingress key
   space — permanently burns one ingress key per Execution for input never submitted, and would
   require qualifying C6's receipt-boundary sentence; separation keeps C2/C6 verbatim.
-- **KC1-DEC-2 — the mental-model tree is restored to base.** All 31 `mental-model/**` paths that
-  drifted between B and the preserved starting point are returned to their B state in the correction
-  payload. None of that drift is K1.1 packet maintenance: the contract's governing owners are B's
-  pages, the drift was never reviewed, and B is already clean on the broken-link and
-  atomicity-vs-durability findings. The trimmed tree remains available in preserved history
-  (`ddf24de`, `7af27bd`) for a future docs packet; revision 1 carried zero reference payload. Revision 2 authorizes only decision-01's named
-  delivery-boundary maintenance; unrelated historical drift remains reverted.
+- **KC1-DEC-2 — superseded by KC1-DEC-7 at revision 3.** Revisions 1 and 2 required all 31
+  `mental-model/**` paths that drifted between B and the correction's starting point to be
+  returned to their B state, authorizing only decision-01's four named delivery-boundary paths.
+  That rule governed H1 and H2 and is preserved here as the reasoning those candidates were
+  judged against. It does not govern revision 3: the drift it was written about was unreviewed
+  historical drift, whereas the tree at D is the owner's completed and deliberate rewrite.
+  The rejected alternative — reverting the owner's finished work to B and asking for it again
+  as a separate packet — destroys reviewed-and-correct prose to satisfy an anchor rather than
+  a semantic obligation, and would have left the same collision waiting for the next round.
+- **KC1-DEC-7 — the documentation anchor moves from B to D, and the guard covers the whole tree.**
+  On 2026-09-15, after H3, the owner completed and froze the Layer-1/2 documentation rewrite at
+  `0ee13f8138af52107d86967043bcc460faba8893` (`finish-all-second-layer-doc`) and instructed that
+  the resulting tree is authoritative and is not to be reverted. That commit is **D**, this
+  packet's documentation anchor. Its provenance is the owner's instruction in the round-5
+  implementation session, recorded in [implementation-04](implementation-04.md); the four earlier
+  owner commits it builds on (`55389aa`, `4c2f0a5`, `b548e17`, `462ae3f`) remain in ancestry
+  untouched.
+
+  Two consequences, and they are deliberately in opposite directions. The tree at D is authorized
+  retained payload: the Layer-1/2 rewrite of `README.md`, `kernel.md`, `runtime.md`, `driver.md`
+  and `deployment.md` stands, decision-01's instruction to restore `deployment.md` to B is
+  withdrawn, and no `mental-model/**` path is reverted by this packet. But the guard that failed
+  is not relaxed to accommodate that — it is **tightened**. A four-path allowlist measured from B
+  becomes whole-tree byte identity measured from D. Under revision 2 a reviewer had to reason
+  about which of 31 differing paths were authorized; under revision 3 the check is
+  `git diff --name-only D HEAD -- mental-model/` and the only passing answer is empty output.
+
+  This decision changes documentation scope only. It moves no acceptance criterion, no canonical
+  Layer-3 semantics, and nothing in `KC1-ARCH-1`. The Layer-3 pages are unaffected in substance:
+  every `concepts/**` and `mechanisms/**` page except the four decision-01 authorizes is
+  word-for-word identical between B and D, differing only in line wrapping — established by the
+  word-level comparison in [review-05](review-05.md) and reproduced in this round's evidence.
+  `concepts/` and `mechanisms/` remain unrewritten; when the owner does rewrite them, that is a
+  change to the governing sources the K1.1 criteria are judged against and belongs to its own
+  packet with its own review, not to a branch commit while a candidate is open.
 - **KC1-DEC-3 — the serializer window covers the iterator-protocol graph.** The sandbox restores the
   primordial Array-iterator-prototype `next` and removes caller-installable `next`/`value`/`done`
   shadows above the iterator holder for the call window; the audit table names the
@@ -189,6 +251,17 @@ regressions, the retained unrelated ablation/mutation checks plus the four repor
 mutations in decision-01, and the 015 structural gates. `npm run test:evals`
 is not run: this correction reaches no Agent behaviour and no model path.
 
+The KC1-DEC-7 documentation scope guard is part of this plan and its raw output is recorded:
+
+```bash
+git diff --name-only 0ee13f8138af52107d86967043bcc460faba8893 HEAD -- mental-model/   # must be empty
+git diff --stat 777b9955fb3a443f700b4f3d1f4f2aef1869345b 0ee13f8138af52107d86967043bcc460faba8893 -- mental-model/
+```
+
+The first line is the gate. The second is the B→D accounting the report classifies, together with
+the word-level comparison that shows which of those paths changed in substance rather than in line
+wrapping. A non-empty first result fails the packet; it is never explained away in a report.
+
 ## Evidence and closure
 
 006/008 lifecycle: a new clean payload C, final validation run against the committed C, an 008
@@ -198,9 +271,14 @@ independent review of the cumulative interval from the original base B to the ne
 PASS exempts any dependency. Integration and any dependent release stay held until that review
 returns ACCEPT and the owner acts on it.
 
-- Next report: `implementation-02.md` in this directory.
-- Fresh raw evidence: `validation-02/`, with a MANIFEST recording digests.
-- H1's implementation-01/validation-01 remain historical and do not validate revision 2.
+- Next report: `implementation-04.md` in this directory.
+- Fresh raw evidence: `validation-04/`, with a MANIFEST recording digests.
+- Rounds 1–4's implementation-01…03 and validation-01…03 remain historical. They validate the
+  trees they name and are not evidence for revision 3's documentation scope.
+- [Review-01](review-01.md), [review-02](review-02.md), [review-03](review-03.md),
+  [review-04](review-04.md) and [review-05](review-05.md) are immutable and are not edited.
+  Review-04 (ACCEPT) and review-05 (CHANGES REQUIRED) bind the same candidate H3 and disagree;
+  both stand as recorded, and neither is amended to match the other.
 
 Both are administrative records that belong to the candidate H rather than to the clean payload C,
 so they are named here rather than linked: at C they do not yet exist, and a contract that linked

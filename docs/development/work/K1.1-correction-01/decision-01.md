@@ -157,3 +157,35 @@ release or permission to begin a successor packet.
   allowlist exactly. No claim of a passing C2 scope gate is made.
 - No runtime/typecheck/conformance suite rerun: no implementation was performed. Their
   fresh execution remains mandatory on C2 under the acceptance mapping and command plan.
+
+## Superseding note — documentation payload allowlist withdrawn (2026-09-15, round 5)
+
+**Everything above is the record as decided, and is not edited.** This note is appended under
+006's rule that corrections to a sealed decision are new, explicitly superseding records rather
+than rewrites. It changes exactly one provision.
+
+**Superseded:** the "Authorized payload and migration handoff" section's four-path mental-model
+allowlist, its requirement that "All other mental-model paths must be byte-identical to B in C2",
+and its instruction to restore `mental-model/deployment.md` to B in the next payload.
+
+**Replaced by:** [contract](contract.md) revision 3, `KC1-DEC-7`. After H3 the owner completed and
+froze a Layer-1/2 documentation rewrite at `0ee13f8138af52107d86967043bcc460faba8893` and
+instructed that the resulting tree is authoritative. That commit is the documentation anchor **D**.
+The scope guard is re-anchored from B to D and tightened from a four-path allowlist to whole-tree
+byte identity: `git diff --name-only D HEAD -- mental-model/` must be empty. `deployment.md` is not
+restored to B; it is held byte-identical to D like every other page.
+
+**Unchanged by this note:** `KC1-ARCH-1` itself — the delivery reporting boundary, the
+`deliver(activation, settlement): undefined` signature, every acceptance-mapping row, the rejected
+alternatives, the mutation requirements and the ownership analysis all stand exactly as decided.
+The canonical rule remains owned by
+[execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary).
+This note authorizes no architecture change, no acceptance, no integration and no successor
+release, and it does not revise any historical review verdict.
+
+**Why the earlier provision was right when written and wrong to keep.** It was written against
+*unreviewed historical drift* that had leaked onto the branch and made a validated tree stop
+matching its candidate. Reverting that was correct. The tree at D is a different thing: deliberate,
+completed owner work whose Layer-3 pages are word-for-word identical to B outside the four paths
+this decision already authorized. Holding it to an anchor written for the other situation is what
+produced the contradiction [review-05](review-05.md) records as `KC1-R4-PROC-01`.
