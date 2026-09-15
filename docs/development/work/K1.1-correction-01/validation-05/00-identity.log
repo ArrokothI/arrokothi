@@ -1,0 +1,108 @@
+=== Round-6 identity log: EVERY interval, printed from git, nothing from memory ===
+This log exists because KC1-R5-PROC-01 was a narrative that contradicted its own evidence.
+Round 5's log 01 printed the correct C3..C4 output; the report prose said something else.
+Every identity sentence in implementation-05.md is copied from the output below.
+
+B  = 777b9955fb3a443f700b4f3d1f4f2aef1869345b
+C3 = 90dec32040aeaf067dcaadca8f918dce6bdb86c4   (round-4 payload)
+H3 = b883f291d83060b360b419e2a58b771f9abbc74b
+A4 = 484beb07fe150646631985d5e9ce7b2754da7475   (review-04)
+D  = 0ee13f8138af52107d86967043bcc460faba8893   (owner documentation freeze; also introduced review-05)
+C4 = 56164092d128c6767f501962174ac81c6363af9e   (round-5 payload; UNCHANGED in round 6)
+H4 = d69671168c0dcf5db6a7683d631027487c7520fe
+A5 = 9664a12f0792ef64bda71ce11d14bec4fea74adc   (review-06 + review-07)
+HEAD at this run = 9664a12f0792ef64bda71ce11d14bec4fea74adc
+
+--- parentage, from git ---
+  5616409 parent=0ee13f8  correct(K1.1-correction-01): re-anchor documentation scope to owner freeze D (C4)
+  d696711 parent=5616409  report(K1.1-correction-01): round-5 implementation report and validation evidence (H4)
+  9664a12 parent=d696711  review(K1.1-correction-01): record both round-5 reviews of exact H4 (A5)
+  => C4's parent is D. C3 is NOT C4's parent; C3..C4 spans H3, A4 and D.
+
+--- THE CORRECTED CLAIM: D..C4 (the round-5 payload) ---
+$ git diff --name-status 0ee13f8138af52107d86967043bcc460faba8893 56164092d128c6767f501962174ac81c6363af9e
+M	docs/development/007-work-packets.md
+M	docs/development/work/K1.1-correction-01/contract.md
+M	docs/development/work/K1.1-correction-01/decision-01.md
+count: 3
+
+--- THE FALSE CLAIM, shown in full: C3..C4 ---
+$ git diff --name-status 90dec32040aeaf067dcaadca8f918dce6bdb86c4 56164092d128c6767f501962174ac81c6363af9e
+M	docs/development/007-work-packets.md
+M	docs/development/work/K1.1-correction-01/contract.md
+M	docs/development/work/K1.1-correction-01/decision-01.md
+A	docs/development/work/K1.1-correction-01/implementation-03.md
+A	docs/development/work/K1.1-correction-01/review-04.md
+A	docs/development/work/K1.1-correction-01/review-05.md
+A	docs/development/work/K1.1-correction-01/validation-03/00-provenance.log
+A	docs/development/work/K1.1-correction-01/validation-03/01-tree-and-environment.log
+A	docs/development/work/K1.1-correction-01/validation-03/02-typecheck.log
+A	docs/development/work/K1.1-correction-01/validation-03/03-test-full.log
+A	docs/development/work/K1.1-correction-01/validation-03/04-test-conformance.log
+A	docs/development/work/K1.1-correction-01/validation-03/05-check-builder-docs.log
+A	docs/development/work/K1.1-correction-01/validation-03/06-test-kernel.log
+A	docs/development/work/K1.1-correction-01/validation-03/07-test-sdk.log
+A	docs/development/work/K1.1-correction-01/validation-03/08-architecture-suite.log
+A	docs/development/work/K1.1-correction-01/validation-03/09-k1.1-case-inventory.log
+A	docs/development/work/K1.1-correction-01/validation-03/09a-kc1-arch1-focused.log
+A	docs/development/work/K1.1-correction-01/validation-03/09b-distinguishing-ablations.log
+A	docs/development/work/K1.1-correction-01/validation-03/10-doc-scope.log
+A	docs/development/work/K1.1-correction-01/validation-03/MANIFEST.md
+M	mental-model/deployment.md
+count: 21
+implementation-04.md said 'C3 -> C4 is four paths ... Nothing else. No mental-model ... path'.
+Both sentences are FALSE. Actual: 21 paths, including mental-model/deployment.md.
+
+$ git diff --stat 90dec32040aeaf067dcaadca8f918dce6bdb86c4 56164092d128c6767f501962174ac81c6363af9e -- mental-model/
+ mental-model/deployment.md | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+That page is the one earlier rounds disputed. It changed at D, by the owner.
+
+--- the claims that were TRUE, reverified ---
+executable C3..C4 (packages tests scripts examples): empty  TRUE
+mental-model D..C4:                                  empty  TRUE
+evals/agents/models/examples B..C4:                  empty  TRUE
+
+--- round 6 changes no payload: C4 .. HEAD ---
+$ git diff --name-status 56164092d128c6767f501962174ac81c6363af9e HEAD
+M	docs/development/007-work-packets.md
+A	docs/development/work/K1.1-correction-01/implementation-04.md
+A	docs/development/work/K1.1-correction-01/review-06.md
+A	docs/development/work/K1.1-correction-01/review-07.md
+A	docs/development/work/K1.1-correction-01/validation-04/00-doc-scope-gate.log
+A	docs/development/work/K1.1-correction-01/validation-04/01-tree-and-environment.log
+A	docs/development/work/K1.1-correction-01/validation-04/02-typecheck.log
+A	docs/development/work/K1.1-correction-01/validation-04/03-test-full.log
+A	docs/development/work/K1.1-correction-01/validation-04/04-test-conformance.log
+A	docs/development/work/K1.1-correction-01/validation-04/05-check-builder-docs.log
+A	docs/development/work/K1.1-correction-01/validation-04/06-test-kernel.log
+A	docs/development/work/K1.1-correction-01/validation-04/07-test-sdk.log
+A	docs/development/work/K1.1-correction-01/validation-04/08-architecture-suite.log
+A	docs/development/work/K1.1-correction-01/validation-04/09-k1.1-case-inventory.log
+A	docs/development/work/K1.1-correction-01/validation-04/09a-kc1-arch1-focused.log
+A	docs/development/work/K1.1-correction-01/validation-04/09b-distinguishing-ablations.log
+A	docs/development/work/K1.1-correction-01/validation-04/10-doc-accounting-b-to-d.log
+A	docs/development/work/K1.1-correction-01/validation-04/MANIFEST.md
+payload paths C4..HEAD (must be empty):              empty  PASS
+  => the only C4..HEAD changes are administrative: review records and the 007 ledger row.
+
+--- KC1-DEC-7 gate at HEAD ---
+git diff --name-only D HEAD -- mental-model/:        empty  GATE PASS
+negative control (one appended newline):             mental-model/reference.md  REJECTED as required
+restored:                                            clean
+
+--- preserved records at HEAD ---
+  review-01              unchanged
+  review-02              unchanged
+  review-03              unchanged
+  review-04              unchanged
+  review-05              unchanged
+  review-06              unchanged
+  review-07              unchanged
+  blocker-01             unchanged
+  implementation-01      unchanged
+  implementation-02      unchanged
+  implementation-03      unchanged
+  implementation-04      unchanged
+  decision-01            append-only: 0 deleted lines
+  validation-01..04/     unchanged

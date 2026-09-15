@@ -1,0 +1,1979 @@
+TAP version 13
+# Subtest: K1.1-C8 the boundary carries no Agent or Workflow discriminator
+    # Subtest: neither word appears in the zone's executable text
+    ok 1 - neither word appears in the zone's executable text
+      ---
+      duration_ms: 22.898542
+      type: 'test'
+      ...
+    # Subtest: no legacy controller vocabulary is carried forward into code either
+    ok 2 - no legacy controller vocabulary is carried forward into code either
+      ---
+      duration_ms: 8.652917
+      type: 'test'
+      ...
+    # Subtest: the exported surface names no Agent or Workflow concept
+    ok 3 - the exported surface names no Agent or Workflow concept
+      ---
+      duration_ms: 103.284166
+      type: 'test'
+      ...
+    # Subtest: the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)
+    ok 4 - the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)
+      ---
+      duration_ms: 2.745333
+      type: 'test'
+      ...
+    # Subtest: which code can read progress is answered only by pinned revisions and a codec
+    ok 5 - which code can read progress is answered only by pinned revisions and a codec
+      ---
+      duration_ms: 1.57
+      type: 'test'
+      ...
+    # Subtest: K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts
+    ok 6 - K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts
+      ---
+      duration_ms: 3.357583
+      type: 'test'
+      ...
+    # Subtest: K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list
+    ok 7 - K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list
+      ---
+      duration_ms: 10.8745
+      type: 'test'
+      ...
+    # Subtest: K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner
+    ok 8 - K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner
+      ---
+      duration_ms: 4.830084
+      type: 'test'
+      ...
+    # Subtest: every import in the zone is internal, a node: builtin, or the approved JCS dependency
+    ok 9 - every import in the zone is internal, a node: builtin, or the approved JCS dependency
+      ---
+      duration_ms: 4.292375
+      type: 'test'
+      ...
+    1..9
+ok 1 - K1.1-C8 the boundary carries no Agent or Workflow discriminator
+  ---
+  duration_ms: 163.931875
+  type: 'suite'
+  ...
+# Subtest: K1.1-C1 one atomic creation
+    # Subtest: creation binds every field in one decision and lands READY
+    ok 1 - creation binds every field in one decision and lands READY
+      ---
+      duration_ms: 4.057917
+      type: 'test'
+      ...
+    # Subtest: the creation receipt names the creation boundary and covers its initial input
+    ok 2 - the creation receipt names the creation boundary and covers its initial input
+      ---
+      duration_ms: 1.3665
+      type: 'test'
+      ...
+    # Subtest: a creation the caller may not scope is refused and creates nothing
+    ok 3 - a creation the caller may not scope is refused and creates nothing
+      ---
+      duration_ms: 0.248542
+      type: 'test'
+      ...
+    # Subtest: creation content that is not a boundary value is refused, with the reason
+    ok 4 - creation content that is not a boundary value is refused, with the reason
+      ---
+      duration_ms: 0.759375
+      type: 'test'
+      ...
+    1..4
+ok 2 - K1.1-C1 one atomic creation
+  ---
+  duration_ms: 9.562292
+  type: 'suite'
+  ...
+# Subtest: K1.1-C1 the lost-response cases
+    # Subtest: row 1: nothing committed, so the creation commits now
+    ok 1 - row 1: nothing committed, so the creation commits now
+      ---
+      duration_ms: 0.811167
+      type: 'test'
+      ...
+    # Subtest: rows 2 and 3: a retry returns the same Execution and the retained decision
+    ok 2 - rows 2 and 3: a retry returns the same Execution and the retained decision
+      ---
+      duration_ms: 2.622541
+      type: 'test'
+      ...
+    # Subtest: changing the content under one key is a conflict, not an update
+    ok 3 - changing the content under one key is a conflict, not an update
+      ---
+      duration_ms: 1.948667
+      type: 'test'
+      ...
+    # Subtest: any changed part of the creation content conflicts, not only the input
+    ok 4 - any changed part of the creation content conflicts, not only the input
+      ---
+      duration_ms: 5.6305
+      type: 'test'
+      ...
+    # Subtest: content equality is logical, so an honest re-serialization is still a replay
+    ok 5 - content equality is logical, so an honest re-serialization is still a replay
+      ---
+      duration_ms: 4.005458
+      type: 'test'
+      ...
+    # Subtest: a second intentional run needs a fresh key, even with identical content
+    ok 6 - a second intentional run needs a fresh key, even with identical content
+      ---
+      duration_ms: 2.776792
+      type: 'test'
+      ...
+    1..6
+ok 3 - K1.1-C1 the lost-response cases
+  ---
+  duration_ms: 18.14875
+  type: 'suite'
+  ...
+# Subtest: K1.1-C1 the key is scoped, and the scope comes from authentication
+    # Subtest: another authenticated caller may use the same key text without colliding
+    ok 1 - another authenticated caller may use the same key text without colliding
+      ---
+      duration_ms: 16.330458
+      type: 'test'
+      ...
+    # Subtest: the same caller's key text in two authority scopes names two requests
+    ok 2 - the same caller's key text in two authority scopes names two requests
+      ---
+      duration_ms: 0.8945
+      type: 'test'
+      ...
+    # Subtest: no packing of the creation key's three parts can make two requests collide
+    ok 3 - no packing of the creation key's three parts can make two requests collide
+      ---
+      duration_ms: 1.017708
+      type: 'test'
+      ...
+    # Subtest: K11-R3-ID-02 an identity field that is not text is refused rather than packed into a colliding key
+    ok 4 - K11-R3-ID-02 an identity field that is not text is refused rather than packed into a colliding key
+      ---
+      duration_ms: 2.315625
+      type: 'test'
+      ...
+    # Subtest: K11-R3-ID-02 identity text is still held to the ordinary boundary-value rules
+    ok 5 - K11-R3-ID-02 identity text is still held to the ordinary boundary-value rules
+      ---
+      duration_ms: 0.620625
+      type: 'test'
+      ...
+    # Subtest: K11-R3-ID-03 malformed scope is refused before authorization, well-formed unauthorized scope after
+    ok 6 - K11-R3-ID-03 malformed scope is refused before authorization, well-formed unauthorized scope after
+      ---
+      duration_ms: 0.162208
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 creation under ambient toJSON still binds the retained payload and its replay
+    ok 7 - K11-R2-VAL-02 creation under ambient toJSON still binds the retained payload and its replay
+      ---
+      duration_ms: 1.096041
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement
+    ok 8 - K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement
+      ---
+      duration_ms: 1.551917
+      type: 'test'
+      ...
+    # Subtest: K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding
+    ok 9 - K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding
+      ---
+      duration_ms: 0.486333
+      type: 'test'
+      ...
+    # Subtest: K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit
+    ok 10 - K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit
+      ---
+      duration_ms: 3.887042
+      type: 'test'
+      ...
+    # Subtest: the payload cannot supply or change the producer namespace
+    ok 11 - the payload cannot supply or change the producer namespace
+      ---
+      duration_ms: 0.9635
+      type: 'test'
+      ...
+    # Subtest: an Execution is invisible outside its authority scope, exactly as a missing one is
+    ok 12 - an Execution is invisible outside its authority scope, exactly as a missing one is
+      ---
+      duration_ms: 0.504791
+      type: 'test'
+      ...
+    # Subtest: K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection
+    ok 13 - K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection
+      ---
+      duration_ms: 14.198458
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation
+    ok 14 - K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation
+      ---
+      duration_ms: 4.813375
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 what creation retained is exactly what its canonical identity described
+    ok 15 - K11-R2-VAL-02 what creation retained is exactly what its canonical identity described
+      ---
+      duration_ms: 1.32325
+      type: 'test'
+      ...
+    # Subtest: K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation
+    ok 16 - K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation
+      ---
+      duration_ms: 4.323125
+      type: 'test'
+      ...
+    1..16
+ok 4 - K1.1-C1 the key is scoped, and the scope comes from authentication
+  ---
+  duration_ms: 55.0665
+  type: 'suite'
+  ...
+# Subtest: K11-R6-VAL-04 the one observed value is what creation binds, retains and replays
+    # Subtest: a coherent array whose prototype observation installs an indexed accessor binds its own value
+    ok 1 - a coherent array whose prototype observation installs an indexed accessor binds its own value
+      ---
+      duration_ms: 5.152667
+      type: 'test'
+      ...
+    1..1
+ok 5 - K11-R6-VAL-04 the one observed value is what creation binds, retains and replays
+  ---
+  duration_ms: 5.311875
+  type: 'suite'
+  ...
+# Subtest: K11-R7-STATE-03 creation under inherited descriptor-field pollution
+    # Subtest: a payload observation that installs get/set still creates the exact Execution
+    ok 1 - a payload observation that installs get/set still creates the exact Execution
+      ---
+      duration_ms: 2.493042
+      type: 'test'
+      ...
+    # Subtest: an ordinary handler broken by its own pollution is refused, never accepted or leaked
+    ok 2 - an ordinary handler broken by its own pollution is refused, never accepted or leaked
+      ---
+      duration_ms: 3.663625
+      type: 'test'
+      ...
+    1..2
+ok 6 - K11-R7-STATE-03 creation under inherited descriptor-field pollution
+  ---
+  duration_ms: 6.385458
+  type: 'suite'
+  ...
+# Subtest: K11-R16-VAL-01 creation replay and conflict are stable while the iterator next is hostile
+    # Subtest: retry still replays and changed content still conflicts
+    ok 1 - retry still replays and changed content still conflicts
+      ---
+      duration_ms: 5.97025
+      type: 'test'
+      ...
+    1..1
+ok 7 - K11-R16-VAL-01 creation replay and conflict are stable while the iterator next is hostile
+  ---
+  duration_ms: 6.098875
+  type: 'suite'
+  ...
+# Subtest: K11-R16-ID-01 malformed identity diagnostics never throw on caller-owned values
+    # Subtest: a revoked Proxy in any identity-text field is a located malformed_value refusal
+    ok 1 - a revoked Proxy in any identity-text field is a located malformed_value refusal
+      ---
+      duration_ms: 2.231834
+      type: 'test'
+      ...
+    # Subtest: a revoked Proxy in initial-input identity fields is located under initialInput
+    ok 2 - a revoked Proxy in initial-input identity fields is located under initialInput
+      ---
+      duration_ms: 2.479292
+      type: 'test'
+      ...
+    # Subtest: an unreadable or absent creation envelope is malformed, and scope still precedes authorization
+    ok 3 - an unreadable or absent creation envelope is malformed, and scope still precedes authorization
+      ---
+      duration_ms: 0.249917
+      type: 'test'
+      ...
+    # Subtest: a revoked initialInput envelope is a located refusal
+    ok 4 - a revoked initialInput envelope is a located refusal
+      ---
+      duration_ms: 0.8045
+      type: 'test'
+      ...
+    1..4
+ok 8 - K11-R16-ID-01 malformed identity diagnostics never throw on caller-owned values
+  ---
+  duration_ms: 5.893458
+  type: 'suite'
+  ...
+# Subtest: K11-R16-ID-01 (R3) ambient prototype state cannot answer missing envelope fields
+    # Subtest: ambient identity text cannot complete an empty creation envelope
+    ok 1 - ambient identity text cannot complete an empty creation envelope
+      ---
+      duration_ms: 0.232667
+      type: 'test'
+      ...
+    # Subtest: an earlier-field trap cannot steer a later field through ambient state in the same tick
+    ok 2 - an earlier-field trap cannot steer a later field through ambient state in the same tick
+      ---
+      duration_ms: 0.630792
+      type: 'test'
+      ...
+    # Subtest: a field carried only by inheritance reads as missing
+    ok 3 - a field carried only by inheritance reads as missing
+      ---
+      duration_ms: 0.095875
+      type: 'test'
+      ...
+    1..3
+ok 9 - K11-R16-ID-01 (R3) ambient prototype state cannot answer missing envelope fields
+  ---
+  duration_ms: 1.071167
+  type: 'suite'
+  ...
+# Subtest: K1.1-C4 what one dispatch intent pins
+    # Subtest: the Activation carries exactly the facts creation bound, and the Execution is RUNNING
+    ok 1 - the Activation carries exactly the facts creation bound, and the Execution is RUNNING
+      ---
+      duration_ms: 3.547083
+      type: 'test'
+      ...
+    # Subtest: the pinned codec and revisions come from the creation that bound them, per Execution
+    ok 2 - the pinned codec and revisions come from the creation that bound them, per Execution
+      ---
+      duration_ms: 1.9465
+      type: 'test'
+      ...
+    # Subtest: reservation pins a batch and acknowledges none of it
+    ok 3 - reservation pins a batch and acknowledges none of it
+      ---
+      duration_ms: 66.172958
+      type: 'test'
+      ...
+    # Subtest: K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound
+    ok 4 - K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound
+      ---
+      duration_ms: 2.793333
+      type: 'test'
+      ...
+    # Subtest: K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it
+    ok 5 - K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it
+      ---
+      duration_ms: 0.661125
+      type: 'test'
+      ...
+    # Subtest: K11-R4-DISP-01 a non-object envelope is refused as an invalid bound, not thrown out of the boundary
+    ok 6 - K11-R4-DISP-01 a non-object envelope is refused as an invalid bound, not thrown out of the boundary
+      ---
+      duration_ms: 2.181041
+      type: 'test'
+      ...
+    # Subtest: the bound selects an acceptance-order prefix and must be at least one
+    ok 7 - the bound selects an acceptance-order prefix and must be at least one
+      ---
+      duration_ms: 6.997541
+      type: 'test'
+      ...
+    # Subtest: one Execution has at most one Activation authorized to commit
+    ok 8 - one Execution has at most one Activation authorized to commit
+      ---
+      duration_ms: 0.673
+      type: 'test'
+      ...
+    # Subtest: an invisible Execution is not dispatched
+    ok 9 - an invisible Execution is not dispatched
+      ---
+      duration_ms: 0.882708
+      type: 'test'
+      ...
+    1..9
+ok 10 - K1.1-C4 what one dispatch intent pins
+  ---
+  duration_ms: 86.674542
+  type: 'suite'
+  ...
+# Subtest: K1.1-C4 the intent is accepted before the send, and the send is not awaited
+    # Subtest: a Driver that throws leaves the accepted intent standing
+    ok 1 - a Driver that throws leaves the accepted intent standing
+      ---
+      duration_ms: 0.695834
+      type: 'test'
+      ...
+    # Subtest: a Driver that reports failure records an operational failure, not a state change
+    ok 2 - a Driver that reports failure records an operational failure, not a state change
+      ---
+      duration_ms: 0.72275
+      type: 'test'
+      ...
+    # Subtest: the intent is already accepted and readable by the time the Driver is called
+    ok 3 - the intent is already accepted and readable by the time the Driver is called
+      ---
+      duration_ms: 0.9395
+      type: 'test'
+      ...
+    # Subtest: a delayed Execution does not prevent another from being dispatched on the same coordinator
+    ok 4 - a delayed Execution does not prevent another from being dispatched on the same coordinator
+      ---
+      duration_ms: 1.0065
+      type: 'test'
+      ...
+    # Subtest: dispatch returns while the report is outstanding; a later report settles it
+    ok 5 - dispatch returns while the report is outstanding; a later report settles it
+      ---
+      duration_ms: 0.489875
+      type: 'test'
+      ...
+    1..5
+ok 11 - K1.1-C4 the intent is accepted before the send, and the send is not awaited
+  ---
+  duration_ms: 4.004208
+  type: 'suite'
+  ...
+# Subtest: K1.1-C5 ordinary redelivery is the same exchange
+    # Subtest: identity, epoch, base revision and batch are preserved, and nothing is re-selected
+    ok 1 - identity, epoch, base revision and batch are preserved, and nothing is re-selected
+      ---
+      duration_ms: 1.198
+      type: 'test'
+      ...
+    # Subtest: redelivery is refused when there is no unresolved exchange
+    ok 2 - redelivery is refused when there is no unresolved exchange
+      ---
+      duration_ms: 0.464708
+      type: 'test'
+      ...
+    # Subtest: redelivering an invisible Execution answers as an unknown one
+    ok 3 - redelivering an invisible Execution answers as an unknown one
+      ---
+      duration_ms: 0.701833
+      type: 'test'
+      ...
+    # Subtest: nothing in this packet advances a writer epoch
+    ok 4 - nothing in this packet advances a writer epoch
+      ---
+      duration_ms: 0.625459
+      type: 'test'
+      ...
+    # Subtest: K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value
+    ok 5 - K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value
+      ---
+      duration_ms: 0.562625
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 the Activation, redelivery and inspection carry the one value identity described
+    ok 6 - K11-R2-VAL-02 the Activation, redelivery and inspection carry the one value identity described
+      ---
+      duration_ms: 1.612
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 a payload with no single reading never reaches a Driver
+    ok 7 - K11-R2-VAL-02 a payload with no single reading never reaches a Driver
+      ---
+      duration_ms: 1.032208
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound
+    ok 8 - K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound
+      ---
+      duration_ms: 0.756833
+      type: 'test'
+      ...
+    # Subtest: K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable
+    ok 9 - K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable
+      ---
+      duration_ms: 0.776833
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution
+    ok 10 - K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution
+      ---
+      duration_ms: 0.629917
+      type: 'test'
+      ...
+    1..10
+ok 12 - K1.1-C5 ordinary redelivery is the same exchange
+  ---
+  duration_ms: 8.555
+  type: 'suite'
+  ...
+# Subtest: K11-R6-STATE-02 batch reservation is own data, not an ambient write
+    # Subtest: a bound getter that installs Array.prototype["0"] still reserves the exact available prefix
+    ok 1 - a bound getter that installs Array.prototype["0"] still reserves the exact available prefix
+      ---
+      duration_ms: 5.782125
+      type: 'test'
+      ...
+    # Subtest: the same trap at every reserved index cannot shorten a larger batch either
+    ok 2 - the same trap at every reserved index cannot shorten a larger batch either
+      ---
+      duration_ms: 3.165416
+      type: 'test'
+      ...
+    1..2
+ok 13 - K11-R6-STATE-02 batch reservation is own data, not an ambient write
+  ---
+  duration_ms: 9.102125
+  type: 'suite'
+  ...
+# Subtest: K11-R7-STATE-03 dispatch under inherited descriptor-field pollution
+    # Subtest: a bound getter that installs Object.prototype.get still reserves the exact prefix
+    ok 1 - a bound getter that installs Object.prototype.get still reserves the exact prefix
+      ---
+      duration_ms: 2.083625
+      type: 'test'
+      ...
+    # Subtest: an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it
+    ok 2 - an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it
+      ---
+      duration_ms: 0.806417
+      type: 'test'
+      ...
+    # Subtest: an inherited descriptor getter runs zero times inside the hardened operation
+    ok 3 - an inherited descriptor getter runs zero times inside the hardened operation
+      ---
+      duration_ms: 6.468083
+      type: 'test'
+      ...
+    # Subtest: descriptor pollution and an inherited indexed trap together still commit the exact batch
+    ok 4 - descriptor pollution and an inherited indexed trap together still commit the exact batch
+      ---
+      duration_ms: 0.695208
+      type: 'test'
+      ...
+    1..4
+ok 14 - K11-R7-STATE-03 dispatch under inherited descriptor-field pollution
+  ---
+  duration_ms: 10.8555
+  type: 'suite'
+  ...
+# Subtest: K11-R16-VAL-01 dispatch and redelivery project the snapshot while the iterator next is hostile
+    # Subtest: batch, Activation payload and redelivery are stable under an omit-all next
+    ok 1 - batch, Activation payload and redelivery are stable under an omit-all next
+      ---
+      duration_ms: 0.959958
+      type: 'test'
+      ...
+    1..1
+ok 15 - K11-R16-VAL-01 dispatch and redelivery project the snapshot while the iterator next is hostile
+  ---
+  duration_ms: 1.022667
+  type: 'suite'
+  ...
+# Subtest: KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)
+    # Subtest: report during invocation settles the attempt with intent intact
+    ok 1 - report during invocation settles the attempt with intent intact
+      ---
+      duration_ms: 0.743375
+      type: 'test'
+      ...
+    # Subtest: delayed or absent report leaves the attempt pending without blocking others
+    ok 2 - delayed or absent report leaves the attempt pending without blocking others
+      ---
+      duration_ms: 0.93775
+      type: 'test'
+      ...
+    # Subtest: synchronous throw is an implicit failure report with a total diagnostic
+    ok 3 - synchronous throw is an implicit failure report with a total diagnostic
+      ---
+      duration_ms: 0.656292
+      type: 'test'
+      ...
+    # Subtest: a report followed by a throw retains the report
+    ok 4 - a report followed by a throw retains the report
+      ---
+      duration_ms: 1.049375
+      type: 'test'
+      ...
+    # Subtest: a throw followed by a late report retains the failure
+    ok 5 - a throw followed by a late report retains the failure
+      ---
+      duration_ms: 2.58125
+      type: 'test'
+      ...
+    # Subtest: duplicate and conflicting reports are inert after the first
+    ok 6 - duplicate and conflicting reports are inert after the first
+      ---
+      duration_ms: 2.1515
+      type: 'test'
+      ...
+    # Subtest: capability integrity: frozen, detached, and bound to its own attempt
+    ok 7 - capability integrity: frozen, detached, and bound to its own attempt
+      ---
+      duration_ms: 3.412042
+      type: 'test'
+      ...
+    # Subtest: hostile failure reasons are never invoked and stay bounded
+    ok 8 - hostile failure reasons are never invoked and stay bounded
+      ---
+      duration_ms: 0.628708
+      type: 'test'
+      ...
+    # Subtest: a poisoned Error message is never read
+    ok 9 - a poisoned Error message is never read
+      ---
+      duration_ms: 1.250375
+      type: 'test'
+      ...
+    # Subtest: revoked Proxy, symbol, function, and boxed-string reasons collapse to the fixed text
+    ok 10 - revoked Proxy, symbol, function, and boxed-string reasons collapse to the fixed text
+      ---
+      duration_ms: 3.017958
+      type: 'test'
+      ...
+    # Subtest: a primitive string reason is retained up to 1,024 code units
+    ok 11 - a primitive string reason is retained up to 1,024 code units
+      ---
+      duration_ms: 0.635583
+      type: 'test'
+      ...
+    # Subtest: redelivery overlap: out-of-order reports settle only their own attempts
+    ok 12 - redelivery overlap: out-of-order reports settle only their own attempts
+      ---
+      duration_ms: 0.713083
+      type: 'test'
+      ...
+    # Subtest: Promise independence: hostile ambient constructor/species slots change nothing
+    ok 13 - Promise independence: hostile ambient constructor/species slots change nothing
+      ---
+      duration_ms: 0.63875
+      type: 'test'
+      ...
+    # Subtest: return misuse: an inert hostile return is never observed; the attempt stays pending
+    ok 14 - return misuse: an inert hostile return is never observed; the attempt stays pending
+      ---
+      duration_ms: 0.533792
+      type: 'test'
+      ...
+    # Subtest: Driver-internal asynchronous failure reports with zero unhandled (strict subprocess)
+    ok 15 - Driver-internal asynchronous failure reports with zero unhandled (strict subprocess)
+      ---
+      duration_ms: 356.894708
+      type: 'test'
+      ...
+    # Subtest: type boundary: an async deliver is not assignable; a sync undefined deliver compiles
+    ok 16 - type boundary: an async deliver is not assignable; a sync undefined deliver compiles
+      ---
+      duration_ms: 0.11525
+      type: 'test'
+      ...
+    1..16
+ok 16 - KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)
+  ---
+  duration_ms: 376.496792
+  type: 'suite'
+  ...
+# Subtest: K11-R16-ID-01 (R3) ambient prototype state cannot answer a missing bound
+    # Subtest: an ambient Object.prototype bound cannot dispatch an empty envelope
+    ok 1 - an ambient Object.prototype bound cannot dispatch an empty envelope
+      ---
+      duration_ms: 0.527625
+      type: 'test'
+      ...
+    # Subtest: an array envelope cannot inherit its bound through the Array.prototype chain
+    ok 2 - an array envelope cannot inherit its bound through the Array.prototype chain
+      ---
+      duration_ms: 0.72325
+      type: 'test'
+      ...
+    # Subtest: a bound carried only by inheritance reads as missing
+    ok 3 - a bound carried only by inheritance reads as missing
+      ---
+      duration_ms: 0.38875
+      type: 'test'
+      ...
+    1..3
+ok 17 - K11-R16-ID-01 (R3) ambient prototype state cannot answer a missing bound
+  ---
+  duration_ms: 1.705041
+  type: 'suite'
+  ...
+# Subtest: K11-R2-EVID-01 retained receipts survive a caller editing what it was handed
+    # Subtest: the creation receipt is unchanged by editing the returned one, on replay and in inspection
+    ok 1 - the creation receipt is unchanged by editing the returned one, on replay and in inspection
+      ---
+      duration_ms: 25.2545
+      type: 'test'
+      ...
+    # Subtest: the ingress receipt is unchanged by editing the returned one
+    ok 2 - the ingress receipt is unchanged by editing the returned one
+      ---
+      duration_ms: 5.231125
+      type: 'test'
+      ...
+    # Subtest: the dispatch receipt is unchanged by editing the returned one, and redelivery returns the original
+    ok 3 - the dispatch receipt is unchanged by editing the returned one, and redelivery returns the original
+      ---
+      duration_ms: 1.149292
+      type: 'test'
+      ...
+    # Subtest: editing a receipt reached through inspection cannot reach the Execution either
+    ok 4 - editing a receipt reached through inspection cannot reach the Execution either
+      ---
+      duration_ms: 1.74575
+      type: 'test'
+      ...
+    # Subtest: the retained mailbox disposition cannot be edited into a different disposition
+    ok 5 - the retained mailbox disposition cannot be edited into a different disposition
+      ---
+      duration_ms: 0.919125
+      type: 'test'
+      ...
+    1..5
+ok 18 - K11-R2-EVID-01 retained receipts survive a caller editing what it was handed
+  ---
+  duration_ms: 35.29125
+  type: 'suite'
+  ...
+# Subtest: K11-R2-EVID-01 retained refusals survive a caller editing what it was handed
+    # Subtest: a recorded creation conflict is unchanged by editing the returned record
+    ok 1 - a recorded creation conflict is unchanged by editing the returned record
+      ---
+      duration_ms: 1.339708
+      type: 'test'
+      ...
+    # Subtest: a recorded ingress conflict is unchanged, and editing it invents no Execution
+    ok 2 - a recorded ingress conflict is unchanged, and editing it invents no Execution
+      ---
+      duration_ms: 2.024125
+      type: 'test'
+      ...
+    # Subtest: editing a refusal reached through inspection cannot reach the Execution
+    ok 3 - editing a refusal reached through inspection cannot reach the Execution
+      ---
+      duration_ms: 79.158125
+      type: 'test'
+      ...
+    # Subtest: a refusal that names no Execution is immutable too, and stays unrecorded
+    ok 4 - a refusal that names no Execution is immutable too, and stays unrecorded
+      ---
+      duration_ms: 0.121916
+      type: 'test'
+      ...
+    1..4
+ok 19 - K11-R2-EVID-01 retained refusals survive a caller editing what it was handed
+  ---
+  duration_ms: 82.839167
+  type: 'suite'
+  ...
+# Subtest: K11-R2-EVID-01 the ownership rule, not one call site
+    # Subtest: every evidence object any exposed path returns is immutable
+    ok 1 - every evidence object any exposed path returns is immutable
+      ---
+      duration_ms: 5.938958
+      type: 'test'
+      ...
+    # Subtest: evidence the Kernel retains and evidence it returns are the same object, safely
+    ok 2 - evidence the Kernel retains and evidence it returns are the same object, safely
+      ---
+      duration_ms: 2.385834
+      type: 'test'
+      ...
+    1..2
+ok 20 - K11-R2-EVID-01 the ownership rule, not one call site
+  ---
+  duration_ms: 8.429625
+  type: 'suite'
+  ...
+# Subtest: the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)
+    # Subtest: the terminal vocabulary cannot be extended, emptied or re-spelled
+    ok 1 - the terminal vocabulary cannot be extended, emptied or re-spelled
+      ---
+      duration_ms: 2.468459
+      type: 'test'
+      ...
+    # Subtest: the published limits cannot be raised or lowered by a caller
+    ok 2 - the published limits cannot be raised or lowered by a caller
+      ---
+      duration_ms: 48.703666
+      type: 'test'
+      ...
+    1..2
+ok 21 - the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)
+  ---
+  duration_ms: 51.263875
+  type: 'suite'
+  ...
+# Subtest: K1.1-C2 accepting one input
+    # Subtest: acceptance records content, provenance, a mailbox entry and a position together
+    ok 1 - acceptance records content, provenance, a mailbox entry and a position together
+      ---
+      duration_ms: 13.18325
+      type: 'test'
+      ...
+    # Subtest: a declared subscription class is retained as part of the immutable content
+    ok 2 - a declared subscription class is retained as part of the immutable content
+      ---
+      duration_ms: 2.017375
+      type: 'test'
+      ...
+    # Subtest: input that is not a boundary value is refused and queues nothing
+    ok 3 - input that is not a boundary value is refused and queues nothing
+      ---
+      duration_ms: 3.564292
+      type: 'test'
+      ...
+    1..3
+ok 22 - K1.1-C2 accepting one input
+  ---
+  duration_ms: 19.370125
+  type: 'suite'
+  ...
+# Subtest: K1.1-C2 each field is measured as its own boundary-value root
+    # Subtest: a payload exactly at a limit is accepted, and one unit over is refused
+    ok 1 - a payload exactly at a limit is accepted, and one unit over is refused
+      ---
+      duration_ms: 1.640875
+      type: 'test'
+      ...
+    # Subtest: the same holds at creation, for the initial input and the authority context alike
+    ok 2 - the same holds at creation, for the initial input and the authority context alike
+      ---
+      duration_ms: 4.571583
+      type: 'test'
+      ...
+    # Subtest: a refusal locates the offending field by name
+    ok 3 - a refusal locates the offending field by name
+      ---
+      duration_ms: 1.63625
+      type: 'test'
+      ...
+    1..3
+ok 23 - K1.1-C2 each field is measured as its own boundary-value root
+  ---
+  duration_ms: 8.030666
+  type: 'suite'
+  ...
+# Subtest: K1.1-C2 exact replay and content conflict
+    # Subtest: an exact replay returns the recorded disposition and creates no second Event
+    ok 1 - an exact replay returns the recorded disposition and creates no second Event
+      ---
+      duration_ms: 1.374125
+      type: 'test'
+      ...
+    # Subtest: a replay is decided by logical value, not by spelling
+    ok 2 - a replay is decided by logical value, not by spelling
+      ---
+      duration_ms: 2.370583
+      type: 'test'
+      ...
+    # Subtest: different content under an accepted identity is recorded and refused, and edits nothing
+    ok 3 - different content under an accepted identity is recorded and refused, and edits nothing
+      ---
+      duration_ms: 2.889417
+      type: 'test'
+      ...
+    # Subtest: K11-R15-ID-01 the creation key text stays usable as a genuine ingress key
+    ok 4 - K11-R15-ID-01 the creation key text stays usable as a genuine ingress key
+      ---
+      duration_ms: 9.423083
+      type: 'test'
+      ...
+    # Subtest: K11-R15-ID-01 different content under the creation key text is fresh ingress, not a conflict
+    ok 5 - K11-R15-ID-01 different content under the creation key text is fresh ingress, not a conflict
+      ---
+      duration_ms: 1.842791
+      type: 'test'
+      ...
+    # Subtest: K11-R15-ID-01 the new ingress row replays on its own receipt while creation retry still replays creation
+    ok 6 - K11-R15-ID-01 the new ingress row replays on its own receipt while creation retry still replays creation
+      ---
+      duration_ms: 1.41275
+      type: 'test'
+      ...
+    1..6
+ok 24 - K1.1-C2 exact replay and content conflict
+  ---
+  duration_ms: 19.588375
+  type: 'suite'
+  ...
+# Subtest: K1.1-C2 the triple keeps unrelated requests apart
+    # Subtest: two producers may use the same request-key text
+    ok 1 - two producers may use the same request-key text
+      ---
+      duration_ms: 0.821041
+      type: 'test'
+      ...
+    # Subtest: one producer's key text to two Executions names two inputs
+    ok 2 - one producer's key text to two Executions names two inputs
+      ---
+      duration_ms: 2.221834
+      type: 'test'
+      ...
+    # Subtest: K11-R3-ID-02 a request key that is not text names nothing and is refused
+    ok 3 - K11-R3-ID-02 a request key that is not text names nothing and is refused
+      ---
+      duration_ms: 1.083834
+      type: 'test'
+      ...
+    # Subtest: K11-R3-ID-02 a destination that is not text answers as an unknown destination, disclosing nothing
+    ok 4 - K11-R3-ID-02 a destination that is not text answers as an unknown destination, disclosing nothing
+      ---
+      duration_ms: 0.49325
+      type: 'test'
+      ...
+    # Subtest: no packing of the three parts can make two identities collide
+    ok 5 - no packing of the three parts can make two identities collide
+      ---
+      duration_ms: 0.917
+      type: 'test'
+      ...
+    1..5
+ok 25 - K1.1-C2 the triple keeps unrelated requests apart
+  ---
+  duration_ms: 5.648
+  type: 'suite'
+  ...
+# Subtest: K1.1-C2 destinations that refuse
+    # Subtest: an unknown destination and one the caller may not see answer identically
+    ok 1 - an unknown destination and one the caller may not see answer identically
+      ---
+      duration_ms: 0.507041
+      type: 'test'
+      ...
+    # Subtest: K11-R1-SCOPE-01 terminal-ingress rule is specified with live-terminal evidence deferred to K1.3
+    ok 2 - K11-R1-SCOPE-01 terminal-ingress rule is specified with live-terminal evidence deferred to K1.3
+      ---
+      duration_ms: 0.785084
+      type: 'test'
+      ...
+    # Subtest: a capacity below one is a configuration error, not a refusal to discover at runtime
+    ok 3 - a capacity below one is a configuration error, not a refusal to discover at runtime
+      ---
+      duration_ms: 0.312834
+      type: 'test'
+      ...
+    # Subtest: capacity refuses ingress before any acknowledgment
+    ok 4 - capacity refuses ingress before any acknowledgment
+      ---
+      duration_ms: 3.271084
+      type: 'test'
+      ...
+    1..4
+ok 26 - K1.1-C2 destinations that refuse
+  ---
+  duration_ms: 4.969458
+  type: 'suite'
+  ...
+# Subtest: K1.1-C2 ingress does not depend on what the Execution is doing
+    # Subtest: input accepted while RUNNING is queued and stays out of the reserved batch
+    ok 1 - input accepted while RUNNING is queued and stays out of the reserved batch
+      ---
+      duration_ms: 1.020334
+      type: 'test'
+      ...
+    # Subtest: replay and conflict behave the same way while RUNNING as while READY
+    ok 2 - replay and conflict behave the same way while RUNNING as while READY
+      ---
+      duration_ms: 1.119583
+      type: 'test'
+      ...
+    # Subtest: K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection
+    ok 3 - K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection
+      ---
+      duration_ms: 3.149625
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress
+    ok 4 - K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress
+      ---
+      duration_ms: 5.747875
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 the accepted content, the replay decision and the exposed value are one structure
+    ok 5 - K11-R2-VAL-02 the accepted content, the replay decision and the exposed value are one structure
+      ---
+      duration_ms: 1.390333
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement
+    ok 6 - K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement
+      ---
+      duration_ms: 1.271
+      type: 'test'
+      ...
+    # Subtest: K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing
+    ok 7 - K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing
+      ---
+      duration_ms: 0.742083
+      type: 'test'
+      ...
+    1..7
+ok 27 - K1.1-C2 ingress does not depend on what the Execution is doing
+  ---
+  duration_ms: 14.617041
+  type: 'suite'
+  ...
+# Subtest: K11-R6-STATE-02 accepted input is retained as own data
+    # Subtest: an inherited setter at the next mailbox index cannot make an accepted Event go unretained
+    ok 1 - an inherited setter at the next mailbox index cannot make an accepted Event go unretained
+      ---
+      duration_ms: 1.243709
+      type: 'test'
+      ...
+    # Subtest: a creation whose payload traps the first mailbox index still binds its initial Event
+    ok 2 - a creation whose payload traps the first mailbox index still binds its initial Event
+      ---
+      duration_ms: 0.815958
+      type: 'test'
+      ...
+    1..2
+ok 28 - K11-R6-STATE-02 accepted input is retained as own data
+  ---
+  duration_ms: 2.115417
+  type: 'suite'
+  ...
+# Subtest: K11-R7-STATE-03 ingress under inherited descriptor-field pollution
+    # Subtest: a payload observation that installs get/set still retains the accepted Event
+    ok 1 - a payload observation that installs get/set still retains the accepted Event
+      ---
+      duration_ms: 1.199041
+      type: 'test'
+      ...
+    1..1
+ok 29 - K11-R7-STATE-03 ingress under inherited descriptor-field pollution
+  ---
+  duration_ms: 1.252708
+  type: 'suite'
+  ...
+# Subtest: K11-R16-VAL-01 ingress replay and conflict are stable while the iterator next is hostile
+    # Subtest: replay returns the retained disposition and changed content conflicts
+    ok 1 - replay returns the retained disposition and changed content conflicts
+      ---
+      duration_ms: 6.322666
+      type: 'test'
+      ...
+    1..1
+ok 30 - K11-R16-VAL-01 ingress replay and conflict are stable while the iterator next is hostile
+  ---
+  duration_ms: 6.388958
+  type: 'suite'
+  ...
+# Subtest: K11-R16-ID-01 ingress diagnostics never throw on caller-owned values
+    # Subtest: a revoked Proxy in requestKey, kind or subscriptionClass is a located refusal
+    ok 1 - a revoked Proxy in requestKey, kind or subscriptionClass is a located refusal
+      ---
+      duration_ms: 1.586709
+      type: 'test'
+      ...
+    # Subtest: an unreadable or absent ingress envelope answers as an unknown destination
+    ok 2 - an unreadable or absent ingress envelope answers as an unknown destination
+      ---
+      duration_ms: 5.690458
+      type: 'test'
+      ...
+    1..2
+ok 31 - K11-R16-ID-01 ingress diagnostics never throw on caller-owned values
+  ---
+  duration_ms: 7.420875
+  type: 'suite'
+  ...
+# Subtest: K1.1-C9 what a reader can see
+    # Subtest: the snapshot carries every fact the packet accepts
+    ok 1 - the snapshot carries every fact the packet accepts
+      ---
+      duration_ms: 6.055291
+      type: 'test'
+      ...
+    # Subtest: reading twice changes nothing and reads the same
+    ok 2 - reading twice changes nothing and reads the same
+      ---
+      duration_ms: 4.570625
+      type: 'test'
+      ...
+    # Subtest: editing a returned view cannot reach the Execution
+    ok 3 - editing a returned view cannot reach the Execution
+      ---
+      duration_ms: 3.342667
+      type: 'test'
+      ...
+    # Subtest: accepted content cannot be edited through the caller's own object either
+    ok 4 - accepted content cannot be edited through the caller's own object either
+      ---
+      duration_ms: 0.884209
+      type: 'test'
+      ...
+    # Subtest: inspection is scoped like every other read
+    ok 5 - inspection is scoped like every other read
+      ---
+      duration_ms: 1.299625
+      type: 'test'
+      ...
+    # Subtest: K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound
+    ok 6 - K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound
+      ---
+      duration_ms: 0.67975
+      type: 'test'
+      ...
+    # Subtest: K11-R2-VAL-02 inspection exposes the structure identity was taken from, twice over
+    ok 7 - K11-R2-VAL-02 inspection exposes the structure identity was taken from, twice over
+      ---
+      duration_ms: 2.06725
+      type: 'test'
+      ...
+    # Subtest: visibleExecutions lists what this caller may reach, and nothing else
+    ok 8 - visibleExecutions lists what this caller may reach, and nothing else
+      ---
+      duration_ms: 2.865208
+      type: 'test'
+      ...
+    1..8
+ok 32 - K1.1-C9 what a reader can see
+  ---
+  duration_ms: 22.718917
+  type: 'suite'
+  ...
+# Subtest: K11-R6-STATE-02 a projection describes retained truth under persistent ambient pollution
+    # Subtest: inspect and visibleExecutions report the same facts with the accessor live as without it
+    ok 1 - inspect and visibleExecutions report the same facts with the accessor live as without it
+      ---
+      duration_ms: 1.610417
+      type: 'test'
+      ...
+    # Subtest: a refusal recorded under the accessor is still retained evidence a later read reports
+    ok 2 - a refusal recorded under the accessor is still retained evidence a later read reports
+      ---
+      duration_ms: 1.099917
+      type: 'test'
+      ...
+    1..2
+ok 33 - K11-R6-STATE-02 a projection describes retained truth under persistent ambient pollution
+  ---
+  duration_ms: 2.85025
+  type: 'suite'
+  ...
+# Subtest: K11-R7-STATE-03 projection under residual descriptor-field pollution
+    # Subtest: inspect, redelivery and listings under live get/set pollution equal the unpolluted views
+    ok 1 - inspect, redelivery and listings under live get/set pollution equal the unpolluted views
+      ---
+      duration_ms: 12.973417
+      type: 'test'
+      ...
+    1..1
+ok 34 - K11-R7-STATE-03 projection under residual descriptor-field pollution
+  ---
+  duration_ms: 13.056125
+  type: 'suite'
+  ...
+# Subtest: K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path
+    # Subtest: the oracle is deterministic: two control arms agree exactly
+    ok 1 - the oracle is deterministic: two control arms agree exactly
+      ---
+      duration_ms: 31.77575
+      type: 'test'
+      ...
+    # Subtest: one hidden accepted creation discloses nothing to A
+    ok 2 - one hidden accepted creation discloses nothing to A
+      ---
+      duration_ms: 10.577708
+      type: 'test'
+      ...
+    # Subtest: hidden activity before A's first operation discloses nothing to A
+    ok 3 - hidden activity before A's first operation discloses nothing to A
+      ---
+      duration_ms: 6.073208
+      type: 'test'
+      ...
+    # Subtest: several hidden accepts across hidden Executions discloses nothing to A
+    ok 4 - several hidden accepts across hidden Executions discloses nothing to A
+      ---
+      duration_ms: 9.270084
+      type: 'test'
+      ...
+    # Subtest: hidden refusals attached to hidden Executions disclose nothing to A
+    ok 5 - hidden refusals attached to hidden Executions disclose nothing to A
+      ---
+      duration_ms: 5.122709
+      type: 'test'
+      ...
+    # Subtest: hidden refusals naming no Execution disclose nothing to A
+    ok 6 - hidden refusals naming no Execution disclose nothing to A
+      ---
+      duration_ms: 5.783
+      type: 'test'
+      ...
+    # Subtest: mixed hidden accepts and refusals disclose nothing to A
+    ok 7 - mixed hidden accepts and refusals disclose nothing to A
+      ---
+      duration_ms: 13.624125
+      type: 'test'
+      ...
+    # Subtest: the same producer namespace in a hidden scope neither collides nor discloses
+    ok 8 - the same producer namespace in a hidden scope neither collides nor discloses
+      ---
+      duration_ms: 7.922666
+      type: 'test'
+      ...
+    # Subtest: hidden work striped across several hidden Executions discloses nothing to A
+    ok 9 - hidden work striped across several hidden Executions discloses nothing to A
+      ---
+      duration_ms: 16.745292
+      type: 'test'
+      ...
+    # Subtest: A's own several Executions stay mutually ordered and undisclosing
+    ok 10 - A's own several Executions stay mutually ordered and undisclosing
+      ---
+      duration_ms: 14.567042
+      type: 'test'
+      ...
+    # Subtest: refusal order is per Execution, not per scope: same-scope Executions do not share it
+    ok 11 - refusal order is per Execution, not per scope: same-scope Executions do not share it
+      ---
+      duration_ms: 6.761167
+      type: 'test'
+      ...
+    # Subtest: hidden attached refusals on every remaining path disclose nothing to A
+    ok 12 - hidden attached refusals on every remaining path disclose nothing to A
+      ---
+      duration_ms: 15.04625
+      type: 'test'
+      ...
+    # Subtest: hidden capacity exhaustion discloses nothing to A
+    ok 13 - hidden capacity exhaustion discloses nothing to A
+      ---
+      duration_ms: 3.36875
+      type: 'test'
+      ...
+    # Subtest: a hidden Execution and a missing one stay indistinguishable, including position
+    ok 14 - a hidden Execution and a missing one stay indistinguishable, including position
+      ---
+      duration_ms: 0.652833
+      type: 'test'
+      ...
+    1..14
+ok 35 - K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path
+  ---
+  duration_ms: 148.4625
+  type: 'suite'
+  ...
+# Subtest: K11-R3-ID-02 identity packing is injective only over text, and says so
+    # Subtest: the length-prefixed packing separates parts no separator could
+    ok 1 - the length-prefixed packing separates parts no separator could
+      ---
+      duration_ms: 0.471
+      type: 'test'
+      ...
+    # Subtest: a part that is not text is raised rather than packed into a colliding key
+    ok 2 - a part that is not text is raised rather than packed into a colliding key
+      ---
+      duration_ms: 0.480916
+      type: 'test'
+      ...
+    1..2
+ok 36 - K11-R3-ID-02 identity packing is injective only over text, and says so
+  ---
+  duration_ms: 1.557458
+  type: 'suite'
+  ...
+# Subtest: K1.1-C6 one receipt per accepted boundary
+    # Subtest: creation, ingress and dispatch intent each mint their own
+    ok 1 - creation, ingress and dispatch intent each mint their own
+      ---
+      duration_ms: 47.45325
+      type: 'test'
+      ...
+    # Subtest: a receipt from one boundary can never be mistaken for another's
+    ok 2 - a receipt from one boundary can never be mistaken for another's
+      ---
+      duration_ms: 3.503625
+      type: 'test'
+      ...
+    # Subtest: an exact replay returns the original token, at each boundary that can replay
+    ok 3 - an exact replay returns the original token, at each boundary that can replay
+      ---
+      duration_ms: 4.920292
+      type: 'test'
+      ...
+    # Subtest: every refusal mints none
+    ok 4 - every refusal mints none
+      ---
+      duration_ms: 1.96925
+      type: 'test'
+      ...
+    1..4
+ok 37 - K1.1-C6 one receipt per accepted boundary
+  ---
+  duration_ms: 58.057583
+  type: 'suite'
+  ...
+# Subtest: K1.1-C6 reads are authenticated and scoped first
+    # Subtest: an unauthorized caller cannot learn that an Execution exists
+    ok 1 - an unauthorized caller cannot learn that an Execution exists
+      ---
+      duration_ms: 0.627917
+      type: 'test'
+      ...
+    # Subtest: refusals that name no Execution advance nothing observable
+    ok 2 - refusals that name no Execution advance nothing observable
+      ---
+      duration_ms: 3.994167
+      type: 'test'
+      ...
+    # Subtest: a caller that holds the scope sees the Execution and its receipts
+    ok 3 - a caller that holds the scope sees the Execution and its receipts
+      ---
+      duration_ms: 0.63775
+      type: 'test'
+      ...
+    # Subtest: K11-R1-ID-01 hidden and missing lookups do equal work
+        # Subtest: inspect performs the same scope work for hidden and missing
+        ok 1 - inspect performs the same scope work for hidden and missing
+          ---
+          duration_ms: 2.375625
+          type: 'test'
+          ...
+        # Subtest: equal work holds with many legitimate scopes and in both orders
+        ok 2 - equal work holds with many legitimate scopes and in both orders
+          ---
+          duration_ms: 1.361583
+          type: 'test'
+          ...
+        # Subtest: scope work does not depend on where the match sits
+        ok 3 - scope work does not depend on where the match sits
+          ---
+          duration_ms: 0.653458
+          type: 'test'
+          ...
+        # Subtest: single-ID lookup work does not depend on hidden-record population
+        ok 4 - single-ID lookup work does not depend on hidden-record population
+          ---
+          duration_ms: 25.203
+          type: 'test'
+          ...
+        # Subtest: ingress, dispatch and redelivery share the same normalized lookup
+        ok 5 - ingress, dispatch and redelivery share the same normalized lookup
+          ---
+          duration_ms: 0.743667
+          type: 'test'
+          ...
+        # Subtest: visibleExecutions does uniform per-record work and reveals only visible IDs
+        ok 6 - visibleExecutions does uniform per-record work and reveals only visible IDs
+          ---
+          duration_ms: 0.896875
+          type: 'test'
+          ...
+        1..6
+    ok 4 - K11-R1-ID-01 hidden and missing lookups do equal work
+      ---
+      duration_ms: 31.399209
+      type: 'suite'
+      ...
+    1..4
+ok 38 - K1.1-C6 reads are authenticated and scoped first
+  ---
+  duration_ms: 36.8435
+  type: 'suite'
+  ...
+# Subtest: K1.1-C7 unlanded surfaces
+    # Subtest: each refuses, names its owner packet, and returns nothing
+    ok 1 - each refuses, names its owner packet, and returns nothing
+      ---
+      duration_ms: 0.74275
+      type: 'test'
+      ...
+    # Subtest: calling them leaves the whole observable state untouched
+    ok 2 - calling them leaves the whole observable state untouched
+      ---
+      duration_ms: 3.733458
+      type: 'test'
+      ...
+    # Subtest: K11-R1-SCOPE-01 cancellation is K1.3-owned and changes no accepted state
+    ok 3 - K11-R1-SCOPE-01 cancellation is K1.3-owned and changes no accepted state
+      ---
+      duration_ms: 1.007542
+      type: 'test'
+      ...
+    1..3
+ok 39 - K1.1-C7 unlanded surfaces
+  ---
+  duration_ms: 6.088959
+  type: 'suite'
+  ...
+# Subtest: target Kernel scaffolding
+    # Subtest: an unimplemented surface throws rather than returning anything
+    ok 1 - an unimplemented surface throws rather than returning anything
+      ---
+      duration_ms: 3.801917
+      type: 'test'
+      ...
+    # Subtest: the refusal names the surface and the packet that owns implementing it
+    ok 2 - the refusal names the surface and the packet that owns implementing it
+      ---
+      duration_ms: 1.58
+      type: 'test'
+      ...
+    # Subtest: the refusal points at the supported implementation instead of leaving a dead end
+    ok 3 - the refusal points at the supported implementation instead of leaving a dead end
+      ---
+      duration_ms: 0.088583
+      type: 'test'
+      ...
+    # Subtest: the package exports exactly the K1.1 surface and nothing that could look like a later packet's
+    ok 4 - the package exports exactly the K1.1 surface and nothing that could look like a later packet's
+      ---
+      duration_ms: 0.674042
+      type: 'test'
+      ...
+    1..4
+ok 40 - target Kernel scaffolding
+  ---
+  duration_ms: 7.583875
+  type: 'suite'
+  ...
+# Subtest: K1.1-C3 boundary values are validated, never repaired
+    # Subtest: non-finite numbers are rejected rather than coerced
+    ok 1 - non-finite numbers are rejected rather than coerced
+      ---
+      duration_ms: 2.099167
+      type: 'test'
+      ...
+    # Subtest: a member that is present with no value is refused, because absent and null differ
+    ok 2 - a member that is present with no value is refused, because absent and null differ
+      ---
+      duration_ms: 0.632
+      type: 'test'
+      ...
+    # Subtest: values with no boundary form are refused with their form named
+    ok 3 - values with no boundary form are refused with their form named
+      ---
+      duration_ms: 1.050542
+      type: 'test'
+      ...
+    # Subtest: members canonical form cannot represent are refused, never dropped
+    ok 4 - members canonical form cannot represent are refused, never dropped
+      ---
+      duration_ms: 0.124125
+      type: 'test'
+      ...
+    # Subtest: lone surrogates are refused rather than replaced
+    ok 5 - lone surrogates are refused rather than replaced
+      ---
+      duration_ms: 0.337625
+      type: 'test'
+      ...
+    # Subtest: a cycle has no canonical form and is reported as one
+    ok 6 - a cycle has no canonical form and is reported as one
+      ---
+      duration_ms: 0.267041
+      type: 'test'
+      ...
+    # Subtest: every reason is reported, with a path, rather than only the first
+    ok 7 - every reason is reported, with a path, rather than only the first
+      ---
+      duration_ms: 0.1255
+      type: 'test'
+      ...
+    # Subtest: isBoundaryValue agrees with the issue list
+    ok 8 - isBoundaryValue agrees with the issue list
+      ---
+      duration_ms: 0.211458
+      type: 'test'
+      ...
+    # Subtest: K11-R1-VAL-01 value-preserving acceptance over the full key space
+        # Subtest: a valid own __proto__ member is accepted and sealed as own data, not a prototype
+        ok 1 - a valid own __proto__ member is accepted and sealed as own data, not a prototype
+          ---
+          duration_ms: 0.8465
+          type: 'test'
+          ...
+        # Subtest: nested and array-embedded __proto__ members survive at depth
+        ok 2 - nested and array-embedded __proto__ members survive at depth
+          ---
+          duration_ms: 0.376542
+          type: 'test'
+          ...
+        # Subtest: a null-prototype object keeps its prototype and its members
+        ok 3 - a null-prototype object keeps its prototype and its members
+          ---
+          duration_ms: 0.259667
+          type: 'test'
+          ...
+        # Subtest: numeric-looking non-index array members are refused, never silently dropped
+        ok 4 - numeric-looking non-index array members are refused, never silently dropped
+          ---
+          duration_ms: 0.238917
+          type: 'test'
+          ...
+        # Subtest: accessors and exotic array prototypes are refused rather than invoked or coerced
+        ok 5 - accessors and exotic array prototypes are refused rather than invoked or coerced
+          ---
+          duration_ms: 0.098375
+          type: 'test'
+          ...
+        # Subtest: acceptance detaches and freezes without invoking any accessor
+        ok 6 - acceptance detaches and freezes without invoking any accessor
+          ---
+          duration_ms: 0.343208
+          type: 'test'
+          ...
+        1..6
+    ok 9 - K11-R1-VAL-01 value-preserving acceptance over the full key space
+      ---
+      duration_ms: 2.353375
+      type: 'suite'
+      ...
+    # Subtest: K11-R2-VAL-02 identity and retained content come from one observation
+        # Subtest: an array position read differently than it is owned is refused, not silently picked
+        ok 1 - an array position read differently than it is owned is refused, not silently picked
+          ---
+          duration_ms: 0.126584
+          type: 'test'
+          ...
+        # Subtest: an object member read differently than it is owned is refused the same way
+        ok 2 - an object member read differently than it is owned is refused the same way
+          ---
+          duration_ms: 0.062
+          type: 'test'
+          ...
+        # Subtest: the disagreement is refused at depth and under a valid root
+        ok 3 - the disagreement is refused at depth and under a valid root
+          ---
+          duration_ms: 0.091583
+          type: 'test'
+          ...
+        # Subtest: an array position supplied only by a dynamic read, owning nothing, is refused
+        ok 4 - an array position supplied only by a dynamic read, owning nothing, is refused
+          ---
+          duration_ms: 0.058209
+          type: 'test'
+          ...
+        # Subtest: a member supplied only by a prototype is not accepted as own content
+        ok 5 - a member supplied only by a prototype is not accepted as own content
+          ---
+          duration_ms: 0.047292
+          type: 'test'
+          ...
+        # Subtest: a length that does not agree with itself cannot decide which positions exist
+        ok 6 - a length that does not agree with itself cannot decide which positions exist
+          ---
+          duration_ms: 0.056833
+          type: 'test'
+          ...
+        # Subtest: a structure that cannot be observed is refused rather than thrown out of the boundary
+        ok 7 - a structure that cannot be observed is refused rather than thrown out of the boundary
+          ---
+          duration_ms: 0.118834
+          type: 'test'
+          ...
+        # Subtest: an object listing an own member it does not own is refused
+        ok 8 - an object listing an own member it does not own is refused
+          ---
+          duration_ms: 0.06075
+          type: 'test'
+          ...
+        # Subtest: every accepted root re-canonicalizes to the bytes that accepted it
+        ok 9 - every accepted root re-canonicalizes to the bytes that accepted it
+          ---
+          duration_ms: 3.364167
+          type: 'test'
+          ...
+        # Subtest: a value that answers differently on each read is bound to the one reading that was taken
+        ok 10 - a value that answers differently on each read is bound to the one reading that was taken
+          ---
+          duration_ms: 0.233041
+          type: 'test'
+          ...
+        1..10
+    ok 10 - K11-R2-VAL-02 identity and retained content come from one observation
+      ---
+      duration_ms: 4.355625
+      type: 'suite'
+      ...
+    1..10
+ok 41 - K1.1-C3 boundary values are validated, never repaired
+  ---
+  duration_ms: 13.674709
+  type: 'suite'
+  ...
+# Subtest: K1.1-C3 canonical form follows values.md rules 1-6
+    # Subtest: member names sort as unsigned UTF-16 code units, not code points or locale
+    ok 1 - member names sort as unsigned UTF-16 code units, not code points or locale
+      ---
+      duration_ms: 0.26075
+      type: 'test'
+      ...
+    # Subtest: array order stays semantic
+    ok 2 - array order stays semantic
+      ---
+      duration_ms: 0.274417
+      type: 'test'
+      ...
+    # Subtest: absent and explicitly null are different values
+    ok 3 - absent and explicitly null are different values
+      ---
+      duration_ms: 0.331792
+      type: 'test'
+      ...
+    # Subtest: literals are spelled exactly
+    ok 4 - literals are spelled exactly
+      ---
+      duration_ms: 0.262375
+      type: 'test'
+      ...
+    # Subtest: numbers use the shortest round-trip spelling values.md names
+    ok 5 - numbers use the shortest round-trip spelling values.md names
+      ---
+      duration_ms: 0.432959
+      type: 'test'
+      ...
+    # Subtest: strings escape exactly the characters rule 4 names and nothing else
+    ok 6 - strings escape exactly the characters rule 4 names and nothing else
+      ---
+      duration_ms: 0.446042
+      type: 'test'
+      ...
+    # Subtest: no insignificant whitespace and no byte-order mark
+    ok 7 - no insignificant whitespace and no byte-order mark
+      ---
+      duration_ms: 0.309459
+      type: 'test'
+      ...
+    # Subtest: equality is over canonical bytes, so two honest spellings of one value agree
+    ok 8 - equality is over canonical bytes, so two honest spellings of one value agree
+      ---
+      duration_ms: 0.366
+      type: 'test'
+      ...
+    1..8
+ok 42 - K1.1-C3 canonical form follows values.md rules 1-6
+  ---
+  duration_ms: 2.786458
+  type: 'suite'
+  ...
+# Subtest: K1.1-C3 the four semantic limits, at the limit and one over
+    # Subtest: decoded string length counts Unicode scalar values
+    ok 1 - decoded string length counts Unicode scalar values
+      ---
+      duration_ms: 6.088167
+      type: 'test'
+      ...
+    # Subtest: the same limit applies to member names
+    ok 2 - the same limit applies to member names
+      ---
+      duration_ms: 0.687083
+      type: 'test'
+      ...
+    # Subtest: entry count counts direct children of one container, not a recursive total
+    ok 3 - entry count counts direct children of one container, not a recursive total
+      ---
+      duration_ms: 45.91675
+      type: 'test'
+      ...
+    # Subtest: depth counts containers on a path, with empty containers counting
+    ok 4 - depth counts containers on a path, with empty containers counting
+      ---
+      duration_ms: 1.418125
+      type: 'test'
+      ...
+    # Subtest: a value nested far past the limit is refused rather than exhausting the stack
+    ok 5 - a value nested far past the limit is refused rather than exhausting the stack
+      ---
+      duration_ms: 0.503042
+      type: 'test'
+      ...
+    # Subtest: canonical size is measured per root, at the byte
+    ok 6 - canonical size is measured per root, at the byte
+      ---
+      duration_ms: 64.584542
+      type: 'test'
+      ...
+    # Subtest: sibling roots are not summed
+    ok 7 - sibling roots are not summed
+      ---
+      duration_ms: 32.5765
+      type: 'test'
+      ...
+    # Subtest: the reported canonical byte length is the UTF-8 length, not the UTF-16 one
+    ok 8 - the reported canonical byte length is the UTF-8 length, not the UTF-16 one
+      ---
+      duration_ms: 0.138292
+      type: 'test'
+      ...
+    1..8
+ok 43 - K1.1-C3 the four semantic limits, at the limit and one over
+  ---
+  duration_ms: 152.074166
+  type: 'suite'
+  ...
+# Subtest: K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)
+    # Subtest: an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot
+    ok 1 - an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot
+      ---
+      duration_ms: 0.275458
+      type: 'test'
+      ...
+    # Subtest: an inherited Array.prototype.toJSON cannot divert canonical bytes either
+    ok 2 - an inherited Array.prototype.toJSON cannot divert canonical bytes either
+      ---
+      duration_ms: 0.129583
+      type: 'test'
+      ...
+    # Subtest: a capture-time side effect installing Object.prototype.toJSON still binds the observed structure
+    ok 3 - a capture-time side effect installing Object.prototype.toJSON still binds the observed structure
+      ---
+      duration_ms: 0.156625
+      type: 'test'
+      ...
+    # Subtest: a legitimate own toJSON data member is still content, not a hook
+    ok 4 - a legitimate own toJSON data member is still content, not a hook
+      ---
+      duration_ms: 0.104125
+      type: 'test'
+      ...
+    # Subtest: an own-name listing reporting a canonical index outside length with no backing property is refused
+    ok 5 - an own-name listing reporting a canonical index outside length with no backing property is refused
+      ---
+      duration_ms: 0.170583
+      type: 'test'
+      ...
+    # Subtest: a backed canonical index outside length is also refused rather than silently dropped
+    ok 6 - a backed canonical index outside length is also refused rather than silently dropped
+      ---
+      duration_ms: 0.09475
+      type: 'test'
+      ...
+    # Subtest: a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal
+    ok 7 - a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal
+      ---
+      duration_ms: 0.095542
+      type: 'test'
+      ...
+    1..7
+ok 44 - K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)
+  ---
+  duration_ms: 1.125125
+  type: 'suite'
+  ...
+# Subtest: K11-R3-LIMIT-01 over-limit arrays refuse without work proportional to the declared length
+    # Subtest: exactly-at-limit passes and one-over refuses
+    ok 1 - exactly-at-limit passes and one-over refuses
+      ---
+      duration_ms: 6.239625
+      type: 'test'
+      ...
+    # Subtest: a deliberately huge sparse length refuses bounded without traversing its extent
+    ok 2 - a deliberately huge sparse length refuses bounded without traversing its extent
+      ---
+      duration_ms: 26.867167
+      type: 'test'
+      ...
+    1..2
+ok 45 - K11-R3-LIMIT-01 over-limit arrays refuse without work proportional to the declared length
+  ---
+  duration_ms: 33.174792
+  type: 'suite'
+  ...
+# Subtest: K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)
+    # Subtest: a capture-time one-shot Object.keys replacement cannot change canonical bytes
+    ok 1 - a capture-time one-shot Object.keys replacement cannot change canonical bytes
+      ---
+      duration_ms: 0.270042
+      type: 'test'
+      ...
+    # Subtest: a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes
+    ok 2 - a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes
+      ---
+      duration_ms: 0.121792
+      type: 'test'
+      ...
+    # Subtest: a capture-time Array.prototype.join replacement cannot change canonical bytes either
+    ok 3 - a capture-time Array.prototype.join replacement cannot change canonical bytes either
+      ---
+      duration_ms: 0.127667
+      type: 'test'
+      ...
+    # Subtest: K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain
+    ok 4 - K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain
+      ---
+      duration_ms: 0.108917
+      type: 'test'
+      ...
+    1..4
+ok 46 - K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)
+  ---
+  duration_ms: 0.703375
+  type: 'suite'
+  ...
+# Subtest: K11-R6-VAL-04 one observation survives an indexed accessor installed while observing it
+    # Subtest: the retained structure and the canonical bytes are exactly the one value observed
+    ok 1 - the retained structure and the canonical bytes are exactly the one value observed
+      ---
+      duration_ms: 0.506917
+      type: 'test'
+      ...
+    # Subtest: the index the accessor picks is not special: position zero and a nested array behave the same
+    ok 2 - the index the accessor picks is not special: position zero and a nested array behave the same
+      ---
+      duration_ms: 0.259542
+      type: 'test'
+      ...
+    # Subtest: a value the rules do refuse is still refused with the accessor live, not normalized
+    ok 3 - a value the rules do refuse is still refused with the accessor live, not normalized
+      ---
+      duration_ms: 0.130584
+      type: 'test'
+      ...
+    1..3
+ok 47 - K11-R6-VAL-04 one observation survives an indexed accessor installed while observing it
+  ---
+  duration_ms: 0.952167
+  type: 'suite'
+  ...
+# Subtest: K11-R6-VAL-05 canonical bytes do not depend on what the prototypes carry
+    # Subtest: an inherited accessor at the indices the serializer writes cannot choose the bytes
+    ok 1 - an inherited accessor at the indices the serializer writes cannot choose the bytes
+      ---
+      duration_ms: 0.418667
+      type: 'test'
+      ...
+    # Subtest: an inherited data property at those indices cannot either, and equality still follows the bytes
+    ok 2 - an inherited data property at those indices cannot either, and equality still follows the bytes
+      ---
+      duration_ms: 0.201958
+      type: 'test'
+      ...
+    # Subtest: the prototypes are left exactly as found, including properties the Kernel never installed
+    ok 3 - the prototypes are left exactly as found, including properties the Kernel never installed
+      ---
+      duration_ms: 0.137541
+      type: 'test'
+      ...
+    1..3
+ok 48 - K11-R6-VAL-05 canonical bytes do not depend on what the prototypes carry
+  ---
+  duration_ms: 0.811417
+  type: 'suite'
+  ...
+# Subtest: K11-R16-VAL-01 canonical bytes do not depend on the iterator protocol the caller can reach
+    # Subtest: a caller-mutated iterator next cannot omit, substitute, duplicate or reorder the keys
+    ok 1 - a caller-mutated iterator next cannot omit, substitute, duplicate or reorder the keys
+      ---
+      duration_ms: 1.131334
+      type: 'test'
+      ...
+    # Subtest: an iterator result without its own done cannot be ended early through Object.prototype
+    ok 2 - an iterator result without its own done cannot be ended early through Object.prototype
+      ---
+      duration_ms: 0.203708
+      type: 'test'
+      ...
+    # Subtest: a deleted holder next plus an Object.prototype next shadow still binds the snapshot
+    ok 3 - a deleted holder next plus an Object.prototype next shadow still binds the snapshot
+      ---
+      duration_ms: 0.150958
+      type: 'test'
+      ...
+    # Subtest: the byte limit is enforced on the snapshot bytes, not on bytes the pollution chose
+    ok 4 - the byte limit is enforced on the snapshot bytes, not on bytes the pollution chose
+      ---
+      duration_ms: 107.382375
+      type: 'test'
+      ...
+    # Subtest: retained content accepted under pollution re-canonicalizes to the accepting bytes
+    ok 5 - retained content accepted under pollution re-canonicalizes to the accepting bytes
+      ---
+      duration_ms: 0.287541
+      type: 'test'
+      ...
+    1..5
+ok 49 - K11-R16-VAL-01 canonical bytes do not depend on the iterator protocol the caller can reach
+  ---
+  duration_ms: 109.277959
+  type: 'suite'
+  ...
+# Subtest: K11-R16-VAL-01 (R2) canonical bytes do not depend on prototype-chain shape
+    # Subtest: an object inserted between Array.prototype and Object.prototype cannot choose the bytes
+    ok 1 - an object inserted between Array.prototype and Object.prototype cannot choose the bytes
+      ---
+      duration_ms: 0.32875
+      type: 'test'
+      ...
+    # Subtest: the top of the chain is engine-pinned, so bare results have nowhere hostile to resolve
+    ok 2 - the top of the chain is engine-pinned, so bare results have nowhere hostile to resolve
+      ---
+      duration_ms: 0.151208
+      type: 'test'
+      ...
+    # Subtest: an object inserted on the iterator chain cannot supply next
+    ok 3 - an object inserted on the iterator chain cannot supply next
+      ---
+      duration_ms: 0.10775
+      type: 'test'
+      ...
+    # Subtest: a capture-time trap that inserts the chain still binds the observed structure
+    ok 4 - a capture-time trap that inserts the chain still binds the observed structure
+      ---
+      duration_ms: 0.204459
+      type: 'test'
+      ...
+    # Subtest: an unresettable chain degrades to a refusal, never to wrong bytes
+    ok 5 - an unresettable chain degrades to a refusal, never to wrong bytes
+      ---
+      duration_ms: 85.788209
+      type: 'test'
+      ...
+    1..5
+ok 50 - K11-R16-VAL-01 (R2) canonical bytes do not depend on prototype-chain shape
+  ---
+  duration_ms: 86.679417
+  type: 'suite'
+  ...
+# Subtest: K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never to wrong bytes
+    # Subtest: the refusal is located, the bytes are never wrong, and the borrowed slots are handed back
+    ok 1 - the refusal is located, the bytes are never wrong, and the borrowed slots are handed back
+      ---
+      duration_ms: 86.67075
+      type: 'test'
+      ...
+    1..1
+ok 51 - K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never to wrong bytes
+  ---
+  duration_ms: 86.736542
+  type: 'suite'
+  ...
+# Subtest: K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution
+    # Subtest: every hostile data-field combination still yields the exact clean bytes
+    ok 1 - every hostile data-field combination still yields the exact clean bytes
+      ---
+      duration_ms: 1.051459
+      type: 'test'
+      ...
+    # Subtest: an inherited descriptor getter never runs inside capture, cloning or the serializer window
+    ok 2 - an inherited descriptor getter never runs inside capture, cloning or the serializer window
+      ---
+      duration_ms: 0.27075
+      type: 'test'
+      ...
+    # Subtest: an own __proto__ member still installs while conversion is hostile
+    ok 3 - an own __proto__ member still installs while conversion is hostile
+      ---
+      duration_ms: 0.154583
+      type: 'test'
+      ...
+    # Subtest: restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host
+    ok 4 - restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host
+      ---
+      duration_ms: 0.18925
+      type: 'test'
+      ...
+    1..4
+ok 52 - K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution
+  ---
+  duration_ms: 1.772084
+  type: 'suite'
+  ...
+1..52
+# tests 264
+# suites 55
+# pass 264
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1089.706

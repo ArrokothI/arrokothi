@@ -1,0 +1,63 @@
+Distinguishing ablation battery on the round-6 tree (payload byte-identical to C4)
+Each mutation is applied transiently, the mapped oracle is run (expected RED = fail > 0),
+then reverted with `git checkout --` and a clean-tree check. The packages/tests/scripts tree
+at C4 is byte-identical to reviewed C3, so this re-derives the battery on the cumulative
+candidate including the owner documentation freeze D. Commands run from the repository root.
+Oracle counts are printed verbatim from node --test.
+
+--- CONTROL: clean tree at HEAD 9664a12f0792ef64bda71ce11d14bec4fea74adc (payload byte-identical to C4) ---
+dispatch.test.ts     ℹ tests 50 ℹ pass 50 ℹ fail 0 
+creation+ingress     ℹ tests 71 ℹ pass 71 ℹ fail 0 
+values.test.ts       ℹ tests 74 ℹ pass 74 ℹ fail 0 
+evidence.test.ts     ℹ tests 13 ℹ pass 13 ℹ fail 0 
+
+=== M1 normal-return-implies-delivered ===
+mutation: #deliver marks a still-pending attempt delivered on normal return
+oracle dispatch.test.ts  ℹ tests 50 ℹ pass 42 ℹ fail 8 
+restored: clean
+
+=== M2 second-report-overwrites-first ===
+mutation: first-report-wins guards removed from delivered()/failed()
+oracle dispatch.test.ts  ℹ tests 50 ℹ pass 48 ℹ fail 2 
+restored: clean
+
+=== M3 capability-targets-latest-attempt ===
+mutation: settlement writes intent.deliveries[last] instead of its own bound attempt
+oracle dispatch.test.ts  ℹ tests 50 ℹ pass 48 ℹ fail 2 
+restored: clean
+
+=== M4 observe-returned-thenable ===
+mutation: #deliver reads the return value's `then` and treats a callable then as delivered
+oracle dispatch.test.ts  ℹ tests 50 ℹ pass 49 ℹ fail 1 
+restored: clean
+
+=== R1 creation-event-in-ingress-domain ===
+mutation: creation seeds the initial Event into byInputId (reintroduces K11-R15-ID-01)
+oracle creation+ingress  ℹ tests 71 ℹ pass 68 ℹ fail 3 
+restored: clean
+
+=== R2 inherited-envelope-read ===
+mutation: observeOwn answers by ordinary chain read instead of own-descriptor-first
+oracle dispatch.test.ts  ℹ tests 50 ℹ pass 47 ℹ fail 3 
+restored: clean
+
+=== R3 uncontained-identity-classification ===
+mutation: acceptIdentityText classifies without containing the observation throw
+clean-tree control for this oracle:
+  ℹ tests 1 ℹ pass 1 ℹ fail 0 
+oracle mutated           ℹ tests 1 ℹ pass 0 ℹ fail 1 
+restored: clean
+
+=== R4 iterator-next-left-hostile ===
+mutation: serializer window no longer restores the Array iterator prototype `next` slot
+oracle values.test.ts    ℹ tests 74 ℹ pass 70 ℹ fail 4 
+restored: clean
+
+=== R5 unfrozen-receipt ===
+mutation: identity.ts PrimordialObjectFreeze becomes identity (receipt mint no longer freezes)
+oracle evidence.test.ts  ℹ tests 13 ℹ pass 7 ℹ fail 6 
+restored: clean
+
+--- final tree state ---
+HEAD unchanged at 9664a12f0792ef64bda71ce11d14bec4fea74adc after the battery: yes (the script's own label said "C4"; HEAD is A5, whose payload paths are byte-identical to C4 -- see 00-identity.log)
+source/test diff C3..HEAD (empty = identical):
