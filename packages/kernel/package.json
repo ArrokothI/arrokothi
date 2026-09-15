@@ -2,7 +2,7 @@
   "name": "@arrokothi/kernel",
   "version": "0.8.1",
   "private": true,
-  "description": "Target Kernel landing zone. Structural only: it contains no Activation/Outcome protocol implementation and is deliberately unpublishable until a protocol packet lands.",
+  "description": "Target Kernel (private, in-memory K1.1 only): atomic creation with initial input, post-creation input ingress, batch reservation with asynchronous Driver dispatch/redelivery, and inspection. Outcome acceptance (K1.2), cancellation/waits/deadlines (K1.3), Effects (K2) and later boundaries refuse by name.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -10,5 +10,8 @@
   "files": [
     "src"
   ],
-  "sideEffects": false
+  "sideEffects": false,
+  "dependencies": {
+    "canonicalize": "3.0.0"
+  }
 }

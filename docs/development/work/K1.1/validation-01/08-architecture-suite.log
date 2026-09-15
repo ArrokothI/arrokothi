@@ -1,0 +1,26 @@
+$ node --test --test-reporter=tap --experimental-strip-types tests/conformance/architecture/*.test.ts
+ok 1 - Agent architecture boundaries
+ok 2 - child-composition boundaries
+ok 3 - interleaving / peer / cancellation boundaries
+ok 4 - explicit Working Notes handoff boundaries
+ok 5 - K1.0 evidence records
+ok 6 - import scanner: prose is not an import (K0.2-SELF-01)
+ok 7 - import scanner: every real import form is still found
+ok 8 - import scanner: the parser survives real source shapes
+ok 9 - import scanner: the real tree
+ok 10 - dependency extractor: every way TypeScript can name a module (K10-R2-01)
+ok 11 - dependency extractor: two independent extractors, and what each is for
+ok 12 - dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)
+ok 13 - K1.0 target Kernel landing zone
+ok 14 - K1.0 forbidden-edge controls
+ok 15 - K1.0 legacy quarantine
+ok 16 - K1.0 policy and inventory agree
+ok 17 - Legacy core (0.8.x) architecture boundaries
+ok 18 - MCP is an adapter dependency, never a kernel one
+ok 19 - Workflow architecture boundaries
+# tests 360
+# suites 37
+# pass 360
+# fail 0
+# skipped 0
+exit: 0

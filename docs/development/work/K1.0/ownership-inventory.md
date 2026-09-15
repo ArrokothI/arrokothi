@@ -15,7 +15,7 @@ unzoned and carries no new rule from this packet.
 
 | Zone id | Roots | Owner and status |
 |---|---|---|
-| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |
+| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |
 | `legacy-core` | `packages/core/src` | The current 0.8.x `Harness`/controller implementation. Explicitly legacy, fully supported, unchanged by this packet. |
 | `runtime-integrations` | `packages/agents/strands/src`, `packages/models/gemini/src`, `packages/retrieval/local/src`, `packages/interoperability/mcp/src` | Provider and Runtime adapters. Depend inward on `legacy-core` today. |
 | `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |
@@ -30,16 +30,25 @@ future work lands and changes nothing about what the code does. The target zone 
 
 Measured over the candidate tree (the payload commit named in the implementation report) by the
 same analyzer the guards use, over every `.ts` file in each zone, following relative paths,
-package roots and package subpaths. For the three zones that already existed at base
-`c9a9ed7e6e538ab0542fc6a999426264abb6212a` the result is identical at that base: K1.0 moves no
-source in those zones (base→payload touches none of their files, verified by
-`git diff --name-only`), so their rows can be reproduced at either tree. The `target-kernel` row
-exists only in the candidate tree, where `packages/kernel` is new; it was never true at the base,
-where that directory did not exist.
+package roots and package subpaths.
+
+This table is maintained by whichever packet changes the tree it measures; it is not a K1.0
+historical record. K1.0 created the `target-kernel` row, which did not exist at its base
+`c9a9ed7e6e538ab0542fc6a999426264abb6212a`, and left the other three unchanged from it. **K1.1**
+raised `target-kernel` from 2 `.ts` files to 10 by implementing creation, input ingress, reservation
+and dispatch in that zone, and to 11 in its round-8 correction, which gives the rule for building and
+reading a Kernel-owned list one owning module (`own-array.ts`, K11-R6-STATE-02); that module is
+internal to the zone and adds no exported name. Its base is `777b9955fb3a443f700b4f3d1f4f2aef1869345b`
+and its own row is true only of its candidate tree. The other three zones are unchanged by K1.1 as well: it moves and
+edits no source in them (base→payload touches none of their files, verified by
+`git diff --name-only`), so those rows reproduce at either tree. What has **not** changed across
+either packet is the target zone's legacy column: it still reaches no legacy code. Its third-party
+column gains exactly one entry in K1.1 round 3: the owner-approved JCS implementation
+`canonicalize` (see below).
 
 | Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |
 |---|---|---|---|
-| `target-kernel` | 2 | nothing | nothing |
+| `target-kernel` | 11 | nothing | `canonicalize` |
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
 | `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |
@@ -73,7 +82,11 @@ packet that intends to change a public surface changes them deliberately.
 
 1. Modules inside `packages/kernel/src`.
 2. `node:` builtins.
-3. Nothing else.
+3. Exactly one third-party specifier: `canonicalize` (exact `canonicalize@3.0.0`), owner-approved
+   for K1.1 round 3 under [AGENTS.md's third-party review](../../../../AGENTS.md) as the unmodified
+   conforming JCS implementation `values.md` requires (K11-R1-JCS-01). The executable rule holds this
+   as an exact-specifier allowance, not a prefix: similarly-named packages and subpaths stay refused.
+4. Nothing else.
 
 There is **no approved portable leaf** at K1.0. `packages/core/src/util/{hash,json,result}.ts` and
 `packages/core/src/schema/value-schema.ts` are the plausible candidates, and the guard demonstrates
@@ -82,8 +95,10 @@ would still be rejected. None is approved here, because K1.0 implements no targe
 one, and approving a leaf without a consumer would freeze a dependency nobody has audited against a
 real use. Adding an entry is a reviewed decision in the packet that needs it, not a convenience edit.
 
-A third-party package for the target zone needs an owner decision under
-[AGENTS.md's third-party review](../../../../AGENTS.md), not an allowlist edit in a test.
+A further third-party package for the target zone needs a new owner decision under
+[AGENTS.md's third-party review](../../../../AGENTS.md), not an allowlist edit in a test. The
+`canonicalize` approval above is that decision for this one specifier; its source, version, license,
+reuse method and obligations are recorded in [K1.1's round-3 report](../K1.1/implementation-03.md).
 
 ## Deferred extraction and bridge owners
 
@@ -115,3 +130,36 @@ no-op target API, moves no legacy source file and rewrites no native Runtime. A 
 evidence about dependency direction only. It is not an E1 result, not a K1 acceptance, not a package
 release, and not evidence of durability, isolation or Driver fidelity. K1.4 rechecks these structural
 obligations against actual behaviour.
+
+## K1.1 disposition of its assigned rows
+
+K1.1 owns four of the deferred rows above. An assignment is an owner, not a promise to preserve the
+behaviour, and this is that owner's decision. No entry was added to `TARGET_KERNEL_ALLOWED_LEAVES`:
+the approved-leaf list is still empty. The target zone imports nothing outside itself except `node:`
+builtins and, since round 3, the single owner-approved third-party specifier `canonicalize`
+(exact `canonicalize@3.0.0`; see "What the target zone may import" above).
+
+- **DX-1** (`util/hash.ts`, migratable) — **not extracted, and not needed.** K1.1 compares logical
+  values by their canonical bytes directly, so no content hash takes part in any identity decision.
+  A receipt token is minted from its boundary and an acceptance position, not from a digest. The row
+  stays open for the first packet that genuinely needs hashing; it is not this one.
+- **DX-2** (`util/json.ts`, migratable) — **not extracted; canonical bytes delegated to the
+  owner-approved third-party JCS implementation.** The legacy canonical encoder (`canonicalJson` in
+  `util/hash.ts`, alongside `util/json.ts`'s validity walk) maps `undefined` to `null`, admits
+  non-finite numbers through `JSON.stringify`, enforces none of the four semantic limits and rejects
+  no invalid value. Extracting it would import exactly the repair-on-encode behaviour
+  [values](../../../../mental-model/concepts/values.md) forbids. `packages/kernel/src/values.ts` keeps
+  ArrokothI's own boundary validation, limits and single capture pass, and calls unmodified
+  `canonicalize@3.0.0` only to serialize the immutable snapshot that capture produced. Owner approval
+  and the AGENTS.md third-party record are in [K1.1's round-3 report](../K1.1/implementation-03.md);
+  the former K1.1-OPEN-2 question is closed by that decision. K1.1 round 4 removed the separately
+  callable seal from the zone's export surface: validation, canonical bytes and retained content come
+  from one capture, so there is no supported way to seal a value the zone has not validated
+  ([K11-R2-VAL-02](../K1.1/implementation-04.md)).
+- **DX-3** (`util/result.ts`, migratable) — **not extracted; implemented in-zone.** The legacy file
+  is ten lines of the same shape. Crossing the boundary to reuse them would freeze a dependency edge
+  for no behaviour.
+- **DX-12** (`ports/controller.ts`, refused) — **refused, as assigned.** The target Driver boundary
+  carries no `DefinitionKind` and no Agent/Workflow discriminator; which code can interpret an
+  Execution's progress is answered by the pinned Definition revision, Runtime contract revision and
+  progress codec. `packages/kernel/tests/boundary.test.ts` holds the zone's sources to that.

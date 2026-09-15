@@ -1,0 +1,174 @@
+
+> arrokothi-agent-kernel@0.8.1 test:kernel
+> node --test --experimental-strip-types packages/kernel/tests/*.test.ts
+
+▶ K1.1-C8 the boundary carries no Agent or Workflow discriminator
+  ✔ neither word appears in the zone's executable text (34.518583ms)
+  ✔ no legacy controller vocabulary is carried forward into code either (4.337792ms)
+  ✔ the exported surface names no Agent or Workflow concept (34.40875ms)
+  ✔ which code can read progress is answered only by pinned revisions and a codec (2.143917ms)
+  ✔ every import in the zone is internal or a node: builtin (1.483792ms)
+✔ K1.1-C8 the boundary carries no Agent or Workflow discriminator (78.761917ms)
+▶ K1.1-C1 one atomic creation
+  ✔ creation binds every field in one decision and lands READY (4.796583ms)
+  ✔ the creation receipt names the creation boundary and covers its initial input (0.251167ms)
+  ✔ a creation the caller may not scope is refused and creates nothing (0.142167ms)
+  ✔ creation content that is not a boundary value is refused, with the reason (0.230458ms)
+✔ K1.1-C1 one atomic creation (6.09975ms)
+▶ K1.1-C1 the lost-response cases
+  ✔ row 1: nothing committed, so the creation commits now (0.204708ms)
+  ✔ rows 2 and 3: a retry returns the same Execution and the retained decision (0.284666ms)
+  ✔ changing the content under one key is a conflict, not an update (0.1865ms)
+  ✔ any changed part of the creation content conflicts, not only the input (0.3335ms)
+  ✔ content equality is logical, so an honest re-serialization is still a replay (0.323375ms)
+  ✔ a second intentional run needs a fresh key, even with identical content (0.199542ms)
+✔ K1.1-C1 the lost-response cases (1.710708ms)
+▶ K1.1-C1 the key is scoped, and the scope comes from authentication
+  ✔ another authenticated caller may use the same key text without colliding (0.199583ms)
+  ✔ the same caller's key text in two authority scopes names two requests (0.09375ms)
+  ✔ no packing of the creation key's three parts can make two requests collide (0.09625ms)
+  ✔ the payload cannot supply or change the producer namespace (10.876292ms)
+  ✔ an Execution is invisible outside its authority scope, exactly as a missing one is (2.937208ms)
+  ✔ K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection (1.283834ms)
+  ✔ K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation (0.143791ms)
+✔ K1.1-C1 the key is scoped, and the scope comes from authentication (15.813584ms)
+▶ K1.1-C4 what one dispatch intent pins
+  ✔ the Activation carries exactly the facts creation bound, and the Execution is RUNNING (7.342667ms)
+  ✔ the pinned codec and revisions come from the creation that bound them, per Execution (1.567333ms)
+  ✔ reservation pins a batch and acknowledges none of it (0.446916ms)
+  ✔ the bound selects an acceptance-order prefix and must be at least one (1.697416ms)
+  ✔ one Execution has at most one Activation authorized to commit (0.289ms)
+  ✔ an invisible Execution is not dispatched (12.568166ms)
+✔ K1.1-C4 what one dispatch intent pins (76.152333ms)
+▶ K1.1-C4 the intent is accepted before the send, and the send is not awaited
+  ✔ a Driver that throws leaves the accepted intent standing (0.309ms)
+  ✔ a Driver whose promise rejects records an operational failure, not a state change (13.802291ms)
+  ✔ the intent is already accepted and readable by the time the Driver is called (0.251ms)
+  ✔ a delayed Execution does not prevent another from being dispatched on the same coordinator (0.254208ms)
+  ✔ dispatch returns before the Driver's promise settles (2.948334ms)
+✔ K1.1-C4 the intent is accepted before the send, and the send is not awaited (17.894ms)
+▶ K1.1-C5 ordinary redelivery is the same exchange
+  ✔ identity, epoch, base revision and batch are preserved, and nothing is re-selected (3.018625ms)
+  ✔ redelivery is refused when there is no unresolved exchange (0.402ms)
+  ✔ redelivering an invisible Execution answers as an unknown one (0.215708ms)
+  ✔ nothing in this packet advances a writer epoch (0.191792ms)
+  ✔ K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value (0.158708ms)
+✔ K1.1-C5 ordinary redelivery is the same exchange (4.404583ms)
+▶ K1.1-C2 accepting one input
+  ✔ acceptance records content, provenance, a mailbox entry and a position together (1.803167ms)
+  ✔ a declared subscription class is retained as part of the immutable content (0.301708ms)
+  ✔ input that is not a boundary value is refused and queues nothing (4.007666ms)
+✔ K1.1-C2 accepting one input (6.846875ms)
+▶ K1.1-C2 each field is measured as its own boundary-value root
+  ✔ a payload exactly at a limit is accepted, and one unit over is refused (0.495084ms)
+  ✔ the same holds at creation, for the initial input and the authority context alike (0.334ms)
+  ✔ a refusal locates the offending field by name (0.138167ms)
+✔ K1.1-C2 each field is measured as its own boundary-value root (1.097959ms)
+▶ K1.1-C2 exact replay and content conflict
+  ✔ an exact replay returns the recorded disposition and creates no second Event (0.244459ms)
+  ✔ a replay is decided by logical value, not by spelling (0.223792ms)
+  ✔ different content under an accepted identity is recorded and refused, and edits nothing (0.199209ms)
+  ✔ the initial input is reachable under its own triple, like any other input (0.178333ms)
+✔ K1.1-C2 exact replay and content conflict (0.991083ms)
+▶ K1.1-C2 the triple keeps unrelated requests apart
+  ✔ two producers may use the same request-key text (0.182958ms)
+  ✔ one producer's key text to two Executions names two inputs (0.148ms)
+  ✔ no packing of the three parts can make two identities collide (1.382417ms)
+✔ K1.1-C2 the triple keeps unrelated requests apart (1.791416ms)
+▶ K1.1-C2 destinations that refuse
+  ✔ an unknown destination and one the caller may not see answer identically (0.160667ms)
+  ✔ K11-R1-SCOPE-01 terminal-ingress rule is specified with live-terminal evidence deferred to K1.3 (0.096667ms)
+  ✔ a capacity below one is a configuration error, not a refusal to discover at runtime (0.255292ms)
+  ✔ capacity refuses ingress before any acknowledgment (0.148417ms)
+✔ K1.1-C2 destinations that refuse (0.772334ms)
+▶ K1.1-C2 ingress does not depend on what the Execution is doing
+  ✔ input accepted while RUNNING is queued and stays out of the reserved batch (0.362917ms)
+  ✔ replay and conflict behave the same way while RUNNING as while READY (0.117625ms)
+  ✔ K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection (0.134542ms)
+  ✔ K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing (0.103875ms)
+✔ K1.1-C2 ingress does not depend on what the Execution is doing (0.788916ms)
+▶ K1.1-C9 what a reader can see
+  ✔ the snapshot carries every fact the packet accepts (2.0395ms)
+  ✔ reading twice changes nothing and reads the same (14.587ms)
+  ✔ editing a returned view cannot reach the Execution (1.089375ms)
+  ✔ accepted content cannot be edited through the caller's own object either (2.226833ms)
+  ✔ inspection is scoped like every other read (1.633834ms)
+  ✔ K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound (0.811709ms)
+  ✔ visibleExecutions lists what this caller may reach, and nothing else (0.892ms)
+✔ K1.1-C9 what a reader can see (24.498792ms)
+▶ K1.1-C6 one receipt per accepted boundary
+  ✔ creation, ingress and dispatch intent each mint their own (1.889083ms)
+  ✔ a receipt from one boundary can never be mistaken for another's (0.340166ms)
+  ✔ an exact replay returns the original token, at each boundary that can replay (0.294ms)
+  ✔ every refusal mints none (0.347083ms)
+✔ K1.1-C6 one receipt per accepted boundary (3.42725ms)
+▶ K1.1-C6 reads are authenticated and scoped first
+  ✔ an unauthorized caller cannot learn that an Execution exists (0.206625ms)
+  ✔ the two refusals cost the same position, which is shape evidence rather than timing evidence (0.167542ms)
+  ✔ a caller that holds the scope sees the Execution and its receipts (0.124166ms)
+  ▶ K11-R1-ID-01 hidden and missing lookups do equal work
+    ✔ inspect performs the same scope work for hidden and missing (0.305291ms)
+    ✔ equal work holds with many legitimate scopes and in both orders (0.293125ms)
+    ✔ scope work does not depend on where the match sits (0.246959ms)
+    ✔ single-ID lookup work does not depend on hidden-record population (1.497375ms)
+    ✔ ingress, dispatch and redelivery share the same normalized lookup (0.225209ms)
+    ✔ visibleExecutions does uniform per-record work and reveals only visible IDs (0.124958ms)
+  ✔ K11-R1-ID-01 hidden and missing lookups do equal work (2.859625ms)
+✔ K1.1-C6 reads are authenticated and scoped first (3.487833ms)
+▶ K1.1-C7 unlanded surfaces
+  ✔ each refuses, names its owner packet, and returns nothing (0.718459ms)
+  ✔ calling them leaves the whole observable state untouched (1.598542ms)
+  ✔ K11-R1-SCOPE-01 cancellation is K1.3-owned and changes no accepted state (0.290875ms)
+✔ K1.1-C7 unlanded surfaces (3.150458ms)
+▶ target Kernel scaffolding
+  ✔ an unimplemented surface throws rather than returning anything (0.547458ms)
+  ✔ the refusal names the surface and the packet that owns implementing it (0.154625ms)
+  ✔ the refusal points at the supported implementation instead of leaving a dead end (0.064125ms)
+  ✔ the package exports exactly the K1.1 surface and nothing that could look like a later packet's (0.583667ms)
+✔ target Kernel scaffolding (1.907375ms)
+▶ K1.1-C3 boundary values are validated, never repaired
+  ✔ non-finite numbers are rejected rather than coerced (1.21225ms)
+  ✔ a member that is present with no value is refused, because absent and null differ (0.210459ms)
+  ✔ values with no boundary form are refused with their form named (0.890541ms)
+  ✔ members canonical form cannot represent are refused, never dropped (0.100292ms)
+  ✔ lone surrogates are refused rather than replaced (0.4385ms)
+  ✔ a cycle has no canonical form and is reported as one (0.108417ms)
+  ✔ every reason is reported, with a path, rather than only the first (0.109667ms)
+  ✔ isBoundaryValue agrees with the issue list (0.081792ms)
+  ▶ K11-R1-VAL-01 value-preserving acceptance over the full key space
+    ✔ a valid own __proto__ member is accepted and sealed as own data, not a prototype (0.248791ms)
+    ✔ nested and array-embedded __proto__ members survive at depth (0.193792ms)
+    ✔ a null-prototype object keeps its prototype and its members (0.1145ms)
+    ✔ numeric-looking non-index array members are refused, never silently dropped (0.097791ms)
+    ✔ accessors and exotic array prototypes are refused rather than invoked or coerced (0.086875ms)
+    ✔ sealBoundaryValue detaches and freezes without invoking getters (0.251125ms)
+  ✔ K11-R1-VAL-01 value-preserving acceptance over the full key space (1.152083ms)
+✔ K1.1-C3 boundary values are validated, never repaired (4.9505ms)
+▶ K1.1-C3 canonical form follows values.md rules 1-6
+  ✔ member names sort as unsigned UTF-16 code units, not code points or locale (0.103833ms)
+  ✔ array order stays semantic (0.074667ms)
+  ✔ absent and explicitly null are different values (0.051792ms)
+  ✔ literals are spelled exactly (0.042292ms)
+  ✔ numbers use the shortest round-trip spelling values.md names (0.055084ms)
+  ✔ strings escape exactly the characters rule 4 names and nothing else (0.059834ms)
+  ✔ no insignificant whitespace and no byte-order mark (0.047875ms)
+  ✔ equality is over canonical bytes, so two honest spellings of one value agree (0.071166ms)
+✔ K1.1-C3 canonical form follows values.md rules 1-6 (0.594542ms)
+▶ K1.1-C3 the four semantic limits, at the limit and one over
+  ✔ decoded string length counts Unicode scalar values (13.811208ms)
+  ✔ the same limit applies to member names (5.375875ms)
+  ✔ entry count counts direct children of one container, not a recursive total (13.896417ms)
+  ✔ depth counts containers on a path, with empty containers counting (0.580625ms)
+  ✔ a value nested far past the limit is refused rather than exhausting the stack (0.437875ms)
+  ✔ canonical size is measured per root, at the byte (572.333083ms)
+  ✔ sibling roots are not summed (267.380167ms)
+  ✔ the reported canonical byte length is the UTF-8 length, not the UTF-16 one (0.108125ms)
+✔ K1.1-C3 the four semantic limits, at the limit and one over (874.115292ms)
+ℹ tests 116
+ℹ suites 23
+ℹ pass 116
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1197.949583

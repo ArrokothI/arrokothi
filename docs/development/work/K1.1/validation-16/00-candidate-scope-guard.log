@@ -1,0 +1,184 @@
+K11-R14-PROC-01 scope guard round 16: transcript of the guard script, then its live run.
+
+$ cat /tmp/k11-c16-scope-guard.sh
+#!/usr/bin/env bash
+# K11-R14-PROC-01 candidate-contamination guard, round 16 (single unified branch).
+# Verifies, against live Git state (not prose), that the unified candidate's effective tree
+# is scoped: the fresh payload C12 differs from C11 by admin paths only, with zero
+# substantive (non-docs) delta, and the staged H16 attachments are allowlisted.
+# Fail-closed under set -euo pipefail: any violation aborts nonzero with no PASS.
+#
+# Timing: runs AFTER `git add` of the H16 attachments but BEFORE the H16 commit, in the
+# unification worktree whose HEAD is C12. After PASS, staging the guard log itself adds
+# exactly one allowlisted path; the post-commit handoff re-verifies C12..H16 and C11..H16.
+set -euo pipefail
+C11="f117e6b47c4930af6735aaa3668b8b4c242fd76d"
+C12="37ee8c39ebfcce797bafb67faecae01e55fab89f"
+REPO="/tmp/k11-c16-unify"
+
+echo "$ git -C REPO rev-parse HEAD (pre-commit tip must be the fresh payload C12)"
+TIP="$(git -C "$REPO" rev-parse HEAD)"
+echo "$TIP"
+test "$TIP" = "$C12" || { echo "GUARD FAIL: tip is not C12"; exit 1; }
+
+echo "$ git -C REPO log --format=%P -1 HEAD (C12 must have exactly the revert + H15 parents)"
+PARENTS="$(git -C "$REPO" log --format=%P -1 HEAD)"
+echo "$PARENTS"
+test "$PARENTS" = "2f931c185f42b81ddcf8e41dc6fd0a9927a44a72 7851595cfc35c5fcbc5bd4087ed5d7c27a7a84be" \
+  || { echo "GUARD FAIL: C12 parents are not revert+H15"; exit 1; }
+
+echo "$ git -C REPO diff --name-only C11 C12 (must equal exactly the 40 known admin paths)"
+git -C "$REPO" diff --name-only "$C11" "$C12" | sort > /tmp/k11-c16-guard-range.txt
+cat /tmp/k11-c16-guard-range.txt
+cat > /tmp/k11-c16-guard-range-expected.txt <<'EOF'
+docs/development/007-work-packets.md
+docs/development/work/K1.1/implementation-13.md
+docs/development/work/K1.1/implementation-14.md
+docs/development/work/K1.1/implementation-15.md
+docs/development/work/K1.1/review-12.md
+docs/development/work/K1.1/review-13.md
+docs/development/work/K1.1/validation-13/01-tree-and-environment.log
+docs/development/work/K1.1/validation-13/02-typecheck.log
+docs/development/work/K1.1/validation-13/03-test-full.log
+docs/development/work/K1.1/validation-13/04-test-conformance.log
+docs/development/work/K1.1/validation-13/05-check-builder-docs.log
+docs/development/work/K1.1/validation-13/06-test-kernel.log
+docs/development/work/K1.1/validation-13/07-test-sdk.log
+docs/development/work/K1.1/validation-13/08-architecture-suite.log
+docs/development/work/K1.1/validation-13/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-13/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-13/MANIFEST.md
+docs/development/work/K1.1/validation-14/01-tree-and-environment.log
+docs/development/work/K1.1/validation-14/02-typecheck.log
+docs/development/work/K1.1/validation-14/03-test-full.log
+docs/development/work/K1.1/validation-14/04-test-conformance.log
+docs/development/work/K1.1/validation-14/05-check-builder-docs.log
+docs/development/work/K1.1/validation-14/06-test-kernel.log
+docs/development/work/K1.1/validation-14/07-test-sdk.log
+docs/development/work/K1.1/validation-14/08-architecture-suite.log
+docs/development/work/K1.1/validation-14/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-14/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-14/MANIFEST.md
+docs/development/work/K1.1/validation-15/00-candidate-scope-guard.log
+docs/development/work/K1.1/validation-15/01-tree-and-environment.log
+docs/development/work/K1.1/validation-15/02-typecheck.log
+docs/development/work/K1.1/validation-15/03-test-full.log
+docs/development/work/K1.1/validation-15/04-test-conformance.log
+docs/development/work/K1.1/validation-15/05-check-builder-docs.log
+docs/development/work/K1.1/validation-15/06-test-kernel.log
+docs/development/work/K1.1/validation-15/07-test-sdk.log
+docs/development/work/K1.1/validation-15/08-architecture-suite.log
+docs/development/work/K1.1/validation-15/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-15/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-15/MANIFEST.md
+EOF
+diff /tmp/k11-c16-guard-range-expected.txt /tmp/k11-c16-guard-range.txt \
+  || { echo "GUARD FAIL: C11..C12 range differs from the 40 known admin paths"; exit 1; }
+echo "effective range is exactly the 40 known admin paths"
+
+echo "$ substantive proof: non-docs names between C11 and C12 (must print nothing)"
+if git -C "$REPO" diff --name-only "$C11" "$C12" -- . ':!docs'; then :; fi
+test -z "$(git -C "$REPO" diff --name-only "$C11" "$C12" -- . ':!docs')" \
+  || { echo "GUARD FAIL: substantive delta between C11 and C12"; exit 1; }
+echo "zero non-docs paths differ between C11 and C12"
+SUBST_BYTES="$(git -C "$REPO" diff "$C11" "$C12" -- mental-model packages | wc -c | tr -d ' ')"
+echo "mental-model/packages content bytes: $SUBST_BYTES"
+test "$SUBST_BYTES" = "0" || { echo "GUARD FAIL: content bytes differ"; exit 1; }
+
+echo "$ git -C REPO diff --cached --name-only (staged H16 attachments; must be allowlist subset)"
+git -C "$REPO" diff --cached --name-only | sort > /tmp/k11-c16-guard-staged.txt
+cat /tmp/k11-c16-guard-staged.txt
+test -s /tmp/k11-c16-guard-staged.txt || { echo "GUARD FAIL: nothing staged"; exit 1; }
+while IFS= read -r f; do
+  case "$f" in
+    docs/development/007-work-packets.md|\
+    docs/development/work/K1.1/implementation-16.md|\
+    docs/development/work/K1.1/validation-16/00-candidate-scope-guard.log|\
+    docs/development/work/K1.1/validation-16/01-tree-and-environment.log|\
+    docs/development/work/K1.1/validation-16/02-typecheck.log|\
+    docs/development/work/K1.1/validation-16/03-test-full.log|\
+    docs/development/work/K1.1/validation-16/04-test-conformance.log|\
+    docs/development/work/K1.1/validation-16/05-check-builder-docs.log|\
+    docs/development/work/K1.1/validation-16/06-test-kernel.log|\
+    docs/development/work/K1.1/validation-16/07-test-sdk.log|\
+    docs/development/work/K1.1/validation-16/08-architecture-suite.log|\
+    docs/development/work/K1.1/validation-16/09-k1.1-case-inventory.log|\
+    docs/development/work/K1.1/validation-16/09b-distinguishing-ablations.log|\
+    docs/development/work/K1.1/validation-16/MANIFEST.md) ;;
+    *) echo "GUARD FAIL: staged file outside H16 attachment allowlist: $f"; exit 1 ;;
+  esac
+done < /tmp/k11-c16-guard-staged.txt
+echo "staged set is an allowlist subset"
+
+echo "$ git -C REPO status --porcelain=v1 (only staged entries + node_modules link + pending guard log)"
+git -C "$REPO" status --porcelain=v1
+if git -C "$REPO" status --porcelain=v1 | grep -v '^?? node_modules$' | grep -v '^?? docs/development/work/K1.1/validation-16/00-candidate-scope-guard.log$' | grep -E '^( [MD]|UU|AA|DD)|^\?\? '; then
+  echo "GUARD FAIL: unexpected worktree state (unstaged or extra untracked files)"; exit 1
+else
+  echo "worktree holds only staged entries plus the node_modules symlink and the pending guard log"
+fi
+
+echo "SCOPE GUARD: PASS — C12 effective tree is C11 plus the 40 known admin paths; staged is H16 attachments only"
+
+=== live run ===
+$ git -C REPO rev-parse HEAD (pre-commit tip must be the fresh payload C12)
+37ee8c39ebfcce797bafb67faecae01e55fab89f
+$ git -C REPO log --format=%P -1 HEAD (C12 must have exactly the revert + H15 parents)
+2f931c185f42b81ddcf8e41dc6fd0a9927a44a72 7851595cfc35c5fcbc5bd4087ed5d7c27a7a84be
+$ git -C REPO diff --name-only C11 C12 (must equal exactly the 40 known admin paths)
+docs/development/007-work-packets.md
+docs/development/work/K1.1/implementation-13.md
+docs/development/work/K1.1/implementation-14.md
+docs/development/work/K1.1/implementation-15.md
+docs/development/work/K1.1/review-12.md
+docs/development/work/K1.1/review-13.md
+docs/development/work/K1.1/validation-13/01-tree-and-environment.log
+docs/development/work/K1.1/validation-13/02-typecheck.log
+docs/development/work/K1.1/validation-13/03-test-full.log
+docs/development/work/K1.1/validation-13/04-test-conformance.log
+docs/development/work/K1.1/validation-13/05-check-builder-docs.log
+docs/development/work/K1.1/validation-13/06-test-kernel.log
+docs/development/work/K1.1/validation-13/07-test-sdk.log
+docs/development/work/K1.1/validation-13/08-architecture-suite.log
+docs/development/work/K1.1/validation-13/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-13/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-13/MANIFEST.md
+docs/development/work/K1.1/validation-14/01-tree-and-environment.log
+docs/development/work/K1.1/validation-14/02-typecheck.log
+docs/development/work/K1.1/validation-14/03-test-full.log
+docs/development/work/K1.1/validation-14/04-test-conformance.log
+docs/development/work/K1.1/validation-14/05-check-builder-docs.log
+docs/development/work/K1.1/validation-14/06-test-kernel.log
+docs/development/work/K1.1/validation-14/07-test-sdk.log
+docs/development/work/K1.1/validation-14/08-architecture-suite.log
+docs/development/work/K1.1/validation-14/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-14/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-14/MANIFEST.md
+docs/development/work/K1.1/validation-15/00-candidate-scope-guard.log
+docs/development/work/K1.1/validation-15/01-tree-and-environment.log
+docs/development/work/K1.1/validation-15/02-typecheck.log
+docs/development/work/K1.1/validation-15/03-test-full.log
+docs/development/work/K1.1/validation-15/04-test-conformance.log
+docs/development/work/K1.1/validation-15/05-check-builder-docs.log
+docs/development/work/K1.1/validation-15/06-test-kernel.log
+docs/development/work/K1.1/validation-15/07-test-sdk.log
+docs/development/work/K1.1/validation-15/08-architecture-suite.log
+docs/development/work/K1.1/validation-15/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-15/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-15/MANIFEST.md
+effective range is exactly the 40 known admin paths
+$ substantive proof: non-docs names between C11 and C12 (must print nothing)
+zero non-docs paths differ between C11 and C12
+mental-model/packages content bytes: 0
+$ git -C REPO diff --cached --name-only (staged H16 attachments; must be allowlist subset)
+docs/development/007-work-packets.md
+docs/development/work/K1.1/implementation-16.md
+docs/development/work/K1.1/validation-16/MANIFEST.md
+staged set is an allowlist subset
+$ git -C REPO status --porcelain=v1 (only staged entries + node_modules link + pending guard log)
+M  docs/development/007-work-packets.md
+A  docs/development/work/K1.1/implementation-16.md
+A  docs/development/work/K1.1/validation-16/MANIFEST.md
+?? node_modules
+worktree holds only staged entries plus the node_modules symlink and the pending guard log
+SCOPE GUARD: PASS — C12 effective tree is C11 plus the 40 known admin paths; staged is H16 attachments only

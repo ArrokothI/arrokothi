@@ -1,0 +1,235 @@
+=== payload and base ===
+$ git rev-parse HEAD
+f117e6b47c4930af6735aaa3668b8b4c242fd76d
+B=777b9955fb3a443f700b4f3d1f4f2aef1869345b
+$ git merge-base --is-ancestor 777b9955fb3a443f700b4f3d1f4f2aef1869345b HEAD
+B is ancestor of C11
+$ git status --short
+?? node_modules
+$ node --version
+v25.2.1
+$ npm --version
+11.6.2
+$ npx tsc --version
+Version 5.9.3
+$ uname -srm
+Darwin 25.6.0 arm64
+=== candidate/review ancestry on the branch ===
+$ git merge-base --is-ancestor 8cd9e269b1c08f166dec1b567aedf7d1b4810b34 HEAD
+ancestor of C11 checkout: 8cd9e269b1c08f166dec1b567aedf7d1b4810b34
+$ git merge-base --is-ancestor 0f345b3c9ab49f6c5d9e09b162641cda78f96356 HEAD
+ancestor of C11 checkout: 0f345b3c9ab49f6c5d9e09b162641cda78f96356
+$ git merge-base --is-ancestor 6b7e5fb0eb3cb323788f97889b84db845a7b3f9f HEAD
+ancestor of C11 checkout: 6b7e5fb0eb3cb323788f97889b84db845a7b3f9f
+$ git merge-base --is-ancestor 297cc56ff186638817e0edfba7a3ce9f103d561e HEAD
+ancestor of C11 checkout: 297cc56ff186638817e0edfba7a3ce9f103d561e
+$ git merge-base --is-ancestor 615cdf884ac560aec659162353680e55f732804c HEAD
+ancestor of C11 checkout: 615cdf884ac560aec659162353680e55f732804c
+$ git merge-base --is-ancestor b3cdf33732df1f0645e0d773917b4f82444208c5 HEAD
+ancestor of C11 checkout: b3cdf33732df1f0645e0d773917b4f82444208c5
+$ git merge-base --is-ancestor 1d4e4867b748f9e0b2f4041e17ded836ebc25a75 HEAD
+ancestor of C11 checkout: 1d4e4867b748f9e0b2f4041e17ded836ebc25a75
+$ git merge-base --is-ancestor 156f13530fc01883608407948d320d12ba4821ca HEAD
+ancestor of C11 checkout: 156f13530fc01883608407948d320d12ba4821ca
+$ git merge-base --is-ancestor e0660effc729b968c528943220d9ba6fbc561c18 HEAD
+ancestor of C11 checkout: e0660effc729b968c528943220d9ba6fbc561c18
+$ git merge-base --is-ancestor bd2dab6d91e0af2328aa39fe74de831bffb27818 HEAD
+ancestor of C11 checkout: bd2dab6d91e0af2328aa39fe74de831bffb27818
+$ git merge-base --is-ancestor b3d0d59f18f6c2b1d0a49746428123d84dd80df2 HEAD
+ancestor of C11 checkout: b3d0d59f18f6c2b1d0a49746428123d84dd80df2
+$ git merge-base --is-ancestor 417798a3e540acce78d73c7a0fdb92ebfd69faf8 HEAD
+ancestor of C11 checkout: 417798a3e540acce78d73c7a0fdb92ebfd69faf8
+$ git merge-base --is-ancestor e59bd312373ca7afacd507a73717b16dfaa0a8f0 HEAD
+ancestor of C11 checkout: e59bd312373ca7afacd507a73717b16dfaa0a8f0
+$ git merge-base --is-ancestor ae02c32ae575c70326cd7d2a91aa5c268671d92f HEAD
+ancestor of C11 checkout: ae02c32ae575c70326cd7d2a91aa5c268671d92f
+$ git merge-base --is-ancestor 79151afc77533d5d542918515d8809773ff61809 HEAD
+ancestor of C11 checkout: 79151afc77533d5d542918515d8809773ff61809
+$ git merge-base --is-ancestor c1e7d78afc9aebb89410ff55892adcfb37e9e973 HEAD
+ancestor of C11 checkout: c1e7d78afc9aebb89410ff55892adcfb37e9e973
+$ git merge-base --is-ancestor 5ac76207a05b61f918a1efd2313c25b7108d775c HEAD
+ancestor of C11 checkout: 5ac76207a05b61f918a1efd2313c25b7108d775c
+$ git merge-base --is-ancestor 5dddc2ad3cfd616b38c062380e450873cbc4c132 HEAD
+ancestor of C11 checkout: 5dddc2ad3cfd616b38c062380e450873cbc4c132
+$ git merge-base --is-ancestor d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14 HEAD
+ancestor of C11 checkout: d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14
+$ git merge-base --is-ancestor 05f48c204d1eae021b3464c206e5c11e84bb3505 HEAD
+ancestor of C11 checkout: 05f48c204d1eae021b3464c206e5c11e84bb3505
+$ git merge-base --is-ancestor 9baff3a03662720af6eefe1ecfabc41fde99298f HEAD
+ancestor of C11 checkout: 9baff3a03662720af6eefe1ecfabc41fde99298f
+$ git merge-base --is-ancestor 2cdb1e22f0391079619e97a0fe49bf09c7855ca6 HEAD
+ancestor of C11 checkout: 2cdb1e22f0391079619e97a0fe49bf09c7855ca6
+$ git merge-base --is-ancestor fbba168b638840cecc871ce4e787bc29ddc04b5d HEAD
+ancestor of C11 checkout: fbba168b638840cecc871ce4e787bc29ddc04b5d
+$ git merge-base --is-ancestor ccc0140ffca7fe2196cb80e57d6eb2d767666793 HEAD
+ancestor of C11 checkout: ccc0140ffca7fe2196cb80e57d6eb2d767666793
+$ git merge-base --is-ancestor 4c03ce8b1190e4186da1407fda21951b2d32319e HEAD
+ancestor of C11 checkout: 4c03ce8b1190e4186da1407fda21951b2d32319e
+$ git merge-base --is-ancestor a047283523f7487cc025f4cf58d17028caad6389 HEAD
+ancestor of C11 checkout: a047283523f7487cc025f4cf58d17028caad6389
+$ git merge-base --is-ancestor 0367420d8993075470e8e671e462b643e6d42f10 HEAD
+ancestor of C11 checkout: 0367420d8993075470e8e671e462b643e6d42f10
+$ git merge-base --is-ancestor e2d62d1459fe662d8f0ef936f46216bde66eab3f HEAD
+ancestor of C11 checkout: e2d62d1459fe662d8f0ef936f46216bde66eab3f
+$ git merge-base --is-ancestor f117e6b47c4930af6735aaa3668b8b4c242fd76d HEAD
+ancestor of C11 checkout: f117e6b47c4930af6735aaa3668b8b4c242fd76d
+=== payload file set: C10..C11 and C11 alone ===
+$ git diff --name-only d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14 f117e6b47c4930af6735aaa3668b8b4c242fd76d
+docs/development/007-work-packets.md
+docs/development/work/K1.1/implementation-10.md
+docs/development/work/K1.1/implementation-11.md
+docs/development/work/K1.1/implementation-12.md
+docs/development/work/K1.1/review-08.md
+docs/development/work/K1.1/review-09.md
+docs/development/work/K1.1/review-10.md
+docs/development/work/K1.1/review-11.md
+docs/development/work/K1.1/validation-10/01-tree-and-environment.log
+docs/development/work/K1.1/validation-10/02-typecheck.log
+docs/development/work/K1.1/validation-10/03-test-full.log
+docs/development/work/K1.1/validation-10/04-test-conformance.log
+docs/development/work/K1.1/validation-10/05-check-builder-docs.log
+docs/development/work/K1.1/validation-10/06-test-kernel.log
+docs/development/work/K1.1/validation-10/07-test-sdk.log
+docs/development/work/K1.1/validation-10/08-architecture-suite.log
+docs/development/work/K1.1/validation-10/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-10/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-10/MANIFEST.md
+docs/development/work/K1.1/validation-11/01-tree-and-environment.log
+docs/development/work/K1.1/validation-11/02-typecheck.log
+docs/development/work/K1.1/validation-11/03-test-full.log
+docs/development/work/K1.1/validation-11/04-test-conformance.log
+docs/development/work/K1.1/validation-11/05-check-builder-docs.log
+docs/development/work/K1.1/validation-11/06-test-kernel.log
+docs/development/work/K1.1/validation-11/07-test-sdk.log
+docs/development/work/K1.1/validation-11/08-architecture-suite.log
+docs/development/work/K1.1/validation-11/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-11/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-11/MANIFEST.md
+docs/development/work/K1.1/validation-12/01-tree-and-environment.log
+docs/development/work/K1.1/validation-12/02-typecheck.log
+docs/development/work/K1.1/validation-12/03-test-full.log
+docs/development/work/K1.1/validation-12/04-test-conformance.log
+docs/development/work/K1.1/validation-12/05-check-builder-docs.log
+docs/development/work/K1.1/validation-12/06-test-kernel.log
+docs/development/work/K1.1/validation-12/07-test-sdk.log
+docs/development/work/K1.1/validation-12/08-architecture-suite.log
+docs/development/work/K1.1/validation-12/09-k1.1-case-inventory.log
+docs/development/work/K1.1/validation-12/09b-distinguishing-ablations.log
+docs/development/work/K1.1/validation-12/MANIFEST.md
+packages/kernel/src/coordinator.ts
+packages/kernel/src/identity.ts
+packages/kernel/src/refusal.ts
+packages/kernel/tests/creation.test.ts
+packages/kernel/tests/dispatch.test.ts
+packages/kernel/tests/ingress.test.ts
+packages/kernel/tests/inspection.test.ts
+packages/kernel/tests/nondisclosure.test.ts
+packages/kernel/tests/receipts.test.ts
+$ git show --stat --oneline f117e6b47c4930af6735aaa3668b8b4c242fd76d
+f117e6b fix(K1.1): scope acceptance/refusal order to the owning Execution (K11-R12-ID-01)
+ packages/kernel/src/coordinator.ts          |  86 +++--
+ packages/kernel/src/identity.ts             |  23 +-
+ packages/kernel/src/refusal.ts              |  11 +-
+ packages/kernel/tests/creation.test.ts      |   3 +-
+ packages/kernel/tests/dispatch.test.ts      |   8 +-
+ packages/kernel/tests/ingress.test.ts       |   7 +-
+ packages/kernel/tests/inspection.test.ts    |   4 +-
+ packages/kernel/tests/nondisclosure.test.ts | 477 ++++++++++++++++++++++++++++
+ packages/kernel/tests/receipts.test.ts      |  49 ++-
+ 9 files changed, 623 insertions(+), 45 deletions(-)
+=== dependency pin: exact canonicalize ===
+$ grep canonicalize packages/kernel/package.json
+    "canonicalize": "3.0.0"
+$ grep -A4 "node_modules/canonicalize" package-lock.json
+    "node_modules/canonicalize": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/canonicalize/-/canonicalize-3.0.0.tgz",
+      "integrity": "sha512-yYLfHyDMIXRyRqsKBRLX023riFLpXY2YOfdtqKXZRZy9qsfOJ9U+4F9YZL7MEzL5+ziN2x2nlBvY/Voi3EBljA==",
+      "license": "Apache-2.0",
+=== zone inventory: target source files ===
+definition: tracked .ts files directly under packages/kernel/src (git-tracked set, not a
+filesystem listing, so worktree dirt cannot contaminate the measurement; the count below is
+taken from the same command output, and the self-check recomputes it from the same command).
+$ git ls-files packages/kernel/src/*.ts
+packages/kernel/src/coordinator.ts
+packages/kernel/src/driver.ts
+packages/kernel/src/identity.ts
+packages/kernel/src/index.ts
+packages/kernel/src/inspection.ts
+packages/kernel/src/lifecycle.ts
+packages/kernel/src/own-array.ts
+packages/kernel/src/refusal.ts
+packages/kernel/src/result.ts
+packages/kernel/src/unsupported.ts
+packages/kernel/src/values.ts
+      12
+$ test 11 = 11
+SELF-CHECK PASS: listed set and reported count agree (11 tracked .ts files directly under packages/kernel/src)
+=== zone inventory: runtime export surface (measured by importing the barrel, with assert) ===
+$ node --experimental-strip-types -e import("./packages/kernel/src/index.ts").then(m => { const names = Object.keys(m).sort(); console.log("runtime export count: " + names.length); for (const n of names) console.log("  " + n); if (names.length !== 17) { console.error("SELF-CHECK FAIL: expected 17 runtime exports"); process.exit(1); } console.log("SELF-CHECK PASS: 17 runtime exports, all named above"); })
+runtime export count: 17
+  BOUNDARY_LIMITS
+  ExecutionCoordinator
+  TERMINAL_STATES
+  UNKNOWN_DESTINATION_REASON
+  UnsupportedKernelSurfaceError
+  boundaryValueIssues
+  canonicalize
+  creationKeyIdKey
+  err
+  inputIdKey
+  isBoundaryValue
+  isTerminal
+  mayReachScope
+  mintReceipt
+  ok
+  refuseUnsupportedSurface
+  sameLogicalValue
+SELF-CHECK PASS: 17 runtime exports, all named above
+=== zone inventory: import boundary ===
+$ grep -rh from " packages/kernel/src/
+import type { BoundaryValue } from "./values.ts";
+import type { InputId, Receipt } from "./identity.ts";
+import type { ExecutionState } from "./lifecycle.ts";
+import type { RefusalRecord } from "./refusal.ts";
+import type { BoundaryValue } from "./values.ts";
+export { UnsupportedKernelSurfaceError, refuseUnsupportedSurface } from "./unsupported.ts";
+export { ExecutionCoordinator } from "./coordinator.ts";
+} from "./coordinator.ts";
+export type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+export { creationKeyIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
+export type { AuthenticatedCaller, CreationKeyId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";
+} from "./inspection.ts";
+export { TERMINAL_STATES, isTerminal } from "./lifecycle.ts";
+export type { ExecutionState } from "./lifecycle.ts";
+export { UNKNOWN_DESTINATION_REASON } from "./refusal.ts";
+export type { RefusalClassification, RefusalRecord } from "./refusal.ts";
+export { err, ok } from "./result.ts";
+export type { Err, Ok, Result } from "./result.ts";
+export { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue } from "./values.ts";
+export type { BoundaryValue, CanonicalValue, ValueIssue, ValueIssueCode } from "./values.ts";
+import canonicalizeJcs from "canonicalize";
+import { Buffer } from "node:buffer";
+import { appendOwn, defineAt, defineData, readAt, restoreDescriptor, sizedList, truncateOwn } from "./own-array.ts";
+import type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+} from "./identity.ts";
+} from "./inspection.ts";
+import { isTerminal, type ExecutionState } from "./lifecycle.ts";
+import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts";
+import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
+import { err, ok, type Result } from "./result.ts";
+import { refuseUnsupportedSurface } from "./unsupported.ts";
+import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
+$ grep -rho from "[^"]*" packages/kernel/src/
+from "./coordinator.ts"
+from "./driver.ts"
+from "./identity.ts"
+from "./inspection.ts"
+from "./lifecycle.ts"
+from "./own-array.ts"
+from "./refusal.ts"
+from "./result.ts"
+from "./unsupported.ts"
+from "./values.ts"
+from "canonicalize"
+from "node:buffer"

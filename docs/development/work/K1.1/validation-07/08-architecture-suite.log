@@ -1,0 +1,2441 @@
+TAP version 13
+# Subtest: Agent architecture boundaries
+    # Subtest: ActivationInput is still exactly four fields and function-free
+    ok 1 - ActivationInput is still exactly four fields and function-free
+      ---
+      duration_ms: 7.6155
+      type: 'test'
+      ...
+    # Subtest: the Agent controller import graph reaches nothing operational
+    ok 2 - the Agent controller import graph reaches nothing operational
+      ---
+      duration_ms: 24.172708
+      type: 'test'
+      ...
+    # Subtest: the Agent controller holds narrow Structured Memory view resolvers, not runtime state
+    ok 3 - the Agent controller holds narrow Structured Memory view resolvers, not runtime state
+      ---
+      duration_ms: 7.31675
+      type: 'test'
+      ...
+    # Subtest: the Agent controller holds only the narrow Derived Semantic Memory resolver, not the provider or extractor
+    ok 4 - the Agent controller holds only the narrow Derived Semantic Memory resolver, not the provider or extractor
+      ---
+      duration_ms: 91.31475
+      type: 'test'
+      ...
+    # Subtest: Derived Semantic Memory is a dependency-free execution leaf, and its ports reach nothing operational
+    ok 5 - Derived Semantic Memory is a dependency-free execution leaf, and its ports reach nothing operational
+      ---
+      duration_ms: 17.406417
+      type: 'test'
+      ...
+    # Subtest: the information compiler may read a Derived claim snapshot but cannot retrieve, write, or promote
+    ok 6 - the information compiler may read a Derived claim snapshot but cannot retrieve, write, or promote
+      ---
+      duration_ms: 13.694584
+      type: 'test'
+      ...
+    # Subtest: Derived Semantic Memory adds no Effect kind, no Event kind, and no model action / local control
+    ok 7 - Derived Semantic Memory adds no Effect kind, no Event kind, and no model action / local control
+      ---
+      duration_ms: 4.191875
+      type: 'test'
+      ...
+    # Subtest: no Agent module names a dispatcher, policy evaluator, store, scheduler, or settlement path
+    ok 8 - no Agent module names a dispatcher, policy evaluator, store, scheduler, or settlement path
+      ---
+      duration_ms: 34.609042
+      type: 'test'
+      ...
+    # Subtest: the information branch does not depend on authority, exposure, or projection
+    ok 9 - the information branch does not depend on authority, exposure, or projection
+      ---
+      duration_ms: 4.744875
+      type: 'test'
+      ...
+    # Subtest: an observation projector reaches no authority, dispatch, or runtime state
+    ok 10 - an observation projector reaches no authority, dispatch, or runtime state
+      ---
+      duration_ms: 2.835959
+      type: 'test'
+      ...
+    # Subtest: model action targets are identity only, with the two authority-governed arms
+    ok 11 - model action targets are identity only, with the two authority-governed arms
+      ---
+      duration_ms: 3.817125
+      type: 'test'
+      ...
+    # Subtest: the action branch does not depend on context compilation or memory reads
+    ok 12 - the action branch does not depend on context compilation or memory reads
+      ---
+      duration_ms: 17.991583
+      type: 'test'
+      ...
+    # Subtest: Working Notes state and the local-control view/projection reach nothing operational
+    ok 13 - Working Notes state and the local-control view/projection reach nothing operational
+      ---
+      duration_ms: 5.398042
+      type: 'test'
+      ...
+    # Subtest: working_notes_set is a local control, not a member of any authority-governed view
+    ok 14 - working_notes_set is a local control, not a member of any authority-governed view
+      ---
+      duration_ms: 1.942167
+      type: 'test'
+      ...
+    # Subtest: the model-invocation trace records local controls distinctly from Effect proposals
+    ok 15 - the model-invocation trace records local controls distinctly from Effect proposals
+      ---
+      duration_ms: 8.185958
+      type: 'test'
+      ...
+    # Subtest: the local Working Notes control is not an Effect or Event; the F.2b handoff is only spawn data
+    ok 16 - the local Working Notes control is not an Effect or Event; the F.2b handoff is only spawn data
+      ---
+      duration_ms: 1.187
+      type: 'test'
+      ...
+    # Subtest: the Agent controller owns the local Working Notes update; the Workflow controller does not
+    ok 17 - the Agent controller owns the local Working Notes update; the Workflow controller does not
+      ---
+      duration_ms: 1.213625
+      type: 'test'
+      ...
+    # Subtest: the information compiler may read a Working Notes frame but cannot mutate it or choose actions
+    ok 18 - the information compiler may read a Working Notes frame but cannot mutate it or choose actions
+      ---
+      duration_ms: 4.109208
+      type: 'test'
+      ...
+    # Subtest: projection has no AgentSpec side channel, and only the Agent consumes write exposure
+    ok 19 - projection has no AgentSpec side channel, and only the Agent consumes write exposure
+      ---
+      duration_ms: 3.20875
+      type: 'test'
+      ...
+    # Subtest: core Agent semantics mention no protocol, framework, or vendor type
+    ok 20 - core Agent semantics mention no protocol, framework, or vendor type
+      ---
+      duration_ms: 17.950209
+      type: 'test'
+      ...
+    # Subtest: Agent definitions, progress, projections, and authority records are plain data
+    ok 21 - Agent definitions, progress, projections, and authority records are plain data
+      ---
+      duration_ms: 3.200083
+      type: 'test'
+      ...
+    # Subtest: only the runtime Effect gateway may read effective authority at dispatch
+    ok 22 - only the runtime Effect gateway may read effective authority at dispatch
+      ---
+      duration_ms: 30.043875
+      type: 'test'
+      ...
+    # Subtest: the Agent path adds no external dependency to core
+    ok 23 - the Agent path adds no external dependency to core
+      ---
+      duration_ms: 132.147125
+      type: 'test'
+      ...
+    1..23
+ok 1 - Agent architecture boundaries
+  ---
+  duration_ms: 440.4765
+  type: 'suite'
+  ...
+# Subtest: child-composition boundaries
+    # Subtest: no controller module constructs a child, a delegated ceiling, a budget, or a link
+    ok 1 - no controller module constructs a child, a delegated ceiling, a budget, or a link
+      ---
+      duration_ms: 19.931833
+      type: 'test'
+      ...
+    # Subtest: the controller boundary cannot reach the child-creation machinery
+    ok 2 - the controller boundary cannot reach the child-creation machinery
+      ---
+      duration_ms: 13.05
+      type: 'test'
+      ...
+    # Subtest: the lineage structural spawn budget is written in exactly the runtime gateway and the Harness
+    ok 3 - the lineage structural spawn budget is written in exactly the runtime gateway and the Harness
+      ---
+      duration_ms: 60.649583
+      type: 'test'
+      ...
+    # Subtest: child Execution records are inserted only by the Harness and the Effect gateway
+    ok 4 - child Execution records are inserted only by the Harness and the Effect gateway
+      ---
+      duration_ms: 99.246458
+      type: 'test'
+      ...
+    # Subtest: the child-composition modules import no package and no builtin
+    ok 5 - the child-composition modules import no package and no builtin
+      ---
+      duration_ms: 76.544542
+      type: 'test'
+      ...
+    # Subtest: no MCP, provider, or storage package name appears in the child-composition sources
+    ok 6 - no MCP, provider, or storage package name appears in the child-composition sources
+      ---
+      duration_ms: 107.16825
+      type: 'test'
+      ...
+    # Subtest: the SpawnExecution proposal is plain data, handoff snapshot included
+    ok 7 - the SpawnExecution proposal is plain data, handoff snapshot included
+      ---
+      duration_ms: 0.379666
+      type: 'test'
+      ...
+    # Subtest: an Agent/Workflow Stage proposes a child call - it never creates the child or routes its result
+    ok 8 - an Agent/Workflow Stage proposes a child call - it never creates the child or routes its result
+      ---
+      duration_ms: 3.529458
+      type: 'test'
+      ...
+    # Subtest: the Workflow controller's import graph still cannot reach the child-creation machinery
+    ok 9 - the Workflow controller's import graph still cannot reach the child-creation machinery
+      ---
+      duration_ms: 19.313209
+      type: 'test'
+      ...
+    1..9
+ok 2 - child-composition boundaries
+  ---
+  duration_ms: 402.627083
+  type: 'suite'
+  ...
+# Subtest: interleaving / peer / cancellation boundaries
+    # Subtest: the Effect vocabulary gained no sixth kind for messaging or cancellation
+    ok 1 - the Effect vocabulary gained no sixth kind for messaging or cancellation
+      ---
+      duration_ms: 1.90025
+      type: 'test'
+      ...
+    # Subtest: no controller module reaches messaging, peer-link, or cancellation runtime machinery
+    ok 2 - no controller module reaches messaging, peer-link, or cancellation runtime machinery
+      ---
+      duration_ms: 14.763416
+      type: 'test'
+      ...
+    # Subtest: the controller boundary cannot reach the message gateway or the cancellation entry point
+    ok 3 - the controller boundary cannot reach the message gateway or the cancellation entry point
+      ---
+      duration_ms: 42.758209
+      type: 'test'
+      ...
+    # Subtest: SendMessage is dispatched only from the Effect gateway; peer.message is routed only through routeEvent
+    ok 4 - SendMessage is dispatched only from the Effect gateway; peer.message is routed only through routeEvent
+      ---
+      duration_ms: 66.561375
+      type: 'test'
+      ...
+    # Subtest: the peer message source identity is runtime-owned, never a controller field
+    ok 5 - the peer message source identity is runtime-owned, never a controller field
+      ---
+      duration_ms: 1.68325
+      type: 'test'
+      ...
+    # Subtest: ControllerResumption invalidation is runtime state, and never becomes an Event
+    ok 6 - ControllerResumption invalidation is runtime state, and never becomes an Event
+      ---
+      duration_ms: 3.608458
+      type: 'test'
+      ...
+    1..6
+ok 3 - interleaving / peer / cancellation boundaries
+  ---
+  duration_ms: 131.891792
+  type: 'suite'
+  ...
+# Subtest: explicit Working Notes handoff boundaries
+    # Subtest: the handoff snapshot / selection helper is a dependency-free execution leaf
+    ok 1 - the handoff snapshot / selection helper is a dependency-free execution leaf
+      ---
+      duration_ms: 2.339917
+      type: 'test'
+      ...
+    # Subtest: the generic spawn runtime never reaches Agent control state or the Agent controller
+    ok 2 - the generic spawn runtime never reaches Agent control state or the Agent controller
+      ---
+      duration_ms: 29.198375
+      type: 'test'
+      ...
+    # Subtest: the handoff is carried on the Execution context, not a DeferredSlot and not a runtime record
+    ok 3 - the handoff is carried on the Execution context, not a DeferredSlot and not a runtime record
+      ---
+      duration_ms: 1.241
+      type: 'test'
+      ...
+    # Subtest: the AgentController consumes a handoff but still holds no runtime handle
+    ok 4 - the AgentController consumes a handoff but still holds no runtime handle
+      ---
+      duration_ms: 32.793083
+      type: 'test'
+      ...
+    # Subtest: the handoff adds no new Effect kind, Event kind, or local model control
+    ok 5 - the handoff adds no new Effect kind, Event kind, or local model control
+      ---
+      duration_ms: 2.048417
+      type: 'test'
+      ...
+    # Subtest: ActiveModelActionView stays authority-governed only
+    ok 6 - ActiveModelActionView stays authority-governed only
+      ---
+      duration_ms: 0.673917
+      type: 'test'
+      ...
+    1..6
+ok 4 - explicit Working Notes handoff boundaries
+  ---
+  duration_ms: 68.724708
+  type: 'suite'
+  ...
+# Subtest: K1.0 evidence records
+    # Subtest: every settled round's manifest is present and checked
+    ok 1 - every settled round's manifest is present and checked
+      ---
+      duration_ms: 7.684167
+      type: 'test'
+      ...
+    # Subtest: every recorded digest is the digest of the file it names
+    ok 2 - every recorded digest is the digest of the file it names
+      ---
+      duration_ms: 266.599125
+      type: 'test'
+      ...
+    # Subtest: no token presented as a digest has an impossible length
+    ok 3 - no token presented as a digest has an impossible length
+      ---
+      duration_ms: 9.412083
+      type: 'test'
+      ...
+    # Subtest: the check is not vacuous: it rejects a manifest whose digest is wrong
+    ok 4 - the check is not vacuous: it rejects a manifest whose digest is wrong
+      ---
+      duration_ms: 1.400792
+      type: 'test'
+      ...
+    1..4
+ok 5 - K1.0 evidence records
+  ---
+  duration_ms: 286.807125
+  type: 'suite'
+  ...
+# Subtest: import scanner: prose is not an import (K0.2-SELF-01)
+    # Subtest: a line comment ending in the preposition before a quoted term yields nothing
+    ok 1 - a line comment ending in the preposition before a quoted term yields nothing
+      ---
+      duration_ms: 7.541083
+      type: 'test'
+      ...
+    # Subtest: a documentation block ending in the preposition before a quoted term yields nothing
+    ok 2 - a documentation block ending in the preposition before a quoted term yields nothing
+      ---
+      duration_ms: 3.008875
+      type: 'test'
+      ...
+    # Subtest: a string used as a search needle is data, not an import
+    ok 3 - a string used as a search needle is data, not an import
+      ---
+      duration_ms: 1.105208
+      type: 'test'
+      ...
+    # Subtest: a word list containing the preposition is data, not an import
+    ok 4 - a word list containing the preposition is data, not an import
+      ---
+      duration_ms: 0.342458
+      type: 'test'
+      ...
+    # Subtest: a fixture carrying an import statement as literal text is data, not an import
+    ok 5 - a fixture carrying an import statement as literal text is data, not an import
+      ---
+      duration_ms: 0.371166
+      type: 'test'
+      ...
+    # Subtest: the same holds for a template literal, which is how the controls actually carry them
+    ok 6 - the same holds for a template literal, which is how the controls actually carry them
+      ---
+      duration_ms: 0.307666
+      type: 'test'
+      ...
+    1..6
+ok 6 - import scanner: prose is not an import (K0.2-SELF-01)
+  ---
+  duration_ms: 13.348125
+  type: 'suite'
+  ...
+# Subtest: import scanner: every real import form is still found
+    # Subtest: named import
+    ok 1 - named import
+      ---
+      duration_ms: 0.677542
+      type: 'test'
+      ...
+    # Subtest: default import
+    ok 2 - default import
+      ---
+      duration_ms: 0.198833
+      type: 'test'
+      ...
+    # Subtest: namespace import
+    ok 3 - namespace import
+      ---
+      duration_ms: 0.184667
+      type: 'test'
+      ...
+    # Subtest: default and named import
+    ok 4 - default and named import
+      ---
+      duration_ms: 0.175791
+      type: 'test'
+      ...
+    # Subtest: side-effect import
+    ok 5 - side-effect import
+      ---
+      duration_ms: 0.094333
+      type: 'test'
+      ...
+    # Subtest: type-only import
+    ok 6 - type-only import
+      ---
+      duration_ms: 0.4695
+      type: 'test'
+      ...
+    # Subtest: inline type import
+    ok 7 - inline type import
+      ---
+      duration_ms: 0.402167
+      type: 'test'
+      ...
+    # Subtest: multi-line import
+    ok 8 - multi-line import
+      ---
+      duration_ms: 0.269917
+      type: 'test'
+      ...
+    # Subtest: import with a comment before the from clause
+    ok 9 - import with a comment before the from clause
+      ---
+      duration_ms: 0.154292
+      type: 'test'
+      ...
+    # Subtest: re-export all
+    ok 10 - re-export all
+      ---
+      duration_ms: 0.2275
+      type: 'test'
+      ...
+    # Subtest: re-export named
+    ok 11 - re-export named
+      ---
+      duration_ms: 0.147833
+      type: 'test'
+      ...
+    # Subtest: re-export namespace
+    ok 12 - re-export namespace
+      ---
+      duration_ms: 0.105083
+      type: 'test'
+      ...
+    # Subtest: re-export type
+    ok 13 - re-export type
+      ---
+      duration_ms: 0.146958
+      type: 'test'
+      ...
+    # Subtest: dynamic import
+    ok 14 - dynamic import
+      ---
+      duration_ms: 0.169375
+      type: 'test'
+      ...
+    # Subtest: dynamic import with whitespace
+    ok 15 - dynamic import with whitespace
+      ---
+      duration_ms: 0.11925
+      type: 'test'
+      ...
+    # Subtest: a dynamic import inside a template interpolation is still found
+    ok 16 - a dynamic import inside a template interpolation is still found
+      ---
+      duration_ms: 1.771792
+      type: 'test'
+      ...
+    # Subtest: several imports in one file are all found
+    ok 17 - several imports in one file are all found
+      ---
+      duration_ms: 0.731125
+      type: 'test'
+      ...
+    1..17
+ok 7 - import scanner: every real import form is still found
+  ---
+  duration_ms: 7.733583
+  type: 'suite'
+  ...
+# Subtest: import scanner: the parser survives real source shapes
+    # Subtest: a regular expression containing quote characters does not corrupt the rest of the file
+    ok 1 - a regular expression containing quote characters does not corrupt the rest of the file
+      ---
+      duration_ms: 1.210917
+      type: 'test'
+      ...
+    # Subtest: a regular expression after a control-flow closing paren does not hide the next import (K10-R1-01)
+    ok 2 - a regular expression after a control-flow closing paren does not hide the next import (K10-R1-01)
+      ---
+      duration_ms: 0.705959
+      type: 'test'
+      ...
+    # Subtest: division is not mistaken for a regular expression
+    ok 3 - division is not mistaken for a regular expression
+      ---
+      duration_ms: 0.331333
+      type: 'test'
+      ...
+    # Subtest: import.meta before a later string produces no phantom specifier
+    ok 4 - import.meta before a later string produces no phantom specifier
+      ---
+      duration_ms: 0.296
+      type: 'test'
+      ...
+    # Subtest: an escaped quote inside a string does not end it early
+    ok 5 - an escaped quote inside a string does not end it early
+      ---
+      duration_ms: 1.034042
+      type: 'test'
+      ...
+    # Subtest: nested template literals are parsed back into code correctly
+    ok 6 - nested template literals are parsed back into code correctly
+      ---
+      duration_ms: 0.231833
+      type: 'test'
+      ...
+    # Subtest: an identifier that merely starts with the keyword is not an import
+    ok 7 - an identifier that merely starts with the keyword is not an import
+      ---
+      duration_ms: 0.135208
+      type: 'test'
+      ...
+    # Subtest: a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)
+    ok 8 - a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)
+      ---
+      duration_ms: 0.148708
+      type: 'test'
+      ...
+    # Subtest: a template dynamic import with substitutions fails closed
+    ok 9 - a template dynamic import with substitutions fails closed
+      ---
+      duration_ms: 0.12775
+      type: 'test'
+      ...
+    # Subtest: a no-substitution template dynamic import is still a literal
+    ok 10 - a no-substitution template dynamic import is still a literal
+      ---
+      duration_ms: 0.10775
+      type: 'test'
+      ...
+    1..10
+ok 8 - import scanner: the parser survives real source shapes
+  ---
+  duration_ms: 4.602708
+  type: 'suite'
+  ...
+# Subtest: import scanner: the real tree
+    # Subtest: packages/retrieval/local/src/records.ts reports its imports and not its prose
+    ok 1 - packages/retrieval/local/src/records.ts reports its imports and not its prose
+      ---
+      duration_ms: 20.313875
+      type: 'test'
+      ...
+    # Subtest: packages/interoperability/mcp/src/import/result.ts reports its imports and not its prose
+    ok 2 - packages/interoperability/mcp/src/import/result.ts reports its imports and not its prose
+      ---
+      duration_ms: 7.4395
+      type: 'test'
+      ...
+    # Subtest: packages/retrieval/local/src/lexical.ts reports its imports and not its prose
+    ok 3 - packages/retrieval/local/src/lexical.ts reports its imports and not its prose
+      ---
+      duration_ms: 4.366792
+      type: 'test'
+      ...
+    # Subtest: scripts/check-builder-docs.ts reports its imports and not its prose
+    ok 4 - scripts/check-builder-docs.ts reports its imports and not its prose
+      ---
+      duration_ms: 5.178208
+      type: 'test'
+      ...
+    # Subtest: the k0 fixture, worded around the old defect, still reports only node builtins
+    ok 5 - the k0 fixture, worded around the old defect, still reports only node builtins
+      ---
+      duration_ms: 73.72025
+      type: 'test'
+      ...
+    1..5
+ok 9 - import scanner: the real tree
+  ---
+  duration_ms: 111.314125
+  type: 'suite'
+  ...
+# Subtest: dependency extractor: every way TypeScript can name a module (K10-R2-01)
+    # Subtest: import type at a property position
+    ok 1 - import type at a property position
+      ---
+      duration_ms: 0.418458
+      type: 'test'
+      ...
+    # Subtest: import type under typeof
+    ok 2 - import type under typeof
+      ---
+      duration_ms: 0.092
+      type: 'test'
+      ...
+    # Subtest: import type with no qualifier
+    ok 3 - import type with no qualifier
+      ---
+      duration_ms: 0.095375
+      type: 'test'
+      ...
+    # Subtest: import type with type arguments
+    ok 4 - import type with type arguments
+      ---
+      duration_ms: 0.063708
+      type: 'test'
+      ...
+    # Subtest: import type in a parameter
+    ok 5 - import type in a parameter
+      ---
+      duration_ms: 0.149625
+      type: 'test'
+      ...
+    # Subtest: import type nested in a generic
+    ok 6 - import type nested in a generic
+      ---
+      duration_ms: 0.065292
+      type: 'test'
+      ...
+    # Subtest: import type in a return position
+    ok 7 - import type in a return position
+      ---
+      duration_ms: 0.094583
+      type: 'test'
+      ...
+    # Subtest: triple-slash types reference
+    ok 8 - triple-slash types reference
+      ---
+      duration_ms: 0.661167
+      type: 'test'
+      ...
+    # Subtest: ambient module declaration
+    ok 9 - ambient module declaration
+      ---
+      duration_ms: 0.350417
+      type: 'test'
+      ...
+    # Subtest: a triple-slash path reference is extracted as a path, not a bare specifier
+    ok 10 - a triple-slash path reference is extracted as a path, not a bare specifier
+      ---
+      duration_ms: 0.123625
+      type: 'test'
+      ...
+    # Subtest: a lib reference names a TypeScript library, not a module, and is not a dependency
+    ok 11 - a lib reference names a TypeScript library, not a module, and is not a dependency
+      ---
+      duration_ms: 0.108917
+      type: 'test'
+      ...
+    # Subtest: an import type whose target is not a literal fails closed
+    ok 12 - an import type whose target is not a literal fails closed
+      ---
+      duration_ms: 0.079166
+      type: 'test'
+      ...
+    # Subtest: a re-export with no module specifier names no module
+    ok 13 - a re-export with no module specifier names no module
+      ---
+      duration_ms: 0.101917
+      type: 'test'
+      ...
+    # Subtest: each form is reported with the syntax that carried it
+    ok 14 - each form is reported with the syntax that carried it
+      ---
+      duration_ms: 1.09075
+      type: 'test'
+      ...
+    1..14
+ok 10 - dependency extractor: every way TypeScript can name a module (K10-R2-01)
+  ---
+  duration_ms: 3.693
+  type: 'suite'
+  ...
+# Subtest: dependency extractor: two independent extractors, and what each is for
+    # Subtest: the AST pass alone already finds everything the compiler's pre-processor finds
+    ok 1 - the AST pass alone already finds everything the compiler's pre-processor finds
+      ---
+      duration_ms: 719.643333
+      type: 'test'
+      ...
+    # Subtest: the union still reports a dependency only one extractor can see
+    ok 2 - the union still reports a dependency only one extractor can see
+      ---
+      duration_ms: 0.183709
+      type: 'test'
+      ...
+    1..2
+ok 11 - dependency extractor: two independent extractors, and what each is for
+  ---
+  duration_ms: 719.921167
+  type: 'suite'
+  ...
+# Subtest: dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)
+    # Subtest: prose in a line comment
+    ok 1 - prose in a line comment
+      ---
+      duration_ms: 0.088167
+      type: 'test'
+      ...
+    # Subtest: prose in a documentation block
+    ok 2 - prose in a documentation block
+      ---
+      duration_ms: 0.048375
+      type: 'test'
+      ...
+    # Subtest: an import statement as a string
+    ok 3 - an import statement as a string
+      ---
+      duration_ms: 0.038
+      type: 'test'
+      ...
+    # Subtest: an import statement in a template
+    ok 4 - an import statement in a template
+      ---
+      duration_ms: 0.0375
+      type: 'test'
+      ...
+    # Subtest: a reference directive as fixture text
+    ok 5 - a reference directive as fixture text
+      ---
+      duration_ms: 0.035708
+      type: 'test'
+      ...
+    # Subtest: an import type as fixture text
+    ok 6 - an import type as fixture text
+      ---
+      duration_ms: 0.041917
+      type: 'test'
+      ...
+    # Subtest: a word list containing the preposition
+    ok 7 - a word list containing the preposition
+      ---
+      duration_ms: 0.05225
+      type: 'test'
+      ...
+    1..7
+ok 12 - dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)
+  ---
+  duration_ms: 0.419834
+  type: 'suite'
+  ...
+# Subtest: K1.0 target Kernel landing zone
+    # Subtest: the target zone exists, is a workspace member, and cannot be published
+    ok 1 - the target zone exists, is a workspace member, and cannot be published
+      ---
+      duration_ms: 22.500333
+      type: 'test'
+      ...
+    # Subtest: the target zone's real import graph reaches nothing outside itself except the approved JCS dependency
+    ok 2 - the target zone's real import graph reaches nothing outside itself except the approved JCS dependency
+      ---
+      duration_ms: 197.000542
+      type: 'test'
+      ...
+    # Subtest: that result is not vacuous: the graph has real files and a real internal edge
+    ok 3 - that result is not vacuous: the graph has real files and a real internal edge
+      ---
+      duration_ms: 54.33025
+      type: 'test'
+      ...
+    # Subtest: the zone refuses unimplemented surfaces rather than answering with a no-op
+    ok 4 - the zone refuses unimplemented surfaces rather than answering with a no-op
+      ---
+      duration_ms: 15.603125
+      type: 'test'
+      ...
+    1..4
+ok 13 - K1.0 target Kernel landing zone
+  ---
+  duration_ms: 290.17125
+  type: 'suite'
+  ...
+# Subtest: K1.0 forbidden-edge controls
+    # Subtest: a direct relative import into the legacy implementation is rejected
+    ok 1 - a direct relative import into the legacy implementation is rejected
+      ---
+      duration_ms: 17.897167
+      type: 'test'
+      ...
+    # Subtest: a type-only import of a legacy subpath barrel is rejected
+    ok 2 - a type-only import of a legacy subpath barrel is rejected
+      ---
+      duration_ms: 19.184416
+      type: 'test'
+      ...
+    # Subtest: an import of the legacy package root barrel is rejected
+    ok 3 - an import of the legacy package root barrel is rejected
+      ---
+      duration_ms: 13.29475
+      type: 'test'
+      ...
+    # Subtest: a re-export of the legacy package root barrel is rejected
+    ok 4 - a re-export of the legacy package root barrel is rejected
+      ---
+      duration_ms: 12.811292
+      type: 'test'
+      ...
+    # Subtest: a dynamic import of the legacy implementation is rejected
+    ok 5 - a dynamic import of the legacy implementation is rejected
+      ---
+      duration_ms: 23.463458
+      type: 'test'
+      ...
+    # Subtest: a forbidden import after a regular expression after a control-flow paren is rejected (K10-R1-01)
+    ok 6 - a forbidden import after a regular expression after a control-flow paren is rejected (K10-R1-01)
+      ---
+      duration_ms: 14.227917
+      type: 'test'
+      ...
+    # Subtest: a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)
+    ok 7 - a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)
+      ---
+      duration_ms: 18.650209
+      type: 'test'
+      ...
+    # Subtest: a type-only import-type dependency on the legacy barrel is rejected (K10-R2-01)
+    ok 8 - a type-only import-type dependency on the legacy barrel is rejected (K10-R2-01)
+      ---
+      duration_ms: 12.228625
+      type: 'test'
+      ...
+    # Subtest: a typeof import-type dependency on the legacy barrel is rejected (K10-R2-01)
+    ok 9 - a typeof import-type dependency on the legacy barrel is rejected (K10-R2-01)
+      ---
+      duration_ms: 11.1975
+      type: 'test'
+      ...
+    # Subtest: an import type nested in a signature or generic is rejected (K10-R2-01)
+    ok 10 - an import type nested in a signature or generic is rejected (K10-R2-01)
+      ---
+      duration_ms: 17.122083
+      type: 'test'
+      ...
+    # Subtest: an import type whose target is not a literal fails closed (K10-R2-01)
+    ok 11 - an import type whose target is not a literal fails closed (K10-R2-01)
+      ---
+      duration_ms: 13.804916
+      type: 'test'
+      ...
+    # Subtest: a triple-slash reference into the legacy tree is rejected (K10-R2-01)
+    ok 12 - a triple-slash reference into the legacy tree is rejected (K10-R2-01)
+      ---
+      duration_ms: 14.430792
+      type: 'test'
+      ...
+    # Subtest: a triple-slash types reference on a forbidden package is rejected (K10-R2-01)
+    ok 13 - a triple-slash types reference on a forbidden package is rejected (K10-R2-01)
+      ---
+      duration_ms: 10.486
+      type: 'test'
+      ...
+    # Subtest: an ambient declaration of a forbidden module is rejected (K10-R2-01)
+    ok 14 - an ambient declaration of a forbidden module is rejected (K10-R2-01)
+      ---
+      duration_ms: 13.923
+      type: 'test'
+      ...
+    # Subtest: a reference and an import type that stay inside the zone are accepted (K10-R2-01)
+    ok 15 - a reference and an import type that stay inside the zone are accepted (K10-R2-01)
+      ---
+      duration_ms: 10.396709
+      type: 'test'
+      ...
+    # Subtest: a legacy dependency reached through an in-zone module is rejected
+    ok 16 - a legacy dependency reached through an in-zone module is rejected
+      ---
+      duration_ms: 12.586458
+      type: 'test'
+      ...
+    # Subtest: an import of the application host is rejected
+    ok 17 - an import of the application host is rejected
+      ---
+      duration_ms: 14.143583
+      type: 'test'
+      ...
+    # Subtest: an import of an unapproved third-party package is rejected
+    ok 18 - an import of an unapproved third-party package is rejected
+      ---
+      duration_ms: 9.763667
+      type: 'test'
+      ...
+    # Subtest: a similarly-named third-party package is not covered by the canonicalize approval
+    ok 19 - a similarly-named third-party package is not covered by the canonicalize approval
+      ---
+      duration_ms: 11.0605
+      type: 'test'
+      ...
+    # Subtest: the approved canonicalize specifier is accepted
+    ok 20 - the approved canonicalize specifier is accepted
+      ---
+      duration_ms: 8.579666
+      type: 'test'
+      ...
+    # Subtest: a workspace subpath that is not a declared export is rejected as unresolved
+    ok 21 - a workspace subpath that is not a declared export is rejected as unresolved
+      ---
+      duration_ms: 11.982125
+      type: 'test'
+      ...
+    # Subtest: the guard accepts what the policy actually permits
+    ok 22 - the guard accepts what the policy actually permits
+      ---
+      duration_ms: 11.456167
+      type: 'test'
+      ...
+    # Subtest: an approved portable leaf is accepted while its unaudited sibling stays rejected
+    ok 23 - an approved portable leaf is accepted while its unaudited sibling stays rejected
+      ---
+      duration_ms: 27.573167
+      type: 'test'
+      ...
+    # Subtest: approving a leaf does not approve what that leaf imports
+    ok 24 - approving a leaf does not approve what that leaf imports
+      ---
+      duration_ms: 11.762083
+      type: 'test'
+      ...
+    # Subtest: one forbidden barrel import reports one violation, not one per edge behind it
+    ok 25 - one forbidden barrel import reports one violation, not one per edge behind it
+      ---
+      duration_ms: 13.381625
+      type: 'test'
+      ...
+    1..25
+ok 14 - K1.0 forbidden-edge controls
+  ---
+  duration_ms: 357.238291
+  type: 'suite'
+  ...
+# Subtest: K1.0 legacy quarantine
+    # Subtest: nothing outside the zone depends on the unimplemented target Kernel
+    ok 1 - nothing outside the zone depends on the unimplemented target Kernel
+      ---
+      duration_ms: 514.971292
+      type: 'test'
+      ...
+    # Subtest: the legacy package keeps its published export map exactly
+    ok 2 - the legacy package keeps its published export map exactly
+      ---
+      duration_ms: 0.640875
+      type: 'test'
+      ...
+    # Subtest: the legacy package's exported names are unchanged by this packet
+    ok 3 - the legacy package's exported names are unchanged by this packet
+      ---
+      duration_ms: 70.365583
+      type: 'test'
+      ...
+    1..3
+ok 15 - K1.0 legacy quarantine
+  ---
+  duration_ms: 586.183042
+  type: 'suite'
+  ...
+# Subtest: K1.0 policy and inventory agree
+    # Subtest: the parser actually reads the three ownership tables
+    ok 1 - the parser actually reads the three ownership tables
+      ---
+      duration_ms: 10.352917
+      type: 'test'
+      ...
+    # Subtest: the inventory's ownership relations agree with the policy and the manifests
+    ok 2 - the inventory's ownership relations agree with the policy and the manifests
+      ---
+      duration_ms: 5.847167
+      type: 'test'
+      ...
+    # Subtest: every deferred owner names a packet the ledger declares
+    ok 3 - every deferred owner names a packet the ledger declares
+      ---
+      duration_ms: 0.182625
+      type: 'test'
+      ...
+    # Subtest: mutated-document controls (K10-R2-02)
+        # Subtest: two zones' roots are swapped with each other
+        ok 1 - two zones' roots are swapped with each other
+          ---
+          duration_ms: 5.303208
+          type: 'test'
+          ...
+        # Subtest: one zone's root is replaced
+        ok 2 - one zone's root is replaced
+          ---
+          duration_ms: 5.487
+          type: 'test'
+          ...
+        # Subtest: a deferred row's owner is reassigned
+        ok 3 - a deferred row's owner is reassigned
+          ---
+          duration_ms: 4.905208
+          type: 'test'
+          ...
+        # Subtest: a deferred row's disposition is changed
+        ok 4 - a deferred row's disposition is changed
+          ---
+          duration_ms: 4.608917
+          type: 'test'
+          ...
+        # Subtest: a deferred row's path is moved to another subsystem
+        ok 5 - a deferred row's path is moved to another subsystem
+          ---
+          duration_ms: 4.262125
+          type: 'test'
+          ...
+        # Subtest: a private package is claimed to be published
+        ok 6 - a private package is claimed to be published
+          ---
+          duration_ms: 4.440458
+          type: 'test'
+          ...
+        # Subtest: a published package is claimed to be private
+        ok 7 - a published package is claimed to be private
+          ---
+          duration_ms: 5.263208
+          type: 'test'
+          ...
+        # Subtest: an exported subpath is dropped from a row
+        ok 8 - an exported subpath is dropped from a row
+          ---
+          duration_ms: 4.33475
+          type: 'test'
+          ...
+        # Subtest: a package row is deleted entirely
+        ok 9 - a package row is deleted entirely
+          ---
+          duration_ms: 4.29175
+          type: 'test'
+          ...
+        # Subtest: an undeclared zone is added in prose
+        ok 10 - an undeclared zone is added in prose
+          ---
+          duration_ms: 4.178541
+          type: 'test'
+          ...
+        # Subtest: a duplicate zone row before the correct row is rejected
+        ok 11 - a duplicate zone row before the correct row is rejected
+          ---
+          duration_ms: 4.693084
+          type: 'test'
+          ...
+        # Subtest: a duplicate zone row after the correct row is rejected
+        ok 12 - a duplicate zone row after the correct row is rejected
+          ---
+          duration_ms: 4.20125
+          type: 'test'
+          ...
+        # Subtest: a duplicate deferred row before the correct row is rejected
+        ok 13 - a duplicate deferred row before the correct row is rejected
+          ---
+          duration_ms: 4.2365
+          type: 'test'
+          ...
+        # Subtest: a duplicate deferred row after the correct row is rejected
+        ok 14 - a duplicate deferred row after the correct row is rejected
+          ---
+          duration_ms: 4.285792
+          type: 'test'
+          ...
+        # Subtest: a duplicate package row before the correct row is rejected
+        ok 15 - a duplicate package row before the correct row is rejected
+          ---
+          duration_ms: 4.445417
+          type: 'test'
+          ...
+        # Subtest: a duplicate package row after the correct row is rejected
+        ok 16 - a duplicate package row after the correct row is rejected
+          ---
+          duration_ms: 4.696333
+          type: 'test'
+          ...
+        1..16
+    ok 4 - mutated-document controls (K10-R2-02)
+      ---
+      duration_ms: 74.013667
+      type: 'suite'
+      ...
+    # Subtest: the cross-boundary dependency table matches the measured tree (K10-R1-02)
+    ok 5 - the cross-boundary dependency table matches the measured tree (K10-R1-02)
+      ---
+      duration_ms: 125.780125
+      type: 'test'
+      ...
+    # Subtest: a malformed keyed dependency row fails closed in either position (K10-R4-01)
+    ok 6 - a malformed keyed dependency row fails closed in either position (K10-R4-01)
+      ---
+      duration_ms: 1.372125
+      type: 'test'
+      ...
+    # Subtest: a dependency row with no recognisable key fails closed (K10-R4-01)
+    ok 7 - a dependency row with no recognisable key fails closed (K10-R4-01)
+      ---
+      duration_ms: 0.685167
+      type: 'test'
+      ...
+    # Subtest: a short row with a recognisable key fails closed in every ownership table (K1.0-SELF-08)
+    ok 8 - a short row with a recognisable key fails closed in every ownership table (K1.0-SELF-08)
+      ---
+      duration_ms: 4.493084
+      type: 'test'
+      ...
+    # Subtest: duplicate cross-boundary dependency rows fail closed (K10-R3-01)
+    ok 9 - duplicate cross-boundary dependency rows fail closed (K10-R3-01)
+      ---
+      duration_ms: 1.187792
+      type: 'test'
+      ...
+    # Subtest: contradictory zone rows with omitted edge pipes fail closed in either position (K10-R5-01)
+    ok 10 - contradictory zone rows with omitted edge pipes fail closed in either position (K10-R5-01)
+      ---
+      duration_ms: 12.009167
+      type: 'test'
+      ...
+    # Subtest: contradictory deferred rows with omitted edge pipes fail closed in either position (K10-R5-01)
+    ok 11 - contradictory deferred rows with omitted edge pipes fail closed in either position (K10-R5-01)
+      ---
+      duration_ms: 11.853167
+      type: 'test'
+      ...
+    # Subtest: contradictory export rows with omitted edge pipes fail closed in either position (K10-R5-01)
+    ok 12 - contradictory export rows with omitted edge pipes fail closed in either position (K10-R5-01)
+      ---
+      duration_ms: 11.468292
+      type: 'test'
+      ...
+    # Subtest: contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)
+    ok 13 - contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)
+      ---
+      duration_ms: 3.255125
+      type: 'test'
+      ...
+    # Subtest: a pipe-less contradictory row inside the table block fails closed (K1.0-SELF-11)
+    ok 14 - a pipe-less contradictory row inside the table block fails closed (K1.0-SELF-11)
+      ---
+      duration_ms: 2.883416
+      type: 'test'
+      ...
+    # Subtest: GFM delimiter and header variants do not hide the table (K1.0-SELF-11)
+    ok 15 - GFM delimiter and header variants do not hide the table (K1.0-SELF-11)
+      ---
+      duration_ms: 9.092417
+      type: 'test'
+      ...
+    # Subtest: header identity is structural, not textual (K10-R6-01)
+        # Subtest: a Zones body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+        ok 1 - a Zones body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+          ---
+          duration_ms: 5.084958
+          type: 'test'
+          ...
+        # Subtest: a Zones body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+        ok 2 - a Zones body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+          ---
+          duration_ms: 4.163958
+          type: 'test'
+          ...
+        # Subtest: a Zones body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+        ok 3 - a Zones body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 4.156458
+          type: 'test'
+          ...
+        # Subtest: a Zones body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+        ok 4 - a Zones body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 4.234375
+          type: 'test'
+          ...
+        # Subtest: a Deferred body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+        ok 5 - a Deferred body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+          ---
+          duration_ms: 5.057583
+          type: 'test'
+          ...
+        # Subtest: a Deferred body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+        ok 6 - a Deferred body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+          ---
+          duration_ms: 4.329542
+          type: 'test'
+          ...
+        # Subtest: a Deferred body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+        ok 7 - a Deferred body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 4.235833
+          type: 'test'
+          ...
+        # Subtest: a Deferred body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+        ok 8 - a Deferred body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 4.233167
+          type: 'test'
+          ...
+        # Subtest: a Export body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+        ok 9 - a Export body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+          ---
+          duration_ms: 4.866208
+          type: 'test'
+          ...
+        # Subtest: a Export body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+        ok 10 - a Export body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+          ---
+          duration_ms: 4.1025
+          type: 'test'
+          ...
+        # Subtest: a Export body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+        ok 11 - a Export body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 4.24125
+          type: 'test'
+          ...
+        # Subtest: a Export body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+        ok 12 - a Export body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 4.081083
+          type: 'test'
+          ...
+        # Subtest: a Dependency body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+        ok 13 - a Dependency body row beginning with the header label is accounted for, before the correct row, with full edge pipes
+          ---
+          duration_ms: 0.727416
+          type: 'test'
+          ...
+        # Subtest: a Dependency body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+        ok 14 - a Dependency body row beginning with the header label is accounted for, after the correct row, with full edge pipes
+          ---
+          duration_ms: 0.596958
+          type: 'test'
+          ...
+        # Subtest: a Dependency body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+        ok 15 - a Dependency body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 0.601083
+          type: 'test'
+          ...
+        # Subtest: a Dependency body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+        ok 16 - a Dependency body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes
+          ---
+          duration_ms: 1.0945
+          type: 'test'
+          ...
+        # Subtest: the real structural header of each governed table is accepted and is not read as data
+        ok 17 - the real structural header of each governed table is accepted and is not read as data
+          ---
+          duration_ms: 4.804084
+          type: 'test'
+          ...
+        # Subtest: a header that does not carry its expected label is reported, not silently accepted
+        ok 18 - a header that does not carry its expected label is reported, not silently accepted
+          ---
+          duration_ms: 4.262917
+          type: 'test'
+          ...
+        # Subtest: a contradictory row promoted to a further table's header is still accounted for (K1.0-SELF-13)
+        ok 19 - a contradictory row promoted to a further table's header is still accounted for (K1.0-SELF-13)
+          ---
+          duration_ms: 4.368042
+          type: 'test'
+          ...
+        # Subtest: a repeated section heading cannot delete the rows after it (K1.0-SELF-12)
+        ok 20 - a repeated section heading cannot delete the rows after it (K1.0-SELF-12)
+          ---
+          duration_ms: 4.622875
+          type: 'test'
+          ...
+        # Subtest: a governed table that is not discoverable at all is reported, not read as an empty relation
+        ok 21 - a governed table that is not discoverable at all is reported, not read as an empty relation
+          ---
+          duration_ms: 1.449417
+          type: 'test'
+          ...
+        1..21
+    ok 16 - header identity is structural, not textual (K10-R6-01)
+      ---
+      duration_ms: 75.726542
+      type: 'suite'
+      ...
+    # Subtest: structural section boundaries (K10-R7-01)
+        # Subtest: a literal next-heading mention in prose does not truncate the section
+        ok 1 - a literal next-heading mention in prose does not truncate the section
+          ---
+          duration_ms: 4.414833
+          type: 'test'
+          ...
+        # Subtest: a next-heading mention inside an inline code span does not truncate the section
+        ok 2 - a next-heading mention inside an inline code span does not truncate the section
+          ---
+          duration_ms: 4.174375
+          type: 'test'
+          ...
+        # Subtest: a next-heading mention inside a fenced code block does not truncate the section
+        ok 3 - a next-heading mention inside a fenced code block does not truncate the section
+          ---
+          duration_ms: 4.765208
+          type: 'test'
+          ...
+        # Subtest: a real ATX next heading still terminates the section
+        ok 4 - a real ATX next heading still terminates the section
+          ---
+          duration_ms: 2.377958
+          type: 'test'
+          ...
+        # Subtest: a current-heading mention in earlier prose does not select the section start
+        ok 5 - a current-heading mention in earlier prose does not select the section start
+          ---
+          duration_ms: 1.658791
+          type: 'test'
+          ...
+        # Subtest: a current-heading mention inside a fenced block does not select the section start
+        ok 6 - a current-heading mention inside a fenced block does not select the section start
+          ---
+          duration_ms: 1.520375
+          type: 'test'
+          ...
+        # Subtest: an escaped hash does not start or end a section (K1.0-SELF-14)
+        ok 7 - an escaped hash does not start or end a section (K1.0-SELF-14)
+          ---
+          duration_ms: 4.666959
+          type: 'test'
+          ...
+        # Subtest: a heading-like line without the required whitespace is not a heading (K1.0-SELF-15)
+        ok 8 - a heading-like line without the required whitespace is not a heading (K1.0-SELF-15)
+          ---
+          duration_ms: 4.514834
+          type: 'test'
+          ...
+        # Subtest: an over-long hash run and indented code are not headings (K1.0-SELF-16)
+        ok 9 - an over-long hash run and indented code are not headings (K1.0-SELF-16)
+          ---
+          duration_ms: 6.402875
+          type: 'test'
+          ...
+        # Subtest: a mismatched fence closer does not end the fenced region (K1.0-SELF-17)
+        ok 10 - a mismatched fence closer does not end the fenced region (K1.0-SELF-17)
+          ---
+          duration_ms: 4.532333
+          type: 'test'
+          ...
+        # Subtest: the structural boundary holds for the second relation as well
+        ok 11 - the structural boundary holds for the second relation as well
+          ---
+          duration_ms: 0.742042
+          type: 'test'
+          ...
+        1..11
+    ok 17 - structural section boundaries (K10-R7-01)
+      ---
+      duration_ms: 40.046917
+      type: 'suite'
+      ...
+    # Subtest: fence single-consumption (K10-R8-01)
+        # Subtest: a complete table inside a bare backtick fence immediately after the body stays green
+        ok 1 - a complete table inside a bare backtick fence immediately after the body stays green
+          ---
+          duration_ms: 4.673417
+          type: 'test'
+          ...
+        # Subtest: the same block with a legitimate fence info string stays green
+        ok 2 - the same block with a legitimate fence info string stays green
+          ---
+          duration_ms: 4.270375
+          type: 'test'
+          ...
+        # Subtest: a tilde-fenced equivalent stays green
+        ok 3 - a tilde-fenced equivalent stays green
+          ---
+          duration_ms: 4.641834
+          type: 'test'
+          ...
+        # Subtest: a real second Markdown table at the same location but outside a fence still fails
+        ok 4 - a real second Markdown table at the same location but outside a fence still fails
+          ---
+          duration_ms: 4.102958
+          type: 'test'
+          ...
+        # Subtest: mismatched closers remain inside the open fence
+        ok 5 - mismatched closers remain inside the open fence
+          ---
+          duration_ms: 4.42425
+          type: 'test'
+          ...
+        # Subtest: a shorter closer than the opener does not close it
+        ok 6 - a shorter closer than the opener does not close it
+          ---
+          duration_ms: 4.582917
+          type: 'test'
+          ...
+        # Subtest: an unclosed fence before the governed table stays fail-loud (GFM-consistent)
+        ok 7 - an unclosed fence before the governed table stays fail-loud (GFM-consistent)
+          ---
+          duration_ms: 0.5595
+          type: 'test'
+          ...
+        # Subtest: a complete table inside indented code after the body stays green (adjacent block challenger)
+        ok 8 - a complete table inside indented code after the body stays green (adjacent block challenger)
+          ---
+          duration_ms: 5.562708
+          type: 'test'
+          ...
+        # Subtest: table-shaped lines inside a blockquote after the body stay green (adjacent block challenger)
+        ok 9 - table-shaped lines inside a blockquote after the body stay green (adjacent block challenger)
+          ---
+          duration_ms: 4.061291
+          type: 'test'
+          ...
+        # Subtest: a real table after a blockquote break still fails
+        ok 10 - a real table after a blockquote break still fails
+          ---
+          duration_ms: 4.174542
+          type: 'test'
+          ...
+        1..10
+    ok 18 - fence single-consumption (K10-R8-01)
+      ---
+      duration_ms: 41.301084
+      type: 'suite'
+      ...
+    # Subtest: raw HTML blocks (K10-R8-02)
+        # Subtest: an exact next-heading line inside a script block cannot truncate the section
+        ok 1 - an exact next-heading line inside a script block cannot truncate the section
+          ---
+          duration_ms: 4.81725
+          type: 'test'
+          ...
+        # Subtest: a script open tag with attributes and mixed case still opens the raw block
+        ok 2 - a script open tag with attributes and mixed case still opens the raw block
+          ---
+          duration_ms: 4.444958
+          type: 'test'
+          ...
+        # Subtest: an HTML comment block hides its heading but not the later table (adjacent raw-block challenger)
+        ok 3 - an HTML comment block hides its heading but not the later table (adjacent raw-block challenger)
+          ---
+          duration_ms: 5.279833
+          type: 'test'
+          ...
+        # Subtest: a pre block hides its heading but not the later table
+        ok 4 - a pre block hides its heading but not the later table
+          ---
+          duration_ms: 4.374708
+          type: 'test'
+          ...
+        # Subtest: a type-6 div block hides its heading until the blank line
+        ok 5 - a type-6 div block hides its heading until the blank line
+          ---
+          duration_ms: 4.312667
+          type: 'test'
+          ...
+        # Subtest: ordinary inline HTML and prose do not open a raw block
+        ok 6 - ordinary inline HTML and prose do not open a raw block
+          ---
+          duration_ms: 4.392834
+          type: 'test'
+          ...
+        # Subtest: inline HTML alone without a contradictory table stays green
+        ok 7 - inline HTML alone without a contradictory table stays green
+          ---
+          duration_ms: 5.093625
+          type: 'test'
+          ...
+        1..7
+    ok 19 - raw HTML blocks (K10-R8-02)
+      ---
+      duration_ms: 32.912292
+      type: 'suite'
+      ...
+    # Subtest: list containers (K10-R9-01)
+        # Subtest: a next-heading line nested in a bullet item cannot truncate the section
+        ok 1 - a next-heading line nested in a bullet item cannot truncate the section
+          ---
+          duration_ms: 4.557417
+          type: 'test'
+          ...
+        # Subtest: an ordered-list equivalent cannot truncate the section
+        ok 2 - an ordered-list equivalent cannot truncate the section
+          ---
+          duration_ms: 4.258833
+          type: 'test'
+          ...
+        # Subtest: a wider ordered marker derives a deeper continuation indent
+        ok 3 - a wider ordered marker derives a deeper continuation indent
+          ---
+          duration_ms: 6.76725
+          type: 'test'
+          ...
+        # Subtest: a heading nested two containers deep cannot truncate the section
+        ok 4 - a heading nested two containers deep cannot truncate the section
+          ---
+          duration_ms: 4.876167
+          type: 'test'
+          ...
+        # Subtest: a list-contained heading equal to the current title stays inside
+        ok 5 - a list-contained heading equal to the current title stays inside
+          ---
+          duration_ms: 4.273042
+          type: 'test'
+          ...
+        # Subtest: a genuine top-level exact next heading after the container still terminates
+        ok 6 - a genuine top-level exact next heading after the container still terminates
+          ---
+          duration_ms: 4.143042
+          type: 'test'
+          ...
+        # Subtest: a normal list with no dangerous heading is supported behavior
+        ok 7 - a normal list with no dangerous heading is supported behavior
+          ---
+          duration_ms: 5.411208
+          type: 'test'
+          ...
+        # Subtest: a task-list item is a list container too
+        ok 8 - a task-list item is a list container too
+          ---
+          duration_ms: 4.696375
+          type: 'test'
+          ...
+        # Subtest: a thematic break does not open a list container
+        ok 9 - a thematic break does not open a list container
+          ---
+          duration_ms: 4.147
+          type: 'test'
+          ...
+        # Subtest: restricted markers after prose stay prose
+        ok 10 - restricted markers after prose stay prose
+          ---
+          duration_ms: 7.192166
+          type: 'test'
+          ...
+        # Subtest: a dash line that is really a second item keeps the container open
+        ok 11 - a dash line that is really a second item keeps the container open
+          ---
+          duration_ms: 5.023917
+          type: 'test'
+          ...
+        # Subtest: the container boundary holds for the Zones relation as well
+        ok 12 - the container boundary holds for the Zones relation as well
+          ---
+          duration_ms: 4.2495
+          type: 'test'
+          ...
+        1..12
+    ok 20 - list containers (K10-R9-01)
+      ---
+      duration_ms: 59.853417
+      type: 'suite'
+      ...
+    # Subtest: complete type-7 tags (K10-R9-02)
+        # Subtest: a double-quoted value containing > still opens the raw block
+        ok 1 - a double-quoted value containing > still opens the raw block
+          ---
+          duration_ms: 4.835708
+          type: 'test'
+          ...
+        # Subtest: a single-quoted value containing < still opens the raw block
+        ok 2 - a single-quoted value containing < still opens the raw block
+          ---
+          duration_ms: 4.385708
+          type: 'test'
+          ...
+        # Subtest: ordinary and unquoted attributes still open the raw block
+        ok 3 - ordinary and unquoted attributes still open the raw block
+          ---
+          duration_ms: 7.584292
+          type: 'test'
+          ...
+        # Subtest: a complete closing tag opens the raw block but carries no attributes
+        ok 4 - a complete closing tag opens the raw block but carries no attributes
+          ---
+          duration_ms: 5.900416
+          type: 'test'
+          ...
+        # Subtest: malformed near-tags remain ordinary Markdown
+        ok 5 - malformed near-tags remain ordinary Markdown
+          ---
+          duration_ms: 8.894084
+          type: 'test'
+          ...
+        # Subtest: type 7 cannot interrupt a paragraph
+        ok 6 - type 7 cannot interrupt a paragraph
+          ---
+          duration_ms: 4.843958
+          type: 'test'
+          ...
+        # Subtest: a tag after a table row still opens the raw block
+        ok 7 - a tag after a table row still opens the raw block
+          ---
+          duration_ms: 4.366917
+          type: 'test'
+          ...
+        # Subtest: type-4 declarations use the uppercase-ASCII rule
+        ok 8 - type-4 declarations use the uppercase-ASCII rule
+          ---
+          duration_ms: 7.256375
+          type: 'test'
+          ...
+        # Subtest: type-6 starts match the declared tag boundary
+        ok 9 - type-6 starts match the declared tag boundary
+          ---
+          duration_ms: 7.24475
+          type: 'test'
+          ...
+        # Subtest: textarea follows published GFM: type 7, not type 1 (K10-R10-03)
+        ok 10 - textarea follows published GFM: type 7, not type 1 (K10-R10-03)
+          ---
+          duration_ms: 7.499875
+          type: 'test'
+          ...
+        # Subtest: search follows published GFM: no type-6 start (K10-R10-03)
+        ok 11 - search follows published GFM: no type-6 start (K10-R10-03)
+          ---
+          duration_ms: 5.630791
+          type: 'test'
+          ...
+        1..11
+    ok 21 - complete type-7 tags (K10-R9-02)
+      ---
+      duration_ms: 68.736834
+      type: 'suite'
+      ...
+    # Subtest: CRLF line endings do not reopen the escapes (K1.0-SELF-20)
+    ok 22 - CRLF line endings do not reopen the escapes (K1.0-SELF-20)
+      ---
+      duration_ms: 6.168875
+      type: 'test'
+      ...
+    # Subtest: GFM line endings (K10-R13-01)
+        # Subtest: the whole real inventory recoded LF → lone CR stays baseline-green
+        ok 1 - the whole real inventory recoded LF → lone CR stays baseline-green
+          ---
+          duration_ms: 4.344459
+          type: 'test'
+          ...
+        # Subtest: the whole real inventory recoded LF → CRLF stays baseline-green
+        ok 2 - the whole real inventory recoded LF → CRLF stays baseline-green
+          ---
+          duration_ms: 4.200667
+          type: 'test'
+          ...
+        # Subtest: mixed LF/CRLF/lone-CR preserves governed section and table boundaries
+        ok 3 - mixed LF/CRLF/lone-CR preserves governed section and table boundaries
+          ---
+          duration_ms: 5.519292
+          type: 'test'
+          ...
+        # Subtest: physical-line primitives: CR, CRLF and LF all delimit
+        ok 4 - physical-line primitives: CR, CRLF and LF all delimit
+          ---
+          duration_ms: 0.161917
+          type: 'test'
+          ...
+        # Subtest: a lone-CR-separated exact next heading terminates its section
+        ok 5 - a lone-CR-separated exact next heading terminates its section
+          ---
+          duration_ms: 6.271458
+          type: 'test'
+          ...
+        # Subtest: lone-CR raw-block lifetime matches the LF twin (type-6 and type-7)
+        ok 6 - lone-CR raw-block lifetime matches the LF twin (type-6 and type-7)
+          ---
+          duration_ms: 8.253334
+          type: 'test'
+          ...
+        # Subtest: CR-only table header/delimiter/body rows remain distinct physical rows
+        ok 7 - CR-only table header/delimiter/body rows remain distinct physical rows
+          ---
+          duration_ms: 4.875833
+          type: 'test'
+          ...
+        # Subtest: final line with and without a trailing line ending behaves intentionally
+        ok 8 - final line with and without a trailing line ending behaves intentionally
+          ---
+          duration_ms: 4.211291
+          type: 'test'
+          ...
+        1..8
+    ok 23 - GFM line endings (K10-R13-01)
+      ---
+      duration_ms: 38.010917
+      type: 'suite'
+      ...
+    # Subtest: GFM ATX heading identity and structural whitespace (K10-R14-01)
+        # Subtest: a heading whose content carries Unicode whitespace is not the exact title
+        ok 1 - a heading whose content carries Unicode whitespace is not the exact title
+          ---
+          duration_ms: 11.963667
+          type: 'test'
+          ...
+        # Subtest: leading vertical tab and form feed are heading content, not padding
+        ok 2 - leading vertical tab and form feed are heading content, not padding
+          ---
+          duration_ms: 6.011125
+          type: 'test'
+          ...
+        # Subtest: the opening sequence needs SPACE or TAB, never a Unicode space
+        ok 3 - the opening sequence needs SPACE or TAB, never a Unicode space
+          ---
+          duration_ms: 7.20925
+          type: 'test'
+          ...
+        # Subtest: a genuine exact next heading still terminates the section
+        ok 4 - a genuine exact next heading still terminates the section
+          ---
+          duration_ms: 12.474458
+          type: 'test'
+          ...
+        # Subtest: a Unicode-whitespace current heading does not open the governed section
+        ok 5 - a Unicode-whitespace current heading does not open the governed section
+          ---
+          duration_ms: 6.165167
+          type: 'test'
+          ...
+        # Subtest: the whole real inventory re-separated with TAB stays baseline-green
+        ok 6 - the whole real inventory re-separated with TAB stays baseline-green
+          ---
+          duration_ms: 4.395292
+          type: 'test'
+          ...
+        # Subtest: ATX content primitives follow the grammar, not the host trimmer
+        ok 7 - ATX content primitives follow the grammar, not the host trimmer
+          ---
+          duration_ms: 0.24375
+          type: 'test'
+          ...
+        1..7
+    ok 24 - GFM ATX heading identity and structural whitespace (K10-R14-01)
+      ---
+      duration_ms: 48.654125
+      type: 'suite'
+      ...
+    # Subtest: ATX and table structural-whitespace classes (K10-R15-01)
+        # Subtest: a hash run preceded by VT or FF is not a closing sequence
+        ok 1 - a hash run preceded by VT or FF is not a closing sequence
+          ---
+          duration_ms: 5.671708
+          type: 'test'
+          ...
+        # Subtest: a hash run followed by VT or FF is not a closing sequence
+        ok 2 - a hash run followed by VT or FF is not a closing sequence
+          ---
+          duration_ms: 6.053959
+          type: 'test'
+          ...
+        # Subtest: VT and FF are not stripped from the end of heading content
+        ok 3 - VT and FF are not stripped from the end of heading content
+          ---
+          duration_ms: 5.437875
+          type: 'test'
+          ...
+        # Subtest: the SPACE and TAB twins of every case above still terminate the section
+        ok 4 - the SPACE and TAB twins of every case above still terminate the section
+          ---
+          duration_ms: 10.670125
+          type: 'test'
+          ...
+        # Subtest: a VT or FF key cell is not the policy's key
+        ok 5 - a VT or FF key cell is not the policy's key
+          ---
+          duration_ms: 5.792375
+          type: 'test'
+          ...
+        # Subtest: a VT or FF value cell is a different token, and is reported
+        ok 6 - a VT or FF value cell is a different token, and is reported
+          ---
+          duration_ms: 5.580375
+          type: 'test'
+          ...
+        # Subtest: the permitted SPACE and TAB padding twins still parse
+        ok 7 - the permitted SPACE and TAB padding twins still parse
+          ---
+          duration_ms: 4.148833
+          type: 'test'
+          ...
+        # Subtest: a VT-indented row has no leading edge pipe, and a trailing VT is a further cell
+        ok 8 - a VT-indented row has no leading edge pipe, and a trailing VT is a further cell
+          ---
+          duration_ms: 5.369583
+          type: 'test'
+          ...
+        # Subtest: the §2.1 six still governs the productions that cite it
+        ok 9 - the §2.1 six still governs the productions that cite it
+          ---
+          duration_ms: 5.919875
+          type: 'test'
+          ...
+        1..9
+    ok 25 - ATX and table structural-whitespace classes (K10-R15-01)
+      ---
+      duration_ms: 54.870083
+      type: 'suite'
+      ...
+    # Subtest: GFM table row and cell whitespace (K1.0-SELF-24)
+        # Subtest: a key cell padded with Unicode whitespace is not the policy's key
+        ok 1 - a key cell padded with Unicode whitespace is not the policy's key
+          ---
+          duration_ms: 4.21175
+          type: 'test'
+          ...
+        # Subtest: a value cell padded with Unicode whitespace disagrees with the policy
+        ok 2 - a value cell padded with Unicode whitespace disagrees with the policy
+          ---
+          duration_ms: 4.134416
+          type: 'test'
+          ...
+        # Subtest: a padded publishability cell is unreadable, not a silent yes
+        ok 3 - a padded publishability cell is unreadable, not a silent yes
+          ---
+          duration_ms: 4.14325
+          type: 'test'
+          ...
+        # Subtest: a row indented with Unicode whitespace is not a row with an edge pipe
+        ok 4 - a row indented with Unicode whitespace is not a row with an edge pipe
+          ---
+          duration_ms: 4.587125
+          type: 'test'
+          ...
+        # Subtest: ASCII space and tab padding around cells is still trimmed
+        ok 5 - ASCII space and tab padding around cells is still trimmed
+          ---
+          duration_ms: 5.254083
+          type: 'test'
+          ...
+        1..5
+    ok 26 - GFM table row and cell whitespace (K1.0-SELF-24)
+      ---
+      duration_ms: 22.437875
+      type: 'suite'
+      ...
+    # Subtest: whole-cell value decoding (K10-CLEANUP-01)
+        # Subtest: the cleanup's four counterexamples are reported, not equated with the measured row
+        ok 1 - the cleanup's four counterexamples are reported, not equated with the measured row
+          ---
+          duration_ms: 4.914958
+          type: 'test'
+          ...
+        # Subtest: a count cell is a whole decimal number or it is unreadable
+        ok 2 - a count cell is a whole decimal number or it is unreadable
+          ---
+          duration_ms: 6.042375
+          type: 'test'
+          ...
+        # Subtest: a genuine count still decodes, including zero and a multi-digit measurement
+        ok 3 - a genuine count still decodes, including zero and a multi-digit measurement
+          ---
+          duration_ms: 2.184792
+          type: 'test'
+          ...
+        # Subtest: an edge cell denies every edge or names them all; it cannot do both
+        ok 4 - an edge cell denies every edge or names them all; it cannot do both
+          ---
+          duration_ms: 6.439
+          type: 'test'
+          ...
+        # Subtest: each empty sentinel is accepted only in the column whose grammar names it
+        ok 5 - each empty sentinel is accepted only in the column whose grammar names it
+          ---
+          duration_ms: 1.12575
+          type: 'test'
+          ...
+        # Subtest: a list cell is read to its end, so an unquoted or repeated token cannot hide in it
+        ok 6 - a list cell is read to its end, so an unquoted or repeated token cannot hide in it
+          ---
+          duration_ms: 21.134042
+          type: 'test'
+          ...
+        # Subtest: an unquoted specifier appended to a dependency list is reported
+        ok 7 - an unquoted specifier appended to a dependency list is reported
+          ---
+          duration_ms: 0.70425
+          type: 'test'
+          ...
+        # Subtest: the permitted list spellings still parse: one token, several, and block-whitespace padding
+        ok 8 - the permitted list spellings still parse: one token, several, and block-whitespace padding
+          ---
+          duration_ms: 6.119209
+          type: 'test'
+          ...
+        # Subtest: a publishability cell is a whole normalised answer, not a first word
+        ok 9 - a publishability cell is a whole normalised answer, not a first word
+          ---
+          duration_ms: 24.191542
+          type: 'test'
+          ...
+        # Subtest: the document's own publishability vocabulary still decodes in both directions
+        ok 10 - the document's own publishability vocabulary still decodes in both directions
+          ---
+          duration_ms: 11.162834
+          type: 'test'
+          ...
+        # Subtest: a disposition or owner cell is compared whole, so an appended word is a different token
+        ok 11 - a disposition or owner cell is compared whole, so an appended word is a different token
+          ---
+          duration_ms: 7.974417
+          type: 'test'
+          ...
+        # Subtest: a row carrying more cells than its header declares is reported (K1.0-SELF-29)
+        ok 12 - a row carrying more cells than its header declares is reported (K1.0-SELF-29)
+          ---
+          duration_ms: 12.387458
+          type: 'test'
+          ...
+        # Subtest: a row with fewer cells than its header keeps its established outcome (K1.0-SELF-29)
+        ok 13 - a row with fewer cells than its header keeps its established outcome (K1.0-SELF-29)
+          ---
+          duration_ms: 8.027458
+          type: 'test'
+          ...
+        # Subtest: the decoders are not vacuous: every governed cell of the real inventory is read
+        ok 14 - the decoders are not vacuous: every governed cell of the real inventory is read
+          ---
+          duration_ms: 1.86325
+          type: 'test'
+          ...
+        1..14
+    ok 27 - whole-cell value decoding (K10-CLEANUP-01)
+      ---
+      duration_ms: 114.620542
+      type: 'suite'
+      ...
+    # Subtest: governed table schemas own their arity (K10-CORR1-R1-01)
+        # Subtest: a widened dependency header cannot authorize an unread fifth body cell
+        ok 1 - a widened dependency header cannot authorize an unread fifth body cell
+          ---
+          duration_ms: 1.838542
+          type: 'test'
+          ...
+        # Subtest: the same widening is loud in Zones, Export and Deferred
+        ok 2 - the same widening is loud in Zones, Export and Deferred
+          ---
+          duration_ms: 16.651125
+          type: 'test'
+          ...
+        # Subtest: one width means different things under each schema
+        ok 3 - one width means different things under each schema
+          ---
+          duration_ms: 17.109083
+          type: 'test'
+          ...
+        # Subtest: a header that renames or reorders a non-first position is reported
+        ok 4 - a header that renames or reorders a non-first position is reported
+          ---
+          duration_ms: 17.997667
+          type: 'test'
+          ...
+        # Subtest: a narrowed or widened header cannot change what a schema-correct body means
+        ok 5 - a narrowed or widened header cannot change what a schema-correct body means
+          ---
+          duration_ms: 1.322209
+          type: 'test'
+          ...
+        # Subtest: an ordinary excess body cell with a correct header is still loud in every table
+        ok 6 - an ordinary excess body cell with a correct header is still loud in every table
+          ---
+          duration_ms: 6.722084
+          type: 'test'
+          ...
+        # Subtest: a short row omitting only trailing ungoverned prose is still accepted
+        ok 7 - a short row omitting only trailing ungoverned prose is still accepted
+          ---
+          duration_ms: 12.386708
+          type: 'test'
+          ...
+        1..7
+    ok 28 - governed table schemas own their arity (K10-CORR1-R1-01)
+      ---
+      duration_ms: 74.334416
+      type: 'suite'
+      ...
+    # Subtest: collection identity in relation comparison (K10-CORR2-01)
+        # Subtest: every contiguous merge of a declared collection is reported, in both columns
+        ok 1 - every contiguous merge of a declared collection is reported, in both columns
+          ---
+          duration_ms: 104.979042
+          type: 'test'
+          ...
+        # Subtest: the separator byte is not the rule: any invented member is reported
+        ok 2 - the separator byte is not the rule: any invented member is reported
+          ---
+          duration_ms: 30.218084
+          type: 'test'
+          ...
+        # Subtest: cardinality alone is not the rule, and neither is membership alone
+        ok 3 - cardinality alone is not the rule, and neither is membership alone
+          ---
+          duration_ms: 21.361916
+          type: 'test'
+          ...
+        # Subtest: a dropped or invented member is reported by size in both columns
+        ok 4 - a dropped or invented member is reported by size in both columns
+          ---
+          duration_ms: 31.043958
+          type: 'test'
+          ...
+        # Subtest: the loss is two-sided: the enforced collection cannot be split either
+        ok 5 - the loss is two-sided: the enforced collection cannot be split either
+          ---
+          duration_ms: 5.952041
+          type: 'test'
+          ...
+        # Subtest: reordering stays permitted in every collection-valued relation
+        ok 6 - reordering stays permitted in every collection-valued relation
+          ---
+          duration_ms: 18.93175
+          type: 'test'
+          ...
+        # Subtest: the dependency columns are compared by the same rule as the ownership tables
+        ok 7 - the dependency columns are compared by the same rule as the ownership tables
+          ---
+          duration_ms: 20.008542
+          type: 'test'
+          ...
+        # Subtest: the Deferred tuple still distinguishes every scalar field
+        ok 8 - the Deferred tuple still distinguishes every scalar field
+          ---
+          duration_ms: 8.442166
+          type: 'test'
+          ...
+        # Subtest: the diagnostic shows the boundaries it compared
+        ok 9 - the diagnostic shows the boundaries it compared
+          ---
+          duration_ms: 13.521625
+          type: 'test'
+          ...
+        1..9
+    ok 29 - collection identity in relation comparison (K10-CORR2-01)
+      ---
+      duration_ms: 254.810916
+      type: 'suite'
+      ...
+    # Subtest: container-owned leaf lifetime (K10-R10-01)
+        # Subtest: an unclosed list-local fence ends with its item before a real heading
+        ok 1 - an unclosed list-local fence ends with its item before a real heading
+          ---
+          duration_ms: 4.3585
+          type: 'test'
+          ...
+        # Subtest: an equivalent ordered and wide-marker list-local fence
+        ok 2 - an equivalent ordered and wide-marker list-local fence
+          ---
+          duration_ms: 6.078792
+          type: 'test'
+          ...
+        # Subtest: a list-local type-7 block without its blank terminator ends with the item
+        ok 3 - a list-local type-7 block without its blank terminator ends with the item
+          ---
+          duration_ms: 4.848833
+          type: 'test'
+          ...
+        # Subtest: a list-local type-1 and comment block without closers end with the item
+        ok 4 - a list-local type-1 and comment block without closers end with the item
+          ---
+          duration_ms: 5.504333
+          type: 'test'
+          ...
+        # Subtest: a properly closed list-local fence stays local and green
+        ok 5 - a properly closed list-local fence stays local and green
+          ---
+          duration_ms: 4.517458
+          type: 'test'
+          ...
+        # Subtest: a nested raw block closes at the correct inner and outer boundary
+        ok 6 - a nested raw block closes at the correct inner and outer boundary
+          ---
+          duration_ms: 6.466625
+          type: 'test'
+          ...
+        # Subtest: a real table after the dedented heading stays outside the section
+        ok 7 - a real table after the dedented heading stays outside the section
+          ---
+          duration_ms: 4.222833
+          type: 'test'
+          ...
+        # Subtest: a quote-prefixed fence never owns leaf state (blockquote analogue)
+        ok 8 - a quote-prefixed fence never owns leaf state (blockquote analogue)
+          ---
+          duration_ms: 4.261666
+          type: 'test'
+          ...
+        1..8
+    ok 30 - container-owned leaf lifetime (K10-R10-01)
+      ---
+      duration_ms: 40.454875
+      type: 'suite'
+      ...
+    # Subtest: attribute separators (K10-R10-02)
+        # Subtest: the exact GFM missing-whitespace form stays ordinary
+        ok 1 - the exact GFM missing-whitespace form stays ordinary
+          ---
+          duration_ms: 4.4955
+          type: 'test'
+          ...
+        # Subtest: missing whitespace after quoted values stays ordinary
+        ok 2 - missing whitespace after quoted values stays ordinary
+          ---
+          duration_ms: 7.803083
+          type: 'test'
+          ...
+        # Subtest: valid multi-attribute tags still open raw blocks
+        ok 3 - valid multi-attribute tags still open raw blocks
+          ---
+          duration_ms: 7.454833
+          type: 'test'
+          ...
+        # Subtest: malformed and valid neighbors stay separated
+        ok 4 - malformed and valid neighbors stay separated
+          ---
+          duration_ms: 7.406542
+          type: 'test'
+          ...
+        1..4
+    ok 31 - attribute separators (K10-R10-02)
+      ---
+      duration_ms: 27.314292
+      type: 'suite'
+      ...
+    # Subtest: type-6 boundary tokens (K10-R11-01)
+        # Subtest: lone-slash and dollar forms stay ordinary
+        ok 1 - lone-slash and dollar forms stay ordinary
+          ---
+          duration_ms: 8.828458
+          type: 'test'
+          ...
+        # Subtest: valid open boundaries still open the raw block
+        ok 2 - valid open boundaries still open the raw block
+          ---
+          duration_ms: 9.917125
+          type: 'test'
+          ...
+        # Subtest: closing tags keep the same valid boundaries; prefixes do not inherit them
+        ok 3 - closing tags keep the same valid boundaries; prefixes do not inherit them
+          ---
+          duration_ms: 12.462834
+          type: 'test'
+          ...
+        # Subtest: round-11 textarea/search, attribute-whitespace and owner-depth controls are unchanged
+        ok 4 - round-11 textarea/search, attribute-whitespace and owner-depth controls are unchanged
+          ---
+          duration_ms: 8.607667
+          type: 'test'
+          ...
+        1..4
+    ok 32 - type-6 boundary tokens (K10-R11-01)
+      ---
+      duration_ms: 40.033292
+      type: 'suite'
+      ...
+    # Subtest: GFM whitespace and blank-line lexical classes (K10-R12-01)
+        # Subtest: vertical-tab and form-feed begin attributes in a complete type-7 tag
+        ok 1 - vertical-tab and form-feed begin attributes in a complete type-7 tag
+          ---
+          duration_ms: 5.984583
+          type: 'test'
+          ...
+        # Subtest: optional and trailing tag whitespace accepts vertical-tab and form-feed
+        ok 2 - optional and trailing tag whitespace accepts vertical-tab and form-feed
+          ---
+          duration_ms: 6.754667
+          type: 'test'
+          ...
+        # Subtest: no-break space is not a type-6 or type-1 boundary
+        ok 3 - no-break space is not a type-6 or type-1 boundary
+          ---
+          duration_ms: 6.002167
+          type: 'test'
+          ...
+        # Subtest: a script boundary in NBSP opens no raw block that swallows later sections
+        ok 4 - a script boundary in NBSP opens no raw block that swallows later sections
+          ---
+          duration_ms: 4.507583
+          type: 'test'
+          ...
+        # Subtest: NBSP-only, vertical-tab-only and form-feed-only lines do not end raw blocks
+        ok 5 - NBSP-only, vertical-tab-only and form-feed-only lines do not end raw blocks
+          ---
+          duration_ms: 10.771292
+          type: 'test'
+          ...
+        # Subtest: space-only and tab-only lines still end raw blocks
+        ok 6 - space-only and tab-only lines still end raw blocks
+          ---
+          duration_ms: 8.426583
+          type: 'test'
+          ...
+        # Subtest: ordinary ASCII syntax, CRLF tolerance and the round-12 token matrix are unchanged
+        ok 7 - ordinary ASCII syntax, CRLF tolerance and the round-12 token matrix are unchanged
+          ---
+          duration_ms: 16.143791
+          type: 'test'
+          ...
+        1..7
+    ok 33 - GFM whitespace and blank-line lexical classes (K10-R12-01)
+      ---
+      duration_ms: 58.831333
+      type: 'suite'
+      ...
+    # Subtest: the allowed-leaf list is empty, and the inventory says why
+    ok 34 - the allowed-leaf list is empty, and the inventory says why
+      ---
+      duration_ms: 0.349625
+      type: 'test'
+      ...
+    1..34
+ok 16 - K1.0 policy and inventory agree
+  ---
+  duration_ms: 1374.684791
+  type: 'suite'
+  ...
+# Subtest: Legacy core (0.8.x) architecture boundaries
+    # Subtest: the legacy core import graph reuses only the declared dependency-free leaves
+    ok 1 - the legacy core import graph reuses only the declared dependency-free leaves
+      ---
+      duration_ms: 469.795125
+      type: 'test'
+      ...
+    # Subtest: the legacy core import graph has no external dependency at all
+    ok 2 - the legacy core import graph has no external dependency at all
+      ---
+      duration_ms: 166.73825
+      type: 'test'
+      ...
+    # Subtest: no vendor, storage, or application package name appears in legacy core sources
+    ok 3 - no vendor, storage, or application package name appears in legacy core sources
+      ---
+      duration_ms: 179.919375
+      type: 'test'
+      ...
+    # Subtest: conformance tests use published package surfaces
+    ok 4 - conformance tests use published package surfaces
+      ---
+      duration_ms: 285.607333
+      type: 'test'
+      ...
+    # Subtest: the controller boundary cannot reach an executor, policy, journal, or store
+    ok 5 - the controller boundary cannot reach an executor, policy, journal, or store
+      ---
+      duration_ms: 29.567459
+      type: 'test'
+      ...
+    # Subtest: no controller-reachable module mentions settlement ingress
+    ok 6 - no controller-reachable module mentions settlement ingress
+      ---
+      duration_ms: 32.394458
+      type: 'test'
+      ...
+    # Subtest: the capability boundary cannot reach Execution state, the store, or the Harness
+    ok 7 - the capability boundary cannot reach Execution state, the store, or the Harness
+      ---
+      duration_ms: 16.988042
+      type: 'test'
+      ...
+    # Subtest: the authorization boundary sees requests, not runtime machinery
+    ok 8 - the authorization boundary sees requests, not runtime machinery
+      ---
+      duration_ms: 14.666167
+      type: 'test'
+      ...
+    # Subtest: the model provider boundary cannot reach Effects, Execution state, or runtime machinery
+    ok 9 - the model provider boundary cannot reach Effects, Execution state, or runtime machinery
+      ---
+      duration_ms: 4.001625
+      type: 'test'
+      ...
+    # Subtest: model-call and capability-call data cannot dispatch a capability directly
+    ok 10 - model-call and capability-call data cannot dispatch a capability directly
+      ---
+      duration_ms: 0.592417
+      type: 'test'
+      ...
+    # Subtest: Gemini implements the core port and core never imports Gemini
+    ok 11 - Gemini implements the core port and core never imports Gemini
+      ---
+      duration_ms: 110.88425
+      type: 'test'
+      ...
+    # Subtest: the published entry points are the ones the package exports
+    ok 12 - the published entry points are the ones the package exports
+      ---
+      duration_ms: 0.439625
+      type: 'test'
+      ...
+    # Subtest: the package root and focused execution entry point expose the same semantic API
+    ok 13 - the package root and focused execution entry point expose the same semantic API
+      ---
+      duration_ms: 59.64775
+      type: 'test'
+      ...
+    1..13
+ok 17 - Legacy core (0.8.x) architecture boundaries
+  ---
+  duration_ms: 1372.449541
+  type: 'suite'
+  ...
+# Subtest: MCP is an adapter dependency, never a kernel one
+    # Subtest: no core source file imports or names an MCP package
+    ok 1 - no core source file imports or names an MCP package
+      ---
+      duration_ms: 143.423916
+      type: 'test'
+      ...
+    # Subtest: core's manifest declares no MCP dependency
+    ok 2 - core's manifest declares no MCP dependency
+      ---
+      duration_ms: 3.696458
+      type: 'test'
+      ...
+    # Subtest: the adapter depends inward, and is the only workspace package that declares MCP
+    ok 3 - the adapter depends inward, and is the only workspace package that declares MCP
+      ---
+      duration_ms: 3.831542
+      type: 'test'
+      ...
+    # Subtest: the adapter's only package dependencies are the kernel surface and the MCP SDK
+    ok 4 - the adapter's only package dependencies are the kernel surface and the MCP SDK
+      ---
+      duration_ms: 9.395209
+      type: 'test'
+      ...
+    # Subtest: the adapter reaches the kernel only through its published entry points
+    ok 5 - the adapter reaches the kernel only through its published entry points
+      ---
+      duration_ms: 7.910834
+      type: 'test'
+      ...
+    # Subtest: the export path holds no dispatcher, policy evaluator, grant, store, or Harness
+    ok 6 - the export path holds no dispatcher, policy evaluator, grant, store, or Harness
+      ---
+      duration_ms: 5.290875
+      type: 'test'
+      ...
+    # Subtest: the import path holds no runtime state, authority, or exposure machinery
+    ok 7 - the import path holds no runtime state, authority, or exposure machinery
+      ---
+      duration_ms: 2.12
+      type: 'test'
+      ...
+    # Subtest: no MCP Effect or Event vocabulary was introduced
+    ok 8 - no MCP Effect or Event vocabulary was introduced
+      ---
+      duration_ms: 4.182917
+      type: 'test'
+      ...
+    # Subtest: no AgentSpec, controller, or Agent executor gained an MCP field
+    ok 9 - no AgentSpec, controller, or Agent executor gained an MCP field
+      ---
+      duration_ms: 17.981375
+      type: 'test'
+      ...
+    # Subtest: the protocol dependency appears only where it belongs
+    ok 10 - the protocol dependency appears only where it belongs
+      ---
+      duration_ms: 246.838334
+      type: 'test'
+      ...
+    1..10
+ok 18 - MCP is an adapter dependency, never a kernel one
+  ---
+  duration_ms: 447.090875
+  type: 'suite'
+  ...
+# Subtest: Workflow architecture boundaries
+    # Subtest: Stage is not an Execution kind
+    ok 1 - Stage is not an Execution kind
+      ---
+      duration_ms: 20.551542
+      type: 'test'
+      ...
+    # Subtest: Workflow and Stage modules do not import Harness, store, or scheduler internals
+    ok 2 - Workflow and Stage modules do not import Harness, store, or scheduler internals
+      ---
+      duration_ms: 16.342541
+      type: 'test'
+      ...
+    # Subtest: the WorkflowController cannot dispatch a capability implementation
+    ok 3 - the WorkflowController cannot dispatch a capability implementation
+      ---
+      duration_ms: 23.081375
+      type: 'test'
+      ...
+    # Subtest: the Function Stage context cannot reach the Harness, the store, or a lifecycle
+    ok 4 - the Function Stage context cannot reach the Harness, the store, or a lifecycle
+      ---
+      duration_ms: 4.804542
+      type: 'test'
+      ...
+    # Subtest: the Adapter context cannot reach an Effect proposal, a capability, or a dispatcher
+    ok 5 - the Adapter context cannot reach an Effect proposal, a capability, or a dispatcher
+      ---
+      duration_ms: 3.000583
+      type: 'test'
+      ...
+    # Subtest: the Adapter runner reaches no executor or Effect processor
+    ok 6 - the Adapter runner reaches no executor or Effect processor
+      ---
+      duration_ms: 8.690958
+      type: 'test'
+      ...
+    # Subtest: the model provider boundary cannot reach Effect dispatch
+    ok 7 - the model provider boundary cannot reach Effect dispatch
+      ---
+      duration_ms: 2.407209
+      type: 'test'
+      ...
+    # Subtest: core Workflow modules mention no provider vendor or agent framework
+    ok 8 - core Workflow modules mention no provider vendor or agent framework
+      ---
+      duration_ms: 10.847167
+      type: 'test'
+      ...
+    # Subtest: core declares no LangChain dependency
+    ok 9 - core declares no LangChain dependency
+      ---
+      duration_ms: 43.387583
+      type: 'test'
+      ...
+    # Subtest: packages/retrieval/local depends inward on core, and core never depends on it
+    ok 10 - packages/retrieval/local depends inward on core, and core never depends on it
+      ---
+      duration_ms: 95.304375
+      type: 'test'
+      ...
+    # Subtest: a WorkflowDefinition can only contain serializable data
+    ok 11 - a WorkflowDefinition can only contain serializable data
+      ---
+      duration_ms: 130.057584
+      type: 'test'
+      ...
+    # Subtest: Agent and Workflow Stage handling never creates a child Execution
+    ok 12 - Agent and Workflow Stage handling never creates a child Execution
+      ---
+      duration_ms: 20.343542
+      type: 'test'
+      ...
+    1..12
+ok 19 - Workflow architecture boundaries
+  ---
+  duration_ms: 380.783875
+  type: 'suite'
+  ...
+1..19
+# tests 362
+# suites 37
+# pass 362
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3382.042291

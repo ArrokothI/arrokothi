@@ -1,9 +1,10 @@
 /**
  * Explicit refusal for target Kernel surfaces that no accepted packet has implemented yet.
  *
- * K1.0 establishes where target Kernel code will live; it implements no protocol. A caller that
- * reaches for a surface this package does not have yet gets a refusal naming the packet that owns
- * it, never a silent no-op that could be mistaken for working behaviour.
+ * K1.0 established where target Kernel code will live; K1.1 implements its first protocol
+ * boundaries there (creation, input ingress, reservation/dispatch/redelivery and inspection).
+ * A caller that reaches for a surface this package does not have yet gets a refusal naming the
+ * packet that owns it, never a silent no-op that could be mistaken for working behaviour.
  */
 
 /** Thrown when a target Kernel surface exists as a plan rather than as an implementation. */
@@ -15,9 +16,9 @@ export class UnsupportedKernelSurfaceError extends Error {
 
   constructor(surface: string, owner: string) {
     super(
-      `${surface} is not implemented in @arrokothi/kernel. The target Activation/Outcome protocol ` +
-        `is unimplemented at this revision; ${owner} owns this surface. The current 0.8.x behaviour ` +
-        `remains available from @arrokothi/core, which is explicitly legacy.`,
+      `${surface} is not implemented in @arrokothi/kernel at this revision. K1.1 implements ` +
+        `creation, input ingress, reservation/dispatch/redelivery and inspection only; ${owner} owns this surface. ` +
+        `The current 0.8.x behaviour remains available from @arrokothi/core, which is explicitly legacy.`,
     );
     this.name = "UnsupportedKernelSurfaceError";
     this.surface = surface;

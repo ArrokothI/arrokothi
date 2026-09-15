@@ -20,6 +20,19 @@ with its assertions retained, because the graph it guards is this implementation
 target Kernel. The zones and the deferred extraction owners are recorded in
 [K1.0's ownership inventory](work/K1.0/ownership-inventory.md). No behaviour below changed.
 
+Structural note, K1.1 (2026-09-14, corrected rounds 2–3): `packages/kernel` is no longer refusal-only. It now implements
+the first target protocol boundaries — atomic creation with initial input, post-creation input
+ingress under the Input ID triple (including refusal of new ordinary input to a terminal
+destination, whose live-terminal exercise awaits K1.3), batch reservation, asynchronous Driver
+dispatch, ordinary redelivery, and the inspection that makes those facts observable — in memory,
+behind an `ExecutionCoordinator`. Canonical bytes come from the owner-approved unmodified JCS
+implementation `canonicalize@3.0.0`; ArrokothI boundary validation, limits and sealing remain
+in-zone. Outcome acceptance and the recovery hold (K1.2), out-of-band
+cancellation with terminal disposition, waits and deadlines (K1.3), and Effects are not implemented
+and refuse by name. Nothing below changed: the package is still `private`, no consumer is routed
+through it, and every path in the legacy map keeps its exports, behaviour and regression suite. This note describes the packet's candidate tree; whether it is
+accepted and integrated is recorded in [the status ledger](007-work-packets.md), never here.
+
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains with the owners in the [reference index](../../mental-model/reference.md).
 Paths below are representative rather than exhaustive; the conformance suite is the executable
