@@ -1,17 +1,10 @@
 # Reference index
 
-Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtime.md),
-[Driver](driver.md) and [Deployment](deployment.md). This page then serves two different
-readers: the next section is a **reading order**, for someone learning Layer 3 for the
-first time; “Find a mechanism” further down is a **lookup table**, for someone who
-already knows the architecture and wants one page. Layer 3 is precise target/reference
-material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
+Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtime.md), [Driver](driver.md) and [Deployment](deployment.md). This page then serves two different readers: the next section is a **reading order**, for someone learning Layer 3 for the first time; “Find a mechanism” further down is a **lookup table**, for someone who already knows the architecture and wants one page. Layer 3 is precise target/reference material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
 
 ## Reading `concepts/` and `mechanisms/` in order
 
-If you are learning Layer 3 rather than looking something up, read in this order. It
-tracks actual term dependency, not alphabetical or directory order — opening the folders
-in a file browser will not give you this sequence.
+If you are learning Layer 3 rather than looking something up, read in this order. It tracks actual term dependency, not alphabetical or directory order — opening the folders in a file browser will not give you this sequence.
 
 **Concepts**, in dependency order:
 
@@ -23,48 +16,19 @@ in a file browser will not give you this sequence.
 6. [state](concepts/state.md) — progress, checkpoints, structured state, memory
 7. [values](concepts/values.md) — canonical form and value equality
 
-Read `core.md` before `actions.md`: `actions.md`'s first term, Effect, is defined in
-terms of Outcome, which `core.md` owns. The two pages are listed together under
-“Actions, authority and observations” and “Core coordination vocabulary” below because
-they are cross-referenced heavily, not because either order works equally well on a
-first pass.
+Read `core.md` before `actions.md`: `actions.md`'s first term, Effect, is defined in terms of Outcome, which `core.md` owns. The two pages are listed together under “Actions, authority and observations” and “Core coordination vocabulary” below because they are cross-referenced heavily, not because either order works equally well on a first pass.
 
-**Mechanisms**, in the same order as “Find a mechanism” below (creation → execution-cycle
-→ waits → lifecycle → authority → actions → output → communication → recovery →
-integration → composition → state → context → external-protocols → resources →
-evidence). That table doubles as this reading path, despite its Question/Owning-page
-framing. Reading `mechanisms/` alphabetically instead — the order a
-file browser or `ls` shows — puts `actions.md` before `execution-cycle.md` and
-`authority.md`, both of which it depends on; avoid that order for a first pass.
+**Mechanisms**, in the same order as “Find a mechanism” below (creation → execution-cycle → waits → lifecycle → authority → actions → output → communication → recovery → integration → composition → state → context → external-protocols → resources → evidence). That table doubles as this reading path, despite its Question/Owning-page framing. Reading `mechanisms/` alphabetically instead — the order a file browser or `ls` shows — puts `actions.md` before `execution-cycle.md` and `authority.md`, both of which it depends on; avoid that order for a first pass.
 
-Not every mechanism has a matching concept page and vice versa: `context` is a mechanism
-with no `concepts/context.md`, because its vocabulary lives in `concepts/roles.md`
-instead. The reverse also happens. Matching basenames (`actions`, `state`) mean the
-subject was large enough to split; they are not a promise that every subject splits.
+Not every mechanism has a matching concept page and vice versa: `context` is a mechanism with no `concepts/context.md`, because its vocabulary lives in `concepts/roles.md` instead. The reverse also happens. Matching basenames (`actions`, `state`) mean the subject was large enough to split; they are not a promise that every subject splits.
 
 ## How pages are named
 
 Three conventions, so a path tells you what you are opening.
 
-- **`concepts/` owns canonical vocabulary and its local invariants; `mechanisms/` owns
-  how several concepts interact.** This is closer to the real split than “concepts
-  define, mechanisms compose”: `concepts/values.md` states the actual canonical-encoding
-  algorithm, and `concepts/identity.md` states substantive epoch/duplicate/retention
-  rules, not bare definitions. Where a subject splits across both directories —
-  `actions` and `state` — the concept page is the sole definition of the terms and the
-  mechanism page is the sole specification of how they interact. The shared name is
-  deliberate; the directory says which half you are in.
-- **Layer-2 files use the short names.** `runtime.md` and `driver.md` cover the
-  *Execution Runtime* and *Execution Driver*, whose formal names and shorthands are
-  fixed in [core vocabulary](concepts/core.md#execution-runtime). Role vocabulary
-  for Agents, Workflows and Stages is [`concepts/roles.md`](concepts/roles.md),
-  a different subject from the Layer-2 `runtime.md`.
-- **Each mechanism page opens with a Status line** naming whether it is a required
-  Kernel contract, a per-Driver obligation or an optional Runtime design, and which
-  development gate introduces it. Concept pages carry no Status line: they define
-  vocabulary, and a term is not a commitment to build anything. A concept page you
-  reached directly still describes target specification, not shipped behavior — see
-  [Target, not shipped](README.md#target-not-shipped).
+- **`concepts/` owns canonical vocabulary and its local invariants; `mechanisms/` owns how several concepts interact.** This is closer to the real split than “concepts define, mechanisms compose”: `concepts/values.md` states the actual canonical-encoding algorithm, and `concepts/identity.md` states substantive epoch/duplicate/retention rules, not bare definitions. Where a subject splits across both directories — `actions` and `state` — the concept page is the sole definition of the terms and the mechanism page is the sole specification of how they interact. The shared name is deliberate; the directory says which half you are in.
+- **Layer-2 files use the short names.** `runtime.md` and `driver.md` cover the *Execution Runtime* and *Execution Driver*, whose formal names and shorthands are fixed in [core vocabulary](concepts/core.md#execution-runtime). Role vocabulary for Agents, Workflows and Stages is [`concepts/roles.md`](concepts/roles.md), a different subject from the Layer-2 `runtime.md`.
+- **Each mechanism page opens with a Status line** naming whether it is a required Kernel contract, a per-Driver obligation or an optional Runtime design, and which development gate introduces it. Concept pages carry no Status line: they define vocabulary, and a term is not a commitment to build anything. A concept page you reached directly still describes target specification, not shipped behavior — see [Target, not shipped](README.md#target-not-shipped).
 
 ## Find a mechanism
 
@@ -89,9 +53,7 @@ Three conventions, so a path tells you what you are opening.
 
 ## Canonical definitions
 
-Each entry points to its sole definition section. Related words share a page so a
-reader can compare them without opening dozens of one-paragraph files. Linked local
-reminders elsewhere do not own another definition.
+Each entry points to its sole definition section. Related words share a page so a reader can compare them without opening dozens of one-paragraph files. Linked local reminders elsewhere do not own another definition.
 
 ### Core coordination vocabulary
 
@@ -111,8 +73,7 @@ reminders elsewhere do not own another definition.
 
 ### Actions, authority and observations
 
-Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect, this
-section's first term, is defined in terms of Outcome, which that section owns.
+Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect, this section's first term, is defined in terms of Outcome, which that section owns.
 
 - [Operation](concepts/actions.md#operation)
 - [Effect](concepts/actions.md#effect)
@@ -195,7 +156,4 @@ section's first term, is defined in terms of Outcome, which that section owns.
 | Agent, Workflow, Stage, Skill, “runtime concepts”, authoring | [Roles vocabulary](concepts/roles.md) |
 | ControllerResumption, interleave, closed Agent/Workflow union | Legacy implementation vocabulary; [baseline](../docs/development/002-implemented-kernel-baseline.md) and [target separation](mechanisms/evidence.md#structural-evidence) |
 
-Ordinary words such as process, queue, model, database and transport retain their
-normal engineering meanings unless qualified above. This index introduces no universal
-object hierarchy. [Sources and open choices](sources.md) records provenance, accepted
-decision coverage, usability findings and intentionally unselected implementation choices.
+Ordinary words such as process, queue, model, database and transport retain their normal engineering meanings unless qualified above. This index introduces no universal object hierarchy. [Sources and open choices](sources.md) records provenance, accepted decision coverage, usability findings and intentionally unselected implementation choices.

@@ -1,7 +1,6 @@
 # Lifecycle, cancellation and completion
 
-This page owns the transitions of one [Execution](../concepts/core.md#execution).
-Terminal states never reopen; intentional re-execution creates a new identity.
+This page owns the transitions of one [Execution](../concepts/core.md#execution). Terminal states never reopen; intentional re-execution creates a new identity.
 
 ```text
 atomic create + initial input                         → READY
@@ -14,59 +13,26 @@ WAITING + eligible Event or current deadline expiry   → READY
 nonterminal + accepted cancellation control           → CANCELLED
 ```
 
-`RUNNING` means an Activation is unresolved, not that a process is healthy. Lost work
-can remain visibly recovery-held. `WAITING` exists only for an accepted Runtime-declared
-Kernel dependency. [Wait registration](waits.md#registering-a-wait) determines whether
-an `await` instead immediately yields `READY`.
+`RUNNING` means an Activation is unresolved, not that a process is healthy. Lost work can remain visibly recovery-held. `WAITING` exists only for an accepted Runtime-declared Kernel dependency. [Wait registration](waits.md#registering-a-wait) determines whether an `await` instead immediately yields `READY`.
 
-**Status:** Required Kernel contract. Introduced by K1.2–K1.3; completion accounting bites
-from K2.3. This is target specification, not shipped behavior.
+**Status:** Required Kernel contract. Introduced by K1.2–K1.3; completion accounting bites from K2.3. This is target specification, not shipped behavior.
 
 ## Cancellation order
 
-Cancellation is a Kernel control operation independent of the Runtime mailbox. Its
-**request acceptance** immediately fences new progress and action admission. Native
-interrupt may occur later; the Kernel requests it without waiting for cooperation.
-Execution deadline expiry uses this same control path.
+Cancellation is a Kernel control operation independent of the Runtime mailbox. Its **request acceptance** immediately fences new progress and action admission. Native interrupt may occur later; the Kernel requests it without waiting for cooperation. Execution deadline expiry uses this same control path.
 
-Order cancellation acceptance against Outcome acceptance, not submission time or
-later physical stop. If the Outcome wins, its complete atomic result stands. A later
-cancel acts on its nonterminal result or reports its already terminal result. If
-cancellation wins, every new losing Outcome (`continue`, `await`, `complete`, `fail`)
-is rejected in full, with no accepted component.
+Order cancellation acceptance against Outcome acceptance, not submission time or later physical stop. If the Outcome wins, its complete atomic result stands. A later cancel acts on its nonterminal result or reports its already terminal result. If cancellation wins, every new losing Outcome (`continue`, `await`, `complete`, `fail`) is rejected in full, with no accepted component.
 
-Record the losing proposal — its scoped Execution/Activation/epoch/base revision and
-canonical content — under classification **cancellation/terminal-conflict**, reason
-**cancellation accepted before Outcome acceptance**. Its exact authenticated retry
-returns that same recorded rejection, including after cancellation completes. It
-does not manufacture an acceptance receipt. Retention expiry never removes the
-terminal fence. In contrast, retry of an Outcome accepted *before* cancellation still
-returns its original acceptance receipt without mutations.
+Record the losing proposal — its scoped Execution/Activation/epoch/base revision and canonical content — under classification **cancellation/terminal-conflict**, reason **cancellation accepted before Outcome acceptance**. Its exact authenticated retry returns that same recorded rejection, including after cancellation completes. It does not manufacture an acceptance receipt. Retention expiry never removes the terminal fence. In contrast, retry of an Outcome accepted *before* cancellation still returns its original acceptance receipt without mutations.
 
-The losing reserved batch remains unacknowledged. The cancellation control path gives
-all unprocessed Events explicit terminal dispositions. A pending/applied operational
-marker cannot defer the semantic fence, install losing progress or add a lifecycle state.
+The losing reserved batch remains unacknowledged. The cancellation control path gives all unprocessed Events explicit terminal dispositions. A pending/applied operational marker cannot defer the semantic fence, install losing progress or add a lifecycle state.
 
 ## Completion is an accounting check
 
-An Outcome proposing completion must propose no new Effects. Required owned actions
-and children must have known dispositions, with their relevant results accounted for
-in previously acknowledged Events or this batch — unless responsibility was explicitly
-transferred or abandoned under policy. Approved but undispatched work is still pending.
-Acknowledging an unknown-action Event is not settlement and cannot discharge it.
+An Outcome proposing completion must propose no new Effects. Required owned actions and children must have known dispositions, with their relevant results accounted for in previously acknowledged Events or this batch — unless responsibility was explicitly transferred or abandoned under policy. Approved but undispatched work is still pending. Acknowledging an unknown-action Event is not settlement and cannot discharge it.
 
-A child failure can be accounted for without implying application success; the Runtime
-decides that meaning. Arbitrary detachment may be refused until a durable recipient
-of responsibility is defined. K1 has no Effects, but still enforces the rule at acceptance.
+A child failure can be accounted for without implying application success; the Runtime decides that meaning. Arbitrary detachment may be refused until a durable recipient of responsibility is defined. K1 has no Effects, but still enforces the rule at acceptance.
 
-Failure/cancellation may proceed with unknown external work. Keep its evidence and
-application reconciliation/supervision owner. Late trusted settlements update their
-original action records without reopening the Execution or replacing its terminal result.
-Physical termination, child cancellation, compensation and cleanup follow separately
-declared policies; logical cancellation cannot promise that they all succeeded.
+Failure/cancellation may proceed with unknown external work. Keep its evidence and application reconciliation/supervision owner. Late trusted settlements update their original action records without reopening the Execution or replacing its terminal result. Physical termination, child cancellation, compensation and cleanup follow separately declared policies; logical cancellation cannot promise that they all succeeded.
 
-Completion records the terminal result plus its [output obligation](output.md).
-Required child-result routing commits with it or as a durable routing intent; it is
-not another Runtime Effect proposed at completion. External delivery may remain
-pending afterwards. If delivery is required for business success, request and account
-for that action before completing.
+Completion records the terminal result plus its [output obligation](output.md). Required child-result routing commits with it or as a durable routing intent; it is not another Runtime Effect proposed at completion. External delivery may remain pending afterwards. If delivery is required for business success, request and account for that action before completing.

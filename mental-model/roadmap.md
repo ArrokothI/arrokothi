@@ -1,22 +1,10 @@
 # Roadmap → Layer-3 maintenance map
 
-This page maps each roadmap gate (K0.1, K1.2, S1, and so on) to the `concepts/` and
-`mechanisms/` pages accepted work under that gate is expected to touch — ownership and
-navigation, for someone landing on a packet who needs to know which Layer-3 pages to
-read and maintain. **It is not a whitelist, release or status ledger:** for what is
-actually implemented and released, see the
-[packet ledger](../docs/development/007-work-packets.md), which owns status and release;
-the [milestone roadmap](../docs/development/001-current-status-and-roadmap.md) owns what
-each gate means. Cleanup examines every affected concept/mechanism and its dependents,
-even when not listed here. Update this map when accepted work creates a new owner or
-changes scope.
+This page maps each roadmap gate (K0.1, K1.2, S1, and so on) to the `concepts/` and `mechanisms/` pages accepted work under that gate is expected to touch — ownership and navigation, for someone landing on a packet who needs to know which Layer-3 pages to read and maintain. **It is not a whitelist, release or status ledger:** for what is actually implemented and released, see the [packet ledger](../docs/development/007-work-packets.md), which owns status and release; the [milestone roadmap](../docs/development/001-current-status-and-roadmap.md) owns what each gate means. Cleanup examines every affected concept/mechanism and its dependents, even when not listed here. Update this map when accepted work creates a new owner or changes scope.
 
-Layer 1/2 change only when the whole-system model or a major abstraction changes.
-Layer 3 is maintained after acceptance under [Prompt C](../docs/development/009-universal-prompts.md#prompt-c--gpt-6-final-cleanup-close-or-reopen-and-push).
-No extra sequencing packet is required: the existing packet scopes identify these owners.
+Layer 1/2 change only when the whole-system model or a major abstraction changes. Layer 3 is maintained after acceptance under [Prompt C](../docs/development/009-universal-prompts.md#prompt-c--gpt-6-final-cleanup-close-or-reopen-and-push). No extra sequencing packet is required: the existing packet scopes identify these owners.
 
-Historical packets are mapped for retrieval and future corrections — not retroactive
-edits of sealed contracts/reports, and not a change to their acceptance.
+Historical packets are mapped for retrieval and future corrections — not retroactive edits of sealed contracts/reports, and not a change to their acceptance.
 
 ## K0.1
 
