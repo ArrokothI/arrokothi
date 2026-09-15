@@ -24,7 +24,7 @@ The current public SDK remains the implemented 0.8.x surface; K1.0's private tar
 
 [Trusted Execution](concepts/operations.md#trusted-execution) intentionally permits ambient host access. [Isolated Execution](concepts/operations.md#isolated-execution) physically restricts that access under a declared threat model — but that threat model can still explicitly allow some native access, such as calling one approved external API: isolation only decides what the Runtime can physically reach, not whether the Kernel is mediating and authorizing what it does with that reach. A container label alone does not establish containment. Isolation and Kernel-mediated action checks are separate guarantees: a well-isolated Execution can still make an unmediated native call within what it's allowed to reach, and a well-mediated Execution can run with no physical isolation at all.
 
-Credentials broad enough to act on the whole service's behalf — not a narrow, per-request token — belong only in code running under Trusted Execution, such as the Driver, never inside isolated Runtime code. The [resource and isolation rules](mechanisms/resources.md) explain enforcement and cleanup.
+Credentials that are broad enough to act on the whole service's behalf — not a narrow, per-request token — belong only in code running under Trusted Execution, such as the Driver, never inside isolated Runtime code. The [resource and isolation rules](mechanisms/resources.md) explain enforcement and cleanup.
 
 ## Independent failures and resource costs
 
