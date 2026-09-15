@@ -385,10 +385,17 @@ const isThenable = (value: unknown): value is PromiseLike<unknown> => {
   // non-function shadows the chain exactly as an ordinary read would see it. The step cap bounds
   // Proxy-built prototype cycles; exceeding it attempts observation rather than inventing a
   // delivery.
+  //
+  // When the walk finds no owned `then` anywhere, a contained ordinary read confirms (R4-F1):
+  // the walk just proved no getter exists on the chain of an ordinary object, so the read cannot
+  // invoke anything there — but a Proxy's `getOwnPropertyDescriptor` trap may have lied about
+  // absence while its `get` trap answers a function (classifying that as non-thenable invents a
+  // sync `delivered` for a settlement never observed). A throwing confirm-read attempts
+  // observation. Own/inherited throwing getters never reach this line: they returned above.
   try {
     let holder: object | null = value;
     for (let steps = 0; steps < 128; steps += 1) {
-      if (holder === null) return false;
+      if (holder === null) break;
       const descriptor = PrimordialGetOwnPropertyDescriptor(holder, "then") as
         | { readonly value?: unknown; readonly get?: unknown; readonly set?: unknown }
         | undefined;
@@ -399,7 +406,12 @@ const isThenable = (value: unknown): value is PromiseLike<unknown> => {
       }
       holder = PrimordialGetPrototypeOf(holder) as object | null;
     }
-    return true;
+    if (holder !== null) return true;
+    try {
+      return typeof (value as { readonly then?: unknown }).then === "function";
+    } catch {
+      return true;
+    }
   } catch {
     // An unreadable shape cannot be classified; attempting observation records whatever happens
     // as an operational failure rather than inventing a delivery.
@@ -475,8 +487,15 @@ function sanitizeInstance(settled: object): { readonly constructor: PropertyDesc
   // Computed keys, not literals: the `delete` operand must be optional-typed (TS2790), which a
   // union-typed key satisfies where a literal does not — the same spelling the windows use.
   const constructorKey: string | symbol = "constructor";
+  // Atomic (R4-F2): a non-configurable own species must not leave a removed constructor behind.
+  // The first removal needs no rollback — nothing changed yet if it throws.
   if (constructor !== undefined) delete (settled as Record<string | symbol, unknown>)[constructorKey];
-  if (species !== undefined) delete (settled as Record<string | symbol, unknown>)[PrimordialSymbolSpecies];
+  try {
+    if (species !== undefined) delete (settled as Record<string | symbol, unknown>)[PrimordialSymbolSpecies];
+  } catch (error) {
+    if (constructor !== undefined) restoreDescriptor(settled, constructorKey, constructor);
+    throw error;
+  }
   return { constructor, species };
 }
 

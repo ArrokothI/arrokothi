@@ -1418,6 +1418,71 @@ describe("K11-R16-DISP-01 delivery observes rejection under hostile Promise mach
     assert.equal((observed.batch ?? []).length, 1, "the reserved batch is intact");
     assert.deepEqual(observed.acknowledged, [], "a failure acknowledges nothing");
   });
+
+  test("R4-F1 a Proxy thenable answered only by the get trap is observed, never invented delivered", async () => {
+    // The descriptor walk finds no owned `then` on a get-trap-only Proxy, but classifying it as
+    // non-thenable invents a sync `delivered` for a settlement never observed (delta-reviewer
+    // counterexample). The contained confirm-read sees the function the ordinary path would call.
+    let thenCalls = 0;
+    const proxyDriver = {
+      driverId: "fake-proxy-thenable",
+      deliver(): Promise<void> {
+        const proxy = new Proxy(
+          {},
+          {
+            get(target, property) {
+              if (property === "then") {
+                return (onFulfilled: unknown, onRejected: unknown): void => {
+                  thenCalls += 1;
+                  (onRejected as (reason: unknown) => void)(new Error("proxy rej"));
+                };
+              }
+              return Reflect.get(target, property);
+            },
+          },
+        );
+        return proxy as unknown as Promise<void>;
+      },
+    };
+    const kernel = new ExecutionCoordinator({ driver: proxyDriver });
+    const created = started(kernel);
+    const tap = collectUnhandled();
+    try {
+      accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+      await drain();
+      assert.equal(tap.reasons.length, 0, "the observed rejection was handled");
+      assert.equal(thenCalls > 0, true, "the thenable was actually called, not skipped");
+      const after = accepted(kernel.inspect(author, created.executionId));
+      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed", "never an invented delivered");
+      assert.match((after.activation?.deliveries ?? [])[0]?.failure ?? "", /proxy rej/);
+    } finally {
+      tap.stop();
+    }
+  });
+
+  test("R4-F2 instance sanitation is atomic: a partial throw hands every slot back", () => {
+    // Own configurable constructor plus own non-configurable species: the first removal must be
+    // rolled back when the second throws. A fulfilled promise keeps this in-process: nothing can
+    // escape unhandled, so the test can assert restore-exactness directly. (The instance-level
+    // non-configurability is permanent only for this garbage fixture, never for shared state.)
+    const settled = Promise.resolve("settled-value");
+    Object.defineProperty(settled, "constructor", { value: 42, writable: true, enumerable: false, configurable: true });
+    Object.defineProperty(settled, Symbol.species, { value: 43, writable: false, enumerable: false, configurable: false });
+    const partialDriver = {
+      driverId: "fake-partial-instance",
+      deliver(): Promise<void> {
+        return settled as unknown as Promise<void>;
+      },
+    };
+    const kernel = new ExecutionCoordinator({ driver: partialDriver });
+    const created = started(kernel);
+    const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    assert.equal(dispatched.receipt.boundary, "dispatch_intent", "the intent stands despite the attach failure");
+    const after = accepted(kernel.inspect(author, created.executionId));
+    assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
+    assert.equal(Object.getOwnPropertyDescriptor(settled, "constructor")?.value, 42, "removed slot handed back");
+    assert.equal(Object.getOwnPropertyDescriptor(settled, Symbol.species)?.value, 43, "unremovable slot untouched");
+  });
 });
 
 describe("K11-R16-ID-01 (R3) ambient prototype state cannot answer a missing bound", () => {
