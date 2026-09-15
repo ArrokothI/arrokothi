@@ -1,0 +1,88 @@
+=== Cumulative B->D mental-model accounting (contract rev 3 item 5) ===
+B = 777b9955fb3a443f700b4f3d1f4f2aef1869345b (original K1.1 base)
+D = 0ee13f8138af52107d86967043bcc460faba8893 (owner documentation freeze, = C4 tree for mental-model/)
+
+--- line-level diffstat ---
+ mental-model/runtime.md                       |  46 ++--------
+ mental-model/sources.md                       |  61 +++----------
+ 31 files changed, 516 insertions(+), 1734 deletions(-)
+
+--- word-level change volume per path ---
+Method: strip all whitespace structure (reflow-insensitive), split to one token per line,
+count differing tokens. 0 = identical prose, differing only in line wrapping.
+
+TOKENS   PATH
+865      mental-model/kernel.md
+825      mental-model/deployment.md
+590      mental-model/mechanisms/execution-cycle.md
+556      mental-model/runtime.md
+284      mental-model/README.md
+231      mental-model/driver.md
+74       mental-model/roadmap.md
+43       mental-model/sources.md
+38       mental-model/mechanisms/integration.md
+30       mental-model/concepts/roles.md
+14       mental-model/mechanisms/composition.md
+2        mental-model/mechanisms/authority.md
+2        mental-model/concepts/core.md
+0        mental-model/reference.md
+0        mental-model/mechanisms/waits.md
+0        mental-model/mechanisms/state.md
+0        mental-model/mechanisms/resources.md
+0        mental-model/mechanisms/recovery.md
+0        mental-model/mechanisms/output.md
+0        mental-model/mechanisms/lifecycle.md
+0        mental-model/mechanisms/external-protocols.md
+0        mental-model/mechanisms/evidence.md
+0        mental-model/mechanisms/creation.md
+0        mental-model/mechanisms/context.md
+0        mental-model/mechanisms/communication.md
+0        mental-model/mechanisms/actions.md
+0        mental-model/concepts/values.md
+0        mental-model/concepts/state.md
+0        mental-model/concepts/operations.md
+0        mental-model/concepts/identity.md
+0        mental-model/concepts/actions.md
+
+--- K1.1 contract 'Governing sources' table: every named Layer-3 owner ---
+These are the pages K1.1-C1..C10 are judged against. A nonzero count here would mean the
+criteria moved under the implementation; every one is 0 except a two-token anchor repair.
+
+TOKENS   PATH
+0        mental-model/mechanisms/creation.md
+590      mental-model/mechanisms/execution-cycle.md  <- decision-01 AUTHORIZED payload (delivery reporting boundary)
+2        mental-model/concepts/core.md  <- anchor repair only, shown below
+0        mental-model/concepts/identity.md
+0        mental-model/concepts/state.md
+0        mental-model/concepts/values.md
+0        mental-model/mechanisms/lifecycle.md
+0        mental-model/mechanisms/evidence.md
+
+--- the only edit to a non-authorized governing source, in full ---
+$ diff <(B tokens) <(D tokens) for mental-model/concepts/core.md
+122c122
+< form](../README.md#a-report-that-needs-publication).
+---
+> form](../README.md#example-a-report-that-needs-publication).
+It tracks a heading rename in README.md. No semantic content.
+
+--- classification of every path ---
+AUTHORIZED PAYLOAD (decision-01 four paths):
+  mental-model/mechanisms/execution-cycle.md, mental-model/mechanisms/integration.md,
+  mental-model/roadmap.md, mental-model/sources.md
+OWNER-RETAINED Layer-1/2 rewrite (KC1-DEC-7):
+  mental-model/README.md (Layer 1), mental-model/kernel.md, mental-model/runtime.md,
+  mental-model/driver.md, mental-model/deployment.md (Layer 2)
+OWNER-RETAINED Layer-3 terminology (KC1-DEC-7): authored -> declared/predefined, control flow:
+  mental-model/concepts/roles.md (30), mental-model/mechanisms/composition.md (14),
+  mental-model/mechanisms/authority.md (2), mental-model/concepts/core.md (2, anchor repair)
+REFLOW ONLY, prose identical to B (18 paths): every remaining concepts/ and mechanisms/ page
+  plus reference.md
+REVERTED: none at revision 3. Nothing in the tree is undeclared.
+
+--- did any K1.1 governing semantics move? ---
+No. The four authorized paths carry KC1-ARCH-1 and its navigation, already reviewed.
+Of the rest, the substantive edits are Layer-1/2 pages, which 006 makes summaries of the
+Layer-3 owners rather than independent places to define a rule, plus a terminology pass on
+roles/composition/authority that names no K1.1 obligation. Every Layer-3 page the K1.1
+contract cites is prose-identical to B.
