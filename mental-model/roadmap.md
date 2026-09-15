@@ -1,22 +1,10 @@
 # Roadmap → Layer-3 maintenance map
 
-This page maps each roadmap gate (K0.1, K1.2, S1, and so on) to the `concepts/` and
-`mechanisms/` pages accepted work under that gate is expected to touch — ownership and
-navigation, for someone landing on a packet who needs to know which Layer-3 pages to
-read and maintain. **It is not a whitelist, release or status ledger:** for what is
-actually implemented and released, see the
-[packet ledger](../docs/development/007-work-packets.md), which owns status and release;
-the [milestone roadmap](../docs/development/001-current-status-and-roadmap.md) owns what
-each gate means. Cleanup examines every affected concept/mechanism and its dependents,
-even when not listed here. Update this map when accepted work creates a new owner or
-changes scope.
+This page maps each roadmap gate (K0.1, K1.2, S1, and so on) to the `concepts/` and `mechanisms/` pages accepted work under that gate is expected to touch — ownership and navigation, for someone landing on a packet who needs to know which Layer-3 pages to read and maintain. **It is not a whitelist, release or status ledger:** for what is actually implemented and released, see the [packet ledger](../docs/development/007-work-packets.md), which owns status and release; the [milestone roadmap](../docs/development/001-current-status-and-roadmap.md) owns what each gate means. Cleanup examines every affected concept/mechanism and its dependents, even when not listed here. Update this map when accepted work creates a new owner or changes scope.
 
-Layer 1/2 change only when the whole-system model or a major abstraction changes.
-Layer 3 is maintained after acceptance under [Prompt C](../docs/development/009-universal-prompts.md#prompt-c--gpt-6-final-cleanup-close-or-reopen-and-push).
-No extra sequencing packet is required: the existing packet scopes identify these owners.
+Layer 1/2 change only when the whole-system model or a major abstraction changes. Layer 3 is maintained after acceptance under [Prompt C](../docs/development/009-universal-prompts.md#prompt-c--gpt-6-final-cleanup-close-or-reopen-and-push). No extra sequencing packet is required: the existing packet scopes identify these owners.
 
-Historical packets are mapped for retrieval and future corrections — not retroactive
-edits of sealed contracts/reports, and not a change to their acceptance.
+Historical packets are mapped for retrieval and future corrections — not retroactive edits of sealed contracts/reports, and not a change to their acceptance.
 
 ## K0.1
 
@@ -82,13 +70,7 @@ Create, reserve and asynchronous dispatch. Expected Layer-3 owners:
 
 ## K1.1-correction-01
 
-Delivery reporting replaces Driver-returned Promise observation. The precise rule lives in
-[execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary), with the
-adapter obligation linked from [integration](mechanisms/integration.md). K1.1-correction-01
-owns deterministic first-report, failure, duplicate, delayed and redelivery tests. K1.2/K1.3
-exercise late reports after their lifecycle transitions; K5 owns retired-record behavior.
-The [decision and acceptance mapping](../docs/development/work/K1.1-correction-01/decision-01.md)
-records the implementation gap and bounded handoff. No successor is released by this decision.
+Delivery reporting replaces Driver-returned Promise observation. The precise rule lives in [execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary), with the adapter obligation linked from [integration](mechanisms/integration.md). K1.1-correction-01 owns deterministic first-report, failure, duplicate, delayed and redelivery tests. K1.2/K1.3 exercise late reports after their lifecycle transitions; K5 owns retired-record behavior. The [decision and acceptance mapping](../docs/development/work/K1.1-correction-01/decision-01.md) records the implementation gap and bounded handoff. No successor is released by this decision.
 
 ## K1.2
 
