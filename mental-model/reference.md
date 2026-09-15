@@ -91,7 +91,7 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 - [Request key and Input ID](concepts/identity.md#request-key-and-input-id)
 - [Runtime attempt](concepts/identity.md#runtime-attempt)
 - [Writer epoch](concepts/identity.md#writer-epoch)
-- [Dispatch and delivery](concepts/identity.md#dispatch-and-delivery)
+- [Dispatch and delivery](concepts/identity.md#dispatch-and-delivery); [delivery reporting mechanism](mechanisms/execution-cycle.md#delivery-reporting-boundary)
 - [Revision](concepts/identity.md#revision)
 - [Acceptance, boundary and receipt](concepts/identity.md#acceptance-boundary-and-receipt)
 
@@ -138,6 +138,7 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 
 - [Codec](concepts/values.md#codec)
 - [Boundary value and root](concepts/values.md#boundary-value-and-root)
+- [In-process value capture](concepts/values.md#in-process-value-capture)
 - [Canonical form](concepts/values.md#canonical-form)
 - [Fixed semantic limits](concepts/values.md#fixed-semantic-limits)
 - [What these rules do not cover](concepts/values.md#what-these-rules-do-not-cover)

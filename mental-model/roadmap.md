@@ -72,6 +72,10 @@ Create, reserve and asynchronous dispatch. Expected Layer-3 owners:
 
 Delivery reporting replaces Driver-returned Promise observation. The precise rule lives in [execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary), with the adapter obligation linked from [integration](mechanisms/integration.md). K1.1-correction-01 owns deterministic first-report, failure, duplicate, delayed and redelivery tests. K1.2/K1.3 exercise late reports after their lifecycle transitions; K5 owns retired-record behavior. The [decision and acceptance mapping](../docs/development/work/K1.1-correction-01/decision-01.md) recorded the implementation gap at decision time (closed by the correction candidate's undefined-only delivery implementation) and the bounded handoff. No successor is released by this decision.
 
+## K1.1-reference-01
+
+Faithful maintenance after the accepted K1.1 correction: [identity](concepts/identity.md#request-key-and-input-id) owns creation/ingress domain separation, [creation](mechanisms/creation.md#later-input-has-a-destination) illustrates reuse, and [values](concepts/values.md#in-process-value-capture) owns the in-process capture rules. [Execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary) retains the delivery mechanism with exact implementation evidence. Reference and source navigation are updated together. [Scope and review dependency](../docs/development/007-work-packets.md#k11-reference-01--faithful-reference-maintenance) preserve implementation ACCEPT separately from documentation review; no runtime successor is released.
+
 ## K1.2
 
 Outcome acceptance and receipts. Expected Layer-3 owners:

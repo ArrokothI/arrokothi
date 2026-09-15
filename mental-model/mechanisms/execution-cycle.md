@@ -27,7 +27,7 @@ next:       continue | await(wait) | complete(result) | fail(error)
 
 ## Delivery reporting boundary
 
-**Target revision:** selected for K1.1-correction-01 and implemented by the correction candidate (undefined-only `deliver`; no Driver-returned Promise observation). Independent acceptance/integration remain pending before this contract is claimed as accepted.
+**Implementation evidence:** K1.1-correction-01 implements this boundary (undefined-only `deliver`; no Driver-returned Promise observation) in exact H5 `52b1600f3b42e3a360fdc3395178f1d147edf304`, independently accepted by [review-08](../../docs/development/work/K1.1-correction-01/review-08.md). Integration and this reference supplement's review are tracked separately in the [ledger](../../docs/development/007-work-packets.md). This in-memory implementation establishes no Outcome acceptance, persistence, native fidelity or isolation claim.
 
 The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability and returns only `undefined`:
 

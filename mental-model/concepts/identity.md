@@ -14,6 +14,8 @@ An **Input ID** is a triple: authenticated producer namespace, destination Execu
 
 A **caller-scoped creation key** applies the same retry idea to creation, before an Execution exists: the authenticated caller scope and request key identify one create request, and its binding includes the complete creation content. This is a scope rule, not a new durable object type or a fixed token format.
 
+Creation and later input use separate identity domains. Accepting the initial Event during creation does not consume a post-creation Input ID. A later input from that same producer may reuse the creation-key text: it is a new ingress request, not a creation replay or conflict. The initial Event retains creation provenance and a creation receipt; only later ingress participates in Input-ID replay/conflict lookup. See the [reuse example](../mechanisms/creation.md#later-input-has-a-destination).
+
 ## Runtime attempt
 
 A **Runtime attempt** is the currently authorized effort to perform one unresolved Activation exchange. Ordinary re-sending to the Driver is still the same attempt. Authorized takeover creates a replacement attempt of that same exchange. Use **physical action attempt** for a service invocation; it has a different owner and lifecycle.
@@ -30,7 +32,7 @@ It fences **the entire Outcome acceptance**: batch acknowledgment, progress, emi
 
 **Activation dispatch** is the Kernel's preparation and sending of one Activation through a Driver toward a Runtime. Its **dispatch intent** is the accepted record fixing the exchange input, reserved batch and current attempt before sending. Dispatch is not Execution creation or simply choosing which Runtime implements it.
 
-**Delivery** is an ordinary transport verb: always name what is delivered and to whom. “Activation delivery to the Driver” can be in-process; “Driver submission to the native Runtime” can be remote. The logical route is Kernel → Driver → Runtime, without requiring two physical hops. Receipt of bytes at either hop is not Outcome acceptance.
+**Delivery** is an ordinary transport verb: always name what is delivered and to whom. “Activation delivery to the Driver” can be in-process; “Driver submission to the native Runtime” can be remote. The logical route is Kernel → Driver → Runtime, without requiring two physical hops. Receipt of bytes at either hop is not Outcome acceptance. The Kernel-owned reporting capability, its attempt-local evidence and first-report rule are specified once in the [delivery reporting boundary](../mechanisms/execution-cycle.md#delivery-reporting-boundary).
 
 **Action dispatch**, **destination-mailbox acceptance** and **external output delivery** refer to different operations, specified by their respective mechanisms. Avoid bare “Execution delivery” and do not treat every use of “delivery” as one subsystem.
 
