@@ -4,9 +4,11 @@ An [Execution Driver](concepts/core.md#execution-driver) adapts the [Kernel](con
 
 ## The translation it owns
 
-The Driver maps [Execution](concepts/core.md#execution) and Activation identities to native runs, sessions or jobs, forwards the exact input and interprets native responses — and that interpretation cannot just relay the native vocabulary as-is. A provider's “success” may mean “paused with a human form,” so copying its status string into `COMPLETED` would be wrong; likewise, a session may span several runs, so one Activation cannot be assumed to line up with one conversation turn.
+The Driver maps [Execution](concepts/core.md#execution) and Activation identities to the Runtime's native runs, sessions or jobs — and that mapping is not one-to-one: a single native session may span several runs, and one Activation is not automatically the same thing as one conversation turn. It also forwards the exact input and interprets native responses, and that interpretation cannot just copy native vocabulary: a native provider's own “success” status may really mean “paused, waiting on a human form,” so copying that label straight into the Execution's `COMPLETED` state would be wrong.
 
-When a tool call is mediated, the Driver holds onto the exact resolved operation, its final arguments and the Runtime's [progress](concepts/state.md#progress) until a later Activation delivers the [Effect](concepts/actions.md#effect)'s result Event, so the native engine can pick back up where it left off. When a tool call stays native instead, the Driver's job is not to mediate it, but to say so plainly in its support record — disclosing that this path sits outside Kernel mediation, so nobody mistakes an unmediated native action for one the Kernel actually governs.
+When the native Runtime asks to call a mediated tool, the Driver turns that request into the Outcome's [Effect](concepts/actions.md#effect), identifying exactly which operation and arguments were requested. Once the Kernel admits the action and its result arrives as an Event in a later Activation, the Driver hands that result to the correct pending native call rather than a different one. [The exact mediated-tool sequence](mechanisms/integration.md#mediated-tool-sequence) covers each step between the native request and the native engine resuming with its result.
+
+When a tool call stays native instead, the Driver does not mediate it. Its job there is only to state, in its [support record](mechanisms/integration.md#support-record), that this path is not Kernel-mediated — so an operator evaluating this Driver's guarantees does not mistake an unmediated native action for one the Kernel actually governs.
 
 ## Recovery needs more than a job ID
 
@@ -16,7 +18,7 @@ Similarly, replacing an old host must not leave two writers mutating one native 
 
 ## Supported claims are small and explicit
 
-Each Driver declares its identity mapping, input retry behavior, progress format, recovery modes, mediated tools, pause/output meaning, cancellation behavior, resources and supported versions. [The support record](mechanisms/integration.md#support-record) is the owning checklist. Unsupported and same-process-only are useful answers.
+Each Driver declares its identity mapping, input retry behavior, progress format, recovery modes, mediated tools, pause/output meaning, cancellation behavior, resources and supported versions. The support record is the owning checklist. Unsupported and same-process-only are useful answers.
 
 Start with a useful native public API. Compare native operation with the thin adapter before deep interception; if the native system already solves the whole application, direct use may be preferable. A second independently designed Runtime is required before treating an integration-specific extension as a portable contract.
 
