@@ -4,9 +4,9 @@ An [Execution Driver](concepts/core.md#execution-driver) adapts the [Kernel](con
 
 ## The translation it owns
 
-The Driver maps [Execution](concepts/core.md#execution) and Activation identities to native runs, sessions or jobs. It forwards the exact input and interprets native responses. A provider's “success” may mean “paused with a human form,” so copying its status string into `COMPLETED` would be wrong. A session may span several runs; an Activation is not automatically one conversation turn.
+The Driver maps [Execution](concepts/core.md#execution) and Activation identities to native runs, sessions or jobs, forwards the exact input and interprets native responses — and that interpretation cannot just relay the native vocabulary as-is. A provider's “success” may mean “paused with a human form,” so copying its status string into `COMPLETED` would be wrong; likewise, a session may span several runs, so one Activation cannot be assumed to line up with one conversation turn.
 
-When native tools are mediated, the Driver preserves the exact selected operation, final arguments and continuation until a later result can reach the native engine. When tools remain native, the integration describes their scope honestly.
+When a tool call is mediated, the Driver holds onto the exact resolved operation, its final arguments and the Runtime's [progress](concepts/state.md#progress) until a later Activation delivers the [Effect](concepts/actions.md#effect)'s result Event, so the native engine can pick back up where it left off. When a tool call stays native instead, the Driver's job is not to mediate it, but to say so plainly in its support record — disclosing that this path sits outside Kernel mediation, so nobody mistakes an unmediated native action for one the Kernel actually governs.
 
 ## Recovery needs more than a job ID
 
