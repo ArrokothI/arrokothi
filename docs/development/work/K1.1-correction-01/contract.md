@@ -137,12 +137,20 @@ Derived from the criteria's own obligations, not from probe strings:
   envelope and field reads map observation failure to the located refusal for that field. Refusal
   shape, ordering, nondisclosure and retention semantics are unchanged — only the throw becomes the
   refusal the contract already requires.
-- **KC1-DEC-5 — delivery sanitizes Promise construction slots.** `#deliver` installs primordial
-  `Promise[Symbol.species]` / `Promise.prototype.constructor` (and removes a caller-installed
-  `Object.prototype[Symbol.species]`) for the synchronous attach window, then restores. A host that
-  made such a slot non-configurable cannot be sanitized by any in-process code; that permanently
-  disturbed host degrades to a recorded operational delivery failure, the same availability-only
-  degradation the values module already commits to for non-configurable slots.
+- **KC1-DEC-5 — delivery sanitizes before sending, classifies without invoking, and states its
+  limit.** `#deliver` runs the Driver invocation itself inside the sanitized window
+  (`Promise[Symbol.species]` / `Promise.prototype.constructor` reinstalled, caller-installed
+  `Object.prototype[Symbol.species]` removed): when the host cannot be sanitized at all
+  (non-configurable slot) the Driver is never called, so no Driver promise comes into existence
+  to escape — the attempt records the operational failure with intent, reservation and redelivery
+  intact (R4-F1). Thenable classification reads descriptors without invoking a throwing `then`
+  getter (R4-F3), and the returned promise's own construction slots fall through to the sanitized
+  ambient for the attach (R4-F2). What remains is the fundamental JavaScript limit, locked by an
+  explicit regression rather than claimed away: a Driver-authored subclass (or non-configurable
+  own slot, or Proxy-trapped descriptor) whose species cannot be sanitized from outside makes
+  every native subscription throw before any continuation attaches, so the attempt records failed
+  while the original rejection escapes as process-level unhandled (R4-F4). No false delivery
+  evidence, acknowledgment, or intent/batch/receipt alteration occurs on any of these paths.
 - **KC1-DEC-6 — envelope fields are own fields; inherited-only reads as missing.** Fresh adversarial
   review (R3) showed ordinary reads let ambient `Object.prototype`/`Array.prototype` state answer
   *missing* envelope fields into acceptances the caller never spelled (`dispatch({})` accepted by
