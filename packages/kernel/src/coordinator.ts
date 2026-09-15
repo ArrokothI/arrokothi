@@ -289,7 +289,21 @@ interface ExecutionRecord {
   acceptedProgress: BoundaryValue | null;
   progressRevision: number;
   activation: ActivationRecord | null;
+  /**
+   * This Execution's own acceptance index. Creation consumes 1; each later accepted
+   * input-ingress or dispatch-intent decision on this Execution consumes the next.
+   * Replay and redelivery consume none: they return an already-accepted decision.
+   * Because the index advances only for decisions on this Execution, gaps in it reveal
+   * only this Execution's own history — never activity elsewhere.
+   */
   nextAcceptancePosition: number;
+  /**
+   * This Execution's own refusal index, sharing nothing with the acceptance index above.
+   * The first recorded refusal against this Execution is 1. Refusals that name no
+   * Execution never touch it (they carry position 0), so probing for hidden versus
+   * missing records advances no observable sequence at all.
+   */
+  nextRefusalPosition: number;
   activationsMinted: number;
 }
 
@@ -526,9 +540,16 @@ export class ExecutionCoordinator {
   readonly #mailboxCapacity: number;
   readonly #executions = new PrimordialMap<string, ExecutionRecord>();
   readonly #byCreationKey = new PrimordialMap<string, ExecutionRecord>();
-  #acceptancePosition = 0;
-  #executionsMinted = 0;
-  #eventsMinted = 0;
+  // K11-R12-ID-01: there is deliberately no coordinator-wide acceptance counter, execution
+  // counter or event counter here. A single mutable sequence shared across Executions, callers
+  // and boundaries turns one principal's own receipt into an oracle for decisions taken in
+  // scopes it cannot observe: every accepted boundary and every refusal used to increment one
+  // `#acceptancePosition`, and the resulting number was exposed as `Receipt.position` and
+  // embedded in `Receipt.token`. Ordering therefore lives on the owning Execution record
+  // (`nextAcceptancePosition`/`nextRefusalPosition` below), Execution and Event identities are
+  // pure functions of the request identity that named them, and receipt tokens name the owning
+  // Execution plus its own acceptance index. Nothing one Execution's evidence exposes advances
+  // when an unrelated Execution is accepted or refused.
 
   constructor(options: CoordinatorOptions) {
     const capacity = options.mailboxCapacity ?? DEFAULT_MAILBOX_CAPACITY;
@@ -619,11 +640,19 @@ export class ExecutionCoordinator {
       );
     }
 
-    this.#executionsMinted += 1;
-    const executionId = `execution-${this.#executionsMinted}`;
-    const receipt = this.#mint("creation");
-    this.#eventsMinted += 1;
-    const eventId = `event-${this.#eventsMinted}`;
+    // K11-R12-ID-01: both identities are pure functions of the request identity that named
+    // them — the caller-scoped creation key for the Execution, the Input ID triple for the
+    // initial Event — so neither encodes how many unrelated Executions or Events already exist.
+    // Creation is always this Execution's first acceptance, hence position 1; the record below
+    // continues its own index at 2.
+    const executionId = `execution-${creationKeyIdKey(creationKey)}`;
+    const receipt = mintReceipt("creation", 1, executionId);
+    const initialInputId: InputId = {
+      producerNamespace: caller.namespace,
+      destination: executionId,
+      requestKey: creationKeyText,
+    };
+    const eventId = `event-${inputIdKey(initialInputId)}`;
 
     // Accepted content is immutable, so what is retained is the sealed copy validation made, never
     // the caller's own object. An application that keeps editing the value it passed in cannot change
@@ -632,7 +661,7 @@ export class ExecutionCoordinator {
 
     const entry: MailboxEntry = {
       eventId,
-      inputId: { producerNamespace: caller.namespace, destination: executionId, requestKey: creationKeyText },
+      inputId: initialInputId,
       contentIdentity: initial.identity,
       kind: initial.kind,
       payload: initial.payload.value,
@@ -672,6 +701,7 @@ export class ExecutionCoordinator {
       progressRevision: 0,
       activation: null,
       nextAcceptancePosition: 2,
+      nextRefusalPosition: 1,
       activationsMinted: 0,
     };
 
@@ -768,9 +798,8 @@ export class ExecutionCoordinator {
       );
     }
 
-    this.#eventsMinted += 1;
-    const eventId = `event-${this.#eventsMinted}`;
-    const receipt = this.#mint("input_ingress");
+    const eventId = `event-${inputIdKey(inputId)}`;
+    const receipt = this.#mint("input_ingress", record);
     const entry: MailboxEntry = {
       eventId,
       inputId,
@@ -778,11 +807,13 @@ export class ExecutionCoordinator {
       kind: content.value.kind,
       payload: content.value.payload.value,
       subscriptionClass: content.value.subscriptionClass,
-      acceptancePosition: record.nextAcceptancePosition,
+      // One accepted decision carries one acceptance number: the mailbox entry shares the
+      // receipt's position rather than consuming a second one (`#mint` above already advanced
+      // this Execution's index).
+      acceptancePosition: receipt.position,
       receipt,
       disposition: QUEUED,
     };
-    record.nextAcceptancePosition += 1;
     // `appendOwn`, not `.push` and not `mailbox[mailbox.length] = entry`: both are `[[Set]]` on a
     // position the mailbox does not own yet, and the payload capture above ran caller traps in this
     // tick that may have installed an inherited accessor at exactly that index name. A swallowed
@@ -874,7 +905,7 @@ export class ExecutionCoordinator {
     }
     record.activationsMinted += 1;
     const activationId = `${record.executionId}/activation-${record.activationsMinted}`;
-    const receipt = this.#mint("dispatch_intent");
+    const receipt = this.#mint("dispatch_intent", record);
 
     // The intent is frozen through the load-time reference and its member arrays are built with
     // index loops: a capture-time (or bound-getter) side effect may have replaced live
@@ -1019,9 +1050,17 @@ export class ExecutionCoordinator {
 
   // -- Internals -------------------------------------------------------------
 
-  #mint(boundary: ReceiptBoundary): Receipt {
-    this.#acceptancePosition += 1;
-    return mintReceipt(boundary, this.#acceptancePosition);
+  /**
+   * Mints the receipt for one accepted decision on the given Execution.
+   *
+   * The position consumed is that Execution's own acceptance index, never a shared
+   * coordinator sequence (K11-R12-ID-01). Replay and redelivery do not call this: they
+   * return the already-minted receipt unchanged.
+   */
+  #mint(boundary: ReceiptBoundary, record: ExecutionRecord): Receipt {
+    const position = record.nextAcceptancePosition;
+    record.nextAcceptancePosition += 1;
+    return mintReceipt(boundary, position, record.executionId);
   }
 
   /**
@@ -1057,9 +1096,14 @@ export class ExecutionCoordinator {
    * "what was returned" and "what was recorded" the same fact rather than two that could drift.
    */
   #refusal(classification: RefusalClassification, reason: string, record: ExecutionRecord | null): RefusalRecord {
-    this.#acceptancePosition += 1;
-    const refusal = mintRefusal(classification, reason, this.#acceptancePosition, record === null ? null : record.executionId);
-    if (record !== null) appendOwn(record.refusals, refusal);
+    // K11-R12-ID-01: a refusal advances only the owning Execution's own refusal index, and a
+    // refusal that names no Execution advances nothing at all — it carries position 0. Either
+    // way no caller-visible sequence moves for activity outside the caller's visible domain.
+    if (record === null) return mintRefusal(classification, reason, 0, null);
+    const position = record.nextRefusalPosition;
+    record.nextRefusalPosition += 1;
+    const refusal = mintRefusal(classification, reason, position, record.executionId);
+    appendOwn(record.refusals, refusal);
     return refusal;
   }
 

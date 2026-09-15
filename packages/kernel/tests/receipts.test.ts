@@ -131,23 +131,34 @@ describe("K1.1-C6 reads are authenticated and scoped first", () => {
     assert.deepEqual(kernel.visibleExecutions(outsider), []);
   });
 
-  test("the two refusals cost the same position, which is shape evidence rather than timing evidence", () => {
+  test("refusals that name no Execution advance nothing observable", () => {
     const kernel = coordinator();
     const created = accepted(kernel.createExecution(author, createRequest()));
     const outsider = caller("app-c", "tenant-c");
 
-    // Identical text is not enough: a record position that advances differently for the hidden case
-    // is a side channel of exactly the kind ID-8 forbids. Both orders are measured, so the check
-    // cannot be satisfied by a constant offset. This asserts record-position shape; the
-    // K11-R1-ID-01 cases below assert equal lookup *work* via scope-read counting, which is what
-    // distinguishes a missing fast path from a hidden scope search.
+    // K11-R12-ID-01: a refusal that names no Execution concerns no record and therefore orders
+    // against nothing. Its position is always 0 — identically for a hidden record and a missing
+    // one — so probing for another principal's Execution cannot move any caller-visible
+    // sequence. Both orders are measured, so the check cannot be satisfied by a constant
+    // offset. The K11-R1-ID-01 cases below assert equal lookup *work* via scope-read counting,
+    // which is what distinguishes a missing fast path from a hidden scope search.
     const hiddenFirst = refused(kernel.inspect(outsider, created.executionId));
     const missingAfter = refused(kernel.inspect(outsider, "execution-404"));
     const missingFirst = refused(kernel.inspect(outsider, "execution-405"));
     const hiddenAfter = refused(kernel.inspect(outsider, created.executionId));
 
-    assert.equal(missingAfter.position - hiddenFirst.position, 1, "an invisible Execution costs one position");
-    assert.equal(hiddenAfter.position - missingFirst.position, 1, "and so does one that does not exist");
+    assert.deepEqual({ ...hiddenFirst }, { ...missingAfter }, "hidden and missing refusals are identical");
+    assert.deepEqual({ ...missingFirst }, { ...hiddenAfter }, "in either order");
+    assert.equal(hiddenFirst.position, 0, "a refusal that names no Execution carries position 0");
+    assert.equal(hiddenFirst.executionId, null, "and names nothing");
+
+    // And the author's own Execution is undisturbed: its next acceptance still follows its own
+    // record order with no gap for the four refusals above.
+    const next = accepted(
+      kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 1 } }),
+    );
+    assert.equal(next.receipt.position, 2, "creation took 1; refusals take none");
+    assert.equal(next.acceptancePosition, 2);
   });
 
   test("a caller that holds the scope sees the Execution and its receipts", () => {
@@ -186,7 +197,12 @@ describe("K1.1-C6 reads are authenticated and scoped first", () => {
       const missingReads = missingCounter.reads();
 
       assert.equal(hidden.classification, "unknown_destination");
-      assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 });
+      // K11-R12-ID-01: unmasked on purpose. A refusal that names no Execution carries position
+      // 0 and names nothing, so masking `position` before comparing would hide a global
+      // sequence smuggled into exactly this path.
+      assert.deepEqual({ ...hidden }, { ...missing });
+      assert.equal(hidden.position, 0, "a refusal that names no Execution orders against nothing");
+      assert.equal(hidden.executionId, null, "and names nothing");
       assert.ok(hiddenReads > 0, "the hidden path really scans scopes");
       assert.equal(missingReads, hiddenReads, "a missing fast path that skipped the scan would read 0");
     });
@@ -249,21 +265,30 @@ describe("K1.1-C6 reads are authenticated and scoped first", () => {
       const hiddenIngressRefusal = refused(kernel.submitInput(hiddenIngress.caller, { destination: created.executionId, requestKey: "k", kind: "k", payload: null }));
       const missingIngress = countingCaller("app-c", ["tenant-c"]);
       const missingIngressRefusal = refused(kernel.submitInput(missingIngress.caller, { destination: "execution-404", requestKey: "k", kind: "k", payload: null }));
-      assert.deepEqual({ ...hiddenIngressRefusal, position: 0 }, { ...missingIngressRefusal, position: 0 });
+      // K11-R12-ID-01: unmasked — see the inspect case above.
+      assert.deepEqual({ ...hiddenIngressRefusal }, { ...missingIngressRefusal });
+      assert.equal(hiddenIngressRefusal.position, 0);
+      assert.equal(hiddenIngressRefusal.executionId, null);
       assert.equal(missingIngress.reads(), hiddenIngress.reads());
 
       const hiddenDispatch = countingCaller("app-c", ["tenant-c"]);
       const hiddenDispatchRefusal = refused(kernel.dispatch(hiddenDispatch.caller, created.executionId, { bound: 1 }));
       const missingDispatch = countingCaller("app-c", ["tenant-c"]);
       const missingDispatchRefusal = refused(kernel.dispatch(missingDispatch.caller, "execution-404", { bound: 1 }));
-      assert.deepEqual({ ...hiddenDispatchRefusal, position: 0 }, { ...missingDispatchRefusal, position: 0 });
+      // K11-R12-ID-01: unmasked — see the inspect case above.
+      assert.deepEqual({ ...hiddenDispatchRefusal }, { ...missingDispatchRefusal });
+      assert.equal(hiddenDispatchRefusal.position, 0);
+      assert.equal(hiddenDispatchRefusal.executionId, null);
       assert.equal(missingDispatch.reads(), hiddenDispatch.reads());
 
       const hiddenRedeliver = countingCaller("app-c", ["tenant-c"]);
       const hiddenRedeliverRefusal = refused(kernel.redeliver(hiddenRedeliver.caller, created.executionId));
       const missingRedeliver = countingCaller("app-c", ["tenant-c"]);
       const missingRedeliverRefusal = refused(kernel.redeliver(missingRedeliver.caller, "execution-404"));
-      assert.deepEqual({ ...hiddenRedeliverRefusal, position: 0 }, { ...missingRedeliverRefusal, position: 0 });
+      // K11-R12-ID-01: unmasked — see the inspect case above.
+      assert.deepEqual({ ...hiddenRedeliverRefusal }, { ...missingRedeliverRefusal });
+      assert.equal(hiddenRedeliverRefusal.position, 0);
+      assert.equal(hiddenRedeliverRefusal.executionId, null);
       assert.equal(missingRedeliver.reads(), hiddenRedeliver.reads());
     });
 

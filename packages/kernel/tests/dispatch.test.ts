@@ -238,7 +238,9 @@ describe("K1.1-C4 what one dispatch intent pins", () => {
 
     const hidden = refused(kernel.dispatch(outsider, created.executionId, { bound: 1 }));
     const missing = refused(kernel.dispatch(outsider, "execution-404", { bound: 1 }));
-    assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 });
+    // K11-R12-ID-01: unmasked — a refusal naming no Execution must be identical, position included.
+    assert.deepEqual({ ...hidden }, { ...missing });
+    assert.equal(hidden.position, 0);
 
     // K11-R1-SCOPE-01: dispatch to a terminal destination remains refused with
     // `terminal_destination`, but no terminal state is reachable in K1.1 — manufacturing one
@@ -413,7 +415,9 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
 
     const hidden = refused(kernel.redeliver(outsider, created.executionId));
     const missing = refused(kernel.redeliver(outsider, "execution-404"));
-    assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 });
+    // K11-R12-ID-01: unmasked — see the dispatch case above.
+    assert.deepEqual({ ...hidden }, { ...missing });
+    assert.equal(hidden.position, 0);
   });
 
   test("nothing in this packet advances a writer epoch", () => {

@@ -110,7 +110,9 @@ describe("K1.1-C9 what a reader can see", () => {
     const outsider = caller("app-c", "tenant-c");
     const hidden = refused(kernel.inspect(outsider, executionId));
     const missing = refused(kernel.inspect(outsider, "execution-404"));
-    assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 });
+    // K11-R12-ID-01: unmasked — hidden and missing refusals must be identical, position included.
+    assert.deepEqual({ ...hidden }, { ...missing });
+    assert.equal(hidden.position, 0);
   });
 
   test("K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound", () => {

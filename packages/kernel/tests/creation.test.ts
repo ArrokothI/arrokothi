@@ -505,7 +505,8 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
 
     const hidden = refused(kernel.inspect(outsider, created.executionId));
     const missing = refused(kernel.inspect(outsider, "execution-does-not-exist"));
-    assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 }, "the two refusals are indistinguishable");
+    assert.deepEqual({ ...hidden }, { ...missing }, "the two refusals are indistinguishable");
+    assert.equal(hidden.position, 0, "K11-R12-ID-01: unmasked — a refusal naming no Execution orders against nothing");
     assert.deepEqual(kernel.visibleExecutions(outsider), []);
   });
 

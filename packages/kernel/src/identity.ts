@@ -122,7 +122,16 @@ export interface Receipt {
   readonly boundary: ReceiptBoundary;
   /** Opaque to callers; its spelling is implementation-owned. */
   readonly token: string;
-  /** This coordinator's acceptance position, which orders accepted facts within it. */
+  /**
+   * This Execution's acceptance position, which orders accepted facts within it.
+   *
+   * `identity.md` is explicit that an acceptance position orders accepted facts within the
+   * owning record/domain and is not a global clock. A receipt's position is therefore the
+   * owning Execution's own acceptance index — creation is 1, each later accepted boundary on
+   * that Execution consumes the next — and carries no information about decisions on any other
+   * Execution. Two receipts on different Executions may hold the same numeric position without
+   * naming the same decision; the token below keeps them distinct.
+   */
   readonly position: number;
 }
 
@@ -147,11 +156,19 @@ const BOUNDARY_PREFIX: Record<ReceiptBoundary, string> = {
  * Without this, ordinary JavaScript could cast away `readonly`, edit a returned receipt's token, and
  * have the Kernel's own later replay and inspection report the edited value as the decision it had
  * retained (K11-R2-EVID-01).
+ *
+ * K11-R12-ID-01: the token and the position together must not encode a coordinator-global order.
+ * A previous revision minted `token` as `prefix:globalPosition` off one coordinator-wide counter
+ * shared with refusals, so one principal's own receipt disclosed how many decisions had happened
+ * in scopes it cannot observe. The token is therefore `prefix:owningExecution:position`: a pure
+ * function of the owning Execution's identity and that Execution's own acceptance index. It is
+ * unique per accepted decision — no two receipts on one Execution share a position, and no two
+ * Executions share an identity — while revealing nothing about any other Execution's activity.
  */
-export const mintReceipt = (boundary: ReceiptBoundary, position: number): Receipt =>
+export const mintReceipt = (boundary: ReceiptBoundary, position: number, executionId: string): Receipt =>
   PrimordialObjectFreeze({
     boundary,
-    token: `${BOUNDARY_PREFIX[boundary]}:${position}`,
+    token: `${BOUNDARY_PREFIX[boundary]}:${executionId}:${position}`,
     position,
   });
 

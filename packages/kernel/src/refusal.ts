@@ -48,10 +48,15 @@ export interface RefusalRecord {
   /** Human-readable and specific; the classification is what code should branch on. */
   readonly reason: string;
   /**
-   * Where this refusal sits in the coordinator's record order.
+   * Where this refusal sits in the record order of the Execution it concerns.
    *
-   * It shares one monotonic counter with receipt positions so refusals and acceptances can be read
-   * in the order they happened. It is a record position, not an acceptance: nothing was accepted.
+   * K11-R12-ID-01: this is the owning Execution's own refusal index — the first recorded refusal
+   * against an Execution is 1, each later one consumes the next — and it shares no counter with
+   * receipt positions, so acceptances cannot gap around refusals and refusals cannot gap around
+   * acceptances. A refusal that names no Execution (`executionId` below is `null`) concerns no
+   * record and therefore orders against nothing: its position is always 0, identically for a
+   * hidden record and a missing one. It is a record position, not an acceptance: nothing was
+   * accepted.
    */
   readonly position: number;
   /** The Execution the refusal concerns, when the caller was allowed to learn there is one. */

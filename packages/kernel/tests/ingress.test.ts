@@ -280,7 +280,9 @@ describe("K1.1-C2 the triple keeps unrelated requests apart", () => {
     const { executionId } = start(kernel);
     const missing = refused(kernel.submitInput(author, input("execution-404", { requestKey: "a" })));
     const nonText = refused(kernel.submitInput(author, input({ destination: executionId } as never, { requestKey: "a" })));
-    assert.deepEqual({ ...nonText, position: 0 }, { ...missing, position: 0 }, "the same answer as any destination that does not exist");
+    // K11-R12-ID-01: unmasked — the non-text destination must give the same answer, position included.
+    assert.deepEqual({ ...nonText }, { ...missing }, "the same answer as any destination that does not exist");
+    assert.equal(nonText.position, 0);
   });
 
   test("no packing of the three parts can make two identities collide", () => {
@@ -318,7 +320,8 @@ describe("K1.1-C2 destinations that refuse", () => {
     const hidden = refused(kernel.submitInput(outsider, input(executionId)));
     const missing = refused(kernel.submitInput(outsider, input("execution-404")));
     assert.equal(hidden.classification, "unknown_destination");
-    assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 });
+    // K11-R12-ID-01: unmasked — see the non-text case above.
+    assert.deepEqual({ ...hidden }, { ...missing });
     assert.equal(hidden.executionId, null, "the refusal does not name an Execution the caller cannot see");
     assert.equal(view(kernel, executionId).refusals.length, 0, "and records nothing against it");
   });
