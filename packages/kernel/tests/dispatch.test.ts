@@ -530,6 +530,54 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     }
   });
 
+  test("K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const realFreeze = Object.freeze;
+    // The input reads coherently while disabling the operation a later dispatch uses to seal its
+    // exchange. Identity is correct — what is under test is that the Activation handed to the
+    // Driver is actually immutable.
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Object as unknown as Record<string, unknown>).freeze = (value: unknown) => value;
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    let created: { executionId: string; initialEventId: string };
+    try {
+      created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "state-freeze", initialInput: { kind: "k", payload: sneaky as never } }),
+        ),
+      );
+      assert.notEqual(Object.freeze, realFreeze, "the replacement was live across the boundary call");
+      // The replacement stays live through the later dispatch below: the review witness requires
+      // the Activation sealed *after* the pollution, not after a cleanup.
+      accepted(kernel.dispatch(author, created!.executionId, { bound: 1 }));
+      const activation = driver.seen[0];
+      assert.ok(activation, "the Driver received the exchange");
+      assert.ok(Object.isFrozen(activation), "the Activation itself is frozen");
+      assert.ok(Object.isFrozen(activation!.events), "its Event batch is frozen");
+      assert.ok(Object.isFrozen(activation!.events[0]), "each carried Event is frozen");
+      assert.throws(() => {
+        (activation as unknown as { activationId: string }).activationId = "activation-forged";
+      }, TypeError);
+      assert.throws(() => {
+        (activation!.events[0] as unknown as { kind: string }).kind = "forged";
+      }, TypeError);
+      // Redelivery therefore re-sends an exchange no Driver mutation could have altered.
+      accepted(kernel.redeliver(author, created!.executionId));
+      assert.equal(driver.seen[1], activation, "redelivery re-sends the same frozen Activation");
+      assert.deepEqual(accepted(kernel.inspect(author, created!.executionId)).mailbox[0]?.payload, { a: 1 });
+    } finally {
+      (Object as unknown as Record<string, unknown>).freeze = realFreeze;
+    }
+  });
+
   test("K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution", () => {
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });

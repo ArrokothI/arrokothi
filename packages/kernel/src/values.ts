@@ -94,6 +94,17 @@ const PrimordialGetPrototypeOf = Object.getPrototypeOf;
 const PrimordialObjectCreate = Object.create;
 const PrimordialObjectFreeze = Object.freeze;
 const PrimordialObjectIs = Object.is;
+/**
+ * The genuine `Object.prototype`, captured before any caller code runs.
+ *
+ * `captureObject` must compare the observed prototype against this, never against a live
+ * `Object.prototype` read: the `getPrototypeOf` observation itself runs a caller-controlled trap
+ * that can replace `globalThis.Object` and return the replacement's prototype, which would then
+ * compare equal to the live `Object.prototype` while being neither primordial nor null
+ * (K11-R5-VAL-03). `Object.prototype` is non-writable/non-configurable and so cannot be swapped
+ * in place — but the *binding* `globalThis.Object` can, which is what the live comparison reads.
+ */
+const PrimordialObjectPrototype = Object.prototype;
 const PrimordialGetOwnPropertySymbols = Object.getOwnPropertySymbols;
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialJSONStringify = JSON.stringify;
@@ -109,6 +120,18 @@ const PrimordialSetHas = Set.prototype.has;
 const PrimordialSetAdd = Set.prototype.add;
 const PrimordialSetDelete = Set.prototype.delete;
 const PrimordialStringCharCodeAt = String.prototype.charCodeAt;
+/**
+ * Own-property existence without consulting the prototype chain.
+ *
+ * The `in` operator consults inherited members: a trap can pollute `Object.prototype` with a
+ * `value` member mid-pass, making an accessor descriptor (which owns no `value`) pass a
+ * `"value" in descriptor` test, after which `descriptor.value` reads the pollution as if it were
+ * owned data. Every data-descriptor test below therefore uses this own-check instead of `in`
+ * (K11-R5-VAL-03 capture-path re-audit). It runs through load-time references only.
+ */
+const PrimordialHasOwnProperty = Object.prototype.hasOwnProperty;
+const hasOwnValue = (holder: object): boolean =>
+  PrimordialReflectApply(PrimordialHasOwnProperty, holder, ["value"]) as boolean;
 const PrimordialBufferByteLength = Buffer.byteLength;
 const PrimordialGlobalThis = globalThis;
 
@@ -375,7 +398,7 @@ function describedValue(
     });
     return { ok: false };
   }
-  if (!("value" in descriptor)) {
+  if (!hasOwnValue(descriptor)) {
     pushIssue(state.issues, { path, code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" });
     return { ok: false };
   }
@@ -491,7 +514,7 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   const lengthRead: unknown = (container as { length: unknown }).length;
   if (
     lengthDescriptor === undefined ||
-    !("value" in lengthDescriptor) ||
+    !hasOwnValue(lengthDescriptor) ||
     !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||
     typeof lengthRead !== "number"
   ) {
@@ -605,8 +628,14 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
 
 /** The object half of `capture`. Members come from own enumerable string-keyed data properties. */
 function captureObject(container: object, path: string, entered: number, state: CaptureState): Captured {
+  // Both sides of this comparison are independent of caller-mutable state: the observation uses
+  // the load-time `getPrototypeOf`, and the plain prototype is the load-time object, not a live
+  // `globalThis.Object` read the trap itself may just have replaced (K11-R5-VAL-03). A trap that
+  // returns a non-primordial, non-null prototype is refused here rather than normalized; a trap
+  // that returns the primordial prototype (or null) yields a genuinely plain snapshot, whatever
+  // else the trap did — and everything downstream of capture uses primordials only.
   const prototype = PrimordialGetPrototypeOf(container) as object | null;
-  if (prototype !== Object.prototype && prototype !== null) {
+  if (prototype !== PrimordialObjectPrototype && prototype !== null) {
     pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
     return REFUSED;
   }
@@ -777,7 +806,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
   if (PrimordialArrayIsArray(value)) {
     const lengthDescriptor = PrimordialGetOwnPropertyDescriptor(value, "length");
     const length =
-      lengthDescriptor !== undefined && "value" in lengthDescriptor && typeof lengthDescriptor.value === "number"
+      lengthDescriptor !== undefined && hasOwnValue(lengthDescriptor) && typeof lengthDescriptor.value === "number"
         ? lengthDescriptor.value
         : (value as unknown[]).length;
     const out: unknown[] = new PrimordialArray(length);
@@ -786,7 +815,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
       // Snapshots are dense own-data by construction; a missing descriptor here is unreachable.
       // Fall back to `undefined` rather than an ordinary read so no prototype is ever consulted.
       const child: BoundaryValue =
-        descriptor !== undefined && "value" in descriptor ? (descriptor.value as BoundaryValue) : (undefined as unknown as BoundaryValue);
+        descriptor !== undefined && hasOwnValue(descriptor) ? (descriptor.value as BoundaryValue) : (undefined as unknown as BoundaryValue);
       PrimordialDefineProperty(out, `${index}`, {
         value: toSerializationSafe(child),
         writable: true,
@@ -802,13 +831,13 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
       const self = this as unknown[];
       const lengthDescriptorInner = PrimordialGetOwnPropertyDescriptor(self, "length");
       const innerLength =
-        lengthDescriptorInner !== undefined && "value" in lengthDescriptorInner && typeof lengthDescriptorInner.value === "number"
+        lengthDescriptorInner !== undefined && hasOwnValue(lengthDescriptorInner) && typeof lengthDescriptorInner.value === "number"
           ? lengthDescriptorInner.value
           : self.length;
       const result: unknown[] = new PrimordialArray(innerLength);
       for (let innerIndex = 0; innerIndex < innerLength; innerIndex += 1) {
         const innerDescriptor = PrimordialGetOwnPropertyDescriptor(self, `${innerIndex}`);
-        const innerValue = innerDescriptor !== undefined && "value" in innerDescriptor ? innerDescriptor.value : undefined;
+        const innerValue = innerDescriptor !== undefined && hasOwnValue(innerDescriptor) ? innerDescriptor.value : undefined;
         result[innerIndex] = callback(innerValue, innerIndex, self);
       }
       return result;
@@ -821,7 +850,7 @@ function toSerializationSafe(value: BoundaryValue): BoundaryValue {
   for (let keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
     const key = keys[keyIndex] as string;
     const descriptor = PrimordialGetOwnPropertyDescriptor(value, key);
-    if (descriptor === undefined || !("value" in descriptor)) continue;
+    if (descriptor === undefined || !hasOwnValue(descriptor)) continue;
     PrimordialDefineProperty(out, key, {
       value: toSerializationSafe(descriptor.value as BoundaryValue),
       writable: true,

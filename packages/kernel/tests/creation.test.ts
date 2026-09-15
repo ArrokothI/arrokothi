@@ -397,6 +397,78 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.equal(conflict.classification, "duplicate_conflict");
   });
 
+  test("K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const RealObject = Object;
+    const Fake = function Fake(this: unknown) {};
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      getPrototypeOf() {
+        (globalThis as unknown as Record<string, unknown>).Object = Fake;
+        return (Fake as unknown as { prototype: object }).prototype;
+      },
+    });
+    let refusal: { classification: string };
+    try {
+      refusal = refused(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "foreign-proto", initialInput: { kind: "k", payload: sneaky as never } }),
+        ),
+      );
+    } finally {
+      (globalThis as unknown as Record<string, unknown>).Object = RealObject;
+    }
+    assert.equal(refusal!.classification, "malformed_value");
+    assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created from the refused value");
+  });
+
+  test("K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const realSet = Map.prototype.set;
+    // Coherent on the one reading capture takes, while the read disables the commit path's own
+    // collection operation. Bytes and identity are correct — what is under test is retention.
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Map.prototype as unknown as Record<string, unknown>).set = function (this: unknown) {
+            return this;
+          };
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    let created: { executionId: string; initialEventId: string; replayed: boolean };
+    try {
+      created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "state-map", initialInput: { kind: "k", payload: sneaky as never } }),
+        ),
+      );
+      assert.notEqual(Map.prototype.set, realSet, "the no-op was live across the boundary call");
+    } finally {
+      (Map.prototype as unknown as Record<string, unknown>).set = realSet;
+    }
+    assert.equal(created!.replayed, false);
+    // The receipt must have a retained decision behind it: exact replay returns the same
+    // Execution (a dropped commit would mint a second Execution here), and inspection shows it.
+    const replay = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({ creationKey: "state-map", initialInput: { kind: "k", payload: { a: 1 } as never } }),
+      ),
+    );
+    assert.equal(replay.replayed, true, "the creation decision was actually retained");
+    assert.equal(replay.executionId, created!.executionId);
+    const view = accepted(kernel.inspect(author, created!.executionId));
+    assert.equal(view.state, "READY");
+    assert.deepEqual(view.mailbox[0]?.payload, { a: 1 });
+    assert.deepEqual(kernel.visibleExecutions(author), [created!.executionId]);
+  });
+
   test("the payload cannot supply or change the producer namespace", () => {
     const kernel = coordinator();
     const impersonating = {

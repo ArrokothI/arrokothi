@@ -812,4 +812,37 @@ describe("K11-R2-VAL-02 serializer execution environment is caller-independent (
     assert.ok(result!.ok);
     assert.equal(result!.ok && result!.value.canonical, '{"list":[1,2]}', "array bytes survive prototype replacement too, not only Object.keys");
   });
+
+  test("K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain", () => {
+    const RealObject = Object;
+    const realProto = Object.prototype;
+    // A fresh constructor whose prototype is neither the primordial object prototype nor null.
+    const Fake = function Fake(this: unknown) {};
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      getPrototypeOf() {
+        // The observation itself replaces the live binding, then returns the replacement's
+        // prototype. Against a live `Object.prototype` read this compares equal and passes as
+        // plain; the retained snapshot would then inherit the foreign prototype.
+        (globalThis as unknown as Record<string, unknown>).Object = Fake;
+        return (Fake as unknown as { prototype: object }).prototype;
+      },
+    });
+    let issues: ReturnType<typeof boundaryValueIssues>;
+    let secondOk: boolean | undefined;
+    try {
+      issues = boundaryValueIssues(sneaky);
+      assert.notEqual((globalThis as unknown as Record<string, unknown>).Object, RealObject, "the swap was live across the boundary call");
+      // The trap fires again here and re-installs the swap; the finally below restores it.
+      secondOk = canonicalize(sneaky).ok;
+    } finally {
+      (globalThis as unknown as Record<string, unknown>).Object = RealObject;
+    }
+    assert.ok(issues!.length > 0, "a foreign prototype is refused, not normalized into a plain snapshot");
+    assert.ok(
+      issues!.some((issue) => issue.code === "unsupported_form"),
+      `the refusal names the non-plain form, got ${JSON.stringify(issues)}`,
+    );
+    assert.equal(secondOk, false, "it produces no canonical identity");
+    assert.equal(Object.prototype, realProto, "the live binding is restored for later tests");
+  });
 });

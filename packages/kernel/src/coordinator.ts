@@ -66,15 +66,59 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue 
 /**
  * Load-time references used on paths that run after caller-owned state has been observed.
  *
- * A capture-time side effect (installed while `canonicalize` observes a hostile value) can
- * replace `Number.isInteger` or `Array.prototype` methods before the validation below runs in
- * the same tick. The dispatch-bound decision and the refusal formatters therefore use only
- * these references — and index loops with index assignment rather than `map`/`join`/`push` —
- * so an observed-then-validated field cannot be steered between its validation and its use
- * (K11-R4-DISP-01) and a refusal cannot be turned into a leaked exception.
+ * K11-R5-STATE-01: a capture-time side effect (installed while `canonicalize` observes a hostile
+ * value) can replace *any* mutable builtin or prototype method before the commit below runs in
+ * the same tick — `Map.prototype.set`, `Object.freeze`, `Array.prototype.push/map/filter`, `Set`,
+ * `Promise.prototype.then`, and the rest. The serializer sandbox (values.ts) does not cover these
+ * because they are not serializer dependencies; yet they decide whether the accepted fact is
+ * retained, whether a receipt has a decision behind it, whether an Event is queued, and whether
+ * an Activation is actually immutable.
+ *
+ * The class-closing rule is therefore total, not a per-method blacklist: from the first caller
+ * observation until the atomic decision is completely recorded — and on every replay, redelivery
+ * and inspection projection of that decision — this module consults **no live global, no live
+ * prototype method, no iteration protocol and no promise machinery**. Everything below comes from
+ * these load-time references, index loops and index assignment. Completeness is verifiable by
+ * inspection: no `new Map/Set`, no `.get/.set/.has/.push/.map/.filter/.slice`, no `for...of`, no
+ * array/object-iterator spread and no bare `Object.freeze`/`Promise` remains on these paths.
+ * (Object *spread* of plain Kernel records copies own data without an iterator and is kept;
+ * Driver-supplied values and the host-authenticated caller are trusted inputs, not caller
+ * observations, and are documented where used.)
  */
 const PrimordialNumberIsInteger = Number.isInteger;
 const PrimordialArrayIsArray = Array.isArray;
+const PrimordialObjectFreeze = Object.freeze;
+const PrimordialReflectApply = Reflect.apply;
+const PrimordialMap = Map;
+const PrimordialPromise = Promise;
+const PrimordialMapGet = Map.prototype.get;
+const PrimordialMapSet = Map.prototype.set;
+const PrimordialMapForEach = Map.prototype.forEach;
+const PrimordialPromiseResolve = Promise.resolve;
+const PrimordialPromiseThen = Promise.prototype.then;
+
+/** `Map.get` without consulting the (possibly replaced) live prototype method. */
+const mapGet = <K, V>(map: Map<K, V>, key: K): V | undefined =>
+  PrimordialReflectApply(PrimordialMapGet, map, [key]) as V | undefined;
+
+/** `Map.set` without consulting the (possibly replaced) live prototype method. */
+const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
+  PrimordialReflectApply(PrimordialMapSet, map, [key, value]);
+};
+
+/** Copies an array without spread iteration, `slice`, or any other prototype method. */
+const copyArray = <T>(source: readonly T[]): T[] => {
+  const out: T[] = [];
+  for (let index = 0; index < source.length; index += 1) out[out.length] = source[index] as T;
+  return out;
+};
+
+/** Projects an array with an index loop instead of `Array.prototype.map`. */
+const copyMapped = <T, U>(source: readonly T[], project: (item: T) => U): U[] => {
+  const out: U[] = [];
+  for (let index = 0; index < source.length; index += 1) out[out.length] = project(source[index] as T);
+  return out;
+};
 
 /** Single-observation append for refusal issue lists (see the note above). */
 const appendIssue = (target: ValueIssue[], issue: ValueIssue): void => {
@@ -243,7 +287,7 @@ const DEFAULT_MAILBOX_CAPACITY = 1_024;
  * record their own dispositions by *replacing* an entry's disposition with a new frozen value, which
  * is why `MailboxEntry.disposition` stays a writable field while the object it names does not.
  */
-const QUEUED: MailboxDisposition = Object.freeze({ kind: "queued" });
+const QUEUED: MailboxDisposition = PrimordialObjectFreeze({ kind: "queued" });
 
 const describeFailure = (reason: unknown): string => {
   try {
@@ -297,7 +341,10 @@ const located = (issues: readonly ValueIssue[], label: string): ValueIssue[] => 
   const out: ValueIssue[] = [];
   for (let index = 0; index < issues.length; index += 1) {
     const issue = issues[index] as ValueIssue;
-    const path = issue.path === "" ? label : issue.path.startsWith("[") ? `${label}${issue.path}` : `${label}.${issue.path}`;
+    // Index read, not `String.prototype.startsWith`: refusal formatting runs after caller
+    // observation in the same tick, and the method is caller-replaceable.
+    const bracketed = issue.path.length > 0 && (issue.path[0] as string) === "[";
+    const path = issue.path === "" ? label : bracketed ? `${label}${issue.path}` : `${label}.${issue.path}`;
     out[out.length] = { ...issue, path };
   }
   return out;
@@ -456,8 +503,8 @@ function acceptCreationContent(
 export class ExecutionCoordinator {
   readonly #driver: ExecutionDriver;
   readonly #mailboxCapacity: number;
-  readonly #executions = new Map<string, ExecutionRecord>();
-  readonly #byCreationKey = new Map<string, ExecutionRecord>();
+  readonly #executions = new PrimordialMap<string, ExecutionRecord>();
+  readonly #byCreationKey = new PrimordialMap<string, ExecutionRecord>();
   #acceptancePosition = 0;
   #executionsMinted = 0;
   #eventsMinted = 0;
@@ -532,7 +579,7 @@ export class ExecutionCoordinator {
       scope,
       requestKey: creationKeyText,
     };
-    const existing = this.#byCreationKey.get(creationKeyIdKey(creationKey));
+    const existing = mapGet(this.#byCreationKey, creationKeyIdKey(creationKey));
     if (existing !== undefined) {
       if (existing.creationIdentity === content.value.identity) {
         return ok({
@@ -576,6 +623,13 @@ export class ExecutionCoordinator {
       disposition: QUEUED,
     };
 
+    // The commit below uses primordial collection operations only. Content observation above ran
+    // caller traps in this tick, which may have replaced `Map.prototype.set` (or any sibling)
+    // before these lines run: a live `.set` that silently drops the write would return an accepted
+    // Execution ID and receipt with no retained decision behind them (K11-R5-STATE-01).
+    const byInputId = new PrimordialMap<string, MailboxEntry>();
+    mapSet(byInputId, inputIdKey(entry.inputId), entry);
+
     const record: ExecutionRecord = {
       executionId,
       scope: content.value.scope,
@@ -588,7 +642,7 @@ export class ExecutionCoordinator {
       creationReceipt: receipt,
       initialEventId: eventId,
       mailbox: [entry],
-      byInputId: new Map([[inputIdKey(entry.inputId), entry]]),
+      byInputId,
       refusals: [],
       receipts: [receipt],
       // No externally visible CREATED: the Execution is READY the moment creation is accepted.
@@ -600,8 +654,8 @@ export class ExecutionCoordinator {
       activationsMinted: 0,
     };
 
-    this.#executions.set(executionId, record);
-    this.#byCreationKey.set(creationKeyIdKey(creationKey), record);
+    mapSet(this.#executions, executionId, record);
+    mapSet(this.#byCreationKey, creationKeyIdKey(creationKey), record);
     return ok({ executionId, receipt, replayed: false, initialEventId: eventId });
   }
 
@@ -647,7 +701,7 @@ export class ExecutionCoordinator {
       destination: record.executionId,
       requestKey,
     };
-    const existing = record.byInputId.get(inputIdKey(inputId));
+    const existing = mapGet(record.byInputId, inputIdKey(inputId));
     if (existing !== undefined) {
       if (existing.contentIdentity === content.value.identity) {
         return ok({
@@ -708,9 +762,10 @@ export class ExecutionCoordinator {
       disposition: QUEUED,
     };
     record.nextAcceptancePosition += 1;
-    record.mailbox.push(entry);
-    record.byInputId.set(inputIdKey(inputId), entry);
-    record.receipts.push(receipt);
+    // Index assignment, not `.push`: same-tick capture side effects may have replaced the method.
+    record.mailbox[record.mailbox.length] = entry;
+    mapSet(record.byInputId, inputIdKey(inputId), entry);
+    record.receipts[record.receipts.length] = receipt;
 
     return ok({
       eventId,
@@ -786,7 +841,19 @@ export class ExecutionCoordinator {
     const activationId = `${record.executionId}/activation-${record.activationsMinted}`;
     const receipt = this.#mint("dispatch_intent");
 
-    const activation: Activation = Object.freeze({
+    // The intent is frozen through the load-time reference and its member arrays are built with
+    // index loops: a capture-time (or bound-getter) side effect may have replaced live
+    // `Object.freeze`/`Array.prototype.map` before these lines run, which would hand the Driver a
+    // mutable exchange whose later mutation reappears on redelivery (K11-R5-STATE-01).
+    const carriedEvents: ActivationEvent[] = [];
+    for (let index = 0; index < selected.length; index += 1) {
+      carriedEvents[carriedEvents.length] = toActivationEvent(selected[index] as MailboxEntry);
+    }
+    const batchIds: string[] = [];
+    for (let index = 0; index < selected.length; index += 1) {
+      batchIds[batchIds.length] = (selected[index] as MailboxEntry).eventId;
+    }
+    const activation: Activation = PrimordialObjectFreeze({
       executionId: record.executionId,
       activationId,
       // A new exchange starts its own attempt ordering. `identity.md` leaves whether the counter
@@ -798,19 +865,19 @@ export class ExecutionCoordinator {
       definitionRevision: record.definitionRevision,
       progressCodec: record.progressCodec,
       acceptedProgress: record.acceptedProgress,
-      events: Object.freeze(selected.map(toActivationEvent)),
+      events: PrimordialObjectFreeze(carriedEvents),
       executionView: record.authorityContext,
     });
 
     const intent: ActivationRecord = {
       activation,
       receipt,
-      batch: Object.freeze(selected.map((entry) => entry.eventId)),
+      batch: PrimordialObjectFreeze(batchIds),
       deliveries: [],
     };
     record.activation = intent;
     record.state = "RUNNING";
-    record.receipts.push(receipt);
+    record.receipts[record.receipts.length] = receipt;
 
     this.#deliver(intent);
 
@@ -880,9 +947,14 @@ export class ExecutionCoordinator {
    */
   visibleExecutions(caller: AuthenticatedCaller): readonly string[] {
     const visible: string[] = [];
-    for (const record of this.#executions.values()) {
-      if (mayReachScope(caller, record.scope)) visible.push(record.executionId);
-    }
+    // `Map.forEach` through the load-time reference: neither the `values()` iterator protocol
+    // (`Symbol.iterator`) nor `Array.prototype.push` is consulted, so persistent ambient pollution
+    // from an earlier boundary observation cannot hide or duplicate listed IDs.
+    PrimordialReflectApply(PrimordialMapForEach, this.#executions, [
+      (record: ExecutionRecord) => {
+        if (mayReachScope(caller, record.scope)) visible[visible.length] = record.executionId;
+      },
+    ]);
     return visible;
   }
 
@@ -940,7 +1012,7 @@ export class ExecutionCoordinator {
    * string or hash-table behavior, which JavaScript does not provide; see `identity.ts`.
    */
   #visible(caller: AuthenticatedCaller, executionId: string): ExecutionRecord | null {
-    const record = this.#executions.get(executionId);
+    const record = mapGet(this.#executions, executionId);
     const targetScope = record !== undefined ? record.scope : MISSING_SCOPE_SENTINEL;
     if (!mayReachScope(caller, targetScope)) return null;
     return record ?? null;
@@ -956,7 +1028,7 @@ export class ExecutionCoordinator {
   #refusal(classification: RefusalClassification, reason: string, record: ExecutionRecord | null): RefusalRecord {
     this.#acceptancePosition += 1;
     const refusal = mintRefusal(classification, reason, this.#acceptancePosition, record === null ? null : record.executionId);
-    if (record !== null) record.refusals.push(refusal);
+    if (record !== null) record.refusals[record.refusals.length] = refusal;
     return refusal;
   }
 
@@ -969,18 +1041,28 @@ export class ExecutionCoordinator {
    */
   #deliver(intent: ActivationRecord): void {
     const attempt: DeliveryAttempt = { attempt: intent.deliveries.length + 1, status: "pending", failure: null };
-    intent.deliveries.push(attempt);
+    intent.deliveries[intent.deliveries.length] = attempt;
     try {
       const settled: unknown = this.#driver.deliver(intent.activation);
       if (isThenable(settled)) {
-        void Promise.resolve(settled).then(
-          () => {
-            attempt.status = "delivered";
-          },
-          (reason: unknown) => {
-            attempt.status = "failed";
-            attempt.failure = describeFailure(reason);
-          },
+        // Promise machinery through load-time references: a caller-observation side effect earlier
+        // in the dispatch tick (e.g. the bound getter) may have replaced global `Promise` or
+        // `Promise.prototype.then` before this line runs. `settled` itself is Driver-supplied
+        // (host-trusted), but the machinery that observes it must not be caller-steerable, or a
+        // throw here would escape dispatch after the intent was already recorded.
+        const observed = PrimordialReflectApply(PrimordialPromiseResolve, PrimordialPromise, [settled]);
+        void PrimordialReflectApply(
+          PrimordialPromiseThen,
+          observed,
+          [
+            () => {
+              attempt.status = "delivered";
+            },
+            (reason: unknown) => {
+              attempt.status = "failed";
+              attempt.failure = describeFailure(reason);
+            },
+          ],
         );
         return;
       }
@@ -1011,7 +1093,7 @@ const toActivationEvent = (entry: MailboxEntry): ActivationEvent => {
     sourceCategory: "application_input",
     acceptancePosition: entry.acceptancePosition,
   } as const;
-  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });
+  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });
 };
 
 const toDeliveryView = (attempt: DeliveryAttempt): DeliveryAttemptView => ({
@@ -1024,12 +1106,12 @@ const toActivationView = (intent: ActivationRecord): ActivationView => ({
   activationId: intent.activation.activationId,
   writerEpoch: intent.activation.writerEpoch,
   baseProgressRevision: intent.activation.baseProgressRevision,
-  batch: [...intent.batch],
+  batch: copyArray(intent.batch),
   receipt: intent.receipt,
-  deliveries: intent.deliveries.map(toDeliveryView),
+  deliveries: copyMapped(intent.deliveries, toDeliveryView),
 });
 
-const toMailboxView = (entry: MailboxEntry, reserved: ReadonlySet<string>): MailboxEntryView => ({
+const toMailboxView = (entry: MailboxEntry, isReserved: (eventId: string) => boolean): MailboxEntryView => ({
   eventId: entry.eventId,
   inputId: { ...entry.inputId },
   kind: entry.kind,
@@ -1038,12 +1120,31 @@ const toMailboxView = (entry: MailboxEntry, reserved: ReadonlySet<string>): Mail
   sourceCategory: "application_input",
   acceptancePosition: entry.acceptancePosition,
   disposition: entry.disposition,
-  reserved: reserved.has(entry.eventId),
+  reserved: isReserved(entry.eventId),
   receipt: entry.receipt,
 });
 
 function viewOf(record: ExecutionRecord): ExecutionView {
-  const reserved = new Set(record.activation === null ? [] : record.activation.batch);
+  // Membership over the reserved batch without constructing a `Set` (global `Set` and
+  // `Set.prototype.has` are both caller-mutable) and without any prototype method: batches are
+  // small and bounded by the mailbox capacity, so a linear scan is exact and dependency-free.
+  const batch = record.activation === null ? null : record.activation.batch;
+  const isReserved = (eventId: string): boolean => {
+    if (batch === null) return false;
+    for (let index = 0; index < batch.length; index += 1) {
+      if ((batch[index] as string) === eventId) return true;
+    }
+    return false;
+  };
+  const mailbox: MailboxEntryView[] = [];
+  const queued: string[] = [];
+  const terminalDispositions: string[] = [];
+  for (let index = 0; index < record.mailbox.length; index += 1) {
+    const entry = record.mailbox[index] as MailboxEntry;
+    mailbox[mailbox.length] = toMailboxView(entry, isReserved);
+    if (entry.disposition.kind === "queued") queued[queued.length] = entry.eventId;
+    else if (entry.disposition.kind === "terminal") terminalDispositions[terminalDispositions.length] = entry.eventId;
+  }
   return {
     executionId: record.executionId,
     state: record.state,
@@ -1056,13 +1157,13 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     progressRevision: record.progressRevision,
     authorityContext: record.authorityContext,
     activation: record.activation === null ? null : toActivationView(record.activation),
-    mailbox: record.mailbox.map((entry) => toMailboxView(entry, reserved)),
-    queued: record.mailbox.filter((entry) => entry.disposition.kind === "queued").map((entry) => entry.eventId),
+    mailbox,
+    queued,
     // Acknowledgment arrives with Outcome acceptance (K1.2). Nothing in this packet produces one,
     // and reporting an empty list is the truthful answer rather than an omitted field.
     acknowledged: [],
-    terminalDispositions: record.mailbox.filter((entry) => entry.disposition.kind === "terminal").map((entry) => entry.eventId),
-    refusals: [...record.refusals],
-    receipts: [...record.receipts],
+    terminalDispositions,
+    refusals: copyArray(record.refusals),
+    receipts: copyArray(record.receipts),
   };
 }

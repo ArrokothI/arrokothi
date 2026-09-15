@@ -17,5 +17,16 @@ export type ExecutionState = "READY" | "RUNNING" | "WAITING" | "COMPLETED" | "FA
 
 export const TERMINAL_STATES: readonly ExecutionState[] = ["COMPLETED", "FAILED", "CANCELLED"];
 
-/** A terminal lifetime never reopens; intentional re-execution creates a new identity. */
-export const isTerminal = (state: ExecutionState): boolean => TERMINAL_STATES.includes(state);
+/**
+ * A terminal lifetime never reopens; intentional re-execution creates a new identity.
+ *
+ * Compared with an index loop, not `TERMINAL_STATES.includes(state)`: `isTerminal` runs after
+ * caller-owned values have been observed in the same tick, and a capture-time side effect can
+ * replace `Array.prototype.includes` before this line runs (K11-R5-STATE-01).
+ */
+export const isTerminal = (state: ExecutionState): boolean => {
+  for (let index = 0; index < TERMINAL_STATES.length; index += 1) {
+    if (TERMINAL_STATES[index] === state) return true;
+  }
+  return false;
+};
