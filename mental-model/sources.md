@@ -1,16 +1,30 @@
 # Source decisions, usability evidence and open choices
 
-This is provenance and maintenance navigation. Current meanings are owned by [concepts and mechanisms](reference.md); historical records remain unchanged and their old paths/status describe their recorded candidate. No current rule requires reading an old architecture page.
+This is provenance and maintenance navigation. Current meanings are owned by
+[concepts and mechanisms](reference.md); historical records remain unchanged and
+their old paths/status describe their recorded candidate. No current rule requires
+reading an old architecture page.
 
 ## Ownership and precedence
 
-Layer 1 teaches a deliberately incomplete whole-system model. Layer 2 explains major abstractions. Layer 3 defines terms once and owns precise mechanisms. Local reminders link to those owners. Higher-level summaries are consequences of those rules, not independent competing specifications.
+Layer 1 teaches a deliberately incomplete whole-system model. Layer 2 explains major
+abstractions. Layer 3 defines terms once and owns precise mechanisms. Local reminders
+link to those owners. Higher-level summaries are consequences of those rules, not
+independent competing specifications.
 
-This rewrite preserves the accepted architecture and incorporated K0.1 decisions; it does not authorize a semantic change or claim implementation. If a source actually conflicts, use the repository's accepted decision/precedence policy and provenance. If that cannot resolve it, record the affected rule as unresolved rather than choosing the wording that is easier to implement. Development status and implementation observations do not override target semantics.
+This rewrite preserves the accepted architecture and incorporated K0.1 decisions;
+it does not authorize a semantic change or claim implementation. If a source actually
+conflicts, use the repository's accepted decision/precedence policy and provenance.
+If that cannot resolve it, record the affected rule as unresolved rather than choosing
+the wording that is easier to implement. Development status and implementation observations
+do not override target semantics.
 
 ## Accepted decision coverage
 
-The [K0.1 worksheet](../docs/development/work/K0.1/protocol-worksheet.md) is retained as historical decision evidence. Its accepted revision 12 is identified by [review 12](../docs/development/work/K0.1/review-12.md) and [integration](../docs/development/work/K0.1/integration-01.md). Current retrieval is:
+The [K0.1 worksheet](../docs/development/work/K0.1/protocol-worksheet.md) is retained as
+historical decision evidence. Its accepted revision 12 is identified by
+[review 12](../docs/development/work/K0.1/review-12.md) and
+[integration](../docs/development/work/K0.1/integration-01.md). Current retrieval is:
 
 | Accepted family | Current owner |
 |---|---|
@@ -25,7 +39,12 @@ The [K0.1 worksheet](../docs/development/work/K0.1/protocol-worksheet.md) is ret
 | M-1, worksheet assertion mapping | [Evidence attribution](mechanisms/evidence.md), benchmark-owned gates in [roadmap](roadmap.md) |
 | LC-1, MIG/LEG/REF classifications | [Implemented baseline](../docs/development/002-implemented-kernel-baseline.md), [live ownership inventory](../docs/development/work/K1.0/ownership-inventory.md); no legacy code/data deleted by this rewrite |
 
-K0.2's [accepted review](../docs/development/work/K0.2/review-17.md) and [public fixture specification](../docs/development/work/K0.2/public-fixture-specification.md) are evidence of observable distinctions, not an alternative definition graph. K1.0's [final correction review](../docs/development/work/K1.0-correction-02/review-01.md) supports the [structural evidence contract](mechanisms/evidence.md#structural-evidence). The [status ledger](../docs/development/007-work-packets.md) alone owns current release status.
+K0.2's [accepted review](../docs/development/work/K0.2/review-17.md) and
+[public fixture specification](../docs/development/work/K0.2/public-fixture-specification.md)
+are evidence of observable distinctions, not an alternative definition graph.
+K1.0's [final correction review](../docs/development/work/K1.0-correction-02/review-01.md)
+supports the [structural evidence contract](mechanisms/evidence.md#structural-evidence).
+The [status ledger](../docs/development/007-work-packets.md) alone owns current release status.
 
 ## Misunderstandings that shaped these pages
 
@@ -40,7 +59,9 @@ K0.2's [accepted review](../docs/development/work/K0.2/review-17.md) and [public
 | [K1.0 round 2 review](../docs/development/work/K1.0/review-02.md) | Matching labels/partial checks appeared to prove inventory agreement | Preserve relational source/document evidence and distinguish base versus candidate measurements |
 | [K1.0 cleanup](../docs/development/work/K1.0/cleanup-01.md), [correction-02 review](../docs/development/work/K1.0-correction-02/review-01.md) | Whole-cell meaning and collection identity were replaced by rendered fragments/strings | Define cardinality/member identity separately from formatting; preserve fail-closed inventory checks |
 
-Repeated misunderstandings are usability evidence even when a correct rule was present elsewhere. They do not prove every code defect was caused by prose. These changes address prerequisite ordering, overloaded words, competing rules and weak examples.
+Repeated misunderstandings are usability evidence even when a correct rule was present
+elsewhere. They do not prove every code defect was caused by prose. These changes
+address prerequisite ordering, overloaded words, competing rules and weak examples.
 
 ## Scope of the replaced architecture
 
@@ -61,7 +82,11 @@ Repeated misunderstandings are usability evidence even when a correct rule was p
 
 ## Native design evidence
 
-The historical [architecture review](../docs/development/004-architecture-review.md) pins inspected sibling checkouts. These examples preserve useful prior-art navigation; inspection was not an executed test, adopted dependency or license clearance. The sibling source trees are not present in this checkout; the paths below are source locators at those pinned revisions, not broken local-file links or new inspections.
+The historical [architecture review](../docs/development/004-architecture-review.md)
+pins inspected sibling checkouts. These examples preserve useful prior-art navigation;
+inspection was not an executed test, adopted dependency or license clearance. The
+sibling source trees are not present in this checkout; the paths below are source
+locators at those pinned revisions, not broken local-file links or new inspections.
 
 | Source | Specific lesson |
 |---|---|
@@ -79,10 +104,24 @@ The historical [architecture review](../docs/development/004-architecture-review
 
 ## Intentionally unselected choices
 
-Exact wire encoding, receipt serialization, epoch representation across new exchanges, batch maximum (at least one), wait-generation/subscription spelling, clock units, storage schema and timer machinery remain implementation-owned within their fixed semantics. K1.1/K1.3 are expected to populate those choices when accepted work defines them.
+Exact wire encoding, receipt serialization, epoch representation across new exchanges,
+batch maximum (at least one), wait-generation/subscription spelling, clock units,
+storage schema and timer machinery remain implementation-owned within their fixed
+semantics. K1.1/K1.3 are expected to populate those choices when accepted work defines them.
 
-K2 owns concrete policy/consent representation and remote freshness. R1 owns actual Driver-specific phase guarantees. K3 selects a persistent substrate; D1 selects any claimed isolation backend; S1 states supported versions/protocol subsets. No universal artifact service, memory ontology, Skill schema, policy backend or native checkpoint migration is silently invented to fill the directory. Optional concepts are usable design guidance, not automatic release commitments.
+K2 owns concrete policy/consent representation and remote freshness. R1 owns actual
+Driver-specific phase guarantees. K3 selects a persistent substrate; D1 selects any
+claimed isolation backend; S1 states supported versions/protocol subsets. No universal
+artifact service, memory ontology, Skill schema, policy backend or native checkpoint
+migration is silently invented to fill the directory. Optional concepts are usable
+design guidance, not automatic release commitments.
 
 ## Writing references
 
-The rewrite follows the definition-before-composition approach in [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents), the local clarity plus deeper links in [MCP architecture](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture), and the explicit connection to earlier ideas in [Harness design for long-running apps](https://www.anthropic.com/engineering/harness-design-long-running-apps). These are writing references, not ArrokothI architecture authorities.
+The rewrite follows the definition-before-composition approach in
+[Building effective agents](https://www.anthropic.com/engineering/building-effective-agents),
+the local clarity plus deeper links in
+[MCP architecture](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture),
+and the explicit connection to earlier ideas in
+[Harness design for long-running apps](https://www.anthropic.com/engineering/harness-design-long-running-apps).
+These are writing references, not ArrokothI architecture authorities.

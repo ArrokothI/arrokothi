@@ -1,18 +1,37 @@
 # Activation → Runtime attempt → Outcome acceptance
 
-An [Activation](../concepts/core.md#activation) fixes the input for one exchange. A [Runtime attempt](../concepts/identity.md#runtime-attempt) performs it. An [Outcome](../concepts/core.md#outcome) proposes the next accepted state. This page owns dispatch and acceptance; [waits](waits.md) owns input selection.
+An [Activation](../concepts/core.md#activation) fixes the input for one exchange.
+A [Runtime attempt](../concepts/identity.md#runtime-attempt) performs it.
+An [Outcome](../concepts/core.md#outcome) proposes the next accepted state.
+This page owns dispatch and acceptance; [waits](waits.md) owns input selection.
 
-**Status:** Required Kernel contract. Introduced by K1.1–K1.2; Effect intents by K2.1. This is target specification, not shipped behavior.
+**Status:** Required Kernel contract. Introduced by K1.1–K1.2; Effect intents by K2.1. This
+is target specification, not shipped behavior.
 
 ## A first example
 
-Before the protocol details: the application creates Execution E for a weekly report. The Kernel sends Activation A1, writer epoch 1, base progress revision 0. The Runtime drafts the report and returns an Outcome proposing progress 1 and `await` for the editor's correction. The Kernel accepts progress, the wait registration and the next state together, as one decision. When the correction later arrives as an Event, the Kernel dispatches Activation A2 carrying it, still under epoch 1. The sections below cover retries, takeover and the exact validation order; the [worked trace](#worked-trace) extends this same scenario with a lost reply and an epoch takeover.
+Before the protocol details: the application creates Execution E for a weekly report.
+The Kernel sends Activation A1, writer epoch 1, base progress revision 0. The Runtime
+drafts the report and returns an Outcome proposing progress 1 and `await` for the
+editor's correction. The Kernel accepts progress, the wait registration and the next
+state together, as one decision. When the correction later arrives as an Event, the
+Kernel dispatches Activation A2 carrying it, still under epoch 1. The sections below
+cover retries, takeover and the exact validation order; the
+[worked trace](#worked-trace) extends this same scenario with a lost reply and an
+epoch takeover.
 
 ## Before sending
 
-As one decision, the Kernel atomically reserves the exact Event batch and records: dispatch intent, the current writer epoch, accepted progress and base revision, the progress codec, pinned Runtime/Definition revisions, and the supplied authorized execution view. This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost.
+As one decision, the Kernel atomically reserves the exact Event batch and records:
+dispatch intent, the current writer epoch, accepted progress and base revision, the
+progress codec, pinned Runtime/Definition revisions, and the supplied authorized
+execution view. This makes the Execution `RUNNING`. The accepted intent is
+reconstructible even if notification is lost.
 
-Sending proceeds through the Driver without synchronously waiting for native work in the coordinator loop. The Driver may call a local function or submit a remote job. Dispatch acknowledgment, heartbeat, cancellation signals and diagnostic streaming are operational traffic, not extra progress-writing Outcomes.
+Sending proceeds through the Driver without synchronously waiting for native work
+in the coordinator loop. The Driver may call a local function or submit a remote job.
+Dispatch acknowledgment, heartbeat, cancellation signals and diagnostic streaming
+are operational traffic, not extra progress-writing Outcomes.
 
 Conceptual data shape (not a frozen wire schema):
 
@@ -33,23 +52,45 @@ next:       continue | await(wait) | complete(result) | fail(error)
 | Authorized takeover | Same | Advances | Same |
 | Next exchange after resolution | New | Implementation chooses starting epoch | Newly selected |
 
-Retrying delivery is not permission to repeat native work. [Recovery](recovery.md) establishes phase-specific permission before takeover/replay. New mailbox arrivals cannot replace the batch under an existing Activation ID. If fresh policy forbids redisclosing the pinned view, hold/refuse or explicitly abandon the exchange; do not silently sanitize it and call it identical replay.
+Retrying delivery is not permission to repeat native work. [Recovery](recovery.md)
+establishes phase-specific permission before takeover/replay. New mailbox arrivals
+cannot replace the batch under an existing Activation ID. If fresh policy forbids
+redisclosing the pinned view, hold/refuse or explicitly abandon the exchange; do not
+silently sanitize it and call it identical replay.
 
 ## Outcome acceptance
 
 Perform these steps in order:
 
 1. Authenticate and scope access to the Execution before inspecting or disclosing content.
-2. Look for an already accepted matching Outcome. An exact duplicate returns its original [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) without repeating any mutation or publication. Different content under the accepted identity conflicts. This lookup precedes fresh validation, including after later policy changes or cancellation.
-3. For a new proposal, validate the whole envelope: current Activation, writer epoch, base progress revision, cancellation fence/terminal state, bounded values, unique proposal/emission keys, supported next step, wait references and completion obligations. Bind any same-Outcome Effect reference by its local proposal key.
-4. Atomically: acknowledge the entire batch; install progress and its accepted revision; record emissions and output obligations, all Effect intents, next state, and any wait/deadline/readiness. The validation and commit are ordered against cancellation; a pre-cancel check cannot authorize a post-cancel commit. For `await`, follow the exact internal order in [wait registration](waits.md#registering-a-wait).
+2. Look for an already accepted matching Outcome. An exact duplicate returns its original
+   [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) without repeating any mutation
+   or publication. Different content under the accepted identity conflicts. This lookup
+   precedes fresh validation, including after later policy changes or cancellation.
+3. For a new proposal, validate the whole envelope: current Activation, writer epoch,
+   base progress revision, cancellation fence/terminal state, bounded values, unique
+   proposal/emission keys, supported next step, wait references and completion obligations.
+   Bind any same-Outcome Effect reference by its local proposal key.
+4. Atomically: acknowledge the entire batch; install progress and its accepted revision;
+   record emissions and output obligations, all Effect intents, next state, and any
+   wait/deadline/readiness. The validation and commit are ordered against cancellation;
+   a pre-cancel check cannot authorize a post-cancel commit. For `await`, follow the
+   exact internal order in [wait registration](waits.md#registering-a-wait).
 5. Return the accepted receipt. Dispatchers and output readers act on accepted records.
 
-An envelope/reference error rejects the whole proposal: no acknowledgment, progress, emission, Effect intent, wait, deadline, readiness or next-state mutation. Record the reason; never silently drop or endlessly retry it. An invalid current Runtime response that cannot be classified instead ends or holds the exchange, under an inspectable protocol-failure/recovery decision. Rejection does not roll back native mutations.
+An envelope/reference error rejects the whole proposal: no acknowledgment, progress,
+emission, Effect intent, wait, deadline, readiness or next-state mutation. Record the
+reason; never silently drop or endlessly retry it. An invalid current Runtime response
+that cannot be classified instead ends or holds the exchange, under an inspectable
+protocol-failure/recovery decision. Rejection does not roll back native mutations.
 
-[Cancellation](lifecycle.md#cancellation-order) owns exact replay of a cancellation-losing rejection. It must not be confused with replay of an already accepted Outcome.
+[Cancellation](lifecycle.md#cancellation-order) owns exact replay of a cancellation-losing
+rejection. It must not be confused with replay of an already accepted Outcome.
 
-When Effects are supported, operation-specific validation or policy denial can later settle an individual accepted intent without discarding the others. **K1 initially supports no Effects:** an Outcome containing one fails whole-envelope validation. No Effect ID, “denied action,” admission or settlement record is created for it.
+When Effects are supported, operation-specific validation or policy denial can later
+settle an individual accepted intent without discarding the others. **K1 initially
+supports no Effects:** an Outcome containing one fails whole-envelope validation.
+No Effect ID, “denied action,” admission or settlement record is created for it.
 
 ## Worked trace
 
@@ -65,7 +106,11 @@ The example uses K2 target actions to connect the protocol; it is not a shipped 
 | 6 | Activation B carries R and progress 1. Runtime accounts for R and proposes completion without new Effects. |
 | 7 | Kernel accepts the terminal result and output obligation. A UI's later observation does not acknowledge any Event or send a message. |
 
-Change step 3: if epoch 2 takeover was authorized before the old attempt submitted, epoch 1's never-accepted Outcome is rejected **in full**, even if its draft looks correct. Change step 5: if publication may have happened but the receipt is missing, the action is unknown. The Runtime cannot complete merely by acknowledging that uncertainty. The [action mechanism](actions.md) handles reconciliation.
+Change step 3: if epoch 2 takeover was authorized before the old attempt submitted,
+epoch 1's never-accepted Outcome is rejected **in full**, even if its draft looks correct.
+Change step 5: if publication may have happened but the receipt is missing, the action
+is unknown. The Runtime cannot complete merely by acknowledging that uncertainty.
+The [action mechanism](actions.md) handles reconciliation.
 
 ## Atomic decisions across the system
 
@@ -78,4 +123,7 @@ Change step 3: if epoch 2 takeover was authorized before the old attempt submitt
 | Action settlement | Evidence, action observation, Event and applicable readiness | [Actions](actions.md) |
 | Child/message operation | Creation/routing responsibility, correlation, applicable budget | [Communication](communication.md) |
 
-A transaction, journal or mature durable substrate may implement these decisions; check first [what that substrate re-runs on its own](../deployment.md#check-what-a-durable-substrate-retries-on-its-own). Derived queues are allowed; no second source of accepted truth is required. Cross-shard atomicity and exactly-once external effects are not implied.
+A transaction, journal or mature durable substrate may implement these decisions; check
+first [what that substrate re-runs on its own](../deployment.md#check-what-a-durable-substrate-retries-on-its-own).
+Derived queues are allowed; no second source of accepted truth is required. Cross-shard
+atomicity and exactly-once external effects are not implied.
