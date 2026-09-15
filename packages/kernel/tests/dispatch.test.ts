@@ -1259,3 +1259,46 @@ describe("K11-R16-DISP-01 delivery observes rejection under hostile Promise mach
     assert.match(result, /SURVIVED failed/, "the child recorded the operational failure and nothing escaped");
   });
 });
+
+describe("K11-R16-ID-01 (R3) ambient prototype state cannot answer a missing bound", () => {
+  // Same family as the creation-side R3 cases: the bound observation is own-only, so ambient
+  // `Object.prototype` state, an `Array.prototype`-chain answer for an array envelope, or an
+  // inherited-only bound all read as missing and refuse — never as an acceptance.
+  test("an ambient Object.prototype bound cannot dispatch an empty envelope", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const created = started(kernel);
+    (Object.prototype as Record<string, unknown>).bound = 1;
+    try {
+      const refusal = refused(kernel.dispatch(author, created.executionId, {} as DispatchOptions));
+      assert.equal(refusal.classification, "invalid_batch_bound");
+      assert.equal(driver.seen.length, 0, "nothing was sent behind the refusal");
+    } finally {
+      delete (Object.prototype as Record<string, unknown>).bound;
+    }
+    const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    assert.deepEqual(dispatched.batch, [created.initialEventId], "a literal bound still dispatches");
+  });
+
+  test("an array envelope cannot inherit its bound through the Array.prototype chain", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const created = started(kernel);
+    Object.defineProperty(Array.prototype, "bound", { value: 1, writable: true, enumerable: false, configurable: true });
+    try {
+      const refusal = refused(kernel.dispatch(author, created.executionId, [] as never));
+      assert.equal(refusal.classification, "invalid_batch_bound");
+      assert.equal(driver.seen.length, 0);
+    } finally {
+      delete (Array.prototype as unknown as Record<string, unknown>).bound;
+    }
+    assert.equal(Object.getOwnPropertyDescriptor(Array.prototype, "bound"), undefined, "chain handed back exactly");
+  });
+
+  test("a bound carried only by inheritance reads as missing", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = started(kernel);
+    const refusal = refused(kernel.dispatch(author, created.executionId, Object.create({ bound: 1 }) as DispatchOptions));
+    assert.equal(refusal.classification, "invalid_batch_bound");
+  });
+});

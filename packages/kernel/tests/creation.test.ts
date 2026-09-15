@@ -988,3 +988,80 @@ describe("K11-R16-ID-01 malformed identity diagnostics never throw on caller-own
     assert.deepEqual(kernel.visibleExecutions(author), []);
   });
 });
+
+describe("K11-R16-ID-01 (R3) ambient prototype state cannot answer missing envelope fields", () => {
+  /**
+   * Found by the fresh adversarial review wave (Reviewer 3), not by the implementation pass.
+   *
+   * Ordinary field reads consult the whole prototype chain for a key the envelope does not own,
+   * so ambient `Object.prototype`/`Array.prototype` pollution — residue or same-tick
+   * trap-installed — steered missing fields into acceptances the caller never spelled:
+   * `dispatch({})` accepted by an ambient `bound`, `create({})` accepted by ambient identity text.
+   * Every envelope observation is therefore own-only: inherited-only reads as missing (KC1-DEC-6).
+   */
+  const setProtoFields = (fields: Record<string, unknown>): void => {
+    for (const key of Object.keys(fields)) (Object.prototype as Record<string, unknown>)[key] = fields[key];
+  };
+  const clearProtoFields = (fields: Record<string, unknown>): void => {
+    for (const key of Object.keys(fields)) delete (Object.prototype as Record<string, unknown>)[key];
+  };
+
+  test("ambient identity text cannot complete an empty creation envelope", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const ambient = {
+      scope: "tenant-a",
+      creationKey: "proto-key",
+      definitionRevision: "weekly-report@3",
+      runtimeContractRevision: "runtime-contract@1",
+      progressCodec: "inline-json@1",
+    };
+    setProtoFields(ambient);
+    try {
+      const refusal = refused(kernel.createExecution(author, {} as never));
+      assert.equal(refusal.classification, "malformed_value");
+      assert.match(refusal.reason, /scope unsupported_form/, "the own-missing scope is refused, not ambient-answered");
+      assert.doesNotMatch(refusal.reason, /proto-key/, "ambient text leaks nowhere into the reason");
+      assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created behind the refusal");
+    } finally {
+      clearProtoFields(ambient);
+    }
+  });
+
+  test("an earlier-field trap cannot steer a later field through ambient state in the same tick", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    let installed = false;
+    const pollutingContext = new Proxy({ tenant: "a" }, {
+      get(target, property, receiver) {
+        if (!installed) {
+          installed = true;
+          setProtoFields({ kind: "INJECTED", payload: { injected: true } });
+        }
+        return Reflect.get(target, property, receiver);
+      },
+    });
+    try {
+      const refusal = refused(
+        kernel.createExecution(author, createRequest({ authorityContext: pollutingContext as never, initialInput: {} as never })),
+      );
+      assert.equal(installed, true, "the trap ran, so this is not a vacuous pass");
+      assert.equal(refusal.classification, "malformed_value");
+      assert.match(refusal.reason, /initialInput\.kind unsupported_form/, "the own-missing kind is refused");
+      assert.doesNotMatch(refusal.reason, /INJECTED/, "the injected kind was never bound");
+      assert.deepEqual(kernel.visibleExecutions(author), []);
+    } finally {
+      clearProtoFields({ kind: "INJECTED", payload: { injected: true } });
+    }
+  });
+
+  test("a field carried only by inheritance reads as missing", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const inherited = Object.create(createRequest());
+    const refusal = refused(kernel.createExecution(author, inherited as never));
+    assert.equal(refusal.classification, "malformed_value");
+    assert.match(refusal.reason, /scope unsupported_form/);
+    assert.deepEqual(kernel.visibleExecutions(author), []);
+  });
+});

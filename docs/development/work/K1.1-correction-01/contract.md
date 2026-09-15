@@ -143,6 +143,15 @@ Derived from the criteria's own obligations, not from probe strings:
   made such a slot non-configurable cannot be sanitized by any in-process code; that permanently
   disturbed host degrades to a recorded operational delivery failure, the same availability-only
   degradation the values module already commits to for non-configurable slots.
+- **KC1-DEC-6 — envelope fields are own fields; inherited-only reads as missing.** Fresh adversarial
+  review (R3) showed ordinary reads let ambient `Object.prototype`/`Array.prototype` state answer
+  *missing* envelope fields into acceptances the caller never spelled (`dispatch({})` accepted by
+  an ambient `bound`, `create({})` by ambient identity text, `dispatch([])` through the array
+  chain, same-tick trap steering of a later field). Every envelope observation therefore goes
+  through an own-descriptor check first; a field carried only by inheritance — including a benign
+  one — reads exactly as an omitted field. Own accessors still run as the allowed caller
+  observation; only the chain above the envelope is cut off. No refusal shape, ordering, or
+  retention rule changes — only what counts as "the field was supplied".
 
 ## Command plan
 

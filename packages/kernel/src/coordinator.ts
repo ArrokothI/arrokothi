@@ -128,6 +128,12 @@ const PrimordialPromiseThen = Promise.prototype.then;
  * coordinator correctly records only a synchronous attach failure. `#deliver` reinstalls these
  * primordials for the synchronous attach and restores afterwards; descriptor reads never invoke
  * an installed getter.
+ *
+ * `getOwnPropertyDescriptor` doubles for own-only envelope observation (R3-BLOCKING): an ordinary
+ * field read consults the whole prototype chain for a key the envelope does not own, so ambient
+ * `Object.prototype`/`Array.prototype` pollution would answer missing fields into acceptances the
+ * caller never spelled. The envelope's own data is what was sent; anything above it reads as
+ * missing.
  */
 const PrimordialGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 const PrimordialSymbolSpecies = Symbol.species;
@@ -518,22 +524,48 @@ function acceptIdentityText(value: unknown, label: string, issues: ValueIssue[])
 }
 
 /**
- * One caller-owned envelope field, observed without letting an observation failure escape.
+ * One caller-owned envelope field, observed from the envelope's own data only.
  *
  * The envelope is caller-owned state: on a revoked Proxy, or under a throwing getter, the read
  * itself throws. That failure is a fact *about this field*, so it is recorded as a located
- * `unstable_representation` issue rather than thrown out of the boundary (K11-R16-ID-01). A
- * `null`/`undefined` holder owns no fields and observes as `undefined`, so the field validator
- * refuses it as malformed rather than the boundary throwing a `TypeError`.
+ * `unstable_representation` issue rather than thrown out of the boundary (K11-R16-ID-01).
+ *
+ * A field the envelope does not own itself is missing — even when a prototype above it would
+ * answer. Ordinary reads consult the whole chain, so ambient `Object.prototype`/`Array.prototype`
+ * pollution (residue or same-tick trap-installed) would otherwise steer missing fields into
+ * acceptances the caller never spelled: `dispatch({})` accepted by an ambient `bound`,
+ * `create({})` accepted by ambient identity text, `dispatch([])` answered through the
+ * `Array.prototype` chain (R3-BLOCKING). An envelope that carries a field only by inheritance
+ * therefore reads exactly as one that omits it (KC1-DEC-6).
+ *
+ * A `null`/`undefined` holder owns no fields and observes as `undefined`, so the field validator
+ * refuses it as malformed rather than the boundary throwing a `TypeError`. A primitive holder
+ * likewise owns no text field. An own accessor still runs — a `get bound()` is the allowed caller
+ * observation the single-observation rule already accounts for — and its throw maps the same way.
  */
-function observeField(holder: unknown, key: string, label: string, issues: ValueIssue[]): { readonly observed: unknown; readonly ok: boolean } {
+function observeOwn(holder: unknown, key: string): { readonly observed: unknown; readonly threw: boolean } {
   try {
-    if (holder === null || holder === undefined) return { observed: undefined, ok: true };
-    return { observed: (holder as Record<string, unknown>)[key], ok: true };
+    if (holder === null || holder === undefined) return { observed: undefined, threw: false };
+    if (typeof holder !== "object" && typeof holder !== "function") return { observed: undefined, threw: false };
+    // Own-descriptor first, never an ordinary read for the existence question: the descriptor
+    // reports without invoking anything, and only an owned position may proceed to the read.
+    // A Proxy's traps may throw here; that is the same observation failure as a throwing getter.
+    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };
+    // Owned, so the prototype chain is no longer on the path: own data answers directly and an
+    // own accessor runs with the holder as receiver — the same single observation as before.
+    return { observed: (holder as Record<string, unknown>)[key], threw: false };
   } catch {
+    return { observed: undefined, threw: true };
+  }
+}
+
+function observeField(holder: unknown, key: string, label: string, issues: ValueIssue[]): { readonly observed: unknown; readonly ok: boolean } {
+  const seen = observeOwn(holder, key);
+  if (seen.threw) {
     appendIssue(issues, { path: label, code: "unstable_representation", message: `request field ${label} could not be observed` });
     return { observed: undefined, ok: false };
   }
+  return { observed: seen.observed, ok: true };
 }
 
 function acceptInputContent(content: InputContent, prefix: string): Result<AcceptedInput, ValueIssue[]> {
@@ -867,16 +899,13 @@ export class ExecutionCoordinator {
    * 5. Refuse before any acknowledgment when the mailbox is at its declared capacity.
    */
   submitInput(caller: AuthenticatedCaller, request: SubmitInputRequest): Result<InputAccepted, RefusalRecord> {
-    // Total destination observation (K11-R16-ID-01): the envelope is caller-owned, so reading it
-    // can throw. An unreadable destination matches no minted Execution ID and is answered exactly
-    // as a missing one, disclosing nothing.
-    let destinationObserved: unknown;
-    try {
-      destinationObserved = request === null || request === undefined ? undefined : (request as { destination?: unknown }).destination;
-    } catch {
-      return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
-    }
-    const record = this.#visible(caller, destinationObserved as string);
+    // Total destination observation (K11-R16-ID-01), from the envelope's own data only
+    // (R3-BLOCKING): the envelope is caller-owned, so reading it can throw, and a prototype above
+    // it must not answer a missing destination. An unreadable destination matches no minted
+    // Execution ID and is answered exactly as a missing one, disclosing nothing.
+    const destinationSeen = observeOwn(request, "destination");
+    if (destinationSeen.threw) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
+    const record = this.#visible(caller, destinationSeen.observed as string);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
 
     // The producer request key is the third member of the Input ID triple, so it is identity text
@@ -1007,13 +1036,14 @@ export class ExecutionCoordinator {
     // observe and is refused the same way, rather than throwing a `TypeError` out of the boundary.
     // K11-R16-ID-01: the read itself can also throw (a revoked envelope, a throwing `bound`
     // getter). That failure is an invalid bound, reported without stringifying caller state.
-    let boundObserved: unknown;
+    // R3-BLOCKING: the read is own-only, so ambient `Object.prototype`/`Array.prototype` state
+    // cannot answer a missing bound, and an array envelope (`[]`) owns none.
+    let boundObserved: unknown = undefined;
     let boundUninspectable = false;
-    try {
-      boundObserved = options !== null && typeof options === "object" ? (options as { bound?: unknown }).bound : undefined;
-    } catch {
-      boundObserved = undefined;
-      boundUninspectable = true;
+    if (options !== null && typeof options === "object") {
+      const seen = observeOwn(options, "bound");
+      if (seen.threw) boundUninspectable = true;
+      else boundObserved = seen.observed;
     }
     if (!PrimordialNumberIsInteger(boundObserved) || (boundObserved as number) < 1) {
       // Only numbers are interpolated: anything else failing validation may be an object whose
