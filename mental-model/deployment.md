@@ -1,7 +1,8 @@
 # Deployment: making logical promises physical
 
-Deployment chooses where the Kernel, Driver and Runtime execute, where state survives,
-and what access the Runtime actually has. It is an operating view of the same logical
+Deployment chooses where the [Kernel](concepts/core.md#kernel),
+[Driver](concepts/core.md#execution-driver) and [Runtime](concepts/core.md#execution-runtime)
+execute, where state survives, and what access the Runtime actually has. It is an operating view of the same logical
 architecture, rather than another execution engine.
 
 ## Roles are not required services

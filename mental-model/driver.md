@@ -1,13 +1,15 @@
 # Driver: preserving behavior across the protocol
 
-An [Execution Driver](concepts/core.md#execution-driver) adapts the Kernel's Activation
-and Outcome exchange to a particular Runtime. It can be an in-process function,
+An [Execution Driver](concepts/core.md#execution-driver) adapts the
+[Kernel](concepts/core.md#kernel)'s [Activation](concepts/core.md#activation)
+and [Outcome](concepts/core.md#outcome) exchange to a particular
+[Runtime](concepts/core.md#execution-runtime). It can be an in-process function,
 subprocess client or remote-job adapter. It exists to preserve native behavior while
 giving the Kernel an explicit coordination contract.
 
 ## The translation it owns
 
-The Driver maps Execution and Activation identities to native runs, sessions or jobs.
+The Driver maps [Execution](concepts/core.md#execution) and Activation identities to native runs, sessions or jobs.
 It forwards the exact input and interprets native responses. A provider's “success”
 may mean “paused with a human form,” so copying its status string into `COMPLETED`
 would be wrong. A session may span several runs; an Activation is not automatically
