@@ -133,3 +133,17 @@ They are deterministic Kernel-local evidence. They contain no E1 result, no pers
 process-failure evidence, no native Driver observation and no packaging or release check. A green
 suite is not acceptance: the per-criterion assessment in [implementation-08](../implementation-08.md)
 is the implementer's, and the verdict is an independent reviewer's, bound to the exact candidate.
+
+---
+
+## Superseded — this is the clean-C8 run, not the candidate's evidence
+
+**Appended after this manifest was committed, without altering anything above it.**
+
+Payload C8 `79151afc77533d5d542918515d8809773ff61809` and candidate H8
+`c1e7d78afc9aebb89410ff55892adcfb37e9e973` were superseded before handoff by payload C9
+`5ac76207a05b61f918a1efd2313c25b7108d775c` and candidate H9, in the same correction attempt and with
+no review between them. Every result recorded above is a true clean-C8 observation and is preserved as
+such; it is **not** claimed as evidence for the candidate. The candidate's evidence is
+[validation-09/MANIFEST.md](../validation-09/MANIFEST.md), where everything was rerun on C9, and the
+reason for the supersession is in [implementation-09.md](../implementation-09.md).
