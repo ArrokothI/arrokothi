@@ -126,7 +126,12 @@ Derived from the criteria's own obligations, not from probe strings:
 - **KC1-DEC-3 — the serializer window covers the iterator-protocol graph.** The sandbox restores the
   primordial Array-iterator-prototype `next` and removes caller-installable `next`/`value`/`done`
   shadows above the iterator holder for the call window; the audit table names the
-  `GetV(iterator, "next")` chain. The dependency is not forked, patched or wrapped in behaviour.
+  `GetV(iterator, "next")` chain. Fresh adversarial review (R2) then showed removal is not enough:
+  `Object.setPrototypeOf(Array.prototype, hostile)` inserts a hostile object *between* the cleaned
+  holders, and the dependency's `[[Set]]`/`[[Get]]` walks land in it — so the window additionally
+  resets every prototype link on the dependency's paths to its load-time shape for the exact call
+  (refusing, never binding wrong bytes, where a link cannot be reset). The dependency is not
+  forked, patched or wrapped in behaviour.
 - **KC1-DEC-4 — diagnostics observe caller state through total operations only.** Non-text
   classification never lets a throwing observation (e.g. `Array.isArray` on a revoked Proxy) escape;
   envelope and field reads map observation failure to the located refusal for that field. Refusal
