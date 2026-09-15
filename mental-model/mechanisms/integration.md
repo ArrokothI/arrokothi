@@ -8,6 +8,11 @@ claims; [recovery](recovery.md) owns the common continuation protocol.
 versions frozen at S1. K1.4's legacy bridge uses only the reference-Runtime shape below
 and earns no support record here. This is target specification, not shipped behavior.
 
+In-process adapters obey the Kernel's [delivery reporting boundary](execution-cycle.md#delivery-reporting-boundary):
+translate native asynchronous success/failure into the supplied operational reporting
+capability and own all internal Promise handling. This K1 boundary is separate from the
+R1 native-fidelity support claims below.
+
 ## Select the smallest useful integration
 
 | Integration shape | Kernel can manage | Native system retains |

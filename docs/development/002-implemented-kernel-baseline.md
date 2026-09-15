@@ -33,6 +33,11 @@ and refuse by name. Nothing below changed: the package is still `private`, no co
 through it, and every path in the legacy map keeps its exports, behaviour and regression suite. This note describes the packet's candidate tree; whether it is
 accepted and integrated is recorded in [the status ledger](007-work-packets.md), never here.
 
+Target decision, 2026-09-15: [K1.1-correction-01 decision-01](work/K1.1-correction-01/decision-01.md)
+selects Kernel-owned delivery reporting and an undefined-only Driver return. The current
+candidate source still uses `void | Promise<void>` and Promise observation. Migration and
+fresh acceptance remain outstanding; this documentation decision changes no executable behavior.
+
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains with the owners in the [reference index](../../mental-model/reference.md).
 Paths below are representative rather than exhaustive; the conformance suite is the executable

@@ -36,7 +36,7 @@
  * another consequential request.
  */
 
-import type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
 import {
   creationKeyIdKey,
   inputIdKey,
@@ -58,7 +58,7 @@ import type {
   MailboxEntryView,
 } from "./inspection.ts";
 import { isTerminal, type ExecutionState } from "./lifecycle.ts";
-import { appendAllOwn, appendOwn, copyOwn, defineData, mapOwn, readAt, restoreDescriptor } from "./own-array.ts";
+import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts";
 import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
 import { err, ok, type Result } from "./result.ts";
 import { refuseUnsupportedSurface } from "./unsupported.ts";
@@ -70,7 +70,7 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue 
  * K11-R5-STATE-01: a capture-time side effect (installed while `canonicalize` observes a hostile
  * value) can replace *any* mutable builtin or prototype method before the commit below runs in
  * the same tick — `Map.prototype.set`, `Object.freeze`, `Array.prototype.push/map/filter`, `Set`,
- * `Promise.prototype.then`, and the rest. The serializer sandbox (values.ts) does not cover these
+ * and the rest. The serializer sandbox (values.ts) does not cover these
  * because they are not serializer dependencies; yet they decide whether the accepted fact is
  * retained, whether a receipt has a decision behind it, whether an Event is queued, and whether
  * an Activation is actually immutable.
@@ -102,58 +102,36 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue 
  * `CreateDataPropertyOrThrow` rather than `[[Set]]`, and consults no iterator, so it is kept;
  * array literals are own data at construction for the same reason; Driver-supplied values and the
  * host-authenticated caller are trusted inputs, not caller observations, and are documented where
- * used.)
+ * used. Delivery reporting creates no Promise and consults no Promise machinery.)
  */
 const PrimordialNumberIsInteger = Number.isInteger;
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialObjectFreeze = Object.freeze;
 const PrimordialReflectApply = Reflect.apply;
 const PrimordialMap = Map;
-const PrimordialPromise = Promise;
 const PrimordialMapGet = Map.prototype.get;
 const PrimordialMapSet = Map.prototype.set;
 const PrimordialMapForEach = Map.prototype.forEach;
-const PrimordialPromiseResolve = Promise.resolve;
-const PrimordialPromiseThen = Promise.prototype.then;
 /**
- * Load-time Promise-construction machinery for the delivery window (K11-R16-DISP-01).
- *
- * A native `then` performs `SpeciesConstructor` — `Get(O, "constructor")`, then
- * `Get(C, Symbol.species)` — before attaching any continuation. Capturing `resolve`/`then`
- * alone therefore leaves two caller-mutable slots on the path: a capture-time side effect can
- * install a throwing `Promise[Symbol.species]` getter (or a hostile
- * `Promise.prototype.constructor`, or an own `Symbol.species` on `Object.prototype` that answers
- * once the Promise-own slot is deleted) and make the attach itself throw *before* the rejection
- * handler exists. The original rejected Driver promise would then escape as unhandled while the
- * coordinator correctly records only a synchronous attach failure. `#deliver` reinstalls these
- * primordials for the synchronous attach and restores afterwards; descriptor reads never invoke
- * an installed getter.
- *
- * `getOwnPropertyDescriptor` doubles for own-only envelope observation (R3-BLOCKING): an ordinary
+ * Load-time descriptor observation for own-only envelope reads (R3-BLOCKING): an ordinary
  * field read consults the whole prototype chain for a key the envelope does not own, so ambient
  * `Object.prototype`/`Array.prototype` pollution would answer missing fields into acceptances the
  * caller never spelled. The envelope's own data is what was sent; anything above it reads as
  * missing.
  */
 const PrimordialGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-const PrimordialGetPrototypeOf = Object.getPrototypeOf;
-const PrimordialSymbolSpecies = Symbol.species;
-const PrimordialPromisePrototype = Promise.prototype;
-const PrimordialObjectPrototype = Object.prototype;
-/**
- * Error constructors and `String`, from load time.
- *
- * `describeFailure` runs inside `#deliver`, which the dispatch tick reaches *after* the caller's
- * `options.bound` getter has run, so a live `Error`/`String` read there is exactly the ambient
- * dependency the rule above forbids: `instanceof Error` consults `globalThis.Error` and then its
- * `Symbol.hasInstance`, and `String(x)` consults `globalThis.String`. Both failures are already
- * contained by `describeFailure`'s own guard, so this is closing the stated rule rather than a
- * reachable wrong-answer path — but the rule should be true as written (self-found, separate
- * provenance from K11-R6-STATE-02).
- */
-const PrimordialErrorConstructor = Error;
+/** `RangeError` for coordinator configuration misuse, from load time. */
 const PrimordialRangeError = RangeError;
-const PrimordialString = String;
+/**
+ * `String.prototype.slice`, from load time.
+ *
+ * Delivery diagnostics retain a bounded prefix of a primitive string reason. The slice runs
+ * after caller-owned state has been observed in the same tick, so a live
+ * `String.prototype.slice` read there is exactly the ambient dependency the rule above
+ * forbids. Slicing a primitive string through the captured reference invokes no
+ * caller-owned getter, coercion, or thenable.
+ */
+const PrimordialStringSlice = String.prototype.slice;
 
 /** `Map.get` without consulting the (possibly replaced) live prototype method. */
 const mapGet = <K, V>(map: Map<K, V>, key: K): V | undefined =>
@@ -352,160 +330,31 @@ const DEFAULT_MAILBOX_CAPACITY = 1_024;
  */
 const QUEUED: MailboxDisposition = PrimordialObjectFreeze({ kind: "queued" });
 
-const describeFailure = (reason: unknown): string => {
+/**
+ * Bounded total diagnostic for one delivery report (KC1-ARCH-1).
+ *
+ * The settlement reason is Driver-supplied data observed after caller-owned state has run in
+ * the same tick, so reading it must invoke nothing: no `Error`/`message` property read, no
+ * `String()` coercion, no `then` assimilation. A primitive string reason retains at most its
+ * first 1,024 UTF-16 code units through the captured slice; every other value — objects,
+ * string objects, numbers, accessors, revoked Proxies, thenables — collapses to the fixed
+ * text. The retained string is a fresh primitive, so later caller mutation cannot alter
+ * inspection. This limit is operational diagnostics, independent of canonical
+ * boundary-value limits.
+ */
+const DELIVERY_FAILURE_FALLBACK = "Driver delivery failed";
+const DELIVERY_REASON_LIMIT = 1_024;
+
+const describeDeliveryFailure = (reason: unknown): string => {
   try {
-    if (reason instanceof PrimordialErrorConstructor) {
-      // A hostile rejection reason can throw again when `name`/`message` is read. Delivery
-      // bookkeeping must never let that second error escape the Kernel boundary.
-      let name: unknown;
-      let message: unknown;
-      try {
-        name = reason.name;
-        message = reason.message;
-      } catch {
-        return "delivery failed with an uninspectable reason";
-      }
-      return `${typeof name === "string" ? name : "Error"}: ${typeof message === "string" ? message : PrimordialString(message)}`;
+    if (typeof reason === "string") {
+      return PrimordialReflectApply(PrimordialStringSlice, reason, [0, DELIVERY_REASON_LIMIT]) as string;
     }
-    return PrimordialString(reason);
+    return DELIVERY_FAILURE_FALLBACK;
   } catch {
-    return "delivery failed with an uninspectable reason";
+    return DELIVERY_FAILURE_FALLBACK;
   }
 };
-
-const isThenable = (value: unknown): value is PromiseLike<unknown> => {
-  if (typeof value !== "object" || value === null) return false;
-  // Descriptor-only chain walk (R4-F3): an ordinary read would invoke an own or inherited
-  // throwing `then` getter during classification — before any handler exists — letting an
-  // already-rejected promise escape as process-level unhandled. Descriptors report without
-  // invoking anything, and the walk follows first-hit `[[Get]]` semantics: the nearest owned
-  // `then` decides, so native promises (whose `then` lives on the prototype) still classify.
-  // A data descriptor carrying a function is a thenable; an accessor is attempted as one — its
-  // getter then runs inside `Resolve`, under `#deliver`'s containment, rather than here; a data
-  // non-function shadows the chain exactly as an ordinary read would see it. The step cap bounds
-  // Proxy-built prototype cycles; exceeding it attempts observation rather than inventing a
-  // delivery.
-  //
-  // When the walk finds no owned `then` anywhere, a contained ordinary read confirms (R4-F1):
-  // the walk just proved no getter exists on the chain of an ordinary object, so the read cannot
-  // invoke anything there — but a Proxy's `getOwnPropertyDescriptor` trap may have lied about
-  // absence while its `get` trap answers a function (classifying that as non-thenable invents a
-  // sync `delivered` for a settlement never observed). A throwing confirm-read attempts
-  // observation. Own/inherited throwing getters never reach this line: they returned above.
-  try {
-    let holder: object | null = value;
-    for (let steps = 0; steps < 128; steps += 1) {
-      if (holder === null) break;
-      const descriptor = PrimordialGetOwnPropertyDescriptor(holder, "then") as
-        | { readonly value?: unknown; readonly get?: unknown; readonly set?: unknown }
-        | undefined;
-      if (descriptor !== undefined) {
-        if (typeof descriptor.value === "function") return true;
-        if (typeof descriptor.get === "function" || typeof descriptor.set === "function") return true;
-        return false;
-      }
-      holder = PrimordialGetPrototypeOf(holder) as object | null;
-    }
-    if (holder !== null) return true;
-    try {
-      return typeof (value as { readonly then?: unknown }).then === "function";
-    } catch {
-      return true;
-    }
-  } catch {
-    // An unreadable shape cannot be classified; attempting observation records whatever happens
-    // as an operational failure rather than inventing a delivery.
-    return true;
-  }
-};
-
-/**
- * Subscribes to a Driver settlement under sanitized Promise-construction machinery.
- *
- * Captured `resolve`/`then` decide *which function object* runs, but a native `then` still reads
- * *what that function observes*: `SpeciesConstructor` performs `Get(O, "constructor")` and then
- * `Get(C, Symbol.species)` before `PerformPromiseThen` attaches anything. A throwing
- * `Promise[Symbol.species]` getter installed by an earlier caller observation in the same tick
- * therefore makes the attach itself throw before the rejection continuation exists — and the
- * already-rejected Driver promise escapes as process-level unhandled rejection while the attempt
- * is (correctly but incompletely) recorded as failed (K11-R16-DISP-01).
- *
- * This window closes that channel the same way `own-array.ts` closes the list discipline: the
- * two construction slots (`Promise[Symbol.species]`, `Promise.prototype.constructor`) are
- * reinstalled to their primordials, and a caller-installed own `Symbol.species` on
- * `Object.prototype` — which would answer once the Promise-own slot is deleted — is removed, for
- * the synchronous attach only, then everything is restored from its saved descriptor. Saving and
- * restoring go through own-property descriptors, so neither step executes an installed getter.
- * `settled` itself stays host-trusted (it is Driver-supplied); what is sanitized is the ambient
- * machinery that observes it.
- *
- * The window covers the Driver invocation itself, not only the attach (R4-F1): if sanitization
- * throws — a host that redefined one of these slots as non-configurable — the Driver is never
- * called, so no Driver promise comes into existence to escape. The attempt records the
- * operational failure with intent, reservation and redelivery intact. A rejected promise that
- * already exists before sanitization fails (a non-configurable *own* slot on the returned
- * promise, or an inherited/subclass species the window must not rewrite) is beyond any
- * in-process code: every native observation runs `SpeciesConstructor`, so failure still records
- * failed while the original rejection escapes as process-level unhandled — the documented
- * fundamental limit, not a second defect.
- */
-function withDeliveryEnvironment<T>(work: () => T): T {
-  // Observation first, through own-property descriptors only: reading what is installed cannot
-  // itself execute an installed getter. Nothing is changed yet, so this has nothing to undo.
-  const promiseSpecies = PrimordialGetOwnPropertyDescriptor(PrimordialPromise, PrimordialSymbolSpecies);
-  const prototypeConstructor = PrimordialGetOwnPropertyDescriptor(PrimordialPromisePrototype, "constructor");
-  const objectSpecies = PrimordialGetOwnPropertyDescriptor(PrimordialObjectPrototype, PrimordialSymbolSpecies);
-  try {
-    defineData(PrimordialPromise, PrimordialSymbolSpecies, PrimordialPromise, true, false, true);
-    defineData(PrimordialPromisePrototype, "constructor", PrimordialPromise, true, false, true);
-    // No conforming host owns this property; its only possible content is caller-installed.
-    if (objectSpecies !== undefined) {
-      delete (PrimordialObjectPrototype as Record<string | symbol, unknown>)[PrimordialSymbolSpecies];
-    }
-    return work();
-  } finally {
-    restoreDescriptor(PrimordialPromise, PrimordialSymbolSpecies, promiseSpecies);
-    restoreDescriptor(PrimordialPromisePrototype, "constructor", prototypeConstructor);
-    if (objectSpecies !== undefined) {
-      restoreDescriptor(PrimordialObjectPrototype, PrimordialSymbolSpecies, objectSpecies);
-    }
-  }
-}
-
-/**
- * Removes the returned promise's own construction slots for the attach, then hands them back.
- *
- * `Resolve`/`then` read `Get(settled, "constructor")` and `Get(constructor, Symbol.species")`
- * before any continuation attaches, so an own throwing slot on the returned instance breaks the
- * attach the same way an ambient one does (R4-F2). Deleting the own slots lets the reads fall
- * through to the sanitized ambient above. Only own slots are touched — an inherited or subclass
- * species (R4-F4) is another object's state and cannot be sanitized from here.
- */
-function sanitizeInstance(settled: object): { readonly constructor: PropertyDescriptor | undefined; readonly species: PropertyDescriptor | undefined } {
-  const constructor = PrimordialGetOwnPropertyDescriptor(settled, "constructor");
-  const species = PrimordialGetOwnPropertyDescriptor(settled, PrimordialSymbolSpecies);
-  // Computed keys, not literals: the `delete` operand must be optional-typed (TS2790), which a
-  // union-typed key satisfies where a literal does not — the same spelling the windows use.
-  const constructorKey: string | symbol = "constructor";
-  // Atomic (R4-F2): a non-configurable own species must not leave a removed constructor behind.
-  // The first removal needs no rollback — nothing changed yet if it throws.
-  if (constructor !== undefined) delete (settled as Record<string | symbol, unknown>)[constructorKey];
-  try {
-    if (species !== undefined) delete (settled as Record<string | symbol, unknown>)[PrimordialSymbolSpecies];
-  } catch (error) {
-    if (constructor !== undefined) restoreDescriptor(settled, constructorKey, constructor);
-    throw error;
-  }
-  return { constructor, species };
-}
-
-function restoreInstance(
-  settled: object,
-  saved: { readonly constructor: PropertyDescriptor | undefined; readonly species: PropertyDescriptor | undefined },
-): void {
-  if (saved.species !== undefined) restoreDescriptor(settled, PrimordialSymbolSpecies, saved.species);
-  if (saved.constructor !== undefined) restoreDescriptor(settled, "constructor", saved.constructor);
-}
 
 // -- Accepting content -------------------------------------------------------
 
@@ -1094,8 +943,9 @@ export class ExecutionCoordinator {
    * keep their own dispositions, which is what makes "reservation is not acknowledgment" observable
    * rather than asserted.
    *
-   * `deliver` is called and its result is not awaited. A Driver that never settles holds up nothing:
-   * another Execution on this same coordinator dispatches while the first exchange is unresolved.
+   * `deliver` is called with a fresh reporting capability and the Kernel does not wait for a
+   * report. A Driver that never reports holds up nothing: another Execution on this same
+   * coordinator dispatches while the first exchange is unresolved.
    */
   dispatch(caller: AuthenticatedCaller, executionId: string, options: DispatchOptions): Result<DispatchAccepted, RefusalRecord> {
     const record = this.#visible(caller, executionId);
@@ -1369,49 +1219,43 @@ export class ExecutionCoordinator {
   }
 
   /**
-   * Hands an Activation to the Driver and returns immediately.
+   * Hands an Activation to the Driver with a Kernel-owned reporting capability.
    *
-   * A synchronous throw and a rejected promise are both recorded as operational delivery failures.
-   * Neither changes accepted state: the intent stands, the Execution stays `RUNNING`, and the same
-   * exchange can be redelivered.
+   * The attempt is recorded before the Driver is invoked, and a fresh frozen capability
+   * bound to that exact attempt is supplied. Only an explicit `delivered()`/`failed()`
+   * report settles the attempt; returning normally leaves it `pending` and the return
+   * value is never read, classified, or subscribed to. A synchronous throw is an implicit
+   * failure report through the same first-report rule: a report followed by a throw keeps
+   * the report, and a throw followed by a late report keeps the failure. Nothing here
+   * changes accepted state: the intent stands, the Execution stays `RUNNING`, and the same
+   * exchange can be redelivered with a new capability for the new attempt (KC1-ARCH-1).
    */
   #deliver(intent: ActivationRecord): void {
     const attempt: DeliveryAttempt = { attempt: intent.deliveries.length + 1, status: "pending", failure: null };
     appendOwn(intent.deliveries, attempt);
+    // Claimed before any reason is inspected: the first report wins, including reentrant
+    // reports issued while a diagnostic is being bounded. Each closure captures only its
+    // own attempt object, so a late report can settle only its original retained record —
+    // never a newer attempt, the current exchange, or logical state.
+    const settlement: DeliverySettlement = PrimordialObjectFreeze({
+      delivered(): void {
+        if (attempt.status !== "pending") return;
+        attempt.status = "delivered";
+      },
+      failed(reason: unknown): void {
+        if (attempt.status !== "pending") return;
+        attempt.status = "failed";
+        attempt.failure = describeDeliveryFailure(reason);
+      },
+    });
     try {
-      // The Driver invocation runs inside the sanitized window (R4-F1): caller-observation residue
-      // installed earlier in the dispatch tick is already neutralized when the Driver runs, and if
-      // the host cannot be sanitized at all the Driver is never called — so no Driver promise
-      // comes into existence to escape unhandled. Intent, reservation and redelivery are intact
-      // either way; the Driver observes primordial construction slots for this synchronous call.
-      withDeliveryEnvironment(() => {
-        const settled: unknown = this.#driver.deliver(intent.activation);
-        if (!isThenable(settled)) {
-          attempt.status = "delivered";
-          return;
-        }
-        // Own construction slots on the returned promise fall through to the sanitized ambient
-        // for the attach (R4-F2), then are handed back. Non-configurable own slots and
-        // inherited/subclass species stay beyond reach: see the window's note.
-        const savedInstance = sanitizeInstance(settled as object);
-        try {
-          const observed = PrimordialReflectApply(PrimordialPromiseResolve, PrimordialPromise, [settled]);
-          void PrimordialReflectApply(PrimordialPromiseThen, observed, [
-            () => {
-              attempt.status = "delivered";
-            },
-            (reason: unknown) => {
-              attempt.status = "failed";
-              attempt.failure = describeFailure(reason);
-            },
-          ]);
-        } finally {
-          restoreInstance(settled as object, savedInstance);
-        }
-      });
+      // The return value is intentionally ignored: no observation, no assimilation, no
+      // Promise creation, and no constructor/species sanitization on this path.
+      this.#driver.deliver(intent.activation, settlement);
     } catch (error) {
+      if (attempt.status !== "pending") return;
       attempt.status = "failed";
-      attempt.failure = describeFailure(error);
+      attempt.failure = describeDeliveryFailure(error);
     }
   }
 }

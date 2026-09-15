@@ -17,13 +17,15 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { ExecutionCoordinator, canonicalize } from "../src/index.ts";
-import type { DispatchOptions } from "../src/index.ts";
+import type { DeliverySettlement, DispatchOptions, ExecutionDriver } from "../src/index.ts";
 import {
   accepted,
+  asyncFailingDriver,
   caller,
   createRequest,
   delayedDriver,
   descriptorConversionIsHostile,
+  failingDriver,
   inheritedIndexIsLive,
   iteratorNextIsHostile,
   polluteDescriptorFields,
@@ -35,7 +37,6 @@ import {
   promiseSpeciesIsHostile,
   recordingDriver,
   refused,
-  rejectingDriver,
   throwingDriver,
   trapInheritedIndices,
   type DescriptorPollution,
@@ -271,20 +272,19 @@ describe("K1.1-C4 the intent is accepted before the send, and the send is not aw
     assert.equal(view.state, "RUNNING", "the exchange exists even though nothing received it");
     assert.equal(view.activation?.activationId, result.activationId);
     assert.deepEqual(view.activation?.batch, [created.initialEventId]);
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Error: native submit refused" }]);
+    // A thrown Error object is not a primitive string, so the total diagnostic collapses to
+    // the fixed text rather than reading `message` (KC1-ARCH-1).
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
   });
 
-  test("a Driver whose promise rejects records an operational failure, not a state change", async () => {
-    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+  test("a Driver that reports failure records an operational failure, not a state change", () => {
+    const kernel = new ExecutionCoordinator({ driver: failingDriver() });
     const created = started(kernel);
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
 
-    assert.equal(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries[0]?.status, "pending");
-    await settle();
-
     const view = accepted(kernel.inspect(author, created.executionId));
     assert.equal(view.state, "RUNNING", "a lost send does not resolve the exchange");
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Error: native submit lost" }]);
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "native submit lost" }]);
     assert.deepEqual(view.acknowledged, [], "and acknowledges nothing");
   });
 
@@ -298,7 +298,7 @@ describe("K1.1-C4 the intent is accepted before the send, and the send is not aw
     const kernel: ExecutionCoordinator = new ExecutionCoordinator({
       driver: {
         driverId: "fake-reentrant",
-        deliver(activation) {
+        deliver(activation, settlement): undefined {
           const view = accepted(kernel.inspect(author, activation.executionId));
           observed = {
             state: view.state,
@@ -336,8 +336,8 @@ describe("K1.1-C4 the intent is accepted before the send, and the send is not aw
     const other = started(kernel, "other");
 
     const slowDispatch = accepted(kernel.dispatch(author, slow.executionId, { bound: 1 }));
-    // The Driver's promise for `slow` is outstanding right now: nothing has released it. If the
-    // coordinator awaited native work, this next call could not have returned at all.
+    // The Driver's report for `slow` is outstanding right now: nothing has released it. If the
+    // coordinator waited for delivery work, this next call could not have returned at all.
     const otherDispatch = accepted(kernel.dispatch(author, other.executionId, { bound: 1 }));
 
     assert.notEqual(otherDispatch.activationId, slowDispatch.activationId);
@@ -348,21 +348,19 @@ describe("K1.1-C4 the intent is accepted before the send, and the send is not aw
     driver.release();
   });
 
-  test("dispatch returns before the Driver's promise settles", async () => {
+  test("dispatch returns while the report is outstanding; a later report settles it", () => {
     const driver = delayedDriver();
     const kernel = new ExecutionCoordinator({ driver });
     const created = started(kernel);
 
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    await settle();
     assert.equal(
       accepted(kernel.inspect(author, created.executionId)).activation?.deliveries[0]?.status,
       "pending",
-      "still outstanding after the event loop turned over",
+      "no report yet, so the attempt is still outstanding",
     );
 
     driver.release();
-    await settle();
     assert.equal(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries[0]?.status, "delivered");
   });
 });
@@ -1041,447 +1039,453 @@ describe("K11-R16-VAL-01 dispatch and redelivery project the snapshot while the 
   });
 });
 
-describe("K11-R16-DISP-01 delivery observes rejection under hostile Promise machinery", () => {
+describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
   /**
-   * Capturing `Promise.resolve`/`Promise.prototype.then` is not the whole observation: a native
-   * `then` runs `SpeciesConstructor` before attaching continuations, so a throwing
-   * `Promise[Symbol.species]` getter installed by an earlier caller observation makes the attach
-   * itself throw before the rejection handler exists — and the already-rejected Driver promise
-   * escapes as process-level unhandled rejection. The delivery window reinstalls the primordial
-   * construction slots for the synchronous attach and hands them back afterwards.
+   * Decision-01 (KC1-ARCH-1) removes Driver-returned Promise observation: `deliver` receives a
+   * Kernel-created reporting capability and returns only `undefined`. Returning normally is not
+   * an acknowledgment — only an explicit `delivered()`/`failed()` report settles the attempt.
+   * The Kernel never reads, classifies, assimilates, or subscribes to the return value, creates
+   * no Promise on this path, and performs no Promise constructor/species sanitization. The
+   * Driver owns its asynchronous work and handles its own internal rejections.
    *
-   * Test discipline: `await` itself depends on the species machinery, so no `await` may run while
-   * the throwing species is installed. Each case dispatches synchronously under pollution,
-   * restores host state, and only then drains microtasks and asserts. The attach under test
-   * happens synchronously inside `dispatch`; the drain merely lets the already-attached handler
-   * run. (An earlier revision of these cases awaited while polluted and measured the test
-   * harness's own broken `await` instead of the Kernel — the failure below would have been
-   * misattributed without this ordering.)
+   * H1's counted-unhandled oracle (`unhandled.length === 1`) is removed with the path it
+   * belonged to. An inert hostile return object proves non-observation without manufacturing an
+   * unrelated unhandled promise; Driver-internal rejection handling is proved separately by a
+   * conforming async fake under strict rejection handling.
    */
   const drain = async (): Promise<void> => {
     await settle();
     await new Promise<void>((resolve) => setTimeout(resolve, 25));
   };
 
-  const collectUnhandled = (): { readonly reasons: unknown[]; stop(): void } => {
-    const reasons: unknown[] = [];
-    const handler = (reason: unknown): void => {
-      reasons.push(reason);
-    };
-    process.on("unhandledRejection", handler);
-    return {
-      reasons,
-      stop: (): void => {
-        process.off("unhandledRejection", handler);
-      },
-    };
-  };
-
-  test("a rejected Driver under a throwing species stays an operational failure with no unhandled rejection", async () => {
-    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+  test("report during invocation settles the attempt with intent intact", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
     const created = started(kernel);
-    const species = pollutePromiseSpecies(() => {
-      throw new Error("species boom");
-    });
-    const tap = collectUnhandled();
-    let dispatched: { receipt: { boundary: string; token: string } };
-    try {
-      assert.equal(promiseSpeciesIsHostile(), true, "throwing species live across the call");
-      dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-      assert.equal(dispatched.receipt.boundary, "dispatch_intent", "the intent was recorded before the send");
-    } finally {
-      species.restore();
-    }
-    try {
-      await drain();
-      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
-      const after = accepted(kernel.inspect(author, created.executionId));
-      assert.equal(after.state, "RUNNING", "a rejection changes no accepted state");
-      const deliveries = after.activation?.deliveries ?? [];
-      assert.equal(deliveries.length, 1);
-      assert.equal(deliveries[0]?.status, "failed");
-      assert.equal(after.acknowledged.length, 0, "a failure acknowledges nothing");
-      assert.equal(after.activation?.receipt.token, dispatched!.receipt.token, "the intent receipt is intact");
-      assert.deepEqual(after.activation?.batch, [created.initialEventId], "the reserved batch is intact");
-    } finally {
-      tap.stop();
-    }
-    assert.equal(promiseSpeciesIsHostile(), false, "host state restored");
+    const result = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.equal(view.state, "RUNNING", "a report changes no accepted state");
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "delivered", failure: null }]);
+    assert.equal(view.activation?.receipt.token, result.receipt.token, "the intent receipt is intact");
+    assert.deepEqual(view.activation?.batch, [created.initialEventId], "the reserved batch is intact");
+    assert.deepEqual(view.acknowledged, [], "a report acknowledges nothing");
   });
 
-  test("redelivery under a throwing species stays operational with no unhandled rejection", async () => {
-    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+  test("delayed or absent report leaves the attempt pending without blocking others", () => {
+    const driver = delayedDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const slow = started(kernel, "slow");
+    const other = started(kernel, "other");
+
+    accepted(kernel.dispatch(author, slow.executionId, { bound: 1 }));
+    assert.equal(
+      accepted(kernel.inspect(author, slow.executionId)).activation?.deliveries[0]?.status,
+      "pending",
+      "no report yet",
+    );
+    // Another Execution dispatches while the first report is outstanding.
+    accepted(kernel.dispatch(author, other.executionId, { bound: 1 }));
+    assert.equal(accepted(kernel.inspect(author, other.executionId)).state, "RUNNING");
+
+    driver.release();
+    assert.equal(accepted(kernel.inspect(author, slow.executionId)).activation?.deliveries[0]?.status, "delivered");
+    assert.equal(accepted(kernel.inspect(author, other.executionId)).activation?.deliveries[0]?.status, "delivered");
+  });
+
+  test("synchronous throw is an implicit failure report with a total diagnostic", () => {
+    const kernel = new ExecutionCoordinator({ driver: throwingDriver() });
+    const created = started(kernel);
+    const result = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.equal(view.state, "RUNNING");
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
+    assert.equal(view.activation?.receipt.token, result.receipt.token);
+    assert.deepEqual(view.activation?.batch, [created.initialEventId]);
+    assert.deepEqual(view.acknowledged, []);
+  });
+
+  test("a report followed by a throw retains the report", () => {
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-report-then-throw",
+        deliver(_activation, settlement): undefined {
+          settlement.delivered();
+          throw new Error("late throw");
+        },
+      },
+    });
+    const created = started(kernel);
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "delivered", failure: null }]);
+  });
+
+  test("a throw followed by a late report retains the failure", () => {
+    let captured: DeliverySettlement | null = null;
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-throw-then-late",
+        deliver(_activation, settlement): undefined {
+          captured = settlement;
+          throw new Error("early throw");
+        },
+      },
+    });
+    const created = started(kernel);
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    assert.ok(captured !== null, "the capability was supplied before the throw");
+    (captured as DeliverySettlement).delivered();
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
+  });
+
+  test("duplicate and conflicting reports are inert after the first", () => {
+    const settlements: DeliverySettlement[] = [];
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-manual",
+        deliver(_activation, settlement): undefined {
+          settlements.push(settlement);
+          return undefined;
+        },
+      },
+    });
+    const created = started(kernel);
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    const first = settlements[0] as DeliverySettlement;
+    first.delivered();
+    first.delivered();
+    first.failed("late conflict");
+    assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [
+      { attempt: 1, status: "delivered", failure: null },
+    ]);
+
+    accepted(kernel.redeliver(author, created.executionId));
+    const second = settlements[1] as DeliverySettlement;
+    second.failed("first failure");
+    second.delivered();
+    second.failed("second failure");
+    assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [
+      { attempt: 1, status: "delivered", failure: null },
+      { attempt: 2, status: "failed", failure: "first failure" },
+    ]);
+  });
+
+  test("capability integrity: frozen, detached, and bound to its own attempt", () => {
+    const settlements: DeliverySettlement[] = [];
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-capture",
+        deliver(_activation, settlement): undefined {
+          settlements.push(settlement);
+          return undefined;
+        },
+      },
+    });
+    const first = started(kernel, "first");
+    const second = started(kernel, "second");
+    accepted(kernel.dispatch(author, first.executionId, { bound: 1 }));
+    accepted(kernel.dispatch(author, second.executionId, { bound: 1 }));
+    const sFirst = settlements[0] as DeliverySettlement;
+    const sSecond = settlements[1] as DeliverySettlement;
+    assert.equal(Object.isFrozen(sFirst), true, "the capability exposes no mutable record");
+    assert.deepEqual(Object.keys(sFirst).sort(), ["delivered", "failed"]);
+    // Detached methods work without a receiver.
+    const detachedDeliver = sFirst.delivered;
+    detachedDeliver();
+    assert.equal(accepted(kernel.inspect(author, first.executionId)).activation?.deliveries[0]?.status, "delivered");
+    assert.equal(
+      accepted(kernel.inspect(author, second.executionId)).activation?.deliveries[0]?.status,
+      "pending",
+      "one Execution's report cannot settle another's attempt",
+    );
+    const detachedFail = sSecond.failed;
+    detachedFail("second failed");
+    assert.deepEqual(accepted(kernel.inspect(author, second.executionId)).activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "second failed" },
+    ]);
+    assert.deepEqual(accepted(kernel.inspect(author, first.executionId)).activation?.deliveries, [
+      { attempt: 1, status: "delivered", failure: null },
+    ]);
+  });
+
+  test("hostile failure reasons are never invoked and stay bounded", () => {
+    const calls = { toString: 0, valueOf: 0, then: 0 };
+    const hostile = {};
+    Object.defineProperty(hostile, "toString", {
+      get() {
+        calls.toString += 1;
+        throw new Error("coerce");
+      },
+      configurable: true,
+    });
+    Object.defineProperty(hostile, "valueOf", {
+      get() {
+        calls.valueOf += 1;
+        return 1;
+      },
+      configurable: true,
+    });
+    Object.defineProperty(hostile, "then", {
+      get() {
+        calls.then += 1;
+        throw new Error("then");
+      },
+      configurable: true,
+    });
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-hostile-reason",
+        deliver(_activation, settlement): undefined {
+          settlement.failed(hostile);
+          return undefined;
+        },
+      },
+    });
+    const created = started(kernel);
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    assert.deepEqual(calls, { toString: 0, valueOf: 0, then: 0 }, "no coercion, getter, or thenable ran");
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
+    assert.deepEqual(
+      accepted(kernel.inspect(author, created.executionId)).activation?.deliveries,
+      view.activation?.deliveries,
+      "the retained diagnostic is stable",
+    );
+  });
+
+  test("a poisoned Error message is never read", () => {
+    let messageReads = 0;
+    const poisoned = new Error("unread");
+    Object.defineProperty(poisoned, "message", {
+      get(): never {
+        messageReads += 1;
+        throw new Error("message trap");
+      },
+      configurable: true,
+    });
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-poisoned",
+        deliver(_activation, settlement): undefined {
+          settlement.failed(poisoned);
+          return undefined;
+        },
+      },
+    });
+    const created = started(kernel);
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    assert.equal(messageReads, 0, "the diagnostic never reads message");
+    assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "Driver delivery failed" },
+    ]);
+  });
+
+  test("revoked Proxy, symbol, function, and boxed-string reasons collapse to the fixed text", () => {
+    const { proxy, revoke } = Proxy.revocable({}, {});
+    revoke();
+    const reasons: { name: string; reason: unknown }[] = [
+      { name: "revoked proxy", reason: proxy },
+      { name: "symbol", reason: Symbol("opaque") },
+      { name: "function", reason: () => {} },
+      { name: "number", reason: 42 },
+      { name: "boxed string", reason: new String("boxed") },
+      { name: "undefined", reason: undefined },
+    ];
+    for (const entry of reasons) {
+      const kernel = new ExecutionCoordinator({
+        driver: {
+          driverId: "fake-exotic",
+          deliver(_activation, settlement): undefined {
+            settlement.failed(entry.reason);
+            return undefined;
+          },
+        },
+      });
+      const created = started(kernel, `exotic ${entry.name}`);
+      accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+      assert.deepEqual(
+        accepted(kernel.inspect(author, created.executionId)).activation?.deliveries,
+        [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }],
+        entry.name,
+      );
+    }
+  });
+
+  test("a primitive string reason is retained up to 1,024 code units", () => {
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-long",
+        deliver(_activation, settlement): undefined {
+          settlement.failed(`prefix-${"x".repeat(2000)}`);
+          return undefined;
+        },
+      },
+    });
+    const created = started(kernel);
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    const failure = accepted(kernel.inspect(author, created.executionId)).activation?.deliveries[0]?.failure as string;
+    assert.equal(failure.length, 1_024);
+    assert.equal(failure, `prefix-${"x".repeat(2000)}`.slice(0, 1_024));
+  });
+
+  test("redelivery overlap: out-of-order reports settle only their own attempts", () => {
+    const settlements: DeliverySettlement[] = [];
+    const seenIds: string[] = [];
+    const kernel = new ExecutionCoordinator({
+      driver: {
+        driverId: "fake-overlap",
+        deliver(activation, settlement): undefined {
+          settlements.push(settlement);
+          seenIds.push(activation.activationId);
+          return undefined;
+        },
+      },
+    });
     const created = started(kernel);
     const first = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    await drain();
-
-    const species = pollutePromiseSpecies(() => {
-      throw new Error("species boom");
-    });
-    const tap = collectUnhandled();
-    let redelivered: { activationId: string; receipt: { token: string } };
-    try {
-      redelivered = accepted(kernel.redeliver(author, created.executionId));
-      assert.equal(redelivered.activationId, first.activationId);
-      assert.equal(redelivered.receipt.token, first.receipt.token);
-    } finally {
-      species.restore();
-    }
-    try {
-      await drain();
-      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
-      const after = accepted(kernel.inspect(author, created.executionId));
-      const deliveries = after.activation?.deliveries ?? [];
-      assert.equal(deliveries.length, 2, "the redelivery attempt was recorded");
-      assert.equal(deliveries[1]?.status, "failed");
-      assert.deepEqual(after.activation?.batch, [created.initialEventId], "nothing was re-selected");
-    } finally {
-      tap.stop();
-    }
+    const late = withInputs(kernel, created.executionId, ["late"]);
+    const again = accepted(kernel.redeliver(author, created.executionId));
+    assert.equal(again.activationId, first.activationId);
+    assert.deepEqual(seenIds, [first.activationId, first.activationId], "redelivery carries the identical Activation");
+    // The newer attempt reports first; the older attempt fails late.
+    (settlements[1] as DeliverySettlement).delivered();
+    (settlements[0] as DeliverySettlement).failed("late failure");
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "late failure" },
+      { attempt: 2, status: "delivered", failure: null },
+    ]);
+    assert.equal(view.activation?.writerEpoch, 1, "reports never advance the epoch");
+    assert.deepEqual(view.activation?.batch, [created.initialEventId], "nothing was re-selected");
+    assert.deepEqual(view.queued, [created.initialEventId, late[0]]);
   });
 
-  test("a hostile constructor with a non-constructor species cannot divert the rejection", async () => {
-    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
-    const created = started(kernel);
-    const Evil = function Evil(this: unknown): void {};
-    (Evil as unknown as Record<symbol, unknown>)[Symbol.species] = 42;
-    const ctor = pollutePromiseConstructor(Evil);
-    const tap = collectUnhandled();
-    let dispatched: { writerEpoch: number };
-    try {
-      dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    } finally {
-      ctor.restore();
-    }
-    try {
-      await drain();
-      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
-      const after = accepted(kernel.inspect(author, created.executionId));
-      assert.equal(after.state, "RUNNING");
-      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
-      assert.equal(dispatched!.writerEpoch, 1, "epoch untouched");
-    } finally {
-      tap.stop();
-    }
-    assert.deepEqual(Object.getOwnPropertyDescriptor(Promise.prototype, "constructor")?.value, Promise);
-  });
-
-  test("a deleted Promise species plus an Object.prototype species shadow still attaches", async () => {
-    const kernel = new ExecutionCoordinator({ driver: rejectingDriver() });
+  test("Promise independence: hostile ambient constructor/species slots change nothing", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
     const created = started(kernel);
     const savedSpecies = Object.getOwnPropertyDescriptor(Promise, Symbol.species);
-    delete (Promise as unknown as Record<symbol, unknown>)[Symbol.species];
-    const shadow = polluteObjectSpecies({});
-    const tap = collectUnhandled();
-    let dispatched: { receipt: { boundary: string } };
+    const savedCtor = Object.getOwnPropertyDescriptor(Promise.prototype, "constructor");
+    const savedShadow = Object.getOwnPropertyDescriptor(Object.prototype, Symbol.species);
+    Object.defineProperty(Promise, Symbol.species, {
+      configurable: true,
+      get() {
+        throw new Error("species boom");
+      },
+    });
+    Object.defineProperty(Promise.prototype, "constructor", { value: 42, writable: true, enumerable: false, configurable: true });
+    Object.defineProperty(Object.prototype, Symbol.species, { value: {}, writable: true, enumerable: false, configurable: true });
     try {
-      dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+      assert.equal(promiseSpeciesIsHostile(), true, "throwing species live across the calls");
+      const result = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+      assert.equal(result.receipt.boundary, "dispatch_intent");
+      const redelivered = accepted(kernel.redeliver(author, created.executionId));
+      assert.equal(redelivered.redelivered, true);
+      // The Kernel performed no sanitization: the hostile getter is still installed.
+      assert.equal(typeof Object.getOwnPropertyDescriptor(Promise, Symbol.species)?.get, "function");
     } finally {
-      shadow.restore();
       if (savedSpecies === undefined) delete (Promise as unknown as Record<symbol, unknown>)[Symbol.species];
       else Object.defineProperty(Promise, Symbol.species, savedSpecies);
+      if (savedCtor === undefined) delete (Promise.prototype as unknown as Record<string, unknown>)["constructor"];
+      else Object.defineProperty(Promise.prototype, "constructor", savedCtor);
+      if (savedShadow === undefined) delete (Object.prototype as unknown as Record<symbol, unknown>)[Symbol.species];
+      else Object.defineProperty(Object.prototype, Symbol.species, savedShadow);
     }
-    try {
-      await drain();
-      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
-      const after = accepted(kernel.inspect(author, created.executionId));
-      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
-      assert.equal(dispatched!.receipt.boundary, "dispatch_intent");
-    } finally {
-      tap.stop();
-    }
-    assert.equal(Object.getOwnPropertyDescriptor(Object.prototype, Symbol.species), undefined, "shadow handed back absent");
+    assert.equal(promiseSpeciesIsHostile(), false, "host state restored");
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "delivered", failure: null },
+      { attempt: 2, status: "delivered", failure: null },
+    ]);
   });
 
-  test("a pending Driver under a throwing species still delivers once released", async () => {
-    let release: () => void = () => {};
-    const pendingDriver = {
-      driverId: "fake-pending-species",
-      deliver(): Promise<void> {
-        return new Promise<void>((resolve) => {
-          release = resolve;
-        });
+  test("return misuse: an inert hostile return is never observed; the attempt stays pending", () => {
+    let thenCalls = 0;
+    const hostile = {};
+    Object.defineProperty(hostile, "then", {
+      get() {
+        thenCalls += 1;
+        throw new Error("then boom");
       },
-    };
-    const kernel = new ExecutionCoordinator({ driver: pendingDriver });
-    const created = started(kernel);
-    const species = pollutePromiseSpecies(() => {
-      throw new Error("species boom");
+      configurable: true,
     });
-    const tap = collectUnhandled();
-    try {
-      accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    } finally {
-      species.restore();
-    }
-    try {
-      await drain();
-      const waiting = accepted(kernel.inspect(author, created.executionId));
-      assert.equal((waiting.activation?.deliveries ?? [])[0]?.status, "pending", "no false evidence while unsettled");
-      release();
-      await drain();
-      assert.equal(tap.reasons.length, 0);
-      const after = accepted(kernel.inspect(author, created.executionId));
-      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "delivered");
-    } finally {
-      tap.stop();
-    }
-  });
-
-  test("a rejected Driver under a throwing species never escapes as unhandled (subprocess oracle)", () => {
-    const probe = `
-      const { ExecutionCoordinator } = await import("./packages/kernel/src/index.ts");
-      const harness = await import("./packages/kernel/tests/harness.ts");
-      const savedSpecies = Object.getOwnPropertyDescriptor(Promise, Symbol.species);
-      Object.defineProperty(Promise, Symbol.species, { configurable: true, get() { throw new Error("species boom"); } });
-      const kernel = new ExecutionCoordinator({ driver: { driverId: "probe", deliver() { return Promise.reject(new Error("native submit lost")); } } });
-      const author = harness.caller("app-a", "tenant-a");
-      const created = kernel.createExecution(author, harness.createRequest());
-      if (!created.ok) { console.log("SETUP FAILED"); process.exit(2); }
-      const dispatched = kernel.dispatch(author, created.value.executionId, { bound: 1 });
-      if (!dispatched.ok) { console.log("DISPATCH REFUSED"); process.exit(3); }
-      // Restoring before the first await matters: await itself runs SpeciesConstructor, so
-      // awaiting while polluted would measure the probe's own broken suspension, not the Kernel.
-      // The attach under test already happened synchronously inside dispatch.
-      if (savedSpecies !== undefined) Object.defineProperty(Promise, Symbol.species, savedSpecies);
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      const view = kernel.inspect(author, created.value.executionId);
-      const status = view.ok && view.value.activation !== null ? view.value.activation.deliveries[0].status : "missing";
-      console.log("SURVIVED " + status);
-    `;
-    // `--unhandled-rejections=strict`: any Driver rejection that escapes the Kernel's handling
-    // crashes the child with a non-zero exit instead of passing silently.
-    const result = execFileSync(
-      process.execPath,
-      ["--unhandled-rejections=strict", "--experimental-strip-types", "--input-type=module", "-e", probe],
-      { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
-    );
-    assert.match(result, /SURVIVED failed/, "the child recorded the operational failure and nothing escaped");
-  });
-
-  test("R4-F1 a non-configurable species slot means the Driver is never called, so nothing can escape (subprocess oracle)", () => {
-    // The window sanitizes before invoking the Driver: when the host cannot be sanitized at all,
-    // no Driver promise comes into existence. Strict exit 0 proves no unhandled rejection; the
-    // sync inspection proves the failure was still recorded with the exchange intact.
-    const probe = `
-      const { ExecutionCoordinator } = await import("./packages/kernel/src/index.ts");
-      const harness = await import("./packages/kernel/tests/harness.ts");
-      Object.defineProperty(Promise, Symbol.species, { configurable: false, get() { throw new Error("boom"); } });
-      let driverCalls = 0;
-      const kernel = new ExecutionCoordinator({ driver: { driverId: "probe", deliver() { driverCalls += 1; return Promise.reject(new Error("never created")); } } });
-      const author = harness.caller("app-a", "tenant-a");
-      const created = kernel.createExecution(author, harness.createRequest());
-      if (!created.ok) { console.log("SETUP FAILED"); process.exit(2); }
-      const dispatched = kernel.dispatch(author, created.value.executionId, { bound: 1 });
-      if (!dispatched.ok) { console.log("DISPATCH REFUSED"); process.exit(3); }
-      const view = kernel.inspect(author, created.value.executionId);
-      const status = view.ok && view.value.activation !== null ? view.value.activation.deliveries[0].status : "missing";
-      const state = view.ok ? view.value.state : "missing";
-      console.log("RESULT " + status + " driverCalls=" + driverCalls + " state=" + state);
-      process.exit(0);
-    `;
-    const result = execFileSync(
-      process.execPath,
-      ["--unhandled-rejections=strict", "--experimental-strip-types", "--input-type=module", "-e", probe],
-      { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
-    );
-    assert.match(result, /RESULT failed driverCalls=0 state=RUNNING/, "failed without ever sending, and nothing escaped");
-  });
-
-  test("R4-F2 an own throwing constructor on the returned promise stays operational with no unhandled rejection", async () => {
-    const hostileDriver = {
-      driverId: "fake-hostile-constructor",
-      deliver(): Promise<void> {
-        const rejected = Promise.reject(new Error("native submit lost"));
-        Object.defineProperty(rejected, "constructor", {
-          get() {
-            throw new Error("own ctor boom");
-          },
-          configurable: true,
-        });
-        return rejected;
+    const misuse = {
+      driverId: "fake-return-misuse",
+      deliver(): unknown {
+        return hostile;
       },
-    };
-    const kernel = new ExecutionCoordinator({ driver: hostileDriver });
+    } as unknown as ExecutionDriver;
+    const kernel = new ExecutionCoordinator({ driver: misuse });
     const created = started(kernel);
-    const tap = collectUnhandled();
-    try {
-      // The instance's own slot falls through to the sanitized ambient for the attach. The tap
-      // stays live through the drain: anything escaping during settlement is counted, not missed.
-      const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-      await drain();
-      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
-      const after = accepted(kernel.inspect(author, created.executionId));
-      assert.equal(after.state, "RUNNING");
-      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
-      assert.match((after.activation?.deliveries ?? [])[0]?.failure ?? "", /native submit lost/, "the Driver reason was observed through the sanitized instance");
-      assert.equal(after.activation?.receipt.token, dispatched.receipt.token, "the intent receipt is intact");
-      assert.equal(after.acknowledged.length, 0, "a failure acknowledges nothing");
-    } finally {
-      tap.stop();
-    }
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    assert.equal(thenCalls, 0, "no return-object property is read");
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "pending", failure: null }], "an absent explicit report remains pending");
+    assert.equal(view.state, "RUNNING");
   });
 
-  test("R4-F3 an own throwing then getter is classified without invoking it", async () => {
-    const hostileDriver = {
-      driverId: "fake-hostile-then",
-      deliver(): Promise<void> {
-        const rejected = Promise.reject(new Error("native submit lost"));
-        Object.defineProperty(rejected, "then", {
-          get() {
-            throw new Error("own then boom");
-          },
-          configurable: true,
-        });
-        return rejected;
-      },
-    };
-    const kernel = new ExecutionCoordinator({ driver: hostileDriver });
-    const created = started(kernel);
-    const tap = collectUnhandled();
-    try {
-      // Descriptor-only classification never runs the getter; Resolve/Then never consult it on a
-      // native promise, so the rejection is observed and the getter never fires. Tap live through
-      // the drain, as above.
-      accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-      await drain();
-      assert.equal(tap.reasons.length, 0, "no rejected Driver promise escaped as unhandled");
-      const after = accepted(kernel.inspect(author, created.executionId));
-      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
-      assert.match((after.activation?.deliveries ?? [])[0]?.failure ?? "", /native submit lost/, "the Driver reason was observed, not the getter");
-    } finally {
-      tap.stop();
-    }
-  });
-
-  test("R4-F4 a Driver subclass with a throwing static species is the documented fundamental limit (subprocess oracle)", () => {
-    // No species-bypassing observation exists in JavaScript: every native subscription runs
-    // SpeciesConstructor, which reads the subclass's throwing slot before any continuation
-    // attaches. The Kernel records the failure with the exchange intact; the original rejection
-    // escapes as process-level unhandled. This runs in a child process because node:test fails
-    // any in-process test that lets a rejection escape unhandled, even a counted one — the very
-    // property under test. The child locks the honest behavior: failed, intact, and exactly the
-    // Driver rejection counted as unhandled, rather than claiming the unclosable closed.
-    // (Arming after construction matters: the subclass's own construction reads the same slot,
-    // so an always-throwing species detonates in the fixture itself, before the Kernel runs.)
+  test("Driver-internal asynchronous failure reports with zero unhandled (strict subprocess)", async () => {
     const probe = `
       const { ExecutionCoordinator } = await import("./packages/kernel/src/index.ts");
       const harness = await import("./packages/kernel/tests/harness.ts");
-      let armed = false;
-      class HostileSub extends Promise {
-        static get [Symbol.species]() {
-          if (armed) throw new Error("sub species boom");
-          return this;
-        }
-      }
-      const kernel = new ExecutionCoordinator({ driver: { driverId: "probe", deliver() {
-        const pending = new HostileSub((_, reject) => reject(new Error("native submit lost")));
-        armed = true;
-        return pending;
-      } } });
       const unhandled = [];
-      process.on("unhandledRejection", (reason) => unhandled.push(String((reason && reason.message) || reason)));
+      process.on("unhandledRejection", (reason) => unhandled.push(String(reason?.message ?? reason)));
+      const kernel = new ExecutionCoordinator({ driver: harness.asyncFailingDriver("async lost") });
       const author = harness.caller("app-a", "tenant-a");
       const created = kernel.createExecution(author, harness.createRequest());
       if (!created.ok) { console.log("SETUP FAILED"); process.exit(2); }
-      const dispatched = kernel.dispatch(author, created.value.executionId, { bound: 1 });
-      if (!dispatched.ok) { console.log("DISPATCH REFUSED"); process.exit(3); }
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      const first = kernel.dispatch(author, created.value.executionId, { bound: 1 });
+      if (!first.ok) { console.log("DISPATCH REFUSED"); process.exit(3); }
+      const again = kernel.redeliver(author, created.value.executionId);
+      if (!again.ok) { console.log("REDELIVER REFUSED"); process.exit(4); }
+      await new Promise((resolve) => setTimeout(resolve, 150));
       const view = kernel.inspect(author, created.value.executionId);
       console.log(JSON.stringify({
-        unhandled,
-        status: view.ok && view.value.activation !== null ? view.value.activation.deliveries[0].status : "missing",
-        failure: view.ok && view.value.activation !== null ? view.value.activation.deliveries[0].failure : null,
+        unhandled: unhandled.length,
         state: view.ok ? view.value.state : "missing",
+        activationId: view.ok && view.value.activation !== null ? view.value.activation.activationId : null,
         batch: view.ok && view.value.activation !== null ? view.value.activation.batch : null,
+        deliveries: view.ok && view.value.activation !== null ? view.value.activation.deliveries : null,
         acknowledged: view.ok ? view.value.acknowledged : null,
       }));
     `;
     const result = execFileSync(
       process.execPath,
-      ["--experimental-strip-types", "--input-type=module", "-e", probe],
+      ["--unhandled-rejections=strict", "--experimental-strip-types", "--input-type=module", "-e", probe],
       { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
     );
+    // The drain helper above keeps this test's async shape honest for the in-process cases; the
+    // strict oracle itself runs in the child.
+    await drain();
     const observed = JSON.parse(result.trim().split("\n").pop() as string) as {
-      unhandled: string[];
-      status: string;
-      failure: string | null;
+      unhandled: number;
       state: string;
+      activationId: string;
       batch: string[] | null;
+      deliveries: { attempt: number; status: string; failure: string | null }[] | null;
       acknowledged: unknown[];
     };
-    assert.equal(observed.unhandled.length, 1, "exactly the Driver rejection escaped, counted not hidden");
-    assert.match(observed.unhandled[0] as string, /native submit lost/);
-    assert.equal(observed.status, "failed");
-    assert.match(observed.failure ?? "", /sub species boom/, "the attach failure is recorded while the original rejection is the one that escaped");
-    assert.equal(observed.state, "RUNNING", "a rejection changes no accepted state");
+    assert.equal(observed.unhandled, 0, "the conforming Driver handled its own rejection on both attempts");
+    assert.equal(observed.state, "RUNNING", "reports change no accepted state");
+    assert.deepEqual(observed.deliveries, [
+      { attempt: 1, status: "failed", failure: "Driver delivery failed" },
+      { attempt: 2, status: "failed", failure: "Driver delivery failed" },
+    ]);
     assert.equal((observed.batch ?? []).length, 1, "the reserved batch is intact");
     assert.deepEqual(observed.acknowledged, [], "a failure acknowledges nothing");
   });
 
-  test("R4-F1 a Proxy thenable answered only by the get trap is observed, never invented delivered", async () => {
-    // The descriptor walk finds no owned `then` on a get-trap-only Proxy, but classifying it as
-    // non-thenable invents a sync `delivered` for a settlement never observed (delta-reviewer
-    // counterexample). The contained confirm-read sees the function the ordinary path would call.
-    let thenCalls = 0;
-    const proxyDriver = {
-      driverId: "fake-proxy-thenable",
-      deliver(): Promise<void> {
-        const proxy = new Proxy(
-          {},
-          {
-            get(target, property) {
-              if (property === "then") {
-                return (onFulfilled: unknown, onRejected: unknown): void => {
-                  thenCalls += 1;
-                  (onRejected as (reason: unknown) => void)(new Error("proxy rej"));
-                };
-              }
-              return Reflect.get(target, property);
-            },
-          },
-        );
-        return proxy as unknown as Promise<void>;
+  test("type boundary: an async deliver is not assignable; a sync undefined deliver compiles", () => {
+    const good: ExecutionDriver = {
+      driverId: "fake-type-good",
+      deliver(_activation, settlement): undefined {
+        settlement.delivered();
+        return undefined;
       },
     };
-    const kernel = new ExecutionCoordinator({ driver: proxyDriver });
-    const created = started(kernel);
-    const tap = collectUnhandled();
-    try {
-      accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-      await drain();
-      assert.equal(tap.reasons.length, 0, "the observed rejection was handled");
-      assert.equal(thenCalls > 0, true, "the thenable was actually called, not skipped");
-      const after = accepted(kernel.inspect(author, created.executionId));
-      assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed", "never an invented delivered");
-      assert.match((after.activation?.deliveries ?? [])[0]?.failure ?? "", /proxy rej/);
-    } finally {
-      tap.stop();
-    }
-  });
-
-  test("R4-F2 instance sanitation is atomic: a partial throw hands every slot back", () => {
-    // Own configurable constructor plus own non-configurable species: the first removal must be
-    // rolled back when the second throws. A fulfilled promise keeps this in-process: nothing can
-    // escape unhandled, so the test can assert restore-exactness directly. (The instance-level
-    // non-configurability is permanent only for this garbage fixture, never for shared state.)
-    const settled = Promise.resolve("settled-value");
-    Object.defineProperty(settled, "constructor", { value: 42, writable: true, enumerable: false, configurable: true });
-    Object.defineProperty(settled, Symbol.species, { value: 43, writable: false, enumerable: false, configurable: false });
-    const partialDriver = {
-      driverId: "fake-partial-instance",
-      deliver(): Promise<void> {
-        return settled as unknown as Promise<void>;
-      },
-    };
-    const kernel = new ExecutionCoordinator({ driver: partialDriver });
-    const created = started(kernel);
-    const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    assert.equal(dispatched.receipt.boundary, "dispatch_intent", "the intent stands despite the attach failure");
-    const after = accepted(kernel.inspect(author, created.executionId));
-    assert.equal((after.activation?.deliveries ?? [])[0]?.status, "failed");
-    assert.equal(Object.getOwnPropertyDescriptor(settled, "constructor")?.value, 42, "removed slot handed back");
-    assert.equal(Object.getOwnPropertyDescriptor(settled, Symbol.species)?.value, 43, "unremovable slot untouched");
+    assert.equal(good.driverId, "fake-type-good");
+    // @ts-expect-error an async deliver returns a Promise, not undefined
+    const _bad: ExecutionDriver = { driverId: "fake-type-bad", deliver: async () => {} };
+    assert.ok(true, "the misuse above must fail typecheck");
   });
 });
 

@@ -46,6 +46,12 @@ K1.0's [final correction review](../docs/development/work/K1.0-correction-02/rev
 supports the [structural evidence contract](mechanisms/evidence.md#structural-evidence).
 The [status ledger](../docs/development/007-work-packets.md) alone owns current release status.
 
+The owner delegated the K1.1-correction-01 architecture decision on 2026-09-15.
+[Decision 01](../docs/development/work/K1.1-correction-01/decision-01.md) replaces arbitrary
+Driver-returned Promise observation with the [delivery reporting boundary](mechanisms/execution-cycle.md#delivery-reporting-boundary).
+This is an authorized target change, pending implementation and independent acceptance;
+it does not reinterpret historical K1.1 reviews.
+
 ## Misunderstandings that shaped these pages
 
 | Evidence | Comprehension problem | Structural correction |

@@ -10,15 +10,20 @@ accepted-work invalidation and this corrective handoff), preserved at
 correction closure is reviewed over the cumulative base-to-H interval, not over the
 correction delta alone).
 **Base commit:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b` (K1.1's original base B).
-**Branch:** `codex/k1.1-correction-01-review-findings`. **Revision 1.**
+**Branch:** `codex/k1.1-correction-01-review-findings`. **Revision 2.**
 
 ## What this packet is, and what it is not
 
-It corrects K1.1. It releases no successor, opens no new criterion and weakens none.
+It corrects K1.1 and releases no successor. [Decision 01](decision-01.md), authorized by
+the owner on 2026-09-15, changes the delivery API and replaces revision 1's absolute
+Promise-observation obligation with explicit operational reporting. This is a deliberate
+contract change, not a claim that H1 satisfied revision 1.
 
 The acceptance criteria are **K1.1-C1 … K1.1-C10 exactly as
 [K1.1's contract](../K1.1/contract.md#acceptance-criteria) states them**, at revision 5. This
-packet adds no criterion of its own, so a reviewer judges it against the same ten obligations
+packet retains those ten criterion IDs and their coordination invariants. For C4/C5,
+the delivery API and corrective acceptance mapping in [decision-01](decision-01.md#acceptance-mapping)
+supersede revision 1's Promise-specific requirement. A reviewer judges the ten obligations
 the released packet is judged against, over the whole cumulative interval. It may add coverage,
 provenance, tests, validation, structural evidence and clarifying documentation required by the
 findings; it must not weaken C1…C10, relax receipt boundaries, alter approved value limits,
@@ -29,9 +34,10 @@ rules, implement persistence, or expand into K1.2.
 
 The reopening is required by [review-16](../K1.1/review-16.md) §§4–5 under 006's
 "If later evidence invalidates accepted work" rule: historical ACCEPT retained, affected
-claims/integration on hold, linked corrective packet before any new candidate. No unresolved
-architecture decision is identified for these findings, so no blocker state applies. No K1.2
-release is authorized by this packet.
+claims/integration on hold, linked corrective packet before any new candidate. The later
+[blocker](blocker-01.md) and [review-02](review-02.md) established a real API conflict.
+[Decision 01](decision-01.md) resolves it under the owner's explicit delegation; implementation
+resumes in this correction only. No K1.2 release is authorized.
 
 | Identity | Value | Disposition |
 |---|---|---|
@@ -42,14 +48,19 @@ release is authorized by this packet.
 | Contrary review (Opus) | [review-15](../K1.1/review-15.md) | `CHANGES REQUIRED`; open findings below |
 | Reconciliation review | [review-16](../K1.1/review-16.md) | `CHANGES REQUIRED`; invalidation + handoff |
 | Correction starting point | `a8ac787b2a766d897c7bd85311c1b2aee53a1ca8` | Preserved history containing review-16 |
-| K1.1 contract at correction | revision 5 | Inherited unchanged |
+| K1.1 contract at correction | revision 5 | Historical text preserved; C4/C5 correction mapping governed by revision 2 and decision-01 |
 
 Review records 14, 15 and 16 are immutable and are not edited. Post-H17 documentation commits
 on the preserved line (`9893376`, `1aa2de1`, `7af27bd`) are treated as declared payload in this
 correction — reverted, not smuggled into any administrative window — and remain in history
 untouched.
 
-## Open findings
+## Finding coverage
+
+Review-01 closed seven findings. `K11-R16-DISP-01` remains open; review-02 also
+identified the 007 contradiction `KC1-R2-PROC-01`, repaired by decision-01 and awaiting
+reviewer verification. The original eight findings below remain cumulative coverage:
+
 
 `K11-R15-ID-01`, `K11-R15-DOC-01`, `K11-R15-DOC-02`, `K11-R15-PROC-01`,
 `K11-R16-VAL-01`, `K11-R16-ID-01`, `K11-R16-DISP-01`, `K11-R16-DOC-01`.
@@ -61,7 +72,7 @@ one Proxy spelling, one link, or one historical diff window:
 2. accepted value snapshot → JCS abstract-operation graph → canonical bytes/size → all dependent
    identity/evidence (R16-VAL-01);
 3. total diagnostics over arbitrary caller-owned malformed values (R16-ID-01);
-4. promise/rejection observation under mutable ambient Promise machinery (R16-DISP-01);
+4. explicit delivery reporting replacing Promise observation (R16-DISP-01; decision-01);
 5. cumulative B→new-C documentation ownership and provenance (R15-DOC-01, R15-PROC-01);
 6. canonical documentation correctness and mechanical link validation
    (R15-DOC-02, R16-DOC-01);
@@ -70,13 +81,14 @@ one Proxy spelling, one link, or one historical diff window:
 ## Scope
 
 **In scope.** The seven families above with all dependent producer/consumer paths; distinguishing
-regressions for each concrete counterexample plus nearby-family cases; the four executable
+regressions for each concrete counterexample plus nearby-family cases; the decision-01 reporting mutations and retained unrelated
 ablations proving oracle sensitivity; cumulative B→new-C documentation accounting with the
 mechanical scope guard anchored at B; the mental-model link/anchor check; truthful 007
 status/provenance repair; full 006/008/012/015 validation and evidence. Any defect of the same
 family found while reconstructing those paths, recorded with its own self-found provenance.
 
-**Out of scope.** Any change to K1.1-C1…C10; any K1.2/K1.3/K1.4 semantics; persistence, schedulers
+**Out of scope.** Any change to K1.1-C1…C10 outside the delivery-boundary change explicitly
+authorized by decision-01; any K1.2/K1.3/K1.4 semantics; persistence, schedulers
 or leases (K3); real Drivers (R1); durability/isolation/Driver-fidelity claims; E1 or any
 benchmark gate; K1 milestone closure; successor release.
 
@@ -97,14 +109,19 @@ Derived from the criteria's own obligations, not from probe strings:
    caller-owned identity/request fields is total: no exception escapes merely while diagnosing
    malformed input; each returns the located contract-defined refusal with scope-before-authorization,
    nondisclosure, and zero accepted-state/receipt mutation preserved (KC1-DEC-4).
-4. **Driver rejection observation (C4, C5).** Dispatch and redelivery stay safe under
-   caller-observable mutation of ambient Promise machinery, including species construction before
-   rejection-continuation installation; no rejected Driver promise escapes as unhandled; intent,
-   Activation, epoch, base, batch, receipt and no-acknowledgment guarantees preserved (KC1-DEC-5).
+4. **Driver delivery reporting (C4, C5).** Implement the canonical
+   [delivery reporting boundary](../../../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary)
+   and all [decision-01 acceptance cases](decision-01.md#acceptance-mapping). Preserve intent,
+   Activation, epoch, base, batch, receipt and no-acknowledgment guarantees. Remove the
+   Promise-return path and replace the counted-unhandled oracle; no compatibility fallback.
 5. **Cumulative documentation/provenance (006/008).** Every non-record documentation path B→new-C is
    enumerated and classified; undeclared Layer-1/2/3 payload is reverted to base rather than
    justified after the fact (KC1-DEC-2). Post-H17 documentation is payload, reverted here. The
-   mental-model tree gains a mechanical link/anchor check covering the class, not one string.
+   mental-model tree retains a mechanical link/anchor check covering the class, not one string.
+   Decision-01's four enumerated mental-model paths are now authorized payload; all other
+   mental-model paths must be byte-identical to B in C2. Decision-01 identifies the current
+   pre-existing deployment-page deviation and authorizes its restoration in C2. No historical
+   drift is reinstated.
 6. **Status/process discipline (006/007/008).** 007 truthfully records the historical ACCEPT, its
    invalidation/hold, and this corrective packet. C/H/A scope rules hold: docs are payload in C,
    never in H..A; H carries only the report, status transcription and declared C-outputs.
@@ -122,7 +139,8 @@ Derived from the criteria's own obligations, not from probe strings:
   payload. None of that drift is K1.1 packet maintenance: the contract's governing owners are B's
   pages, the drift was never reviewed, and B is already clean on the broken-link and
   atomicity-vs-durability findings. The trimmed tree remains available in preserved history
-  (`ddf24de`, `7af27bd`) for a future docs packet; this packet carries zero reference payload.
+  (`ddf24de`, `7af27bd`) for a future docs packet; revision 1 carried zero reference payload. Revision 2 authorizes only decision-01's named
+  delivery-boundary maintenance; unrelated historical drift remains reverted.
 - **KC1-DEC-3 — the serializer window covers the iterator-protocol graph.** The sandbox restores the
   primordial Array-iterator-prototype `next` and removes caller-installable `next`/`value`/`done`
   shadows above the iterator holder for the call window; the audit table names the
@@ -137,20 +155,11 @@ Derived from the criteria's own obligations, not from probe strings:
   envelope and field reads map observation failure to the located refusal for that field. Refusal
   shape, ordering, nondisclosure and retention semantics are unchanged — only the throw becomes the
   refusal the contract already requires.
-- **KC1-DEC-5 — delivery sanitizes before sending, classifies without invoking, and states its
-  limit.** `#deliver` runs the Driver invocation itself inside the sanitized window
-  (`Promise[Symbol.species]` / `Promise.prototype.constructor` reinstalled, caller-installed
-  `Object.prototype[Symbol.species]` removed): when the host cannot be sanitized at all
-  (non-configurable slot) the Driver is never called, so no Driver promise comes into existence
-  to escape — the attempt records the operational failure with intent, reservation and redelivery
-  intact (R4-F1). Thenable classification reads descriptors without invoking a throwing `then`
-  getter (R4-F3), and the returned promise's own construction slots fall through to the sanitized
-  ambient for the attach (R4-F2). What remains is the fundamental JavaScript limit, locked by an
-  explicit regression rather than claimed away: a Driver-authored subclass (or non-configurable
-  own slot, or Proxy-trapped descriptor) whose species cannot be sanitized from outside makes
-  every native subscription throw before any continuation attaches, so the attempt records failed
-  while the original rejection escapes as process-level unhandled (R4-F4). No false delivery
-  evidence, acknowledgment, or intent/batch/receipt alteration occurs on any of these paths.
+- **KC1-DEC-5 — superseded by owner-delegated decision KC1-ARCH-1.** H1's Promise sanitation
+  strategy and counted-unhandled exception do not govern revision 2. The configurable
+  subclass was fixable, but the unrestricted return domain was not. Implement the canonical
+  [reporting boundary](../../../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary)
+  under [decision-01](decision-01.md); preserve H1 and its reviews as history.
 - **KC1-DEC-6 — envelope fields are own fields; inherited-only reads as missing.** Fresh adversarial
   review (R3) showed ordinary reads let ambient `Object.prototype`/`Array.prototype` state answer
   *missing* envelope fields into acceptances the caller never spelled (`dispatch({})` accepted by
@@ -176,7 +185,8 @@ node --test --test-reporter=tap "tests/conformance/architecture/*.test.ts"
 ```
 
 plus the packet case inventory, the new mental-model link/anchor check, all correction
-regressions, the four ablation/mutation checks, and the 015 structural gates. `npm run test:evals`
+regressions, the retained unrelated ablation/mutation checks plus the four reporting-boundary
+mutations in decision-01, and the 015 structural gates. `npm run test:evals`
 is not run: this correction reaches no Agent behaviour and no model path.
 
 ## Evidence and closure
@@ -188,8 +198,9 @@ independent review of the cumulative interval from the original base B to the ne
 PASS exempts any dependency. Integration and any dependent release stay held until that review
 returns ACCEPT and the owner acts on it.
 
-- Report: `implementation-01.md` in this directory.
-- Raw evidence: `validation-01/` in this directory, with a MANIFEST recording digests.
+- Next report: `implementation-02.md` in this directory.
+- Fresh raw evidence: `validation-02/`, with a MANIFEST recording digests.
+- H1's implementation-01/validation-01 remain historical and do not validate revision 2.
 
 Both are administrative records that belong to the candidate H rather than to the clean payload C,
 so they are named here rather than linked: at C they do not yet exist, and a contract that linked

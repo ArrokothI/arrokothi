@@ -9,7 +9,13 @@
  * could excuse the implementation; these only record what they were handed.
  */
 
-import type { Activation, AuthenticatedCaller, CreateExecutionRequest, ExecutionDriver } from "../src/index.ts";
+import type {
+  Activation,
+  AuthenticatedCaller,
+  CreateExecutionRequest,
+  DeliverySettlement,
+  ExecutionDriver,
+} from "../src/index.ts";
 import { defineAt, restoreDescriptor } from "../src/own-array.ts";
 
 /**
@@ -286,59 +292,86 @@ export interface RecordingDriver extends ExecutionDriver {
   readonly seen: Activation[];
 }
 
-/** Records every Activation handed to it and returns nothing. */
+/** Records every Activation handed to it and reports delivered synchronously. */
 export function recordingDriver(driverId = "fake-recording"): RecordingDriver {
   const seen: Activation[] = [];
   return {
     driverId,
     seen,
-    deliver(activation: Activation): void {
+    deliver(activation: Activation, settlement: DeliverySettlement): undefined {
       recordOwn(seen, activation);
+      settlement.delivered();
+      return undefined;
     },
   };
 }
 
 export interface DelayedDriver extends ExecutionDriver {
   readonly seen: Activation[];
-  /** Settles every promise this Driver has returned so far. */
+  readonly settlements: DeliverySettlement[];
+  /** Reports delivered for every captured settlement still outstanding. */
   release(): void;
 }
 
 /**
- * Returns a promise that never settles until `release` is called.
+ * Captures the reporting capability and reports nothing until `release` is called.
  *
  * This is the barrier behind "a delayed fake A does not prevent B dispatch on the same
- * coordinator": while the promise is outstanding, the coordinator has demonstrably not awaited it.
+ * coordinator": while the report is outstanding, the coordinator has demonstrably not waited
+ * for it.
  */
 export function delayedDriver(driverId = "fake-delayed"): DelayedDriver {
   const seen: Activation[] = [];
-  const pending: (() => void)[] = [];
+  const settlements: DeliverySettlement[] = [];
   return {
     driverId,
     seen,
-    deliver(activation: Activation): Promise<void> {
+    settlements,
+    deliver(activation: Activation, settlement: DeliverySettlement): undefined {
       recordOwn(seen, activation);
-      return new Promise<void>((resolve) => recordOwn(pending, resolve));
+      recordOwn(settlements, settlement);
+      return undefined;
     },
     release(): void {
-      while (pending.length > 0) (pending.pop() as () => void)();
+      while (settlements.length > 0) (settlements.pop() as DeliverySettlement).delivered();
     },
   };
 }
 
-/** Throws synchronously from `deliver`. */
+/** Throws synchronously from `deliver` (implicit failure report, no explicit report). */
 export const throwingDriver = (driverId = "fake-throwing"): ExecutionDriver => ({
   driverId,
-  deliver(): never {
+  deliver(): undefined {
     throw new Error("native submit refused");
   },
 });
 
-/** Returns an already-rejected promise from `deliver`. */
-export const rejectingDriver = (driverId = "fake-rejecting"): ExecutionDriver => ({
+/** Reports failed synchronously with a primitive string reason (retained, bounded). */
+export const failingDriver = (reason = "native submit lost", driverId = "fake-failing"): ExecutionDriver => ({
   driverId,
-  deliver(): Promise<void> {
-    return Promise.reject(new Error("native submit lost"));
+  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
+    settlement.failed(reason);
+    return undefined;
+  },
+});
+
+/**
+ * A conforming Driver with internal asynchronous work (KC1-ARCH-1).
+ *
+ * It returns `undefined` promptly, handles its own internal promise rejection, and reports
+ * the failure through the capability. No promise crosses into Kernel observation, so no
+ * unhandled rejection can escape from the reporting mechanism itself.
+ */
+export const asyncFailingDriver = (reason = "native submit lost", driverId = "fake-async-failing"): ExecutionDriver => ({
+  driverId,
+  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
+    Promise.reject(new Error(reason)).then(
+      () => {},
+      (error: unknown) => {
+        settlement.failed(error);
+      },
+    );
+    return undefined;
   },
 });
 
