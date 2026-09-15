@@ -1,0 +1,115 @@
+# 09b round-11 distinguishing ablations of clean payload C10 (rerun: payload unchanged, evidence regenerated)
+
+Payload C10: d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14 (unchanged; fresh rerun for validation-11).
+Each ablation changes exactly one behaviour in a detached worktree at C10, runs
+packages/kernel/tests/*.test.ts against it, and is reverted before the next.
+An ablation is REJECTED when named packet cases fail; that is what makes those cases
+distinguishing rather than merely green.
+
+XA/XB are new for K11-R7-STATE-03 (this round's finding). X1/X7/X3/X4/X8 re-prove the
+own-data family guards after the descriptor-hardening reconstruction.
+Guards for code this round does not touch (holey scratch X2, dual serializer layers X5,
+frozen vocabulary X6, Map/freeze S1/S2, primordial prototype V3, exact-JCS-call N1, single
+bound observation N3, descriptor agreement P1, JCS pin JCS, over-limit traversal) are
+unchanged between C9 and C10 apart from the descriptor they convert through; their
+round-9 runs (validation-09/09b) remain committed as their own round's evidence and are
+not claimed as this candidate's reruns.
+
+=== control: unmodified C10 ===
+    207 tests, 0 failing -> control clean
+
+=== ablation [XA]: defineData builds an ordinary descriptor literal (install direction only) ===
+packages/kernel/src/own-array.ts | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+    207 tests, 11 failing -> REJECTED by 11 case(s):
+      - a payload observation that installs get/set still creates the exact Execution
+      - an ordinary handler broken by its own pollution is refused, never accepted or leaked
+      - a bound getter that installs Object.prototype.get still reserves the exact prefix
+      - an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it
+      - an inherited descriptor getter runs zero times inside the hardened operation
+      - descriptor pollution and an inherited indexed trap together still commit the exact batch
+      - a payload observation that installs get/set still retains the accepted Event
+      - inspect, redelivery and listings under live get/set pollution equal the unpolluted views
+      - every hostile data-field combination still yields the exact clean bytes
+      - an inherited descriptor getter never runs inside capture, cloning or the serializer window
+      - an own __proto__ member still installs while conversion is hostile
+
+=== ablation [XB]: restoreDescriptor passes the saved ordinary descriptor through (restore direction only) ===
+packages/kernel/src/own-array.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    207 tests, 6 failing -> REJECTED by 6 case(s):
+      - a payload observation that installs get/set still creates the exact Execution
+      - a payload observation that installs get/set still retains the accepted Event
+      - every hostile data-field combination still yields the exact clean bytes
+      - an inherited descriptor getter never runs inside capture, cloning or the serializer window
+      - an own __proto__ member still installs while conversion is hostile
+      - restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host
+
+=== ablation [X1]: defineAt reverts to ordinary indexed assignment (exact H7 operation) ===
+packages/kernel/src/own-array.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    207 tests, 15 failing -> REJECTED by 15 case(s):
+      - a coherent array whose prototype observation installs an indexed accessor binds its own value
+      - a bound getter that installs Array.prototype["0"] still reserves the exact available prefix
+      - the same trap at every reserved index cannot shorten a larger batch either
+      - descriptor pollution and an inherited indexed trap together still commit the exact batch
+      - an inherited setter at the next mailbox index cannot make an accepted Event go unretained
+      - a creation whose payload traps the first mailbox index still binds its initial Event
+      - a payload observation that installs get/set still retains the accepted Event
+      - inspect and visibleExecutions report the same facts with the accessor live as without it
+      - a refusal recorded under the accessor is still retained evidence a later read reports
+      - the retained structure and the canonical bytes are exactly the one value observed
+      - the index the accessor picks is not special: position zero and a nested array behave the same
+      - an inherited accessor at the indices the serializer writes cannot choose the bytes
+      - the prototypes are left exactly as found, including properties the Kernel never installed
+      - the refusal is located, the bytes are never wrong, and the borrowed slots are handed back
+      - restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host
+
+=== ablation [X7]: appendOwn uses the captured primordial Array.prototype.push ===
+packages/kernel/src/own-array.ts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+    207 tests, 14 failing -> REJECTED by 14 case(s):
+      - a coherent array whose prototype observation installs an indexed accessor binds its own value
+      - a bound getter that installs Array.prototype["0"] still reserves the exact available prefix
+      - the same trap at every reserved index cannot shorten a larger batch either
+      - descriptor pollution and an inherited indexed trap together still commit the exact batch
+      - an inherited setter at the next mailbox index cannot make an accepted Event go unretained
+      - a creation whose payload traps the first mailbox index still binds its initial Event
+      - inspect and visibleExecutions report the same facts with the accessor live as without it
+      - a refusal recorded under the accessor is still retained evidence a later read reports
+      - the retained structure and the canonical bytes are exactly the one value observed
+      - the index the accessor picks is not special: position zero and a nested array behave the same
+      - an inherited accessor at the indices the serializer writes cannot choose the bytes
+      - the prototypes are left exactly as found, including properties the Kernel never installed
+      - the refusal is located, the bytes are never wrong, and the borrowed slots are handed back
+      - restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host
+
+=== ablation [X3]: serializer window keeps named slots but stops removing inherited index shadows ===
+packages/kernel/src/values.ts | 4 ----
+ 1 file changed, 4 deletions(-)
+    207 tests, 3 failing -> REJECTED by 3 case(s):
+      - the index the accessor picks is not special: position zero and a nested array behave the same
+      - an inherited accessor at the indices the serializer writes cannot choose the bytes
+      - the refusal is located, the bytes are never wrong, and the borrowed slots are handed back
+
+=== ablation [X4]: one ordinary indexed write reintroduced at a site with no runtime witness ===
+packages/kernel/src/coordinator.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    207 tests, 2 failing -> REJECTED by 2 case(s):
+      - K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts
+      - inspect and visibleExecutions report the same facts with the accessor live as without it
+
+=== ablation [X8]: serializer window stops restoring what it borrowed ===
+packages/kernel/src/values.ts | 18 ------------------
+ 1 file changed, 18 deletions(-)
+    207 tests, 9 failing -> REJECTED by 9 case(s):
+      - a coherent array whose prototype observation installs an indexed accessor binds its own value
+      - an inherited setter at the next mailbox index cannot make an accepted Event go unretained
+      - a creation whose payload traps the first mailbox index still binds its initial Event
+      - a refusal recorded under the accessor is still retained evidence a later read reports
+      - a capture-time one-shot Object.keys replacement cannot change canonical bytes
+      - a capture-time Array.prototype.join replacement cannot change canonical bytes either
+      - an inherited accessor at the indices the serializer writes cannot choose the bytes
+      - an inherited data property at those indices cannot either, and equality still follows the bytes
+      - restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host
+

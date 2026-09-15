@@ -1,0 +1,146 @@
+=== payload and base ===
+$ git rev-parse HEAD
+d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14
+B=777b9955fb3a443f700b4f3d1f4f2aef1869345b
+$ git merge-base --is-ancestor 777b9955fb3a443f700b4f3d1f4f2aef1869345b HEAD
+B is ancestor of C10
+$ git status --short
+?? node_modules
+$ node --version
+v25.2.1
+$ npm --version
+11.6.2
+$ npx tsc --version
+Version 5.9.3
+$ uname -srm
+Darwin 25.6.0 arm64
+=== candidate/review ancestry on the branch ===
+ancestor of C10 checkout: 8cd9e269b1c08f166dec1b567aedf7d1b4810b34
+ancestor of C10 checkout: 0f345b3c9ab49f6c5d9e09b162641cda78f96356
+ancestor of C10 checkout: 6b7e5fb0eb3cb323788f97889b84db845a7b3f9f
+ancestor of C10 checkout: 297cc56ff186638817e0edfba7a3ce9f103d561e
+ancestor of C10 checkout: 615cdf884ac560aec659162353680e55f732804c
+ancestor of C10 checkout: b3cdf33732df1f0645e0d773917b4f82444208c5
+ancestor of C10 checkout: 1d4e4867b748f9e0b2f4041e17ded836ebc25a75
+ancestor of C10 checkout: 156f13530fc01883608407948d320d12ba4821ca
+ancestor of C10 checkout: e0660effc729b968c528943220d9ba6fbc561c18
+ancestor of C10 checkout: bd2dab6d91e0af2328aa39fe74de831bffb27818
+ancestor of C10 checkout: b3d0d59f18f6c2b1d0a49746428123d84dd80df2
+ancestor of C10 checkout: 417798a3e540acce78d73c7a0fdb92ebfd69faf8
+ancestor of C10 checkout: e59bd312373ca7afacd507a73717b16dfaa0a8f0
+ancestor of C10 checkout: ae02c32ae575c70326cd7d2a91aa5c268671d92f
+ancestor of C10 checkout: 79151afc77533d5d542918515d8809773ff61809
+ancestor of C10 checkout: c1e7d78afc9aebb89410ff55892adcfb37e9e973
+ancestor of C10 checkout: 5ac76207a05b61f918a1efd2313c25b7108d775c
+ancestor of C10 checkout: 5dddc2ad3cfd616b38c062380e450873cbc4c132
+ancestor of C10 checkout: d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14
+NOT ancestor of C10 checkout (lives on branch history outside payload): 2cdb1e22f0391079619e97a0fe49bf09c7855ca6
+NOT ancestor of C10 checkout (lives on branch history outside payload): fbba168b638840cecc871ce4e787bc29ddc04b5d
+ancestor of C10 checkout: 05f48c204d1eae021b3464c206e5c11e84bb3505
+ancestor of C10 checkout: 9baff3a03662720af6eefe1ecfabc41fde99298f
+H10/review-08 descend from C10 (administrative children, not payload):
+$ git merge-base --is-ancestor d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14 2cdb1e22f0391079619e97a0fe49bf09c7855ca6
+C10 is ancestor of H10
+$ git merge-base --is-ancestor d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14 fbba168b638840cecc871ce4e787bc29ddc04b5d
+C10 is ancestor of review-08 record
+=== payload file set: H9..C10 and C10 alone ===
+$ git diff --name-only 5dddc2ad3cfd616b38c062380e450873cbc4c132 d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14
+docs/development/work/K1.1/review-07.md
+mental-model/kernel.md
+packages/kernel/src/own-array.ts
+packages/kernel/src/values.ts
+packages/kernel/tests/boundary.test.ts
+packages/kernel/tests/creation.test.ts
+packages/kernel/tests/dispatch.test.ts
+packages/kernel/tests/harness.ts
+packages/kernel/tests/ingress.test.ts
+packages/kernel/tests/inspection.test.ts
+packages/kernel/tests/values.test.ts
+$ git show --stat --oneline d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14
+d1fcffd fix(K1.1): define own data through null-prototype descriptors (K11-R7-STATE-03)
+ packages/kernel/src/own-array.ts         | 115 +++++++++++++++-
+ packages/kernel/src/values.ts            |  56 ++++----
+ packages/kernel/tests/boundary.test.ts   |  34 +++++
+ packages/kernel/tests/creation.test.ts   | 189 +++++++++++++++++++++++++
+ packages/kernel/tests/dispatch.test.ts   | 230 +++++++++++++++++++++++++++++++
+ packages/kernel/tests/harness.ts         | 126 +++++++++++++++--
+ packages/kernel/tests/ingress.test.ts    |  91 ++++++++++++
+ packages/kernel/tests/inspection.test.ts |  33 +++++
+ packages/kernel/tests/values.test.ts     | 115 +++++++++++++++-
+ 9 files changed, 944 insertions(+), 45 deletions(-)
+=== dependency pin: exact canonicalize ===
+$ grep "canonicalize" packages/kernel/package.json
+    "canonicalize": "3.0.0"
+$ grep -A4 "node_modules/canonicalize": package-lock.json
+    "node_modules/canonicalize": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/canonicalize/-/canonicalize-3.0.0.tgz",
+      "integrity": "sha512-yYLfHyDMIXRyRqsKBRLX023riFLpXY2YOfdtqKXZRZy9qsfOJ9U+4F9YZL7MEzL5+ziN2x2nlBvY/Voi3EBljA==",
+      "license": "Apache-2.0",
+=== zone inventory: target source files ===
+$ ls packages/kernel/src/
+coordinator.ts
+driver.ts
+identity.ts
+index.ts
+inspection.ts
+lifecycle.ts
+own-array.ts
+refusal.ts
+result.ts
+unsupported.ts
+values.ts
+file count:
+      12
+=== zone inventory: runtime export surface (measured, not a source-text line count) ===
+$ node --experimental-strip-types -e import("./packages/kernel/src/index.ts").then(m => { const names = Object.keys(m).sort(); console.log("runtime export count: " + names.length); for (const n of names) console.log("  " + n); })
+runtime export count: 17
+  BOUNDARY_LIMITS
+  ExecutionCoordinator
+  TERMINAL_STATES
+  UNKNOWN_DESTINATION_REASON
+  UnsupportedKernelSurfaceError
+  boundaryValueIssues
+  canonicalize
+  creationKeyIdKey
+  err
+  inputIdKey
+  isBoundaryValue
+  isTerminal
+  mayReachScope
+  mintReceipt
+  ok
+  refuseUnsupportedSurface
+  sameLogicalValue
+=== zone inventory: import boundary (distinct specifiers) ===
+$ grep -rh from " packages/kernel/src/
+export type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+export type { AuthenticatedCaller, CreationKeyId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";
+export type { BoundaryValue, CanonicalValue, ValueIssue, ValueIssueCode } from "./values.ts";
+export type { Err, Ok, Result } from "./result.ts";
+export type { ExecutionState } from "./lifecycle.ts";
+export type { RefusalClassification, RefusalRecord } from "./refusal.ts";
+export { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue } from "./values.ts";
+export { ExecutionCoordinator } from "./coordinator.ts";
+export { TERMINAL_STATES, isTerminal } from "./lifecycle.ts";
+export { UNKNOWN_DESTINATION_REASON } from "./refusal.ts";
+export { UnsupportedKernelSurfaceError, refuseUnsupportedSurface } from "./unsupported.ts";
+export { creationKeyIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
+export { err, ok } from "./result.ts";
+import canonicalizeJcs from "canonicalize";
+import type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+import type { BoundaryValue } from "./values.ts";
+import type { ExecutionState } from "./lifecycle.ts";
+import type { InputId, Receipt } from "./identity.ts";
+import type { RefusalRecord } from "./refusal.ts";
+import { Buffer } from "node:buffer";
+import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
+import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts";
+import { appendOwn, defineAt, defineData, readAt, restoreDescriptor, sizedList, truncateOwn } from "./own-array.ts";
+import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
+import { err, ok, type Result } from "./result.ts";
+import { isTerminal, type ExecutionState } from "./lifecycle.ts";
+import { refuseUnsupportedSurface } from "./unsupported.ts";
+} from "./coordinator.ts";
+} from "./identity.ts";
+} from "./inspection.ts";
