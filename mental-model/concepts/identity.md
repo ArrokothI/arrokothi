@@ -6,6 +6,8 @@
 
 Follow one Execution through these terms before the detailed definitions below. The application creates Execution E using request key `submit-report-17`. Its first Activation runs as Runtime attempt 1 under writer epoch 1. That attempt's Outcome is accepted at progress revision 1, producing a receipt for that Outcome-acceptance boundary. If the attempt stalls and an operator authorizes takeover, writer epoch advances to 2 for a new Runtime attempt of the same exchange; epoch 1's Outcome, if it arrives late, is rejected in full even though nothing about its content changed. The sections below define each of these terms precisely and cover cases this summary skips — duplicate retries, the other revision kinds and receipt scope by boundary.
 
+Each identity answers a different "same as what?" question. Request key and Input ID say whether two *requests from a caller* are the same. Runtime attempt and writer epoch say whether two *efforts to answer one Activation* are the same, and which one is allowed to win. Dispatch and delivery say whether two *sends* are the same. Revisions say whether two *accepted states* are the same. Receipts say what an accepted answer *covers*. Reusing one of these for another's question is the usual source of duplicate work or lost work — the [execution cycle](../mechanisms/execution-cycle.md#retry-versus-takeover) shows the three cases where this matters most.
+
 ## Request key and Input ID
 
 A **request key** is a caller-chosen identifier reused when retrying one intended request, such as `submit-report-17`. It is not a content hash: two intentional requests may carry identical content and must still be distinguishable.

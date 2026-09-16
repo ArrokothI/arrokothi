@@ -1,6 +1,6 @@
 # ArrokothI: coordinating work without owning its algorithms
 
-ArrokothI lets an application manages work performed by different agent frameworks, workflow engines or ordinary code. It gives that work a stable identity, records its accepted progress and coordinates the actions it asks the application to perform.
+ArrokothI lets an application manage work performed by different agent frameworks, workflow engines or ordinary code. It gives that work a stable identity, records its accepted progress and coordinates the actions it asks the application to perform.
 
 The central division is simple: **the Kernel manages execution; the Runtime decides how to do the work.** A Runtime can keep its own model loop, graph, tools and memory. Sharing this coordination layer is intended to reduce integration failures. Whether that is better than using a native framework directly remains a product question to test.
 
@@ -28,13 +28,12 @@ An [Activation](concepts/core.md#activation) asks the Runtime to advance one Exe
 1. An application creates “prepare the weekly report” with its initial input.
 2. The Kernel sends an **Activation** through the Driver. The Runtime gathers data, calls models and writes a draft using its own implementation.
 3. To publish through an application-controlled service, the Runtime can propose an [Effect](concepts/actions.md#effect) in its **Outcome**—a request for the Kernel to mediate that action. The Runtime saves enough progress to continue in a later **Activation**, submits the **Outcome**, and asks to wait for the publication result.
-
 4. Accepting this **Outcome** records the progress and [action intent](concepts/actions.md#logical-action-and-intent) together. The Kernel then checks the exact action against current permissions and any required approval.
 5. The service's authenticated result becomes an [Event](concepts/core.md#event), an accepted observation addressed to this Execution. A later **Activation** supplies it to the Runtime, which can account for the result and complete the report.
 
 A UI can also observe accepted output without publishing it to an external destination. The [worked protocol trace](mechanisms/execution-cycle.md#worked-trace) adds identities, lost replies and retries when you need those details.
 
-This example shows the target design; some of these steps are not implemented yet. See **Target, not shipped** below for current status.
+This example describes the target design. **Target, not shipped** below says where to look for what exists today.
 
 ## What this arrangement guarantees
 
