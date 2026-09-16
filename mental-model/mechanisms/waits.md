@@ -34,7 +34,7 @@ First use the Event's trusted ingress/mint [provenance](../concepts/core.md#even
 | Kernel [timeout Event](../concepts/core.md#timeout-event) | Never through matching; expiry supplies it by the mandatory-member rule below |
 | Every other trusted Kernel Event (settlement, child result, peer message, etc.) | At least one dependency alternative matches |
 
-A kind string cannot change the category. A dependency alternative cannot bypass the subscription requirement for application input; a subscription cannot match a peer message or settlement. This is the accepted K0/K1 rule. Any later extension for peer subscriptions requires explicit versioning and refusal of unsupported semantics.
+A kind string cannot change the category. A dependency alternative cannot bypass the subscription requirement for application input; a subscription cannot match a peer message or settlement. The reason is that the two lists guard against different mistakes. Application input is untrusted and freely shaped, so if it could satisfy a dependency alternative, any caller who learned a correlation ID could wake a wait meant for a service's settlement by sending input that imitates it. Kernel-minted and routed Events are already trusted, so for them the selector can safely use identity, kind and correlation. Deciding by ingress path rather than by payload keeps that separation even when the payloads look identical. This is the accepted K0/K1 rule. Any later extension for peer subscriptions requires explicit versioning and refusal of unsupported semantics.
 
 Example: waiting for child C and for an application correction uses a child-result dependency plus a correction subscription. A peer question uses a peer-message dependency. A subscription-only “continue when the editor replies” wait is valid with no dependencies. Choosing `kind: external.input` as a dependency alone does not wake on ordinary application input.
 
@@ -51,7 +51,7 @@ An already accepted eligible Event wins over an already-due deadline, so that pa
 
 ## Ending a wait
 
-A generation is live exactly while `WAITING`. Any eligible wake retires the **entire** registration. No partial “dependency satisfied” flag survives. If work remains needed, the Runtime registers it again in its next Outcome with a new generation.
+A generation is live exactly while `WAITING`. Any eligible wake retires the **entire** registration. No partial “dependency satisfied” flag survives. If work remains needed, the Runtime registers it again in its next Outcome with a new generation. Retiring everything at once is deliberate: the Runtime, not the Kernel, decides what a partially satisfied wait means. Waking on the editor's correction may make the pending publication irrelevant, or it may not — only the Runtime knows, and it says so by what it registers next.
 
 | Trigger | Atomic facts | Next batch must contain |
 |---|---|---|
@@ -102,6 +102,6 @@ If R ends the live wait *before* its timer is accepted, the timer is stale and n
 
 ## Accounting and limits
 
-Only accepted Outcome acknowledges the whole reserved batch. Runtime deferred meaning must live in its progress or explicit rejection decision; Kernel does not infer it from output text. Nonselected Events keep independent disposition, never disappearing behind a global cursor. Terminal disposition records nonprocessing, not acknowledgment.
+Only accepted Outcome acknowledges the whole reserved batch. If the Runtime defers or refuses what an acknowledged Event asked for, that decision lives in its progress; the Kernel does not infer it from output text, and records no per-Event disposition beyond [acknowledgment or terminal disposition](../concepts/core.md#batch-reservation-and-acknowledgment). Nonselected Events keep independent disposition, never disappearing behind a global cursor. Terminal disposition records nonprocessing, not acknowledgment.
 
 The wait deadline is checked only at registration and while its generation is live in `WAITING`. [Execution deadline and scheduler lease](../concepts/operations.md#three-clocks) have different effects. Long human waits may last indefinitely while stored state and autonomous work stay bounded. No store lock survives an external call or human wait. Admission fairness/load limits are [operating claims](../concepts/operations.md#operating-profile-and-durability), not consequences of asynchrony.

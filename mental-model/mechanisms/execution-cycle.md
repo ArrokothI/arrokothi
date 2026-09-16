@@ -10,7 +10,7 @@ Before the protocol details: the application creates Execution E for a weekly re
 
 ## Before sending
 
-As one decision, the Kernel atomically reserves the exact Event [batch](../concepts/core.md#batch-reservation-and-acknowledgment) and records: [dispatch intent](../concepts/identity.md#dispatch-and-delivery), the current [writer epoch](../concepts/identity.md#writer-epoch), accepted [progress](../concepts/state.md#progress) and base revision, the progress [codec](../concepts/values.md#codec), pinned Runtime/[Definition](../concepts/core.md#definition) revisions, and the supplied authorized [execution view](../concepts/roles.md#view-and-disclosure). This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost.
+As one decision, the Kernel atomically reserves the exact Event [batch](../concepts/core.md#batch-reservation-and-acknowledgment) and records: [dispatch intent](../concepts/identity.md#dispatch-and-delivery), the current [writer epoch](../concepts/identity.md#writer-epoch), accepted [progress](../concepts/state.md#progress) and base revision, the progress [codec](../concepts/values.md#codec), pinned Runtime/[Definition](../concepts/core.md#definition) revisions, and the supplied authorized [execution view](../concepts/roles.md#view-and-disclosure). This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost. Recording all of this before sending is what makes a crash between "decided to dispatch" and "the Runtime heard about it" recoverable: on restart the Kernel finds a pinned exchange it can redeliver unchanged, rather than having to guess which Events it had meant to hand over.
 
 Sending proceeds through the [Driver](../concepts/core.md#execution-driver) without synchronously waiting for native work in the coordinator loop. The Driver may call a local function or submit a remote job. Dispatch acknowledgment, heartbeat, cancellation signals and diagnostic streaming are operational traffic, not extra progress-writing Outcomes.
 
@@ -27,7 +27,9 @@ next:       continue | await(wait) | complete(result) | fail(error)
 
 ## Delivery reporting boundary
 
-**Introduced by:** K1.1-correction-01, which selected this boundary over Driver-returned Promise observation. Which candidate implements it, what has been independently accepted and what remains to integrate are recorded in the [status ledger](../../docs/development/007-work-packets.md), which owns that question; this page states the contract, not what has shipped. Nothing here establishes Outcome acceptance, persistence, native fidelity or isolation.
+Between "the Kernel handed an Activation to the Driver" and "the Runtime answered with an Outcome" there is one small fact the Kernel still needs: did the hand-off itself succeed? This section defines how the Driver reports that one fact and nothing else. The design question it settles is whether the Driver should report by returning a Promise the Kernel then observes; the answer is no, because a returned Promise blurs "I delivered it" with "the work finished", and lets a Driver's unhandled rejection become the Kernel's problem. The rules below are exact because the in-process binding cannot rely on a network boundary to keep the two sides apart.
+
+**Introduced by:** K1.1-correction-01. Implementation status belongs to the [status ledger](../../docs/development/007-work-packets.md); this page states the contract. Nothing here establishes Outcome acceptance, persistence, native fidelity or isolation.
 
 The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability and returns only `undefined`:
 
@@ -61,6 +63,8 @@ The Kernel does not read, classify, assimilate or subscribe to the return value 
 Retrying delivery is not permission to repeat native work. [Recovery](recovery.md) establishes phase-specific permission before takeover/replay. New mailbox arrivals cannot replace the batch under an existing Activation ID. If fresh policy forbids redisclosing the pinned view, hold/refuse or explicitly abandon the exchange; do not silently sanitize it and call it identical replay.
 
 ## Outcome acceptance
+
+The Outcome is a proposal until this procedure accepts it. The order matters: authentication comes before anything is read so an unauthenticated caller learns nothing; the duplicate lookup comes before validation so a retried Outcome gets the same answer it got the first time even if policy has since changed; and the commit is a single atomic step so no observer can ever see acknowledged Events without the progress that accounted for them, or progress without the intents it proposed.
 
 Perform these steps in order:
 
