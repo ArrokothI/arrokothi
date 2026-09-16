@@ -1,6 +1,8 @@
 # Runtime roles and context vocabulary
 
-These concepts describe optional reference Runtime facilities. Native frameworks may use their own names and representations. They do not add Kernel lifecycle types.
+These concepts describe optional reference Runtime facilities. Native frameworks may use their own names and representations. They do not add Kernel lifecycle types: the [Kernel](core.md#kernel) sees an Execution whichever of these patterns built it, and the shared rule under every definition here is that a Runtime-internal structure has no Kernel mailbox, authority or lifecycle of its own.
+
+Three groups. **How a Runtime is shaped**: Agent, Workflow, Stage and local branch, local worker. **What a Runtime shows a model and how it reads the reply**: context, projection and invocation binding, invocation snapshot. **What a Runtime is allowed to see and to package**: view and disclosure, Skill and package, service and interaction template. [Composition](../mechanisms/composition.md), [context construction](../mechanisms/context.md) and [state and memory](../mechanisms/state.md) are the mechanisms that use them.
 
 ## Agent
 
@@ -24,7 +26,7 @@ A **local/delegated worker** is internal work managed by a Runtime or native fra
 
 ## Projection and invocation binding
 
-An **operation projection** renders selected stable operations as provider-facing names and schemas. A **callable alias** is the name shown to the model. An **invocation binding** fixes the mapping from each alias to its actual operation or local control for one invocation, with relevant contract versions and input/state. A late reply resolves using that binding, not today's refreshed catalog.
+An **operation projection** renders selected stable [operations](actions.md#operation) as provider-facing names and schemas. A **callable alias** is the name shown to the model; it is not the operation's stable identity. An **invocation binding** fixes the mapping from each alias to its actual operation or local control for one invocation, with relevant contract versions and input/state. A late reply resolves using that binding, not today's refreshed catalog: if a model was shown `search_docs` bound to operation `docs.search@2`, and the catalog has since renamed that alias to point at `docs.search@3`, the model's reply still means version 2. [Context construction](../mechanisms/context.md) owns how the binding is kept for the reply.
 
 A **local control** changes Runtime-local planner/scratch state. It retains typed origin even if it shares provider tool syntax with a mediated operation.
 

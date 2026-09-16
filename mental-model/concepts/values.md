@@ -2,9 +2,11 @@
 
 These definitions and rules own logical value equality. They preserve accepted K0.1 E-1–E-7. Transport framing and the native checkpoint format remain separate choices.
 
+The page moves from the general to the exact. It first separates the three jobs that all get called "encoding", then says which values the protocol governs at all, how the in-process binding captures them, how equality between two of them is decided byte for byte, what sizes are permitted, and finally what this page deliberately does not compare.
+
 ## Codec
 
-A **codec** encodes and decodes values. Keep three uses distinct:
+A **codec** encodes and decodes values. Three different jobs are all casually called "serialization", and the confusion between them is the reason this section exists. Keep them distinct:
 
 | Qualified name | Owner | What it does |
 |---|---|---|
@@ -13,6 +15,8 @@ A **codec** encodes and decodes values. Keep three uses distinct:
 | Canonical value encoding | Kernel protocol | Produces fixed bytes for logical equality and semantic size limits |
 
 Changing pretty-printing on the wire need not change logical equality. Changing how a checkpoint is interpreted requires a compatible progress codec. Neither authorizes a change to the canonical comparison rules below.
+
+Each answers a different question, and conflating them breaks a different guarantee. If wire bytes were used for equality, a proxy that reformats JSON would turn a benign duplicate request into a "conflicting content" refusal. If canonical bytes were treated as the wire format, every transport would be forced to emit JCS, which no transport is required to do. And if the Kernel tried to read progress with anything but the Runtime's own codec, it would be interpreting continuation data whose meaning it does not own. The rest of this page is about the third column only.
 
 ## Boundary value and root
 
