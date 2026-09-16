@@ -1,6 +1,6 @@
 # K1.1-reference-01 — faithful reference maintenance
 
-**Revision 6**; documentation-only supplement to accepted K1.1-correction-01. This is not
+**Revision 7**; documentation-only supplement to accepted K1.1-correction-01. This is not
 an implementation invalidation or a K1.2 release.
 
 Revision 2 reconciled one payload bullet with the approach the packet actually took, under
@@ -121,8 +121,18 @@ proof step for this packet** — withdrawn by revision 6 below, which states the
 objection a reviewer should test.
 
 **Revision 5 — WITHDRAWN BY REVISION 6. Preserved as the record of a decision that was made
-and then reversed; not in force.** Its text follows unedited so that revision 6's objection can be
-read against what it objects to.
+and then reversed; not in force.**
+
+**Exactly what is preserved, corrected by revision 7 under `REF1-R7-QUOTE-02`.** Revision 6 said
+"its text follows unedited", which was not accurate. The revision-5 block below — from its heading
+through "…this cleanup session must not accept its own reference edits." — is **byte-identical** to
+its state at C6 `2f1a7ced4ab0a4b340132899bd61fc14ae678a6d`, and a reviewer can confirm that by
+diffing the block. What moved is the paragraph that **followed** it at C6, the contract's closing
+`next_release: none` status line: inserting revision 6 between them left that paragraph closing
+revision 6 instead. No words were added, removed or altered. It is recorded here rather than
+restored inside the block because `next_release` is the contract's live status field, and a live
+status field printed inside a block marked WITHDRAWN would be worse than the displacement it fixes.
+Provenance, stated so it is not lost: that sentence was written as revision 5's closer.
 
 **Revision 5 — `git diff --check` is scoped to authored content, and is now actually required
 every round.** [Review-05](review-05.md)'s `REF1-R5-CHK-01` found this proof step recorded in round 1
@@ -215,11 +225,40 @@ does hide, in two lines of the very log that carried the control
 space, and a `printf '%-52s '` pad). The control was constructed to confirm what revision 5 claimed
 rather than to break it. Recorded because the defect is in the method, not the wording.
 
-The exclusion was also broader than revision 5 claimed. `':(exclude)docs/development/work/*/validation-*/*.log'`
-exempts **453 files repo-wide**, most of them pinned by no MANIFEST digest, and at least one —
-`../K1.0/validation-01/09-self-01-demonstration.log` — opens with hand-authored narrative prose
-rather than command stdout. "The narrowest that works" was measured against the nine warnings then
-visible, not against what the rule actually covers.
+The exclusion was also broader than revision 5 claimed: `':(exclude)docs/development/work/*/validation-*/*.log'`
+exempts **453 files repo-wide** at C7 (**458** at the round-7 head). "The narrowest that works" was
+measured against the nine warnings then visible, not against what the rule actually covers.
+
+**Revision 7 corrects this paragraph's census, which was false. It changes no scope, no acceptance
+criterion and no proof step** — the payload and the five REF criteria stand exactly as revision 6
+left them, and no fresh owner decision is invoked; correcting a false factual claim in a governing
+artifact is REF-5 compliance, not an amendment. Revision 6 added that most of
+those files are "pinned by no MANIFEST digest". The repository says the opposite, and a reviewer
+measured it before this correction was written. Of the 458 at the round-7 head: **423** have a
+same-directory `MANIFEST.md` row whose SHA-256 matches the file's bytes; **33** (`../K0.2/validation-12`
+through `validation-16`) have no directory manifest but are digest-pinned in their round reports
+`../K0.2/implementation-12..16.md`, all 33 verified matching; and **2** — `../K1.1/validation-06/04-test-conformance.log`
+(a 67-character digest) and `../K1.1/validation-10/09b-distinguishing-ablations.log` (a 51-character
+prefix) — carry malformed rows that do not pin their file. **Nothing is unpinned.** The two
+malformed rows are in predecessor packets, outside this payload, and are carried to the owner.
+
+The companion clause was also weak. It is true that at least one exempted log opens with
+hand-authored prose, but that does not discriminate: **73 of the 458** open with a `#` header line,
+because 006's environment rule and this packet's own round-6 remediation *require* an authored
+header on every capture. Authored prose in a capture is the norm the process asks for, not a
+symptom.
+
+**The objection that survives measurement** is narrower than the one revision 6 argued, and it is
+the one that should have been stated: a digest pins **bytes**, and certifies nothing about
+whitespace hygiene — so "these files are digest-pinned" was never a reason the linter could safely
+skip them. Alongside it stands the boundary argument, which the measurements strengthen rather than
+weaken: the exempted set grew **433 → 453 → 458** across A, C7 and the round-7 head, five of the
+last additions made by the round that was arguing about it. A carve-out that widens every round has
+no stable boundary. **Neither correction disturbs the withdrawal**: the reasons it rests on are the
+wrong measured property (two-space hard breaks are markdown syntax), the wrong operand (the 31
+survivors are in a sibling packet's sealed files this packet may not edit), and that unstable
+boundary. The false clause is withdrawn, not repaired into a different argument for the same
+conclusion.
 
 **What is not claimed.** This is not a finding that whitespace hygiene does not matter, and
 revision 5's substantive point stands unchanged: a sealed byte-capture must not be edited to satisfy
