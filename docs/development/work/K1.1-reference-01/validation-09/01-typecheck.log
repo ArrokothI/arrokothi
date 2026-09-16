@@ -1,0 +1,15 @@
+# 01-typecheck — K1.1-reference-01 round 8
+Commit:    a117b2983278f09c03027e2b3553a9a644d18986
+Run:       2026-09-16T05:43:03Z UTC
+Node:      v25.2.1
+npm:       11.6.2
+git:       2.39.5
+Platform:  Darwin 25.6.0
+Toolchain note: TypeScript from the pinned lockfile; output captured verbatim.
+Commands are shown before every result (REF1-R6-EVID-01, REF1-R7-EVID-04).
+
+$ npm run typecheck
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+exit=0
