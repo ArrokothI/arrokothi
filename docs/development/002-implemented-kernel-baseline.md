@@ -39,7 +39,7 @@ correction candidate implements that boundary (`ExecutionDriver.deliver` returns
 `undefined`; the Kernel never observes a Driver-returned Promise); independent acceptance is recorded for exact H5
 `52b1600f3b42e3a360fdc3395178f1d147edf304` in [review-08](work/K1.1-correction-01/review-08.md).
 The separate reference-maintenance review is accepted at H9
-`644dfffc7904176ee3a4f9943310cf926408a113`; cleanup is complete and integration remains pending in [007](007-work-packets.md). The decision record itself changes no executable behavior.
+`644dfffc7904176ee3a4f9943310cf926408a113`; cleanup is complete and the correction plus supplement are integrated on `main` as `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa` (PR #28); see [007](007-work-packets.md) and the [parent receipt](work/K1.1/integration-01.md). The decision record itself changes no executable behavior.
 
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains with the owners in the [reference index](../../mental-model/reference.md).
