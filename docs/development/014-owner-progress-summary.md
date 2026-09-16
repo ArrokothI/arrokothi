@@ -1,13 +1,16 @@
 # ArrokothI and benchmark: progress summary for the owner
 
-**Snapshot: 2026-09-15.** Checked ArrokothI remote `main`
-`07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec`, accepted implementation H5
-`52b1600f3b42e3a360fdc3395178f1d147edf304`, acceptance/status A
-`519ba002378707a4deccff1ea0a243d21eb694b7`, reference C `2dc3cedb02888d891ec0a6389439b7cfb3b07943`, and reference H
-`d4bd49fd49fb6d70a992635cf2b6bf8317c3af89` in the
-[cleanup handoff](work/K1.1-correction-01/cleanup-01.md). Benchmark remote `main` remains
-`5a3f1ba525f68244701b1f73a1d29c4902ffe589`; its E1 branch remains
-`8de04779d279dba82cf834d419e465d2b677ef46`.
+**Snapshot: 2026-09-16.** Checked ArrokothI remote `main`
+`07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec`, implementation H5
+`52b1600f3b42e3a360fdc3395178f1d147edf304`, reference C9
+`a117b2983278f09c03027e2b3553a9a644d18986`, accepted reference H9
+`644dfffc7904176ee3a4f9943310cf926408a113`, independent review record
+`50eae5a653faa2afeb76d243adf63a1daa14dd98`, and acceptance transcription A
+`09220e6be976aff90c30fb47d95c46d6d5e18b0f`. The
+[final cleanup record](work/K1.1-reference-01/cleanup-01.md) records the verification and limits.
+Benchmark remote `main` is `5a3f1ba525f68244701b1f73a1d29c4902ffe589`; its E1 branch is
+`8de04779d279dba82cf834d419e465d2b677ef46`. Both advertised revisions and the E1 branch ledger
+were checked; benchmark main still lists E1 as planned, while its unmerged branch records the blocker.
 
 This is the human-readable account of accepted work and its limits. The
 [ArrokothI ledger](007-work-packets.md) and
@@ -18,14 +21,14 @@ own status; linked reviews and cleanup records hold the evidence.
 
 | Repository | Accepted and integrated | Open |
 |---|---|---|
-| ArrokothI | K0.1-process-review, K0.1, K0.2 (**K0 closed**), K1.0 | Corrected K1.1 implementation independently accepted at H5; reference supplement awaiting independent review, final cleanup and owner integration pending. K1.2–K1.4 planned; `next_release: none`. |
+| ArrokothI | K0.1-process-review, K0.1, K0.2 (**K0 closed**), K1.0 | Corrected K1.1 implementation and reference supplement independently accepted; cleanup complete, owner integration pending. K1.2–K1.4 planned; `next_release: none`. |
 | benchmark | PROC-1, E0 | E1 blocked and unmerged on its branch. |
 
 The private target package can now create an Execution, accept later input and dispatch a fixed
 Activation through a Driver in memory. It cannot yet accept an Outcome or complete the exchange.
 Remote main contains an earlier K1.1 tree whose invalidation history is preserved; it does not
-contain the accepted corrective H5. The correction's acceptance is real, while the current branch
-still needs an independent review of its reference supplement before a merge-ready handoff.
+contain the accepted corrective H5. The implementation and reference acceptances are recorded separately. Final cleanup is complete;
+the owner's manual merge and its verified integration receipt remain pending.
 
 ## What has been achieved
 
@@ -120,10 +123,10 @@ preserves earlier mistakes as historical records instead of rewriting them.
 
 **Status:** the cumulative implementation is independently accepted at H5
 `52b1600f3b42e3a360fdc3395178f1d147edf304` by
-[review-08](work/K1.1-correction-01/review-08.md). The separate reference supplement records the
-accepted identity/value boundaries and updates delivery evidence; it awaits independent review.
-[Cleanup](work/K1.1-correction-01/cleanup-01.md) is blocked on that review, and corrected
-implementation integration remains pending. This is not closure of the parent K1 milestone.
+[review-08](work/K1.1-correction-01/review-08.md). The reference supplement is also independently accepted at H9.
+[Final cleanup](work/K1.1-reference-01/cleanup-01.md) closes the documentation dependency recorded
+in the [earlier cleanup](work/K1.1-correction-01/cleanup-01.md); corrected implementation
+integration remains pending. This is not closure of the parent K1 milestone.
 
 **Limit:** no Outcome acceptance, accepted progress update, Event acknowledgment, terminal result,
 wait/cancellation implementation, persistence, physical isolation, native Driver fidelity or E1
@@ -131,14 +134,35 @@ result. The implementation's Node 25.2.1 full-suite evidence is green; the indep
 recorded two legacy Effect-test cancellations on Node 22.22.3, also reproduced at the original base.
 That existing Node-version issue remains an owner observation, not a claim of universal test success.
 
+### Canonical reference for accepted boundaries — ArrokothI K1.1-reference-01
+
+**Question answered:** where can readers find the precise meaning of the accepted creation,
+value-capture and delivery boundaries without reconstructing them from review history?
+
+The reference now distinguishes creation keys from later Input IDs, with a fresh-input/replay
+example and separate receipts. It defines immutable in-process value capture and its refusal
+limits, keeps delivery reporting in one mechanism page, and links these owners through the
+vocabulary index and roadmap. Specification pages route current implementation and acceptance
+questions to the baseline and ledger.
+
+The review history showed why copied status prose drifts: precise definitions and current build
+status need separate owners, and evidence claims must name the revision actually measured.
+
+**Status:** independently accepted at H9 `644dfffc7904176ee3a4f9943310cf926408a113` by
+[review-08](work/K1.1-reference-01/review-08.md); cleanup complete, integration pending owner merge.
+
+**Limit:** this is reference maintenance, not new executable behavior, a new wire schema, a
+benchmark result or a release. The review's five non-blocking P3 observations and the existing
+Node 22 limitation remain recorded in the cleanup handoff.
+
 ## The next few steps
 
-### Finish reference review, then owner integration
+### Owner integration
 
-Have a separate reviewer check the bounded [reference contract](work/K1.1-reference-01/contract.md)
-and exact C/H in its [report](work/K1.1-reference-01/implementation-01.md). H5's implementation
-ACCEPT is preserved. After the supplement is accepted, final cleanup can be completed and the
-branch handed back for manual merge. There is no successor release yet.
+Manually merge the accepted branch after checking the
+[cleanup handoff](work/K1.1-reference-01/cleanup-01.md) and its externally verified pushed head.
+Then report the merge for ancestry and content verification before an integration receipt is
+written. No successor is released.
 
 ### Benchmark E1 — prepared, blocked, unmerged
 
@@ -162,10 +186,10 @@ None follows merely from the current acceptance.
 
 ## What you need to inspect personally
 
-The immediate decision is selecting the separate reference reviewer using the exact handoff in
-[cleanup-01](work/K1.1-correction-01/cleanup-01.md). Keep the existing Node 22 legacy-suite issue
-visible for separate maintenance. After a completed cleanup handoff, merge manually and report
-that merge so its actual ancestry/content can be verified before an integration receipt is written.
+The immediate action is the manual merge described above. Keep the existing Node 22 legacy-suite
+issue, the documentation-checker coverage gap and the predecessor evidence-digest annotations
+visible for separate maintenance; the [cleanup record](work/K1.1-reference-01/cleanup-01.md)
+gives their precise limits. E1 remains blocked on its own branch; K1 is not closed.
 
 ## Maintaining this page
 
