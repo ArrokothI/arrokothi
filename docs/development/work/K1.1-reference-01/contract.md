@@ -1,6 +1,6 @@
 # K1.1-reference-01 — faithful reference maintenance
 
-**Revision 5**; documentation-only supplement to accepted K1.1-correction-01. This is not
+**Revision 6**; documentation-only supplement to accepted K1.1-correction-01. This is not
 an implementation invalidation or a K1.2 release.
 
 Revision 2 reconciled one payload bullet with the approach the packet actually took, under
@@ -91,8 +91,13 @@ A fresh independent reviewer must check fidelity to the accepted decisions befor
   single-owner rule these four rounds kept violating is written down at Layer 1; and replace the
   gate-status prose that has drifted since K1.1 was accepted. The `## Target, not shipped` heading
   text is fixed (inbound anchor). Every other section of the page is out of scope.
-- This contract and 007 scope/status. Reports and raw outputs follow 008. Owner-summary and
-  cleanup records are subsequent administrative work, outside C/H's payload.
+- This contract, [decision-01](decision-01.md) and 007 scope/status. `decision-01.md` is added in
+  revision 6 under `REF1-R6-AUTH-01`: owner scope decisions move out of contract prose into an
+  append-only decision record in the same artifact form the sibling packet uses. It states its own
+  authentication limit — a reviewer can check that behavior matches the quotations but cannot
+  authenticate the quotations — so the finding is narrowed, not closed. Reports and raw outputs
+  follow 008. Owner-summary and cleanup records are subsequent administrative work, outside C/H's
+  payload.
 
 No Layer-2 rewrite; no Layer-1 change beyond the two sections named above; no
 executable/test/dependency change, new runtime guarantee, changed limit,
@@ -109,9 +114,15 @@ Historical reports, reviews, decisions and evidence remain byte-identical.
 | REF-4 | One owner per definition; related identity, batch/wait, acceptance, action/authority, recovery, resources, output and evidence pages assessed; navigation valid | mental-model reference/roadmap; builder-docs and link checks; report dependency matrix |
 | REF-5 | Only declared documentation payload differs from A; Layer 1/2, executable tree and sealed records unchanged; C/H and review independence preserved | git scope checks, whole-tree comparison, clean-C validation, fresh independent review |
 
-Run `npm run check:builder-docs`, `git diff --check`, declared-path/executable/sealed-record
-comparison and local-link checks on clean C. Runtime evidence may be inspected from accepted H5
-only after byte-identity checks; no runtime change calls for new ablations.
+Run `npm run check:builder-docs`, declared-path/executable/sealed-record comparison and
+local-link checks on clean C. Runtime evidence may be inspected from accepted H5 only after
+byte-identity checks; no runtime change calls for new ablations. **`git diff --check` is not a
+proof step for this packet** — withdrawn by revision 6 below, which states the measurement and the
+objection a reviewer should test.
+
+**Revision 5 — WITHDRAWN BY REVISION 6. Preserved as the record of a decision that was made
+and then reversed; not in force.** Its text follows unedited so that revision 6's objection can be
+read against what it objects to.
 
 **Revision 5 — `git diff --check` is scoped to authored content, and is now actually required
 every round.** [Review-05](review-05.md)'s `REF1-R5-CHK-01` found this proof step recorded in round 1
@@ -155,6 +166,74 @@ regenerating a log to make it look tidier is precisely the edit this revision sa
 Leaving it is the consistent action. No external gate or
 Agent behavior claim is made. The independent reviewer assesses all REF criteria cumulatively
 from A to the new H; this cleanup session must not accept its own reference edits.
+
+**Revision 6 — `git diff --check` is withdrawn as a proof step for this packet, and revision 5's
+exclusion with it.** On 2026-09-16 the owner, shown the measurement below, chose removal over a
+second attempt at drawing an exclusion ([decision-01](decision-01.md), `REF1-DEC-3`, superseding
+`REF1-DEC-2`). **State the shape plainly before the argument: this removes
+a gate that an implementation failed, which is the move [006](../../006-development-process.md)
+forbids.** What follows is offered for a reviewer to test, not to accept. If it does not hold, the
+remedy is to restore revision 5's scoped command and reopen `REF1-R6-EXCL-01`; nothing else in this
+packet depends on the removal.
+
+**The measurement, with its range stated.** Two ranges answer differently, and conflating them is
+how `KC1-R5-PROC-01` happened, so both are given. On the **packet range** `A..C`, revision 5's
+scoped command reports 0 — but it reports 0 *because* the exclusion hides two authored lines inside
+`validation-06/00-findings-and-scope.log` (`:15`, the negative control's own inserted space; `:53`,
+a `printf '%-52s '` pad). On the **integration range** `main..H` — the range the check would
+actually run over at merge — the same scoped command still reports 31 warnings. Every one is inside
+a sealed transcribed review
+([review-01](../K1.1-correction-01/review-01.md) … [review-04](../K1.1-correction-01/review-04.md)),
+belonging to the **sibling** packet, which this packet may not edit; and every one is **exactly two
+trailing spaces** — 31 of 31, measured, not sampled. In every case the line sits in a run of
+metadata lines (`··` marks the two spaces):
+
+```text
+**Verdict:** ACCEPT··
+**Reviewer:** OpenAI GPT-5.6 Sol (High)··
+**Date:** 2026-09-15··
+```
+
+Two trailing spaces is the markdown hard line break. It is the syntax that makes those lines render
+as separate lines rather than one reflowed paragraph; deleting it changes what the page says.
+`git diff --check` flags trailing whitespace because in source code it is always residue. In a
+markdown tree it is sometimes the markup. **The tool is measuring a property this content type does
+not have**, which is a different fault from a dirty payload and is not repaired by excluding more
+paths: the next markdown file an outside reviewer writes will trip it again, and the exclusion would
+have to grow each time. A carve-out that must grow on every future contribution is not narrow.
+
+Note what the two ranges together show: revision 5 produced a step that **passes inside the packet
+and cannot pass at integration**, and whose in-packet pass depended on hiding authored whitespace.
+That is not a gate; it is a gate-shaped result.
+
+**Why revision 5 was the wrong answer, recorded by its own author.** Revision 5 and its negative
+control were written by this session. The control added a trailing space to `reference.md` and
+showed the scoped check still caught it. That proves the exclusion does not hide whitespace in
+non-`.log` pages, and says nothing about whitespace *inside* the excluded `.log` files — which it
+does hide, in two lines of the very log that carried the control
+(`validation-06/00-findings-and-scope.log:15` and `:53`, both authored: the control's own inserted
+space, and a `printf '%-52s '` pad). The control was constructed to confirm what revision 5 claimed
+rather than to break it. Recorded because the defect is in the method, not the wording.
+
+The exclusion was also broader than revision 5 claimed. `':(exclude)docs/development/work/*/validation-*/*.log'`
+exempts **453 files repo-wide**, most of them pinned by no MANIFEST digest, and at least one —
+`../K1.0/validation-01/09-self-01-demonstration.log` — opens with hand-authored narrative prose
+rather than command stdout. "The narrowest that works" was measured against the nine warnings then
+visible, not against what the rule actually covers.
+
+**What is not claimed.** This is not a finding that whitespace hygiene does not matter, and
+revision 5's substantive point stands unchanged: a sealed byte-capture must not be edited to satisfy
+a linter. No replacement gate is asserted to exist, and none is quietly assumed. A markdown-aware
+whitespace check — one that distinguishes a hard line break from residue, and that reads
+`docs/development/work/**` — is a `scripts/` packet, named here so the gap stays visible in the
+record instead of closing silently.
+
+**Effect on the criteria.** REF-5 is otherwise unchanged. Declared-path scope, executable
+byte-identity, sealed-record byte-identity and the clean-C comparison all remain required, and none
+of them depended on this step. `REF1-R5-CHK-01` is resolved **by withdrawal rather than by
+compliance**, and is recorded as such rather than as a closure. `REF1-R6-CHK-01` (round 6 recorded
+the check on C only, never on H, as revision 5 itself required) and `REF1-R6-EXCL-01` are resolved
+with the requirement they referred to.
 
 `next_release: none`. Implementation acceptance remains intact; integration waits for this
 separate documentation review and a completed cleanup handoff.
