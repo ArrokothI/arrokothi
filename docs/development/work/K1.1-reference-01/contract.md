@@ -1,12 +1,25 @@
 # K1.1-reference-01 — faithful reference maintenance
 
-**Revision 2**; documentation-only supplement to accepted K1.1-correction-01. This is not
+**Revision 3**; documentation-only supplement to accepted K1.1-correction-01. This is not
 an implementation invalidation or a K1.2 release.
 
-Revision 2 reconciles one payload bullet with the approach the packet actually took, under
-`REF1-R2-DOC-01` from [review-03](review-03.md). Only the `execution-cycle.md` bullet changes; the
-five REF criteria, the bounded payload paths, the anchors and every exclusion stand verbatim. No
-acceptance condition is relaxed — see the bullet's own note.
+Revision 2 reconciled one payload bullet with the approach the packet actually took, under
+`REF1-R2-DOC-01` from [review-03](review-03.md). Only the `execution-cycle.md` bullet changed; the
+five REF criteria, the bounded payload paths, the anchors and every exclusion stood verbatim. No
+acceptance condition was relaxed — see the bullet's own note.
+
+**Revision 3 — owner scope amendment, recorded before its payload.** On 2026-09-16 the owner
+granted a bounded Layer-1 exception: *"for `mental-model/README.md`, all the part in
+`## How these pages are organized` and `## Target, not shipped` can be modified"*, with the
+standing rule that the five Layer-1/2 core pages are "not immutable, just need to have a clear
+discussion instead of change them secretly." This is the scope amendment
+[review-02](review-02.md) identified as resolution (a)'s prerequisite and declined to
+self-authorize; it is recorded here, before the payload commit, rather than justified inside a
+report. The exception is **exactly those two sections of `README.md` and nothing else**: no other
+section of that page, and no byte of `kernel.md`, `runtime.md`, `driver.md` or `deployment.md`.
+The `## Target, not shipped` heading text is fixed, because [reference.md](../../../../mental-model/reference.md)
+links `README.md#target-not-shipped`. The five REF criteria are unchanged; REF-4 and REF-5 now
+also govern these two sections.
 
 ## Authority and anchors
 
@@ -53,10 +66,16 @@ A fresh independent reviewer must check fidelity to the accepted decisions befor
 - `mental-model/reference.md`, `mental-model/roadmap.md`, `mental-model/sources.md`: navigation,
   maintenance ownership and provenance for those rules.
 - `docs/development/002-implemented-kernel-baseline.md`: acceptance/integration distinction only.
+- `mental-model/README.md`, **revision 3 only**, and **only** its `## How these pages are organized`
+  and `## Target, not shipped` sections: state where implementation status is owned, so that the
+  single-owner rule these four rounds kept violating is written down at Layer 1; and replace the
+  gate-status prose that has drifted since K1.1 was accepted. The `## Target, not shipped` heading
+  text is fixed (inbound anchor). Every other section of the page is out of scope.
 - This contract and 007 scope/status. Reports and raw outputs follow 008. Owner-summary and
   cleanup records are subsequent administrative work, outside C/H's payload.
 
-No Layer-1/2 rewrite, executable/test/dependency change, new runtime guarantee, changed limit,
+No Layer-2 rewrite; no Layer-1 change beyond the two sections named above; no
+executable/test/dependency change, new runtime guarantee, changed limit,
 retention policy, wire schema, provider promise, E-gate, parent milestone closure or successor release.
 Historical reports, reviews, decisions and evidence remain byte-identical.
 
