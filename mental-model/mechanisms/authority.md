@@ -14,18 +14,18 @@ Send, inspect, cancel, delegate, read, write and impersonate are separate powers
 
 Authority is an upper bound; current application policy may narrow it. When grants are used, retain holder/delegator, operation/resource constraints, validity/expiry, delegability and policy provenance. Trusted records can suffice in one trust domain; signatures authenticate origin but do not prove current permission.
 
-Delegate only the intersection of requested power, the parent's delegable bound and current policy. A parent that may email one address cannot give a child the power to email any address by asking for it: the child gets that one address, or nothing. Retain the delegating dependency through grandchildren so revocation or narrowing affects future admissions. An explicitly surviving grant can outlive parent termination; its lifetime must be declared. Child budgets do not grant permission.
+Delegate only the intersection of requested power, the parent's delegable bound and current policy. A parent that may email one address cannot give a [child](../concepts/operations.md#child-and-ownership) the power to email any address by asking for it: the child gets that one address, or nothing. Retain the delegating dependency through grandchildren so revocation or narrowing affects future admissions. An explicitly surviving grant can outlive parent termination; its lifetime must be declared. Child budgets do not grant permission.
 
 Overlapping policy rules need explicit semantics: additive allows combine only under the same policy contract; attenuation constraints intersect; explicit denies cannot disappear through a union. Source order must never decide the match by accident. Unknown identities, resources/operations or unavailable required policy lead to refusal/hold, never ambient fallback. Concrete `check(request)` is fundamental; bulk enumeration is optional.
 
-Descriptor disclosure is itself authorized before ranking or sending metadata to a model/search provider. A cached catalog or stale exposure view cannot authorize arguments. [Invocation bindings](context.md) preserve alias identity separately from this decision.
+Descriptor [disclosure](../concepts/roles.md#view-and-disclosure) is itself authorized before ranking or sending metadata to a model/search provider. A cached catalog or stale exposure view cannot authorize arguments. [Invocation bindings](context.md) preserve alias identity separately from this decision.
 
 ## Exact action consent
 
 Validate and normalize before requesting approval. Bind the decision to:
 
 - Execution/principal scope and logical action ID;
-- operation identity/revision and fully validated canonical arguments;
+- operation identity/[revision](../concepts/identity.md#revision) and fully validated [canonical](../concepts/values.md#canonical-form) arguments;
 - destination/account and resource revision or immutable content digest where meaningful;
 - eligible authenticated approver, decision ID, validity and required approval policy.
 
@@ -33,7 +33,7 @@ Show the values that matter, drawn from that exact bound request. A publication 
 
 After approval, only meaning-preserving transport encoding is allowed. Changing arguments, account, resource content/version or operation revision requires new action and consent or refusal. Hidden defaults, coercions and argument-mutating hooks must not run after approval. Native output presentation cannot rewrite trusted evidence.
 
-Approval state is separate from action disposition: an approved action can later be denied, withdrawn or expire. Refusal closes the same dependency. Duplicate approval returns its original decision; concurrent approval/withdrawal has an ordered outcome. Approvers do not use a privileged alternate dispatch path. Consent normally covers one logical action, including safe physical retries while still valid, not all future equal-looking actions. Multi-approver policy is optional, not a K2 prerequisite.
+Approval state is separate from action disposition: an approved action can later be denied, [withdrawn](../concepts/actions.md#withdrawal-and-compensation) or expire. Refusal closes the same dependency. Duplicate approval returns its original decision; concurrent approval/withdrawal has an ordered outcome. Approvers do not use a privileged alternate dispatch path. Consent normally covers one logical action, including safe physical retries while still valid, not all future equal-looking actions. Multi-approver policy is optional, not a K2 prerequisite.
 
 ## Order revocation against admission
 
@@ -45,6 +45,6 @@ For example, a user typing "wait, not that recipient" changes nothing on its own
 
 ## Content is not authority
 
-Retrieved text, notes, inferred memory, Skill manifests and provider descriptions can influence proposals but cannot supply grants, approvals or settlement facts. Asserted state is policy evidence only under an explicit trusted policy contract. Login/OAuth can satisfy a prerequisite without widening authority. Credential refresh retains the intended account; account substitution needs a new decision.
+Retrieved text, [notes](../concepts/state.md#working-notes), [inferred memory](../concepts/state.md#derived-semantic-memory), [Skill](../concepts/roles.md#skill-and-package) manifests and provider descriptions can influence proposals but cannot supply grants, approvals or settlement facts. [Asserted state](../concepts/state.md#structured-state) is policy evidence only under an explicit trusted policy contract. Login/OAuth can satisfy a prerequisite without widening authority. Credential refresh retains the intended account; account substitution needs a new decision.
 
 Complete mediation claims require inspection of nested tools, fallbacks, subprocesses and shared credentials, plus [physical enforcement](resources.md#containment-claims). An LLM refusing a request and a log of a native action are not evidence of prevention.

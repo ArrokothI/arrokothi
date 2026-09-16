@@ -10,9 +10,9 @@ Before the protocol details: the application creates Execution E for a weekly re
 
 ## Before sending
 
-As one decision, the Kernel atomically reserves the exact Event batch and records: dispatch intent, the current writer epoch, accepted progress and base revision, the progress codec, pinned Runtime/Definition revisions, and the supplied authorized execution view. This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost.
+As one decision, the Kernel atomically reserves the exact Event [batch](../concepts/core.md#batch-reservation-and-acknowledgment) and records: [dispatch intent](../concepts/identity.md#dispatch-and-delivery), the current [writer epoch](../concepts/identity.md#writer-epoch), accepted [progress](../concepts/state.md#progress) and base revision, the progress [codec](../concepts/values.md#codec), pinned Runtime/[Definition](../concepts/core.md#definition) revisions, and the supplied authorized [execution view](../concepts/roles.md#view-and-disclosure). This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost.
 
-Sending proceeds through the Driver without synchronously waiting for native work in the coordinator loop. The Driver may call a local function or submit a remote job. Dispatch acknowledgment, heartbeat, cancellation signals and diagnostic streaming are operational traffic, not extra progress-writing Outcomes.
+Sending proceeds through the [Driver](../concepts/core.md#execution-driver) without synchronously waiting for native work in the coordinator loop. The Driver may call a local function or submit a remote job. Dispatch acknowledgment, heartbeat, cancellation signals and diagnostic streaming are operational traffic, not extra progress-writing Outcomes.
 
 Conceptual data shape (not a frozen wire schema):
 
@@ -66,8 +66,8 @@ Perform these steps in order:
 
 1. Authenticate and scope access to the Execution before inspecting or disclosing content.
 2. Look for an already accepted matching Outcome. An exact duplicate returns its original [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) without repeating any mutation or publication. Different content under the accepted identity conflicts. This lookup precedes fresh validation, including after later policy changes or cancellation.
-3. For a new proposal, validate the whole envelope: current Activation, writer epoch, base progress revision, cancellation fence/terminal state, bounded values, unique proposal/emission keys, supported next step, wait references and completion obligations. Bind any same-Outcome Effect reference by its local proposal key.
-4. Atomically: acknowledge the entire batch; install progress and its accepted revision; record emissions and output obligations, all Effect intents, next state, and any wait/deadline/readiness. The validation and commit are ordered against cancellation; a pre-cancel check cannot authorize a post-cancel commit. For `await`, follow the exact internal order in [wait registration](waits.md#registering-a-wait).
+3. For a new proposal, validate the whole envelope: current Activation, writer epoch, base progress revision, cancellation fence/terminal state, bounded values, unique proposal/emission keys, supported next step, wait references and completion obligations. Bind any same-Outcome [Effect](../concepts/actions.md#effect) reference by its local proposal key.
+4. Atomically: acknowledge the entire batch; install progress and its accepted revision; record [emissions and output obligations](../concepts/actions.md#emission-result-and-output-obligation), all Effect intents, next state, and any wait/deadline/[readiness](../concepts/core.md#readiness). The validation and commit are ordered against cancellation; a pre-cancel check cannot authorize a post-cancel commit. For `await`, follow the exact internal order in [wait registration](waits.md#registering-a-wait).
 5. Return the accepted receipt. Dispatchers and output readers act on accepted records.
 
 An envelope/reference error rejects the whole proposal: no acknowledgment, progress, emission, Effect intent, wait, deadline, readiness or next-state mutation. Record the reason; never silently drop or endlessly retry it. An invalid current Runtime response that cannot be classified instead ends or holds the exchange, under an inspectable protocol-failure/recovery decision. Rejection does not roll back native mutations.

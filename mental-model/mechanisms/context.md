@@ -17,15 +17,15 @@ Retain: invocation identity, relevant Runtime input/state version, selected info
 
 All callable kinds can share provider syntax while preserving typed origin. Note-update controls cannot masquerade as mediated operations; discovered tools cannot mint local controls. Dynamic hydration retains the actual callable bindings. If the adapter cannot reconstruct them, refuse portability rather than guessing.
 
-An in-flight binding snapshot has a continuation lifetime; a discardable optimization does not. Retransmission retains the pinned request subject to native retry safety and current disclosure permission. Fresh computation may create a new snapshot but must not be called replay of the old one.
+An in-flight [binding snapshot](../concepts/roles.md#invocation-snapshot-and-cache) has a continuation lifetime; a discardable optimization does not. Retransmission retains the pinned request subject to native retry safety and current disclosure permission. Fresh computation may create a new snapshot but must not be called replay of the old one.
 
 ## Select information without changing its status
 
-Select authorized Events, transcript, state, notes, inferred claims, artifact excerpts and instructions. Preserve source/inference distinctions, scope, versions and truncation markers. Summaries retain useful references/caveats; missing evidence stays unavailable, not proof of absence. Relevance is not source trust.
+Select authorized [Events](../concepts/core.md#event), transcript, state, [notes](../concepts/state.md#working-notes), [inferred claims](../concepts/state.md#derived-semantic-memory), [artifact](../concepts/state.md#artifact-reference) excerpts and instructions. Preserve source/inference distinctions, scope, versions and truncation markers. Summaries retain useful references/caveats; missing evidence stays unavailable, not proof of absence. Relevance is not source trust.
 
 Selection identity can be separate from provider rendering for experiments, but formatting cannot change meaning or conceal omissions. A universal context IR is an experiment. If provider scaffolding/tokenization is hidden, record the observable API request and limitation instead of claiming exact final prompt reconstruction.
 
-Request-only selection leaves the native transcript intact; destructive compaction changes retained state and follows native checkpoint publication. Preserve active call/result bindings and recovery-critical state. Kernel History cannot replace a lost native continuation; authorized historical observation can instead be an input source.
+Request-only selection leaves the native transcript intact; destructive compaction changes retained state and follows native [checkpoint publication](recovery.md#checkpoint-publication). Preserve active call/result bindings and recovery-critical state. [Kernel History](../concepts/state.md#execution-history) cannot replace a lost native continuation; authorized historical observation can instead be an input source.
 
 ## Cache dependencies
 
@@ -36,9 +36,9 @@ Request-only selection leaves the native transcript intact; destructive compacti
 | Selected context cache | Recomputable unless pinned; sources, strategy, audience/redaction |
 | Invocation binding | Retain while response depends on exact versions |
 | Provider prompt cache | Provider optimization; permitted disclosure, never authority |
-| Accepted checkpoint | Retain while recovery requires compatible code/resources |
+| Accepted [checkpoint](../concepts/state.md#checkpoint-and-locator) | Retain while [recovery](recovery.md) requires compatible code/resources |
 
-Global revisions, cache hits and ranking statistics can leak hidden changes. Keep internal metadata out of model content unless authorized. Revoked content cannot enter a new request just because it was cached. Already disclosed data follows the provider/application retention contract, not retroactive forgetting.
+Global revisions, cache hits and ranking statistics can leak hidden changes. Keep internal metadata out of model content unless authorized. Revoked content cannot enter a new request just because it was cached. Already disclosed data follows the provider/application [retention](../concepts/state.md#retention-pin-and-tombstone) contract, not retroactive forgetting.
 
 ## Discovery and observations
 

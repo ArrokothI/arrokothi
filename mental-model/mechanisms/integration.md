@@ -19,13 +19,13 @@ These shapes are not a trust ranking. An isolated external job may be better con
 
 ## Support record
 
-Each supported Driver/profile records versions, declarations and evidence for:
+Each supported Driver/[profile](../concepts/operations.md#operating-profile-and-durability) records versions, declarations and evidence for:
 
 | Dimension | Required answers |
 |---|---|
-| Identity/principals | Execution/Activation/native run/session mapping; account and session-sharing owner |
+| Identity/[principals](../concepts/actions.md#principal-and-authority) | Execution/Activation/native run/session mapping; account and session-sharing owner |
 | Input | Exact native input/config, stable submit key, duplicate and lost-response handling |
-| Progress | Inline/checkpoint/job form, codec/code versions, resources, retention and missing-state behavior |
+| [Progress](../concepts/state.md#progress) | Inline/checkpoint/job form, [codec](../concepts/values.md#codec)/code versions, resources, retention and missing-state behavior |
 | Recovery | Phase-specific reattach/replay/same-process/refusal; stale native writer exclusion and repeat costs |
 | Actions | Direct, indirect, fallback/delegated paths, actual credential holders, proven mediated subset |
 | Pause/input | Native pause identity, one form/resume owner, expiry and duplicate reply handling |
@@ -34,7 +34,7 @@ Each supported Driver/profile records versions, declarations and evidence for:
 | Resources | Acquire/release/destroy, restoration, lost binding and cross-owner cleanup |
 | Fidelity/upgrade | Native features preserved, quality/cost/latency comparison and one upstream upgrade |
 
-Unsupported is a legitimate value. These are tested claims, not a universal capability registry. Preflight refuses requested durability or mediation without proof. Start with one useful Driver; a second independent Runtime must justify a portable extension.
+Unsupported is a legitimate value. These are tested claims, not a universal capability registry. Preflight refuses requested [durability](../concepts/operations.md#operating-profile-and-durability) or [mediation](../concepts/actions.md#exposure-and-mediation) without proof. Start with one useful Driver; a second independent Runtime must justify a portable extension.
 
 ## Mediated tool sequence
 
@@ -46,15 +46,15 @@ native selects tool and final semantic arguments
 → later Activation forwards the correlated Event to native continuation
 ```
 
-Argument-mutating middleware finishes before consent/admission. Result presentation hooks can shape text but not trusted evidence. Inspect nested/fallback tools, caches, delegation and terminal/code paths; a hook that fires after execution cannot prevent it.
+Argument-mutating middleware finishes before [consent](authority.md#exact-action-consent)/[admission](actions.md#admission-and-sending). Result presentation hooks can shape text but not trusted evidence. Inspect nested/fallback tools, caches, delegation and terminal/code paths; a hook that fires after execution cannot prevent it.
 
-A live coroutine callback bridge is valid only for same-process continuation unless the native provider offers durable suspension or safe replay. Never serialize a Promise, blindly replay a billable/toolful prefix or add a second unversioned Effect RPC during an unaccepted Activation. If yielding damages fidelity, keep tools native and govern an outer artifact/action handoff, or refuse the stronger claim. A future streaming action protocol needs its own explicit atomicity/fencing design.
+A live coroutine callback bridge is valid only for same-process continuation unless the native provider offers durable suspension or safe replay. Never serialize a Promise, blindly replay a billable/toolful prefix or add a second unversioned [Effect](../concepts/actions.md#effect) RPC during an unaccepted [Activation](../concepts/core.md#activation). If yielding damages fidelity, keep tools native and govern an outer artifact/action handoff, or refuse the stronger claim. A future streaming action protocol needs its own explicit atomicity/fencing design.
 
 ## Native human work and output
 
-Preserve native pause/form routing with one resume owner. Kernel waiting requires a durable correlation/subscription or queryable job contract; native polling can remain inside `RUNNING`. A native “run succeeded” with deferred human work is not necessarily Kernel completion: an engine can report success together with a form still waiting for a person, which is a pause, not a result. Forward authenticated bound replies; feedback is consent only when it satisfies the exact action contract.
+Preserve native pause/form routing with one resume owner. Kernel [waiting](waits.md) requires a durable correlation/subscription or queryable job contract; native polling can remain inside `RUNNING`. A native “run succeeded” with deferred human work is not necessarily Kernel completion: an engine can report success together with a form still waiting for a person, which is a pause, not a result. Forward authenticated bound replies; feedback is consent only when it satisfies the exact action contract.
 
-Cancellation signaling is separate from immutable Activation input. A late correct native result may remain diagnostic after cancellation without becoming accepted progress. Native model budgets require Runtime/provider enforcement; estimates stay estimates.
+[Cancellation](lifecycle.md#cancellation-order) signaling is separate from immutable Activation input. A late correct native result may remain diagnostic after cancellation without becoming accepted progress. Native model budgets require Runtime/provider enforcement; estimates stay estimates.
 
 ## Evidence before support
 
