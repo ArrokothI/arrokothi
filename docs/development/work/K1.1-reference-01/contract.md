@@ -1,7 +1,12 @@
 # K1.1-reference-01 — faithful reference maintenance
 
-Revision 1; documentation-only supplement to accepted K1.1-correction-01. This is not
+**Revision 2**; documentation-only supplement to accepted K1.1-correction-01. This is not
 an implementation invalidation or a K1.2 release.
+
+Revision 2 reconciles one payload bullet with the approach the packet actually took, under
+`REF1-R2-DOC-01` from [review-03](review-03.md). Only the `execution-cycle.md` bullet changes; the
+five REF criteria, the bounded payload paths, the anchors and every exclusion stand verbatim. No
+acceptance condition is relaxed — see the bullet's own note.
 
 ## Authority and anchors
 
@@ -33,8 +38,18 @@ A fresh independent reviewer must check fidelity to the accepted decisions befor
 - `mental-model/concepts/values.md`: describe the accepted in-process value-capture contract,
   distinguishing it from wire decoding and physical containment.
 - `mental-model/mechanisms/creation.md`: a small creation-key reuse example linked to identity.
-- `mental-model/mechanisms/execution-cycle.md`: replace obsolete acceptance-pending status with
-  exact accepted implementation evidence and limits; keep delivery rules unchanged.
+- `mental-model/mechanisms/execution-cycle.md`: remove the obsolete acceptance-pending status and
+  defer implementation status to the status ledger, which owns it; state the page's limits; keep
+  delivery rules unchanged. **Revision 2 changed this bullet.** Revision 1 asked instead for "exact
+  accepted implementation evidence and limits" on the page. Round 1 implemented that literally and
+  [review-02](review-02.md) found it put a shipped-status assertion on a page whose own Status line
+  and the `reference.md` convention say it carries none (`REF1-R1-CONV-01`). The corrected payload
+  took review-02's resolution (b), which [review-03](review-03.md) judged "the stronger of the two
+  resolutions, not merely the permitted one". The bullet is reconciled with what the packet
+  actually does, per `REF1-R2-DOC-01`. **REF-3's required outcome is unchanged**: accepted H and
+  pending integration must still be accurately separated — only *where* that separation lives
+  moves, from the canonical page to the ledger 006 already makes the single status owner. No
+  acceptance condition is relaxed.
 - `mental-model/reference.md`, `mental-model/roadmap.md`, `mental-model/sources.md`: navigation,
   maintenance ownership and provenance for those rules.
 - `docs/development/002-implemented-kernel-baseline.md`: acceptance/integration distinction only.

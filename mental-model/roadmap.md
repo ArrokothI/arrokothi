@@ -74,7 +74,7 @@ Delivery reporting replaces Driver-returned Promise observation. The precise rul
 
 ## K1.1-reference-01
 
-Faithful maintenance after the accepted K1.1 correction: [identity](concepts/identity.md#request-key-and-input-id) owns creation/ingress domain separation, [creation](mechanisms/creation.md#later-input-has-a-destination) illustrates reuse, and [values](concepts/values.md#in-process-value-capture) owns the in-process capture rules. [Execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary) retains the delivery mechanism with exact implementation evidence. Reference and source navigation are updated together. [Scope and review dependency](../docs/development/007-work-packets.md#k11-reference-01--faithful-reference-maintenance) preserve implementation ACCEPT separately from documentation review; no runtime successor is released.
+Faithful maintenance after the accepted K1.1 correction: [identity](concepts/identity.md#request-key-and-input-id) owns creation/ingress domain separation, [creation](mechanisms/creation.md#later-input-has-a-destination) illustrates reuse, and [values](concepts/values.md#in-process-value-capture) owns the in-process capture rules. [Execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary) retains the delivery mechanism unchanged and defers implementation status to the status ledger, which owns it. Reference and source navigation are updated together. [Scope and review dependency](../docs/development/007-work-packets.md#k11-reference-01--faithful-reference-maintenance) preserve implementation ACCEPT separately from documentation review; no runtime successor is released.
 
 ## K1.2
 
