@@ -1,6 +1,6 @@
 # K1.1-reference-01 — faithful reference maintenance
 
-**Revision 4**; documentation-only supplement to accepted K1.1-correction-01. This is not
+**Revision 5**; documentation-only supplement to accepted K1.1-correction-01. This is not
 an implementation invalidation or a K1.2 release.
 
 Revision 2 reconciled one payload bullet with the approach the packet actually took, under
@@ -111,7 +111,48 @@ Historical reports, reviews, decisions and evidence remain byte-identical.
 
 Run `npm run check:builder-docs`, `git diff --check`, declared-path/executable/sealed-record
 comparison and local-link checks on clean C. Runtime evidence may be inspected from accepted H5
-only after byte-identity checks; no runtime change calls for new ablations. No external gate or
+only after byte-identity checks; no runtime change calls for new ablations.
+
+**Revision 5 — `git diff --check` is scoped to authored content, and is now actually required
+every round.** [Review-05](review-05.md)'s `REF1-R5-CHK-01` found this proof step recorded in round 1
+and omitted in rounds 2–5, and found the cumulative check failing: exit 2, nine warnings. **State
+the failure plainly before the remedy:** it failed, and this revision changes what it covers. Two
+facts decide whether that is legitimate, and a reviewer should test both rather than accept them.
+
+First, **every one of the nine warnings is inside a `.log` file** — a byte-capture of a command's
+stdout. `npm run typecheck` prints a trailing blank line; `fold` leaves a space where it wraps.
+The whitespace is in the evidence because the command emitted it. Second, **the authored payload
+was already clean**: `git diff --check` over `mental-model/`, `002`, `007` and this contract exits
+0, as does the whole tree minus those `.log` files. Nothing the linter exists to catch was being
+caught here.
+
+Making a raw log pass would mean editing the log — which breaks its recorded SHA-256 digest, stops
+it being a faithful capture, and for rounds 2–4 would modify sealed records 006 forbids touching.
+The exclusion exists because those files **must not be edited**, not because editing them is
+inconvenient.
+
+The scoped command, exactly:
+
+```bash
+git diff --check <base> <head> -- . ':(exclude)docs/development/work/*/validation-*/*.log'
+```
+
+**What stays checked — deliberately everything else**, so this cannot be used to hide sloppy
+authoring: every `mental-model/` page, every `docs/` page, this and every other `contract.md`,
+every `implementation-*.md`, every transcribed `review-*.md`, and every `validation-*/MANIFEST.md`.
+Only `*.log` byte-captures are out. Transcribed reviews are **not** excluded even though they too
+must not be edited — they are clean today, and pre-emptively widening the exclusion for a problem
+that does not exist is how a narrow carve-out becomes a broad one. If a future transcription ever
+carries authored-looking whitespace, that is a fresh decision, not a precedent already granted.
+
+**Net effect is a stronger gate, not a weaker one.** Before: nominally covered everything, actually
+run in one round of five. Now: covers all authored content, and **must be run and recorded in every
+round's validation evidence, on the clean C and on H**. A round that omits it fails REF-5.
+
+Not done, and why: review-05 also asked that this round's own `01-typecheck.log` be regenerated
+without its trailing blank line. Under this revision that line is an excluded byte-capture, and
+regenerating a log to make it look tidier is precisely the edit this revision says not to make.
+Leaving it is the consistent action. No external gate or
 Agent behavior claim is made. The independent reviewer assesses all REF criteria cumulatively
 from A to the new H; this cleanup session must not accept its own reference edits.
 
