@@ -1,6 +1,6 @@
 # ArrokothI: coordinating work without owning its algorithms
 
-ArrokothI lets an application manage work performed by different agent frameworks, workflow engines or ordinary code. It gives that work a stable identity, records its accepted progress and coordinates the actions it asks the application to perform.
+ArrokothI lets an application manages work performed by different agent frameworks, workflow engines or ordinary code. It gives that work a stable identity, records its accepted progress and coordinates the actions it asks the application to perform.
 
 The central division is simple: **the Kernel manages execution; the Runtime decides how to do the work.** A Runtime can keep its own model loop, graph, tools and memory. Sharing this coordination layer is intended to reduce integration failures. Whether that is better than using a native framework directly remains a product question to test.
 
