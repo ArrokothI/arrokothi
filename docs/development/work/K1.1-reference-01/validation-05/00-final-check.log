@@ -1,0 +1,52 @@
+=== Round-5 evidence for C5 e1eb5888af6bda071bc57e5aa417bc2496533ccd ===
+Round 5 exists because the implementer's own final check found a gap no reviewer raised:
+contract revision 3 recorded the owner's Layer-1 grant without addressing the standing rule
+in AGENTS.md, 006 and 009. 006 requires a normative conflict to be surfaced, not resolved
+silently. Revision 4 adds only that reconciliation; scope is unchanged.
+
+--- 1. the standing rule, printed from all three governing documents ---
+docs/development/006-development-process.md:262:update the reference index and links. Change Layer 1/2 only for a whole-system or major-abstraction
+docs/development/009-universal-prompts.md:92:Change Layer 1 or Layer 2 only if accepted work changes the whole-system model or a major abstraction;
+AGENTS.md:17:current prose. Change Layer 1/2 only when the whole-system model or major abstraction changes.
+
+--- 2. round-5 delta: contract text only, no scope change ---
+$ git diff --name-status 7db74aa881155a59acdd3933c118180ea68c6924 e1eb5888af6bda071bc57e5aa417bc2496533ccd
+M	docs/development/work/K1.1-reference-01/contract.md
+A	docs/development/work/K1.1-reference-01/review-04.md
+$ git diff --numstat ... (contract only)
+22	2	docs/development/work/K1.1-reference-01/contract.md
+304	0	docs/development/work/K1.1-reference-01/review-04.md
+The Bounded payload list is unchanged except the revision-3 wording fix; the two authorized
+README sections are still the only Layer-1 payload.
+
+--- 3. no mental-model byte moved in round 5 ---
+mental-model H4..C5:                           empty PASS
+
+--- 4. cumulative guards at C5 ---
+executable/manifests A..C5:                    empty PASS
+executable since accepted H5:                  empty PASS
+kernel/runtime/driver/deployment vs D:         byte-identical PASS
+H5 KC1-DEC-7 gate (D..H5 mental-model):        empty PASS
+sealed records modified A..C5:                 none PASS
+reviews 01-04 modified after recording:        0 PASS
+
+--- 5. README section scope, re-proved at C5 ---
+8 sections at D, 8 now, same order; 6 byte-unchanged; 2 changed, both named in the contract.
+$ diff <(git show D:README headings) <(C5 headings)
+headings identical — every inbound anchor survives
+
+--- 6. the four negative greps ---
+stale status phrases in 007:                         0
+accepted/shipped assertion under concepts+mechanisms: none
+candidate SHA under concepts+mechanisms:             none
+two-target entries in canonical list:                0
+
+--- 7. ledger statuses ---
+| K1.1 | ACCEPTED
+| K1.1-correction-01 | ACCEPTED
+| K1.1-reference-01 | WAITING_FOR_REVIEW
+
+--- note on §2 ---
+The H4..C5 range also shows review-04.md as ADDED, because the round-3 ACCEPT was recorded at
+b76e494 between H4 and C5. That is an administrative review record, not payload. The only
+payload path in round 5 is contract.md.

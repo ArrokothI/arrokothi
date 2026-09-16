@@ -14,6 +14,9 @@ const sources = [
   ".agents/skills/arrokothi-agent-builder/SKILL.md",
   ...(await readdir(join(root, guide), { recursive: true })).filter((name) => name.endsWith(".md")).sort().map((name) => `${guide}/${name}`),
   `${example}/README.md`,
+  // K11-R15-DOC-02: the canonical reference tree gets the same mechanical link/anchor validation
+  // as the guides, so a renamed heading cannot silently break a cross-reference again.
+  ...(await readdir(join(root, "mental-model"), { recursive: true })).filter((name) => name.endsWith(".md")).sort().map((name) => `mental-model/${name}`),
 ];
 const errors: string[] = [];
 const texts = new Map<string, string>();
@@ -48,7 +51,9 @@ for (const source of sources) {
     const href = match[1]!;
     if (/^[a-z][a-z\d+.-]*:/i.test(href)) continue;
     const [path = "", fragment] = href.split("#");
-    let target = resolve(dirname(sourcePath), decodeURIComponent(path));
+    // A bare `#anchor` names the source file itself, not its directory's README. The guides never
+    // used that spelling, so the old resolution never fired; the reference tree does.
+    let target = path === "" ? sourcePath : resolve(dirname(sourcePath), decodeURIComponent(path));
     if (!target.startsWith(root + sep)) { errors.push(`${source}: link escapes repository: ${href}`); continue; }
     // Isolation is intentional even if a future guide accidentally links such a target.
     if (/benchmark/i.test(relative(root, target))) { errors.push(`${source}: out-of-scope link: ${href}`); continue; }

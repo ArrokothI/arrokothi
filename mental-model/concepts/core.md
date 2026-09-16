@@ -4,7 +4,7 @@ These are canonical definitions. [The overview](../README.md) shows how they fit
 
 ## A first example
 
-Before the definitions: the application creates an Execution for "prepare the weekly report." The Kernel sends an Activation asking the Runtime to advance it. The Runtime drafts the report and returns an Outcome — proposed progress, plus a wait for the editor's answer. The Kernel accepts it, and the Execution enters `WAITING`. When the editor replies, that reply becomes an Event addressed to this Execution; a new Activation carries it, and the Runtime can complete the report. Each term below names one piece of this exchange precisely — see [the same example in more of its target form](../README.md#a-report-that-needs-publication).
+Before the definitions: the application creates an Execution for "prepare the weekly report." The Kernel sends an Activation asking the Runtime to advance it. The Runtime drafts the report and returns an Outcome — proposed progress, plus a wait for the editor's answer. The Kernel accepts it, and the Execution enters `WAITING`. When the editor replies, that reply becomes an Event addressed to this Execution; a new Activation carries it, and the Runtime can complete the report. Each term below names one piece of this exchange precisely — see [the same example in more of its target form](../README.md#example-a-report-that-needs-publication).
 
 ## Kernel
 

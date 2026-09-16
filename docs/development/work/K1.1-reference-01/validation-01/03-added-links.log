@@ -1,0 +1,24 @@
+Exact inline validation program (not a repository payload script):
+from pathlib import Path
+import subprocess,re,urllib.parse
+base='519ba002378707a4deccff1ea0a243d21eb694b7'
+files=subprocess.check_output(['git','diff','--name-only',base,'HEAD'],text=True).splitlines()
+checked=0
+for name in files:
+ if not name.endswith('.md'): continue
+ p=Path(name)
+ added='\n'.join(line[1:] for line in subprocess.check_output(['git','diff','--unified=0',base,'HEAD','--',name],text=True).splitlines() if line.startswith('+') and not line.startswith('+++'))
+ for url in re.findall(r'\]\(([^\s)]+)\)',added):
+  if '://' in url or url.startswith('mailto:'): continue
+  path,_,anchor=url.partition('#');target=(p.parent/urllib.parse.unquote(path)).resolve() if path else p.resolve()
+  assert target.exists(),(name,url)
+  if anchor:
+   headings=re.findall(r'^#{1,6}\s+(.+?)\s*#*$',target.read_text(),re.M)
+   slugs=[re.sub(r'[^\w\- ]','',h.lower().replace('_','')).replace(' ','-') for h in headings]
+   assert urllib.parse.unquote(anchor) in slugs,(name,url)
+  checked+=1
+print(f'PASS: {checked} added local links/anchors across {len(files)} changed paths. Simple ATX heading anchors only; canonical tree also checked by repository checker.')
+
+Output:
+PASS: 28 added local links/anchors across 10 changed paths. Simple ATX heading anchors only; canonical tree also checked by repository checker.
+exit: 0

@@ -40,7 +40,7 @@ Deletion that removes required data explicitly reports recovery unavailable, sou
 
 ## Structural evidence
 
-K1.0 created a private target package that implemented none of the protocol, plus a checked separation from legacy implementation. That pass does **not** implement asynchronous target execution or earn E1, and a later packet landing real protocol code in that package does not change what the pass proved. The live [ownership inventory](../../docs/development/work/K1.0/ownership-inventory.md) relates documented zones/roots, exports, measured dependencies and deferred owners to enforced source/configuration; it is maintained by whichever packet changes the tree it measures. Candidate measurements are not base measurements.
+K1.0 creates a private, refusal-only target package and a checked separation from legacy implementation. It does **not** implement asynchronous target execution or earn E1. The live [ownership inventory](../../docs/development/work/K1.0/ownership-inventory.md) relates documented zones/roots, exports, measured dependencies and deferred owners to enforced source/configuration. Candidate measurements are not base measurements.
 
 **Moving code is not migrating it.** A new directory, a new package name or a renamed file decides where future work lands. It changes nothing about what the code does. Only an accepted packet that implements the protocol does that. Say which of the two a change was, and never report a move as progress against a protocol gate.
 

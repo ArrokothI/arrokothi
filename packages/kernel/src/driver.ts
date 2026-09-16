@@ -67,13 +67,28 @@ export interface Activation {
 /**
  * Adapts a Runtime to this boundary.
  *
- * `deliver` may return a promise, and the Kernel does not await it: slow native work stays inside the
- * Runtime, and one Execution's unfinished delivery must not delay another's dispatch. A rejected
- * promise or a synchronous throw is recorded as an operational delivery failure and changes no
- * accepted state - the dispatch intent is already accepted and is what a retry or a later takeover
- * re-sends.
+ * `deliver` receives the Activation and a Kernel-owned reporting capability, and returns
+ * only `undefined` (KC1-ARCH-1). The Driver reports delivery explicitly — during the call
+ * or later — through `settlement.delivered()` or `settlement.failed(reason)`. Returning
+ * normally is not an acknowledgment: without an explicit report the delivery attempt stays
+ * `pending`. A synchronous throw is an implicit failure report through the same first-report
+ * rule and changes no accepted state — the dispatch intent is already accepted and is what
+ * a retry or a later takeover re-sends. The Driver owns its asynchronous work and handles
+ * its own internal Promise rejections; the Kernel never observes the return value, creates
+ * no Promise for reporting, and performs no Promise constructor/species sanitization.
  */
+export interface DeliverySettlement {
+  /** Records this attempt as delivered. Inert unless the bound attempt is still pending. */
+  delivered(): void;
+  /**
+   * Records this attempt as failed with a bounded total diagnostic. Inert unless the bound
+   * attempt is still pending. Never invokes caller-owned getters, coercions, or thenables;
+   * non-string reasons collapse to a fixed text.
+   */
+  failed(reason: unknown): void;
+}
+
 export interface ExecutionDriver {
   readonly driverId: string;
-  deliver(activation: Activation): void | Promise<void>;
+  deliver(activation: Activation, settlement: DeliverySettlement): undefined;
 }

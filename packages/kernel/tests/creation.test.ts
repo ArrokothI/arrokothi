@@ -18,9 +18,12 @@ import {
   createRequest,
   descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  iteratorNextIsHostile,
   polluteDescriptorFields,
+  polluteIteratorNext,
   recordingDriver,
   refused,
+  revokedProxy,
   trapInheritedIndices,
   type DescriptorPollution,
   type InheritedIndexTrap,
@@ -870,5 +873,195 @@ describe("K11-R7-STATE-03 creation under inherited descriptor-field pollution", 
 
     assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
     assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
+  });
+});
+
+describe("K11-R16-VAL-01 creation replay and conflict are stable while the iterator next is hostile", () => {
+  // While the omit-all `next` is installed, oracles use `assert.equal` with indexed reads only:
+  // `assert.ok` delegates through a rest-args spread and would fail even on `true`, and any
+  // destructuring, `for...of` or spread would itself iterate through the hostile method.
+  test("retry still replays and changed content still conflicts", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const first = accepted(kernel.createExecution(author, createRequest()));
+
+    const pollution = polluteIteratorNext(() => ({ done: true }));
+    try {
+      assert.equal(iteratorNextIsHostile(), true, "omit-all next live across these calls");
+
+      const retry = accepted(kernel.createExecution(author, createRequest()));
+      assert.equal(retry.replayed, true);
+      assert.equal(retry.executionId, first.executionId);
+      assert.equal(retry.receipt.boundary, first.receipt.boundary);
+      assert.equal(retry.receipt.token, first.receipt.token);
+      assert.equal(retry.receipt.position, first.receipt.position);
+      assert.equal(retry.initialEventId, first.initialEventId);
+
+      const conflict = refused(
+        kernel.createExecution(
+          author,
+          createRequest({ initialInput: { kind: "application.request", payload: { text: "report for week 38" } } }),
+        ),
+      );
+      assert.equal(conflict.classification, "duplicate_conflict");
+      assert.equal(conflict.executionId, first.executionId);
+    } finally {
+      pollution.restore();
+    }
+
+    const after = accepted(kernel.inspect(author, first.executionId));
+    assert.equal(after.mailbox.length, 1, "retry and conflict created no second Event");
+    assert.equal(after.mailbox[0]?.eventId, first.initialEventId);
+  });
+});
+
+describe("K11-R16-ID-01 malformed identity diagnostics never throw on caller-owned values", () => {
+  // Every observation below throws if merely read (`Array.isArray` on a revoked Proxy throws
+  // `TypeError`; a revoked envelope throws on any field read). Each must answer the located
+  // contract-defined refusal with zero accepted-state mutation — never an escaped exception.
+  test("a revoked Proxy in any identity-text field is a located malformed_value refusal", () => {
+    const fields = [
+      "scope",
+      "creationKey",
+      "definitionRevision",
+      "runtimeContractRevision",
+      "progressCodec",
+    ] as const;
+    for (let index = 0; index < fields.length; index += 1) {
+      const field = fields[index] as string;
+      const kernel = coordinator();
+      const author = caller("app-a", "tenant-a");
+      const request = createRequest({ [field]: revokedProxy() } as Partial<Parameters<ExecutionCoordinator["createExecution"]>[1]>);
+      const refusal = refused(kernel.createExecution(author, request));
+      assert.equal(refusal.classification, "malformed_value", field);
+      assert.match(refusal.reason, new RegExp(`${field} (unsupported_form|unstable_representation)`), field);
+      assert.doesNotMatch(refusal.reason, /TypeError|IsArray/, "no ambient exception leaks into the reason");
+      assert.equal(refusal.executionId, null);
+      assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created behind the refusal");
+    }
+  });
+
+  test("a revoked Proxy in initial-input identity fields is located under initialInput", () => {
+    for (const overrides of [{ kind: revokedProxy() as never }, { subscriptionClass: revokedProxy() as never }]) {
+      const kernel = coordinator();
+      const author = caller("app-a", "tenant-a");
+      const refusal = refused(
+        kernel.createExecution(author, createRequest({ initialInput: { kind: "application.request", payload: 1, ...overrides } })),
+      );
+      assert.equal(refusal.classification, "malformed_value");
+      assert.match(refusal.reason, /initialInput\.(kind|subscriptionClass) (unsupported_form|unstable_representation)/);
+      assert.doesNotMatch(refusal.reason, /TypeError|IsArray/);
+      assert.deepEqual(kernel.visibleExecutions(author), []);
+    }
+  });
+
+  test("an unreadable or absent creation envelope is malformed, and scope still precedes authorization", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+
+    const revoked = refused(kernel.createExecution(author, revokedProxy() as never));
+    assert.equal(revoked.classification, "malformed_value");
+    assert.match(revoked.reason, /scope unstable_representation/);
+
+    const missing = refused(kernel.createExecution(author, null as never));
+    assert.equal(missing.classification, "malformed_value");
+    assert.match(missing.reason, /scope unsupported_form/);
+
+    // An outsider naming an unobservable scope learns nothing beyond the malformed-value refusal:
+    // scope text validation still precedes authorization.
+    const outsider = refused(kernel.createExecution(caller("app-a", "tenant-b"), createRequest({ scope: revokedProxy() as never })));
+    assert.equal(outsider.classification, "malformed_value");
+    assert.match(outsider.reason, /scope (unsupported_form|unstable_representation)/);
+
+    assert.deepEqual(kernel.visibleExecutions(author), []);
+  });
+
+  test("a revoked initialInput envelope is a located refusal", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const refusal = refused(kernel.createExecution(author, createRequest({ initialInput: revokedProxy() as never })));
+    assert.equal(refusal.classification, "malformed_value");
+    // Each field read throws on the revoked envelope; every failure is located under initialInput.
+    assert.match(refusal.reason, /initialInput/);
+    assert.match(refusal.reason, /unstable_representation/);
+    assert.doesNotMatch(refusal.reason, /TypeError|IsArray/);
+    assert.deepEqual(kernel.visibleExecutions(author), []);
+  });
+});
+
+describe("K11-R16-ID-01 (R3) ambient prototype state cannot answer missing envelope fields", () => {
+  /**
+   * Found by the fresh adversarial review wave (Reviewer 3), not by the implementation pass.
+   *
+   * Ordinary field reads consult the whole prototype chain for a key the envelope does not own,
+   * so ambient `Object.prototype`/`Array.prototype` pollution — residue or same-tick
+   * trap-installed — steered missing fields into acceptances the caller never spelled:
+   * `dispatch({})` accepted by an ambient `bound`, `create({})` accepted by ambient identity text.
+   * Every envelope observation is therefore own-only: inherited-only reads as missing (KC1-DEC-6).
+   */
+  const setProtoFields = (fields: Record<string, unknown>): void => {
+    for (const key of Object.keys(fields)) (Object.prototype as Record<string, unknown>)[key] = fields[key];
+  };
+  const clearProtoFields = (fields: Record<string, unknown>): void => {
+    for (const key of Object.keys(fields)) delete (Object.prototype as Record<string, unknown>)[key];
+  };
+
+  test("ambient identity text cannot complete an empty creation envelope", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const ambient = {
+      scope: "tenant-a",
+      creationKey: "proto-key",
+      definitionRevision: "weekly-report@3",
+      runtimeContractRevision: "runtime-contract@1",
+      progressCodec: "inline-json@1",
+    };
+    setProtoFields(ambient);
+    try {
+      const refusal = refused(kernel.createExecution(author, {} as never));
+      assert.equal(refusal.classification, "malformed_value");
+      assert.match(refusal.reason, /scope unsupported_form/, "the own-missing scope is refused, not ambient-answered");
+      assert.doesNotMatch(refusal.reason, /proto-key/, "ambient text leaks nowhere into the reason");
+      assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created behind the refusal");
+    } finally {
+      clearProtoFields(ambient);
+    }
+  });
+
+  test("an earlier-field trap cannot steer a later field through ambient state in the same tick", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    let installed = false;
+    const pollutingContext = new Proxy({ tenant: "a" }, {
+      get(target, property, receiver) {
+        if (!installed) {
+          installed = true;
+          setProtoFields({ kind: "INJECTED", payload: { injected: true } });
+        }
+        return Reflect.get(target, property, receiver);
+      },
+    });
+    try {
+      const refusal = refused(
+        kernel.createExecution(author, createRequest({ authorityContext: pollutingContext as never, initialInput: {} as never })),
+      );
+      assert.equal(installed, true, "the trap ran, so this is not a vacuous pass");
+      assert.equal(refusal.classification, "malformed_value");
+      assert.match(refusal.reason, /initialInput\.kind unsupported_form/, "the own-missing kind is refused");
+      assert.doesNotMatch(refusal.reason, /INJECTED/, "the injected kind was never bound");
+      assert.deepEqual(kernel.visibleExecutions(author), []);
+    } finally {
+      clearProtoFields({ kind: "INJECTED", payload: { injected: true } });
+    }
+  });
+
+  test("a field carried only by inheritance reads as missing", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const inherited = Object.create(createRequest());
+    const refusal = refused(kernel.createExecution(author, inherited as never));
+    assert.equal(refusal.classification, "malformed_value");
+    assert.match(refusal.reason, /scope unsupported_form/);
+    assert.deepEqual(kernel.visibleExecutions(author), []);
   });
 });

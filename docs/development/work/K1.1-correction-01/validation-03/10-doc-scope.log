@@ -1,0 +1,30 @@
+=== Cumulative scope for C3 90dec32040aeaf067dcaadca8f918dce6bdb86c4 ===
+
+This log records retention, not exclusion. The owner ruling for this round makes the current
+live mental-model/documentation state authoritative; no B-anchored allowlist is enforced and
+no "owner rewrite exclusion" proof is produced.
+
+=== packages + scripts + tests: NO semantic change since C2 (empty = identical) ===
+$ git diff --name-only fa8e092555c3835155d76b9ced5dc34c58bf4d70 90dec32040aeaf067dcaadca8f918dce6bdb86c4 -- packages/ tests/ scripts/
+(empty)
+
+=== new correction payload C2 -> C3: docs-only, 4 files, +6/-5 ===
+docs/development/002-implemented-kernel-baseline.md
+mental-model/mechanisms/execution-cycle.md
+mental-model/roadmap.md
+mental-model/sources.md
+$ git diff --stat fa8e092..C3 for those paths: 4 files changed, 6 insertions(+), 5 deletions(-)
+mental-model/deployment.md: NOT in the payload diff; live owner version preserved exactly.
+
+=== H2 -> C3 documentation evolution (owner-authorized, intentionally included) ===
+31 mental-model/** paths rewritten by owner commits 55389aa / 4c2f0a5 / b548e17 / 462ae3f
+plus review-03.md (A3, historical review of exact H2) and this round's 4-file current-truth
+correction. Full list:
+$ git diff --name-only 9e3969c1106719b5ac2616778dbcf3613b972417 90dec32040aeaf067dcaadca8f918dce6bdb86c4 --stat tail:
+32 files changed (31 mental-model/** + review-03.md); C3 adds the 4 corrected files above.
+(no package, test, script, contract, or threshold change anywhere in H2 -> C3)
+
+=== builder-docs against the current owner-edited documentation tree ===
+PASS: 57 Markdown files, 827 local links/anchors, 38 public package imports
+(checker inventory includes mental-model/**; see 05-check-builder-docs.log)
+No genuine broken links/anchors found; no owner prose reverted to fix any.

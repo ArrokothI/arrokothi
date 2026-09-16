@@ -22,9 +22,12 @@ import {
   createRequest,
   descriptorConversionIsHostile,
   inheritedIndexIsLive,
+  iteratorNextIsHostile,
   polluteDescriptorFields,
+  polluteIteratorNext,
   recordingDriver,
   refused,
+  revokedProxy,
   trapInheritedIndices,
   type DescriptorPollution,
   type InheritedIndexTrap,
@@ -203,9 +206,61 @@ describe("K1.1-C2 exact replay and content conflict", () => {
     assert.equal(first.eventId, before.mailbox[1]?.eventId);
   });
 
-  test("the initial input is reachable under its own triple, like any other input", () => {
+  test("K11-R15-ID-01 the creation key text stays usable as a genuine ingress key", () => {
     const kernel = coordinator();
     const created = accepted(kernel.createExecution(author, createRequest()));
+
+    // Equal content under the creation key text is fresh ingress with its own identity and
+    // receipt — never a replay of the creation-boundary decision through the ingress boundary
+    // (K1.1-C6: no receipt from one boundary is returned for another).
+    const fresh = accepted(
+      kernel.submitInput(author, {
+        destination: created.executionId,
+        requestKey: "report-17",
+        kind: "application.request",
+        payload: { text: "report for week 37" },
+      }),
+    );
+    assert.equal(fresh.replayed, false);
+    assert.notEqual(fresh.eventId, created.initialEventId, "a second Event, not the initial one");
+    assert.equal(fresh.receipt.boundary, "input_ingress", "the ingress boundary's own receipt");
+    assert.notDeepEqual(fresh.receipt, created.receipt);
+    assert.equal(fresh.acceptancePosition, 2, "after the initial input at position 1");
+
+    const after = view(kernel, created.executionId);
+    assert.deepEqual(after.queued, [created.initialEventId, fresh.eventId]);
+    assert.deepEqual(after.mailbox[1]?.receipt, fresh.receipt);
+  });
+
+  test("K11-R15-ID-01 different content under the creation key text is fresh ingress, not a conflict", () => {
+    const kernel = coordinator();
+    const created = accepted(kernel.createExecution(author, createRequest()));
+
+    // Creation never submitted through ingress, so nothing under this triple can conflict yet.
+    const fresh = accepted(
+      kernel.submitInput(author, {
+        destination: created.executionId,
+        requestKey: "report-17",
+        kind: "application.request",
+        payload: { text: "report for week 38" },
+      }),
+    );
+    assert.equal(fresh.replayed, false);
+    assert.equal(fresh.receipt.boundary, "input_ingress");
+    assert.deepEqual(view(kernel, created.executionId).queued, [created.initialEventId, fresh.eventId]);
+  });
+
+  test("K11-R15-ID-01 the new ingress row replays on its own receipt while creation retry still replays creation", () => {
+    const kernel = coordinator();
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const fresh = accepted(
+      kernel.submitInput(author, {
+        destination: created.executionId,
+        requestKey: "report-17",
+        kind: "application.request",
+        payload: { text: "report for week 37" },
+      }),
+    );
 
     const replay = accepted(
       kernel.submitInput(author, {
@@ -216,18 +271,15 @@ describe("K1.1-C2 exact replay and content conflict", () => {
       }),
     );
     assert.equal(replay.replayed, true);
-    assert.equal(replay.eventId, created.initialEventId);
-    assert.deepEqual(replay.receipt, created.receipt, "the boundary that accepted it was creation");
+    assert.equal(replay.eventId, fresh.eventId);
+    assert.deepEqual(replay.receipt, fresh.receipt, "the ingress receipt, not the creation one");
 
-    const conflict = refused(
-      kernel.submitInput(author, {
-        destination: created.executionId,
-        requestKey: "report-17",
-        kind: "application.request",
-        payload: { text: "report for week 38" },
-      }),
-    );
-    assert.equal(conflict.classification, "duplicate_conflict");
+    const retry = accepted(kernel.createExecution(author, createRequest()));
+    assert.equal(retry.executionId, created.executionId);
+    assert.equal(retry.replayed, true);
+    assert.deepEqual(retry.receipt, created.receipt, "creation retry still returns the retained creation decision");
+    assert.equal(retry.initialEventId, created.initialEventId, "and no second initial Event");
+    assert.equal(view(kernel, created.executionId).mailbox.length, 2, "exactly the initial Event plus the one ingress Event");
   });
 });
 
@@ -731,5 +783,84 @@ describe("K11-R7-STATE-03 ingress under inherited descriptor-field pollution", (
 
     assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
     assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
+  });
+});
+
+describe("K11-R16-VAL-01 ingress replay and conflict are stable while the iterator next is hostile", () => {
+  // Same oracle discipline as the creation-side case: `assert.equal` with indexed reads only
+  // while the hostile `next` is installed; structural comparisons wait for the clean restore.
+  test("replay returns the retained disposition and changed content conflicts", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const first = accepted(kernel.submitInput(author, input(executionId)));
+
+    const pollution = polluteIteratorNext(() => ({ done: true }));
+    try {
+      assert.equal(iteratorNextIsHostile(), true, "omit-all next live across these calls");
+
+      const replay = accepted(kernel.submitInput(author, input(executionId)));
+      assert.equal(replay.replayed, true);
+      assert.equal(replay.eventId, first.eventId);
+      assert.equal(replay.receipt.token, first.receipt.token);
+      assert.equal(replay.acceptancePosition, first.acceptancePosition);
+
+      const conflict = refused(kernel.submitInput(author, input(executionId, { payload: { text: "fix the date" } })));
+      assert.equal(conflict.classification, "duplicate_conflict");
+      assert.equal(conflict.executionId, executionId);
+    } finally {
+      pollution.restore();
+    }
+
+    const after = view(kernel, executionId);
+    assert.equal(after.mailbox.length, 2, "replay and conflict created no third Event");
+    assert.deepEqual(after.queued, [after.mailbox[0]?.eventId, first.eventId]);
+  });
+});
+
+describe("K11-R16-ID-01 ingress diagnostics never throw on caller-owned values", () => {
+  test("a revoked Proxy in requestKey, kind or subscriptionClass is a located refusal", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const before = view(kernel, executionId);
+
+    const keyRefusal = refused(kernel.submitInput(author, input(executionId, { requestKey: revokedProxy() as never })));
+    assert.equal(keyRefusal.classification, "malformed_value");
+    assert.match(keyRefusal.reason, /requestKey (unsupported_form|unstable_representation)/);
+    assert.equal(keyRefusal.executionId, executionId);
+
+    const kindRefusal = refused(kernel.submitInput(author, input(executionId, { kind: revokedProxy() as never })));
+    assert.equal(kindRefusal.classification, "malformed_value");
+    assert.match(kindRefusal.reason, /kind (unsupported_form|unstable_representation)/);
+
+    const classRefusal = refused(
+      kernel.submitInput(author, input(executionId, { subscriptionClass: revokedProxy() as never })),
+    );
+    assert.equal(classRefusal.classification, "malformed_value");
+    assert.match(classRefusal.reason, /subscriptionClass (unsupported_form|unstable_representation)/);
+
+    for (const refusal of [keyRefusal, kindRefusal, classRefusal]) {
+      assert.doesNotMatch(refusal.reason, /TypeError|IsArray/, "no ambient exception leaks into the reason");
+    }
+    const after = view(kernel, executionId);
+    assert.deepEqual(after.mailbox, before.mailbox, "malformed input queues nothing");
+    assert.deepEqual(after.receipts, before.receipts, "and mints no receipt");
+  });
+
+  test("an unreadable or absent ingress envelope answers as an unknown destination", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+
+    const revoked = refused(kernel.submitInput(author, revokedProxy() as never));
+    assert.equal(revoked.classification, "unknown_destination");
+    assert.equal(revoked.position, 0);
+    assert.equal(revoked.executionId, null);
+
+    const missing = refused(kernel.submitInput(author, null as never));
+    assert.equal(missing.classification, "unknown_destination");
+    assert.deepEqual({ ...missing }, { ...revoked }, "identical to any destination that does not exist");
+
+    const after = view(kernel, executionId);
+    assert.equal(after.mailbox.length, 1, "nothing was queued behind the refusals");
+    assert.deepEqual(after.refusals, [], "an unresolvable destination records no refusal against the Execution");
   });
 });

@@ -27,6 +27,10 @@ The [K0.1 worksheet](../docs/development/work/K0.1/protocol-worksheet.md) is ret
 
 K0.2's [accepted review](../docs/development/work/K0.2/review-17.md) and [public fixture specification](../docs/development/work/K0.2/public-fixture-specification.md) are evidence of observable distinctions, not an alternative definition graph. K1.0's [final correction review](../docs/development/work/K1.0-correction-02/review-01.md) supports the [structural evidence contract](mechanisms/evidence.md#structural-evidence). The [status ledger](../docs/development/007-work-packets.md) alone owns current release status.
 
+The owner delegated the K1.1-correction-01 architecture decision on 2026-09-15. [Decision 01](../docs/development/work/K1.1-correction-01/decision-01.md) replaces arbitrary Driver-returned Promise observation with the [delivery reporting boundary](mechanisms/execution-cycle.md#delivery-reporting-boundary). This authorized target change is implemented in exact H5 `52b1600f3b42e3a360fdc3395178f1d147edf304`, independently accepted by [review-08](../docs/development/work/K1.1-correction-01/review-08.md); integration remains a separate ledger decision. It does not reinterpret historical K1.1 reviews.
+
+The [reference supplement](../docs/development/work/K1.1-reference-01/contract.md) brings two accepted implementation decisions into their canonical owners: KC1-DEC-1's creation/ingress domain separation in [identity](concepts/identity.md#request-key-and-input-id), and K1.1 C3 plus KC1-DEC-3/6's coherent in-process capture and representation limits in [values](concepts/values.md#in-process-value-capture). Their sources are the accepted [correction contract](../docs/development/work/K1.1-correction-01/contract.md), original [K1.1 contract](../docs/development/work/K1.1/contract.md) and H5 source/tests. The supplemental prose requires its own independent review; the original implementation ACCEPT is preserved.
+
 ## Misunderstandings that shaped these pages
 
 | Evidence | Comprehension problem | Structural correction |

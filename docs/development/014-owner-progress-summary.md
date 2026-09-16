@@ -1,242 +1,195 @@
 # ArrokothI and benchmark: progress summary for the owner
 
-**Snapshot: 2026-09-14.** Checked against ArrokothI `main`
-`cb9854764caa1fd17b1b56528909846dd1e5af5e` and benchmark `main`
-`5a3f1ba525f68244701b1f73a1d29c4902ffe589` with E1 branch head
-`8de04779d279dba82cf834d419e465d2b677ef46`.
+**Snapshot: 2026-09-16.** Checked ArrokothI remote `main`
+`07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec`, implementation H5
+`52b1600f3b42e3a360fdc3395178f1d147edf304`, reference C9
+`a117b2983278f09c03027e2b3553a9a644d18986`, accepted reference H9
+`644dfffc7904176ee3a4f9943310cf926408a113`, independent review record
+`50eae5a653faa2afeb76d243adf63a1daa14dd98`, and acceptance transcription A
+`09220e6be976aff90c30fb47d95c46d6d5e18b0f`. The
+[final cleanup record](work/K1.1-reference-01/cleanup-01.md) records the verification and limits.
+Benchmark remote `main` is `5a3f1ba525f68244701b1f73a1d29c4902ffe589`; its E1 branch is
+`8de04779d279dba82cf834d419e465d2b677ef46`. Both advertised revisions and the E1 branch ledger
+were checked; benchmark main still lists E1 as planned, while its unmerged branch records the blocker.
 
-This page is the human-readable account of what has been accepted, what each accepted step
-actually gives you, and what comes next. It assumes you have read [the mental model](../../mental-model/README.md)
-and does not repeat the architecture. It is a summary, not an authority: the
-[ArrokothI status ledger](007-work-packets.md) and the
-[benchmark status ledger](https://github.com/ArrokothI/benchmark/blob/main/docs/development/007-evidence-packets.md)
-decide status, and the linked review and cleanup records hold the evidence. Round-by-round review
-history and corrective-packet mechanics are deliberately left out; follow the ledger links when a
-particular finding matters to a decision.
+This is the human-readable account of accepted work and its limits. The
+[ArrokothI ledger](007-work-packets.md) and
+[benchmark ledger](https://github.com/ArrokothI/benchmark/blob/codex/e1-kernel-acceptance-capture/docs/development/007-evidence-packets.md)
+own status; linked reviews and cleanup records hold the evidence.
 
 ## Where things stand
 
 | Repository | Accepted and integrated | Open |
 |---|---|---|
-| ArrokothI | K0.1-process-review, K0.1, K0.2 (closing **K0**), **K1.0** | K1.1–K1.4 unreleased; `next_release: none` |
-| benchmark | PROC-1, E0 | **E1 blocked**, living only on its branch |
+| ArrokothI | K0.1-process-review, K0.1, K0.2 (**K0 closed**), K1.0 | Corrected K1.1 implementation and reference supplement independently accepted; cleanup complete, owner integration pending. K1.2–K1.4 planned; `next_release: none`. |
+| benchmark | PROC-1, E0 | E1 blocked and unmerged on its branch. |
 
-In one sentence: the contract for the target Kernel is settled and testable, the public evidence
-design is settled, both repositories have a working review process, and the codebase now has a
-guarded empty room where the target Kernel will be built — but no line of the asynchronous
-Activation/Outcome protocol has been implemented yet, and nothing has been measured against it.
+The private target package can now create an Execution, accept later input and dispatch a fixed
+Activation through a Driver in memory. It cannot yet accept an Outcome or complete the exchange.
+Remote main contains an earlier K1.1 tree whose invalidation history is preserved; it does not
+contain the accepted corrective H5. The implementation and reference acceptances are recorded separately. Final cleanup is complete;
+the owner's manual merge and its verified integration receipt remain pending.
 
 ## What has been achieved
 
-The steps below are ordered by what each one answers, not by exact chronology.
-
 ### The working process — ArrokothI K0.1-process-review and benchmark PROC-1
 
-**Question answered:** how do coding, review and integration produce progress you can trust
-without re-reading every transcript?
+**Question answered:** how can each accepted increment be traced to the code and evidence reviewed?
 
-Both repositories now run the same shape of workflow. A coding agent works one owner-released
-packet on a scoped branch against a bounded contract with stable criterion IDs, and hands off an
-exact candidate commit plus raw evidence. A separate reviewer session inspects the cumulative
-candidate — not the latest patch — and returns a single verdict bound to that exact commit. A
-delegated cleanup role then verifies the tree, maintains the mental-model reference, records
-status and pushes the branch. You merge manually. Acceptance, integration and permission to start
-the next packet are three separate decisions, and pasting a role prompt releases nothing.
+Both repositories have bounded packet contracts, exact candidate identities, separate independent
+reviews and preserved raw evidence. Benchmark records also pin fixture and evaluator identities,
+keeping evidence ownership separate from ArrokothI implementation ownership.
 
-Two rules from the K0.1 retrospective matter most in practice: a reviewer finding is a starting
-counterexample, so the fix must cover the affected behaviour and its neighbours rather than the
-reported example; and nothing passes merely because tests are green — every obligation needs a
-distinguishing counterexample the check would actually reject.
+**Status:** accepted and integrated; current process is owned by
+[006](006-development-process.md), [008](008-implementation-report.md) and
+[012](012-review-methods.md).
 
-The benchmark's PROC-1 adds rules specific to evidence: frozen experiment identities, private
-evaluation material, and the fact that moving a document or editing a comment can change what a
-pinned fixture means. The benchmark accepts no ArrokothI work and ArrokothI accepts none of the
-benchmark's; each ledger records the other only as an observed, pinned input.
+**Limit:** process records do not themselves establish runtime correctness or benchmark success.
 
 ### The protocol contract — ArrokothI K0.1
 
-**Question answered:** what exactly must a future Kernel accept, reject, preserve or refuse?
+**Question answered:** what must the target Kernel accept, reject, preserve or refuse?
 
-K0.1 turned the architecture into decisions an implementer can apply directly: value equality and
-limits, scoped identity and retry rules, receipts, input batches, the three clock roles, waits,
-cancellation, terminal obligations and progress compatibility. It also classified every piece of
-current 0.8.x data and behaviour as *migratable*, *legacy-only* or *refused*.
+K0.1 settled value equality and limits, scoped identity and retries, receipts, input batches,
+clock roles, waits, cancellation, terminal obligations and progress compatibility. It classified
+legacy behavior as migratable, legacy-only or refused. The current definitions live in the
+[mental-model reference](../../mental-model/reference.md).
 
-The characteristic move is that a decision covers the whole observable change, not a label. A
-cancellation race is not settled by the Execution ending as `CANCELLED`; the losing Outcome must
-also have installed no progress, acknowledged no input and published no output.
+**Status:** accepted and integrated; [integration receipt](work/K0.1/integration-01.md).
 
-**Limit:** K0.1 implemented nothing. The running code is still the synchronous
-`Harness`/controller design.
+**Limit:** this packet specified behavior; it did not implement the target protocol.
 
 ### The testable contract — ArrokothI K0.2
 
-**Question answered:** can observable examples expose plausible violations of those decisions?
+**Question answered:** can public observations expose plausible violations of the protocol?
 
-K0.2 supplies the public conformance fixture at `tests/conformance/k0`: ordered command
-schedules, expected observations, an adapter boundary a future candidate plugs into, an independent
-operation sink that records what was really dispatched, and deliberately wrong transcripts the
-checks must reject. Schedules cover delayed Runtime work, duplicate and conflicting Outcomes,
-input arriving before, during and after a wait, stale timers, cancellation races and refusal of
-missing progress. The failing controls are the point: one keeps the correct cancellation headline
-while committing the losing progress underneath it; another reports a refusal while the sink
-recorded a call.
+The public K0 fixture supplies ordered schedules, expected observations, an adapter boundary and
+an independent operation sink. Deliberately wrong controls demonstrate that headline lifecycle
+states cannot hide forbidden progress, acknowledgment or sink attempts.
 
-Accepting K0.2, with E0 satisfied, closed **K0**.
+**Status:** accepted and integrated, with E0 satisfied; K0 is closed in the ledger.
 
-**Limit:** the fixture's own tests prove the checking machinery, not a Kernel. The current
-repository candidate refuses every target scenario, which is the correct answer today. Some
-obligations need observation surfaces that only K1–K5 will provide and are assigned there.
+**Limit:** fixture tests prove the checking machinery. The pinned benchmark adapter still refuses
+target scenarios, and the full K1/E1 gate remains open.
 
 ### Public evidence and attribution — benchmark E0
 
-**Question answered:** what would a public experiment observe, and who deserves credit or blame?
+**Question answered:** what would an experiment observe, and which component earns the result?
 
-E0 specifies two fresh public application shapes — a reviewed artifact publication with explicit
-review authority and attempted actions, and a restartable request across two independent jobs plus
-human input — together with how an ArrokothI-based implementation and competent ordinary code
-would each be built, where authoritative facts live, which observations are independent, and how
-planned unsafe and state-losing controls would expose attribution mistakes. Fixture, observation
-policy and reference-corpus identities are versioned so any change to the inputs is detectable.
+E0 defines public application shapes, identities, observation policy and reference-corpus inputs
+for mediated publication and restartable work. It separates application outcomes, Kernel behavior,
+Runtime quality and protection supplied by the laboratory.
 
-The rule to carry forward: **laboratory protection earns the subject no credit.** If the lab
-blocked the harm or restored the checkpoint, that proves nothing about whether the system under
-test would have.
+**Status:** accepted and integrated in the benchmark ledger.
 
-**Limit:** E0 implements neither arm and measures nothing. Comparison belongs to E5.
+**Limit:** neither comparison arm nor comparative value was measured by E0; comparison belongs to E5.
 
 ### The target boundary and legacy quarantine — ArrokothI K1.0
 
-**Question answered:** where does new Kernel code live, and how do we stop it from quietly
-inheriting the old implementation?
+**Question answered:** where does target Kernel code live, and how is its dependency boundary checked?
 
-This is the first K1 packet and the most recent acceptance. It is structural: it decides where
-future work lands and what it may depend on, and it changes nothing about what the code does.
+K1.0 established the private `@arrokothi/kernel` package, four source ownership zones, a transitive
+import guard and a checked ownership inventory. Negative controls challenge import resolution,
+whole-cell document reading and collection identity. Legacy exports and behavior remain in
+`@arrokothi/core`. K1.1 subsequently populated the target package and added the explicitly approved
+exact `canonicalize@3.0.0` dependency; K1.0's original refusal-only exports are historical.
 
-What now exists on `main`:
+The useful lesson was to test the inventory's meaning across every parsing/comparison step.
+[015](015-structural-evidence-rules.md) owns the resulting structural evidence rules.
 
-- **A private target package, `@arrokothi/kernel`** at `packages/kernel/src`. It is `private`
-  in its manifest so an unimplemented Kernel cannot be published by accident. It exports exactly
-  two things — `UnsupportedKernelSurfaceError` and `refuseUnsupportedSurface` — and the refusal
-  throws, naming the surface and the packet that owns it. There is deliberately no no-op API that
-  answers a caller with silence.
-- **Four ownership zones** by path: `target-kernel`, `legacy-core` (`packages/core`, the 0.8.x
-  Harness/controller implementation, explicitly legacy and fully supported), `runtime-integrations`
-  (Strands, Gemini, local retrieval, MCP adapters) and `host-sdk`.
-- **An allowed-import rule for the target zone:** modules inside `packages/kernel/src`, `node:`
-  builtins, nothing else. No portable leaf from legacy is approved yet; approving one is a
-  reviewed decision in the packet that first needs it.
-- **Import guards that mean something.** A transitive scanner walks the real import graph
-  including type-only imports, barrels, re-exports, dynamic imports, `import()` types and
-  reference directives, and fails closed on any target it cannot resolve statically. Twenty-three
-  fixture repositories prove the guard rejects each way TypeScript can name a module and accepts
-  the permitted cases, so a green result is not an empty graph.
-- **A written ownership inventory that the tests check against the code** in both directions:
-  [ownership-inventory.md](work/K1.0/ownership-inventory.md) declares zones, roots, exports,
-  measured cross-boundary dependencies and twelve deferred extractions, and
-  `kernel-landing-zone.test.ts` asserts the document and the executable policy agree. The
-  inventory cannot claim a boundary the code does not enforce, and the code cannot enforce one the
-  inventory does not declare.
-- **Every deferred extraction has an owner.** The plausible portable leaves (`hash`, `json`,
-  `result`, `value-schema`) go to K1.1/K1.2 for audit; the Harness, resumption processor, effect
-  processor, store and scheduler ports and stock controllers stay behind a legacy bridge owned by
-  K1.4, K2.1, K3.1 and R2.1; the Strands step adapter is R1.1's; the closed `DefinitionKind`
-  controller port is *refused* and will be replaced by the Driver boundary in K1.1.
-- **Legacy is pinned, not moved.** `@arrokothi/core`'s five export subpaths keep their exact
-  export maps and their 227/227/44/33/21 runtime names by digest; no legacy source file moved.
+**Status:** cumulative acceptance at `def91fb9f34ade40a65cbde999c0ffe192d18239`, integrated by
+PR #21 `9baff3a03662720af6eefe1ecfabc41fde99298f`. Both the
+[parent receipt](work/K1.0/integration-01.md) and
+[correction receipt](work/K1.0-correction-02/integration-01.md) exist; their ledger reconciliation
+was integrated through PR #26.
 
-Fresh check for this snapshot at `cb98547`: 2,060 tests pass with 0 failures and 0 skips;
-typecheck is clean.
+**Limit:** K1.0 established source boundaries, not protocol execution, durability or E1 acceptance.
 
-**How it got here, briefly.** K1.0 took many review rounds and two corrective packets. Almost
-every finding had the same shape: a stage of the inventory check assumed the meaning arriving from
-the previous stage had survived — a row was located but a cell was only partially read; a heading
-was matched after over-broad whitespace stripping; two lists were compared as one joined string
-rather than as members. Each was a way for a false inventory to pass the guard whose job is to
-reject false inventories. The durable outcome is [015 — structural evidence rules](015-structural-evidence-rules.md),
-which now owns how that document is read and compared. The correction records themselves are
-preserved under `work/K1.0-correction-01` and `work/K1.0-correction-02` and are not needed to
-understand the current state.
+### Creation, input and asynchronous dispatch — ArrokothI K1.1
 
-**Status.** The cumulative packet is independently accepted at
-`def91fb9f34ade40a65cbde999c0ffe192d18239` and was merged into `main` (PR #21, merge
-`9baff3a03662720af6eefe1ecfabc41fde99298f`). The ledger's integration receipt for that merge is
-the remaining administrative step.
+**Question answered:** can the Kernel retain one coherent request and fixed Activation while the
+Driver performs work asynchronously?
 
-**Limit — read this one carefully.** K1.0 implements no protocol handler, freezes no target
-semantics, and claims no E1 result. A passing guard is evidence about dependency direction in
-source only. It says nothing about durability, isolation, Driver fidelity or protocol correctness.
-K1.4 rechecks all of these obligations against actual behaviour.
+The private in-memory coordinator now creates Executions atomically with their initial input,
+accepts subsequent input under scoped identities, retains separate receipts, reserves a bounded
+batch without acknowledging it, and dispatches that fixed Activation. Redelivery preserves the
+exchange and creates a separate delivery-attempt record. A Driver reports delivery explicitly
+through a Kernel-owned capability; its first report wins, and pending delivery does not create
+`WAITING` or prevent another Execution from dispatching. Scoped inspection exposes those facts.
+
+The review history's useful lesson is that implementation identity, validation identity and prose
+about them must agree. The accepted evidence now derives its interval statements from Git and
+preserves earlier mistakes as historical records instead of rewriting them.
+
+**Status:** the cumulative implementation is independently accepted at H5
+`52b1600f3b42e3a360fdc3395178f1d147edf304` by
+[review-08](work/K1.1-correction-01/review-08.md). The reference supplement is also independently accepted at H9.
+[Final cleanup](work/K1.1-reference-01/cleanup-01.md) closes the documentation dependency recorded
+in the [earlier cleanup](work/K1.1-correction-01/cleanup-01.md); corrected implementation
+integration remains pending. This is not closure of the parent K1 milestone.
+
+**Limit:** no Outcome acceptance, accepted progress update, Event acknowledgment, terminal result,
+wait/cancellation implementation, persistence, physical isolation, native Driver fidelity or E1
+result. The implementation's Node 25.2.1 full-suite evidence is green; the independent reviewer
+recorded two legacy Effect-test cancellations on Node 22.22.3, also reproduced at the original base.
+That existing Node-version issue remains an owner observation, not a claim of universal test success.
+
+### Canonical reference for accepted boundaries — ArrokothI K1.1-reference-01
+
+**Question answered:** where can readers find the precise meaning of the accepted creation,
+value-capture and delivery boundaries without reconstructing them from review history?
+
+The reference now distinguishes creation keys from later Input IDs, with a fresh-input/replay
+example and separate receipts. It defines immutable in-process value capture and its refusal
+limits, keeps delivery reporting in one mechanism page, and links these owners through the
+vocabulary index and roadmap. Specification pages route current implementation and acceptance
+questions to the baseline and ledger.
+
+The review history showed why copied status prose drifts: precise definitions and current build
+status need separate owners, and evidence claims must name the revision actually measured.
+
+**Status:** independently accepted at H9 `644dfffc7904176ee3a4f9943310cf926408a113` by
+[review-08](work/K1.1-reference-01/review-08.md); cleanup complete, integration pending owner merge.
+
+**Limit:** this is reference maintenance, not new executable behavior, a new wire schema, a
+benchmark result or a release. The review's five non-blocking P3 observations and the existing
+Node 22 limitation remain recorded in the cleanup handoff.
 
 ## The next few steps
 
-### Benchmark E1 — built, blocked, unmerged
+### Owner integration
 
-E1 is the benchmark's Kernel acceptance evidence: pin the ArrokothI K0 fixture at an exact
-revision, drive the deterministic schedules, capture raw traces and produce an invariant report
-offline with no model or judge.
+Manually merge the accepted branch after checking the
+[cleanup handoff](work/K1.1-reference-01/cleanup-01.md) and its externally verified pushed head.
+Then report the merge for ancestry and content verification before an integration receipt is
+written. No successor is released.
 
-The preparation is done and lives only on `codex/e1-kernel-acceptance-capture`. It pins
-`ArrokothI/arrokothi@0535160e677231da41b06d9f822e62e2f0364dd1` `tests/conformance/k0` by per-file
-digest, defines protocol `e1-kernel-acceptance-capture-v1` with identities `e1-capture-set-v1` and
-`e1-capture-policy-v1`, and its capture path is repeatable byte-for-byte. Round 1 came back
-CHANGES REQUIRED on two governance and coverage findings; round 2 corrected them and is the
-current candidate.
+### Benchmark E1 — prepared, blocked, unmerged
 
-**Why it is blocked.** The E1 gate is "zero invariant violations within the declared scope". At
-the pinned revision the target protocol does not exist, so all fifteen schedules are `REFUSED`
-and the gate reads `NO_RESULT`. That is the honest answer, and it is not a pass: the ten satisfied
-checks are preparation checks. The ledger therefore records `BLOCKED_EXTERNAL` on two things
-outside the benchmark's control — an ArrokothI candidate that actually implements the pinned
-fixture's port, and a separate owner release to run against it. Nothing in the branch relabels
-the gate as optional.
+The E1 branch contains deterministic capture material pinned to ArrokothI K0 fixture revision
+`0535160e677231da41b06d9f822e62e2f0364dd1`. Its current ledger remains `BLOCKED_EXTERNAL`:
+all fifteen schedules are `REFUSED`, and the full gate has `NO_RESULT`. Preparation is not gate
+acceptance. It needs a candidate implementing the pinned fixture port and a separate owner release
+to run against it. K1.4 owns that integration; K1.1 acceptance does not unblock E1 by itself.
 
-**Your options.** Leave E1 blocked on its branch until K1 produces a real candidate (the default
-and what both ledgers assume), or adopt an explicit scope amendment that accepts the preparation
-on its own while preserving the full gate for later. Only the second needs a decision from you now.
-Because the pinned bytes are `tests/conformance/k0`, ArrokothI treats that directory as frozen;
-even its stale comment waits for K1.4, which will own both the fixture and the pin.
+### ArrokothI K1.2 → K1.4
 
-### ArrokothI K1.1 → K1.4 — the actual protocol, one packet at a time
-
-Each needs its predecessor accepted and integrated plus a separate owner release. Order and
-scope are fixed in the [ledger](007-work-packets.md); the summary here is what each one buys you.
-
-| Packet | What it implements | What you will be able to observe |
+| Packet | Work remaining | Observable result |
 |---|---|---|
-| **K1.1** | Atomic create with initial input, scoped identity, opaque pinned progress, reservation and asynchronous Driver dispatch, with minimum inspection. Audits the first portable leaves (hash, json, result) and replaces the refused controller port. | A delayed fake Runtime A does not stop Execution B from being dispatched on the same coordinator; retries preserve identity and batch; reservation acknowledges no input; no Agent/Workflow discriminator exists in the new boundary. |
-| **K1.2** | Whole-envelope Outcome validation, receipts with replay and conflict handling, epoch and revision checks, whole-batch acknowledgment, accepted output, continue/complete/fail. Audits the value schema leaf. | Stale, conflicting or malformed proposals change no accepted state; an exact duplicate returns the original receipt; one progress writer; typed terminal and output semantics. Effects and waits are still explicitly refused. |
-| **K1.3** | Finite any-of waits, input subscriptions, eligible-unmatched accounting, wait generations and deadlines, out-of-band cancellation and terminal disposition. | Arrivals before, during and after a wait, stale timers, unmatched backlog and cancel/complete races lose no accepted input or wake and never reopen a terminal Execution. |
-| **K1.4** | Integrate the new boundary with SDK host driving; bridge viable existing controllers as private Runtime machinery; port useful conformance; document unsupported legacy features. **This is the K1/E1 gate.** | The full K1/E1 matrix passes on actual behaviour through the supported entry, K1.0's structural obligations are rechecked live, legacy resumptions drive no new Kernel types or stores, and existing supported behaviour is preserved or explicitly migrated or refused. |
+| K1.2 | Outcome validation/acceptance, receipts, fencing, whole-batch acknowledgment and progress/output | Exact replay retains its receipt; invalid/stale proposals mutate no accepted state. |
+| K1.3 | Waits, subscriptions, deadlines, cancellation and terminal disposition | Races retain accepted input and never reopen terminal work. |
+| K1.4 | SDK host/legacy bridge, supported/refused migration, full K1/E1 gate | The supported entry drives actual target behavior and the benchmark obtains a real gate result. |
 
-E1 unblocks at K1.4: that is the first point where a benchmark capture against a real candidate
-can produce a result other than `REFUSED`. E2 depends on E1 accepted, so the whole benchmark
-evidence track waits on the K1 gate.
-
-### What none of this establishes yet
-
-Process-crash durability (K3), governed actions and consent (K2), composition and operability
-(K4/K5), native Driver fidelity (R1), physical isolation (D1) and any comparative application
-value (E5) are later work. Do not read a K1 result as evidence for any of them.
+Each remains planned pending its own prerequisites and owner release. K2 governs actions; R1
+native fidelity; K3 persistence; K4/K5 composition and operations; D1 isolation; E5 comparative value.
+None follows merely from the current acceptance.
 
 ## What you need to inspect personally
 
-For each future packet the cleanup handoff should give you: the concrete change, what its
-evidence proves, remaining limits, the independent verdict, integration status, and the next
-release or hold. Ask for the underlying review only when a finding, tradeoff or unsupported claim
-affects your decision.
-
-For K1.1 onwards the mental-model pages to have fresh in mind are
-[Execution protocol](../../mental-model/mechanisms/execution-cycle.md),
-[Waits](../../mental-model/mechanisms/waits.md),
-[Lifecycle](../../mental-model/mechanisms/lifecycle.md) and
-[Evidence](../../mental-model/mechanisms/evidence.md), in particular its
-[structural evidence](../../mental-model/mechanisms/evidence.md#structural-evidence) section.
-
-The role prompts are in [ArrokothI's role launchers](009-universal-prompts.md) and the
-[benchmark's role launchers](https://github.com/ArrokothI/benchmark/blob/main/docs/development/009-role-launchers.md):
-A for coding, B in a separate reviewer session with the exact candidate, C for delegated final
-cleanup before your manual merge.
+The immediate action is the manual merge described above. Keep the existing Node 22 legacy-suite
+issue, the documentation-checker coverage gap and the predecessor evidence-digest annotations
+visible for separate maintenance; the [cleanup record](work/K1.1-reference-01/cleanup-01.md)
+gives their precise limits. E1 remains blocked on its own branch; K1 is not closed.
 
 ## Maintaining this page
 

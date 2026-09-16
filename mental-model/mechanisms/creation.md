@@ -24,6 +24,8 @@ Changing “week 37” to “week 38” under `report-17` is a conflict, not an 
 
 After creation, input identity is the [Input ID triple](../concepts/identity.md#request-key-and-input-id). Acceptance records its immutable content, trusted provenance, mailbox entry and any applicable readiness together. Same identity and same [logical value](../concepts/values.md#canonical-form) returns the recorded disposition; different content conflicts.
 
+For example, A creates E with creation key `report-17`. A then sends ordinary input to E with request key `report-17`. Under the [separate identity domains](../concepts/identity.md#request-key-and-input-id), this first ingress gets its own Event and ingress receipt even if its content equals the initial input. Retrying that ingress with equal content returns its ingress receipt; changing its content under that same Input ID conflicts. Retrying creation still returns the creation decision. Capacity, authority and terminal checks continue to apply.
+
 Reject ordinary input to a terminal Execution. Previously accepted unprocessed input has a [terminal disposition](lifecycle.md), while authenticated late action evidence still belongs to its action ledger. Capacity limits refuse ingress before acknowledgment.
 
 Deduplication and receipt lookup respect the [retention contract](evidence.md#retention-and-deletion). An expired key must never silently become another consequential request — deduplication is not unlimited. The exact expired-key policy must be published.

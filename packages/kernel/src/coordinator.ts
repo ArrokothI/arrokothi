@@ -36,7 +36,7 @@
  * another consequential request.
  */
 
-import type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
 import {
   creationKeyIdKey,
   inputIdKey,
@@ -70,7 +70,7 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue 
  * K11-R5-STATE-01: a capture-time side effect (installed while `canonicalize` observes a hostile
  * value) can replace *any* mutable builtin or prototype method before the commit below runs in
  * the same tick — `Map.prototype.set`, `Object.freeze`, `Array.prototype.push/map/filter`, `Set`,
- * `Promise.prototype.then`, and the rest. The serializer sandbox (values.ts) does not cover these
+ * and the rest. The serializer sandbox (values.ts) does not cover these
  * because they are not serializer dependencies; yet they decide whether the accepted fact is
  * retained, whether a receipt has a decision behind it, whether an Event is queued, and whether
  * an Activation is actually immutable.
@@ -102,33 +102,36 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue 
  * `CreateDataPropertyOrThrow` rather than `[[Set]]`, and consults no iterator, so it is kept;
  * array literals are own data at construction for the same reason; Driver-supplied values and the
  * host-authenticated caller are trusted inputs, not caller observations, and are documented where
- * used.)
+ * used. Delivery reporting creates no Promise and consults no Promise machinery.)
  */
 const PrimordialNumberIsInteger = Number.isInteger;
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialObjectFreeze = Object.freeze;
 const PrimordialReflectApply = Reflect.apply;
 const PrimordialMap = Map;
-const PrimordialPromise = Promise;
 const PrimordialMapGet = Map.prototype.get;
 const PrimordialMapSet = Map.prototype.set;
 const PrimordialMapForEach = Map.prototype.forEach;
-const PrimordialPromiseResolve = Promise.resolve;
-const PrimordialPromiseThen = Promise.prototype.then;
 /**
- * Error constructors and `String`, from load time.
- *
- * `describeFailure` runs inside `#deliver`, which the dispatch tick reaches *after* the caller's
- * `options.bound` getter has run, so a live `Error`/`String` read there is exactly the ambient
- * dependency the rule above forbids: `instanceof Error` consults `globalThis.Error` and then its
- * `Symbol.hasInstance`, and `String(x)` consults `globalThis.String`. Both failures are already
- * contained by `describeFailure`'s own guard, so this is closing the stated rule rather than a
- * reachable wrong-answer path — but the rule should be true as written (self-found, separate
- * provenance from K11-R6-STATE-02).
+ * Load-time descriptor observation for own-only envelope reads (R3-BLOCKING): an ordinary
+ * field read consults the whole prototype chain for a key the envelope does not own, so ambient
+ * `Object.prototype`/`Array.prototype` pollution would answer missing fields into acceptances the
+ * caller never spelled. The envelope's own data is what was sent; anything above it reads as
+ * missing.
  */
-const PrimordialErrorConstructor = Error;
+const PrimordialGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+/** `RangeError` for coordinator configuration misuse, from load time. */
 const PrimordialRangeError = RangeError;
-const PrimordialString = String;
+/**
+ * `String.prototype.slice`, from load time.
+ *
+ * Delivery diagnostics retain a bounded prefix of a primitive string reason. The slice runs
+ * after caller-owned state has been observed in the same tick, so a live
+ * `String.prototype.slice` read there is exactly the ambient dependency the rule above
+ * forbids. Slicing a primitive string through the captured reference invokes no
+ * caller-owned getter, coercion, or thenable.
+ */
+const PrimordialStringSlice = String.prototype.slice;
 
 /** `Map.get` without consulting the (possibly replaced) live prototype method. */
 const mapGet = <K, V>(map: Map<K, V>, key: K): V | undefined =>
@@ -282,6 +285,13 @@ interface ExecutionRecord {
   /** The Event the initial input was accepted as. Retained so a creation replay can name it. */
   readonly initialEventId: string;
   readonly mailbox: MailboxEntry[];
+  /**
+   * Post-creation ingress entries by Input ID, for replay/conflict lookup.
+   *
+   * The initial creation Event is deliberately absent: it was accepted by the creation boundary,
+   * not by ingress, and indexing it here would let creation consume a producer-constructible
+   * ingress identity (K11-R15-ID-01).
+   */
   readonly byInputId: Map<string, MailboxEntry>;
   readonly refusals: RefusalRecord[];
   readonly receipts: Receipt[];
@@ -320,29 +330,31 @@ const DEFAULT_MAILBOX_CAPACITY = 1_024;
  */
 const QUEUED: MailboxDisposition = PrimordialObjectFreeze({ kind: "queued" });
 
-const describeFailure = (reason: unknown): string => {
+/**
+ * Bounded total diagnostic for one delivery report (KC1-ARCH-1).
+ *
+ * The settlement reason is Driver-supplied data observed after caller-owned state has run in
+ * the same tick, so reading it must invoke nothing: no `Error`/`message` property read, no
+ * `String()` coercion, no `then` assimilation. A primitive string reason retains at most its
+ * first 1,024 UTF-16 code units through the captured slice; every other value — objects,
+ * string objects, numbers, accessors, revoked Proxies, thenables — collapses to the fixed
+ * text. The retained string is a fresh primitive, so later caller mutation cannot alter
+ * inspection. This limit is operational diagnostics, independent of canonical
+ * boundary-value limits.
+ */
+const DELIVERY_FAILURE_FALLBACK = "Driver delivery failed";
+const DELIVERY_REASON_LIMIT = 1_024;
+
+const describeDeliveryFailure = (reason: unknown): string => {
   try {
-    if (reason instanceof PrimordialErrorConstructor) {
-      // A hostile rejection reason can throw again when `name`/`message` is read. Delivery
-      // bookkeeping must never let that second error escape the Kernel boundary.
-      let name: unknown;
-      let message: unknown;
-      try {
-        name = reason.name;
-        message = reason.message;
-      } catch {
-        return "delivery failed with an uninspectable reason";
-      }
-      return `${typeof name === "string" ? name : "Error"}: ${typeof message === "string" ? message : PrimordialString(message)}`;
+    if (typeof reason === "string") {
+      return PrimordialReflectApply(PrimordialStringSlice, reason, [0, DELIVERY_REASON_LIMIT]) as string;
     }
-    return PrimordialString(reason);
+    return DELIVERY_FAILURE_FALLBACK;
   } catch {
-    return "delivery failed with an uninspectable reason";
+    return DELIVERY_FAILURE_FALLBACK;
   }
 };
-
-const isThenable = (value: unknown): value is PromiseLike<unknown> =>
-  typeof value === "object" && value !== null && typeof (value as { then?: unknown }).then === "function";
 
 // -- Accepting content -------------------------------------------------------
 
@@ -414,7 +426,15 @@ const explain = (issues: readonly ValueIssue[]): string => {
  */
 function acceptIdentityText(value: unknown, label: string, issues: ValueIssue[]): value is string {
   if (typeof value !== "string") {
-    const received = value === null ? "null" : PrimordialArrayIsArray(value) ? "array" : typeof value;
+    // Total classification (K11-R16-ID-01): `Array.isArray` performs `IsArray`, which throws a
+    // `TypeError` on a revoked Proxy. The classifier runs on caller-owned values, so that throw
+    // must become the same located refusal — never an exception escaping the boundary.
+    let received: string;
+    try {
+      received = value === null ? "null" : PrimordialArrayIsArray(value) ? "array" : typeof value;
+    } catch {
+      received = "an uninspectable value";
+    }
     appendIssue(issues, { path: label, code: "unsupported_form", message: `expected text that can name a request, received ${received}` });
     return false;
   }
@@ -426,14 +446,63 @@ function acceptIdentityText(value: unknown, label: string, issues: ValueIssue[])
   return true;
 }
 
+/**
+ * One caller-owned envelope field, observed from the envelope's own data only.
+ *
+ * The envelope is caller-owned state: on a revoked Proxy, or under a throwing getter, the read
+ * itself throws. That failure is a fact *about this field*, so it is recorded as a located
+ * `unstable_representation` issue rather than thrown out of the boundary (K11-R16-ID-01).
+ *
+ * A field the envelope does not own itself is missing — even when a prototype above it would
+ * answer. Ordinary reads consult the whole chain, so ambient `Object.prototype`/`Array.prototype`
+ * pollution (residue or same-tick trap-installed) would otherwise steer missing fields into
+ * acceptances the caller never spelled: `dispatch({})` accepted by an ambient `bound`,
+ * `create({})` accepted by ambient identity text, `dispatch([])` answered through the
+ * `Array.prototype` chain (R3-BLOCKING). An envelope that carries a field only by inheritance
+ * therefore reads exactly as one that omits it (KC1-DEC-6).
+ *
+ * A `null`/`undefined` holder owns no fields and observes as `undefined`, so the field validator
+ * refuses it as malformed rather than the boundary throwing a `TypeError`. A primitive holder
+ * likewise owns no text field. An own accessor still runs — a `get bound()` is the allowed caller
+ * observation the single-observation rule already accounts for — and its throw maps the same way.
+ */
+function observeOwn(holder: unknown, key: string): { readonly observed: unknown; readonly threw: boolean } {
+  try {
+    if (holder === null || holder === undefined) return { observed: undefined, threw: false };
+    if (typeof holder !== "object" && typeof holder !== "function") return { observed: undefined, threw: false };
+    // Own-descriptor first, never an ordinary read for the existence question: the descriptor
+    // reports without invoking anything, and only an owned position may proceed to the read.
+    // A Proxy's traps may throw here; that is the same observation failure as a throwing getter.
+    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };
+    // Owned, so the prototype chain is no longer on the path: own data answers directly and an
+    // own accessor runs with the holder as receiver — the same single observation as before.
+    return { observed: (holder as Record<string, unknown>)[key], threw: false };
+  } catch {
+    return { observed: undefined, threw: true };
+  }
+}
+
+function observeField(holder: unknown, key: string, label: string, issues: ValueIssue[]): { readonly observed: unknown; readonly ok: boolean } {
+  const seen = observeOwn(holder, key);
+  if (seen.threw) {
+    appendIssue(issues, { path: label, code: "unstable_representation", message: `request field ${label} could not be observed` });
+    return { observed: undefined, ok: false };
+  }
+  return { observed: seen.observed, ok: true };
+}
+
 function acceptInputContent(content: InputContent, prefix: string): Result<AcceptedInput, ValueIssue[]> {
   const issues: ValueIssue[] = [];
   // The request envelope is caller-owned state: observe each field once and reuse that same
   // observation for validation, retention and identity. Re-reading `content.kind` for validation
   // and again for packing would let a shifting envelope validate as one kind and bind as another.
-  const kindObserved: unknown = (content as { kind?: unknown }).kind;
-  const payloadObserved: unknown = (content as { payload?: unknown }).payload;
-  const subscriptionObserved: unknown = (content as { subscriptionClass?: unknown }).subscriptionClass;
+  const kindField = observeField(content, "kind", `${prefix}kind`, issues);
+  const payloadField = observeField(content, "payload", `${prefix}payload`, issues);
+  const subscriptionField = observeField(content, "subscriptionClass", `${prefix}subscriptionClass`, issues);
+  if (!kindField.ok || !payloadField.ok || !subscriptionField.ok) return err(issues);
+  const kindObserved: unknown = kindField.observed;
+  const payloadObserved: unknown = payloadField.observed;
+  const subscriptionObserved: unknown = subscriptionField.observed;
   const hasSubscription = subscriptionObserved !== undefined;
   // `kind` and `subscriptionClass` are packed into this input's content identity, so they are held
   // to the identity-text rule rather than only to the boundary-value rules.
@@ -482,9 +551,13 @@ function acceptCreationContent(
   // Each of these is packed into the creation content identity, so each is identity text.
   // Observed once: `request.scope` itself is the caller-supplied `validatedScope` (checked before
   // authorization in `createExecution` and reused here so auth and binding cannot see two scopes).
-  const definitionObserved: unknown = (request as { definitionRevision?: unknown }).definitionRevision;
-  const runtimeObserved: unknown = (request as { runtimeContractRevision?: unknown }).runtimeContractRevision;
-  const codecObserved: unknown = (request as { progressCodec?: unknown }).progressCodec;
+  const definitionField = observeField(request, "definitionRevision", "definitionRevision", issues);
+  const runtimeField = observeField(request, "runtimeContractRevision", "runtimeContractRevision", issues);
+  const codecField = observeField(request, "progressCodec", "progressCodec", issues);
+  if (!definitionField.ok || !runtimeField.ok || !codecField.ok) return err(issues);
+  const definitionObserved: unknown = definitionField.observed;
+  const runtimeObserved: unknown = runtimeField.observed;
+  const codecObserved: unknown = codecField.observed;
   const scalars: [string, unknown][] = [
     ["definitionRevision", definitionObserved],
     ["runtimeContractRevision", runtimeObserved],
@@ -498,8 +571,11 @@ function acceptCreationContent(
     const scalar = scalars[scalarIndex] as [string, unknown];
     if (!acceptIdentityText(scalar[1], scalar[0], issues)) scalarsOk = false;
   }
-  const authorityObserved: unknown = (request as { authorityContext?: unknown }).authorityContext;
-  const initialObserved: unknown = (request as { initialInput?: unknown }).initialInput;
+  const authorityField = observeField(request, "authorityContext", "authorityContext", issues);
+  const initialField = observeField(request, "initialInput", "initialInput", issues);
+  if (!authorityField.ok || !initialField.ok) return err(issues);
+  const authorityObserved: unknown = authorityField.observed;
+  const initialObserved: unknown = initialField.observed;
   const authorityContext = canonicalize(authorityObserved);
   if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, "authorityContext"));
   const initialInput =
@@ -588,8 +664,12 @@ export class ExecutionCoordinator {
     // rather than handed back the retained decision. The envelope is caller-owned state, so `scope`
     // is observed once here and that same observation is reused for validation, authorization,
     // binding and the record below — never re-read.
-    const scopeObserved: unknown = (request as { scope?: unknown }).scope;
     const scopeIssues: ValueIssue[] = [];
+    const scopeField = observeField(request, "scope", "scope", scopeIssues);
+    if (!scopeField.ok) {
+      return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(scopeIssues)}`, null));
+    }
+    const scopeObserved: unknown = scopeField.observed;
     if (!acceptIdentityText(scopeObserved, "scope", scopeIssues)) {
       return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(scopeIssues)}`, null));
     }
@@ -602,9 +682,9 @@ export class ExecutionCoordinator {
     // the caller-scoped key is packed from, so it is held to the same identity-text rule. Both are
     // checked before either is reported, so one call names every reason the request was refused.
     // Observed once and reused for the lookup/binding below for the same single-observation reason.
-    const creationKeyObserved: unknown = (request as { creationKey?: unknown }).creationKey;
     const keyIssues: ValueIssue[] = [];
-    const keyOk = acceptIdentityText(creationKeyObserved, "creationKey", keyIssues);
+    const creationKeyField = observeField(request, "creationKey", "creationKey", keyIssues);
+    const keyOk = creationKeyField.ok && acceptIdentityText(creationKeyField.observed, "creationKey", keyIssues);
     const content = acceptCreationContent(request, scope);
     if (!keyOk || !content.ok) {
       // No spread: spread iteration consults the ambient `Symbol.iterator`, which content
@@ -614,7 +694,7 @@ export class ExecutionCoordinator {
       if (!content.ok) appendIssues(issues, content.error);
       return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(issues)}`, null));
     }
-    const creationKeyText = creationKeyObserved as string;
+    const creationKeyText = creationKeyField.observed as string;
 
     const creationKey: CreationKeyId = {
       producerNamespace: caller.namespace,
@@ -640,11 +720,25 @@ export class ExecutionCoordinator {
       );
     }
 
-    // K11-R12-ID-01: both identities are pure functions of the request identity that named
-    // them — the caller-scoped creation key for the Execution, the Input ID triple for the
-    // initial Event — so neither encodes how many unrelated Executions or Events already exist.
-    // Creation is always this Execution's first acceptance, hence position 1; the record below
-    // continues its own index at 2.
+    // K11-R15-ID-01: the initial Event is accepted by the creation boundary, not by ingress, so
+    // its identity lives in the creation-key domain rather than in the post-creation Input-ID
+    // domain. Indexing it under `(namespace, executionId, creationKeyText)` would plant a row that
+    // `submitInput` constructs for every later ingress request: the creating producer could never
+    // reuse its own creation-key text as a genuine ingress key (equal content replaying a
+    // creation-boundary receipt through the ingress boundary, different content refused as a
+    // conflict for input it never submitted). The caller-scoped creation key and the Input ID
+    // triple are two different scoping constructs in `identity.md`; nothing reserves the
+    // creation-key text inside the producer's ingress key space. `byInputId` therefore indexes
+    // post-creation ingress entries only, and the initial Event ID derives from the creation key
+    // under a prefix no ingress Event ID can carry. Creation retry still resolves through
+    // `byCreationKey`; the triple on the entry below is retained creation provenance for
+    // inspection, not an ingress address.
+    //
+    // K11-R12-ID-01: both identities remain pure functions of the request identity that named
+    // them — the caller-scoped creation key for the Execution and its initial Event — so neither
+    // encodes how many unrelated Executions or Events already exist. Creation is always this
+    // Execution's first acceptance, hence position 1; the record below continues its own index
+    // at 2.
     const executionId = `execution-${creationKeyIdKey(creationKey)}`;
     const receipt = mintReceipt("creation", 1, executionId);
     const initialInputId: InputId = {
@@ -652,7 +746,7 @@ export class ExecutionCoordinator {
       destination: executionId,
       requestKey: creationKeyText,
     };
-    const eventId = `event-${inputIdKey(initialInputId)}`;
+    const eventId = `event-creation-${creationKeyIdKey(creationKey)}`;
 
     // Accepted content is immutable, so what is retained is the sealed copy validation made, never
     // the caller's own object. An application that keeps editing the value it passed in cannot change
@@ -676,9 +770,10 @@ export class ExecutionCoordinator {
     // The commit below uses primordial collection operations only. Content observation above ran
     // caller traps in this tick, which may have replaced `Map.prototype.set` (or any sibling)
     // before these lines run: a live `.set` that silently drops the write would return an accepted
-    // Execution ID and receipt with no retained decision behind them (K11-R5-STATE-01).
+    // Execution ID and receipt with no retained decision behind them (K11-R5-STATE-01). The
+    // initial Event is deliberately *not* indexed in `byInputId`: that map is the post-creation
+    // ingress replay/conflict domain (K11-R15-ID-01 above).
     const byInputId = new PrimordialMap<string, MailboxEntry>();
-    mapSet(byInputId, inputIdKey(entry.inputId), entry);
 
     const record: ExecutionRecord = {
       executionId,
@@ -727,7 +822,13 @@ export class ExecutionCoordinator {
    * 5. Refuse before any acknowledgment when the mailbox is at its declared capacity.
    */
   submitInput(caller: AuthenticatedCaller, request: SubmitInputRequest): Result<InputAccepted, RefusalRecord> {
-    const record = this.#visible(caller, request.destination);
+    // Total destination observation (K11-R16-ID-01), from the envelope's own data only
+    // (R3-BLOCKING): the envelope is caller-owned, so reading it can throw, and a prototype above
+    // it must not answer a missing destination. An unreadable destination matches no minted
+    // Execution ID and is answered exactly as a missing one, disclosing nothing.
+    const destinationSeen = observeOwn(request, "destination");
+    if (destinationSeen.threw) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
+    const record = this.#visible(caller, destinationSeen.observed as string);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
 
     // The producer request key is the third member of the Input ID triple, so it is identity text
@@ -735,9 +836,9 @@ export class ExecutionCoordinator {
     // destination simply matches no minted Execution ID and has already been answered above as an
     // unknown destination, which discloses nothing. Observed once and reused below so validation
     // and binding cannot see two keys.
-    const requestKeyObserved: unknown = (request as { requestKey?: unknown }).requestKey;
     const keyIssues: ValueIssue[] = [];
-    const keyOk = acceptIdentityText(requestKeyObserved, "requestKey", keyIssues);
+    const requestKeyField = observeField(request, "requestKey", "requestKey", keyIssues);
+    const keyOk = requestKeyField.ok && acceptIdentityText(requestKeyField.observed, "requestKey", keyIssues);
     const content = acceptInputContent(request, "");
     if (!keyOk || !content.ok) {
       const issues: ValueIssue[] = [];
@@ -745,7 +846,7 @@ export class ExecutionCoordinator {
       if (!content.ok) appendIssues(issues, content.error);
       return err(this.#refusal("malformed_value", `input content is not an acceptable boundary value: ${explain(issues)}`, record));
     }
-    const requestKey = requestKeyObserved as string;
+    const requestKey = requestKeyField.observed as string;
 
     const inputId: InputId = {
       producerNamespace: caller.namespace,
@@ -842,8 +943,9 @@ export class ExecutionCoordinator {
    * keep their own dispositions, which is what makes "reservation is not acknowledgment" observable
    * rather than asserted.
    *
-   * `deliver` is called and its result is not awaited. A Driver that never settles holds up nothing:
-   * another Execution on this same coordinator dispatches while the first exchange is unresolved.
+   * `deliver` is called with a fresh reporting capability and the Kernel does not wait for a
+   * report. A Driver that never reports holds up nothing: another Execution on this same
+   * coordinator dispatches while the first exchange is unresolved.
    */
   dispatch(caller: AuthenticatedCaller, executionId: string, options: DispatchOptions): Result<DispatchAccepted, RefusalRecord> {
     const record = this.#visible(caller, executionId);
@@ -856,12 +958,21 @@ export class ExecutionCoordinator {
     // The integer test itself is the load-time reference: the observation (a getter) can replace
     // the global before validation runs in the same tick. A non-object envelope has no bound to
     // observe and is refused the same way, rather than throwing a `TypeError` out of the boundary.
-    const boundObserved: unknown =
-      options !== null && typeof options === "object" ? (options as { bound?: unknown }).bound : undefined;
+    // K11-R16-ID-01: the read itself can also throw (a revoked envelope, a throwing `bound`
+    // getter). That failure is an invalid bound, reported without stringifying caller state.
+    // R3-BLOCKING: the read is own-only, so ambient `Object.prototype`/`Array.prototype` state
+    // cannot answer a missing bound, and an array envelope (`[]`) owns none.
+    let boundObserved: unknown = undefined;
+    let boundUninspectable = false;
+    if (options !== null && typeof options === "object") {
+      const seen = observeOwn(options, "bound");
+      if (seen.threw) boundUninspectable = true;
+      else boundObserved = seen.observed;
+    }
     if (!PrimordialNumberIsInteger(boundObserved) || (boundObserved as number) < 1) {
       // Only numbers are interpolated: anything else failing validation may be an object whose
       // `toString` trap throws, and the refusal reason must not invoke it.
-      const received = typeof boundObserved === "number" ? `${boundObserved}` : typeof boundObserved;
+      const received = boundUninspectable ? "an uninspectable value" : typeof boundObserved === "number" ? `${boundObserved}` : typeof boundObserved;
       return err(
         this.#refusal(
           "invalid_batch_bound",
@@ -1108,43 +1219,43 @@ export class ExecutionCoordinator {
   }
 
   /**
-   * Hands an Activation to the Driver and returns immediately.
+   * Hands an Activation to the Driver with a Kernel-owned reporting capability.
    *
-   * A synchronous throw and a rejected promise are both recorded as operational delivery failures.
-   * Neither changes accepted state: the intent stands, the Execution stays `RUNNING`, and the same
-   * exchange can be redelivered.
+   * The attempt is recorded before the Driver is invoked, and a fresh frozen capability
+   * bound to that exact attempt is supplied. Only an explicit `delivered()`/`failed()`
+   * report settles the attempt; returning normally leaves it `pending` and the return
+   * value is never read, classified, or subscribed to. A synchronous throw is an implicit
+   * failure report through the same first-report rule: a report followed by a throw keeps
+   * the report, and a throw followed by a late report keeps the failure. Nothing here
+   * changes accepted state: the intent stands, the Execution stays `RUNNING`, and the same
+   * exchange can be redelivered with a new capability for the new attempt (KC1-ARCH-1).
    */
   #deliver(intent: ActivationRecord): void {
     const attempt: DeliveryAttempt = { attempt: intent.deliveries.length + 1, status: "pending", failure: null };
     appendOwn(intent.deliveries, attempt);
+    // Claimed before any reason is inspected: the first report wins, including reentrant
+    // reports issued while a diagnostic is being bounded. Each closure captures only its
+    // own attempt object, so a late report can settle only its original retained record —
+    // never a newer attempt, the current exchange, or logical state.
+    const settlement: DeliverySettlement = PrimordialObjectFreeze({
+      delivered(): void {
+        if (attempt.status !== "pending") return;
+        attempt.status = "delivered";
+      },
+      failed(reason: unknown): void {
+        if (attempt.status !== "pending") return;
+        attempt.status = "failed";
+        attempt.failure = describeDeliveryFailure(reason);
+      },
+    });
     try {
-      const settled: unknown = this.#driver.deliver(intent.activation);
-      if (isThenable(settled)) {
-        // Promise machinery through load-time references: a caller-observation side effect earlier
-        // in the dispatch tick (e.g. the bound getter) may have replaced global `Promise` or
-        // `Promise.prototype.then` before this line runs. `settled` itself is Driver-supplied
-        // (host-trusted), but the machinery that observes it must not be caller-steerable, or a
-        // throw here would escape dispatch after the intent was already recorded.
-        const observed = PrimordialReflectApply(PrimordialPromiseResolve, PrimordialPromise, [settled]);
-        void PrimordialReflectApply(
-          PrimordialPromiseThen,
-          observed,
-          [
-            () => {
-              attempt.status = "delivered";
-            },
-            (reason: unknown) => {
-              attempt.status = "failed";
-              attempt.failure = describeFailure(reason);
-            },
-          ],
-        );
-        return;
-      }
-      attempt.status = "delivered";
+      // The return value is intentionally ignored: no observation, no assimilation, no
+      // Promise creation, and no constructor/species sanitization on this path.
+      this.#driver.deliver(intent.activation, settlement);
     } catch (error) {
+      if (attempt.status !== "pending") return;
       attempt.status = "failed";
-      attempt.failure = describeFailure(error);
+      attempt.failure = describeDeliveryFailure(error);
     }
   }
 }

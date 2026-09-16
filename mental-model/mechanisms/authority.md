@@ -6,7 +6,7 @@
 
 ## Establish identity at trusted ingress
 
-The application supplies service/acting-on-behalf-of principal, tenant/application scope and relevant relationship facts. Bind create/input/inspect/cancel, callback, restore and resource access to those facts. A model-authored `user_id`, correlation or resource ID cannot authenticate a caller or authorize settlement.
+The application supplies service/acting-on-behalf-of principal, tenant/application scope and relevant relationship facts. Bind create/input/inspect/cancel, callback, restore and resource access to those facts. A model-generated `user_id`, correlation or resource ID cannot authenticate a caller or authorize settlement.
 
 Send, inspect, cancel, delegate, read, write and impersonate are separate powers. Ownership ancestry is not the application's relationship graph. Return scoped refusals without disclosing hidden object existence. Trusted settlement ingress additionally checks the adapter, provider/account and original attempt, even after cancellation.
 

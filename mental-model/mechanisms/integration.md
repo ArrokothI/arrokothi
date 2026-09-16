@@ -4,6 +4,8 @@ The [Driver](../concepts/core.md#execution-driver) translates selected contracts
 
 **Status:** Per-Driver obligation, not Kernel semantics. Introduced by R1; supported versions frozen at S1. K1.4's legacy bridge uses only the reference-Runtime shape below and earns no support record here. This is target specification, not shipped behavior.
 
+In-process adapters obey the Kernel's [delivery reporting boundary](execution-cycle.md#delivery-reporting-boundary): translate native asynchronous success/failure into the supplied operational reporting capability and own all internal Promise handling. This K1 boundary is separate from the R1 native-fidelity support claims below.
+
 ## Select the smallest useful integration
 
 | Integration shape | Kernel can manage | Native system retains |
@@ -11,7 +13,7 @@ The [Driver](../concepts/core.md#execution-driver) translates selected contracts
 | Service operation | Exact surrounding action | Internal run, tools, context and recovery |
 | Managed native job | Enclosing Execution and input/result | Session, graph, algorithm and checkpoint meaning |
 | Selected mediated tools | Above plus proven action paths | All residual paths and native continuation |
-| Reference ArrokothI Runtime | Same protocol, optional authoring libraries | Agent/Workflow algorithms and local state |
+| Reference ArrokothI Runtime | Same protocol, optional helper libraries | Agent/Workflow algorithms and local state |
 
 These shapes are not a trust ranking. An isolated external job may be better contained than reference code with ambient credentials. Report mediation, recovery, containment and fidelity independently. Preserve a useful current step adapter without pretending it proves whole-native-runtime fidelity.
 

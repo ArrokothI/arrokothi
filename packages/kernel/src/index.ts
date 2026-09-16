@@ -38,7 +38,7 @@ export type {
   SubmitInputRequest,
 } from "./coordinator.ts";
 
-export type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
+export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
 
 export { creationKeyIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
 export type { AuthenticatedCaller, CreationKeyId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";

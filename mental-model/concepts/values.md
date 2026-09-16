@@ -20,6 +20,14 @@ A **boundary value** is `null`, boolean, finite IEEE-754 binary64 number, well-f
 
 Reject non-finite numbers, unsupported values and lone Unicode surrogates; do not repair them to null, strings or replacement characters. Duplicate JSON object keys are rejected at decode time, before parsing could erase the duplication. A schema may constrain values further. Small values cross directly; oversized data uses application-owned [artifact references](state.md#artifact-reference).
 
+## In-process value capture
+
+The in-process TypeScript binding captures caller-owned values into one coherent immutable snapshot. Validation, canonical bytes, size measurement, retained content, inspection and Activation input derive from that same snapshot; later reads of the caller's object cannot select a different accepted value. For example, accepting `{count: 1}` and then changing the caller's object to `{count: 2}` leaves the accepted content and its equality bytes describing `1`.
+
+In this binding, objects have the ordinary object prototype or a null prototype and own enumerable string-keyed data members; arrays have the ordinary array prototype and dense own data positions within their observed length. Unsupported forms, accessors, missing array positions, extra array members, symbol-keyed members, non-enumerable object members, cycles and present `undefined` values are refused rather than silently dropped. A member's own data descriptor and its ordinary read must agree; inconsistent or uninspectable structure is refused rather than repaired. These representation rules do not prescribe a wire format or replace the decoder's duplicate-key rejection.
+
+Canonicalization uses the unmodified approved JCS implementation on data derived solely from the snapshot. Host state consulted during that call must not change its bytes; if the binding cannot establish the required serialization environment it refuses the value. The TypeScript implementation's temporary serializer environment is restored after the call. These are value-acceptance guarantees, not containment of arbitrary same-process code; [physical enforcement](../mechanisms/resources.md#containment-claims) has a separate owner. Request-envelope own-field observation is distinct from boundary-value capture: in the implemented coordinator, an inherited-only request field reads as missing, while an own accessor may be observed by the envelope boundary.
+
 ## Canonical form
 
 **Canonicalization** computes one fixed representation of an already valid logical value. It serves equality and size measurement, not authentication or semantic repair. Two values are equal exactly when their canonical bytes are equal. A hash can assist comparison or storage naming but never proves permission, consent or authenticity.

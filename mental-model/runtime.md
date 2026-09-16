@@ -22,6 +22,6 @@ Some native frameworks pause their internal work mid-step by simply suspending e
 
 ## State and quality remain Runtime concerns
 
-[Context](concepts/roles.md#context) is the information selected for a computation. Memory is retained information. Neither is Kernel History or automatic permission. For example, a note saying “the user usually approves publication” can inform a proposal; it cannot approve the current publication request.
+[Context](concepts/roles.md#context) is the information selected for a computation. Memory is retained information. Neither is Kernel History or automatic permission. For example, a note saying "the user usually approves publication" can inform a proposal; it cannot approve the current publication request.
 
 Optional reference facilities are described in [local composition](mechanisms/composition.md), [state and memory](mechanisms/state.md), and [context construction](mechanisms/context.md). Foreign Runtimes keep their native equivalents. Test reasoning, graph behavior and context quality with the Kernel held fixed; the Kernel's protocol tests use deterministic fakes.

@@ -25,6 +25,31 @@ Outcome:    execution_id, activation_id, writer_epoch, base_progress_revision,
 next:       continue | await(wait) | complete(result) | fail(error)
 ```
 
+## Delivery reporting boundary
+
+**Introduced by:** K1.1-correction-01, which selected this boundary over Driver-returned Promise observation. Which candidate implements it, what has been independently accepted and what remains to integrate are recorded in the [status ledger](../../docs/development/007-work-packets.md), which owns that question; this page states the contract, not what has shipped. Nothing here establishes Outcome acceptance, persistence, native fidelity or isolation.
+
+The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability and returns only `undefined`:
+
+```ts
+interface DeliverySettlement {
+  delivered(): void;
+  failed(reason: unknown): void;
+}
+// No Outcome or Promise is returned through this call.
+deliver(activation: Activation, settlement: DeliverySettlement): undefined;
+```
+
+`undefined` is intentional: TypeScript's `void` return assignability alone does not exclude an async implementation. A conforming Driver returns promptly and explicitly reports delivery, either during the call or later. Returning normally is not a delivery acknowledgment. No report leaves that delivery attempt `pending`; it neither blocks another Execution nor creates a Kernel-visible wait. CPU preemption remains a deployment concern. Remote Drivers translate authenticated operational reports to this local capability; it is not a serialized callback or a new wire protocol.
+
+The Kernel records the attempt before invoking the Driver and supplies a fresh, immutable capability bound to that exact attempt. Its methods work without a receiver and expose no mutable Kernel record. Each method returns normally with no Promise. The first report wins: `pending` becomes `delivered` or `failed` once. A synchronous invocation throw is an implicit failure report through the same first-report rule. Thus a report followed by a throw retains the report; a throw followed by a late report retains the failure. Repeated or contradictory calls are inert, including calls reentering during diagnostics. Claim the attempt before inspecting a reason. Diagnostic handling must be total and must not execute caller-owned getters, coercions or thenables; retain at most the first 1,024 UTF-16 code units of a primitive string reason, or the fixed text `Driver delivery failed` for any other value. Use captured string operations, and retain no caller-owned error object. This is an operational diagnostic limit, independent of canonical boundary-value limits.
+
+Ordinary redelivery supplies a new capability for a new delivery attempt while preserving the exact Activation. A late report can settle only its original retained pending attempt, even after a newer delivery attempt reports; it cannot overwrite that newer attempt. After exchange resolution, cancellation or takeover, a report may only update that original retained operational record, never the current exchange or logical state. If its record has been retired, the capability is inert and cannot recreate it. These latter lifecycle interactions belong to K1.2/K1.3 and retention to K5; this rule does not bring those implementations into K1.1.
+
+Reporting or throwing changes no dispatch receipt, accepted progress/revision, writer epoch, reservation, acknowledgment, mailbox disposition or Execution lifecycle. `delivered` reports the Driver's delivery acknowledgment, not native completion or Outcome acceptance. `failed` does not prove that native work never started and does not authorize repeating it. Outcome acceptance and safe native retry retain their separate owners.
+
+The Kernel does not read, classify, assimilate or subscribe to the return value of `deliver`, even if a nonconforming Driver returns an object. It creates no Promise for reporting and does not sanitize Promise constructor/species state to invoke the Driver. There is no Promise-return compatibility path. Drivers must handle rejections of every Promise they create or use, including asynchronous reporting work. Returning an already unhandled Promise violates this authoring contract; ignoring its return does not make that Promise handled. The Kernel guarantees no unhandled rejection from its delivery reporting mechanism for conforming Drivers, not process survival against arbitrary same-process Driver code. Physical containment remains a deployment guarantee.
+
 ## Retry versus takeover
 
 | Operation | Activation ID | Writer epoch | Pinned semantic input |

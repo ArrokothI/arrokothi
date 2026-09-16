@@ -1,0 +1,52 @@
+## 10 doc scope — B-anchored
+B=777b9955fb3a443f700b4f3d1f4f2aef1869345b C=b898ae12f51917c48fef92496ca179773c7744d9
+--- B..C mental-model (must be empty) ---
+(lines above, if any)
+--- core.md anchor target at C ---
+40:## A report that needs publication
+15:[the same example in more of its target form](../README.md#a-report-that-needs-publication).
+--- durability prose at C (must be absent) ---
+(absent)
+--- evals/Agent/model paths B..C (must be empty) ---
+       0
+--- K1.0-adjacent B..C doc paths (packet-adjacent, classified in report) ---
+docs/development/002-implemented-kernel-baseline.md
+docs/development/007-work-packets.md
+docs/development/work/K1.0/integration-01.md
+docs/development/work/K1.0/ownership-inventory.md
+--- canonicalize pin ---
+    "canonicalize": "3.0.0"
+--- ALL B..C doc paths outside packet records (complete) ---
+docs/development/002-implemented-kernel-baseline.md
+docs/development/007-work-packets.md
+docs/development/work/K1.0-correction-02/integration-01.md
+docs/development/work/K1.0/integration-01.md
+docs/development/work/K1.0/ownership-inventory.md
+--- B..C code/test/script/config paths (complete) ---
+packages/kernel/package.json
+packages/kernel/src/coordinator.ts
+packages/kernel/src/driver.ts
+packages/kernel/src/identity.ts
+packages/kernel/src/index.ts
+packages/kernel/src/inspection.ts
+packages/kernel/src/lifecycle.ts
+packages/kernel/src/own-array.ts
+packages/kernel/src/refusal.ts
+packages/kernel/src/result.ts
+packages/kernel/src/unsupported.ts
+packages/kernel/src/values.ts
+packages/kernel/tests/boundary.test.ts
+packages/kernel/tests/creation.test.ts
+packages/kernel/tests/dispatch.test.ts
+packages/kernel/tests/evidence.test.ts
+packages/kernel/tests/harness.ts
+packages/kernel/tests/ingress.test.ts
+packages/kernel/tests/inspection.test.ts
+packages/kernel/tests/nondisclosure.test.ts
+packages/kernel/tests/receipts.test.ts
+packages/kernel/tests/refusals.test.ts
+packages/kernel/tests/unsupported.test.ts
+packages/kernel/tests/values.test.ts
+scripts/check-builder-docs.ts
+tests/conformance/architecture/boundary-policy.ts
+tests/conformance/architecture/kernel-landing-zone.test.ts

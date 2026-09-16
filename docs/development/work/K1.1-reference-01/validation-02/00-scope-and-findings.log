@@ -1,0 +1,106 @@
+=== Round-2 scope and finding-closure evidence for C2 fc3e450027bf2723a61784eb9d48c4c76f8a0377 ===
+HEAD: fc3e450027bf2723a61784eb9d48c4c76f8a0377   clean: yes
+node: v25.2.1  npm: 11.6.2  tsc: Version 5.9.3
+
+--- what round 2 changed (vs the review-record commit 8bb0de6) ---
+M	docs/development/007-work-packets.md
+M	mental-model/concepts/values.md
+M	mental-model/mechanisms/execution-cycle.md
+M	mental-model/reference.md
+
+--- cumulative A..C2: still only declared payload paths ---
+docs/development/002-implemented-kernel-baseline.md
+docs/development/007-work-packets.md
+docs/development/014-owner-progress-summary.md
+docs/development/work/K1.1-correction-01/cleanup-01.md
+docs/development/work/K1.1-correction-01/push-pending-01.md
+docs/development/work/K1.1-correction-01/push-verification-01.md
+docs/development/work/K1.1-reference-01/contract.md
+docs/development/work/K1.1-reference-01/implementation-01.md
+docs/development/work/K1.1-reference-01/review-01.md
+docs/development/work/K1.1-reference-01/review-02.md
+docs/development/work/K1.1-reference-01/validation-01/01-clean-C.log
+docs/development/work/K1.1-reference-01/validation-01/02-inspected-evidence.log
+docs/development/work/K1.1-reference-01/validation-01/03-added-links.log
+docs/development/work/K1.1-reference-01/validation-01/MANIFEST.md
+mental-model/concepts/identity.md
+mental-model/concepts/values.md
+mental-model/mechanisms/creation.md
+mental-model/mechanisms/execution-cycle.md
+mental-model/reference.md
+mental-model/roadmap.md
+mental-model/sources.md
+count: 21
+
+--- forbidden changes, each printed ---
+packages/tests/scripts/examples/manifests A..C2: empty PASS
+Layer 1/2 A..C2:                               empty PASS
+any record under docs/development/work 8bb0de6..C2: empty PASS
+H5 KC1-DEC-7 gate (D..H5 mental-model):        empty PASS (H5 freeze intact)
+
+=== REF1-R1-STATUS-01 closure ===
+$ grep -n 'remain outstanding\|remains open' docs/development/007-work-packets.md
+(no match) CLOSED
+--- the corrected narrative now reads ---
+Historical [review-14](work/K1.1/review-14.md) ACCEPT of exact H17 is preserved, but later
+contrary evidence ([review-15](work/K1.1/review-15.md), [review-16](work/K1.1/review-16.md))
+invalidates it for current claims: under 006's accepted-work invalidation rule the affected K1.1
+claims and integration are **on hold**, no dependent K1.2 release follows, and correction proceeds
+through the linked corrective packet [K1.1-correction-01](#k11-correction-01--accepted-work-correction-for-k11-review-findings)
+([contract](work/K1.1-correction-01/contract.md)). Review-01 closed seven findings; the
+owner-delegated [delivery decision](work/K1.1-correction-01/decision-01.md) resolved the
+architecture block. That paragraph stands as the record of the hold at its own date.
+
+**Resolved since.** `K11-R16-DISP-01` is closed, and the correction is implemented and
+independently accepted at exact H5 `52b1600f3b42e3a360fdc3395178f1d147edf304` by
+[review-08](work/K1.1-correction-01/review-08.md), which records every K1.1 and
+K1.1-correction-01 finding closed. The table rows below are the authoritative status. Integration
+and final cleanup are held for the [K1.1-reference-01](#k11-reference-01--faithful-reference-maintenance)
+documentation review; `next_release: none`.
+
+=== REF1-R1-CONV-01 closure ===
+$ grep -rn 'independently accepted|Implementation evidence|the accepted K1\.1|is implemented in exact' mental-model/concepts/ mental-model/mechanisms/
+mental-model/mechanisms/execution-cycle.md:30:**Introduced by:** K1.1-correction-01, which selected this boundary over Driver-returned Promise observation. Which candidate implements it, what has been independently accepted and what remains to integrate are recorded in the [status ledger](../../docs/development/007-work-packets.md), which owns that question; this page states the contract, not what has shipped. Nothing here establishes Outcome acceptance, persistence, native fidelity or isolation.
+$ grep -rn '52b1600f|56164092|0ee13f8|d4bd49f' mental-model/concepts/ mental-model/mechanisms/
+(no match) CLOSED: no concept/mechanism page asserts shipped status or names a candidate SHA
+
+=== REF1-R1-NAV-01 closure ===
+$ grep -c '^- \[' mental-model/reference.md  (total bullet entries)
+65
+$ grep -n '^- \[.*; \[' mental-model/reference.md  (entries with a second target)
+(no match) CLOSED: every entry points to its sole definition section
+
+--- note on the one remaining grep hit ---
+execution-cycle.md:30 matches the pattern because it contains the words 'independently
+accepted' inside a POINTER: it names the status ledger as the owner of that question and
+says 'this page states the contract, not what has shipped'. It asserts no status itself and
+names no SHA. That is the intended shape of the fix, not a residual instance.
+
+--- note on the 21-path A..C2 count ---
+A..C2 is 21 paths, not the contract's 10. The extra 11 are post-A administrative records
+that are not this packet's payload, printed here rather than described:
+  owner/cleanup commits 154a765, 1c98f61, 8e58325 added 014-owner-progress-summary.md,
+  cleanup-01.md, push-pending-01.md, push-verification-01.md and 007 rows;
+  bb4e4fd added review-01.md; 8bb0de6 added review-02.md;
+  H1 d4bd49f added implementation-01.md and validation-01/ (4 files).
+The packet's own semantic payload is unchanged in count: the same 10 declared paths, of
+which round 2 edits 4. Printed as git produces it:
+$ git diff --name-only A C2 -- mental-model/ docs/development/002-implemented-kernel-baseline.md docs/development/work/K1.1-reference-01/contract.md
+docs/development/002-implemented-kernel-baseline.md
+docs/development/work/K1.1-reference-01/contract.md
+mental-model/concepts/identity.md
+mental-model/concepts/values.md
+mental-model/mechanisms/creation.md
+mental-model/mechanisms/execution-cycle.md
+mental-model/reference.md
+mental-model/roadmap.md
+mental-model/sources.md
+plus docs/development/007-work-packets.md = the 10 declared paths.
+
+--- 002 baseline and sources.md still accurate on accepted-H status? ---
+10:baseline's scope, not target acceptance. See [the current assessment](010-pipeline-planning-assessment.md)
+30:in-zone. Outcome acceptance and the recovery hold (K1.2), out-of-band
+39:`undefined`; the Kernel never observes a Driver-returned Promise); independent acceptance is recorded for exact H5
+338:**Target owner.** [Runtime](../../mental-model/runtime.md) with boundary acceptance in [Kernel](../../mental-model/kernel.md).
+30:The owner delegated the K1.1-correction-01 architecture decision on 2026-09-15. [Decision 01](../docs/development/work/K1.1-correction-01/decision-01.md) replaces arbitrary Driver-returned Promise observation with the [delivery reporting boundary](mechanisms/execution-cycle.md#delivery-reporting-boundary). This authorized target change is implemented in exact H5 `52b1600f3b42e3a360fdc3395178f1d147edf304`, independently accepted by [review-08](../docs/development/work/K1.1-correction-01/review-08.md); integration remains a separate ledger decision. It does not reinterpret historical K1.1 reviews.
+(sources.md is the provenance page, not a concept/mechanism page; it is the right home)
