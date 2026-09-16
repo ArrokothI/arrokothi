@@ -216,7 +216,7 @@ count of verdicts. No successor release follows from this correction.
 **Dependencies:** independently accepted K1.1-correction-01 H5, not a successor implementation.
 **Authority:** the owner's 2026-09-15 delegated cleanup instruction explicitly requests missing
 reference content as a new C/H followed by independent review. **Scope and acceptance:**
-[contract revision 7](work/K1.1-reference-01/contract.md), REF-1–REF-5; identity-domain
+[contract revision 8](work/K1.1-reference-01/contract.md), REF-1–REF-5; identity-domain
 clarification, in-process value capture, delivery status deferred to this ledger, and navigation.
 **The payload also includes two sections of `mental-model/README.md`** — `## How these pages are
 organized` and `## Target, not shipped` — under a bounded Layer-1 exception the owner granted on
@@ -230,8 +230,11 @@ are markdown hard line breaks in sealed reviews — valid markup, not residue. *
 scope**: it corrects two false statements revision 6 made while arguing for that withdrawal — a
 digest census that was inverted (all 458 exempted logs are digest-pinned, not "most … pinned by no
 MANIFEST digest") and a preservation claim about revision 5's text — and states the objection that
-survives measurement, that a digest pins bytes and certifies no hygiene. The revision history
-from 1 to 7, and which review drove each step, is in the row below and in the contract itself. No K1.2 release, runtime
+survives measurement, that a digest pins bytes and certifies no hygiene. **Revision 8 records the
+owner's direct confirmation of `REF1-DEC-1/2/3` on 2026-09-16 (`REF1-DEC-4`), closing
+`REF1-R6-AUTH-01`** and discharging review-07's fourth reservation about the withdrawal; it changes
+no scope, criterion, proof step or payload path. The revision history
+from 1 to 8, and which review drove each step, is in the row below and in the contract itself. No K1.2 release, runtime
 change or invalidation of H5. Integration waits for this documentation review.
 
 ### K1.2 — Outcome acceptance and receipts

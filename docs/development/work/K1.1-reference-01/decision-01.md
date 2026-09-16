@@ -71,3 +71,37 @@ reviewer to test rather than accept. The remedy if a reviewer rejects that argum
 revision: restore revision 5's scoped command and reopen `REF1-R6-EXCL-01`. **REF1-DEC-2's
 constraint is not transferred to REF1-DEC-3**: no claim is made that some other check now covers
 what was withdrawn, and the missing markdown-aware check is recorded as an open `scripts/` packet.
+
+## REF1-DEC-4 — owner confirmation of REF1-DEC-1/2/3, closing `REF1-R6-AUTH-01` (2026-09-16)
+
+Shown [review-07](review-07.md)'s standing `REF1-R6-AUTH-01` — that the three entries above exist
+only as the implementing session's quotation of the owner, and that no reviewer with any tooling can
+authenticate them — the owner was asked to confirm the entries directly, which
+[review-06](review-06.md) and review-07 both name as the only thing that can close the finding. The
+owner's instruction, verbatim:
+
+> I confirm REF1-DEC-1/2/3 are accurate, record that and close AUTH-01, commit and push it
+
+**`REF1-R6-AUTH-01` is closed.** The closure condition both reviews stated is met: the owner, the
+authority who sets this packet's scope under 006, has confirmed that `REF1-DEC-1`, `REF1-DEC-2` and
+`REF1-DEC-3` accurately record their decisions.
+
+**What this closure rests on, stated so a reviewer does not have to discover it.** Every commit in
+this repository carries the owner's git identity, including the ones the implementing session
+authors on the owner's instruction — this entry among them. A reviewer therefore **cannot
+cryptographically distinguish** an owner-authored confirmation from a transcribed one, and nothing
+in this file changes that. What has changed is the thing the finding actually asked for: the
+decisions are no longer supported only by the session that benefited from them, and the owner has
+put their confirmation into the durable record rather than leaving it in a transcript. If the owner
+later wants the stronger artifact, a GPG-signed commit or a confirmation authored outside this
+session would supply it; neither is required to close this finding, and this entry does not claim
+either was done.
+
+**Consequence for the withdrawal.** Review-07 §8 listed four reservations about contract revision 6
+and recorded the fourth as "the whole route rests on an owner approval that nothing in this
+repository can authenticate (`REF1-R6-AUTH-01`, still open)". That reservation is discharged:
+`REF1-DEC-3`, the decision authorizing the withdrawal of `git diff --check`, is confirmed by the
+owner. Review-07's other three reservations were addressed by contract revision 7 and are recorded
+in [implementation-08](implementation-08.md). `REF1-R6-CHK-01` and `REF1-R6-EXCL-01` remain **moot
+by owner-directed withdrawal**, as review-07 recorded them, and no longer carry the conditional
+"reopen unchanged if the owner declines `REF1-DEC-3`" — the owner has not declined it.

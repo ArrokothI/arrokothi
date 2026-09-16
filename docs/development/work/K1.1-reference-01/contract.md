@@ -1,6 +1,6 @@
 # K1.1-reference-01 — faithful reference maintenance
 
-**Revision 7**; documentation-only supplement to accepted K1.1-correction-01. This is not
+**Revision 8**; documentation-only supplement to accepted K1.1-correction-01. This is not
 an implementation invalidation or a K1.2 release.
 
 Revision 2 reconciled one payload bullet with the approach the packet actually took, under
@@ -93,11 +93,11 @@ A fresh independent reviewer must check fidelity to the accepted decisions befor
   text is fixed (inbound anchor). Every other section of the page is out of scope.
 - This contract, [decision-01](decision-01.md) and 007 scope/status. `decision-01.md` is added in
   revision 6 under `REF1-R6-AUTH-01`: owner scope decisions move out of contract prose into an
-  append-only decision record in the same artifact form the sibling packet uses. It states its own
-  authentication limit — a reviewer can check that behavior matches the quotations but cannot
-  authenticate the quotations — so the finding is narrowed, not closed. Reports and raw outputs
-  follow 008. Owner-summary and cleanup records are subsequent administrative work, outside C/H's
-  payload.
+  append-only decision record in the same artifact form the sibling packet uses. **Revision 8
+  records that the owner confirmed `REF1-DEC-1/2/3` directly on 2026-09-16 (`REF1-DEC-4`), which
+  closes `REF1-R6-AUTH-01`** — the closure condition review-06 and review-07 both named. The entry
+  states what the closure rests on and what it does not claim. Reports and raw outputs follow 008.
+  Owner-summary and cleanup records are subsequent administrative work, outside C/H's payload.
 
 No Layer-2 rewrite; no Layer-1 change beyond the two sections named above; no
 executable/test/dependency change, new runtime guarantee, changed limit,
@@ -273,6 +273,29 @@ of them depended on this step. `REF1-R5-CHK-01` is resolved **by withdrawal rath
 compliance**, and is recorded as such rather than as a closure. `REF1-R6-CHK-01` (round 6 recorded
 the check on C only, never on H, as revision 5 itself required) and `REF1-R6-EXCL-01` are resolved
 with the requirement they referred to.
+
+**Revision 8 — the owner confirms the decisions this packet's scope rests on.** On 2026-09-16,
+shown review-07's standing `REF1-R6-AUTH-01`, the owner confirmed that `REF1-DEC-1`, `REF1-DEC-2`
+and `REF1-DEC-3` accurately record their decisions. Recorded as [`REF1-DEC-4`](decision-01.md), with
+the owner's instruction quoted verbatim. **This changes no scope, no acceptance criterion, no proof
+step and no payload path** — it supplies the external confirmation that was the only thing capable
+of closing the finding.
+
+Two consequences a reviewer should check rather than accept. First, `REF1-R6-AUTH-01` is **closed**,
+not narrowed; revision 6's payload bullet, which said otherwise, is corrected above. Second,
+review-07 §8 recorded four reservations about the withdrawal of `git diff --check` and gave the
+fourth as "the whole route rests on an owner approval that nothing in this repository can
+authenticate". That reservation is discharged, because `REF1-DEC-3` is the decision in question.
+The other three were addressed by revision 7. `REF1-R6-CHK-01` and `REF1-R6-EXCL-01` therefore stand
+**moot by owner-directed withdrawal** with the conditional review-07 attached to them — "reopen
+unchanged if the owner declines `REF1-DEC-3`" — no longer live.
+
+**What revision 8 does not claim.** Every commit in this repository carries the owner's git
+identity, including those the implementing session authors on the owner's instruction. A reviewer
+cannot cryptographically distinguish an owner-authored confirmation from a transcribed one, and
+`REF1-DEC-4` says so in its own text rather than leaving a reviewer to find it. The finding asked
+for direct owner confirmation in the durable record; that is what exists, and nothing stronger is
+asserted.
 
 `next_release: none`. Implementation acceptance remains intact; integration waits for this
 separate documentation review and a completed cleanup handoff.
