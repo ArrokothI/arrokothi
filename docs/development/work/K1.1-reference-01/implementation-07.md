@@ -182,8 +182,22 @@ Ready for independent review of exact H7 — cumulatively A→H7, plus the round
 Reviews 01–06 preserved unedited. Implementation ACCEPT at K1.1-correction-01's H5 untouched and
 not re-certified. No self-acceptance; integration and final cleanup remain held; `next_release: none`.
 
-**Push state:** everything from `f8dd3b41` onward is unpushed. A reviewer given this branch must
-confirm the remote advertises H7 before reviewing.
+**Push state — corrected after H7 was committed.** This paragraph first said "everything from
+`f8dd3b41` onward is unpushed", carried forward from
+[implementation-06](implementation-06.md) without being re-measured. **That was false.** Measured
+on 2026-09-16 immediately after H7 was committed,
+`git ls-remote origin refs/heads/codex/k1.1-correction-01-review-findings` advertised
+`6d0b983b046647b86ace523e88c691d2c97d088c` — H7 itself — and the tracking reflog records
+`update by push` for both H6 and H7.
+
+**No claim is made here about what the remote advertises when you read this** — that is precisely
+the kind of statement this packet has now got wrong seven times. The obligation is the durable one:
+**a reviewer must run `git ls-remote` themselves and confirm the advertised SHA matches the exact
+candidate they were asked to review**, before reviewing anything.
+
+**Seventh appearance of the family**, inside the report documenting the sixth: a current-state
+sentence copied from the previous round and never re-measured. Found by the implementer after H7,
+not by a reviewer. Appended rather than edited into place; payload C7 stands byte-for-byte.
 
 ## Owner note
 
