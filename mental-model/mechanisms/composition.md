@@ -6,7 +6,7 @@
 
 ## Typed work and completion barriers
 
-Pass local values directly between functions/nodes. A transform validates or changes values; its enclosing Runtime chooses retry/branch/failure. Keep Stage output distinct from computed terminal result. Across the Kernel protocol, use supported JSON values or explicit application references, refusing unsupported values.
+Pass local values directly between functions/nodes. A transform validates or changes values; its enclosing Runtime chooses retry/branch/failure. Keep Stage output distinct from computed terminal result. Across the Kernel protocol, use supported [JSON values](../concepts/values.md#boundary-value-and-root) or explicit application references, refusing unsupported values.
 
 ```text
 extract → {claims, sourceRef} → validate → two local analyses
@@ -14,27 +14,27 @@ extract → {claims, sourceRef} → validate → two local analyses
         → mediated publication → observed receipt → completion
 ```
 
-No memory write, JSON-as-text convention or extra model call is needed just to transfer that object. Keep Stage completion barriers inside the Workflow: finish required local work, account for required action/child results, finish transforms and commit selected output before transition. A late callback cannot mutate a later Stage's assumptions. Nonblocking work needs an explicit continuation/result owner. A function returning is not evidence that every task it started has finished.
+No memory write, JSON-as-text convention or extra model call is needed just to transfer that object. Keep Stage completion barriers inside the Workflow: finish required local work, account for required action/[child](../concepts/operations.md#child-and-ownership) results, finish transforms and commit selected output before transition. A late callback cannot mutate a later Stage's assumptions. Nonblocking work needs an explicit continuation/result owner. A function returning is not evidence that every task it started has finished.
 
-Independent Effects may share an Outcome. Dependent actions follow evidence in later Activations. Native async work stays inside an unresolved Activation until yielding an Outcome; do not restore a Kernel `ControllerResumption` or ad-hoc second action API.
+Independent [Effects](../concepts/actions.md#effect) may share an Outcome. Dependent actions follow evidence in later [Activations](../concepts/core.md#activation). Native async work stays inside an unresolved Activation until yielding an Outcome; do not restore a Kernel `ControllerResumption` or ad-hoc second action API.
 
 ## Forks, joins and corrections
 
 1. Capture immutable branch input and explicit read views at fork.
-2. Give branches separate progress, scratch frames and result slots. Qualify local proposal keys by branch and visit so loops/retries cannot collide.
+2. Give branches separate [progress](../concepts/state.md#progress), [scratch frames](../concepts/state.md#working-notes) and result slots. Qualify local proposal keys by branch and visit so loops/retries cannot collide.
 3. Compute concurrently but serialize aggregate commits or use equivalent native ownership. Kernel single-writer acceptance does not serialize native shared mutation.
 4. Join required terminal results in declared order, including failures/conflicts.
 5. Use an explicit merge/reducer or refuse conflicts before downstream work starts.
 
 Result collection is not semantic synthesis. Declared display order does not order external writes; use service preconditions. Reducers tolerate reordering only when their associativity/commutativity actually permits it. Side-effecting reducers need normal action contracts. Wait-all, cancel-siblings and partial-result policies are declared in advance; cancellation does not prove losing branches stopped.
 
-When a correction arrives during computation, a native continuation binds its relevant input/state version and re-evaluates, discards, explicitly merges or restricts interleaving. Callback arrival order cannot decide which answer is current. This is Driver fidelity, even though Kernel progress remains single-writer.
+When a correction arrives during computation, a native continuation binds its relevant input/state version and re-evaluates, discards, explicitly merges or restricts interleaving. Callback arrival order cannot decide which answer is current. This is [Driver fidelity](integration.md), even though Kernel progress remains single-writer.
 
 ## Notes, controls and packages
 
 Use explicit [handoff](state.md#notes-and-handoff) between scratch frames. Important data travels through results/state, not a hidden ever-growing ancestry notes stack. [Context construction](context.md) keeps local controls distinguishable from mediated operations, even under one provider tool namespace. Model-based transforms still cost money even when they perform no external business action.
 
-A [Skill](../concepts/roles.md#skill-and-package) can load instructions into the current Runtime or invoke a composition through a function/child according to lifetime needs. Pin source/publisher/version, entry points, input/default bindings, requested operations/resources and supported Runtime/isolation requirements where used. These are preflight inputs, not grants; imported `allowed-tools` cannot widen authority. Descriptions remain untrusted; scripts require the stated execution profile. Do not package credentials, local sessions or private memory.
+A [Skill](../concepts/roles.md#skill-and-package) can load instructions into the current Runtime or invoke a composition through a function/child according to lifetime needs. Pin source/publisher/version, entry points, input/default bindings, requested operations/resources and supported Runtime/isolation requirements where used. These are preflight inputs, not grants; imported `allowed-tools` cannot widen [authority](authority.md). Descriptions remain untrusted; scripts require the stated execution profile. Do not package credentials, local sessions or private memory.
 
 Metadata-first/instructions-on-use/assets-on-demand loading is a context strategy. Exporting a composition-backed Skill to an instruction-only format must disclose lost semantics or expose a service. No universal Skill schema, registry or signing service is required for R2/S1.
 

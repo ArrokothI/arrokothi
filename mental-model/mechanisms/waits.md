@@ -26,12 +26,12 @@ Well-formedness is structural, **not a test that the wait can ever be satisfied*
 
 ## Eligibility comes from trusted source category
 
-First use the Event's trusted ingress/mint provenance, then select within that category:
+First use the Event's trusted ingress/mint [provenance](../concepts/core.md#event), then select within that category:
 
 | Source category | Eligible exactly when |
 |---|---|
 | Ordinary application input | At least one declared input subscription matches |
-| Kernel timeout Event | Never through matching; expiry supplies it by the mandatory-member rule below |
+| Kernel [timeout Event](../concepts/core.md#timeout-event) | Never through matching; expiry supplies it by the mandatory-member rule below |
 | Every other trusted Kernel Event (settlement, child result, peer message, etc.) | At least one dependency alternative matches |
 
 A kind string cannot change the category. A dependency alternative cannot bypass the subscription requirement for application input; a subscription cannot match a peer message or settlement. This is the accepted K0/K1 rule. Any later extension for peer subscriptions requires explicit versioning and refusal of unsupported semantics.
@@ -42,8 +42,8 @@ Example: waiting for child C and for an application correction uses a child-resu
 
 After the whole Outcome has passed validation, evaluate in this order **inside its single acceptance transaction**:
 
-1. Acknowledge this Outcome's entire reserved batch. Those Events no longer qualify.
-2. Create the registration/generation and check all accepted, still-unacknowledged mailbox Events against its eligibility rule. If any qualify, retire the registration immediately and record Event-triggered wait-ended readiness; next state is `READY`.
+1. Acknowledge this [Outcome](../concepts/core.md#outcome)'s entire reserved [batch](../concepts/core.md#batch-reservation-and-acknowledgment). Those Events no longer qualify.
+2. Create the registration/generation and check all accepted, still-unacknowledged [mailbox](../concepts/core.md#mailbox) Events against its eligibility rule. If any qualify, retire the registration immediately and record Event-triggered [wait-ended readiness](../concepts/core.md#readiness); next state is `READY`.
 3. Otherwise, if a deadline exists, compare it with **one accepted-time observation** for this transaction. `now >= deadline` is due. If due, retire the registration, create its one timeout Event and record deadline-triggered readiness; next state is `READY`. Do not persist an already-expired `WAITING` state.
 4. Otherwise persist `WAITING`, the live generation and its deadline.
 
@@ -60,13 +60,13 @@ A generation is live exactly while `WAITING`. Any eligible wake retires the **en
 | Registration finds no eligible Event and deadline is due | Outcome's accepted set + create/retire wait + timeout Event + deadline readiness | That timeout Event |
 | Current live generation expires | Kernel timeout Event + wait retirement + deadline readiness | That timeout Event |
 
-The Event's destination acceptance owns the second row. A child's source-side routing obligation alone cannot wake the parent: readiness starts only when the destination Event actually exists. Durable routing may bridge the two transactions.
+The Event's destination acceptance owns the second row. A [child's](../concepts/operations.md#child-and-ownership) source-side [routing obligation](../concepts/operations.md#observation-cursor-and-routing) alone cannot wake the parent: readiness starts only when the destination Event actually exists. Durable routing may bridge the two transactions.
 
 Expiry creates at most one timeout Event per generation. Repeated timer delivery creates no second Event, readiness or logical timeout. A timer for a retired/replaced generation is a no-op. Timeout acceptance is Kernel-internal, not a seventh external receipt API.
 
 Generation fencing applies to wait-created artifacts such as timers, **not ordinary authenticated results**. A late result stays an accepted mailbox fact and can match a later explicitly correlated wait. It is not discarded because an earlier wait ended.
 
-Events arriving in `READY` or `RUNNING` create no additional wait-ended readiness and do not change a reserved batch. Terminal ordinary input is refused; permitted late evidence follows its terminal disposition. Only retirement of a live or newly-created registration can create wait-ended readiness.
+Events arriving in `READY` or `RUNNING` create no additional wait-ended readiness and do not change a reserved batch. Terminal ordinary input is refused; permitted late evidence follows its [terminal disposition](lifecycle.md). Only retirement of a live or newly-created registration can create wait-ended readiness.
 
 ## Selecting the batch
 
@@ -82,7 +82,7 @@ There is no dispatch or batch selection while `WAITING`. Once `READY`, there are
 
 Ineligible backlog is never a candidate, even with spare capacity. Selection priority and presentation order are different rules. A wait-ended batch is never empty unless an accepted terminal decision suppresses the dispatch entirely.
 
-Wait-ended readiness survives a crash and is consumed at **durable reservation**. It never re-arms during redelivery/takeover or spans two exchanges: those use the already pinned batch. After the Outcome, `continue` produces ordinary readiness; another `await` needs a new registration. A materialized candidate set is permitted only if it stays equivalent to evaluating the selector through reservation, including eligible arrivals after the wake. A stale snapshot taken at wake is insufficient.
+Wait-ended readiness [survives a crash](recovery.md) and is consumed at **durable reservation**. It never re-arms during redelivery/takeover or spans two exchanges: those use the already pinned batch. After the Outcome, `continue` produces ordinary readiness; another `await` needs a new registration. A materialized candidate set is permitted only if it stays equivalent to evaluating the selector through reservation, including eligible arrivals after the wake. A stale snapshot taken at wake is insufficient.
 
 ## Small distinguishing examples
 
@@ -98,10 +98,10 @@ Let U be older ineligible input, E1 and E2 be eligible Events in that acceptance
 
 These distinguish mandatory retention, earliest-member selection, candidate exclusion, late eligibility and ordering. One bound-1 example cannot prove all of them.
 
-If R ends the live wait *before* its timer is accepted, the timer is stale and no T exists. If T was accepted first, a later R does not retract it. Both facts survive; neither establishes external failure. If cancellation wins before reservation, all unacknowledged Events receive terminal disposition and no Activation is dispatched.
+If R ends the live wait *before* its timer is accepted, the timer is stale and no T exists. If T was accepted first, a later R does not retract it. Both facts survive; neither establishes external failure. If [cancellation](lifecycle.md#cancellation-order) wins before reservation, all unacknowledged Events receive terminal disposition and no Activation is dispatched.
 
 ## Accounting and limits
 
 Only accepted Outcome acknowledges the whole reserved batch. Runtime deferred meaning must live in its progress or explicit rejection decision; Kernel does not infer it from output text. Nonselected Events keep independent disposition, never disappearing behind a global cursor. Terminal disposition records nonprocessing, not acknowledgment.
 
-The wait deadline is checked only at registration and while its generation is live in `WAITING`. [Execution deadline and scheduler lease](../concepts/operations.md#three-clocks) have different effects. Long human waits may last indefinitely while stored state and autonomous work stay bounded. No store lock survives an external call or human wait. Admission fairness/load limits are operating claims, not consequences of asynchrony.
+The wait deadline is checked only at registration and while its generation is live in `WAITING`. [Execution deadline and scheduler lease](../concepts/operations.md#three-clocks) have different effects. Long human waits may last indefinitely while stored state and autonomous work stay bounded. No store lock survives an external call or human wait. Admission fairness/load limits are [operating claims](../concepts/operations.md#operating-profile-and-durability), not consequences of asynchrony.
