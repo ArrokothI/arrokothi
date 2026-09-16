@@ -91,7 +91,7 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 - [Request key and Input ID](concepts/identity.md#request-key-and-input-id)
 - [Runtime attempt](concepts/identity.md#runtime-attempt)
 - [Writer epoch](concepts/identity.md#writer-epoch)
-- [Dispatch and delivery](concepts/identity.md#dispatch-and-delivery); [delivery reporting mechanism](mechanisms/execution-cycle.md#delivery-reporting-boundary)
+- [Dispatch and delivery](concepts/identity.md#dispatch-and-delivery)
 - [Revision](concepts/identity.md#revision)
 - [Acceptance, boundary and receipt](concepts/identity.md#acceptance-boundary-and-receipt)
 

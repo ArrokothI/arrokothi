@@ -22,7 +22,7 @@ Reject non-finite numbers, unsupported values and lone Unicode surrogates; do no
 
 ## In-process value capture
 
-The accepted K1.1 TypeScript binding captures caller-owned values into one coherent immutable snapshot. Validation, canonical bytes, size measurement, retained content, inspection and Activation input derive from that same snapshot; later reads of the caller's object cannot select a different accepted value. For example, accepting `{count: 1}` and then changing the caller's object to `{count: 2}` leaves the accepted content and its equality bytes describing `1`.
+The in-process TypeScript binding captures caller-owned values into one coherent immutable snapshot. Validation, canonical bytes, size measurement, retained content, inspection and Activation input derive from that same snapshot; later reads of the caller's object cannot select a different accepted value. For example, accepting `{count: 1}` and then changing the caller's object to `{count: 2}` leaves the accepted content and its equality bytes describing `1`.
 
 In this binding, objects have the ordinary object prototype or a null prototype and own enumerable string-keyed data members; arrays have the ordinary array prototype and dense own data positions within their observed length. Unsupported forms, accessors, missing array positions, extra array members, symbol-keyed members, non-enumerable object members, cycles and present `undefined` values are refused rather than silently dropped. A member's own data descriptor and its ordinary read must agree; inconsistent or uninspectable structure is refused rather than repaired. These representation rules do not prescribe a wire format or replace the decoder's duplicate-key rejection.
 

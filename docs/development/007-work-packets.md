@@ -38,9 +38,16 @@ contrary evidence ([review-15](work/K1.1/review-15.md), [review-16](work/K1.1/re
 invalidates it for current claims: under 006's accepted-work invalidation rule the affected K1.1
 claims and integration are **on hold**, no dependent K1.2 release follows, and correction proceeds
 through the linked corrective packet [K1.1-correction-01](#k11-correction-01--accepted-work-correction-for-k11-review-findings)
-([contract](work/K1.1-correction-01/contract.md)). Review-01 closed seven findings;
-`K11-R16-DISP-01` remains open. The owner-delegated [delivery decision](work/K1.1-correction-01/decision-01.md)
-resolves the architecture block; revision-2 implementation and independent acceptance remain outstanding.
+([contract](work/K1.1-correction-01/contract.md)). Review-01 closed seven findings; the
+owner-delegated [delivery decision](work/K1.1-correction-01/decision-01.md) resolved the
+architecture block. That paragraph stands as the record of the hold at its own date.
+
+**Resolved since.** `K11-R16-DISP-01` is closed, and the correction is implemented and
+independently accepted at exact H5 `52b1600f3b42e3a360fdc3395178f1d147edf304` by
+[review-08](work/K1.1-correction-01/review-08.md), which records every K1.1 and
+K1.1-correction-01 finding closed. The table rows below are the authoritative status. Integration
+and final cleanup are held for the [K1.1-reference-01](#k11-reference-01--faithful-reference-maintenance)
+documentation review; `next_release: none`.
 
 The K1.1–K1.3 seeds below were re-checked on 2026-09-14 against the rewritten mental model and the K0 fixture that E1 pins (`tests/conformance/k0/`, mirrored by the benchmark's E1 kernel-fixture pin). No packet was added, removed or reordered; three fixture-exercised behaviors (authorized takeover, recovery hold for unavailable pinned code, post-creation input ingress) gained an explicit K1 owner so that K1.4 does not meet them unassigned.
 
