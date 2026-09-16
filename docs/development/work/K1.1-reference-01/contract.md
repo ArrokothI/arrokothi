@@ -1,6 +1,6 @@
 # K1.1-reference-01 — faithful reference maintenance
 
-**Revision 3**; documentation-only supplement to accepted K1.1-correction-01. This is not
+**Revision 4**; documentation-only supplement to accepted K1.1-correction-01. This is not
 an implementation invalidation or a K1.2 release.
 
 Revision 2 reconciled one payload bullet with the approach the packet actually took, under
@@ -20,6 +20,26 @@ section of that page, and no byte of `kernel.md`, `runtime.md`, `driver.md` or `
 The `## Target, not shipped` heading text is fixed, because [reference.md](../../../../mental-model/reference.md)
 links `README.md#target-not-shipped`. The five REF criteria are unchanged; REF-4 and REF-5 now
 also govern these two sections.
+
+**Revision 4 — the normative conflict revision 3 left unsurfaced.** A standing rule appears in
+three governing documents: *"Change Layer 1/2 only when the whole-system model or major abstraction
+changes"* ([AGENTS.md](../../../../AGENTS.md) §Architecture first, [006](../../006-development-process.md)
+§Maintaining the mental-model reference, [009](../../009-universal-prompts.md)). On its face this
+payload is outside that permission: it changes no whole-system model. 006 requires such a conflict
+to be surfaced for an owner decision rather than silently resolved, and revision 3 recorded the
+grant without addressing the rule at all. Revision 4 changes **no scope** — the payload is still
+exactly the two named README sections — and adds only this reconciliation.
+
+Two reasons the grant is nonetheless authorized, offered for a reviewer to judge rather than to
+accept. First, that rule constrains an agent deciding on its own; the owner is the authority who
+sets a packet's scope, granted it explicitly on 2026-09-16, and 006 routes scope amendments through
+exactly this artifact. Second, the content is documentation organization and defect repair, not
+model substance: `## How these pages are organized` is Layer 1's own subject, and README itself says
+that when a Layer-1/2 summary disagrees with a Layer-3 page "the summary is the defect" — repairing
+prose that became untrue is not a change to the model it summarizes.
+
+**If a reviewer disagrees**, the remedy is to revert the two sections to their state at D and take
+the change as its own packet under the standing rule; nothing else in this packet depends on it.
 
 ## Authority and anchors
 
@@ -66,7 +86,7 @@ A fresh independent reviewer must check fidelity to the accepted decisions befor
 - `mental-model/reference.md`, `mental-model/roadmap.md`, `mental-model/sources.md`: navigation,
   maintenance ownership and provenance for those rules.
 - `docs/development/002-implemented-kernel-baseline.md`: acceptance/integration distinction only.
-- `mental-model/README.md`, **revision 3 only**, and **only** its `## How these pages are organized`
+- `mental-model/README.md`, **authorized from revision 3**, and **only** its `## How these pages are organized`
   and `## Target, not shipped` sections: state where implementation status is owned, so that the
   single-owner rule these four rounds kept violating is written down at Layer 1; and replace the
   gate-status prose that has drifted since K1.1 was accepted. The `## Target, not shipped` heading
