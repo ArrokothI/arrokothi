@@ -1,0 +1,62 @@
+=== Round-4 evidence: bounded Layer-1 amendment ===
+
+--- 1. scope proof: only the two authorized README sections changed ---
+Sections compared one by one between D 0ee13f8138af52107d86967043bcc460faba8893 and the working tree:
+  (preamble), Four pieces to remember, Example: A report that needs publication,
+  What this arrangement guarantees, Logical pieces and physical deployment, Continue reading
+      -> all UNCHANGED
+  How these pages are organized, Target, not shipped
+      -> changed, both named in contract revision 3
+Section list and order identical (8 = 8); no heading renamed, so every inbound anchor survives.
+
+--- 2. other Layer-1/2 pages untouched since D ---
+  kernel.md        byte-identical to D
+  runtime.md       byte-identical to D
+  driver.md        byte-identical to D
+  deployment.md    byte-identical to D
+
+--- 3. the inbound anchor that constrained the edit ---
+$ grep -rn 'README.md#target-not-shipped' mental-model/ docs/
+mental-model/reference.md:31:- **Each mechanism page opens with a Status line** naming whether it is a required Kernel c
+docs/development/work/K1.1-reference-01/contract.md:21:links `README.md#target-not-shipped`. The five REF criteria are u
+docs/development/work/K1.1-reference-01/validation-04/00-layer1-scope.log:19:$ grep -rn 'README.md#target-not-shipped' m
+heading still present verbatim:                1
+
+--- 4. mutual ownership between README and reference.md, read for consistency ---
+reference.md:31 (owns the naming convention, links to README for target-not-shipped):
+    - **Each mechanism page opens with a Status line** naming whether it is a required Kernel contract, 
+    a per-Driver obligation or an optional Runtime design, and which development gate introduces it. 
+    Concept pages carry no Status line: they define vocabulary, and a term is not a commitment to build 
+    anything. A concept page you reached directly still describes target specification, not shipped 
+    behavior — see [Target, not shipped](README.md#target-not-shipped).
+README now links back to reference.md#how-pages-are-named as that convention's owner.
+anchor #how-pages-are-named exists:            1
+
+--- 5. the four negative greps, still clean ---
+stale status phrases in 007 narrative:               none
+accepted/shipped assertion under concepts+mechanisms: none
+candidate SHA under concepts+mechanisms:             none
+two-target entries in the canonical list:            0
+
+--- 6. does any live document now contradict the new README text? ---
+$ grep -rniE 'only the K0 gate|has not been built yet|implemented none of the protocol' mental-model/ docs/development/*.md
+mental-model/README.md:91:For rough orientation only: K0.1 settled the protocol decisions and K0.2 supplied the public controls; K1.0 prepar
+  ^ that single hit is the NEW README text itself, at line 91: 'K1.0 prepared a private target
+    package whose structure is integrated but which implemented none of the protocol'. True and
+    intentional — K1.0 was structural preparation. The replaced claims ('Only the K0 gate is
+    complete', 'describes protocol behavior that has not been built yet') appear nowhere else,
+    so no live document was left repeating them.
+    (Check 3 also matched this log file, which quotes its own grep. Self-reference, not a hit.)
+
+--- 7. why the new text should not go stale the way the old text did ---
+The replaced prose asserted a status ('Only the K0 gate is complete', 'has not been built
+yet') that silently became wrong when K1.1 was accepted. The new prose is written so its
+failure mode is INCOMPLETE rather than FALSE:
+  - 'A gate named on a page is the contract for that gate, not a claim that the gate has
+    shipped' — a rule, not a status; cannot go stale.
+  - '...are implemented under K1.1' — implementation does not un-happen; stays true.
+  - '...belong to later gates; the ledger says which of them have since landed' — when K1.2
+    lands this sentence becomes less informative, not untrue.
+  - Every precise question is delegated to 007 and 002 by name.
+This is the same delegation the packet applied to execution-cycle.md, now stated at Layer 1
+as a rule, which is what makes it checkable rather than a habit.
