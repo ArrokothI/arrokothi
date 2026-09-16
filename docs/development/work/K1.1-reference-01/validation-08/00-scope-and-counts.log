@@ -1,0 +1,89 @@
+# 00-scope-and-counts — K1.1-reference-01 round 8
+Commit:    30397797852de07c561d27216b87526bbd091ba3
+Run:       2026-09-16T05:33:51Z UTC
+Node:      v25.2.1
+npm:       11.6.2
+git:       2.39.5
+Platform:  Darwin 25.6.0
+Toolchain note: git-only log; Node/npm/git/platform recorded for completeness, not used by the git commands below.
+Commands are shown before every result (REF1-R6-EVID-01, REF1-R7-EVID-04).
+
+A    = 519ba002378707a4deccff1ea0a243d21eb694b7
+A7   = 3ec56b61c10c8cf5bab73627201e2d0b08c3f8ba   (review-07 record)
+C7   = 6535d5739c33a3973d0cce3a2473777a4ce14c2b   (round-7 payload)
+C8   = 30397797852de07c561d27216b87526bbd091ba3   (round-8 payload, the commit this log was captured on)
+D    = 0ee13f8138af52107d86967043bcc460faba8893
+main = 07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec
+
+## 1. REF1-R7-COUNT-03 — whitespace census, classes named, totals given
+
+git diff --check emits more than one warning class. Round 7's table labelled a
+trailing-whitespace-only tally as 'Unscoped', which understated every figure.
+Each command below is run with stderr captured, so a bad range prints STDERR rather
+than a silent clean (the hazard review-07 section 1 records).
+
+RANGE                  TOTAL    trailing   EOF-blank  exit 
+A..C7                  12       7          5          2    
+A..C8                  12       7          5          2    
+main..C7               76       66         10         2    
+main..C8               76       66         10         2    
+C7..C8                 0        0          0          0    
+
+Round 7 reported 'Unscoped 7' (A..C7) and 'Unscoped 66' (main..C7). Those are the
+trailing class alone. The totals are 12 and 76. Round 7 also credited review-06 with
+'unscoped at H6 is 12', a total, so its own record was inconsistent in unit.
+
+Where the A..C8 warnings live — all inside this packet's own captures, none in authored markdown:
+$ git diff --check A C8 | grep -E "trailing whitespace|blank line at EOF" | sed "s/:[0-9]*:/ /" | sort | uniq -c
+   1 docs/development/work/K1.1-reference-01/validation-02/02-typecheck.log  new blank line at EOF.
+   1 docs/development/work/K1.1-reference-01/validation-03/00-bounded-sweep.log  trailing whitespace.
+   1 docs/development/work/K1.1-reference-01/validation-03/02-typecheck.log  new blank line at EOF.
+   4 docs/development/work/K1.1-reference-01/validation-04/00-layer1-scope.log  trailing whitespace.
+   1 docs/development/work/K1.1-reference-01/validation-04/02-typecheck.log  new blank line at EOF.
+   1 docs/development/work/K1.1-reference-01/validation-05/01-typecheck.log  new blank line at EOF.
+   2 docs/development/work/K1.1-reference-01/validation-06/00-findings-and-scope.log  trailing whitespace.
+   1 docs/development/work/K1.1-reference-01/validation-06/01-typecheck.log  new blank line at EOF.
+
+## 2. Declared-path scope
+$ git diff --name-only A C8 | wc -l
+      62
+
+Round-8 delta only (A7 -> C8):
+$ git diff --name-only A7 C8
+docs/development/007-work-packets.md
+docs/development/work/K1.1-reference-01/contract.md
+mental-model/README.md
+
+## 3. Executable tree and dependency manifests byte-identical A -> C8
+$ git diff --name-only A C8 -- packages/ tests/ scripts/ examples/ package.json package-lock.json | wc -l
+       0
+
+## 4. Layer-2 core pages byte-identical to D
+$ git diff --name-only D C8 -- mental-model/kernel.md
+(empty — byte-identical)
+$ git diff --name-only D C8 -- mental-model/runtime.md
+(empty — byte-identical)
+$ git diff --name-only D C8 -- mental-model/driver.md
+(empty — byte-identical)
+$ git diff --name-only D C8 -- mental-model/deployment.md
+(empty — byte-identical)
+
+## 5. Sealed records unmodified A -> C8
+$ git diff --name-only --diff-filter=MD A C8 -- "docs/development/work/*/review-*.md" "docs/development/work/*/validation-*/*" | wc -l
+       0
+(review-06 and review-07 were ADDED as review records; none is modified or deleted.)
+
+## 6. REF1-R7-QUOTE-02 — the preserved revision-5 block vs its state at C6
+$ diff (rev-5 block at 2f1a7ce) (rev-5 block at C8)
+IDENTICAL, 42 lines, 2938 bytes
+
+## 7. Head binding (review-07 section 11)
+H7a 8373455ce3819f72d6a8849f9b8a6caf688d6dda was named nowhere in the packet's records
+when review-07 was written. It is now in the repository:
+$ git log --oneline --all -S"8373455ce3819f72d6a8849f9b8a6caf688d6dda" -- docs/
+3ec56b6 review(K1.1-reference-01): record round-7 independent review of exact H7a (CHANGES REQUIRED)
+
+No commit can contain its own SHA, so a candidate head is named by the review record
+that follows it (006:212-213). This round discharges that for H7a; the same mechanism
+names this round's head when its review is transcribed. A reviewer binds the verdict to
+the SHA they measured with git ls-remote.

@@ -1,0 +1,17 @@
+# 04-builder-docs — K1.1-reference-01 round 8
+Commit:    30397797852de07c561d27216b87526bbd091ba3
+Run:       2026-09-16T05:34:22Z UTC
+Node:      v25.2.1
+npm:       11.6.2
+git:       2.39.5
+Platform:  Darwin 25.6.0
+Toolchain note: Node runs scripts/check-builder-docs.ts with --experimental-strip-types.
+Commands are shown before every result (REF1-R6-EVID-01, REF1-R7-EVID-04).
+
+$ npm run check:builder-docs
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 57 Markdown files, 848 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+exit=0

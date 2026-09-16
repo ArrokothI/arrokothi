@@ -1,0 +1,60 @@
+# 01-digest-census — K1.1-reference-01 round 8
+Commit:    30397797852de07c561d27216b87526bbd091ba3
+Run:       2026-09-16T05:34:06Z UTC
+Node:      v25.2.1
+npm:       11.6.2
+git:       2.39.5
+Platform:  Darwin 25.6.0
+Toolchain note: python3 3.13.5 for sha256; git for file listing.
+Commands are shown before every result (REF1-R6-EVID-01, REF1-R7-EVID-04).
+
+## REF1-R7-DIGEST-01 — the census contract revision 6 got wrong, measured
+
+Revision 6 claimed the exempted logs are 'most of them pinned by no MANIFEST digest'.
+This log is the measurement that shows the opposite, and is the basis of revision 7.
+
+$ python3 census.py   # for every file matching the withdrawn exclusion, does a same-directory
+                      # MANIFEST.md contain a sha256 equal to the file bytes?
+total files matching ':(exclude)docs/development/work/*/validation-*/*.log': 458
+  same-dir MANIFEST row matches the file bytes: 423
+  same-dir MANIFEST exists but no matching digest: 2
+  no MANIFEST.md in that directory: 33
+
+Directories with no MANIFEST.md:
+     8  docs/development/work/K0.2/validation-15
+     7  docs/development/work/K0.2/validation-16
+     6  docs/development/work/K0.2/validation-12
+     6  docs/development/work/K0.2/validation-13
+     6  docs/development/work/K0.2/validation-14
+
+Rows that do not match (checked individually):
+   docs/development/work/K1.1/validation-06/04-test-conformance.log
+      true sha256 : e7ec78aeef4aaff28e4101fc891ba6d99fa1f1aa844e1216afb6ca8c2f3944f8 (64)
+      manifest row: e7ec78aeef4aaff28e4101fc891ba6d99fa1f1aa844e1216afb6d1eb0b26179e707 (67) -> MALFORMED, pins nothing
+   docs/development/work/K1.1/validation-10/09b-distinguishing-ablations.log
+      true sha256 : 4594c1a0b44091ddd510f9716991054e788b639c4f6cd1bccee1eb05cd40aad8 (64)
+      manifest row: 4594c1a0b44091ddd510f9716991054e788b639c4f6cd40aad8 (51) -> MALFORMED, pins nothing
+
+$ python3   # are the 33 without a directory manifest pinned in their round reports?
+K0.2 logs with no directory MANIFEST: 33
+  digest found in K0.2/implementation-*.md and matching the file bytes: 33
+  unpinned: 0
+
+CONCLUSION: nothing is unpinned. Revision 6's clause was inverted; revision 7 states
+the measured census and the objection that survives it — a digest pins bytes and
+certifies no whitespace hygiene, which is why 'they are digest-pinned' was never a
+reason a linter could safely skip them.
+
+## The companion clause: does 'hand-authored prose' discriminate?
+$ python3   # how many exempted logs open with a "#" header line?
+  73 of 458 open with a '#' header line
+006's environment rule and this packet's own round-6 remediation REQUIRE an authored
+header on every capture, so an authored opening line is the norm the process asks for,
+not a symptom. The clause is corrected in revision 7 rather than repeated.
+
+## Boundary instability — the argument the measurements strengthen
+  A: 433
+  C7: 453
+  H7a: 458
+  The exempted set widens every round. A carve-out with no stable boundary is the
+  durable objection; it does not depend on the pinning claim at all.

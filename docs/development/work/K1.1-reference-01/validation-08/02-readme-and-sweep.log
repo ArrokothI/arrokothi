@@ -1,0 +1,75 @@
+# 02-readme-and-sweep — K1.1-reference-01 round 8
+Commit:    30397797852de07c561d27216b87526bbd091ba3
+Run:       2026-09-16T05:34:17Z UTC
+Node:      v25.2.1
+npm:       11.6.2
+git:       2.39.5
+Platform:  Darwin 25.6.0
+Toolchain note: python3 for section hashing; git and grep for the rest.
+Commands are shown before every result (REF1-R6-EVID-01, REF1-R7-EVID-04).
+
+## REF1-R7-WORD-05 — README:83 no longer mis-routes 'implemented'
+
+The sentence routed "accepted", "implemented" or a commit identity to the ledger,
+while the sentence two above gives the API-surface role to 002. Now as it stands:
+$ grep -n "one of those two documents is the place for it" mental-model/README.md
+83:This is a single-owner rule for the same reason each term is defined once, and it is worth stating because it is easy to violate with good intentions: a status sentence copied onto a specification page reads as helpful on the day it is written, and nothing in the page's own subject matter reveals it later when the status moves. If you find yourself adding "accepted", "implemented" or a commit identity to a page under `concepts/` or `mechanisms/`, one of those two documents is the place for it: acceptance, integration and commit identities in the ledger, and what the API surface actually provides in the implemented baseline.
+
+$ grep -c "the ledger is the place for it" mental-model/README.md   # old wording gone
+0
+
+## README still confined to the two authorized sections (section-by-section vs D)
+$ python3   # sha256 of each section body at D 0ee13f8 vs C8
+  section count: D=8 C8=8
+  section list and order identical: True
+    unchanged  (preamble)
+    unchanged  ## Four pieces to remember
+    unchanged  ## Example: A report that needs publication
+    unchanged  ## What this arrangement guarantees
+    unchanged  ## Logical pieces and physical deployment
+    unchanged  ## Continue reading
+    CHANGED    ## How these pages are organized
+    CHANGED    ## Target, not shipped
+
+$ grep -c "^## Target, not shipped" mental-model/README.md   # inbound anchor from reference.md
+1
+
+## Status sweep over all 31 mental-model pages — gate name near a build-status word
+$ python3 statusweep.py   # classified, not counted: a bare count cannot separate
+                          # "an Outcome is accepted" from "K1.1 is accepted"
+  mental-model/concepts/values.md:3  ...accepted K0.1...
+  mental-model/mechanisms/actions.md:5  ...K2.3. K1 refuses Effects. This is target specification, not shipped...
+  mental-model/mechanisms/authority.md:5  ...K2.2; extended by K4 and K5. This is target specification, not shipped...
+  mental-model/mechanisms/communication.md:7  ...K4.1–K4.3. This is target specification, not shipped...
+  mental-model/mechanisms/context.md:12  ...K2/R1/K5. This is target specification, not shipped...
+  mental-model/mechanisms/creation.md:5  ...K1.1. This is target specification, not shipped...
+  mental-model/mechanisms/evidence.md:3  ...accepted K1.0...
+  mental-model/mechanisms/evidence.md:5  ...K1, operating depth at K5. This is target specification, not shipped...
+  mental-model/mechanisms/execution-cycle.md:5  ...K1.2; Effect intents by K2.1. This is target specification, not shipped...
+  mental-model/mechanisms/execution-cycle.md:77  ...accepted intent without discarding the others. **K1...
+  mental-model/mechanisms/execution-cycle.md:81  ...K2 target actions to connect the protocol; it is not a shipped...
+  mental-model/mechanisms/lifecycle.md:18  ...K2.3. This is target specification, not shipped...
+  mental-model/mechanisms/output.md:5  ...K5.1. This is target specification, not shipped...
+  mental-model/mechanisms/state.md:5  ...K2/K3/K5. This is target specification, not shipped...
+  mental-model/mechanisms/waits.md:5  ...K1.3. This is target specification, not shipped...
+  mental-model/mechanisms/waits.md:37  ...accepted K0...
+  mental-model/README.md:91  ...shipped: K0.1...
+  mental-model/deployment.md:21  ...implemented 0.8.x surface; K1.0...
+total gate-adjacent status phrases on canonical pages: 18
+
+  15 are the Status-line disclaimer 'This is target specification, not shipped …'
+   2 are provenance permitted by README:81 (values.md:3, evidence.md:3)
+   1 is deployment.md:21, about the released 0.8.x SDK; byte-identical to D, out of payload
+   0 assert that a gate has been implemented, accepted or integrated
+
+$ grep -rnoE "`[0-9a-f]{7,40}`" mental-model/   # commit SHAs anywhere under mental-model/
+mental-model/sources.md:30:`52b1600f3b42e3a360fdc3395178f1d147edf304`
+  One hit, permitted: sources.md is a navigation page, and README:81 allows navigation
+  pages to record which accepted work a rule derives from. Recorded with its reason
+  rather than hidden by keeping the grep narrow enough to miss it.
+
+$ grep -rnE "Implementation evidence|acceptance pending|pending acceptance" mental-model/
+(no matches)
+
+$ grep -nE "^- \[[^]]+\]\([^)]+\), \[" mental-model/reference.md   # two-target canonical entries
+(no matches)
