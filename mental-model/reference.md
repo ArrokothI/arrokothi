@@ -1,24 +1,15 @@
 # Reference index
 
-Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtime.md), [Driver](driver.md) and [Deployment](deployment.md). This page then serves two different readers: the next section is a **reading order**, for someone learning Layer 3 for the first time; “Find a mechanism” further down is a **lookup table**, for someone who already knows the architecture and wants one page. Layer 3 is precise target/reference material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
+Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtime.md), [Driver](driver.md) and [Deployment](deployment.md). This page is the **lookup table**, for someone who already knows the architecture and wants one term or one page. If you are learning Layer 3 for the first time instead, the reading paths live with the pages they order: [`concepts/README.md`](concepts/README.md) and [`mechanisms/README.md`](mechanisms/README.md). Layer 3 is precise target/reference material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
 
-## Reading `concepts/` and `mechanisms/` in order
+## Where the reading order lives
 
-If you are learning Layer 3 rather than looking something up, read in this order. It tracks actual term dependency, not alphabetical or directory order — opening the folders in a file browser will not give you this sequence.
+Each directory's README owns its own reading path, says what every page in it does, and gives the reason each page sits where it does:
 
-**Concepts**, in dependency order:
+- [`concepts/README.md`](concepts/README.md) — seven pages in dependency order, `core` first.
+- [`mechanisms/README.md`](mechanisms/README.md) — sixteen pages in six groups, `creation` first.
 
-1. [core](concepts/core.md) — Kernel, Execution, Activation, Outcome, Event, wait
-2. [actions](concepts/actions.md) — Operation, Effect, admission, settlement, authority
-3. [identity](concepts/identity.md) — request keys, attempts, epochs, revisions, receipts
-4. [operations](concepts/operations.md) — hosts, trust modes, clocks, children, messages
-5. [roles](concepts/roles.md) — Agent, Workflow, Stage, Context, Skill
-6. [state](concepts/state.md) — progress, checkpoints, structured state, memory
-7. [values](concepts/values.md) — canonical form and value equality
-
-Read `core.md` before `actions.md`: `actions.md`'s first term, Effect, is defined in terms of Outcome, which `core.md` owns. The two pages are listed together under “Actions, authority and observations” and “Core coordination vocabulary” below because they are cross-referenced heavily, not because either order works equally well on a first pass.
-
-**Mechanisms**, in the same order as “Find a mechanism” below (creation → execution-cycle → waits → lifecycle → authority → actions → output → communication → recovery → integration → composition → state → context → external-protocols → resources → evidence). That table doubles as this reading path, despite its Question/Owning-page framing. Reading `mechanisms/` alphabetically instead — the order a file browser or `ls` shows — puts `actions.md` before `execution-cycle.md` and `authority.md`, both of which it depends on; avoid that order for a first pass.
+Both orders track actual term dependency, not alphabetical or directory order, so opening the folders in a file browser will not give you either sequence. The “Find a mechanism” table below lists the mechanism pages in that same reading order, so it doubles as a lookup for anyone who already knows the architecture.
 
 Not every mechanism has a matching concept page and vice versa: `context` is a mechanism with no `concepts/context.md`, because its vocabulary lives in `concepts/roles.md` instead. The reverse also happens. Matching basenames (`actions`, `state`) mean the subject was large enough to split; they are not a promise that every subject splits.
 
@@ -62,6 +53,7 @@ Each entry points to its sole definition section. Related words share a page so 
 - [Execution Runtime](concepts/core.md#execution-runtime)
 - [Execution Driver](concepts/core.md#execution-driver)
 - [Definition](concepts/core.md#definition)
+- [Runtime contract](concepts/core.md#runtime-contract)
 - [Activation](concepts/core.md#activation)
 - [Outcome](concepts/core.md#outcome)
 - [Event](concepts/core.md#event)

@@ -6,11 +6,25 @@ Follow one mediated action through its life and the terms fall into place. The R
 
 ## Operation
 
-An **operation** is an invocable versioned contract: identity, input/output schema, supported schema features, exact input meaning and result-certainty behavior. For example, `publish_report` can describe the callable contract before any report is selected. Its name shown to a model is an alias, not its stable identity — a [projection](roles.md#projection-and-invocation-binding) may show the same operation under a different name without changing what is being called.
+Before a Runtime can ask the Kernel to invoke anything, the thing it wants to invoke has to already be described — what it is called, what arguments it takes, what it returns, and what can ever be known about whether an attempt at it worked. An **operation** is that pre-declared, versioned contract: identity, input/output schema, supported schema features, exact input meaning and result-certainty behavior. "Invocable" sets it apart from the other named contracts on these pages: a [Resource](state.md#resource-binding-and-attachment) is acted on rather than called, a [Service](roles.md#service-and-interaction-template) is a private implementation behind selected operations, and a [Skill](roles.md#skill-and-package) packages instructions rather than exposing a call.
+
+Each field answers a different question. Here is one operation, `publish_report`, with each field worked out:
+
+| Field | Question it answers | For `publish_report` |
+|---|---|---|
+| Identity | Which operation is this, across every revision? | `publish_report` |
+| Input/output schema | What shape do arguments and results take? | in: `{ reportRef }`; out: `{ publishedAt }` |
+| Supported schema features | Which parts of that shape are actually enforced? | an unknown property on the argument is refused, not silently dropped; a missing field gets no substituted default |
+| Exact input meaning | What is a schema-valid argument actually asking for? | `reportRef` must name the exact report revision that was reviewed — not any string of the right shape |
+| Result-certainty behavior | What can an attempt's outcome ever tell you afterward? | whether "definitely failed to publish" is reachable at all, or every failed attempt stays "unknown" |
+
+The last two rows matter most where they are easy to skip past. A schema check only confirms an argument has the right shape; [exact consent](#exact-consent) exists because a human still has to approve what a valid-looking argument actually means, not just its shape. Result-certainty behavior is what later decides which of [settlement's four dimensions](#settlement-and-reconciliation) an attempt can ever reach — an operation with no way to query or retry idempotently can never move past "unknown," however the Kernel records the attempt.
+
+An operation keeps its identity even when a Runtime shows it to a model or other caller under a friendlier label. A [projection](roles.md#projection-and-invocation-binding) can display `publish_report` as "Publish this week's report," and a caller that picked it by that label still invoked the same operation. That distinction matters because the label can change between requests, while a reply that arrives late still has to resolve to the operation the caller actually saw, not to whatever the catalog offers under that label now.
 
 ## Effect
 
-An **Effect** is a proposal for one Kernel-mediated interaction, carried in an [Outcome](core.md#outcome). Examples include invoking a service, reading governed data, requesting human input, creating a child and sending a message. An [Emission](#emission-result-and-output-obligation) is not an Effect: output is something the Runtime has produced, an Effect is something it wants done.
+An **Effect** is a proposal for one Kernel-mediated interaction, carried in an [Outcome](core.md#outcome). Examples include invoking a service, reading governed data, requesting human input, creating a child and sending a message. Only the first two carry a named [Operation](#operation); [requesting human input](operations.md#message-request-and-correlation), creating a [child](operations.md#child-and-ownership) and sending a [message](operations.md#message-request-and-correlation) are proposed through their own shapes instead. An [Emission](#emission-result-and-output-obligation) is not an Effect: output is something the Runtime has produced, an Effect is something it wants done.
 
 A **proposal key** is the Runtime's stable local name for that proposal within the Activation. Acceptance binds it to an **Effect ID** — the immutable logical request identity within the Execution, such as an Activation paired with a local key. This is not the ID of a physical send. A wait may refer to the same Outcome's proposal key.
 

@@ -6,7 +6,7 @@ The [Kernel](concepts/core.md#kernel) coordinates independently addressable [Exe
 
 For each Execution, the Kernel keeps its identity, current [lifecycle state](mechanisms/lifecycle.md), accepted [Progress](concepts/state.md#progress), its [queued observations](concepts/core.md#mailbox), [mediated action](concepts/actions.md#exposure-and-mediation) records and eventual result. Its accepted decisions and observations form the [Execution History](concepts/state.md#execution-history).
 
-It also records the [Definition](concepts/core.md#definition) that pins which code/configuration this Execution runs, and the [Runtime contract](concepts/core.md#definition) that separately pins how the [Driver](concepts/core.md#execution-driver) reads its [Activation](concepts/core.md#activation), [Outcome](concepts/core.md#outcome) and progress. It additionally records the [Authority](concepts/actions.md#principal-and-authority) that bounds what the Execution may access or do through mediated actions.
+It also records the [Definition](concepts/core.md#definition) that pins which code/configuration this Execution runs, and the [Runtime contract](concepts/core.md#runtime-contract) that separately pins how the [Driver](concepts/core.md#execution-driver) reads its [Activation](concepts/core.md#activation), [Outcome](concepts/core.md#outcome) and progress. It additionally records the [Authority](concepts/actions.md#principal-and-authority) that bounds what the Execution may access or do through mediated actions.
 
 ## What it doesn't own
 
