@@ -37,7 +37,7 @@ An Outcome is a proposal until the Kernel accepts it. Acceptance installs progre
 
 An Effect asks for a mediated operation, such as publishing a file or creating a child Execution. Accepting it records an action intent — an accepted obligation to perform the work later, not proof that it already has — which is distinct from admitting the concrete action and from observing its result. That separation lets the Kernel report "the request exists, but approval is pending" or "the service may have acted." It also makes lost acknowledgments recoverable without inventing another request.
 
-Acceptance is also what makes durability possible: because the Kernel commits progress, output and action intents as one atomic decision, there is always a well-defined, durable state to reconstruct after a crash — which is exactly what recovery does next.
+Acceptance is also what makes recovery possible: because the Kernel commits progress, output and action intents as one atomic decision, an accepted state is always coherent rather than half-applied. Atomicity by itself stores nothing, so it is the deployment's storage that decides whether that state survives a crash — and where it does, recovery has a well-defined state to reconstruct, which is exactly what it does next.
 
 ## Recovering after a crash
 
