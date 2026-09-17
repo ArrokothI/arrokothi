@@ -4,25 +4,31 @@
 
 **Status:** Required Kernel contract. Introduced by K4.4; retention hardened by K5.1. This is target specification, not shipped behavior.
 
+Output raises two questions that are easy to run together and must not be. **Is it available to read** — answered by acceptance, replay and retention, the first three sections. **Has it been sent somewhere** — answered only by external delivery, the last section, which is ordinary authorized action work. Between them sits the section that explains why reading is not sending: an observer draining a child's output changes nothing about that child, and nothing about its parent.
+
 ## Acceptance makes output observable
 
-[Outcome acceptance](execution-cycle.md#outcome-acceptance) commits each accepted Emission and terminal result with its stable identity and output obligation. The retained output record itself can fulfill that obligation; no publisher queue is mandatory. A lost notification or duplicate Outcome cannot lose output or mint another identity.
+[Outcome acceptance](execution-cycle.md#outcome-acceptance) commits each accepted Emission and terminal result with its stable identity and output obligation. The retained output record itself can fulfill that obligation; no publisher queue is mandatory — an obligation to make output available is discharged by having it available, not by pushing it anywhere. A lost notification or duplicate Outcome cannot lose output or mint another identity.
 
-Provisional stdout/tokens can be shown if clearly labeled unaccepted. Failed/replaced attempt streams may be retracted or marked; do not splice them into an apparently accepted transcript. They cannot certify consent, action success or terminal result.
+Provisional stdout/tokens can be shown if clearly labeled unaccepted. The label is the whole point: a token stream and an accepted Emission look identical in a terminal, but only one of them survives the attempt being replaced. Failed/replaced attempt streams may be retracted or marked; do not splice them into an apparently accepted transcript. They cannot certify consent, action success or terminal result.
 
 ## Authorized subscriptions and replay
 
+Accepted output has to survive a reader disconnecting, and a reader has to be able to come back without missing or repeating anything. That needs stable identities and positions — and nothing more: the Kernel stores output and answers authorized reads, while everything about connections stays in the application.
+
 The Kernel supplies authorized reads/resumption over retained output. The application output layer owns connections, UI, transport and consumer cursor storage; bounded reads plus notifications suffice. No durable per-subscriber Kernel actor, mailbox or general pub/sub broker is required.
 
-Stable output IDs and per-Execution replay positions survive process restart in the [persistent profile](../concepts/operations.md#operating-profile-and-durability). A [cursor](../concepts/operations.md#observation-cursor-and-routing) identifies an Execution/output [view](../concepts/roles.md#view-and-disclosure) and position, not authority. Resume returns retained accepted output in order; delivery can repeat and consumers deduplicate by output ID. Bridge replay to live observation without skipping output accepted during reconnect. Completion exposes the result and final output position so observers can drain unread Emissions. No cross-Execution order is promised.
+Stable output IDs and per-Execution replay positions survive process restart in the [persistent profile](../concepts/operations.md#operating-profile-and-durability). A [cursor](../concepts/operations.md#observation-cursor-and-routing) identifies an Execution/output [view](../concepts/roles.md#view-and-disclosure) and position, not authority: holding a position in a stream is not permission to keep reading it, so reconnecting is authorized afresh rather than on the strength of the cursor. Resume returns retained accepted output in order; delivery can repeat and consumers deduplicate by output ID. Bridge replay to live observation without skipping output accepted during reconnect. Completion exposes the result and final output position so observers can drain unread Emissions. No cross-Execution order is promised.
 
 Authorize initial read, reconnect and subsequent disclosure under the stated freshness contract. An old connection/cursor cannot preserve revoked access. Filtered views and receipt lookups must not expose hidden content. If a changed view cannot safely resume its old cursor, explicitly rebind or refuse it.
 
 ## Bounded retention
 
-Declare bytes/count/age limits, replay and deduplication periods, and deletion behavior. Keep output through the promised period, including after completion. Expired replay returns an explicit gap/expired cursor, not a deceptively empty successful stream. Privacy [deletion](evidence.md#retention-and-deletion) and access revocation may end availability and must say so.
+Output that is kept forever is a cost, and output that disappears silently is a correctness problem. The rule that resolves both is to promise a bounded period and then be explicit at its edges.
 
-[Slow consumers](../concepts/operations.md#backpressure-and-cleanup-debt) use bounded buffers or disconnect with a resumable cursor/gap. They cannot indefinitely pin records or block Runtime progress. If capacity cannot retain newly promised output, reject/hold Outcome acceptance **before commit**, never accept then drop it. Routing and external-delivery obligations separately pin required data.
+Declare bytes/count/age limits, replay and deduplication periods, and deletion behavior. Keep output through the promised period, including after completion. Expired replay returns an explicit gap/expired cursor, not a deceptively empty successful stream. A consumer cannot tell those apart from the outside, and one of them silently reports that nothing happened. Privacy [deletion](evidence.md#retention-and-deletion) and access revocation may end availability and must say so.
+
+[Slow consumers](../concepts/operations.md#backpressure-and-cleanup-debt) use bounded buffers or disconnect with a resumable cursor/gap. They cannot indefinitely pin records or block Runtime progress. If capacity cannot retain newly promised output, reject/hold Outcome acceptance **before commit**, never accept then drop it. Accepting is the promise; there is no honest way to make it and then not keep it. Routing and external-delivery obligations separately pin required data.
 
 ## Observation does not send input
 
@@ -31,6 +37,8 @@ Reading [child](../concepts/operations.md#child-and-ownership) progress leaves t
 For example, the UI can show “3 sources checked” without waking the parent. A child asking “which region should I search?” explicitly sends a message that may wake a matching parent wait. Child completion has its own required terminal routing contract in [communication](communication.md#children).
 
 ## External delivery
+
+Everything above is about output the Kernel holds. Getting it to a person or another service is a different job with a different owner, and it is ordinary mediated action work with the uncertainty that implies.
 
 A channel adapter owns sending accepted output to a user or external service. If promised durable, its intent must not have a gap with the output it undertakes to send. [Admission](../concepts/actions.md#admission-and-physical-action-attempt) authorizes destination/account; prepared batching/rendering has immutable payload identity. Retry cannot rerender into a changed message or choose a new recipient.
 

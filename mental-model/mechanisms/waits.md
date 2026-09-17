@@ -96,7 +96,9 @@ Let U be older ineligible input, E1 and E2 be eligible Events in that acceptance
 | Expiry T accepted, eligible result R follows, bound 1 | T | R and U |
 | Same expiry, bound 2 | T, R in acceptance order | U |
 
-These distinguish mandatory retention, earliest-member selection, candidate exclusion, late eligibility and ordering. One bound-1 example cannot prove all of them.
+Each row isolates one variable, which is why five are needed. Row 1 fixes the mandatory member: with room for one, the earliest eligible Event is the one that must travel. Row 2 removes the capacity excuse — spare room does not promote ineligible backlog into a candidate, so U stays queued even though nothing is competing for the space. Row 3 moves eligibility later in time: a candidate set frozen at the moment of waking would miss E2, so the selector has to still be evaluated at reservation. Row 4 puts a timeout and an eligible result in the same window and shows the timeout travels because it is mandatory, not because it happens to be earliest. Row 5 repeats row 4 with room for both, separating which member had to be present from the order the batch is presented in.
+
+These distinguish mandatory retention, earliest-member selection, candidate exclusion, late eligibility and ordering. One bound-1 example cannot prove all of them: it would pass against an implementation that ignored eligibility, froze its candidates at wake, or treated the timeout as merely first in line.
 
 If R ends the live wait *before* its timer is accepted, the timer is stale and no T exists. If T was accepted first, a later R does not retract it. Both facts survive; neither establishes external failure. If [cancellation](lifecycle.md#cancellation-order) wins before reservation, all unacknowledged Events receive terminal disposition and no Activation is dispatched.
 

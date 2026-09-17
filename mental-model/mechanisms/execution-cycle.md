@@ -54,6 +54,10 @@ The Kernel does not read, classify, assimilate or subscribe to the return value 
 
 ## Retry versus takeover
 
+Three operations look the same from outside — the Runtime is asked to work on something again — and they differ only in which identities they keep. Read the table as a statement about what a late answer can still be recognized as. **Ordinary delivery retry** changes nothing, so a reply produced by the first send is still a valid reply to the current exchange. **Authorized takeover** keeps the question and replaces who may answer it, so the earlier attempt's answer is now stale and is rejected in full even if its content is correct. **A new exchange** replaces the question itself, so nothing computed against the old one applies.
+
+Conflating the first two removes the fence that stops a disconnected attempt from overwriting the work of the attempt that replaced it. Conflating either with the third lets fresh input be slipped into an exchange whose answer was already computed from different input, so an accepted Outcome would no longer correspond to any fixed question.
+
 | Operation | Activation ID | Writer epoch | Pinned semantic input |
 |---|---|---|---|
 | Ordinary delivery retry | Same | Same | Same |
