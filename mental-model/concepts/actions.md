@@ -6,25 +6,27 @@ Follow one mediated action through its life and the terms fall into place. The R
 
 ## Operation
 
-Before a Runtime can ask the Kernel to invoke anything, the thing it wants to invoke has to already be described — what it is called, what arguments it takes, what it returns, and what can ever be known about whether an attempt at it worked. An **operation** is that pre-declared, versioned contract: identity, input/output schema, supported schema features, exact input meaning and result-certainty behavior. "Invocable" sets it apart from the other named contracts on these pages: a [Resource](state.md#resource-binding-and-attachment) is acted on rather than called, a [Service](roles.md#service-and-interaction-template) is a private implementation behind selected operations, and a [Skill](roles.md#skill-and-package) packages instructions rather than exposing a call.
+A Runtime cannot ask the Kernel to do something unnamed. Before any mediated action runs, the thing it invokes must already exist as a named, versioned contract — An **operation**. Pre-declaration is what gives admission, consent, and settlement something stable to bind to: permission is checked against it, a human approval pins it, and later evidence is interpreted through it.
 
-Each field answers a different question. Here is one operation, `publish_report`, with each field worked out:
+The contract has five parts:
 
-| Field | Question it answers | For `publish_report` |
-|---|---|---|
-| Identity | Which operation is this, across every revision? | `publish_report` |
-| Input/output schema | What shape do arguments and results take? | in: `{ reportRef }`; out: `{ publishedAt }` |
-| Supported schema features | Which parts of that shape are actually enforced? | an unknown property on the argument is refused, not silently dropped; a missing field gets no substituted default |
-| Exact input meaning | What is a schema-valid argument actually asking for? | `reportRef` must name the exact report revision that was reviewed — not any string of the right shape |
-| Result-certainty behavior | What can an attempt's outcome ever tell you afterward? | whether "definitely failed to publish" is reachable at all, or every failed attempt stays "unknown" |
+1. Identity. The stable name across every revision, so `publish_report` stays `publish_report` when its schema moves from revision 2 to revision 3. Admission, approval, and evidence all point at this name plus a pinned revision.
+2. Input/output schema. The shape of arguments and results: `publish_report` takes `{ reportRef }` and returns `{ publishedAt }`.
+3. Supported schema features. Which parts of that shape are actually enforced: an unknown property on the argument is refused instead of silently dropped, and a missing field gets no substituted default. <!-- TODO: rewrite once K2.2 selects the validator and enforced subset -->
+4. Exact input meaning. What a valid-looking argument truly asks for: `reportRef` must name the exact reviewed revision, not any string of the right shape.
+5. Result-certainty behavior. What an attempt can ever prove afterward: whether "definitely failed to publish" is even reachable, or whether every failed attempt stays "unknown."
 
-The last two rows matter most where they are easy to skip past. A schema check only confirms an argument has the right shape; [exact consent](#exact-consent) exists because a human still has to approve what a valid-looking argument actually means, not just its shape. Result-certainty behavior is what later decides which of [settlement's four dimensions](#settlement-and-reconciliation) an attempt can ever reach — an operation with no way to query or retry idempotently can never move past "unknown," however the Kernel records the attempt.
+The middle two parts matter most, because they are easy to skip past. A schema check only confirms shape, so a human approving the action needs the exact meaning behind a valid shape (see [exact consent](#exact-consent)). And the certainty declaration decides afterward which of [settlement's four dimensions](#settlement-and-reconciliation) an attempt can reach: an operation with no way to query or retry safely can never move past "unknown," however the Kernel records it.
 
-An operation keeps its identity even when a Runtime shows it to a model or other caller under a friendlier label. A [projection](roles.md#projection-and-invocation-binding) can display `publish_report` as "Publish this week's report," and a caller that picked it by that label still invoked the same operation. That distinction matters because the label can change between requests, while a reply that arrives late still has to resolve to the operation the caller actually saw, not to whatever the catalog offers under that label now.
+"Invocable" sets an operation apart from the nearby contracts: a [Resource](state.md#resource-binding-and-attachment) is acted on rather than called, a [Service](roles.md#service-and-interaction-template) is a private implementation behind selected operations, and a [Skill](roles.md#skill-and-package) packages instructions rather than exposing a call.
+
+A model chooses from names it can read, but permission and evidence need names that do not drift. So an operation keeps its identity when shown under a friendlier label. A [projection](roles.md#projection-and-invocation-binding) may display `publish_report` as "Publish this week's report," but the caller still invoked the same operation. That matters because the label can change between requests, while a late reply must still resolve to the operation the caller actually saw, not to whatever the catalog offers under that label now.
+
+Operations and Activations vary independently: one Activation can propose many operations, and many Activations can name the same operation over time.
 
 ## Effect
 
-An **Effect** is a proposal for one Kernel-mediated interaction, carried in an [Outcome](core.md#outcome). Examples include invoking a service, reading governed data, requesting human input, creating a child and sending a message. Only the first two carry a named [Operation](#operation); [requesting human input](operations.md#message-request-and-correlation), creating a [child](operations.md#child-and-ownership) and sending a [message](operations.md#message-request-and-correlation) are proposed through their own shapes instead. An [Emission](#emission-result-and-output-obligation) is not an Effect: output is something the Runtime has produced, an Effect is something it wants done.
+An **Effect** is a proposal for one Kernel-mediated action, carried in an [Outcome](core.md#outcome). Examples include invoking a service, reading governed data, requesting human input, creating a child and sending a message. Of these, invoking a service and reading governed data carry a named [Operation](#operation). The Effect proposal points to an existing Operation by Operation identity and pinned revision. The Effect arguments are validated against the operation's schema. Each Effect points to at most one operation, while many Effects over time can point to the same one. The action lifecycle resolves through both: [admission](#admission-and-physical-action-attempt) checks the pointed operation and arguments against authority and policy, [consent](#exact-consent) binds them together with the logical action ID as one immutable action, and [settlement](#settlement-and-reconciliation) records each attempt's evidence under that logical action, interpreted through the operation's certainty behavior. [Requesting human input](operations.md#message-request-and-correlation), creating a [child](operations.md#child-and-ownership) and sending a [message](operations.md#message-request-and-correlation) are proposed through their own shapes instead, pointing to no operation. An [Emission](#emission-result-and-output-obligation) is not an Effect: output is something the Runtime has produced, an Effect is something it wants done.
 
 A **proposal key** is the Runtime's stable local name for that proposal within the Activation. Acceptance binds it to an **Effect ID** — the immutable logical request identity within the Execution, such as an Activation paired with a local key. This is not the ID of a physical send. A wait may refer to the same Outcome's proposal key.
 
@@ -36,7 +38,7 @@ A **logical action** is the immutable action record created when an Effect is ac
 
 An accepted intent is a request that exists. Whether it may run is decided next, and separately.
 
-**Admission** is the ordered decision that authorizes a concrete action attempt under current [policy](#principal-and-authority) and required [consent](#exact-consent). It records that intent under current dispatch ownership. A **physical action attempt** is one invocation of that logical action through a trusted adapter. Admission can precede sending and cannot prove receipt. Its dispatch ownership/fencing is separate from the Runtime's [writer epoch](identity.md#writer-epoch): the Runtime attempt that proposed an action and the dispatcher that performs it are fenced independently.
+**Admission** is the ordered decision that authorizes a concrete action attempt under the Execution's [authority](#principal-and-authority), current policy, and required [consent](#exact-consent). It records that intent under current dispatch ownership. A **physical action attempt** is one invocation of that logical action through a trusted adapter. Admission can precede sending but cannot prove receipt. Its dispatch ownership/fencing is separate from the Runtime's [writer epoch](identity.md#writer-epoch): the Runtime attempt that proposed an action and the action dispatch that performs it are fenced independently. <!-- TODO: if a dispatcher is ever defined as its own concept, link "action dispatch" to it -->
 
 ## Settlement and reconciliation
 
@@ -51,7 +53,7 @@ What settlement records has more than one axis. Keep four dimensions distinct:
 | Request disposition | What may happen next: waiting for approval, denied, withdrawn, no more attempts |
 | Attempt evidence / certainty | What is known externally: no attempt, may have run, observed success, definite failure, unknown |
 | Result validity | Whether the returned value satisfies the result contract, even if the action ran |
-| Responsibility / obligation | Who still owes settlement or required results: Execution, named durable owner, explicit policy abandonment |
+| Responsibility / obligation | Who still owes settlement or required results: the Execution, a named durable owner (e.g. a child the work was transferred to), or explicit policy abandonment (e.g. a cancelled Execution whose still-unknown attempt is recorded but no longer owed) |
 
 These are conceptual dimensions, not a mandated enum cross-product. An invalid result can coexist with proven external success. Stopping retries changes disposition, not certainty. Acknowledging an unknown observation does not remove the obligation. Collapsing any two of them loses a real fact: a single "status" field cannot say both "the service confirmed it ran" and "the value it returned is unusable", yet an application must act differently on each. [Settlement and refinement](../mechanisms/actions.md#settlement-and-refinement) gives worked cases along each axis.
 
@@ -61,11 +63,11 @@ Admission asked whether a request is permitted. The next three sections define w
 
 A **principal** is an authenticated application identity — a user, a service, or an acting-on-behalf-of identity — with tenant/application scope where applicable. An Execution is not a principal. **Authority** is the upper bound of Kernel-mediated operations/resources available to an Execution. **Policy** decides whether a concrete request is permitted now and can narrow that bound. A **grant** records authority and, when applicable, delegation constraints.
 
-**Delegation** passes only the intersection of requested power, the parent's delegable bound and current policy. Ownership ancestry is not a universal permission edge.
+**Delegation** gives a child only what survives three simultaneous limits: what was requested for it, what the parent was allowed to pass on, and what current policy permits now. A parent that may email one address cannot give a child the power to email any address: the child gets that one address, or nothing. Being created by someone never by itself grants what the creator has. Ancestry is responsibility, not permission (see [Child and ownership](operations.md#child-and-ownership) and delegation under [current policy](../mechanisms/authority.md#check-the-concrete-request)).
 
 ## Exact consent
 
-**Exact consent** is an eligible authenticated human's decision about one immutable logical action: scoped identity, validated arguments, operation version, meaningful account/resource/content bindings and validity/approval policy. Ordinary feedback or standing intent is not that decision. Approving “Plan A” need not approve its eventual recipient and payload. The [consent mechanism](../mechanisms/authority.md#exact-action-consent) owns the full binding and mutation rules.
+**Exact consent** is one human's yes to one unchangeable action. It binds the specific action (which Execution, which logical action), the exact request (validated arguments under a pinned operation version), the real-world targets (the account, resource, or content it will touch), and the approval itself (who may approve, and how long the yes lasts). Ordinary feedback or standing intent is not that decision. Approving “Plan A” need not approve its eventual recipient and payload. The [consent mechanism](../mechanisms/authority.md#exact-action-consent) owns the full binding and mutation rules.
 
 ## Exposure and mediation
 
