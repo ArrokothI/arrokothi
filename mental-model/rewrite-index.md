@@ -440,6 +440,12 @@ non-decision is recorded.
   API or wire spelling.
 
 **Unassigned or deferred ownership**
+- **Driver-to-Execution cardinality.** No `mental-model/` page fixes how many Executions one Driver
+  serves; the rewrite candidate carries an open `TODO` for it. `MM/kernel.md` "What it owns" lists no Driver among an Execution's accepted records — what is
+  pinned is the Runtime contract revision — and `integration.md#support-record` makes the
+  Execution/Activation ↔ native run/session mapping a per-Driver declaration. K1.1's coordinator takes a
+  single `driver` in `CoordinatorOptions`, which is an implementation choice of the in-memory profile,
+  not a protocol rule.
 - Whether an **action dispatcher** is its own concept — open `TODO` in
   `concepts/actions.md#admission-and-physical-action-attempt`.
 - Validator and enforced schema subset for operations — open `TODO`, **K2.2 selects it**.
