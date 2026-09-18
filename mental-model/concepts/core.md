@@ -16,7 +16,7 @@ The Runtime's answer is an **Outcome**: here is my new saved state, here is anyt
 
 The Kernel accepts, and the Execution settles into waiting. Later the editor replies. That reply arrives through a trusted path, the Kernel accepts it, and it becomes an **Event**: an observation addressed to this Execution. An Event never goes straight to the Runtime. It sits in the Execution's **mailbox** until the Kernel pins it into a **batch** and carries it to the Runtime in a new Activation. The Runtime picks up from its saved state, reads the editor's answer, and finishes the report.
 
-That is the entire loop, and the fifteen terms below name its pieces precisely. They fall into four groups, in the order the story used them:
+That is the entire loop, and the fourteen terms below name its pieces precisely. They fall into four groups, in the order the story used them:
 
 - **Who is involved** — [Kernel](#kernel), [Execution](#execution), [Execution Runtime](#execution-runtime) and [Execution Driver](#execution-driver), plus the [Definition](#definition) that pins *which program* an Execution runs and the [Runtime contract](#runtime-contract) that separately pins *how the exchange is read*.
 - **One exchange** — [Activation](#activation) asks; [Outcome](#outcome) answers.
