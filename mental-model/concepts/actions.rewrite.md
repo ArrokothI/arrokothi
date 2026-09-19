@@ -8,7 +8,7 @@ Each term is defined here and nowhere else. How they interact is specified elsew
 
 Return to the weekly report. The Runtime has drafted it. Drafting happened inside the Runtime: model calls, files, whatever the application chose. None of that asked the Kernel to do anything in the world.
 
-Publishing is different. The application controls a publication service, and it wants the Kernel to mediate the send — to check that this Execution may publish, to record that it asked, and to retain whatever evidence comes back. The Runtime cannot do that by calling the service on its own and mentioning it later. A native call the Kernel never saw is not a Kernel-mediated action, and no later story about it becomes one.
+Publishing is different. The application controls a publication service, and it wants the Kernel to mediate the send — to check that this Execution may publish, to record that it asked, and to retain whatever evidence comes back. The Runtime cannot do that by calling the service on its own and reporting the call afterwards. A native call the Kernel never saw is not a Kernel-mediated action, and no later story about it becomes one.
 
 So the Runtime proposes, in its [Outcome](core.md#outcome): please publish this draft. That proposal is an **Effect**. It points at a named **operation** that already exists — `publish_report` — because the Kernel cannot admit, and a person cannot approve, a request that has no stable contract. The Outcome also carries the saved progress and a wait for the publication result. None of this is true yet. An Outcome is still a proposal.
 
@@ -93,9 +93,9 @@ Admission can precede sending. It cannot prove receipt. Writing the attempt reco
 
 Dispatch ownership for an action is fenced independently of the Runtime's [writer epoch](identity.md#writer-epoch). The Runtime attempt that proposed the action and the action dispatch that performs it are two different efforts, with two different fences. A takeover that advances the writer epoch does not, by itself, cancel a publication that has already been admitted, and a stale Runtime Outcome cannot sneak a second intent through by arriving after a replacement attempt has taken over the exchange. <!-- TODO: if a dispatcher is ever defined as its own concept, link "action dispatch" to it -->
 
-Unknown operations, invalid input and unsupported schema constructs refuse before any executor is invoked. A business refusal — the service will not publish to that account — is an observation the Runtime can handle, not necessarily the end of the Execution. Waiting for consent consumes no physical attempt: the request is parked, not half-sent.
+Admission keeps the line between *a request exists* and *something went out to the world* crisp. Before that line, unknown operations, invalid input and unsupported schema constructs refuse with no executor invoked: no attempt exists. Waiting for consent also stays on the near side — it consumes no physical attempt, and the request is parked, not half-sent; nothing reaches the adapter until the human yes arrives. After the line, a business refusal — the service will not publish to that account — is an observation the Runtime can handle, not necessarily the end of the Execution.
 
-Who performs the send, and whether that role is its own concept, is not decided on this page. What is decided is that admission is a Kernel decision, that it records the attempt before the send, and that a recorded attempt is not a received one. [Admission and sending](../mechanisms/actions.md#admission-and-sending) owns the sequence; [authority](../mechanisms/authority.md) owns the ordered permission check.
+Who performs the send, and whether that role is its own concept, is not decided on this page. What is decided is that admission is a Kernel decision, that it records the attempt before the send, and that a recorded attempt does not mean the request reached the service. [Admission and sending](../mechanisms/actions.md#admission-and-sending) owns the sequence; [authority](../mechanisms/authority.md) owns the ordered permission check.
 
 ## Settlement and reconciliation
 
@@ -107,7 +107,7 @@ What settlement records has more than one axis. Keep four dimensions distinct:
 
 | Dimension | Meaning, on the report |
 |---|---|
-| Request disposition | What may happen next: waiting for approval, denied, withdrawn, no more attempts |
+| Request disposition | The fate of the request itself: waiting for approval, denied, withdrawn, settled, or no more attempts |
 | Attempt evidence / certainty | What is known externally: no attempt, may have run, observed success, definite failure, unknown |
 | Result validity | Whether the returned value satisfies the result contract, even if the action ran |
 | Responsibility / obligation | Who still owes settlement or required results: this Execution, a named durable owner, or explicit policy abandonment |
@@ -183,7 +183,7 @@ Not everything a Runtime produces is a request. The remaining terms name its out
 
 An **Emission** is accepted nonterminal output from an Outcome: the draft, a progress note, a partial table. A **terminal result** is output accepted with completion. **Provisional output** is unaccepted diagnostic or streaming content — stdout tokens from a still-running attempt, a reasoning trace that will vanish if that attempt is replaced. A token stream and an accepted Emission can look identical in a terminal. Only one of them survives the attempt being replaced. Provisional streams cannot certify consent, action success or a terminal result, and they must not be spliced into an apparently accepted transcript.
 
-An **output obligation** makes accepted Emissions and results available for authorized, retention-bounded observation and replay. The retained output record itself can fulfill that obligation. Nothing has to be pushed anywhere for the obligation to be discharged: available-to-read is the promise, and it is discharged by having the content available. The older name **publication intent** meant this obligation. Do not reuse it. It sounded like automatic public disclosure, or like sending to a channel, and it was neither.
+An **output obligation** makes accepted Emissions and results available for authorized, retention-bounded observation and replay. The retained output record itself can fulfill that obligation. Nothing has to be pushed anywhere for the obligation to be discharged: available-to-read is the promise, and it is discharged by having the content available. <!-- The older name "publication intent" meant this obligation. Do not reuse it: it sounded like automatic public disclosure, or like sending to a channel, and it was neither. -->
 
 External delivery is a separate application-adapter responsibility. Getting the draft to a person or another service is ordinary mediated action work, with the uncertainty that implies. Delivery can remain pending or unknown after the Execution has completed. If business completion requires a delivery receipt, the Runtime must request that Effect, observe the result, and only then complete. A timeout cannot prove the message was not sent. [Output](../mechanisms/output.md) owns acceptance, replay, retention and the line between observation and sending; [external delivery](../mechanisms/output.md#external-delivery) is the last of those, not a side effect of the first.
 
