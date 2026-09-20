@@ -81,7 +81,7 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 ### Identity, attempts and accepted versions
 
 - [Request key and Input ID](concepts/identity.md#request-key-and-input-id)
-- [Runtime attempt](concepts/identity.md#runtime-attempt)
+- [Activation ID and Runtime attempt](concepts/identity.md#runtime-attempt)
 - [Writer epoch](concepts/identity.md#writer-epoch)
 - [Dispatch and delivery](concepts/identity.md#dispatch-and-delivery)
 - [Revision](concepts/identity.md#revision)

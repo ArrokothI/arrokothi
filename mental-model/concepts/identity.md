@@ -20,6 +20,8 @@ Creation and later input use separate identity domains. Accepting the initial Ev
 
 ## Runtime attempt
 
+An **Activation ID** names one immutable semantic exchange — the pinned progress revision, Event batch and input that [core](core.md#activation) defines — for as long as that exchange stays unresolved. A new one is minted only for a genuinely new exchange, after the previous one has resolved.
+
 A **Runtime attempt** is the currently authorized effort to perform one unresolved Activation exchange. Ordinary re-sending to the Driver is still the same attempt. Authorized takeover creates a replacement attempt of that same exchange. Use **physical action attempt** for a service invocation; it has a different owner and lifecycle.
 
 ## Writer epoch
