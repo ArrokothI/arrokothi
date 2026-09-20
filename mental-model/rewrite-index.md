@@ -63,7 +63,7 @@ Established: versioned executable code/configuration selected for an Execution; 
 only the *pinned revision* and does not interpret the code; creation binds revision + authority +
 initial input in one decision; a later Activation carries it. Same creation key with different
 Definition content is a **conflict that creates nothing**.
-Do not infer: **the exact form a Definition takes — there is an open `TODO` in the page itself.**
+Do not infer: **the exact form a Definition takes — the page carries an `OPEN(unassigned)` marker for it.**
 Do not infer that it is a friendly name, a registry entry, or that the Kernel can validate it.
 
 **Runtime contract** — Owner: `concepts/core.md#runtime-contract`.
@@ -102,8 +102,8 @@ kind, payload, trusted ingress provenance, optional correlation. **Source catego
 input | Kernel timeout | other trusted result/routed observation) is decided by the *ingress path*,
 never by the payload or the kind string. Accepted order is per-Execution only.
 Do not infer: cross-Execution ordering; that a payload claiming to be a settlement is one;
-**how trusted ingress provenance is represented — the page carries an open `TODO` for its own
-defining section.**
+**how trusted ingress provenance is represented — the page carries an `OPEN(unassigned)` marker
+for its own defining section.**
 
 **Mailbox** — Owner: `concepts/core.md#mailbox`.
 Established: the accepted Events addressed to an Execution, each with an *independent* processing
@@ -200,7 +200,7 @@ in order. Mechanism owners: `mechanisms/authority.md` (ordering), `mechanisms/ac
   identity, input/output schema, supported schema features, exact input meaning, result-certainty
   behavior. Identity is stable across revisions and across friendly labels. Operations and
   Activations vary independently.
-  Do not infer: the validator or enforced schema subset — **open `TODO`, K2.2 selects it.** Do not
+  Do not infer: the validator or enforced schema subset — **`OPEN(K2.2)`; K2.2 selects it.** Do not
   infer that a Resource, Service or Skill is an Operation.
 - **Effect** — `#effect`. A proposal for **one** Kernel-mediated action carried in an Outcome.
   Invoking a service and reading governed data point at an Operation; requesting human input,
@@ -216,8 +216,8 @@ in order. Mechanism owners: `mechanisms/authority.md` (ordering), `mechanisms/ac
   authorizes a concrete attempt under authority + current policy + required consent, and records it
   under current **dispatch ownership**, which is fenced **independently of the Runtime's writer
   epoch**. Admission can precede sending but cannot prove receipt.
-  Do not infer: that a dispatcher exists as a named concept — **the page carries an open `TODO`
-  saying it has not been defined.**
+  Do not infer: that a dispatcher exists as a named concept — **the page carries an
+  `OPEN(unassigned)` marker saying it has not been defined.**
 - **Settlement and reconciliation** — `#settlement-and-reconciliation`. Four **conceptual**
   dimensions kept apart: request disposition, attempt evidence/certainty, result validity,
   responsibility/obligation. Reconciliation queries, it does not re-execute.
@@ -423,6 +423,14 @@ correction-01 and reference-01 accepted, cleanup-complete, integrated (PR #28), 
 The rewrite must not resolve any of these by making prose sound definite. Each line names where the
 non-decision is recorded.
 
+**In-page marker convention.** Where a page has to leave one of these visibly open, it carries an
+HTML comment shaped `OPEN(<gate>): <what is undecided>. <what to do here when it closes>.
+rewrite-index.md §4` — `OPEN(K2.2)` when a gate owns the choice, `OPEN(unassigned)` when no owner
+exists yet. The point is that the agent implementing that gate can grep `OPEN(` and find the exact
+prose to revisit, which a bare `TODO` does not tell it. Two rules: a comment does not render, so any
+openness a *reader* needs must also be stated in the prose, and one open item gets one marker — a
+second marker for the same item rots independently of the first.
+
 **Representations and formats**
 - Transport wire codec, framing, compression — `concepts/values.md#codec`, WS §1 "Left open".
 - Receipt serialization / token representation; request-key hashing — `concepts/identity.md#acceptance-boundary-and-receipt`, WS §2.
@@ -434,21 +442,21 @@ non-decision is recorded.
 - Storage schema, timer machinery, cancellation-request storage, rejection encoding — WS §5–§7.
 - Clock units, precision, instant source, lease renewal mechanism — `concepts/operations.md#three-clocks`.
 - Batch maximum (only "finite, ≥ 1" is fixed) — `concepts/core.md#batch-reservation-and-acknowledgment`.
-- **The exact form a Definition takes** — open `TODO` in `concepts/core.md#definition`.
-- **A defining section for trusted ingress provenance** — open `TODO` in `concepts/core.md#event`.
+- **The exact form a Definition takes** — `OPEN(unassigned)` in `concepts/core.md#definition`.
+- **A defining section for trusted ingress provenance** — `OPEN(unassigned)` in `concepts/core.md#event`.
 - API spelling generally: `concepts/identity.md` states its names are conceptual and do not freeze
   API or wire spelling.
 
 **Unassigned or deferred ownership**
 - **Driver-to-Execution cardinality.** No `mental-model/` page fixes how many Executions one Driver
-  serves; the rewrite candidate carries an open `TODO` for it. `MM/kernel.md` "What it owns" lists no Driver among an Execution's accepted records — what is
+  serves; `concepts/core.md#execution-driver` carries an `OPEN(unassigned)` marker for it. `MM/kernel.md` "What it owns" lists no Driver among an Execution's accepted records — what is
   pinned is the Runtime contract revision — and `integration.md#support-record` makes the
   Execution/Activation ↔ native run/session mapping a per-Driver declaration. K1.1's coordinator takes a
   single `driver` in `CoordinatorOptions`, which is an implementation choice of the in-memory profile,
   not a protocol rule.
-- Whether an **action dispatcher** is its own concept — open `TODO` in
+- Whether an **action dispatcher** is its own concept — `OPEN(unassigned)` in
   `concepts/actions.md#admission-and-physical-action-attempt`.
-- Validator and enforced schema subset for operations — open `TODO`, **K2.2 selects it**.
+- Validator and enforced schema subset for operations — `OPEN(K2.2)`, **K2.2 selects it**.
 - Concrete policy/consent representation, grant language, remote policy backend, actual remote
   freshness — K2 (`mechanisms/authority.md` preamble; K0/K1 promise none).
 - Driver-specific phase recovery guarantees — R1 (`mechanisms/recovery.md`, `integration.md`).

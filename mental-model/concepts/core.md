@@ -75,7 +75,7 @@ Declaring honestly includes declaring nothing. "This integration cannot prove sa
 
 A Driver is an adapter, not a second scheduler, a required service or a necessary process boundary. A Driver can be an in-process function, a subprocess client or a remote-job adapter, and the logical route Kernel → Driver → Runtime does not imply two physical hops.
 
-How many Executions one Driver serves is not yet established. <!-- TODO: establish the Driver-to-Execution mapping relationship; only the two facts below are settled -->
+How many Executions one Driver serves is not yet established. <!-- OPEN(unassigned): how many Executions one Driver serves. Only the two facts below are settled. Whoever assigns an owner: state the rule here and delete this marker; until then prose must not imply an arrangement. rewrite-index.md §4 -->
 
 Two facts bound the question without answering it. A Driver adapts one particular Runtime, not one particular Execution. And what an Execution pins at [creation](../mechanisms/creation.md#one-atomic-creation) is the [Runtime contract](#runtime-contract) revision, not an adapter — that binding names no Driver at all — so it neither requires nor forbids a Driver per Execution.
 
@@ -95,7 +95,7 @@ That answer stays deliberately small. It says the hand-off was acknowledged, or 
 
 ## Definition
 
-A **Definition** is the versioned executable code or configuration <!-- TODO: pin down the exact form a Definition takes --> selected for an Execution. What the Kernel holds is the pinned revision; it does not interpret the code. It answers *which program*, not just a friendly name.
+A **Definition** is the versioned executable code or configuration <!-- OPEN(unassigned): the exact form a Definition and its pinned revision take. When an owner fixes the form: replace "code or configuration" here, rewrite this entry's closing paragraph, and delete this marker. rewrite-index.md §4 --> selected for an Execution. What the Kernel holds is the pinned revision; it does not interpret the code. It answers *which program*, not just a friendly name.
 
 Two things are named in that first sentence, and keeping them apart makes the rest of this entry easier to follow. The Definition is the program itself: the code or configuration that prepares the weekly report. A Definition [revision](identity.md#revision) is one exact version of that program. What the Kernel holds is the pinned revision rather than the program, and it does not interpret the program in any case — the revision is just enough to say which program an Execution runs without knowing anything about what the program does.
 
@@ -106,7 +106,7 @@ Creation binds that revision together with the Execution's authority and its ini
 Because the revision is bound at creation, a retried creation request cannot quietly change it. Retrying with the same caller-scoped key but different Definition content is a conflict that creates nothing, not an update to the program. The key is a promise that this is the same request as before; letting different content through under it would turn the retry path into a way of changing what an Execution runs without anyone deciding to.
 
 What form a pinned Definition revision actually takes is still open, as the first sentence of this entry marks. What is fixed is that the Kernel holds it and does not interpret it.
-<!-- TODO: fix the form of a pinned Definition revision --> 
+
 ## Runtime contract
 
 A **Runtime contract** is the separate versioned agreement through which the Driver interprets an Activation into a native call and a native result into an Outcome and progress. The Kernel holds only its pinned revision. Compatibility is decided by this pin, never by an Agent or Workflow tag.
@@ -156,7 +156,7 @@ Several things that travel between Kernel and Runtime are emphatically not Outco
 
 An Outcome often ends by asking for something the Runtime cannot produce by itself: an editor's answer, a service's result, a reply from another Execution. What eventually arrives is an Event.
 
-An **Event** is an immutable accepted observation addressed to an Execution. It has [identity](identity.md#request-key-and-input-id), a destination, a kind, a payload and trusted ingress provenance; <!-- TODO: give trusted ingress provenance its own defining section --> correlation is included when needed.
+An **Event** is an immutable accepted observation addressed to an Execution. It has [identity](identity.md#request-key-and-input-id), a destination, a kind, a payload and trusted ingress provenance; <!-- OPEN(unassigned): trusted ingress provenance has no defining section of its own. Whoever writes one: define it there, reduce this clause to a link, and delete this marker. rewrite-index.md §4 --> correlation is included when needed.
 
 Each of those fields answers a different question. The **destination** says which Execution the observation is addressed to. The **kind** is a short label naming what sort of observation this is — an editor's correction, a publication result — which a Runtime can branch on and a [wait](#wait-subscription-and-generation) can select by. The **payload** carries the content. **Trusted ingress provenance** records the path the observation arrived through, and is the subject of the rest of this entry. **Correlation**, where it is present, ties the observation to the request or dependency it concerns.
 
