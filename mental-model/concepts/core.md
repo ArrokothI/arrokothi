@@ -77,7 +77,7 @@ A Driver is an adapter, not a second scheduler, a required service or a necessar
 
 How many Executions one Driver serves is not yet established. <!-- TODO: establish the Driver-to-Execution mapping relationship; only the two facts below are settled -->
 
-Two facts bound the question without answering it. A Driver adapts one particular Runtime, not one particular Execution. And no Driver identity appears in the Kernel's accepted record of an Execution — what an Execution pins at creation is the [Runtime contract](#runtime-contract) revision, not an adapter — so the Kernel's own records neither require nor forbid a Driver per Execution.
+Two facts bound the question without answering it. A Driver adapts one particular Runtime, not one particular Execution. And what an Execution pins at [creation](../mechanisms/creation.md#one-atomic-creation) is the [Runtime contract](#runtime-contract) revision, not an adapter — that binding names no Driver at all — so it neither requires nor forbids a Driver per Execution.
 
 Whether a deployment shares one Driver across many Executions, builds one per Execution, or replaces the Driver behind a long-lived Execution, is not decided here. The absence of a rule is an open question, not permission to assume whichever arrangement is convenient.
 

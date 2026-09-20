@@ -112,7 +112,7 @@ What settlement records has more than one axis. Keep four dimensions distinct:
 | Request disposition | The fate of the request itself: waiting for approval, denied, withdrawn, or no more attempts |
 | Attempt evidence / certainty | What is known externally: no attempt, may have run, observed success, definite failure, unknown |
 | Result validity | Whether the returned value satisfies the result contract, even if the action ran |
-| Responsibility / obligation | Who still owes settlement or required results: this Execution, a named durable owner such as a child the work was transferred to, or explicit policy abandonment — a cancelled Execution whose still-unknown attempt is recorded but no longer owed |
+| Responsibility / obligation | Who still owes settlement or required results: this Execution, another named durable owner that explicitly accepted it, or an explicit policy decision to abandon it — which ending the Execution does not by itself make |
 
 These are conceptual dimensions, not a mandated enum cross-product. An implementation is not required to store a cell for every combination. It is required not to collapse any two of them into one field that cannot tell them apart.
 
@@ -153,7 +153,7 @@ Ordinary feedback is not that decision. Standing intent is not that decision. Ap
 
 The gap this term exists to close is the gap between what a person was shown and what the adapter sends. Once the yes is given, the request is frozen: anything that changes what it means — different arguments, a different account, different content under the same name, a different operation revision, a default quietly filled in on the way out — makes it a different request, and a different request needs its own decision. [Exact action consent](../mechanisms/authority.md#exact-action-consent) owns the full binding and the mutation rules, down to why a hash of the draft does not prove that anyone read the draft.
 
-One yes covers one logical action, including safe physical retries of that action while the yes is still valid, and not the next action that happens to look the same. Whether a person approved an action and what then becomes of it are two different facts. Even with the yes in hand, the action can still be denied, [withdrawn](#withdrawal-and-compensation) or expire. Multi-approver policy is optional, not required for the idea to make sense.
+One yes normally covers one logical action, including safe physical retries of that action while the yes is still valid, and not the next action that happens to look the same. Whether a person approved an action and what then becomes of it are two different facts. Even with the yes in hand, the action can still be denied, [withdrawn](#withdrawal-and-compensation) or expire. Multi-approver policy is optional, not required for the idea to make sense.
 
 A reply to a human input request is an observation, not this. Settling "which region should I search?" does not publish the report.
 
