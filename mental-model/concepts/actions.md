@@ -41,7 +41,7 @@ The contract has five parts, and they answer five different questions:
 
 1. **Identity.** The stable name across every revision, so `publish_report` remains `publish_report` when its schema moves from revision 2 to revision 3. Admission, approval and evidence all point at this name plus a pinned [revision](identity.md#revision).
 2. **Input and output schema.** The shape of arguments and results: `publish_report` takes `{ reportRef }` and returns `{ publishedAt }`.
-3. **Supported schema features.** Which parts of that shape are actually enforced. An unknown property on the argument is refused instead of silently dropped, and a missing field gets no substituted default. <!-- OPEN(K2.2): the validator and the enforced schema subset. When K2.2 selects them: restate part 3 and the closing paragraph of this section in their terms, and delete this marker. rewrite-index.md §4 -->
+3. **Supported schema features.** Which parts of that shape are actually enforced, and how strictly — whether an argument carrying a property the schema does not name is refused or ignored, and whether a missing field can be filled in. <!-- OPEN(K2.2): the validator and the enforced schema subset. When K2.2 selects them: restate part 3 and the closing paragraph of this section in their terms, and delete this marker. rewrite-index.md §4 -->
 4. **Exact input meaning.** What a valid-looking argument truly asks for. `reportRef` must name the exact reviewed revision, not any string of the right shape.
 5. **Result-certainty behaviour.** What an attempt can ever prove afterwards: whether "definitely failed to publish" is even reachable, or whether every failed attempt stays [unknown](#settlement-and-reconciliation).
 
@@ -53,7 +53,7 @@ Nearby contracts are easy to confuse with an operation because they also have na
 
 Operations and [Activations](core.md#activation) vary independently. One Activation can propose many operations. Many Activations can name the same operation over time. The Activation is the exchange; the operation is the kind of work.
 
-Part 3 settles which subset of a schema is enforced, because that is a property of the operation. It does not settle which validator an implementation uses to enforce it. That is a separate choice, and not one this page makes.
+Part 3 is where an operation declares its own enforcement, because that is a property of the operation. Which schema features the protocol supports at all, and which validator enforces them, are not settled on this page.
 
 ## Effect
 
