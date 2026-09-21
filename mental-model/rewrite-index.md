@@ -173,7 +173,7 @@ attempt / writer epoch), sends (dispatch / delivery), accepted states (revisions
   Activation; monotonic within that exchange; advanced **only** by authenticated takeover. It
   fences **the entire Outcome acceptance** (batch acknowledgment, progress, emissions, Effect
   intents, wait/deadline, readiness, next state) — not progress alone. Not authentication; not a
-  lock on a native session or filesystem. Former name "attempt epoch" — do not reuse.
+  lock on a native session or filesystem.
   Do not infer: **whether it resets across a later Activation — that is implementation-owned**
   (WS ID-4; over-constraining it is the K0.2 round-13 defect, §5).
 - **Dispatch and delivery** — `#dispatch-and-delivery`. Dispatch = Kernel preparing and sending one
@@ -242,7 +242,7 @@ in order. Mechanism owners: `mechanisms/authority.md` (ordering), `mechanisms/ac
   authorized action, not rollback of external history.
 - **Emission, result, provisional output, output obligation** — `#emission-result-and-output-obligation`.
   Output obligation = make accepted output available for authorized, retention-bounded
-  observation/replay. Older name "publication intent" — do not reuse. External delivery is separate
+  observation/replay. External delivery is separate
   adapter work (`mechanisms/output.md#external-delivery`).
 
 ### 1.6 Operational vocabulary
@@ -309,8 +309,7 @@ what it proves.*
   an Agent transcript, business database or deterministic replay engine.
 - **Structured state / Derived Semantic Memory / Working Notes** — ordered by trust, not by
   storage. A model inference in valid JSON is not an assertion. **Promotion** is an explicit
-  validated application decision and grants no authority. Former name "Structured Memory" — use
-  structured state.
+  validated application decision and grants no authority.
 - **Artifact reference** — `#artifact-reference`. A bundle of facts crossing the protocol (store,
   object, required immutable version/digest, media hint, size, access owner, retention
   responsibility). A URL or hash supplies neither access nor availability.
@@ -566,9 +565,7 @@ failure modes a rewrite most easily reintroduces.
     `state.md#state-service-contract`.
 20. **Treating Runtime internals as Kernel concepts.** Model loops, graph nodes, compaction, native
     memory, provider checkpoints, local branches and local controls stay behind the Driver unless
-    Kernel correctness depends on the contract. `ControllerResumption` and a closed Agent/Workflow
-    union are **retired legacy vocabulary**, not target concepts. Owners: `MM/runtime.md`,
-    `reference.md` former-names table; WS W-4/W-5.
+    Kernel correctness depends on the contract. Owners: `MM/runtime.md`; WS W-4/W-5.
 21. **A provider example is a portable contract.** A second independently designed Runtime is
     required before an integration-specific extension becomes portable. Owner: `MM/driver.md`,
     `integration.md#evidence-before-support`.

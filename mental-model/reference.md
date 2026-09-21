@@ -136,18 +136,16 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 - [Fixed semantic limits](concepts/values.md#fixed-semantic-limits)
 - [What these rules do not cover](concepts/values.md#what-these-rules-do-not-cover)
 
-## Former names and common search terms
+## Common search terms
 
 | Search term | Use this owner |
 |---|---|
-| attempt epoch, attempt envelope, exchange | [Activation/attempt/epoch](concepts/identity.md#writer-epoch) |
+| attempt envelope, exchange | [Activation/attempt/epoch](concepts/identity.md#writer-epoch) |
 | delivery, Execution dispatch | [Qualified dispatch and delivery](concepts/identity.md#dispatch-and-delivery) |
 | canonical, canonicalization, codec, equality | [Values](concepts/values.md) |
-| publication intent, output subscription | [Output obligation](concepts/actions.md#emission-result-and-output-obligation), [replay](mechanisms/output.md) |
-| Structured Memory | [Structured state](concepts/state.md#structured-state) |
+| output obligation, output subscription | [Output obligation](concepts/actions.md#emission-result-and-output-obligation), [replay](mechanisms/output.md) |
 | boundary, receipt, acceptance position | [Acceptance and receipt](concepts/identity.md#acceptance-boundary-and-receipt) |
 | worker, runtime, host | [Runtime](concepts/core.md#execution-runtime), [local worker](concepts/roles.md#local-worker), [host roles](concepts/operations.md) |
 | Agent, Workflow, Stage, Skill, “runtime concepts”, authoring | [Roles vocabulary](concepts/roles.md) |
-| ControllerResumption, interleave, closed Agent/Workflow union | Legacy implementation vocabulary; [baseline](../docs/development/002-implemented-kernel-baseline.md) and [target separation](mechanisms/evidence.md#structural-evidence) |
 
 Ordinary words such as process, queue, model, database and transport retain their normal engineering meanings unless qualified above. This index introduces no universal object hierarchy. [Sources and open choices](sources.md) records provenance, accepted decision coverage, usability findings and intentionally unselected implementation choices.

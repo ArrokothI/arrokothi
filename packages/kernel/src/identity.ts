@@ -35,12 +35,12 @@ export interface InputId {
 }
 
 /**
- * A caller-scoped creation key: the same retry idea before an Execution exists.
+ * A Creation request ID: the same retry idea before an Execution exists.
  *
- * The destination member of an Input ID has no value yet, so the scope is the authenticated caller
- * namespace together with the authority scope the creation asks for.
+ * No destination Execution exists yet. The producer namespace comes from authentication; `scope`
+ * is the selected creation authority scope, and `requestKey` is the caller's creation-key text.
  */
-export interface CreationKeyId {
+export interface CreationRequestId {
   readonly producerNamespace: string;
   readonly scope: string;
   readonly requestKey: string;
@@ -97,7 +97,7 @@ export const packIdentity = (parts: readonly string[]): string => {
 };
 
 export const inputIdKey = (id: InputId): string => packIdentity([id.producerNamespace, id.destination, id.requestKey]);
-export const creationKeyIdKey = (id: CreationKeyId): string => packIdentity([id.producerNamespace, id.scope, id.requestKey]);
+export const creationRequestIdKey = (id: CreationRequestId): string => packIdentity([id.producerNamespace, id.scope, id.requestKey]);
 
 /**
  * The acceptance boundaries this packet implements.

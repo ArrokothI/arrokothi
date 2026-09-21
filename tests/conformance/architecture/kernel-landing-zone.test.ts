@@ -203,7 +203,7 @@ describe("K1.0 target Kernel landing zone", () => {
       "UnsupportedKernelSurfaceError",
       "boundaryValueIssues",
       "canonicalize",
-      "creationKeyIdKey",
+      "creationRequestIdKey",
       "err",
       "inputIdKey",
       "isBoundaryValue",

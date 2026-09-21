@@ -93,7 +93,7 @@ The example uses K2 target actions to connect the protocol; it is not a shipped 
 | 1 | Application retries a lost create response with the same scoped key. Both calls identify Execution E. |
 | 2 | Kernel reserves input I for Activation A, progress 0, epoch 1. Driver delivery can repeat without changing those fields. |
 | 3 | Runtime proposes draft progress, Effect `publish`, and `await(publish)`. Kernel accepts all intent/progress together at progress 1. |
-| 4 | The submitter loses the response. Its exact Outcome retry returns the original receipt; it creates no second publication intent. |
+| 4 | The submitter loses the response. Its exact Outcome retry returns the original receipt; it creates no second intent to publish the report. |
 | 5 | Publication is separately admitted. Trusted service evidence is accepted as result Event R with applicable readiness. |
 | 6 | Activation B carries R and progress 1. Runtime accounts for R and proposes completion without new Effects. |
 | 7 | Kernel accepts the terminal result and output obligation. A UI's later observation does not acknowledge any Event or send a message. |

@@ -12,7 +12,7 @@ Each identity answers a different "same as what?" question. Request key and Inpu
 
 In request identity vocabulary, a **key** is the caller's local text for a request. An **ID** names the complete identity of the thing being identified. The distinction is about meaning, not representation: an Input ID has multiple components, while an Execution ID may be an opaque string. Encoding a composite ID as text does not turn it into a caller's request key. Use **lookup key** for a storage encoding, and qualify other uses of “key,” such as an Effect's local proposal key.
 
-Use **creation key** for the request-key text supplied on creation, and **Creation request ID** for the complete identity used to recognize that create request. Older material calls the complete identity a “caller-scoped creation key”; that name blurred the text and its context. The distinction changes terminology, not retry behavior or existing API names.
+Use **creation key** for the request-key text supplied on creation, and **Creation request ID** for the complete identity used to recognize that create request.
 
 **Scope** states the context within which a rule applies; always name the rule and its context. For request identity, name the components that distinguish requests. For authority, name the permitted application/resource domain. For a receipt, name the acceptance boundary its evidence covers. These uses do not imply one shared scope object, and an identity component does not grant access.
 
@@ -24,7 +24,7 @@ An **Input ID** is a triple: authenticated producer namespace, destination Execu
 
 A **Creation request ID** identifies one create request before a destination Execution exists. It combines the caller context with the creation key; its binding includes the complete creation content. In the in-process TypeScript binding, the components are `(authenticated producer namespace, creation authority scope, creation key)`. The namespace comes from authentication. The creation authority scope is the application domain selected for the new Execution, which the caller must be authorized to use. The caller's full list of permitted scopes is not part of this identity.
 
-For example, `(app-A, tenant-X, report-17)` and `(app-A, tenant-Y, report-17)` name different create requests in that binding, as do `(app-B, tenant-X, report-17)` and `(app-A, tenant-X, report-17)`. Only repeating the complete Creation request ID asks about the same request; equal content replays the retained decision and changed content conflicts. The binding spells out the caller context rather than hiding it in an unexplained “scope” field. This defines no new durable object or universal wire representation; the [implementation mapping](../../docs/development/002-implemented-kernel-baseline.md#request-identity-terminology-and-api-mapping) relates these terms to existing code names.
+For example, `(app-A, tenant-X, report-17)` and `(app-A, tenant-Y, report-17)` name different create requests in that binding, as do `(app-B, tenant-X, report-17)` and `(app-A, tenant-X, report-17)`. Only repeating the complete Creation request ID asks about the same request; equal content replays the retained decision and changed content conflicts. The binding spells out the caller context rather than hiding it in an unexplained “scope” field. This defines no new durable object or universal wire representation; the [request identity API](../../docs/development/002-implemented-kernel-baseline.md#request-identity-api) documents the TypeScript binding.
 
 Creation and later input use separate identity domains. Accepting the initial Event during creation does not consume a post-creation Input ID. A later input from that same producer may reuse the creation-key text: it is a new ingress request, not a creation replay or conflict. The initial Event retains creation provenance and a creation receipt; only later ingress participates in Input-ID replay/conflict lookup. See the [reuse example](../mechanisms/creation.md#later-input-has-a-destination).
 
@@ -40,7 +40,7 @@ A **writer epoch** identifies which Runtime attempt's Outcome may be accepted fo
 
 It fences **the entire Outcome acceptance**: batch acknowledgment, progress, emissions, Effect intents, wait/deadline, readiness and next state. It does not protect progress alone. The token is not authentication or a lock on a native session/filesystem. An already accepted exact duplicate instead returns its original receipt.
 
-“Attempt epoch” formerly meant this writer epoch; use **writer epoch** consistently. An **attempt envelope** is the transport/protocol wrapper carrying attempt metadata around the immutable exchange. It is not another epoch, identity or recovery mechanism. Takeover can replace the attempt metadata without changing the exchange's semantic input.
+An **attempt envelope** is the transport/protocol wrapper carrying attempt metadata around the immutable exchange. It is not another epoch, identity or recovery mechanism. Takeover can replace the attempt metadata without changing the exchange's semantic input.
 
 ## Dispatch and delivery
 

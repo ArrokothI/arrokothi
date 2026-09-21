@@ -187,6 +187,4 @@ An **Emission** is accepted nonterminal output from an Outcome: the draft, a pro
 
 An **output obligation** makes accepted Emissions and results available for authorized, retention-bounded observation and replay. Nothing has to be pushed anywhere for it to be discharged: available-to-read is the whole promise, and the retained record itself keeps it.
 
-An older name for this obligation, **publication intent**, is not used on these pages. It sounded like automatic public disclosure, or like sending to a channel, and it meant neither.
-
 External delivery is a separate application-adapter responsibility. Getting the draft to a person or another service is ordinary mediated action work, with all the uncertainty that implies, and it can still be pending after the Execution has completed. If business completion depends on a delivery receipt, that receipt has to be requested and observed as an Effect like any other before completing. [Output](../mechanisms/output.md) owns acceptance, replay, retention and the line between observation and sending; [external delivery](../mechanisms/output.md#external-delivery) is the last of those, not a side effect of the first.

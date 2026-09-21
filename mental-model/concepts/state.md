@@ -34,7 +34,7 @@ A **checkpoint** identifies a specific resumable native state plus compatible co
 
 The next three terms describe retained information a Runtime works with, ordered by how much weight it can bear: an asserted application value, an inference that may be wrong, and a scratch note. The names differ because the trust differs, not because the storage does.
 
-**Structured state** means deliberately asserted, schema-bound application values. “Structured Memory” is the older name for the same role; prefer structured state. A model inference in valid JSON is not an application assertion merely because it has a schema. The application/resource service owns validation, revisions and retention.
+**Structured state** means deliberately asserted, schema-bound application values. A model inference in valid JSON is not an application assertion merely because it has a schema. The application/resource service owns validation, revisions and retention.
 
 ## Derived Semantic Memory
 

@@ -40,8 +40,8 @@ export type {
 
 export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
 
-export { creationKeyIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
-export type { AuthenticatedCaller, CreationKeyId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";
+export { creationRequestIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
+export type { AuthenticatedCaller, CreationRequestId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";
 
 export type {
   ActivationView,
