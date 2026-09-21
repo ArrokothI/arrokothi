@@ -437,6 +437,12 @@ second marker for the same item rots independently of the first.
 **Representations and formats**
 - Transport wire codec, framing, compression — `concepts/values.md#codec`, WS §1 "Left open".
 - Receipt serialization / token representation; request-key hashing — `concepts/identity.md#acceptance-boundary-and-receipt`, WS §2.
+- **How a Creation request ID carries the caller's context** — as one component or two, and under
+  what names — `concepts/identity.md#request-key-and-input-id`. The in-process binding uses producer
+  namespace plus the selected creation authority scope; that spelling introduces no "creation request
+  scope" object and fixes no wire representation. What the architecture fixes is only that the ID
+  combines caller context with the creation key and covers the complete creation content. The
+  implementation records its own answer in BASELINE `#request-identity-api`.
 - Writer-epoch representation, and **whether it resets across a later Activation** —
   `concepts/identity.md#writer-epoch`, WS ID-4, K0.2 `K02-R13-01`. (K1.1-DEC-2 chose one epoch per
   exchange starting at 1 — an *implementation* choice, not architecture.)
