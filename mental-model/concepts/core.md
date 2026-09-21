@@ -103,7 +103,7 @@ Pinning one revision, rather than resolving a name whenever the program is neede
 
 Creation binds that revision together with the Execution's authority and its initial input in one accepted decision. Binding them together rather than in sequence is what stops an Execution from existing in a state with no accepted meaning — a lifetime that has an ID but no answer yet to who may act for it or which code reads its progress. [One atomic creation](../mechanisms/creation.md#one-atomic-creation) owns that rule.
 
-Because the revision is bound at creation, a retried creation request cannot quietly change it. Retrying with the same caller-scoped key but different Definition content is a conflict that creates nothing, not an update to the program. The key is a promise that this is the same request as before; letting different content through under it would turn the retry path into a way of changing what an Execution runs without anyone deciding to.
+Because the revision is bound at creation, a retried creation request cannot quietly change it. Retrying with the same [Creation request ID](identity.md#request-key-and-input-id) but different Definition content is a conflict that creates nothing, not an update to the program. The complete identity includes the caller's creation key and its caller context; letting different content through under that identity would turn the retry path into a way of changing what an Execution runs without anyone deciding to.
 
 What form a pinned Definition revision actually takes is still open, as the first sentence of this entry marks. What is fixed is that the Kernel holds it and does not interpret it.
 

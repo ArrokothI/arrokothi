@@ -61,7 +61,7 @@ against an interface proves fidelity.
 `mechanisms/creation.md#one-atomic-creation`.
 Established: versioned executable code/configuration selected for an Execution; the Kernel holds
 only the *pinned revision* and does not interpret the code; creation binds revision + authority +
-initial input in one decision; a later Activation carries it. Same creation key with different
+initial input in one decision; a later Activation carries it. Same Creation request ID with different
 Definition content is a **conflict that creates nothing**.
 Do not infer: **the exact form a Definition takes — the page carries an `OPEN(unassigned)` marker for it.**
 Do not infer that it is a friendly name, a registry entry, or that the Kernel can validate it.
@@ -154,8 +154,12 @@ different "same as what?" — requests (request key / Input ID), efforts at one 
 attempt / writer epoch), sends (dispatch / delivery), accepted states (revisions), coverage
 (receipts).
 
-- **Request key / Input ID / caller-scoped creation key** — `#request-key-and-input-id`.
-  Request key is caller-chosen and reused on retry; **not** a content hash. Input ID is the triple
+- **Request key / creation key / Creation request ID / Input ID** — `#request-key-and-input-id`.
+  Request key is caller-chosen text reused on retry; a creation key is that text for creation.
+  Creation request ID names the complete create-request identity; its in-process binding includes
+  producer namespace, selected creation authority scope and creation key. Naming convention:
+  `concepts/identity.md#keys-ids-and-scope`; an ID need not have a composite representation.
+  No new “creation request scope” object is introduced. Request keys are **not** content hashes. Input ID is the triple
   (authenticated producer namespace, destination Execution ID, producer request key); namespace
   comes from trusted principal context, never a payload field. **Creation and later input use
   separate identity domains** — accepting the initial Event during creation does *not* consume a
@@ -355,7 +359,7 @@ gate's contract, not a shipped claim.**
 
 | Mechanism | Owner | Status / gate | Principal participants | Prerequisite concepts | Neighbours | K0.1–K1.1 evidence | Boundary to hold |
 |---|---|---|---|---|---|---|---|
-| Creation & input ingress | `mechanisms/creation.md` | Kernel, K1.1 | application, Kernel | creation key, Input ID, Definition, mailbox, readiness | execution-cycle, lifecycle, evidence(retention) | WS ID-1/ID-2/ID-7; K1.1-C1/C2; KC1-DEC-1 | Creation and post-creation ingress are **separate identity domains**; different content under one key is a conflict, never an update |
+| Creation & input ingress | `mechanisms/creation.md` | Kernel, K1.1 | application, Kernel | Creation request ID, Input ID, Definition, mailbox, readiness | execution-cycle, lifecycle, evidence(retention) | WS ID-1/ID-2/ID-7; K1.1-C1/C2; KC1-DEC-1 | Creation and post-creation ingress are **separate identity domains**; different content under one key is a conflict, never an update |
 | Execution cycle | `mechanisms/execution-cycle.md` | Kernel, K1.1–K1.2 (Effect intents K2.1) | Kernel, Driver, Runtime | Activation, Outcome, batch, epoch, revisions, view | waits (input selection), lifecycle (cancellation), recovery | WS ID-3/ID-4/ID-9, OA-1–OA-6, EF-1/EF-2; K1.1-C4/C5; KC1-ARCH-1 | Dispatch pins before sending; acceptance is one atomic step; **delivery reporting is not an exchange** |
 | — Delivery reporting boundary | `execution-cycle.md#delivery-reporting-boundary` | Kernel, K1.1-correction-01 | Kernel (owns attempt evidence), Driver (owns its promises) | dispatch intent, attempt | integration.md (adapter obligation) | decision-01 `KC1-ARCH-1`; review-08 | `deliver(...): undefined`; first report wins; report changes **no** accepted state; late report settles only its own retained attempt |
 | Waits & batch selection | `mechanisms/waits.md` | Kernel, K1.3 | Kernel, Runtime | wait, generation, source category, readiness, timeout Event | execution-cycle, lifecycle, communication | WS B-1–B-8, CL-1–CL-3, W-1–W-9; K0.2 round 16 | Eligibility by **trusted source category first**; any eligible wake retires the **whole** registration; mandatory member cannot be displaced by older backlog at any bound |
@@ -544,7 +548,7 @@ failure modes a rewrite most easily reintroduces.
 15. **Inferring API parameters from an atomic semantic binding.** Creation binding Execution ID,
     Definition revision, authority and initial input in one accepted decision fixes *atomicity*, not
     a signature, a field list or a wire shape. Owner: `creation.md#one-atomic-creation`.
-16. **Creation key and Input ID are one domain.** They are separate; the initial Event keeps creation
+16. **Creation request ID and Input ID are one domain.** They are separate; the initial Event keeps creation
     provenance and a creation receipt, and later ingress with the same key text is a new request.
     Evidence: `K11-R15-ID-01`.
 17. **Logical responsibility implies physical deployment.** The Layer-1 diagram describes

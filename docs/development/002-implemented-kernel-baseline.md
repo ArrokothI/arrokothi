@@ -46,6 +46,29 @@ implement?** Canonical meaning remains with the owners in the [reference index](
 Paths below are representative rather than exhaustive; the conformance suite is the executable
 evidence.
 
+## Request identity terminology and API mapping
+
+The documentation naming clarification distinguishes the caller's text **creation key** from the
+complete **Creation request ID**; [identity vocabulary](../../mental-model/concepts/identity.md#keys-ids-and-scope)
+owns that convention. This is a terminology correction, not a change to deduplication, authority,
+stored identities or exported API names. K1.1's accepted correction H5
+`52b1600f3b42e3a360fdc3395178f1d147edf304` already contains the following representation:
+
+| Documentation term | Existing TypeScript name | Meaning |
+|---|---|---|
+| Creation key | `CreateExecutionRequest.creationKey: string` | Caller-chosen request-key text |
+| Creation request ID | `CreationKeyId` | `{ producerNamespace, scope, requestKey }`; `scope` is the selected creation authority scope |
+| Creation identity lookup key | `creationKeyIdKey(...)` | Packed string encoding of those three identity components |
+| Input ID | `InputId` | `{ producerNamespace, destination, requestKey }` |
+| Input identity lookup key | `inputIdKey(...)` | Packed string encoding of the Input ID |
+
+The host supplies `AuthenticatedCaller.namespace` through authentication. Creation selects one
+authority scope that the caller may reach; `AuthenticatedCaller.scopes` is the separate permission
+list, not the creation identity's scope value. The creation key becomes `CreationKeyId.requestKey`.
+`packages/kernel/tests/creation.test.ts` covers separation both between producers and between two
+authority scopes of one producer. Historical K0.1–K1.1 records retain “caller-scoped creation key”
+as written; no sealed record or implementation symbol is renamed by this clarification.
+
 ## 1. Execution and Harness
 
 **Implemented capability.** Independent Execution identities; lifecycle transitions; serialized

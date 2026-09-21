@@ -8,13 +8,23 @@ Follow one Execution through these terms before the detailed definitions below. 
 
 Each identity answers a different "same as what?" question. Request key and Input ID say whether two *requests from a caller* are the same. Runtime attempt and writer epoch say whether two *efforts to answer one Activation* are the same, and which one is allowed to win. Dispatch and delivery say whether two *sends* are the same. Revisions say whether two *accepted states* are the same. Receipts say what an accepted answer *covers*. Reusing one of these for another's question is the usual source of duplicate work or lost work — the [execution cycle](../mechanisms/execution-cycle.md#retry-versus-takeover) shows the three cases where this matters most.
 
+## Keys, IDs and scope
+
+In request identity vocabulary, a **key** is the caller's local text for a request. An **ID** names the complete identity of the thing being identified. The distinction is about meaning, not representation: an Input ID has multiple components, while an Execution ID may be an opaque string. Encoding a composite ID as text does not turn it into a caller's request key. Use **lookup key** for a storage encoding, and qualify other uses of “key,” such as an Effect's local proposal key.
+
+Use **creation key** for the request-key text supplied on creation, and **Creation request ID** for the complete identity used to recognize that create request. Older material calls the complete identity a “caller-scoped creation key”; that name blurred the text and its context. The distinction changes terminology, not retry behavior or existing API names.
+
+**Scope** states the context within which a rule applies; always name the rule and its context. For request identity, name the components that distinguish requests. For authority, name the permitted application/resource domain. For a receipt, name the acceptance boundary its evidence covers. These uses do not imply one shared scope object, and an identity component does not grant access.
+
 ## Request key and Input ID
 
-A **request key** is a caller-chosen identifier reused when retrying one intended request, such as `submit-report-17`. It is not a content hash: two intentional requests may carry identical content and must still be distinguishable.
+A **request key** is caller-chosen text reused when retrying one intended request, such as `submit-report-17`. It is not a content hash: two intentional requests may carry identical content and must still be distinguishable.
 
 An **Input ID** is a triple: authenticated producer namespace, destination Execution ID, and producer request key. The namespace comes from trusted principal context, not a payload's self-declared `user_id`. Two producers can use the text `17` without colliding; the same producer sending `17` to two Executions also names different inputs. It is never a global cross-tenant deduplication ID.
 
-A **caller-scoped creation key** applies the same retry idea to creation, before an Execution exists: the authenticated caller scope and request key identify one create request, and its binding includes the complete creation content. This is a scope rule, not a new durable object type or a fixed token format.
+A **Creation request ID** identifies one create request before a destination Execution exists. It combines the caller context with the creation key; its binding includes the complete creation content. In the in-process TypeScript binding, the components are `(authenticated producer namespace, creation authority scope, creation key)`. The namespace comes from authentication. The creation authority scope is the application domain selected for the new Execution, which the caller must be authorized to use. The caller's full list of permitted scopes is not part of this identity.
+
+For example, `(app-A, tenant-X, report-17)` and `(app-A, tenant-Y, report-17)` name different create requests in that binding, as do `(app-B, tenant-X, report-17)` and `(app-A, tenant-X, report-17)`. Only repeating the complete Creation request ID asks about the same request; equal content replays the retained decision and changed content conflicts. The binding spells out the caller context rather than hiding it in an unexplained “scope” field. This defines no new durable object or universal wire representation; the [implementation mapping](../../docs/development/002-implemented-kernel-baseline.md#request-identity-terminology-and-api-mapping) relates these terms to existing code names.
 
 Creation and later input use separate identity domains. Accepting the initial Event during creation does not consume a post-creation Input ID. A later input from that same producer may reuse the creation-key text: it is a new ingress request, not a creation replay or conflict. The initial Event retains creation provenance and a creation receipt; only later ingress participates in Input-ID replay/conflict lookup. See the [reuse example](../mechanisms/creation.md#later-input-has-a-destination).
 

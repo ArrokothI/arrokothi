@@ -80,7 +80,8 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 
 ### Identity, attempts and accepted versions
 
-- [Request key and Input ID](concepts/identity.md#request-key-and-input-id)
+- [Keys, IDs and scope: naming convention](concepts/identity.md#keys-ids-and-scope)
+- [Request key, creation key, Creation request ID and Input ID](concepts/identity.md#request-key-and-input-id)
 - [Activation ID and Runtime attempt](concepts/identity.md#runtime-attempt)
 - [Writer epoch](concepts/identity.md#writer-epoch)
 - [Dispatch and delivery](concepts/identity.md#dispatch-and-delivery)
