@@ -30,7 +30,15 @@ Five kinds of identity appeared in that story:
 - **Accepted states** — the several kinds of [revision](#revision), which share no counter.
 - **What an accepted answer covers** — [acceptance, boundary and receipt](#acceptance-boundary-and-receipt).
 
-The sections below take them in that order.
+The sections below take them in that order, after one short note on the three words all five of them are built from.
+
+## Keys, IDs and scope
+
+Three words here are easy to use loosely, and none of them tolerates it. A **key** is the submitter's own text — `report-17` above, or a Runtime's local proposal key for an [Effect](actions.md#effect). An **ID** names a complete identity, built so that two different things cannot collide under it. A key is usually one ingredient of an ID, never an ID by itself.
+
+The difference is meaning, not shape: an Input ID has three components, an Execution ID may be one opaque string, and neither fact changes what it identifies. So packing a composite ID into a single string for a storage index does not turn it back into the caller's text — call that packed string a **lookup key**, and qualify every other use of *key* the way "proposal key" does.
+
+**Scope** means nothing until a rule and a context are named with it. Request identity scopes an equality rule to the components that distinguish one request from another; [authority](actions.md#principal-and-authority) scopes permission to a domain the caller may reach; a receipt scopes evidence to one acceptance boundary. Those are three unrelated uses of one English word, not three views of a shared "scope" object — no such object exists. And across all three, holding an identity grants no access to what it names.
 
 ## Request key and Input ID
 
@@ -40,7 +48,7 @@ A request key is deliberately **not** a content hash. This is the property most 
 
 Content equality is still used, but for the opposite job. Once a request key names *which* request to compare against, the recorded content is compared with the new arrival's: the same key with the same content is answered from the decision already recorded, and the same key with different content is a conflict that creates nothing. The two checks have separate work — the key selects the request, and the comparison verifies the caller repeated it faithfully. [Canonical form](values.md#canonical-form) owns what "the same content" means, independently of how any transport happened to spell it.
 
-A request key alone cannot identify an input, though, because text means nothing without a scope. Two unrelated producers may both send input keyed `correction-1`, and one producer may send that key to two different Executions. So an input is identified not by its key but by an **Input ID** built around it — the same move [actions](actions.md#effect) makes when a Runtime's proposal key becomes an Effect ID. That is the convention throughout: a *key* is the submitter's own text, and an *ID* is the complete identity built from it.
+A request key alone cannot identify an input, though, because text means nothing without a scope. Two unrelated producers may both send input keyed `correction-1`, and one producer may send that key to two different Executions. So an input is identified not by its key but by an **Input ID** built around it — the same move [actions](actions.md#effect) makes when a Runtime's proposal key becomes an Effect ID.
 
 An Input ID is a triple, and each part earns its place by ruling out a collision the other two cannot:
 
@@ -58,9 +66,9 @@ The namespace comes from trusted principal context established at ingress — ne
 
 Creation needs the same idea one step earlier, before any Execution exists to be addressed. The caller supplies a **creation key** — request-key text again — and the request is identified by a **Creation request ID** built around it.
 
-A Creation request ID has the same three-part shape as an Input ID, and only the middle part differs. An Input ID names the destination Execution that receives the input. A Creation request ID names the [authority](actions.md#principal-and-authority) the new Execution will be created under: the one the caller selected and must be entitled to use, never its whole list of permissions. There is no destination yet, and that authority stands in its place — so one creation key used under two authorities names two different requests, exactly as one producer's `correction-1` sent to two Executions named two different inputs.
+The awkward part is the middle component. An Input ID leans on the destination Execution to tell two uses of one key apart, and creation has no destination to lean on. The implementation puts the [authority](actions.md#principal-and-authority) the new Execution will be created under in its place: the one the caller selected and must be entitled to use, never its whole list of permissions. One creation key used under two authorities then names two different create requests, exactly as one producer's `correction-1` sent to two Executions named two different inputs.
 
-A Creation request ID binds the complete creation content, so a retry carrying changed content is a conflict rather than a quiet update. It introduces no new durable object and fixes no token format.
+Read that as the current answer rather than the rule. The architecture fixes only this much: a Creation request ID combines the caller's context with the creation key, and covers the complete creation content — so a retry repeating the identity with equal content is answered from the decision already recorded, while changed content is a conflict rather than a quiet update. Whether the caller's context arrives as one component or two, and what those parts are called, is for an implementation to settle; [the request identity API](../../docs/development/002-implemented-kernel-baseline.md#request-identity-api) records the answer it chose. No new durable object and no wire format follow from any of it.
 
 Creation and later input are separate identity domains, even though a Creation request ID and an Input ID can be built around the same request-key text. A producer may use its creation key again later as the request key on ordinary input. [Later input has a destination](../mechanisms/creation.md#later-input-has-a-destination) explains the mechanism behind that.
 
@@ -74,7 +82,7 @@ A **Runtime attempt** is the currently authorized effort to perform one unresolv
 
 Keeping the two identities apart is what makes a late answer classifiable at all. Three situations look identical from outside — a Runtime is being asked to work on something again — and they differ only in which identity survived: ordinary redelivery keeps both, takeover keeps the exchange and replaces the effort, and a new exchange after resolution replaces both.
 
-[Retry versus takeover](../mechanisms/execution-cycle.md#retry-versus-takeover) sets the three side by side, and owns what becomes of input that arrives while a takeover is being decided. It is worth reading once: an implementation that conflates any two of them cannot say what a reconnecting host's Outcome means — a valid reply to the live question, a ghost of an effort that may no longer commit, or an answer computed against an exchange that has already closed.
+[Retry versus takeover](../mechanisms/execution-cycle.md#retry-versus-takeover) sets the three side by side. It is worth reading once: an implementation that conflates any two of them cannot say what a reconnecting host's Outcome means — a valid reply to the live question, a ghost of an effort that may no longer commit, or an answer computed against an exchange that has already closed.
 
 A Runtime attempt is not a model call, a conversation turn, or a native run. How efforts at an exchange line up with the Runtime's own runs and sessions is the [Driver's](core.md#execution-driver) mapping to declare.
 
@@ -98,7 +106,7 @@ That last limit has a consequence the Kernel cannot discharge by itself. Because
 
 Two representation questions stay deliberately open. How an epoch is spelled — an integer, a fencing token, something else — is an implementation choice. So is whether the sequence restarts or continues when a genuinely new Activation begins: a deployment may number each exchange from 1 or carry one order across exchanges, and both preserve the only property the architecture requires, which is that a stale epoch for the *current* exchange is rejected. <!-- OPEN(unassigned): writer-epoch representation, and whether the sequence restarts or continues across a later Activation. Both are deliberately implementation-owned rather than awaiting an owner; the architecture requires only that a stale epoch for the current exchange is rejected. The epoch numbers used in this section are illustrative and fix no representation, no starting value, and no relationship between one exchange's epochs and the next's — a conformance fixture comparing epoch values across different Activation IDs over-constrains conforming implementations (K0.2 round 13, K02-R13-01), and K1.1-DEC-2 numbers each exchange from 1 as an implementation choice, not architecture. If an owner ever fixes a representation: restate this paragraph in those terms and delete this marker. rewrite-index.md §4; WS ID-4 -->
 
-An **attempt envelope** is the transport or protocol wrapper that carries attempt metadata — the writer epoch, and whatever a Driver needs to route and report on the attempt — around the immutable exchange. It is a container: not a second epoch, not an identity of its own, and not a recovery mechanism. A takeover replaces what the envelope carries without touching the exchange's semantic input, which is precisely the property that keeps the Activation ID meaningful across it.
+An **attempt envelope** is the transport or protocol wrapper that carries attempt metadata around the immutable exchange. It is a container: not a second epoch, not an identity of its own, and not a recovery mechanism. A takeover replaces what the envelope carries without touching the exchange's semantic input, which is precisely the property that keeps the Activation ID meaningful across it.
 
 ## Dispatch and delivery
 
@@ -136,23 +144,23 @@ Seven kinds appear across these pages. They stay separate because their creators
 | Base progress revision | The Activation, copying the accepted version this exchange starts from | Which starting point was this answer computed against? |
 | Definition and Runtime contract revision | The publisher of the code, or of the integration | Which program is this, and how is this exchange read? |
 | Progress codec version | The Runtime or Driver publisher | Can this stored continuation still be decoded by compatible code? |
-| Operation and schema revision | The operation's owner | Which contract were these arguments validated, approved, and settled under? |
+| Operation and schema revision | The operation's owner | Which contract were these arguments validated and approved under? |
 | Resource and state revision | The resource service, when its value changes | Is the value still the one this decision assumed? |
 | Action evidence revision | The trusted settlement or reconciliation path | What is known now, without rewriting what was known before? |
 
 Reading two kinds together is where the naming discipline pays. "Progress revision 4, writer epoch 2" says that the attempt authorized under epoch 2 is working from accepted progress 4. It does not say that four attempts preceded this one, or that anything else in the Execution sits at version 4. The two labels count different things in different domains, and the only relationship between them is that both were pinned by the same exchange.
 
-None of these needs to be an integer, and no two share a counter or advance together. [Compatibility and migration](../mechanisms/recovery.md#compatibility-and-migration) owns what becomes of these bindings when work resumes, pairing each one with the check that has to pass before reconstructed state can actually be used.
+None of these needs to be an integer, and no two share a counter or advance together. Several of them can survive a restart and still be wrong, and [compatibility and migration](../mechanisms/recovery.md#compatibility-and-migration) owns the check each of those needs before reconstructed state may be used.
 
 ## Acceptance, boundary and receipt
 
 **Acceptance** is an authoritative decision to record a request or a fact under the relevant contract. It is the moment something stops being a claim and becomes part of what the Kernel will answer questions from.
 
-Several nearby events look like acceptance and are not: a network packet arriving, a payload passing validation, an external action being admitted. Each of those is real, and none of them is the decision. A packet describes a transport, validation describes content, and admission authorizes an attempt at something in the world; none of the three, by itself, records anything as having happened. Treating any of them as acceptance is how a system comes to report progress that nothing ever recorded.
+Several nearby events look like acceptance and are not: a network packet arriving, a payload passing validation, an external action being admitted. A packet describes a transport, and validation describes content; neither is a decision and neither records anything. [Admission](actions.md#admission-and-physical-action-attempt) is a decision, and it does record one — that this attempt was authorized — but an authorized attempt is not an accepted Outcome and is no evidence that anything out in the world happened. None of the three can stand in for the acceptance it sits next to, and treating one as the other is how a system comes to report work that nothing ever recorded.
 
-An **atomic acceptance boundary** names a set of facts that must commit together or not at all. *Boundary* here is a consistency requirement, not machinery: one process may hold several boundaries, and one boundary may be implemented across more than one component, as long as an observer never sees half of it. The word is doing narrower work here than usual: it is not an API, an interface, or a line of ownership. [The atomic decisions table](../mechanisms/execution-cycle.md#atomic-decisions-across-the-system) lists which facts belong together at each boundary.
+An **atomic acceptance boundary** names a set of facts that must commit together or not at all. *Boundary* here is a consistency requirement rather than machinery: it is the all-or-nothing rule itself, and one process may hold several of them. Where a machine, a transport, an API, a process, an owner or an interface is what is meant, these pages use that word instead of *boundary*. [The atomic decisions table](../mechanisms/execution-cycle.md#atomic-decisions-across-the-system) lists which facts belong together at each boundary.
 
-A **receipt** is retained evidence that one specific request was accepted at one named boundary, at a stated revision or position. It can be handed back to a caller, but it is not inherently a message from the Kernel to a Runtime, and it is not a token that carries permission. What it proves is its named decision — and, by construction, nothing adjacent to that decision.
+A **receipt** is retained evidence that one specific request was accepted at one named boundary, at a stated revision or position. It can be handed back to a caller, but it is not inherently a message from the Kernel to a Runtime. What it proves is its named decision — and, by construction, nothing adjacent to that decision.
 
 Six boundaries issue receipts, because the six decisions are made at different moments and under different contracts, and a caller needs to ask about each one without borrowing evidence from another:
 
@@ -167,7 +175,7 @@ Six boundaries issue receipts, because the six decisions are made at different m
 
 There is accordingly no single receipt per Execution, and inventing one is not a harmless abbreviation. The overreach the separation blocks is everyday: an Outcome-acceptance receipt proves that a proposal *containing* a publication request was accepted, and proves nothing whatever about whether anything was published. That question belongs to [admission](actions.md#admission-and-physical-action-attempt) and [settlement](actions.md#settlement-and-reconciliation), which issue their own receipts for it. A Kernel-minted [timeout Event](core.md#timeout-event) is accepted too, but that acceptance is bookkeeping inside the Kernel's own machinery and introduces no seventh receipt for callers to ask about.
 
-A receipt also names a position, and that word claims less than it looks. An **acceptance position** orders accepted facts within the record that owns them — enough to resume a read, or to say which of two decisions from the same authority came first. It is not a clock: no ordering across two accepting domains, or across two Executions, is promised, because none can be observed.
+A receipt also names a position, and that word claims less than it looks. An **acceptance position** orders accepted facts within the record that owns them — enough to resume a read, or to say which of two decisions from the same authority came first. It is not a clock: no ordering is promised across two accepting domains, or across two Executions.
 
 Knowing which receipt to ask for is not the same as being allowed to see it. Lookup authenticates the caller and bounds what that caller may see *before* revealing anything — the content first of all, but the very existence of the record too. A refusal must not distinguish "no such record" from "a record exists and it is not yours": not by its message, not by its shape, not by how long it takes to come back. A lookup that betrays the difference is an oracle — anyone holding a guessable identifier can enumerate another principal's work without ever being authorized to read any of it.
 
