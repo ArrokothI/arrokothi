@@ -14,7 +14,7 @@ Child creation is an immutable [Effect](../concepts/actions.md#effect) binding R
 
 The [first profile](../concepts/operations.md#operating-profile-and-durability) uses one transactional authority domain. If fulfillment is async, record the creation/link/budget obligation atomically and fulfill it with a preallocated child ID. Retry/timeout cannot create a second child or debit twice. Cross-shard atomic creation needs a real protocol and is not promised here.
 
-Children default to required owned work: the safe default is that somebody is still answerable for work that was started, and detaching from it has to be a decision rather than an oversight. The parent can continue other work but must account for required child results before [completing](lifecycle.md#completion-is-an-accounting-check). Child failure/cancellation does not automatically fail the parent. Transfer/detachment requires a named durable owner accepting responsibility; the minimum profile may refuse it. Creation must bind the application reconciliation owner that remains responsible if the parent fails or is cancelled. This may be an existing application service or operator queue; it need not be another Execution or a new supervisor service.
+Children default to required owned work: the safe default is that somebody is still answerable for work that was started, and detaching from it has to be a decision rather than an oversight. The parent can continue other work but must account for required child results before [completing](lifecycle.md#completion-is-an-accounting-check). Child failure/cancellation does not automatically fail the parent. Transfer/detachment requires a named durable owner accepting responsibility; the minimum profile may refuse it. Parent failure/cancellation leaves application supervision/reconciliation responsible for live children and actions; that owner may be an existing application service or an operator queue, and need not be another Execution or a new supervisor service.
 
 Commit child terminal result with parent routing or a durable [routing obligation](../concepts/operations.md#observation-cursor-and-routing). Retrying routing does not run the child again. Destination Event acceptance, rather than source intent creation, applies the [wait wake rules](waits.md#ending-a-wait). A terminal parent receives a recorded terminal routing disposition; never redirect the result into a later unrelated session or reopen either lifetime.
 
@@ -29,7 +29,7 @@ Declare two decisions separately, even when both use the minimum report-and-reta
 | Trigger | Policy owner and consequence |
 |---|---|
 | Child fails or is cancelled while the parent is live | Route its terminal observation. The parent Runtime decides whether to continue, fail, request sibling cancellation or propose a replacement child. A failure observation does not itself choose any of those actions. |
-| Parent becomes terminal while a child remains live | Apply the declared parent-close disposition and preserve the named application reconciliation owner. Retaining the child keeps it running with an accountable owner; requesting cancellation uses the child's ordinary authorized control path. Neither proves physical termination. |
+| Parent becomes terminal while a child remains live | Apply the declared parent-close disposition and preserve the responsible application reconciliation owner. Retaining the child keeps it running with an accountable owner; requesting cancellation uses the child's ordinary authorized control path. Neither proves physical termination. |
 
 The minimum profile may support only reporting child results and retaining outstanding work under the prebound application owner. It must state that default and refuse unsupported automatic policies. Parent success still requires the [completion accounting check](lifecycle.md#completion-is-an-accounting-check); a parent-close policy cannot silently detach required children to make `complete` pass. Ancestry alone implies neither cascade cancellation nor permission to control a child or sibling. [Authority](authority.md) owns transitive grant revocation.
 
@@ -39,7 +39,6 @@ A policy-driven retry of terminal child work creates a new Execution with explic
 
 Native grandchildren stay under their native Runtime owner unless explicitly created as Kernel children. A native framework's stop tree or retry loop is declared in the [Driver support record](integration.md#support-record), not inferred from a matching parent ID.
 
-K4.1 acceptance must cover child failure without implicit sibling cancellation; parent closure followed by a crash before follow-up delivery; and duplicate policy fulfillment. Supported automatic controls/retries also require refused control after revocation and retry exhaustion across replacement identities; a minimum profile instead tests explicit refusal of those policies. The oracle checks links, owners, budgets, control receipts and late result disposition. K3 supplies process-kill infrastructure; K5 adds overdue-owner/cleanup inspection. These are target tests, not evidence that supervision is implemented.
 
 ## Addressed messages and replies
 

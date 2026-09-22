@@ -12,7 +12,7 @@ Everything here answers one of three questions about information an Execution de
 - An immutable checkpoint reference identifying resumable native state.
 - A locator for a still-running native job.
 
-Do not collapse these into an undifferentiated blob that conceals their different recovery guarantees. Every persisted form pins the Runtime/Definition contract and progress codec that can interpret it. K1's fake Runtime requires only inline progress.
+Do not collapse these into an undifferentiated blob that conceals their different recovery guarantees. Every persisted form pins the Runtime/Definition contract and progress codec that can interpret it.
 
 ## Checkpoint and locator
 

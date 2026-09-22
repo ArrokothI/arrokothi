@@ -242,7 +242,7 @@ Durable children and delegation. Expected Layer-3 owners:
 
 Evidence mapping for [supervision](mechanisms/communication.md#finite-expansion-and-supervision):
 
-- Child failure delivers its result without implicit parent or sibling cancellation. Parent failure/cancellation preserves exact children, required-work disposition and the prebound application reconciliation owner.
+- Child failure delivers its result without implicit parent or sibling cancellation. Parent failure/cancellation preserves exact children, required-work disposition and the responsible application reconciliation owner.
 - Crash after parent closure before follow-up delivery; reconstruct the obligation without reactivating the terminal parent. Duplicate fulfillment preserves one control identity and disposition, and stale requests cannot target replacement children.
 - Required children block successful completion until accounted for or explicitly transferred/abandoned under supported policy. Supported automatic controls must refuse revoked authority while retaining an accountable owner.
 - Where policy-driven retries are supported, bound attempts and total spawn credits across replacement Execution IDs and supervisor restarts. Do not renew authority or repeat an old unknown action. A minimum profile instead tests report-and-retain behavior and explicit refusal of unsupported automatic policies.

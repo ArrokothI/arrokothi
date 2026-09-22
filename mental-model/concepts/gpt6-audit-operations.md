@@ -138,13 +138,13 @@ The draft already correctly allows repeated delivery. [Output replay](../mechani
 
 The draft broadens cleanup debt to “work, cost or storage still owed” and includes publication that may still execute. Keep three records distinct: **action uncertainty/reconciliation**, **routing or delivery obligations**, and **resource cleanup debt**. They may refer to one another, but successfully deleting a container settles none of the other two. Also distinguish cost already incurred from future unbounded resource consumption.
 
-Logical active-child slots can be released when a child terminalizes, while physical provider/process slots remain occupied until actual release. Without separate accounting, immediate logical cancellation can admit unlimited replacement compute. Direct clarification: [capacity, cancellation and retention](../mechanisms/resources.md#capacity-cancellation-and-retention). The target tests are assigned in [the roadmap handoff](../gpt6-audit-roadmap.md).
+Logical active-child slots can be released when a child terminalizes, while physical provider/process slots remain occupied until actual release. Without separate accounting, immediate logical cancellation can admit unlimited replacement compute. Direct clarification: [capacity, cancellation and retention](../mechanisms/resources.md#capacity-cancellation-and-retention). The target tests are assigned in [the roadmap map](../roadmap.md).
 
 ## Adjacent changes and handoff
 
 Direct changes: `roles.md`, `state.md`, and mechanisms `communication`, `lifecycle`, `recovery`, `integration`, `resources`, `evidence`, `output`. Their existing ownership and Status gates remain in place. No implementation, public API, accepted protocol encoding or historical evidence was changed.
 
-Claude should update the two operations pages using this note, reconcile [deployment](../gpt6-audit-deployment.md), and maintain the [roadmap mapping](../gpt6-audit-roadmap.md). Do not infer that other files need rewriting merely because they mention children. `values.md` remains correct: none of these comparisons justifies changing canonical equality, fixed limits or progress-codec ownership. Concept/reference anchors were preserved; no new Kernel lifecycle state or entity was introduced.
+Claude should update the two operations pages using this note, reconcile [deployment](../gpt6-audit-deployment.md), and maintain the [roadmap mapping](../roadmap.md). Do not infer that other files need rewriting merely because they mention children. `values.md` remains correct: none of these comparisons justifies changing canonical equality, fixed limits or progress-codec ownership. Concept/reference anchors were preserved; no new Kernel lifecycle state or entity was introduced.
 
 ## Exact source catalog
 

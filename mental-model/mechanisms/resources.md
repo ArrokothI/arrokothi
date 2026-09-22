@@ -31,11 +31,11 @@ Per-Execution process limits do not serialize another Execution's access to shar
 
 ## Containment claims
 
-An Isolated Execution claim requires enforcement tests against the real backend. Without that evidence, isolation is unverified and cannot be advertised as supported. Trusted Execution is an intentional permission to use ambient capabilities, not a label automatically assigned because an isolation test is missing. A deployment requiring isolation must refuse the unsupported configuration rather than silently run it as Trusted.
+Containment is the one claim on these pages that cannot be established by design review at all. Either the tests below were run against a real backend and something was actually prevented, or the isolation is unverified and cannot be advertised as supported. Unverified is not a synonym for Trusted: [Trusted Execution](../concepts/operations.md#trusted-execution) is an intentional permission to use ambient capabilities, never a label a profile acquires by failing to test for containment.
 
 For a [Trusted or Isolated profile](../concepts/operations.md#trusted-execution), list who accesses Kernel storage, policy/secrets, native sessions, workspaces and sinks, and how access is enforced. The trusted computing base includes store/admission, authenticated ingress, adapters and relevant host/containment components. Same-process interfaces cannot contain arbitrary hostile code sharing credentials and objects: an interface describes how cooperating code is meant to be called, and code that is not cooperating is under no obligation to use it.
 
-State which code is contained. Sandboxing a terminal or code-execution tool does not isolate the enclosing agent process, its plugins or its other network clients. Trusted/Isolated classify Runtime reach; a Driver or privileged broker is separately included in the deployment's trusted computing base wherever its powers can affect the guarantee. Keep broad service credentials outside isolated Runtime code and identify their actual holders; the Driver need not hold them itself.
+State which code is contained. Sandboxing a terminal or code-execution tool does not isolate the enclosing agent process, its plugins or its other network clients. Trusted/Isolated classify Runtime reach; a Driver or privileged broker is separately included in the deployment's trusted computing base wherever its powers can affect the guarantee. Keep broad service credentials outside isolated Runtime code, and enumerate their actual holders rather than inferring them from a component's role.
 
 A claimed isolated profile tests:
 

@@ -31,4 +31,4 @@ A Temporal Workflow Task replay is not the same thing as an Activity retry. Tigh
 
 Temporal's server implements parent-close policies after the parent closes (T1), but cancellation requests schedule cooperative handling (T2). Do not treat successful native cancellation/termination requests as proof of physical stop, or copy Temporal's abandon default into ArrokothI's required-child accounting. [Integration](mechanisms/integration.md#native-human-work-and-output) and [supervision](mechanisms/communication.md#finite-expansion-and-supervision) now state the target boundaries.
 
-Claude should apply these summary corrections after reconciling the operations definitions. Do not change release status or sealed packet records. Proposed acceptance ownership is in [the roadmap audit](gpt6-audit-roadmap.md).
+Claude should apply these summary corrections after reconciling the operations definitions. Do not change release status or sealed packet records. Proposed gate ownership is in [the roadmap map](roadmap.md).

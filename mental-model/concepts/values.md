@@ -1,6 +1,6 @@
 # Values, codecs and canonicalization
 
-These definitions and rules own logical value equality. They preserve accepted K0.1 E-1–E-7. Transport framing and the native checkpoint format remain separate choices.
+These definitions and rules own logical value equality. Transport framing and the native checkpoint format remain separate choices.
 
 The page moves from the general to the exact. It first separates the three jobs that all get called "encoding", then says which values the protocol governs at all, how the in-process binding captures them, how equality between two of them is decided byte for byte, what sizes are permitted, and finally what this page deliberately does not compare.
 
