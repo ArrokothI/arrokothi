@@ -39,7 +39,7 @@ Two limits on the Kernel are worth stating now, because both are easy to read to
 
 First, the Kernel is not a process, a service or a deployment unit. The Kernel is a set of responsibilities. One backend process can carry those responsibilities alongside the Driver and the Runtime; another deployment can split them across machines. The operational role that actually executes Kernel transitions is a [Kernel Worker](operations.md#kernel-worker), and [deployment](../deployment.md) owns the question of where anything runs.
 
-Second, "authority enforcement on mediated paths" is a deliberately narrow claim, not loose wording. A **mediated** path is one that goes through Kernel admission and settlement. A Runtime that already holds filesystem or network access can act without asking the Kernel at all, and no Kernel decision stops such an action. Stopping it takes either [mediation or physical isolation](actions.md#exposure-and-mediation), which are two different guarantees with two different owners. Telemetry that merely observes an unmediated action neither mediates nor prevents it.
+Second, "authority enforcement on mediated paths" is a deliberately narrow claim, not loose wording. A path is mediated when the Kernel is actually asked to authorize it, and a Runtime that already holds filesystem or network access need never ask — no Kernel decision reaches what it does then. Stopping that takes mediation or physical isolation, two different guarantees with two different owners, and telemetry is neither. [Exposure and mediation](actions.md#exposure-and-mediation) owns all three.
 
 ## Execution
 

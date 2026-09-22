@@ -2,7 +2,7 @@
 
 Each page here specifies one interaction exactly once. Where a page needs a term it does not own, it links the [concept](../concepts/README.md) that defines it rather than restating the definition — so if two pages seem to state the same rule, one of them is a defect.
 
-Every page carries a **Status line**; [how pages are named](../reference.md#how-pages-are-named) owns what it says. **A gate named on a page is that gate's contract, not a claim that it has shipped.** What exists today is owned by the [status ledger](../../docs/development/007-work-packets.md) and the [implemented baseline](../../docs/development/002-implemented-kernel-baseline.md); see [Target, not shipped](../README.md#target-not-shipped).
+Every page carries a **Status line**; [how pages are named](../reference.md#how-pages-are-named) owns what it says, and [Target, not shipped](../README.md#target-not-shipped) owns what the gate it names does and does not claim. What exists today is owned by the [status ledger](../../docs/development/007-work-packets.md) and the [implemented baseline](../../docs/development/002-implemented-kernel-baseline.md).
 
 To find the page that owns a particular question rather than read through, use the [reference index](../reference.md).
 

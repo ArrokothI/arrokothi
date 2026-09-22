@@ -177,7 +177,7 @@ Whether that promise can be kept is therefore a question of order, and [ordering
 
 **Compensation** is a new authorized action intended to counter an earlier one. It is not rollback of external history. A retraction notice is a second publication, not the unpublishing of the first. Compensation goes through admission like any other action, and can fail like any other action. [Retrying an action](../mechanisms/actions.md#retrying-an-action) owns how it sits against retry and changed arguments. Application or [Workflow](roles.md#workflow) saga policy owns whether to attempt compensation; the Kernel does not invent a compensating Effect because the original one settled badly.
 
-Withdrawal before admission can prevent the future attempt and record a refusal. What it can never do is unsay a send. That is why [responsibility](#settlement-and-reconciliation) outlives it: an operator's "stop trying" leaves the original attempt's evidence on the ledger, and evidence arriving later updates that ledger without reopening the Execution.
+What neither control can do is unsay a send, and that is the gap [responsibility](#settlement-and-reconciliation) exists to cover: stopping a request leaves the original attempt's evidence on the ledger, and evidence arriving later updates that ledger without reopening the Execution.
 
 ## Emission, result and output obligation
 

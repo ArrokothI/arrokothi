@@ -26,7 +26,7 @@ Retrying a local computation is free. Retrying an action means possibly doing an
 
 Retry uncertain work only with provider-enforced idempotency valid for the scope/window or reliable proof of non-execution. A key in the Kernel's own database is not provider deduplication: it can stop this Kernel from sending twice, but it cannot stop the provider from acting twice on two requests that did arrive. Physical retries retain logical identity and recheck authority/consent. Changed arguments form a new action; compensation also forms a new authorized action.
 
-An array of Effects is independent unordered intent, not a transaction or execution sequence. Proposing three Effects together says only that three requests are wanted, not that they run in that order or that any of them is conditional on another. For “reserve → charge → publish,” propose charge only after reserve's result, and publication only after charge's result. Application/[Workflow](../concepts/roles.md#workflow) saga policy owns any [compensation](../concepts/actions.md#withdrawal-and-compensation); failure of action 2 cannot roll back action 1.
+An array of Effects is independent unordered intent, not a transaction or execution sequence. Proposing three Effects together says only that three requests are wanted, not that they run in that order or that any of them is conditional on another. For “reserve → charge → publish,” propose charge only after reserve's result, and publication only after charge's result. Failure of action 2 cannot roll back action 1; recovering from that is [compensation](../concepts/actions.md#withdrawal-and-compensation), and nothing here performs one on its own.
 
 ## Settlement and refinement
 
