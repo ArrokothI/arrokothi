@@ -12,13 +12,15 @@ Everything here answers one of three questions about information an Execution de
 - An immutable checkpoint reference identifying resumable native state.
 - A locator for a still-running native job.
 
-Do not collapse these into an undifferentiated blob that conceals their different recovery guarantees. Every persisted form pins the Runtime/Definition contract and progress codec that can interpret it. K1's fake Runtime requires only inline progress.
+Do not collapse these into an undifferentiated blob that conceals their different recovery guarantees. Every persisted form pins the Runtime/Definition contract and progress codec that can interpret it.
 
 ## Checkpoint and locator
 
 The second and third progress forms look alike on the wire — both are small references into a native store — but they promise different things after a crash.
 
 A **checkpoint** identifies a specific resumable native state plus compatible code and required resources. A **locator** merely finds a mutable session or existing job. A session ID is not a checkpoint if its contents can advance independently of the accepted progress: after a restart, a checkpoint lets the Driver resume from exactly the state the Kernel accepted, whereas a locator can only ask "is that session still there, and what is it doing now?" The Runtime creates native state; Kernel acceptance pins only the proposed continuation. [Publication and recovery](../mechanisms/recovery.md#checkpoint-publication) handle the gap between those stores.
+
+Resumable state need not be a serialized process image: a native engine may reconstruct it from a pinned durable history and compatible deterministic code. Its recovery contract must establish that equivalence. A saved conversation or filesystem checkpoint preserves only the information it actually contains; neither by itself restores pending calls, a model invocation or the engine's control position.
 
 ## Recovery and re-execution
 
@@ -34,7 +36,7 @@ A **checkpoint** identifies a specific resumable native state plus compatible co
 
 The next three terms describe retained information a Runtime works with, ordered by how much weight it can bear: an asserted application value, an inference that may be wrong, and a scratch note. The names differ because the trust differs, not because the storage does.
 
-**Structured state** means deliberately asserted, schema-bound application values. “Structured Memory” is the older name for the same role; prefer structured state. A model inference in valid JSON is not an application assertion merely because it has a schema. The application/resource service owns validation, revisions and retention.
+**Structured state** means deliberately asserted, schema-bound application values. A model inference in valid JSON is not an application assertion merely because it has a schema. The application/resource service owns validation, revisions and retention.
 
 ## Derived Semantic Memory
 

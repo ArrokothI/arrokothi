@@ -46,23 +46,6 @@ The [reference supplement](../docs/development/work/K1.1-reference-01/contract.m
 
 Repeated misunderstandings are usability evidence even when a correct rule was present elsewhere. They do not prove every code defect was caused by prose. These changes address prerequisite ordering, overloaded words, competing rules and weak examples.
 
-## Scope of the replaced architecture
-
-| Former topic | Current home |
-|---|---|
-| Whole-system overview | [Layer 1](README.md) |
-| Kernel detailed page | [Kernel](kernel.md), [cycle](mechanisms/execution-cycle.md), [waits](mechanisms/waits.md), [lifecycle](mechanisms/lifecycle.md), [authority](mechanisms/authority.md) |
-| Execution detailed page | [Runtime](runtime.md), [Driver](driver.md), [integration](mechanisms/integration.md), [recovery](mechanisms/recovery.md) |
-| Deployment detailed page | [Deployment](deployment.md), [resources](mechanisms/resources.md), [external protocols](mechanisms/external-protocols.md) |
-| Execution protocol | [Identity](concepts/identity.md), [values](concepts/values.md), [creation](mechanisms/creation.md), cycle/waits/lifecycle above |
-| Authority and action lifecycle | [Action concepts](concepts/actions.md), [authority](mechanisms/authority.md), [actions](mechanisms/actions.md), [output](mechanisms/output.md) |
-| Children and communication | [Communication](mechanisms/communication.md) |
-| Runtime composition | [Local composition](mechanisms/composition.md) |
-| Memory/state | [State concepts](concepts/state.md), [state mechanisms](mechanisms/state.md) |
-| Context/projections | [Roles and context concepts](concepts/roles.md), [context construction](mechanisms/context.md) |
-| Recovery/compatibility and Driver fidelity | [Recovery](mechanisms/recovery.md), [integration](mechanisms/integration.md) |
-| Resource/isolation and evidence | [Operational terms](concepts/operations.md), [resources](mechanisms/resources.md), [evidence](mechanisms/evidence.md) |
-
 ## Native design evidence
 
 The historical [architecture review](../docs/development/004-architecture-review.md) pins inspected sibling checkouts. These examples preserve useful prior-art navigation; inspection was not an executed test, adopted dependency or license clearance. The sibling source trees are not present in this checkout; the paths below are source locators at those pinned revisions, not broken local-file links or new inspections.

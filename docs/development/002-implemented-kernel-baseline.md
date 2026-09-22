@@ -46,6 +46,21 @@ implement?** Canonical meaning remains with the owners in the [reference index](
 Paths below are representative rather than exhaustive; the conformance suite is the executable
 evidence.
 
+## Request identity API
+
+The target Kernel accepts caller-chosen creation-key text in
+`CreateExecutionRequest.creationKey`. Its complete `CreationRequestId` contains
+`{ producerNamespace, scope, requestKey }`; `scope` is the selected creation authority scope.
+`creationRequestIdKey(...)` produces the packed lookup key. Post-creation input uses
+`InputId { producerNamespace, destination, requestKey }` and `inputIdKey(...)`.
+
+The host supplies `AuthenticatedCaller.namespace` through authentication. Creation selects one
+authority scope that the caller may reach; `AuthenticatedCaller.scopes` is the separate permission
+list, not the creation identity's scope value. The creation key becomes `CreationRequestId.requestKey`.
+`packages/kernel/tests/creation.test.ts` covers separation both between producers and between two
+authority scopes of one producer. Identity components, their encoding and retry behavior are unchanged
+by the symbol cleanup.
+
 ## 1. Execution and Harness
 
 **Implemented capability.** Independent Execution identities; lifecycle transitions; serialized

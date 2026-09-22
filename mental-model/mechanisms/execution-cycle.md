@@ -54,6 +54,10 @@ The Kernel does not read, classify, assimilate or subscribe to the return value 
 
 ## Retry versus takeover
 
+Three operations look the same from outside — the Runtime is asked to work on something again — and they differ only in which identities they keep. Read the table as a statement about what a late answer can still be recognized as. **Ordinary delivery retry** changes nothing, so a reply produced by the first send is still a valid reply to the current exchange. **Authorized takeover** keeps the question and replaces who may answer it, so the earlier attempt's answer is now stale and is rejected in full even if its content is correct. **A new exchange** replaces the question itself, so nothing computed against the old one applies.
+
+Conflating the first two removes the fence that stops a disconnected attempt from overwriting the work of the attempt that replaced it. Conflating either with the third lets fresh input be slipped into an exchange whose answer was already computed from different input, so an accepted Outcome would no longer correspond to any fixed question.
+
 | Operation | Activation ID | Writer epoch | Pinned semantic input |
 |---|---|---|---|
 | Ordinary delivery retry | Same | Same | Same |
@@ -89,7 +93,7 @@ The example uses K2 target actions to connect the protocol; it is not a shipped 
 | 1 | Application retries a lost create response with the same scoped key. Both calls identify Execution E. |
 | 2 | Kernel reserves input I for Activation A, progress 0, epoch 1. Driver delivery can repeat without changing those fields. |
 | 3 | Runtime proposes draft progress, Effect `publish`, and `await(publish)`. Kernel accepts all intent/progress together at progress 1. |
-| 4 | The submitter loses the response. Its exact Outcome retry returns the original receipt; it creates no second publication intent. |
+| 4 | The submitter loses the response. Its exact Outcome retry returns the original receipt; it creates no second intent to publish the report. |
 | 5 | Publication is separately admitted. Trusted service evidence is accepted as result Event R with applicable readiness. |
 | 6 | Activation B carries R and progress 1. Runtime accounts for R and proposes completion without new Effects. |
 | 7 | Kernel accepts the terminal result and output obligation. A UI's later observation does not acknowledge any Event or send a message. |

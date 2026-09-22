@@ -1,5 +1,5 @@
 /**
- * K1.1-C1 - atomic creation under a caller-scoped creation key.
+ * K1.1-C1 - atomic creation under a Creation request ID.
  *
  * `mental-model/mechanisms/creation.md` owns the rules; its lost-response table is asserted row by
  * row. The cases are built around what a wrong implementation would do: key the retry on the bare

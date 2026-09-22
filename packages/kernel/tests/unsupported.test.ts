@@ -52,7 +52,7 @@ describe("target Kernel scaffolding", () => {
       "UnsupportedKernelSurfaceError",
       "boundaryValueIssues",
       "canonicalize",
-      "creationKeyIdKey",
+      "creationRequestIdKey",
       "err",
       "inputIdKey",
       "isBoundaryValue",

@@ -1,24 +1,24 @@
 # Creating an Execution and retrying the request
 
-The application needs to distinguish a repeated request from a second intentional run. Use a [caller-scoped creation key](../concepts/identity.md#request-key-and-input-id) and immutable creation content. This page owns creation and input ingress semantics.
+The application needs to distinguish a repeated request from a second intentional run. The caller supplies a creation key; the Kernel recognizes the complete [Creation request ID](../concepts/identity.md#request-key-and-input-id), which includes the key's caller context, and compares immutable creation content. This page owns creation and input ingress semantics.
 
 **Status:** Required Kernel contract. Introduced by K1.1. This is target specification, not shipped behavior.
 
 ## One atomic creation
 
-Authenticate the caller and authorize its scope. Creation binds an Execution ID, Runtime contract, [Definition](../concepts/core.md#definition) [revision](../concepts/identity.md#revision), authority context and initial input in one accepted decision. It becomes `READY`; there is no externally visible intermediate `CREATED` state. The binding is one decision because every later question — who may act for this Execution, which code reads its progress, what its first Activation carries — is answered by these facts together; an Execution that existed before its authority or Definition was fixed would be a lifetime with no accepted meaning. No bare ID or model-supplied principal can replace authentication.
+Authenticate the caller and authorize creation in the selected authority scope. Creation binds an Execution ID, Runtime contract, [Definition](../concepts/core.md#definition) [revision](../concepts/identity.md#revision), authority context and initial input in one accepted decision. It becomes `READY`; there is no externally visible intermediate `CREATED` state. The binding is one decision because every later question — who may act for this Execution, which code reads its progress, what its first Activation carries — is answered by these facts together; an Execution that existed before its authority or Definition was fixed would be a lifetime with no accepted meaning. No bare ID or model-supplied principal can replace authentication.
 
 ## The lost-response cases
 
-Suppose application account A sends key `report-17` with “report for week 37.”
+Suppose authenticated producer A creates work in authority scope `tenant-X` using creation key `report-17`, with “report for week 37.” In the in-process binding, the Creation request ID is `(A, tenant-X, report-17)`; `report-17` alone is only the text key.
 
-| What happened to the first call? | Same scope + key + content on retry |
+| What happened to the first call? | Same Creation request ID + content on retry |
 |---|---|
 | No creation committed | Creation may commit now |
 | Creation committed, response lost | Return the already-created Execution and retained decision |
 | Response arrived, caller repeats it anyway | Return that same Execution; do not create another |
 
-Changing “week 37” to “week 38” under `report-17` is a conflict, not an update: the key promises "this is the same request as before", and different content breaks that promise — silently accepting it would make the retry path a way to change what an Execution is doing without anyone deciding to. Creating another intentional run requires a fresh key even with identical input. Another authenticated caller may use the same key text without colliding with A. These rules prevent duplicate logical creation; they do not prove native work ran once.
+Changing “week 37” to “week 38” under that same Creation request ID is a conflict, not an update: the retry promises "this is the same request as before", and different content breaks that promise — silently accepting it would make the retry path a way to change what an Execution is doing without anyone deciding to. Creating another intentional run in the same caller context requires a fresh creation key even with identical input. Another authenticated producer may use the same key text without colliding with A; in this binding, A may also use it in another authorized creation authority scope. These rules prevent duplicate logical creation; they do not prove native work ran once.
 
 ## Later input has a destination
 

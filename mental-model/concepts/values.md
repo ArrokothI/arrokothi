@@ -1,6 +1,6 @@
 # Values, codecs and canonicalization
 
-These definitions and rules own logical value equality. They preserve accepted K0.1 E-1–E-7. Transport framing and the native checkpoint format remain separate choices.
+These definitions and rules own logical value equality. Transport framing and the native checkpoint format remain separate choices.
 
 The page moves from the general to the exact. It first separates the three jobs that all get called "encoding", then says which values the protocol governs at all, how the in-process binding captures them, how equality between two of them is decided byte for byte, what sizes are permitted, and finally what this page deliberately does not compare.
 
@@ -30,7 +30,7 @@ The in-process TypeScript binding captures caller-owned values into one coherent
 
 In this binding, objects have the ordinary object prototype or a null prototype and own enumerable string-keyed data members; arrays have the ordinary array prototype and dense own data positions within their observed length. Unsupported forms, accessors, missing array positions, extra array members, symbol-keyed members, non-enumerable object members, cycles and present `undefined` values are refused rather than silently dropped. A member's own data descriptor and its ordinary read must agree; inconsistent or uninspectable structure is refused rather than repaired. These representation rules do not prescribe a wire format or replace the decoder's duplicate-key rejection.
 
-Canonicalization uses the unmodified approved JCS implementation on data derived solely from the snapshot. Host state consulted during that call must not change its bytes; if the binding cannot establish the required serialization environment it refuses the value. The TypeScript implementation's temporary serializer environment is restored after the call. These are value-acceptance guarantees, not containment of arbitrary same-process code; [physical enforcement](../mechanisms/resources.md#containment-claims) has a separate owner. Request-envelope own-field observation is distinct from boundary-value capture: in the implemented coordinator, an inherited-only request field reads as missing, while an own accessor may be observed by the envelope boundary.
+Canonicalization uses the unmodified approved JCS implementation on data derived solely from the snapshot. Host state consulted during that call must not change its bytes; if the binding cannot establish the required serialization environment it refuses the value. Any temporary serialization environment the binding installs is restored after the call. These are value-acceptance guarantees, not containment of arbitrary same-process code; [physical enforcement](../mechanisms/resources.md#containment-claims) has a separate owner. Request-envelope own-field observation is distinct from boundary-value capture: an inherited-only request field reads as missing, while an own accessor may be observed by the envelope boundary.
 
 ## Canonical form
 

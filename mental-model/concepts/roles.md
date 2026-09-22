@@ -20,6 +20,8 @@ A **Stage** or local node is a defined unit of input, computation, output and tr
 
 A **local/delegated worker** is internal work managed by a Runtime or native framework. It is not automatically a child Execution or a Kernel Worker. Always qualify “worker” with the responsibility being discussed.
 
+Local describes ownership, not physical placement: this work may run in another process or remote service and have native IDs, retries and cancellation. Those remain Runtime/Driver responsibilities until the application explicitly creates independently managed Kernel work. A supervisor that evaluates results or chooses a retry strategy is likewise an application/Runtime role; [supervision](../mechanisms/communication.md#finite-expansion-and-supervision) specifies the Kernel accounting and controls that its choices use.
+
 ## Context
 
 **Context** is the information selected for one computation. It need not be retained. A **context compiler** selects/retrieves/redacts/summarizes authorized information for that request. It does not grant access or assert the truth of inferred content.

@@ -6,7 +6,7 @@ The [Kernel](concepts/core.md#kernel) coordinates independently addressable [Exe
 
 For each Execution, the Kernel keeps its identity, current [lifecycle state](mechanisms/lifecycle.md), accepted [Progress](concepts/state.md#progress), its [queued observations](concepts/core.md#mailbox), [mediated action](concepts/actions.md#exposure-and-mediation) records and eventual result. Its accepted decisions and observations form the [Execution History](concepts/state.md#execution-history).
 
-It also records the [Definition](concepts/core.md#definition) that pins which code/configuration this Execution runs, and the [Runtime contract](concepts/core.md#definition) that separately pins how the [Driver](concepts/core.md#execution-driver) reads its [Activation](concepts/core.md#activation), [Outcome](concepts/core.md#outcome) and progress. It additionally records the [Authority](concepts/actions.md#principal-and-authority) that bounds what the Execution may access or do through mediated actions.
+It also records the [Definition](concepts/core.md#definition) that pins which code/configuration this Execution runs, and the [Runtime contract](concepts/core.md#runtime-contract) that separately pins how the [Driver](concepts/core.md#execution-driver) reads its [Activation](concepts/core.md#activation), [Outcome](concepts/core.md#outcome) and progress. It additionally records the [Authority](concepts/actions.md#principal-and-authority) that bounds what the Execution may access or do through mediated actions.
 
 ## What it doesn't own
 
@@ -37,7 +37,7 @@ An Outcome is a proposal until the Kernel accepts it. Acceptance installs progre
 
 An Effect asks for a mediated operation, such as publishing a file or creating a child Execution. Accepting it records an action intent — an accepted obligation to perform the work later, not proof that it already has — which is distinct from admitting the concrete action and from observing its result. That separation lets the Kernel report "the request exists, but approval is pending" or "the service may have acted." It also makes lost acknowledgments recoverable without inventing another request.
 
-Acceptance is also what makes durability possible: because the Kernel commits progress, output and action intents as one atomic decision, there is always a well-defined, durable state to reconstruct after a crash — which is exactly what recovery does next.
+Acceptance is also what makes recovery possible: because the Kernel commits progress, output and action intents as one atomic decision, an accepted state is always coherent rather than half-applied. Atomicity by itself stores nothing, so it is the deployment's storage that decides whether that state survives a crash — and where it does, recovery has a well-defined state to reconstruct, which is exactly what it does next.
 
 ## Recovering after a crash
 

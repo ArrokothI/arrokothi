@@ -25,8 +25,8 @@ later corrected outright.
 
 ## Where the retired architecture went
 
-[Source ownership](../../mental-model/sources.md#scope-of-the-replaced-architecture) maps each
-retired architecture topic to the concept or mechanism page that owns it now. Two earlier records
+[Where the retired architecture went](../../mental-model/reference.md#where-the-retired-architecture-went)
+maps each retired architecture topic to the concept or mechanism page that owns it now. Two earlier records
 describe the reasoning at the time: the [architecture review](../development/004-architecture-review.md)
 and the [detail-design review](../development/005-detail-design-review.md).
 

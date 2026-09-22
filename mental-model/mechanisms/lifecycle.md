@@ -39,4 +39,6 @@ A child failure can be accounted for without implying application success; the R
 
 Failure/cancellation may proceed with unknown external work. Keep its evidence and application reconciliation/supervision owner. Late trusted [settlements](../concepts/actions.md#settlement-and-reconciliation) update their original action records without reopening the Execution or replacing its terminal result. Physical termination, child cancellation, compensation and cleanup follow separately declared policies; logical cancellation cannot promise that they all succeeded.
 
+For live children, terminalization preserves the owner and any follow-up obligation defined by [supervision](communication.md#finite-expansion-and-supervision). It does not depend on a final callback from the parent Runtime. Closing the parent's wait or abandoning its interest in a reply cannot erase the child's independent lifetime or the remaining reconciliation responsibility.
+
 Completion records the terminal result plus its [output obligation](output.md). Required [child-result routing](communication.md#children) commits with it or as a durable routing intent; it is not another Runtime Effect proposed at completion. External delivery may remain pending afterwards. If delivery is required for business success, request and account for that action before completing.

@@ -72,7 +72,7 @@ export interface ExecutionView {
   readonly state: ExecutionState;
   /** The authority scope bound at creation. Only a caller holding it can see this Execution. */
   readonly scope: string;
-  /** The caller-scoped creation key that identifies the create request. */
+  /** The caller-chosen creation-key text. */
   readonly creationKey: string;
   readonly definitionRevision: string;
   readonly runtimeContractRevision: string;

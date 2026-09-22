@@ -4,7 +4,7 @@
  * This is the K1.1 surface. It implements the boundaries `creation.md` and `execution-cycle.md` own
  * up to, but not including, Outcome acceptance:
  *
- * - one atomic creation per caller-scoped creation key, with the initial input;
+ * - one atomic creation per Creation request ID, with the initial input;
  * - post-creation input ingress under the Input ID triple, including refusal of new ordinary
  *   input to a terminal destination (the rule is K1.1's; manufacturing a terminal state is not —
  *   cancellation and terminal disposition are K1.3's, completion/failure are K1.2's, so no
@@ -38,14 +38,14 @@
 
 import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
 import {
-  creationKeyIdKey,
+  creationRequestIdKey,
   inputIdKey,
   MISSING_SCOPE_SENTINEL,
   mayReachScope,
   mintReceipt,
   packIdentity,
   type AuthenticatedCaller,
-  type CreationKeyId,
+  type CreationRequestId,
   type InputId,
   type Receipt,
   type ReceiptBoundary,
@@ -274,7 +274,7 @@ interface ActivationRecord {
 interface ExecutionRecord {
   readonly executionId: string;
   readonly scope: string;
-  readonly creationKey: CreationKeyId;
+  readonly creationRequestId: CreationRequestId;
   readonly definitionRevision: string;
   readonly runtimeContractRevision: string;
   readonly progressCodec: string;
@@ -532,7 +532,7 @@ function acceptInputContent(content: InputContent, prefix: string): Result<Accep
   });
 }
 
-/** The complete creation content a caller-scoped creation key binds. */
+/** The complete creation content a Creation request ID binds. */
 interface AcceptedCreation {
   readonly scope: string;
   readonly definitionRevision: string;
@@ -615,7 +615,7 @@ export class ExecutionCoordinator {
   readonly #driver: ExecutionDriver;
   readonly #mailboxCapacity: number;
   readonly #executions = new PrimordialMap<string, ExecutionRecord>();
-  readonly #byCreationKey = new PrimordialMap<string, ExecutionRecord>();
+  readonly #byCreationRequestId = new PrimordialMap<string, ExecutionRecord>();
   // K11-R12-ID-01: there is deliberately no coordinator-wide acceptance counter, execution
   // counter or event counter here. A single mutable sequence shared across Executions, callers
   // and boundaries turns one principal's own receipt into an oracle for decisions taken in
@@ -640,7 +640,7 @@ export class ExecutionCoordinator {
   }
 
   /**
-   * Creates one Execution, or returns the one this caller-scoped creation key already named.
+   * Creates one Execution, or returns the one this Creation request ID already named.
    *
    * The three lost-response rows in `creation.md` are one lookup: nothing committed commits now; a
    * committed-then-lost response returns the already-created Execution and its retained decision;
@@ -679,7 +679,7 @@ export class ExecutionCoordinator {
     }
 
     // The creation key is not content — it never joins the content identity — but it is the text
-    // the caller-scoped key is packed from, so it is held to the same identity-text rule. Both are
+    // the Creation request ID is packed from, so it is held to the same identity-text rule. Both are
     // checked before either is reported, so one call names every reason the request was refused.
     // Observed once and reused for the lookup/binding below for the same single-observation reason.
     const keyIssues: ValueIssue[] = [];
@@ -696,12 +696,12 @@ export class ExecutionCoordinator {
     }
     const creationKeyText = creationKeyField.observed as string;
 
-    const creationKey: CreationKeyId = {
+    const creationRequestId: CreationRequestId = {
       producerNamespace: caller.namespace,
       scope,
       requestKey: creationKeyText,
     };
-    const existing = mapGet(this.#byCreationKey, creationKeyIdKey(creationKey));
+    const existing = mapGet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId));
     if (existing !== undefined) {
       if (existing.creationIdentity === content.value.identity) {
         return ok({
@@ -726,27 +726,27 @@ export class ExecutionCoordinator {
     // `submitInput` constructs for every later ingress request: the creating producer could never
     // reuse its own creation-key text as a genuine ingress key (equal content replaying a
     // creation-boundary receipt through the ingress boundary, different content refused as a
-    // conflict for input it never submitted). The caller-scoped creation key and the Input ID
+    // conflict for input it never submitted). The Creation request ID and the Input ID
     // triple are two different scoping constructs in `identity.md`; nothing reserves the
     // creation-key text inside the producer's ingress key space. `byInputId` therefore indexes
-    // post-creation ingress entries only, and the initial Event ID derives from the creation key
+    // post-creation ingress entries only, and the initial Event ID derives from the Creation request ID
     // under a prefix no ingress Event ID can carry. Creation retry still resolves through
-    // `byCreationKey`; the triple on the entry below is retained creation provenance for
+    // `byCreationRequestId`; the triple on the entry below is retained creation provenance for
     // inspection, not an ingress address.
     //
     // K11-R12-ID-01: both identities remain pure functions of the request identity that named
-    // them — the caller-scoped creation key for the Execution and its initial Event — so neither
+    // them — the Creation request ID for the Execution and its initial Event — so neither
     // encodes how many unrelated Executions or Events already exist. Creation is always this
     // Execution's first acceptance, hence position 1; the record below continues its own index
     // at 2.
-    const executionId = `execution-${creationKeyIdKey(creationKey)}`;
+    const executionId = `execution-${creationRequestIdKey(creationRequestId)}`;
     const receipt = mintReceipt("creation", 1, executionId);
     const initialInputId: InputId = {
       producerNamespace: caller.namespace,
       destination: executionId,
       requestKey: creationKeyText,
     };
-    const eventId = `event-creation-${creationKeyIdKey(creationKey)}`;
+    const eventId = `event-creation-${creationRequestIdKey(creationRequestId)}`;
 
     // Accepted content is immutable, so what is retained is the sealed copy validation made, never
     // the caller's own object. An application that keeps editing the value it passed in cannot change
@@ -778,7 +778,7 @@ export class ExecutionCoordinator {
     const record: ExecutionRecord = {
       executionId,
       scope: content.value.scope,
-      creationKey,
+      creationRequestId,
       definitionRevision: content.value.definitionRevision,
       runtimeContractRevision: content.value.runtimeContractRevision,
       progressCodec: content.value.progressCodec,
@@ -801,7 +801,7 @@ export class ExecutionCoordinator {
     };
 
     mapSet(this.#executions, executionId, record);
-    mapSet(this.#byCreationKey, creationKeyIdKey(creationKey), record);
+    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);
     return ok({ executionId, receipt, replayed: false, initialEventId: eventId });
   }
 
@@ -1338,7 +1338,7 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     executionId: record.executionId,
     state: record.state,
     scope: record.scope,
-    creationKey: record.creationKey.requestKey,
+    creationKey: record.creationRequestId.requestKey,
     definitionRevision: record.definitionRevision,
     runtimeContractRevision: record.runtimeContractRevision,
     progressCodec: record.progressCodec,

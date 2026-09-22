@@ -6,6 +6,8 @@ Layer 1/2 change only when the whole-system model or a major abstraction changes
 
 Historical packets are mapped for retrieval and future corrections — not retroactive edits of sealed contracts/reports, and not a change to their acceptance.
 
+The evidence mappings below identify tests for the linked target contracts. They do not claim implementation or acceptance, change packet order, or release work. When implementing them, maintain the active packet and implemented baseline through the development process; the packet ledger remains the owner of acceptance and integration status.
+
 ## K0.1
 
 Protocol decisions and legacy disposition. Expected Layer-3 owners:
@@ -95,6 +97,9 @@ Wait and cancellation races. Expected Layer-3 owners:
 - [lifecycle](mechanisms/lifecycle.md)
 - [core](concepts/core.md)
 - [operations](concepts/operations.md)
+- [recovery](mechanisms/recovery.md)
+
+Evidence mapping: keep wait timeout, Execution deadline and cancellation races distinct. Lease expiry must not become a Runtime-declared wait or proof of native death; [recovery](mechanisms/recovery.md#decide-permission-before-replacing-work) owns the separate takeover obligation.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k13--wait-and-cancellation-races).
 
@@ -155,6 +160,10 @@ First real native boundary. Expected Layer-3 owners:
 - [integration](mechanisms/integration.md)
 - [recovery](mechanisms/recovery.md)
 - [resources](mechanisms/resources.md)
+- [roles](concepts/roles.md)
+- [state](concepts/state.md)
+
+Evidence mapping: pin native job/run/session identities and retry/cancellation behavior in the [Driver support record](mechanisms/integration.md#support-record). Distinguish retained transcripts or filesystem state from resumable computation, and declare native descendants and remaining work after cancellation.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#r11--first-real-native-boundary).
 
@@ -165,6 +174,12 @@ Second boundary and R1/E3 initial gate. Expected Layer-3 owners:
 - [integration](mechanisms/integration.md)
 - [external-protocols](mechanisms/external-protocols.md)
 - [context](mechanisms/context.md)
+- [roles](concepts/roles.md)
+- [state](concepts/state.md)
+- [recovery](mechanisms/recovery.md)
+- [resources](mechanisms/resources.md)
+
+Evidence mapping: challenge the first Driver’s assumptions with the selected second boundary. Relevant comparisons include Temporal workflow replay versus activity retry, Dify graph/form/stream-filter restoration, Hermes retained session/filesystem state versus live delegates, and OpenClaw restart identity and unknown-send handling. These are research comparisons, not a requirement to implement four Drivers. Test the selected Drivers against [native recovery](mechanisms/recovery.md#checkpoint-publication) and resource ownership.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#r12--second-boundary-and-r1e3-initial-gate).
 
@@ -187,6 +202,8 @@ Narrow transactional persistent candidate. Expected Layer-3 owners:
 - [actions](mechanisms/actions.md)
 - [output](mechanisms/output.md)
 
+Evidence mapping: kill a worker with a persisted dormant wait and recover deadline/readiness on another worker without requiring a dedicated surviving process or continuously renewed per-Execution lease. The [recovery procedure](mechanisms/recovery.md#decide-permission-before-replacing-work) retains accepted state before authorizing native continuation.
+
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k32--narrow-transactional-persistent-candidate).
 
 ## K3.3
@@ -196,6 +213,9 @@ Native recovery and resource windows. Expected Layer-3 owners:
 - [recovery](mechanisms/recovery.md)
 - [integration](mechanisms/integration.md)
 - [resources](mechanisms/resources.md)
+- [state](concepts/state.md)
+
+Evidence mapping: lose native state independently of Kernel storage and report hold/unavailability. Test compatible replay code and retained checkpoint/history references; prove native writer exclusion or refuse takeover. A restored Kernel record alone cannot establish native recovery.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k33--native-recovery-and-resource-windows).
 
@@ -216,6 +236,18 @@ Durable children and delegation. Expected Layer-3 owners:
 - [communication](mechanisms/communication.md)
 - [authority](mechanisms/authority.md)
 - [operations](concepts/operations.md)
+- [lifecycle](mechanisms/lifecycle.md)
+- [recovery](mechanisms/recovery.md)
+- [evidence](mechanisms/evidence.md)
+
+Evidence mapping for [supervision](mechanisms/communication.md#finite-expansion-and-supervision):
+
+- Child failure delivers its result without implicit parent or sibling cancellation. Parent failure/cancellation preserves exact children, required-work disposition and the responsible application reconciliation owner.
+- Crash after parent closure before follow-up delivery; reconstruct the obligation without reactivating the terminal parent. Duplicate fulfillment preserves one control identity and disposition, and stale requests cannot target replacement children.
+- Required children block successful completion until accounted for or explicitly transferred/abandoned under supported policy. Supported automatic controls must refuse revoked authority while retaining an accountable owner.
+- Where policy-driven retries are supported, bound attempts and total spawn credits across replacement Execution IDs and supervisor restarts. Do not renew authority or repeat an old unknown action. A minimum profile instead tests report-and-retain behavior and explicit refusal of unsupported automatic policies.
+
+Use deterministic fake Runtimes, independently surviving records and K3 process-kill infrastructure. Attribute Runtime decision quality, Driver fidelity and physical stop separately; a cancel receipt does not prove a provider process stopped. These tests require durable responsibility and authorized obligations, not a universal supervisor process, Kernel policy language or arbitrary detachment facility. Richer supervision or general transfer mechanisms need a separately scoped decision.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k41--durable-children-and-delegation).
 
@@ -227,6 +259,8 @@ Addressed messages and replies. Expected Layer-3 owners:
 - [actions](mechanisms/actions.md)
 - [waits](mechanisms/waits.md)
 
+Evidence mapping: crash between reply acceptance, request closure, routing and wake notification. Exact authenticated retry preserves one disposition; request expiry remains distinct from wait timeout and cancellation. [Addressed replies](mechanisms/communication.md#addressed-messages-and-replies) own the closure and routing contract.
+
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k42--addressed-messages-and-replies).
 
 ## K4.3
@@ -237,6 +271,8 @@ Durable human response lifecycle. Expected Layer-3 owners:
 - [waits](mechanisms/waits.md)
 - [authority](mechanisms/authority.md)
 
+Evidence mapping: crash between human response acceptance, request closure, routing and resume notification. Exact authenticated retry preserves one disposition; redisplaying a form creates no second request or resume owner. Test request expiry separately from wait timeout and cancellation under [human input requests](mechanisms/communication.md#human-input-requests).
+
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k43--durable-human-response-lifecycle).
 
 ## K4.4
@@ -246,6 +282,8 @@ Authorized retained output. Expected Layer-3 owners:
 - [output](mechanisms/output.md)
 - [communication](mechanisms/communication.md)
 - [evidence](mechanisms/evidence.md)
+
+Evidence mapping: reconnect across retained-output/live handoff without silently missing accepted output. Repeated delivery retains stable IDs, revoked reads disclose nothing, and expired positions return explicit gaps. Observation alone must not change the parent’s mailbox or readiness; [output replay](mechanisms/output.md#authorized-subscriptions-and-replay) owns the guarantee.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k44--authorized-retained-output).
 
@@ -301,6 +339,8 @@ Bounded queues, retention and output. Expected Layer-3 owners:
 - [resources](mechanisms/resources.md)
 - [waits](mechanisms/waits.md)
 
+Evidence mapping: slow observers cannot grow buffers indefinitely or pin accepted records beyond the retention contract. Exhaust output capacity before acceptance and verify hold/refusal without partial commit. Retention/deletion reports loss explicitly under [bounded retention](mechanisms/output.md#bounded-retention).
+
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k51--bounded-queues-retention-and-output).
 
 ## K5.2
@@ -311,6 +351,9 @@ Operations, upgrade and deletion. Expected Layer-3 owners:
 - [resources](mechanisms/resources.md)
 - [evidence](mechanisms/evidence.md)
 - [authority](mechanisms/authority.md)
+- [communication](mechanisms/communication.md)
+
+Evidence mapping: cancel an Execution while its native job remains alive and keep logical active-child capacity separate from physical compute capacity. Inspection exposes the cleanup owner, resource, last evidence and next check/deadline. Destroying a container cannot settle an unknown external action; [resource accounting](mechanisms/resources.md#capacity-cancellation-and-retention) and action reconciliation retain their separate owners.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k52--operations-upgrade-and-deletion).
 
@@ -352,6 +395,8 @@ One isolation profile. Expected Layer-3 owners:
 - [operations](concepts/operations.md)
 - [authority](mechanisms/authority.md)
 
+Evidence mapping: enumerate actual credential holders and containment boundaries, including plugins, fallback paths, host resources and native egress. A sandbox around one tool does not establish whole-Runtime isolation. Follow [containment claims](mechanisms/resources.md#containment-claims).
+
 [Packet scope and dependencies](../docs/development/007-work-packets.md#d11--one-isolation-profile).
 
 ## D1.2
@@ -360,6 +405,8 @@ D1 physical gate. Expected Layer-3 owners:
 
 - [resources](mechanisms/resources.md)
 - [evidence](mechanisms/evidence.md)
+
+Evidence mapping: test those boundaries against the real backend. Missing enforcement evidence must refuse an unsupported Isolated profile rather than silently select Trusted. Verification status does not introduce a third Execution trust mode.
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#d12--d1-physical-gate).
 
