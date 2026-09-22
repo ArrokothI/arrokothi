@@ -52,7 +52,7 @@ import {
 } from "./boundary-policy.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const INVENTORY = "docs/development/work/K1.0/ownership-inventory.md";
+const INVENTORY = "docs/development/kernel-ownership.md";
 
 /** A minimal workspace with the same shape as the real one: a target zone, a legacy core, an SDK. */
 const FIXTURE_MANIFESTS: Record<string, string> = {

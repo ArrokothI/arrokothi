@@ -110,4 +110,4 @@ fork branches with an explicit Function join; evaluator/revision loops use decla
 bounds. Dynamic orchestrator/worker plans exceed stock Agent child authoring: keep known workers in
 Workflow child Stages, or explicitly design and test a custom controller through core. Avoid a helper
 that hides child execution in a capability. The external reference and design judgment are recorded
-in the [SDK design note](../../../legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md#external-reference-and-workflow-patterns).
+in the [SDK design note](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md#external-reference-and-workflow-patterns).

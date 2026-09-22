@@ -138,8 +138,9 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 
 ## Where the retired architecture went
 
-The four retired architecture pages and their twelve detail-design pages live in
-[`docs/legacy/architecture/`](../docs/legacy/architecture/). This maps each retired topic to the page
+The four retired architecture pages and their twelve detail-design pages are preserved in the
+[historical archive](../docs/development/archive.md), under their original path
+[`docs/legacy/architecture/`](https://github.com/ArrokothI/arrokothi/tree/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/architecture). This maps each retired topic to the page
 that owns it now. The retired pages state rules that accepted decisions later changed, so read the
 current owner, never the retired page, for what a rule is today.
 

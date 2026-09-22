@@ -1,50 +1,28 @@
 # Implemented kernel baseline
 
-> **Status:** current implementation map, inspected at `e96e513` on 2026-09-07; SDK implementation at `3bdc4f6`.
-> Package `0.8.1` is not an exact experimental identity or a durability/release verdict.
-> **Role:** compact engineering map, not canonical architecture. Target ownership reconciled 2026-09-08; the asynchronous protocol is not implemented by this documentation change.
+This page maps the implemented surface; [007](007-work-packets.md) owns acceptance, integration
+and release. Package version `0.8.1` is not an exact experimental identity or a durability verdict.
+Canonical meanings remain with the [reference index](../../mental-model/reference.md).
 
-Rechecked for pipeline planning at `f3c0a1b2a3a1cb82b295580939d0284f8d329163`: implementation
-and test files under `packages/` and `tests/` are unchanged from `e96e513`; only the SDK README
-differs in those trees. Fresh `npm test` passed 965 tests and typecheck passed. This preserves the
-baseline's scope, not target acceptance. See [the current assessment](010-pipeline-planning-assessment.md)
-for source inspection, process changes and validation limits; historical captures below remain historical.
+The supported application SDK still uses `@arrokothi/core`: Harness, Agent/Workflow controllers,
+Effects, waits and process-local resumptions. The numbered capability sections below describe that
+legacy implementation and its useful regressions. [Kernel ownership](kernel-ownership.md) records
+current source boundaries and the owners of deferred extraction. Historical inspection/test counts
+and incremental migration notes are preserved in the [archive](archive.md).
 
-Structural note, K1.0 (2026-09-13): the package layout below still describes the whole implemented
-system, and every path in it is unchanged. K1.0 added one new package, `packages/kernel`
-(`@arrokothi/kernel`, `private`), as the enforced landing zone for target Kernel work. It contains
-no protocol implementation and no consumer is routed through it. Everything this document maps is
-now the explicitly **legacy** zone, retained with its exports, behaviour and regression suite intact;
-`tests/conformance/architecture/kernel-boundaries.test.ts` was renamed to `legacy-core-boundaries.test.ts`
-with its assertions retained, because the graph it guards is this implementation rather than the
-target Kernel. The zones and the deferred extraction owners are recorded in
-[K1.0's ownership inventory](work/K1.0/ownership-inventory.md). No behaviour below changed.
+The private `@arrokothi/kernel` package separately implements an in-memory `ExecutionCoordinator`:
+atomic creation with initial input, post-creation ingress under the Input ID triple, separate
+receipts, batch reservation, asynchronous Driver dispatch, ordinary redelivery and scoped inspection.
+It refuses new ordinary input to a terminal destination; exercising that through a live terminal
+transition awaits K1.3. Boundary validation, limits and sealing are local; canonical bytes use the
+approved unmodified `canonicalize@3.0.0`. `ExecutionDriver.deliver` returns only `undefined` and
+reports delivery through a Kernel-owned capability; the Kernel never observes a Driver-returned
+Promise.
 
-Structural note, K1.1 (2026-09-14, corrected rounds 2–3): `packages/kernel` is no longer refusal-only. It now implements
-the first target protocol boundaries — atomic creation with initial input, post-creation input
-ingress under the Input ID triple (including refusal of new ordinary input to a terminal
-destination, whose live-terminal exercise awaits K1.3), batch reservation, asynchronous Driver
-dispatch, ordinary redelivery, and the inspection that makes those facts observable — in memory,
-behind an `ExecutionCoordinator`. Canonical bytes come from the owner-approved unmodified JCS
-implementation `canonicalize@3.0.0`; ArrokothI boundary validation, limits and sealing remain
-in-zone. Outcome acceptance and the recovery hold (K1.2), out-of-band
-cancellation with terminal disposition, waits and deadlines (K1.3), and Effects are not implemented
-and refuse by name. Nothing below changed: the package is still `private`, no consumer is routed
-through it, and every path in the legacy map keeps its exports, behaviour and regression suite. This note describes the packet's candidate tree; whether it is
-accepted and integrated is recorded in [the status ledger](007-work-packets.md), never here.
-
-Target decision, 2026-09-15: [K1.1-correction-01 decision-01](work/K1.1-correction-01/decision-01.md)
-selects Kernel-owned delivery reporting and an undefined-only Driver return. The current
-correction candidate implements that boundary (`ExecutionDriver.deliver` returns only
-`undefined`; the Kernel never observes a Driver-returned Promise); independent acceptance is recorded for exact H5
-`52b1600f3b42e3a360fdc3395178f1d147edf304` in [review-08](work/K1.1-correction-01/review-08.md).
-The separate reference-maintenance review is accepted at H9
-`644dfffc7904176ee3a4f9943310cf926408a113`; cleanup is complete and the correction plus supplement are integrated on `main` as `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa` (PR #28); see [007](007-work-packets.md) and the [parent receipt](work/K1.1/integration-01.md). The decision record itself changes no executable behavior.
-
-This document answers one question: **What does the current ArrokothI kernel demonstrably
-implement?** Canonical meaning remains with the owners in the [reference index](../../mental-model/reference.md).
-Paths below are representative rather than exhaustive; the conformance suite is the executable
-evidence.
+Outcome acceptance and the recovery hold belong to K1.2; out-of-band cancellation, terminal
+disposition, waits and deadlines to K1.3; Effects to K2. Those unimplemented surfaces refuse by name.
+No supported SDK consumer is routed through the private target package yet; K1.4 owns that bridge.
+This cleanup changes documentation/evidence locations, not any executable capability.
 
 ## Request identity API
 
@@ -376,7 +354,7 @@ authority. Import/export must preserve the accepted input set and honest `succes
 unknown` certainty.
 
 **Target owner.** [Deployment](../../mental-model/deployment.md), with retained proof
-constraints in [`005`](../legacy/development/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md).
+constraints in [`005`](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/development/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md).
 
 **Representative source.** `packages/interoperability/mcp/src/import/importer.ts`,
 `import/identity.ts`, `import/result.ts`, `schema/from-json-schema.ts`, `export/tools.ts`.
@@ -420,8 +398,8 @@ canaries. Cross-framework benchmark subjects and their evaluation live in the st
 measurement ≠ live integration health. A passing category cannot substitute for another.
 
 **Target owner.** No architecture concept is created here; the owning docs define the
-invariants being tested. Historical engineering guidance is in [`003`](../legacy/development/2026-09-baseline/003-agent-effectiveness-guidance.md)
-and [`004`](../legacy/development/2026-09-baseline/004-efficiency-and-developer-ergonomics.md).
+invariants being tested. Historical engineering guidance is in [`003`](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/development/2026-09-baseline/003-agent-effectiveness-guidance.md)
+and [`004`](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/development/2026-09-baseline/004-efficiency-and-developer-ergonomics.md).
 
 **Representative commands.** `npm test`, `npm run test:conformance`, `npm run test:mcp`,
 `npm run test:evals`, `npm run typecheck`.
@@ -440,7 +418,7 @@ requirements or catalogs. Core remains directly available.
 
 **Evidence.** `packages/sdk/src/`, `packages/sdk/tests/`, the SDK-backed
 `examples/execution-kernel-minimal/`, and `scripts/check-builder-docs.ts`.
-The [SDK design/findings note](../legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
+The [SDK design/findings note](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
 constructor-validation and operation-index bug repairs, and unresolved architectural concerns.
 
 **Boundaries.** This is application composition, not new kernel semantics. Preflight is advisory for

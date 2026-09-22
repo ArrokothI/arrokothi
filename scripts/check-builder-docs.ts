@@ -7,16 +7,16 @@ const root = resolve(import.meta.dirname, "..");
 const guide = "docs/guides";
 const example = "examples/execution-kernel-minimal";
 const sources = [
-  "docs/development/README.md",
   "README.md", "AGENTS.md", "docs/README.md",
-  "packages/sdk/README.md", "docs/legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md",
-  "docs/legacy/development/2026-09-baseline/007-application-builder-ergonomics-findings.md",
+  "packages/sdk/README.md",
+  ...(await readdir(join(root, "docs/development"))).filter((name) => name.endsWith(".md")).sort().map((name) => `docs/development/${name}`),
   ".agents/skills/arrokothi-agent-builder/SKILL.md",
   ...(await readdir(join(root, guide), { recursive: true })).filter((name) => name.endsWith(".md")).sort().map((name) => `${guide}/${name}`),
   `${example}/README.md`,
   // K11-R15-DOC-02: the canonical reference tree gets the same mechanical link/anchor validation
   // as the guides, so a renamed heading cannot silently break a cross-reference again.
-  ...(await readdir(join(root, "mental-model"), { recursive: true })).filter((name) => name.endsWith(".md")).sort().map((name) => `mental-model/${name}`),
+  // Owner rewrite drafts are transient, not canonical pages or validation inputs.
+  ...(await readdir(join(root, "mental-model"), { recursive: true })).filter((name) => name.endsWith(".md") && !/\.rewrite[^/]*\.md$/.test(name)).sort().map((name) => `mental-model/${name}`),
 ];
 const errors: string[] = [];
 const texts = new Map<string, string>();

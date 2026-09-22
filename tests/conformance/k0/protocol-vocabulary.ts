@@ -8,7 +8,7 @@
  * to judge the replacement; see `docs/development/013-structure-and-evidence-sequencing.md`.
  *
  * Every rule restated here is cited to its accepted owner:
- *   W = `docs/development/work/K0.1/protocol-worksheet.md` §5 (waits)
+ *   W = `tests/fixtures/k0/protocol-worksheet.md` §5 (waits)
  *   B = the same worksheet §3 (batches), E = §1 (values), OA = §7, CX = §6, PC = §9.
  * Where this file and the worksheet disagree, the worksheet wins and this file needs a correction.
  *

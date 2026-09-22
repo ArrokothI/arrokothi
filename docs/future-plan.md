@@ -289,5 +289,5 @@ retrospective cancellation/rollback of arbitrary external work.
 
 A demonstrated counterexample may change an accepted contract through architecture review. It must
 name the missing guarantee and simpler alternatives, not only an appealing abstraction. The
-[detail-design review](development/005-detail-design-review.md) records legacy knowledge disposition
+[detail-design review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/005-detail-design-review.md) records legacy knowledge disposition
 so future work does not depend on that directory remaining in the repository.

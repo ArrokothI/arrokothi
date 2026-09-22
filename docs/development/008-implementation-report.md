@@ -23,6 +23,7 @@ than silently omitting a field. Never fabricate a session/model, command result 
 - Selected 012 methods; material exclusions and why:
 - Obligation/interaction coverage with expected facts, forbidden changes, source/test/trace and result:
 - Tests added/ported/removed and reasons; compatibility/refusal; baseline/guides/skills impact:
+- Legacy code/docs/dependencies retired, or retained with consumer and retirement owner/trigger:
 - Semantic correction closure: changed invariant, dependent paths, counterexamples and evidence:
 - Prior findings: open IDs → disposition/evidence; closed findings → prior disposition links:
 - Additional self-found defects (separate provenance); unresolved obligations and unblock conditions:
@@ -115,3 +116,6 @@ and honest provenance.
 The external handoff supplies the final pushed head and verified remote SHA after the push. The
 record never names its own containing commit or claims a future push. A later verified manual merge
 gets the separate integration receipt above; cleanup is not that receipt or a fresh independent ACCEPT.
+
+Closed records may move to a verified archive under [retention](archive.md). Preserve their exact
+bytes and identities; do not copy historical logs into each new report or maintain a second status log.

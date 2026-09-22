@@ -1,9 +1,0 @@
-# 03-builder-docs — K1.1-reference-01 round 7
-Commit: 6535d5739c33a3973d0cce3a2473777a4ce14c2b  Run: 2026-09-16T04:30:34Z UTC  Node: v25.2.1  npm: 11.6.2
-$ npm run check:builder-docs
-
-> arrokothi-agent-kernel@0.8.1 check:builder-docs
-> node --experimental-strip-types scripts/check-builder-docs.ts
-
-Builder checks passed: 57 Markdown files, 848 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
-exit=0

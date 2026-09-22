@@ -9,7 +9,7 @@
  * K1.0 assigned `packages/core/src/util/result.ts` to this packet as `DX-3` (migratable). It is not
  * extracted: the legacy file is ten lines of the same shape, and copying a dependency edge across
  * the boundary to save them would freeze an import the zone does not need. See the K1.1 disposition
- * section of `docs/development/work/K1.0/ownership-inventory.md`.
+ * section of `docs/development/kernel-ownership.md`.
  */
 
 export type Ok<T> = { readonly ok: true; readonly value: T };

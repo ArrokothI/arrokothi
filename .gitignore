@@ -8,3 +8,7 @@ node_modules/
 *.sqlite
 *.sqlite-journal
 tsconfig.tsbuildinfo
+
+# Owner-uploaded historical snapshots; keep outside future Git commits.
+/ultimate-legacy-*.tar.gz
+/ultimate-legacy-*.tar.gz.sha256

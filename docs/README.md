@@ -13,17 +13,15 @@ the Layer-3 pages it should maintain.
 | [Guides](guides/README.md) | Currently implemented SDK/application behavior |
 | [Future questions](future-plan.md) | Unresolved hypotheses; not another release sequence |
 | [Research](research/README.md) | Conditional experiments and analysis |
-| [Architecture strategy study](architecture-strategy-study/README.md) | Historical research evidence |
-| [Legacy](legacy/README.md) | Retired architecture and development documents, kept as evidence only |
+| [Historical evidence](development/archive.md) | Retrieved archive of closed packets, retired designs and research studies |
 
 Target semantics and historical implementation are different. K0/K1.0 acceptance does
 not mean the asynchronous target Kernel or production native recovery has shipped.
 Use the [status ledger](development/007-work-packets.md) and
 [implemented baseline](development/002-implemented-kernel-baseline.md) for actual claims.
 
-Nothing under [`legacy/`](legacy/README.md) is current authority, including pages that still
-call themselves canonical. Historical records may link into it to show what they reviewed;
-current guidance must not.
+Archived documents are historical evidence, including pages that originally called themselves
+canonical. Current guidance links canonical owners; historical claims use pinned evidence.
 
 [Source ownership](../mental-model/sources.md#ownership-and-precedence) explains document
 precedence. Exact concept/mechanism owners supply Layer-3 detail; upper layers summarize

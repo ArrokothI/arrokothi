@@ -3,7 +3,7 @@
 Owner scope update, 2026-09-11: the repository is now
 [ArrokothI/arrokothi](https://github.com/ArrokothI/arrokothi); inspect benchmark read-only and assess
 an optional structural step near K0.2 → K1.1. This is planning, not migration implementation or release.
-It supplements the [K0.1 retrospective](011-k0.1-process-retrospective.md).
+It supplements the [K0.1 retrospective](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/011-k0.1-process-retrospective.md).
 
 ## Inspected identities and current structure
 
