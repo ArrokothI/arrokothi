@@ -4,7 +4,7 @@ An [Execution Runtime](concepts/core.md#execution-runtime) is the code or servic
 
 ## Keep useful native behavior
 
-An Agent lets a model dynamically direct its own control flow. A Workflow primarily follows a predefined control flow. Both can call functions or models, split into [local branches](concepts/roles.md#stage-and-local-branch), and incorporate human input. Agent and Workflow are patterns for structuring a Runtime, not [Kernel](concepts/core.md#kernel) types — the Kernel sees only an Execution, whichever pattern built it. A whole Crew or Dify application can remain one Runtime with its own graph, memory and human-feedback handling.
+[Agent](concepts/roles.md#agent) and [Workflow](concepts/roles.md#workflow) — a model directing its own control flow, or a control flow fixed in advance — are patterns for structuring a Runtime, not [Kernel](concepts/core.md#kernel) types: the Kernel sees only an Execution, whichever pattern built it. Both can call functions or models, split into [local branches](concepts/roles.md#stage-and-local-branch), and incorporate human input. A whole Crew or Dify application can remain one Runtime with its own graph, memory and human-feedback handling.
 
 This is another example of the boundary between Kernel and Runtime, at a finer grain: ordinary dataflow between a Runtime's own steps never needs to cross that boundary. In a Dify or CrewAI graph, for example, passing `{claims, source}` from an extraction step to a validation step should stay a plain function call or graph edge — it does not need to become a Kernel-mediated action, or a write to shared memory just to transport the value. The same holds for an LLM call inside that extraction step: it could in principle be modeled as a mediated Effect, but nothing about Kernel correctness requires that — it stays internal Runtime work unless the Kernel actually needs to observe or coordinate it.
 
@@ -24,6 +24,6 @@ Some native frameworks pause their internal work mid-step by simply suspending e
 
 ## State and quality remain Runtime concerns
 
-[Context](concepts/roles.md#context) is the information selected for a computation. Memory is retained information. Neither is [Execution History](concepts/state.md#execution-history) or automatic permission. For example, a note saying "the user usually approves publication" can inform a proposal; it cannot approve the current publication request.
+[Context](concepts/roles.md#context) — what a Runtime selects for one computation — and the memory it keeps between computations are neither [Execution History](concepts/state.md#execution-history) nor automatic permission. For example, a note saying "the user usually approves publication" can inform a proposal; it cannot approve the current publication request.
 
 Optional reference facilities are described in [local composition](mechanisms/composition.md), [state and memory](mechanisms/state.md), and [context construction](mechanisms/context.md). Foreign Runtimes keep their native equivalents. Test reasoning, graph behavior and context quality with the Kernel held fixed; the Kernel's protocol tests use deterministic fakes.

@@ -18,7 +18,14 @@ Shorthand: **MM** = `mental-model/`, **WS** = `docs/development/work/K0.1/protoc
 
 ## 1. Concept index
 
-### 1.1 The four parties
+Where an owner page states its own grouping, this index uses it, so that a reader moving between the
+two is not re-sorting terms in their head. §1.1–§1.5 follow `concepts/core.md`'s four groups — *who
+is involved* (§1.1 the parties, §1.2 what they run), *one exchange* (§1.3), *what arrives* (§1.4),
+*waiting for what arrives* (§1.5) — and §1.8 follows `concepts/operations.md`'s three families. A
+grouping here that its owner page does not use is this file's defect. §1.9–§1.11 still carry the
+pre-rewrite shape of pages that have not been rewritten yet.
+
+### 1.1 Who is involved: the four parties
 
 **Kernel** — Owner: `MM/concepts/core.md#kernel`. Related: `MM/kernel.md`,
 `MM/mechanisms/execution-cycle.md`, `concepts/operations.md#kernel-worker`.
@@ -55,7 +62,7 @@ Do not infer: that a Driver is a second scheduler, a required service or a separ
 Execution↔native-run mapping is one-to-one (`MM/driver.md` states it is not); that compiling
 against an interface proves fidelity.
 
-### 1.2 What an Execution runs
+### 1.2 Who is involved: what an Execution runs
 
 **Definition** — Owner: `concepts/core.md#definition`. Related: `concepts/identity.md#revision`,
 `mechanisms/creation.md#one-atomic-creation`.
@@ -95,6 +102,8 @@ Heartbeats, dispatch acknowledgments and diagnostic streams are operational traf
 Do not infer: that returning from `deliver` submits an Outcome; that rejection rolls back native
 mutation.
 
+### 1.4 What arrives
+
 **Event** — Owner: `concepts/core.md#event`. Related: `mechanisms/waits.md#eligibility-comes-from-trusted-source-category`,
 `concepts/identity.md#request-key-and-input-id`.
 Established: immutable accepted observation addressed to an Execution; has identity, destination,
@@ -122,6 +131,8 @@ exist and only two: acknowledgment and terminal disposition. Implementation pick
 Do not infer: a per-Event "rejected" disposition; that selected members are acknowledged and
 others are not; the exact bound.
 
+### 1.5 Waiting for what arrives
+
 **Wait, subscription, generation** — Owner: `concepts/core.md#wait-subscription-and-generation`.
 Related: `mechanisms/waits.md` (whole page).
 Established: Runtime-declared need for a Kernel-visible observation, registered by an accepted
@@ -147,7 +158,7 @@ Do not infer: that it proves the external work failed (WS CL-2); that a repeated
 second one; that it is a non-Event special batch member (WS B-1 makes it an ordinary Event
 precisely so every batch member is an accepted Event).
 
-### 1.4 Identity
+### 1.6 Identity
 
 Owner page: `concepts/identity.md`. Its framing sentence is the index: each identity answers a
 different "same as what?" — requests (request key / Input ID), efforts at one Activation (Runtime
@@ -194,7 +205,7 @@ attempt / writer epoch), sends (dispatch / delivery), accepted states (revisions
   receipt.
   Do not infer: that an Outcome receipt says an action ran; receipt serialization or token format.
 
-### 1.5 Actions and authority
+### 1.7 Actions and authority
 
 Owner page: `concepts/actions.md`; its own opening paragraph gives the life of one mediated action
 in order. Mechanism owners: `mechanisms/authority.md` (ordering), `mechanisms/actions.md`
@@ -245,9 +256,13 @@ in order. Mechanism owners: `mechanisms/authority.md` (ordering), `mechanisms/ac
   observation/replay. External delivery is separate
   adapter work (`mechanisms/output.md#external-delivery`).
 
-### 1.6 Operational vocabulary
+### 1.8 Operational vocabulary
 
-Owner page: `concepts/operations.md`, three independent families.
+Owner page: `concepts/operations.md`. Three independent families, in the page's own order and under
+its own names. The page says outright that they do not build on one another and can be read in any
+order — so do not look for a rule that spans them.
+
+*Where code runs and what it may touch* (`#kernel-worker` … `#operating-profile-and-durability`):
 
 - **Kernel Worker / Execution Host** — process roles, not required standalone services; one process
   may be both.
@@ -258,9 +273,13 @@ Owner page: `concepts/operations.md`, three independent families.
   failure assumptions, recovery modes, limits, retention. "Durable" = specified facts survive
   specified failures for the promised period. The first persistent profile covers **process failure
   with surviving storage** only.
+*Time*:
+
 - **Three clocks** — `#three-clocks`: wait deadline, Execution deadline, scheduler lease. Different
   purposes, different expiry consequences, must never share one timer/field. Lease expiry proves
   neither process death nor action failure. Units/precision/renewal implementation-owned.
+*Executions talking to each other and to observers*:
+
 - **Child and ownership; call/spawn/detachment/supervision** — `#child-and-ownership`. Ownership is
   responsibility for required work, not universal access. Required work stays an obligation until
   accounted for or explicitly transferred/abandoned. Detachment needs a **named durable owner**;
@@ -274,7 +293,7 @@ Owner page: `concepts/operations.md`, three independent families.
 - **Backpressure, cleanup debt** — `#backpressure-and-cleanup-debt`. Terminal Execution state does
   not imply debt or remote work disappeared.
 
-### 1.7 Runtime roles (all optional; none adds a Kernel type)
+### 1.9 Runtime roles (all optional; none adds a Kernel type)
 
 Owner page: `concepts/roles.md`. Shared rule under every definition: a Runtime-internal structure
 has **no Kernel mailbox, authority or lifecycle**.
@@ -288,7 +307,7 @@ as a cache) · view and disclosure (scope labels locate, they do not grant) · S
 manifest (a request, never a grant; distinct from this repo's `.agents/skills/`) · service and
 interaction template and async handle.
 
-### 1.8 Continuation, retained information, resources
+### 1.10 Continuation, retained information, resources
 
 Owner page: `concepts/state.md`. Its framing rule: *where information is kept never by itself says
 what it proves.*
@@ -296,7 +315,10 @@ what it proves.*
 - **Progress** — `#progress`. Runtime-owned continuation accepted by the Kernel and returned
   unchanged. Three forms with **different recovery guarantees**: inline structured, immutable
   checkpoint reference, locator for a running native job. Never collapse them. Every persisted form
-  pins Runtime/Definition contract and progress codec. K1's fake Runtime needs only inline.
+  pins Runtime/Definition contract and progress codec.
+  Do not infer: which forms any packet's Runtime actually uses — that is build status, it lives in
+  LEDGER and BASELINE, and a sentence like "K1's fake Runtime needs only inline" was removed from
+  `concepts/state.md` on 2026-09-21 for exactly that reason (`MM/README.md#how-these-pages-are-organized`).
 - **Checkpoint vs locator** — `#checkpoint-and-locator`. A checkpoint identifies a specific
   resumable state plus compatible code and required resources; a locator merely finds a mutable
   session. A session ID is **not** a checkpoint if its contents can advance independently of
@@ -318,7 +340,7 @@ what it proves.*
 - **Retention, pin, tombstone** — `#retention-pin-and-tombstone`. None implies unlimited retention,
   replay, or anonymity of hashes.
 
-### 1.9 Values
+### 1.11 Values
 
 Owner page: `concepts/values.md`; preserves accepted K0.1 E-1–E-7.
 
@@ -352,8 +374,10 @@ Owner page: `concepts/values.md`; preserves accepted K0.1 E-1–E-7.
 
 ## 2. Mechanism index
 
-Navigational only. Every page opens with a **Status line** (required Kernel contract / per-Driver
-obligation / optional Runtime design) plus the gate that introduces it. **A named gate is that
+Navigational only. Every page carries a **Status line** (required Kernel contract / per-Driver
+obligation / optional Runtime design) plus the gate that introduces it — first thing after the
+title on most pages, after a short framing paragraph on `lifecycle.md`, `context.md` and
+`communication.md`. **A named gate is that
 gate's contract, not a shipped claim.**
 
 | Mechanism | Owner | Status / gate | Principal participants | Prerequisite concepts | Neighbours | K0.1–K1.1 evidence | Boundary to hold |
@@ -368,7 +392,7 @@ gate's contract, not a shipped claim.**
 | Output | `mechanisms/output.md` | Kernel, K4.4 (retention K5.1) | Kernel, application output layer, channel adapter | Emission, result, obligation, cursor, view | actions, communication, evidence, resources | detail-design review; F26 | Available-to-read and sent-somewhere are different questions; **observation does not send input** |
 | Communication | `mechanisms/communication.md` | Kernel, K4.1–K4.3 | parent, child, peer, human, Kernel | child/ownership, message, correlation, request record, budget | waits, authority, output, lifecycle | F23, F25 | Ownership, communication and waiting are three independent axes; send success = destination mailbox acceptance |
 | Recovery | `mechanisms/recovery.md` | Kernel contract **plus per-Driver obligation**, K3 (R1 supplies Driver evidence) | Kernel, Driver, native store | progress forms, checkpoint/locator, epoch, lease, codec | execution-cycle, integration, resources, evidence | WS PC-1–PC-5; F24 | Two duties in order: reconstruct accepted records, **then** establish native continuation permission; hold visibly when it cannot be established |
-| Integration (Driver fidelity) | `mechanisms/integration.md` | **Per-Driver obligation, not Kernel semantics**, R1 (versions frozen S1) | Driver, native runtime | Activation/Outcome, Effect, pause, cancellation, resources | recovery, external-protocols, execution-cycle | architecture review prior art; `MM/sources.md#native-design-evidence` | Choose the shallowest integration that works; **unsupported is a legitimate support-record value**; evidence before support |
+| Integration (Driver fidelity) | `mechanisms/integration.md` | **Per-Driver obligation, not Kernel semantics**, R1 (versions frozen S1); K1.4's legacy bridge uses only the reference-Runtime shape and earns **no** support record | Driver, native runtime | Activation/Outcome, Effect, pause, cancellation, resources | recovery, external-protocols, execution-cycle | architecture review prior art; `MM/sources.md#native-design-evidence` | Choose the shallowest integration that works; **unsupported is a legitimate support-record value**; evidence before support |
 | Composition | `mechanisms/composition.md` | **Optional Runtime design, R2** | Runtime-internal stages/branches | Stage, local branch, scratch frame, progress | state, context, communication | detail-design review | Kernel single-writer acceptance does **not** serialize native shared mutation |
 | State & memory | `mechanisms/state.md` | **Optional Runtime/service design, R2** (limits required K2/K3/K5) | state service, Runtime, application | structured state, inferred claim, notes, artifact | authority, context, recovery, resources | memory disposition in 005 | Four owners, not one store; promotion is an explicit act; retrieval is an access-control boundary |
 | Context | `mechanisms/context.md` | **Optional Runtime design, R2** (disclosure/binding limits required K2/R1/K5) | Runtime, model provider | context, projection, invocation binding, snapshot, view | state, authority, integration | K1.1 n/a | Two selection problems feeding one request; selection may shorten but **may not change status** |
@@ -427,29 +451,45 @@ The rewrite must not resolve any of these by making prose sound definite. Each l
 non-decision is recorded.
 
 **In-page marker convention.** Where a page has to leave one of these visibly open, it carries an
-HTML comment shaped `OPEN(<gate>): <what is undecided>. <what to do here when it closes>.
-rewrite-index.md §4` — `OPEN(K2.2)` when a gate owns the choice, `OPEN(unassigned)` when no owner
-exists yet. The point is that the agent implementing that gate can grep `OPEN(` and find the exact
-prose to revisit, which a bare `TODO` does not tell it. Two rules: a comment does not render, so any
-openness a *reader* needs must also be stated in the prose, and one open item gets one marker — a
-second marker for the same item rots independently of the first.
+HTML comment shaped `OPEN(<who settles it>): <what is undecided>. <what to do here when it closes>.
+rewrite-index.md §4`. The point is that whoever eventually settles the item can grep `OPEN(`, find
+the exact prose it affects, and update these pages in the same pass — which a bare `TODO` does not
+tell them. Three values, because the three closings are different work:
+
+- **`OPEN(<gate>)`**, such as `OPEN(K2.2)` — a named roadmap gate owns the choice. When that gate
+  lands, it states the rule in the prose and deletes the marker.
+- **`OPEN(implementation)`** — the architecture deliberately fixes no answer and never will; an
+  implementation settles it for itself. A conforming implementation that makes such a choice comes
+  back here and records it *as that implementation's choice*, with a pointer to where it is written
+  down (usually BASELINE), leaving the marker in place. Only a later architectural decision to fix
+  the representation deletes it. Removing the marker merely because one implementation chose would
+  turn an implementation detail into a protocol rule — §5.3.
+- **`OPEN(unassigned)`** — nobody owns it yet. The marker goes when an owner is assigned and states
+  the rule here.
+
+Two rules across all three: a comment does not render, so any openness a *reader* needs must also be
+stated in the prose, and one open item gets one marker — a second marker for the same item rots
+independently of the first. Every marker's subject has a line in the lists below; a marker with no
+line here, or a line here describing a marker that no page carries, is this file's defect.
 
 **Representations and formats**
 - Transport wire codec, framing, compression — `concepts/values.md#codec`, WS §1 "Left open".
-- Receipt serialization / token representation; request-key hashing — `concepts/identity.md#acceptance-boundary-and-receipt`, WS §2.
+- Receipt serialization / token representation; request-key hashing — `OPEN(implementation)` in
+  `concepts/identity.md#acceptance-boundary-and-receipt`; WS §2.
 - **How a Creation request ID carries the caller's context** — as one component or two, and under
-  what names — `concepts/identity.md#request-key-and-input-id`. The in-process binding uses producer
+  what names — `OPEN(implementation)` in `concepts/identity.md#request-key-and-input-id`. The in-process binding uses producer
   namespace plus the selected creation authority scope; that spelling introduces no "creation request
   scope" object and fixes no wire representation. What the architecture fixes is only that the ID
   combines caller context with the creation key and covers the complete creation content. The
   implementation records its own answer in BASELINE `#request-identity-api`.
 - Writer-epoch representation, and **whether it resets across a later Activation** —
-  `concepts/identity.md#writer-epoch`, WS ID-4, K0.2 `K02-R13-01`. (K1.1-DEC-2 chose one epoch per
+  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. (K1.1-DEC-2 chose one epoch per
   exchange starting at 1 — an *implementation* choice, not architecture.)
 - Wait generation representation; declared-input-subscription spelling — `mechanisms/waits.md#declare-what-can-wake-the-execution`, WS W-9/§5.
 - Timeout Event wire kind token / discriminant — WS W-9 "Left open".
 - Storage schema, timer machinery, cancellation-request storage, rejection encoding — WS §5–§7.
-- Clock units, precision, instant source, lease renewal mechanism — `concepts/operations.md#three-clocks`.
+- Clock units, precision, instant source, lease renewal mechanism — `OPEN(implementation)` in
+  `concepts/operations.md#three-clocks`.
 - Batch maximum (only "finite, ≥ 1" is fixed) — `concepts/core.md#batch-reservation-and-acknowledgment`.
 - **The exact form a Definition takes** — `OPEN(unassigned)` in `concepts/core.md#definition`.
 - **A defining section for trusted ingress provenance** — `OPEN(unassigned)` in `concepts/core.md#event`.
@@ -474,7 +514,16 @@ second marker for the same item rots independently of the first.
 - Isolation backend — D1. Supported versions and tested protocol subsets — S1.
 - Multi-approver policy; `reply_and_ask`; arbitrary detachment; richer joins; context IR — optional
   or refusable in the minimum profile (`mechanisms/authority.md`, `communication.md`,
-  `composition.md`).
+  `composition.md`, `concepts/operations.md#child-and-ownership`).
+- Whether **richer supervision, or detached and supervisory services, are needed at all** —
+  `docs/future-plan.md` Q3, unanswered; WS §14 records it as "not answered here" and puts
+  child/message/human-response durability outside K0.1 entirely. Q3's trigger is a K4 example
+  exposing a missing pattern, not a decision already taken. Owner-decided 2026-09-21 to carry **no
+  in-page marker** for this: the minimum the pages describe — authored failure policy, required
+  owned children, arbitrary detachment refusable — is the current answer stated in ordinary prose at
+  `concepts/operations.md#child-and-ownership`, not a placeholder awaiting one. The standing
+  constraint stays: prose must not imply that a supervision framework or a general detachment
+  facility already exists to be implemented.
 
 **Deliberately not invented**
 - No universal artifact service, memory ontology, Skill schema/registry/signing, policy backend,
@@ -577,8 +626,13 @@ failure modes a rewrite most easily reintroduces.
     `integration.md#evidence-before-support`.
 22. **Isolation and mediation substitute for each other.** A well-isolated Execution can still make
     an unmediated native call; a well-mediated one may have no isolation. Telemetry is neither.
-    Owners: `MM/deployment.md#trust-and-containment`, `resources.md#containment-claims`,
-    `actions.md(concepts)#exposure-and-mediation`.
+    Owner of the independence itself: `concepts/operations.md#isolated-execution`, which
+    `actions.md(concepts)#exposure-and-mediation` names as the owner. Related:
+    `actions.md(concepts)#exposure-and-mediation` (exposure is not permission, mediation is a path),
+    `resources.md#containment-claims` (what evidence an isolation claim needs),
+    `MM/deployment.md#trust-and-containment` (the Layer-2 summary).
+    Watch this one for duplication rather than for drift: the both-directions counterexample is
+    currently written out in full on three pages at once, and each delegates to the next.
 23. **Exposure or discovery is permission.** Showing a model that an operation exists authorizes
     nothing; a Skill manifest's requests are not grants; retrieved text, notes and inferred memory
     are never authority. Owners: `#exposure-and-mediation`, `authority.md#content-is-not-authority`,
