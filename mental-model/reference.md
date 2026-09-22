@@ -19,7 +19,7 @@ Three conventions, so a path tells you what you are opening.
 
 - **`concepts/` owns canonical vocabulary and its local invariants; `mechanisms/` owns how several concepts interact.** This is closer to the real split than “concepts define, mechanisms compose”: `concepts/values.md` states the actual canonical-encoding algorithm, and `concepts/identity.md` states substantive epoch/duplicate/retention rules, not bare definitions. Where a subject splits across both directories — `actions` and `state` — the concept page is the sole definition of the terms and the mechanism page is the sole specification of how they interact. The shared name is deliberate; the directory says which half you are in.
 - **Layer-2 files use the short names.** `runtime.md` and `driver.md` cover the *Execution Runtime* and *Execution Driver*, whose formal names and shorthands are fixed in [core vocabulary](concepts/core.md#execution-runtime). Role vocabulary for Agents, Workflows and Stages is [`concepts/roles.md`](concepts/roles.md), a different subject from the Layer-2 `runtime.md`.
-- **Each mechanism page opens with a Status line** naming whether it is a required Kernel contract, a per-Driver obligation or an optional Runtime design, and which development gate introduces it. Concept pages carry no Status line: they define vocabulary, and a term is not a commitment to build anything. A concept page you reached directly still describes target specification, not shipped behavior — see [Target, not shipped](README.md#target-not-shipped).
+- **Each mechanism page carries a Status line** naming whether it is a required Kernel contract, a per-Driver obligation or an optional Runtime design, and which development gate introduces it. It is the first thing after the title on most pages, and follows a short framing paragraph on `lifecycle.md`, `context.md` and `communication.md`. Concept pages carry no Status line: they define vocabulary, and a term is not a commitment to build anything. A concept page you reached directly still describes target specification, not shipped behavior — see [Target, not shipped](README.md#target-not-shipped).
 
 ## Find a mechanism
 
@@ -136,6 +136,28 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 - [Fixed semantic limits](concepts/values.md#fixed-semantic-limits)
 - [What these rules do not cover](concepts/values.md#what-these-rules-do-not-cover)
 
+## Where the retired architecture went
+
+The four retired architecture pages and their twelve detail-design pages live in
+[`docs/legacy/architecture/`](../docs/legacy/architecture/). This maps each retired topic to the page
+that owns it now. The retired pages state rules that accepted decisions later changed, so read the
+current owner, never the retired page, for what a rule is today.
+
+| Former topic | Current home |
+|---|---|
+| Whole-system overview | [Layer 1](README.md) |
+| Kernel detailed page | [Kernel](kernel.md), [cycle](mechanisms/execution-cycle.md), [waits](mechanisms/waits.md), [lifecycle](mechanisms/lifecycle.md), [authority](mechanisms/authority.md) |
+| Execution detailed page | [Runtime](runtime.md), [Driver](driver.md), [integration](mechanisms/integration.md), [recovery](mechanisms/recovery.md) |
+| Deployment detailed page | [Deployment](deployment.md), [resources](mechanisms/resources.md), [external protocols](mechanisms/external-protocols.md) |
+| Execution protocol | [Identity](concepts/identity.md), [values](concepts/values.md), [creation](mechanisms/creation.md), cycle/waits/lifecycle above |
+| Authority and action lifecycle | [Action concepts](concepts/actions.md), [authority](mechanisms/authority.md), [actions](mechanisms/actions.md), [output](mechanisms/output.md) |
+| Children and communication | [Communication](mechanisms/communication.md) |
+| Runtime composition | [Local composition](mechanisms/composition.md) |
+| Memory/state | [State concepts](concepts/state.md), [state mechanisms](mechanisms/state.md) |
+| Context/projections | [Roles and context concepts](concepts/roles.md), [context construction](mechanisms/context.md) |
+| Recovery/compatibility and Driver fidelity | [Recovery](mechanisms/recovery.md), [integration](mechanisms/integration.md) |
+| Resource/isolation and evidence | [Operational terms](concepts/operations.md), [resources](mechanisms/resources.md), [evidence](mechanisms/evidence.md) |
+
 ## Common search terms
 
 | Search term | Use this owner |
@@ -147,5 +169,11 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 | boundary, receipt, acceptance position | [Acceptance and receipt](concepts/identity.md#acceptance-boundary-and-receipt) |
 | worker, runtime, host | [Runtime](concepts/core.md#execution-runtime), [local worker](concepts/roles.md#local-worker), [host roles](concepts/operations.md) |
 | Agent, Workflow, Stage, Skill, “runtime concepts”, authoring | [Roles vocabulary](concepts/roles.md) |
+| Structured Memory | [Structured state](concepts/state.md#structured-state) — the older name for the same role |
+| ControllerResumption, interleave, Harness, closed Agent/Workflow union | Legacy implementation vocabulary, still live in 0.8.x code and `tests/conformance/`, with no page here that owns it. [Implemented baseline](../docs/development/002-implemented-kernel-baseline.md) describes what exists; [structural evidence](mechanisms/evidence.md#structural-evidence) explains why a name in the current tree is not evidence about the target. Controller-local resumption is replaced by the [Activation](concepts/core.md#activation)/[Outcome](concepts/core.md#outcome) exchange, not renamed into it. |
+
+A term in this second group is a name you will meet in running code or in `AGENTS.md`, not a term
+these pages define. It is listed so the path from the code to the page that owns the concept now
+exists at all; deleting the row does not retire the name.
 
 Ordinary words such as process, queue, model, database and transport retain their normal engineering meanings unless qualified above. This index introduces no universal object hierarchy. [Sources and open choices](sources.md) records provenance, accepted decision coverage, usability findings and intentionally unselected implementation choices.

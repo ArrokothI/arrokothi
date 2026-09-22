@@ -1,8 +1,8 @@
 # Concepts: the canonical vocabulary
 
-Every term ArrokothI uses is defined exactly once, and this directory is where. A page here answers **what is this thing**; a page under [mechanisms](../mechanisms/README.md) answers **how do several of them interact**. Where a subject appears in both directories — `actions`, `state` — the concept page is the sole definition of the terms and the mechanism page is the sole specification of how they behave together. The shared filename is deliberate; the directory tells you which half you are in.
+Every term ArrokothI uses is defined exactly once, and this directory is where. A page here answers **what is this thing**; a page under [mechanisms](../mechanisms/README.md) answers **how do several of them interact**. Two subjects — `actions` and `state` — have a page in each directory; [how pages are named](../reference.md#how-pages-are-named) owns the rule for which half you are in.
 
-Concept pages carry **no Status line**, because naming a term commits nothing to building it. Everything here is target specification: see [Target, not shipped](../README.md#target-not-shipped), and the [status ledger](../../docs/development/007-work-packets.md) for what actually exists today.
+Concept pages carry **no Status line**. Everything here is target specification: see [Target, not shipped](../README.md#target-not-shipped), and the [status ledger](../../docs/development/007-work-packets.md) for what actually exists today.
 
 To look one term up rather than read through, use the [reference index](../reference.md) — it names the owning section of every definition.
 

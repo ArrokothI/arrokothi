@@ -83,7 +83,7 @@ This is a single-owner rule for the same reason each term is defined once, and i
 
 ## Target, not shipped
 
-Everything in these pages is specification. Each Layer-3 mechanism page opens with a **Status** line saying whether it is a required Kernel contract, a per-Driver obligation or an optional Runtime design, and which development gate introduces it. Concept pages carry no Status line, because naming a term commits nothing to building it; [how pages are named](reference.md#how-pages-are-named) owns that convention. Those gates — K1, K2, R1 and so on — are the milestones in the [development roadmap](../docs/development/001-current-status-and-roadmap.md).
+Everything in these pages is specification. Each Layer-3 mechanism page carries a **Status** line naming the kind of obligation it states and the development gate that introduces it; concept pages carry none. [How pages are named](reference.md#how-pages-are-named) owns that convention. Those gates — K1, K2, R1 and so on — are the milestones in the [development roadmap](../docs/development/001-current-status-and-roadmap.md).
 
 **A gate named on a page is the contract for that gate, not a claim that the gate has shipped.** Some of this is built and some of it is not, and the split moves. Two documents answer that, and this page deliberately does not: the [status ledger](../docs/development/007-work-packets.md) records, per packet, what has been independently accepted and what has been integrated — **those are different facts, and work can be accepted for some time before it is merged** — and the [implemented baseline](../docs/development/002-implemented-kernel-baseline.md) lists the APIs that actually exist. Check both before relying on anything here.
 

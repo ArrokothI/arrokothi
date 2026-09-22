@@ -4,7 +4,7 @@ Deployment chooses where the [Kernel](concepts/core.md#kernel), [Driver](concept
 
 ## Roles are not required services
 
-A [Kernel Worker](concepts/operations.md#kernel-worker) processes Kernel transitions. An [Execution Host](concepts/operations.md#execution-host) runs Runtime code. One application process can perform both roles; separate processes let each role be limited and restarted on its own.
+A [Kernel Worker](concepts/operations.md#kernel-worker) performs Kernel transitions. An [Execution Host](concepts/operations.md#execution-host) runs Runtime code. One application process can perform both roles; separate processes let each role be limited and restarted on its own.
 
 | Profile | What it looks like | What you may honestly claim |
 |---|---|---|

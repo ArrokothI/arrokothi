@@ -21,9 +21,10 @@ Shorthand: **MM** = `mental-model/`, **WS** = `docs/development/work/K0.1/protoc
 Where an owner page states its own grouping, this index uses it, so that a reader moving between the
 two is not re-sorting terms in their head. §1.1–§1.5 follow `concepts/core.md`'s four groups — *who
 is involved* (§1.1 the parties, §1.2 what they run), *one exchange* (§1.3), *what arrives* (§1.4),
-*waiting for what arrives* (§1.5) — and §1.8 follows `concepts/operations.md`'s three families. A
-grouping here that its owner page does not use is this file's defect. §1.9–§1.11 still carry the
-pre-rewrite shape of pages that have not been rewritten yet.
+*waiting for what arrives* (§1.5) — §1.8 follows `concepts/operations.md`'s three families, and §1.9
+follows `concepts/roles.md`'s three groups, which predate this branch. A grouping here that its owner
+page does not use is this file's defect. §1.10 and §1.11 still carry the pre-rewrite shape of pages
+that have not been rewritten yet.
 
 ### 1.1 Who is involved: the four parties
 
@@ -70,7 +71,8 @@ Established: versioned executable code/configuration selected for an Execution; 
 only the *pinned revision* and does not interpret the code; creation binds revision + authority +
 initial input in one decision; a later Activation carries it. Same Creation request ID with different
 Definition content is a **conflict that creates nothing**.
-Do not infer: **the exact form a Definition takes — the page carries an `OPEN(unassigned)` marker for it.**
+Do not infer: **the exact form a Definition *or its pinned revision* takes — the page carries one
+`OPEN(unassigned)` marker covering both.**
 Do not infer that it is a friendly name, a registry entry, or that the Kernel can validate it.
 
 **Runtime contract** — Owner: `concepts/core.md#runtime-contract`.
@@ -296,16 +298,22 @@ order — so do not look for a rule that spans them.
 ### 1.9 Runtime roles (all optional; none adds a Kernel type)
 
 Owner page: `concepts/roles.md`. Shared rule under every definition: a Runtime-internal structure
-has **no Kernel mailbox, authority or lifecycle**.
-Agent (model directs control flow) · Workflow (predefined control flow, may include
-model-selected branches) · Stage and local branch · local/delegated worker (not automatically a
-child Execution or a Kernel Worker) · Context and context compiler (selection, not access grant) ·
-**projection / callable alias / invocation binding** (a late reply resolves through the binding it
-saw, never today's catalog) · local control (typed origin preserved even under shared provider tool
-syntax) · invocation snapshot vs context cache (a snapshot in-flight work needs is not discardable
-as a cache) · view and disclosure (scope labels locate, they do not grant) · Skill and package
-manifest (a request, never a grant; distinct from this repo's `.agents/skills/`) · service and
-interaction template and async handle.
+has **no Kernel mailbox, authority or lifecycle**. Three groups, in the page's own order and under
+its own names.
+
+*How a Runtime is shaped*: Agent (model directs control flow) · Workflow (predefined control flow,
+may include model-selected branches) · Stage and local branch · local/delegated worker (not
+automatically a child Execution or a Kernel Worker).
+
+*What a Runtime shows a model and how it reads the reply*: Context and context compiler (selection,
+not access grant) · **projection / callable alias / invocation binding** (a late reply resolves
+through the binding it saw, never today's catalog) · local control (typed origin preserved even
+under shared provider tool syntax) · invocation snapshot vs context cache (a snapshot in-flight work
+needs is not discardable as a cache).
+
+*What a Runtime is allowed to see and to package*: view and disclosure (scope labels locate, they do
+not grant) · Skill and package manifest (a request, never a grant; distinct from this repo's
+`.agents/skills/`) · service and interaction template and async handle.
 
 ### 1.10 Continuation, retained information, resources
 
@@ -491,7 +499,8 @@ line here, or a line here describing a marker that no page carries, is this file
 - Clock units, precision, instant source, lease renewal mechanism — `OPEN(implementation)` in
   `concepts/operations.md#three-clocks`.
 - Batch maximum (only "finite, ≥ 1" is fixed) — `concepts/core.md#batch-reservation-and-acknowledgment`.
-- **The exact form a Definition takes** — `OPEN(unassigned)` in `concepts/core.md#definition`.
+- **The exact form a Definition and its pinned revision take** — one `OPEN(unassigned)` covering both,
+  in `concepts/core.md#definition`.
 - **A defining section for trusted ingress provenance** — `OPEN(unassigned)` in `concepts/core.md#event`.
 - API spelling generally: `concepts/identity.md` states its names are conceptual and do not freeze
   API or wire spelling.
@@ -631,8 +640,10 @@ failure modes a rewrite most easily reintroduces.
     `actions.md(concepts)#exposure-and-mediation` (exposure is not permission, mediation is a path),
     `resources.md#containment-claims` (what evidence an isolation claim needs),
     `MM/deployment.md#trust-and-containment` (the Layer-2 summary).
-    Watch this one for duplication rather than for drift: the both-directions counterexample is
-    currently written out in full on three pages at once, and each delegates to the next.
+    Watch this one for duplication rather than for drift: `operations.md:75` and `actions.md:168`
+    each write the both-directions counterexample out in full, and `actions.md` names
+    `operations.md` as its owner in the same paragraph. `MM/deployment.md` states the rule as a
+    Layer-2 summary and delegates the counterexample, which is the shape the other two should have.
 23. **Exposure or discovery is permission.** Showing a model that an operation exists authorizes
     nothing; a Skill manifest's requests are not grants; retrieved text, notes and inferred memory
     are never authority. Owners: `#exposure-and-mediation`, `authority.md#content-is-not-authority`,
