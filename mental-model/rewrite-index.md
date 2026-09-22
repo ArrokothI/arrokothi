@@ -10,9 +10,12 @@ defect when they disagree. `docs/development/` owns status, never semantics. His
 records describe their candidate at their date; they are evidence of *why* a rule exists, never a
 current rule. Paths below are repo-relative from the repository root.
 
-Shorthand: **MM** = `mental-model/`, **WS** = `docs/development/work/K0.1/protocol-worksheet.md`
+Shorthand: **MM** = `mental-model/`, **WS** = `tests/fixtures/k0/protocol-worksheet.md`
 (accepted revision 12), **LEDGER** = `docs/development/007-work-packets.md`,
 **BASELINE** = `docs/development/002-implemented-kernel-baseline.md`.
+
+Historical `work/` and retired review paths in this working index refer to the original
+paths in the [verified archive](../docs/development/archive.md), not the active checkout.
 
 ---
 

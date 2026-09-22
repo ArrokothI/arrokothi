@@ -1,9 +1,0 @@
-$ npm run check:builder-docs
-
-
-> arrokothi-agent-kernel@0.8.1 check:builder-docs
-> node --experimental-strip-types scripts/check-builder-docs.ts
-
-Builder checks passed: 26 Markdown files, 284 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
-
-exit: 0

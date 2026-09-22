@@ -9,7 +9,7 @@ not prove is owned by [evidence](../../mental-model/mechanisms/evidence.md#struc
 
 | Artifact | Role |
 |---|---|
-| [ownership-inventory.md](work/K1.0/ownership-inventory.md) | The written half: zones, roots, exports, measured dependencies and deferred owners |
+| [ownership-inventory.md](kernel-ownership.md) | The written half: zones, roots, exports, measured dependencies and deferred owners |
 | [inventory-oracle.ts](../../tests/conformance/architecture/inventory-oracle.ts) | Reads that document into the relations it asserts |
 | [boundary-policy.ts](../../tests/conformance/architecture/boundary-policy.ts) | The executable half: the zones and import rules themselves |
 | [kernel-landing-zone.test.ts](../../tests/conformance/architecture/kernel-landing-zone.test.ts) | Asserts the two halves agree, so neither can describe a boundary the other does not enforce |
@@ -42,8 +42,8 @@ meanings; the set rule applies only where the schema declares a collection. This
 rule for this document, not a change to the protocol value model — there,
 [array order stays semantic](../../mental-model/concepts/values.md#canonical-form).
 
-Recorded in [K1.0-correction-01](work/K1.0-correction-01/contract.md) and
-[K1.0-correction-02](work/K1.0-correction-02/contract.md).
+Recorded in [K1.0-correction-01](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.0-correction-01/contract.md) and
+[K1.0-correction-02](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.0-correction-02/contract.md).
 
 ## Editing the inventory
 

@@ -72,7 +72,7 @@ Create, reserve and asynchronous dispatch. Expected Layer-3 owners:
 
 ## K1.1-correction-01
 
-Delivery reporting replaces Driver-returned Promise observation. The precise rule lives in [execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary), with the adapter obligation linked from [integration](mechanisms/integration.md). K1.1-correction-01 owns deterministic first-report, failure, duplicate, delayed and redelivery tests. K1.2/K1.3 exercise late reports after their lifecycle transitions; K5 owns retired-record behavior. The [decision and acceptance mapping](../docs/development/work/K1.1-correction-01/decision-01.md) recorded the implementation gap at decision time (closed by the correction candidate's undefined-only delivery implementation) and the bounded handoff. No successor is released by this decision.
+Delivery reporting replaces Driver-returned Promise observation. The precise rule lives in [execution-cycle](mechanisms/execution-cycle.md#delivery-reporting-boundary), with the adapter obligation linked from [integration](mechanisms/integration.md). K1.1-correction-01 owns deterministic first-report, failure, duplicate, delayed and redelivery tests. K1.2/K1.3 exercise late reports after their lifecycle transitions; K5 owns retired-record behavior. The [decision and acceptance mapping](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/decision-01.md) recorded the implementation gap at decision time (closed by the correction candidate's undefined-only delivery implementation) and the bounded handoff. No successor is released by this decision.
 
 ## K1.1-reference-01
 

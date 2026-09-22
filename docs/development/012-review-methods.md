@@ -2,7 +2,7 @@
 
 [006](006-development-process.md) owns when these methods are required and who may accept work.
 These are proof methods, not additional Kernel semantics or a fixed inventory of packet features.
-The [K0.1 retrospective](011-k0.1-process-retrospective.md) explains their origin.
+The [K0.1 retrospective](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/011-k0.1-process-retrospective.md) explains their origin.
 
 ## Derive coverage from the obligation
 

@@ -24,7 +24,7 @@ The [active roadmap](../development/001-current-status-and-roadmap.md) owns hori
 The [future questions](../future-plan.md) select current hypotheses and negative gates; the
 [mental-model reference index](../../mental-model/reference.md) holds accepted boundary rules and optional Runtime designs.
 Machine/ABI and JIT prototype sequences remain hypotheses; a 2.0 Machine is not committed.
-The [strategy study](../architecture-strategy-study/README.md) independently reviews these directions.
+The [strategy study](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/architecture-strategy-study/README.md) independently reviews these directions.
 
 ## Notes
 

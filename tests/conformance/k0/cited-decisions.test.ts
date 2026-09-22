@@ -9,7 +9,7 @@ import { K0_OBLIGATIONS } from "./coverage.ts";
 import { ALL_SCENARIOS } from "./scenarios.ts";
 
 const sha = (text: string) => createHash("sha256").update(text).digest("hex");
-const worksheet = new URL("../../../docs/development/work/K0.1/protocol-worksheet.md", import.meta.url);
+const worksheet = new URL("../../../tests/fixtures/k0/protocol-worksheet.md", import.meta.url);
 const ledger = new URL("../../../docs/development/007-work-packets.md", import.meta.url);
 
 /** Call on copies too: a removed clause/owner must fail, even though its decision label remains. */

@@ -36,7 +36,8 @@
     "test:packages": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts packages/sdk/tests/*.test.ts",
     "example:application-patterns": "node --experimental-strip-types examples/execution-kernel-minimal/patterns-main.ts",
     "check:builder-docs": "node --experimental-strip-types scripts/check-builder-docs.ts",
-    "test:sdk": "node --test --experimental-strip-types packages/sdk/tests/*.test.ts"
+    "test:sdk": "node --test --experimental-strip-types packages/sdk/tests/*.test.ts",
+    "test:archive-evidence": "node --test --experimental-strip-types tests/archive/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

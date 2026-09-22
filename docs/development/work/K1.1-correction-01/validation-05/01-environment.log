@@ -1,7 +1,0 @@
-=== Environment for the round-6 run ===
-HEAD: 9664a12f0792ef64bda71ce11d14bec4fea74adc
-branch: codex/k1.1-correction-01-review-findings
-node: v25.2.1  npm: 11.6.2  tsc: Version 5.9.3
-cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
-payload tree equals C4 (see 00-identity.log); working tree for payload paths:
-(empty above = clean)

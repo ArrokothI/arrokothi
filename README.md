@@ -47,10 +47,12 @@ For implementation guidance, start at the [Kernel, Execution and Deployment guid
 | `tests/conformance` | Semantic and boundary tests |
 | `mental-model` | Progressive architecture, canonical terms and precise mechanisms |
 | `docs/development` | Implemented baseline, roadmap/evidence, migration status |
-| `docs/architecture-strategy-study` | Comparative architecture diagnosis that informed the redesign |
+| `tests/fixtures/k0` | Sealed protocol evidence needed by ordinary conformance |
+| `tests/archive` | Explicit checks for retrieved historical evidence |
 
-K1.0 prepared a private, refusal-only `packages/kernel` and checked the target/legacy
-separation. It implements no target protocol and earns no E1 result. See the
-[status ledger](docs/development/007-work-packets.md) for release and acceptance details.
+The private `packages/kernel` implements creation, ingress, reservation and asynchronous dispatch;
+Outcome acceptance and later boundaries remain unimplemented. The SDK still uses the legacy core.
+See the [status ledger](docs/development/007-work-packets.md) for acceptance/release and the
+[archive index](docs/development/archive.md) for retired documents and implementation evidence.
 
 The target dependency direction is application/SDK → Kernel + Execution Drivers → Execution Runtimes/providers. Provider-specific concepts should not become Kernel semantics merely because one integration exposes them.

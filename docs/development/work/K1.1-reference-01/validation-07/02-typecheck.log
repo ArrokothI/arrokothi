@@ -1,7 +1,0 @@
-# 02-typecheck — K1.1-reference-01 round 7
-Commit: 6535d5739c33a3973d0cce3a2473777a4ce14c2b  Run: 2026-09-16T04:30:30Z UTC  Node: v25.2.1  npm: 11.6.2
-$ npm run typecheck
-
-> arrokothi-agent-kernel@0.8.1 typecheck
-> tsc --noEmit -p tsconfig.json
-exit=0

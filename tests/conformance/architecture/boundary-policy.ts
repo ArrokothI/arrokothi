@@ -1,7 +1,7 @@
 /**
  * The executable ownership boundary for K1.0.
  *
- * `docs/development/work/K1.0/ownership-inventory.md` is the human-readable record of the same
+ * `docs/development/kernel-ownership.md` is the human-readable record of the same
  * decisions; `kernel-landing-zone.test.ts` asserts that the two agree, so neither can drift into
  * describing a boundary the other does not enforce.
  *

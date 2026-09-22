@@ -15,7 +15,9 @@ before implementing; do not reconstruct semantics from historical records or API
 for each packet, not a whitelist. Accepted semantic changes update affected definitions,
 mechanisms and dependent descriptions; fill defined placeholders and remove superseded
 current prose. Change Layer 1/2 only when the whole-system model or major abstraction changes.
-Preserve historical implementation/review/integration/cleanup evidence under 008. Do not
+Preserve historical implementation/review/integration/cleanup evidence under 008 and
+[the archive retention policy](docs/development/archive.md); closed evidence need not remain in the
+active checkout. Keep active fixtures and inventories at their maintained paths. Do not
 create aliases to replaced architecture documents or route current work through them.
 
 `docs/development/` describes current implementation and migration work. It does not override architecture. The current 0.8.x code still contains the previous `Harness`, synchronous `ExecutionController.activate(...)`, and `ControllerResumption` design; do not infer the target architecture from those implementation names.

@@ -14,7 +14,7 @@
  * terminal disposition, waits and deadlines are K1.3's; Effects are K2's; the legacy bridge, the
  * SDK host entry and the E1 gate are K1.4's. Every surface those packets own refuses by name rather
  * than answering with a no-op. The boundary this package is held to is recorded in
- * `docs/development/work/K1.0/ownership-inventory.md` and enforced by
+ * `docs/development/kernel-ownership.md` and enforced by
  * `tests/conformance/architecture/kernel-landing-zone.test.ts`: nothing here may import
  * `@arrokothi/core`, any provider or Runtime integration, or the SDK. External reach is `node:`
  * builtins plus exactly the single owner-approved third-party specifier `canonicalize` (exact

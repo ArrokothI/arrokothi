@@ -23,7 +23,10 @@ records when possible; if normative conflict remains, block the affected contrac
 decision rather than silently selecting implementation behavior. This documentation rewrite does
 not authorize an architecture change or relax the baseline governing its own review.
 
-One authoritative status lives in the table in 007. Store packet material under
+One authoritative status lives in the table in 007. Closed evidence may be archived under the
+[retention policy](archive.md), preserving sealed bytes, exact identities and accessible evidence.
+This changes its storage location, never its verdict or the review baseline governing a candidate.
+Store active packet material under
 `docs/development/work/<packet-id>/`: `contract.md`, `implementation-01.md`, `review-01.md`, and
 later numbered attempts. These paths are created when work starts, not empty boilerplate now.
 006 owns workflow policy; 007 owns scope/status; 008 owns record fields; 009 only launches roles;
@@ -41,7 +44,7 @@ source, deterministic assertion or external observation, and evidence location. 
 not a passed evidence gate. Parent milestones close only through their final gate packet.
 
 The historical planning integration is `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`.
-K0.1 integration is recorded in its [receipt](work/K0.1/integration-01.md). Neither implements the
+K0.1 integration is recorded in its [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.1/integration-01.md). Neither implements the
 target Runtime migration. For each new packet resolve the actual integrated prerequisite and record
 its full SHA; never use a moving `main` as an unrecorded review base.
 

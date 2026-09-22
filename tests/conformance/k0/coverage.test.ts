@@ -308,7 +308,7 @@ describe("K0 boundary coverage: the corpus is fully accounted for", () => {
     // This file is excluded: it necessarily contains the pattern it searches for, and a scanner that
     // matches its own detector proves nothing about the corpus.
     const fixtureFiles = (await readdir(HERE)).filter((name) => name.endsWith(".ts") && name !== "coverage.test.ts");
-    const specPath = resolve(HERE, "../../../docs/development/work/K0.2/public-fixture-specification.md");
+    const specPath = resolve(HERE, "../../../tests/fixtures/k0/public-fixture-specification.md");
     const sources = await Promise.all([
       ...fixtureFiles.map((name) => readFile(resolve(HERE, name), "utf8")),
       readFile(specPath, "utf8"),
