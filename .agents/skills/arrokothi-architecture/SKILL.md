@@ -25,6 +25,24 @@ the whole-system model or major abstractions. Preserve sealed historical evidenc
 008. Current code/API names are implementation observations, not target definitions.
 Optional reference Runtime concepts are not mandatory Kernel entities or release promises.
 
+## Traverse for the task
+
+Use `reference.md` to find an exact owner and the directory READMEs for a learning
+path. Follow the affected prerequisites and interactions; do not load every page
+or reconstruct current rules from historical review rounds. Consult provenance
+when a rationale or unresolved conflict requires it.
+
+For a prose rewrite, establish the current contract before editing and use
+[technical-documentation](../technical-documentation/SKILL.md) for reader experience
+and semantic-preservation checks. Explanatory treatment is appropriate; changing
+presentation does not authorize changing obligations or resolving open choices.
+`mental-model/rewrite-index.md` tracks that editorial project and its open markers;
+it is not a general coding prerequisite or a second specification.
+
+For implementation, continue from the owner to the implemented baseline, affected
+code, conformance tests, and applicable development process. An editorial rewrite
+does not by itself require implementation work or an acceptance packet.
+
 ## Procedure
 
 1. **Classify the concept.** Decide whether Kernel correctness depends on it. If not, prefer keeping it inside the Execution Runtime or deployment/integration layer.
