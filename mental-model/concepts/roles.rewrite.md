@@ -2,7 +2,7 @@
 
 Every other page in this directory names something the [Kernel](core.md#kernel) decides about. This page names what is inside the box the Kernel declines to open.
 
-That inversion is worth sitting with before reading further, because it changes what the definitions below are for. A term like [Activation](core.md#activation) or [Event](core.md#event) has to be exact because the Kernel enforces it: get the term wrong and an implementation is wrong. Nothing on this page is enforced by anything. These are names for structures a Runtime may build inside itself, and a Runtime that builds none of them, or builds all of them under other names, is not thereby incorrect.
+That inversion changes what the definitions below are for. A term like [Activation](core.md#activation) or [Event](core.md#event) has to be exact because the Kernel enforces it: get the term wrong and an implementation is wrong. Nothing on this page is enforced by anything. These are names for structures a Runtime may build inside itself, and a Runtime that builds none of them, or builds all of them under other names, is not thereby incorrect.
 
 So the shared rule under every definition here is a negative one, and it holds without exception: **a Runtime-internal structure has no Kernel mailbox, no authority binding and no lifecycle of its own.** The Kernel sees one [Execution](core.md#execution) whichever of these patterns built it. Nothing below adds a Kernel type, a Kernel scheduler, or a kind the protocol can branch on.
 
@@ -22,9 +22,9 @@ Open up the weekly report from [the core vocabulary](core.md) and look inside th
 
 The team that wrote this Runtime built it as an **Agent**: a model reads the brief and decides for itself what to do next — search, summarize, draft, ask. A second team, solving the same problem, built theirs as a **Workflow**: fetch, then summarize, then draft, then route for review, in an order fixed before anything ran. Both Runtimes produce an Execution. From outside, the two are indistinguishable, and deliberately so.
 
-Follow the Agent into its drafting step, which is a **Stage** — a bounded unit with its own input, computation and output. The Stage needs three sources checked and it has no reason to check them one at a time, so it opens three **local branches**. The third branch hands its actual work to a summarization service running on someone else's machines. That is still a **local worker**: the report Runtime is still the party answerable for it, and the Kernel has not been told it exists.
+Follow the second team's Workflow into its summarize step, which is a **Stage** — a bounded unit with its own input, computation, output and transition to whatever comes next. The Stage needs three sources read and has no reason to read them one at a time, so it opens three **local branches**. The third branch hands its actual work to a summarization service running on someone else's machines. That is still a **local worker**: the report Runtime remains the party answerable for it, and the Kernel has not been told it exists.
 
-Now the Agent has to ask a model what to do next, which means deciding what the model gets to see. It assembles a **context**: the brief, last quarter's figures, three retrieved passages, a note it left itself two Activations ago. A **context compiler** did that assembling. Alongside the information it sends a list of things the model may call — an **operation projection** of the mediated [operations](actions.md#operation) this Execution is permitted to use. `publish_report` appears under the **callable alias** "Publish this week's report", because that is the phrase a model handles well. An **invocation binding** records, for this one request only, that the alias means `publish_report` at revision 2 — and that `note_update`, which arrives in the provider's tool syntax looking exactly the same, is a **local control** that touches nothing but the Runtime's own scratch state.
+Now go back to the first team's Agent, which faces a question the Workflow never has to ask: what should happen next? Answering it means deciding what a model gets to see. The Agent assembles a **context**: the brief, last quarter's figures, three retrieved passages, a note it left itself two Activations ago. A **context compiler** did that assembling. Alongside the information it sends a list of things the model may call — an **operation projection** of the mediated [operations](actions.md#operation) this Execution is permitted to use. `publish_report` appears under the **callable alias** "Publish this week's report", because that is the phrase a model handles well. An **invocation binding** records, for this one request only, that the alias means `publish_report` at revision 2 — and that `note_update`, which arrives in the provider's tool syntax looking exactly the same, is a **local control** that touches nothing but the Runtime's own scratch state.
 
 The model answers ninety seconds later, naming "Publish this week's report". The Runtime resolves that answer through the **invocation snapshot** it kept from the request, not through whatever the catalog holds now. In between, someone republished the catalog.
 
@@ -40,11 +40,13 @@ The first two terms name the two answers to one question: who decides what happe
 
 An **Agent** is a Runtime whose control flow a model or policy directs while the work is running, rather than one fixed in advance.
 
-The word names a shape, and the shape has consequences for the team that owns the Runtime — what they can predict, what they have to test, what they pay per run. It has no consequences for the Kernel, which never learns the shape.
+The shape exists because some work cannot be drawn in advance. The report may need three sources or thirty, and which ones matter depends on what the first one turned up. A fixed graph has to anticipate those cases before any of them arrives; an Agent trades that anticipation for a loop that decides as it goes. The trade runs both ways, and naming only its upside is how a design gets chosen for the wrong reason: what the loop gains in adaptability it pays in inspectability, because nobody can read the path in advance and two runs over the same input may not take the same one.
 
-Planner, evaluator, router, critic and retriever are application roles inside such a Runtime. They are not separate kinds of anything, and adding one does not add a Kernel concept. A Runtime that calls one part of itself "the planner" has named a function; it has not created something the protocol can address.
+Planner, evaluator, router, critic and retriever are application roles inside such a Runtime. They are not separate kinds of anything, and adding one does not add a Kernel concept. A Runtime that calls one part of itself "the planner" has named a function; it has not created something the protocol can address, authorize, cancel or recover.
 
 An Agent is not a Kernel type, and the temptation to treat it as one is specific enough to name: the label looks like it should predict something about the Runtime behind it. It predicts nothing. Two Agents can disagree completely about how they save their state, and an Agent and a Workflow can agree exactly. [The Runtime contract](core.md#runtime-contract) owns what does decide that compatibility, and owns why no such tag appears in the Kernel's model at all.
+
+One consequence of the shape reaches operators before it reaches anyone else. A model call inside an Agent is the Runtime's own work, never something the Kernel was asked to coordinate, so an Agent that spends ninety seconds waiting on its provider leaves the Execution in `RUNNING` for all ninety. [`WAITING`](core.md#wait-subscription-and-generation) means something narrower that does not cover this case. A long-running Agent therefore looks stuck while working, and that report is correct rather than missing something.
 
 ### Workflow
 
@@ -56,11 +58,11 @@ Agent and Workflow are not exclusive, and the pair is not a union the Kernel res
 
 ### Stage and local branch
 
-A **Stage**, also called a local node, is a defined unit of input, computation, output and transition inside a Runtime. A **local branch** is control flow that owns its own intermediate steps and its own result within the enclosing Runtime.
+A **Stage**, also called a local node, is a defined unit of input, computation, output and transition inside a [Workflow](#workflow) Runtime. A **local branch** is control flow that owns its own intermediate steps and its own result within the enclosing Runtime.
 
-Both are instances of this page's shared rule: a Stage has no Kernel mailbox, no authority of its own and no lifecycle, and neither does a branch. The Kernel cannot address one, cannot cancel one, and does not know how many there are.
+Both are instances of this page's shared rule: a Stage has no Kernel mailbox, no authority of its own and no lifecycle, and neither does a branch. The report Workflow's fetch, summarize and draft steps are not three Executions, and the three branches inside its summarize step are not three more. The Kernel cannot address any of them, cannot cancel one, and does not know how many there are.
 
-Given that, the fair question is why the architecture bothers to name them. The answer is that a Runtime author faces a real and consequential choice — divide this work into Stages inside one Execution, or create a child Execution for it — and a choice between two options is only available to someone who has words for both. A Stage is the cheap side of that choice: it costs nothing the Kernel has to track, and it buys nothing the Kernel can offer. What the expensive side buys instead, and what it then obliges somebody to account for, belongs to [child and ownership](operations.md#child-and-ownership).
+Given that, the fair question is why the architecture bothers to name them. The answer is that a Runtime author faces a real and consequential choice — divide this work into Stages inside one Execution, or create a child Execution for it — and a choice between two options is only available to someone who has words for both. A Stage is the cheap side of that choice: it costs nothing the Kernel has to track, and it buys nothing the Kernel can offer. Rebuilding those same three steps as children would buy three separately addressable lifetimes and charge for three of everything a lifetime carries, plus a parent that cannot finish until it has accounted for all three. [Child and ownership](operations.md#child-and-ownership) owns when that price is worth paying.
 
 The resemblance runs deep enough to mislead in one specific way, so state it directly: two local branches are not two Executions, and they get none of the protection the Kernel provides between Executions. The Kernel's single-writer rule fences which attempt may write accepted progress. It says nothing about which of two branches may write the same file, the same row or the same native session. [Forks, joins and corrections](../mechanisms/composition.md#forks-joins-and-corrections) owns what a Runtime has to do about that, along with barriers and merges.
 
@@ -68,15 +70,15 @@ The resemblance runs deep enough to mislead in one specific way, so state it dir
 
 A **local or delegated worker** is internal work that a Runtime or a native framework manages on its own.
 
-*Local* describes ownership, not location, and this is the most reliably surprising sentence on the page. A local worker may run in a different process, on a different machine, or inside a vendor's service, and may carry native identifiers, native retries and a native cancellation API of its own. None of that makes it less local. It stays local because the Runtime remains the party answerable for it, and it stops being local only when the application explicitly creates independently managed Kernel work — at which point it is a child Execution, with everything that implies.
+*Local* describes ownership, not location, and the two come apart much further than the word suggests. A local worker may run in a different process, on a different machine, or inside a vendor's service, and may carry native identifiers, native retries and a native cancellation API of its own. None of that makes it less local. It stays local because the Runtime remains the party answerable for it, and it stops being local only when the application explicitly creates independently managed Kernel work — at which point it is a child Execution, with everything that implies.
 
 A local worker is therefore neither a child Execution nor a Kernel Worker, and the shared noun does nothing to keep the three apart — [Kernel Worker](operations.md#kernel-worker) lists everything this vocabulary calls a worker and says which qualifier each one needs.
 
-A supervisor that watches these workers, judges their results and picks a retry strategy is likewise an application or Runtime role, not a Kernel facility. The Kernel supplies the accounting and the authorized control paths that such a policy uses to still mean something after a restart; it does not supply the policy. [Finite expansion and supervision](../mechanisms/communication.md#finite-expansion-and-supervision) owns what it does supply.
+A supervisor that watches these workers, judges their results and picks a retry strategy is likewise an application or Runtime role, not a Kernel facility. The Kernel does not supply that policy. What it supplies is the smaller thing a policy needs in order to still mean anything after a restart: records that outlive the Runtime process, and control paths an authorized caller can still reach afterwards. [Finite expansion and supervision](../mechanisms/communication.md#finite-expansion-and-supervision) owns exactly which.
 
 ## What a Runtime shows a model, and how it reads the reply
 
-Showing a model something is the easy half. The hard half arrives later, when the answer comes back and the Runtime has to work out what the model actually meant — against a catalog that may have changed, a token that may look like two different things, and a request nobody kept. The four terms here exist for that second half.
+Showing a model something is the easy half. The hard half arrives later, when the answer comes back and the Runtime has to work out what the model actually meant — against a catalog that may have changed since, a name that two different things can both claim, and a request nobody kept a copy of. The three entries below exist for that second half.
 
 ### Context
 
@@ -86,7 +88,9 @@ The phrase *for one computation* is doing the work, and it is the clause most li
 
 Readers arriving from provider documentation carry a second meaning of the word, and it does not apply here. In a provider API, "context" usually names the token window — a size. Here it names a selection decision: which authorized things go into this request. The size limit is real and belongs to the provider; the term on this page is about the choosing.
 
-Two negatives bound the term. Selecting information does not grant access to it, and compiling a claim into a context does not assert that the claim is true — an inference that arrives looking like an assertion is a defect in the selection, not a promotion. [Selecting information without changing its status](../mechanisms/context.md#select-information-without-changing-its-status) owns what selection may and may not alter.
+Two negatives bound the term. Selecting information does not grant access to it, and compiling a claim into a context does not assert that the claim is true.
+
+The second negative is the one with teeth, because selection is allowed to shorten, reorder and redact — and every one of those operations can quietly change what a thing *is* on the way past. Three cases carry different instructions to the model, and a context that blurs any of them earns a confident answer built on the blur: a guess must not arrive dressed as a finding, an excerpt must not arrive dressed as the whole, and a record nobody could locate must arrive as unavailable rather than as evidence that it does not exist. [Selecting information without changing its status](../mechanisms/context.md#select-information-without-changing-its-status) owns what selection may and may not alter.
 
 ### Projection and invocation binding
 
@@ -130,7 +134,9 @@ A runtime **Skill** packages instructions, references, assets or scripts, and op
 
 A Skill is the one thing on this page that arrives from outside the deployment, and everything unusual about it follows from that. Its text will end up inside a model's context. Its scripts will run somewhere. Its manifest will be read by someone deciding what to enable. All three are inputs from a party the deployment does not control.
 
-The manifest is therefore a request, never a grant, and the word *requested* in the definition is load-bearing. A manifest listing `publish_report` is a package saying what it would like to be able to do. It reads like configuration, which is exactly the hazard: configuration is something an operator wrote, and this is something a stranger wrote. Preflight checks whether the things a manifest names are present and resolvable; it does not decide whether they are permitted, and an imported list of allowed tools cannot widen what an Execution may do. [Content is not authority](../mechanisms/authority.md#content-is-not-authority) is the general form of that rule, and [notes, controls and packages](../mechanisms/composition.md#notes-controls-and-packages) owns what a deployment pins before enabling one.
+The manifest is therefore a request, never a grant, and the word *requested* in the definition is load-bearing. A manifest listing `publish_report` is a package saying what it would like to be able to do. It reads like configuration, which is exactly the hazard: configuration is something an operator wrote, and this is something a stranger wrote. Preflight checks whether the things a manifest names are present and resolvable; it does not decide whether they are permitted, and an imported list of allowed tools cannot widen what an Execution may do. A manifest is one instance of a wider rule that [content is not authority](../mechanisms/authority.md#content-is-not-authority) owns.
+
+Three properties of the package's own contents follow from the same fact, and each is easy to lose the moment a Skill starts being treated as configuration. Its descriptions are text from outside, so they can shape what a Runtime proposes and can settle nothing. Its scripts run under whatever execution profile the deployment states, never one the package selects for itself. And credentials, live sessions and private memory do not belong inside a package at all, because packaging them hands them to everyone the package reaches. [Notes, controls and packages](../mechanisms/composition.md#notes-controls-and-packages) owns what a deployment pins before enabling one.
 
 One naming collision needs closing, because this repository contains both kinds. A runtime Skill is the concept defined here. The coding-agent workflow skills under `.agents/skills/` are tooling for people and agents working *on* ArrokothI, and they are not runtime Skills, not Executions, and not part of the architecture this page describes.
 
@@ -138,11 +144,11 @@ One naming collision needs closing, because this repository contains both kinds.
 
 A **service** exposes selected input, result and interaction contracts while keeping its implementation private. An **interaction template** supplies parameterized predefined or context input. An **async handle** correlates native external work.
 
-These are the shortest entries on the page because they are, genuinely, labels — but each sits next to a Kernel concept that someone will reach for by mistake, and the three mistakes are different.
+Each of the three sits next to a Kernel concept that someone will reach for by mistake, and the three mistakes are different.
 
 A service is not an [operation](actions.md#operation). An operation is a pre-declared contract for one kind of mediated work, and admission, consent and evidence all attach to it. A service is an implementation boundary that may stand behind several operations, or behind none. Treating a service as an operation puts permission and evidence on an object that was never designed to carry them.
 
-An interaction template is not a grant and not a schema amendment. Supplying default or context-derived input shapes what gets asked; it does not widen what may be asked for.
+An interaction template is not a grant, and it is not [exact consent](actions.md#exact-consent). Supplying default or context-derived input shapes what gets asked; it neither widens what may be asked for nor supplies anybody's yes to what it filled in. A template that quietly supplies the account a publication will reach has changed the request, and a changed request needs its own decision.
 
 An async handle is not permission and not a [correlation identifier](operations.md#message-request-and-correlation) in the Kernel's sense. It is a native string that lets a Runtime find its own outstanding external work again. Holding one authorizes nothing — the same rule that applies to every identifier in this architecture, and worth restating here because a handle *feels* like a capability in a way that a folder label does not.
 

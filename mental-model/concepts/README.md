@@ -12,7 +12,7 @@ Seven pages in dependency order. This is not alphabetical, and not the order a f
 
 1. **[core.md](core.md)** — The pieces every other page assumes: the Kernel, an Execution, the Runtime that does the work and the Driver that adapts it, and the protocol objects that carry one exchange — Activation, Outcome, Event, and the mailbox and batch that Events travel in. Read first; little else parses without it.
 
-2. **[actions.md](actions.md)** — What an Execution can ask the world to do, from the Effect it proposes through admission and settlement to the evidence that comes back, plus the authority and consent that gate it. Read directly after `core.md`: its first term, Effect, is defined in terms of Outcome.
+2. **[actions.md](actions.md)** — What an Execution can ask the world to do, from the Effect it proposes through admission and settlement to the evidence that comes back, plus the authority and consent that gate it. Read directly after `core.md`: it starts with Operation, then defines Effect in terms of Outcome.
 
 3. **[identity.md](identity.md)** — The identifiers that make "is this the same request?" answerable: request keys and Input IDs, Runtime attempts and writer epochs, the several kinds of revision, and what a receipt does and does not prove. Read when you need to tell a retry from a new intention.
 
