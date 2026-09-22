@@ -20,6 +20,8 @@ The second and third progress forms look alike on the wire — both are small re
 
 A **checkpoint** identifies a specific resumable native state plus compatible code and required resources. A **locator** merely finds a mutable session or existing job. A session ID is not a checkpoint if its contents can advance independently of the accepted progress: after a restart, a checkpoint lets the Driver resume from exactly the state the Kernel accepted, whereas a locator can only ask "is that session still there, and what is it doing now?" The Runtime creates native state; Kernel acceptance pins only the proposed continuation. [Publication and recovery](../mechanisms/recovery.md#checkpoint-publication) handle the gap between those stores.
 
+Resumable state need not be a serialized process image: a native engine may reconstruct it from a pinned durable history and compatible deterministic code. Its recovery contract must establish that equivalence. A saved conversation or filesystem checkpoint preserves only the information it actually contains; neither by itself restores pending calls, a model invocation or the engine's control position.
+
 ## Recovery and re-execution
 
 **Recovery** reconstructs accepted truth and, if the supported native contract allows it, continues the same logical work. **Reattachment** reconnects to an existing native job. **Replay** repeats the same immutable exchange only when its phase-specific contract proves that safe. **Restart-from-input** is an explicitly authorized new Execution, with causation linking it to the original. A terminal lifetime never reopens.

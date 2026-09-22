@@ -15,6 +15,8 @@ Recovery is two jobs that are tempting to treat as one. Reconstructing accepted 
 
 A [lease](../concepts/operations.md#three-clocks) expiring proves neither process death nor action failure. A lease bounds a claim, not a process: it expires because time passed, which is equally consistent with a dead worker and a slow one still writing. A native job may outlive its host. Do not automatically rerun all `RUNNING` records at startup or fail over an unavailable store to an empty in-memory Kernel. The first persistent profile assumes storage survives process failure.
 
+A dormant `WAITING` Execution need not retain a dedicated worker or a continuously renewed per-Execution lease. Persist the wait, deadline and wake obligation; claim work when a transition needs processing. A substrate may lease a shard or queue instead. Lease granularity and renewal are deployment choices, while accepted writer epochs and native exclusion remain distinct correctness obligations. Driver/provider heartbeat and call timeouts may add other clocks; they do not replace these Kernel meanings.
+
 ## Crash windows
 
 Each row is a moment where two facts that belong together could not be written together. Read the pairs: whatever the Kernel committed first is what it will find, and the column on the right says what must be reconstructed or decided from that fact alone. Rows differ in how recoverable they are — some name an exact reconstruction, others end at "unknown", and that difference is the point rather than an inconsistency.
@@ -30,6 +32,7 @@ Each row is a moment where two facts that belong together could not be written t
 | Settlement commit and wake notification | Recover Event and applicable readiness |
 | Child intent and child/link fulfillment | Fulfill one identity/correlation/budget debit idempotently |
 | Terminal result and route/delivery acknowledgment | Replay the recorded obligation with the same identity |
+| Parent closure and supervision follow-up | Recover the exact child, policy, accountable owner and control/routing obligation without reactivating the terminal parent |
 | Takeover and old host's return | Reject stale Kernel writes and exclude native mutation or refuse takeover |
 | Resume and missing code/checkpoint/resource | Hold, explicitly migrate or fail; never present empty state as restored |
 
@@ -46,6 +49,8 @@ Garbage collection distinguishes candidate, accepted and in-use references. Uplo
 Native state may advance before Kernel acceptance, because the native store and the Kernel's store do not share one transaction. Never resume two accepted/candidate revisions against one mutable session. Use native exclusive ownership, immutable branchable checkpoints with controlled actions, or refusal. Forkable state alone does not make repeated tool calls safe. A mutable session locator remains a locator; it must not be advertised as a snapshot.
 
 Native snapshots retain all their engine's required state: graph position, output filter, pending forms, resources and executable associations when applicable. Restoring serialized configuration does not recreate a live resource client automatically.
+
+A Runtime may reconstruct continuation through deterministic replay of its own durable history instead of loading a memory snapshot. Its Driver must pin the relevant history boundary and compatible code and prove that replay does not repeat unrecorded external actions. A transcript, filesystem snapshot or bare native workflow ID alone is insufficient. ArrokothI's Execution History does not become a replay log for arbitrary Runtime code by adopting such a Driver.
 
 ## Compatibility and migration
 

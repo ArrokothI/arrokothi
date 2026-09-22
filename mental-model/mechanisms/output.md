@@ -14,7 +14,7 @@ Provisional stdout/tokens can be shown if clearly labeled unaccepted. The label 
 
 ## Authorized subscriptions and replay
 
-Accepted output has to survive a reader disconnecting, and a reader has to be able to come back without missing or repeating anything. That needs stable identities and positions — and nothing more: the Kernel stores output and answers authorized reads, while everything about connections stays in the application.
+Accepted output has to survive a reader disconnecting within the promised retention window. A returning reader needs ordered replay with no silent gaps and stable identities for deduplicating repeated delivery. The Kernel stores output and answers authorized reads, while the application owns connections and consumer progress.
 
 The Kernel supplies authorized reads/resumption over retained output. The application output layer owns connections, UI, transport and consumer cursor storage; bounded reads plus notifications suffice. No durable per-subscriber Kernel actor, mailbox or general pub/sub broker is required.
 

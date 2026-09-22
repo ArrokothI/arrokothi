@@ -31,9 +31,11 @@ Per-Execution process limits do not serialize another Execution's access to shar
 
 ## Containment claims
 
-Containment is the one claim on these pages that cannot be established by design review at all. Either the tests below were run against a real backend and something was actually prevented, or the profile is Trusted and should say so.
+An Isolated Execution claim requires enforcement tests against the real backend. Without that evidence, isolation is unverified and cannot be advertised as supported. Trusted Execution is an intentional permission to use ambient capabilities, not a label automatically assigned because an isolation test is missing. A deployment requiring isolation must refuse the unsupported configuration rather than silently run it as Trusted.
 
 For a [Trusted or Isolated profile](../concepts/operations.md#trusted-execution), list who accesses Kernel storage, policy/secrets, native sessions, workspaces and sinks, and how access is enforced. The trusted computing base includes store/admission, authenticated ingress, adapters and relevant host/containment components. Same-process interfaces cannot contain arbitrary hostile code sharing credentials and objects: an interface describes how cooperating code is meant to be called, and code that is not cooperating is under no obligation to use it.
+
+State which code is contained. Sandboxing a terminal or code-execution tool does not isolate the enclosing agent process, its plugins or its other network clients. Trusted/Isolated classify Runtime reach; a Driver or privileged broker is separately included in the deployment's trusted computing base wherever its powers can affect the guarantee. Keep broad service credentials outside isolated Runtime code and identify their actual holders; the Driver need not hold them itself.
 
 A claimed isolated profile tests:
 
@@ -53,5 +55,7 @@ Cost and cleanup are the parts of resource ownership that nothing forces anyone 
 Measure coordinator transitions separately from active native compute, READY admission, provider concurrency, output queues and dormant [waits](waits.md). An embedded CPU loop can block the event loop; use process/worker pools where needed. A timeout field does not preempt it. Kernel bounds mediated work/[children](../concepts/operations.md#child-and-ownership), Runtime/provider bounds internal calls, [host](../concepts/operations.md#execution-host) bounds physical resources. Estimates and unknown consumption must stay labeled.
 
 Polling keeps resources occupied unless the provider supports dormant subscription or [reattachment](../concepts/state.md#recovery-and-re-execution). Stored outer state does not make native waiting free: an Execution that looks idle in Kernel records can still be holding a connection, a process and a provider slot for the whole wait. Logical [cancellation](lifecycle.md#cancellation-order), native interruption and physical cleanup are separate; a remote job may survive host death. Do not delete resources required by admitted work/reconciliation, or silently retain them forever. Record retention deadlines and [cleanup debt](../concepts/operations.md#backpressure-and-cleanup-debt).
+
+Track logical active-child slots separately from physical compute slots. Child terminalization can release the former while an uninterruptible native job still occupies the latter. Cleanup debt records the resource, responsible owner, last evidence, next check/deadline and any unsuccessful cleanup attempt. An unknown external action retains its action/reconciliation record; deleting a container or declaring cleanup complete cannot settle that action.
 
 Handoff includes access and lifetime. Parent completion cannot accidentally delete a child's pinned [artifact](../concepts/state.md#artifact-reference). Privacy deletion may require loss of recovery availability; record what was erased and which guarantee ended. Never expose secret URLs in receipts, logs or context. R1 establishes ownership, K3 tests resource loss and stale writers, K5 tests cost/rotation/retention, and D1 tests physical adversarial access. A laboratory builder container does not count as subject containment.

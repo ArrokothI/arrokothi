@@ -29,7 +29,7 @@ Inspection cannot show what the system does not yet have. Each row adds the fact
 | K1 | Lifecycle, progress revision, current Activation/[epoch](../concepts/identity.md#writer-epoch) or wait, input dispositions, terminal result, protocol failure |
 | K2 | Action disposition, consent, attempts, certainty and owner |
 | K3 | Recovery mode/reason, missing resource/version |
-| K4 | Children/messages and correlations |
+| K4 | Children/messages and correlations; declared supervision/parent-close policy, accountable owner and pending/refused follow-up controls |
 | K5 | Retention/replay gaps, cleanup, pressure and supported profile |
 
 [Held `RUNNING`](../concepts/state.md#recovery-and-re-execution) must visibly show its reason and permitted next actions; terminal work with a live remote action shows that obligation. Read-only inspection comes first; control, reconciliation and authority changes use authenticated recorded commands, not ad-hoc stored-status edits. Scope both field visibility and existence disclosure to what the principal is authorized to see. Parent ownership does not expose private native prompts, notes or resource metadata. Inspection privilege does not grant re-execution or settlement privilege.

@@ -33,6 +33,7 @@ Each supported Driver/[profile](../concepts/operations.md#operating-profile-and-
 | Pause/input | Native pause identity, one form/resume owner, expiry and duplicate reply handling |
 | Output | Completion meaning, typed/invalid result, provisional output and delivery owner |
 | Cancellation | Signal/interrupt/kill support, host loss, late results and remaining native work |
+| Native supervision | Child/parent-close behavior, retries and limits; which descendants remain native; who retains responsibility after native parent closure |
 | Resources | Acquire/release/destroy, restoration, lost binding and cross-owner cleanup |
 | Fidelity/upgrade | Native features preserved, quality/cost/latency comparison and one upstream upgrade |
 
@@ -61,6 +62,8 @@ Native engines rarely distinguish "finished" from "stopped and waiting for a per
 Preserve native pause/form routing with one resume owner. Kernel [waiting](waits.md) requires a durable correlation/subscription or queryable job contract; native polling can remain inside `RUNNING`. A native “run succeeded” with deferred human work is not necessarily Kernel completion: an engine can report success together with a form still waiting for a person, which is a pause, not a result. Forward authenticated bound replies; feedback is consent only when it satisfies the exact action contract.
 
 [Cancellation](lifecycle.md#cancellation-order) signaling is separate from immutable Activation input. A late correct native result may remain diagnostic after cancellation without becoming accepted progress. Native model budgets require Runtime/provider enforcement; estimates stay estimates.
+
+Map cancellation by effect, not by API name. A native cancellation request may only schedule cooperative handling; native termination may close a logical run while its external activity still executes. Neither acknowledgment proves that a process stopped. Likewise, native run retries or continue-as-new chains need an explicit identity mapping: a native session/workflow identifier may span several runs, whereas a terminal ArrokothI Execution never reopens. Declare automatic native retries before wrapping a toolful job, and preserve unknown-action evidence across native replacements.
 
 ## Evidence before support
 
