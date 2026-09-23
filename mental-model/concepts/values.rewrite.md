@@ -192,7 +192,18 @@ Why fixed numbers, rather than a setting for each deployment? The accepted K0.1 
 
 ## In-process value capture
 
-The sections above describe a value that has already been decoded. A wire binding gets its values by decoding bytes, and the duplicate-key rule applies there. The in-process TypeScript binding has no bytes to decode. The caller hands the Kernel a live JavaScript object, and a live object brings problems a decoded value never has. It can change after it has been handed over. It can answer two reads of the same property differently. And it can have members that JSON cannot represent. This section gives that binding's extra obligations. They are value-acceptance rules for this binding. They fix no wire format, and they do not replace the duplicate-key rule for decoders.
+The sections above assume a value that has already been decoded. What has to happen before that point depends on how a value reaches the Kernel, not on what kind of value it is. Any root can arrive either way, whether it is creation input, an Event payload, an Outcome's progress or an Effect's arguments:
+
+- **Over a wire binding,** it arrives as bytes, and a decoder turns them into a value. The duplicate-key rule applies there.
+- **Through the in-process TypeScript binding,** the caller runs in the same JavaScript process and hands the Kernel a live object. There are no bytes to decode.
+
+A decoded value is plain data that nobody else holds. A live object differs in three ways:
+
+- **It can still change.** The Kernel receives a reference, not a copy. After calling `create({ input })`, the caller can still set `input.count = 2`.
+- **It can answer two reads differently.** A getter or a `Proxy` runs code on every read, so validation, canonicalization and storage could each see a different `count`.
+- **It can hold what JSON cannot.** Plain JSON conversion drops or alters `undefined` members, symbol keys, array holes, Maps and Dates. For example, `{a: undefined}` becomes `{}`.
+
+This section gives the binding's extra obligations. Together they turn a live object into the same kind of plain value a decoder would have produced, or refuse it. They are value-acceptance rules for this binding. They fix no wire format, and they do not replace the duplicate-key rule for decoders.
 
 **One snapshot.** The binding reads the caller's value once, into one coherent, immutable snapshot. Everything else is derived from that snapshot:
 
@@ -218,7 +229,7 @@ Anything else is refused rather than silently dropped:
 - cycles;
 - members that are present with the value `undefined`.
 
-Most of these share one reason: plain JSON serialization would quietly lose them. A getter's result might change between reads. A symbol key or a non-enumerable member would simply be left out. A member present as `undefined` would turn into an absent member, and [rule 6](#the-rules) says absent is a different value.
+Each refusal answers one of the three differences above. The `undefined` case also matters for equality: quietly dropping the member would turn it into an absent one, and [rule 6](#the-rules) says absent is a different value.
 
 **One reading or none.** An object can present two different stories about itself. A member's own data descriptor can disagree with what an ordinary property read returns. An array's length can claim a position the array does not own. Merely observing the structure can throw. The binding refuses such a value. It does not pick whichever reading happened to come first, and it does not repair the disagreement. A value that has no single reading has no single content to give an identity to.
 
