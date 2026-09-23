@@ -55,7 +55,7 @@ Now suppose another team runs a similar Agent inside a session hosted by its mod
 
 **Friday.** The report completes. From here on, what keeps any of its information available is **retention**: each kind of record is kept for its declared period, and none of them forever. Eventually the report's original input is deleted. After that, a **deduplication tombstone** can still bind the original create request's identity to its content, so that a very late exact duplicate is recognized as a duplicate and not taken for a new request.
 
-Every bold word in that story is a term this page defines. The rest of the page makes each one exact.
+Apart from the labels that open each day and each list item, every bold word in that story is a term this page defines. The rest of the page makes each one exact.
 
 ## How the work continues
 

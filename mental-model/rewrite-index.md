@@ -52,8 +52,8 @@ The page queue records writing progress, not independent architecture acceptance
 | [identity](concepts/identity.md) | Rewritten, as reported by the owner |
 | [operations](concepts/operations.md) | Rewritten, as reported by the owner |
 | [roles](concepts/roles.md) | Rewritten; the owner incorporated the audited draft in `f645146` |
-| [state](concepts/state.md) | Next target |
-| [values](concepts/values.md) | Remaining concept rewrite; preserve exact algorithms and limits |
+| [state](concepts/state.md) | Rewritten; the owner incorporated the audited draft in `c46506c` |
+| [values](concepts/values.md) | Next target, and the last concept rewrite; preserve exact algorithms and limits |
 
 After the concepts are rewritten, the intended next phase is implementation, such
 as K1.2, under the existing packet eligibility and review process. Reassess whether
@@ -63,9 +63,10 @@ neither starts a packet nor makes a mechanisms-wide rewrite a prerequisite for i
 The roles draft's two review questions, optional facilities versus required
 boundaries and the origin of Skill packages, are answered in the incorporated page:
 see its opening on why optional does not mean unconstrained, and
-[Skill and package](concepts/roles.md#skill-and-package). For the two remaining
-pages, §4 lists the worksheet's open representation choices they touch: checkpoint
-storage and pinning for state, and the transport codec and storage layout for values.
+[Skill and package](concepts/roles.md#skill-and-package). The incorporated state page
+leaves checkpoint storage and pinning open in prose, with no marker, as its §4 line
+records. For values, the one remaining page, §4 lists the worksheet's open
+representation choices it touches: the transport codec and the storage layout/engine.
 
 ## 1. Concept index
 
@@ -99,22 +100,23 @@ Existing structures worth linking rather than copying into a rewrite:
 Where to verify a rule. Current meaning always sits in the owner column; the evidence column is
 for "why does this say that", not for quoting as a rule. `MM/sources.md` is the maintained
 provenance page and should be updated with, not duplicated by, this table. Where this table's
-owner column disagrees with `MM/sources.md#accepted-decision-coverage`, correct this table.
+owner column disagrees with `MM/sources.md#accepted-decision-coverage`, check both against the
+owner pages' own scope statements and correct whichever is wrong, in the same commit.
 
 | Decision family | Current owner | Historical evidence |
 |---|---|---|
 | E-1–E-7 value model, canonical bytes, limits | `concepts/values.md` | WS §1; E-7 rule 4 (UTF-16 code-unit key order) corrected in round 3 (`work/K0.1/review-03.md`, `implementation-04.md`). WS numbers nine E-7 rules and `values.md` renumbers them, so WS rule 4 is its rule 3. E-6's exact depth, string and per-root size limits come from owner supplement K01-O12-01–03 in round 12 (`implementation-12.md`) |
 | ID-1–ID-9 identities, receipts, takeover | `concepts/core.md`, `concepts/identity.md`, `mechanisms/execution-cycle.md#retry-versus-takeover` | WS §2; ID-3 corrected in round 1 (`work/K0.1/implementation-02.md`) |
-| B-1–B-8, CL-1–CL-3, W-1–W-9 waits, clocks, batch | B and W: `mechanisms/waits.md`. CL: `concepts/operations.md#three-clocks`, with the wait clock's reads in `waits.md` | WS §3–§5; reconstruction in round 9 (`review-08.md`, `implementation-09.md`); satisfiability correction round 9/10 (`review-09.md`) |
+| B-1–B-8, CL-1–CL-3, W-1–W-9 waits, clocks, batch | B, W and CL-3 (when the wait deadline is read): `mechanisms/waits.md`, which also keeps CL-2's timeout-versus-later-result race. CL-1 and CL-2's meaning of an expiry: `concepts/operations.md#three-clocks`, `concepts/core.md#timeout-event` | WS §3–§5; reconstruction in round 9 (`review-08.md`, `implementation-09.md`); satisfiability correction round 9/10 (`review-09.md`) |
 | CX-1–CX-6 cancellation and terminal obligations | `mechanisms/lifecycle.md#cancellation-order`, `#completion-is-an-accounting-check` | WS §6; CX-6 added round 11/12 (`review-11.md`, `implementation-12.md`) |
 | OA-1–OA-6 Outcome acceptance; EF-1/EF-2 K1 refusal | `mechanisms/execution-cycle.md#outcome-acceptance` | WS §7–§8 |
 | EF-3/EF-4 four action dimensions | `concepts/actions.md#settlement-and-reconciliation`, `mechanisms/actions.md` | WS §8 |
 | PC-1–PC-5 progress forms and compatibility | `concepts/state.md#progress`, `#checkpoint-and-locator`, `mechanisms/recovery.md` | WS §9 |
 | LP-1–LP-3 local vs remote policy ordering | `mechanisms/authority.md#order-revocation-against-admission` | WS §10 |
-| M-1 unsafe/state-loss controls | `mechanisms/evidence.md#attribution-and-gates`, `MM/roadmap.md` | WS §11; K0.2 `public-fixture-specification.md` |
+| M-1 unsafe/state-loss controls | `mechanisms/evidence.md#attribution-and-gates`, `MM/roadmap.md` | WS §11; K0.2 `tests/fixtures/k0/public-fixture-specification.md` |
 | LC-1 / MIG-LEG-REF legacy classification | BASELINE, `docs/development/kernel-ownership.md` (the live inventory) | WS §12; K1.0's original `work/K1.0/ownership-inventory.md`; nothing deleted by these packets |
-| K0.2 observable distinctions; epoch not pinnable across exchanges | `concepts/identity.md#writer-epoch` | `work/K0.2/public-fixture-specification.md` §19 (`K02-R13-01`), accepted by `review-17.md` |
-| K0.2 five distinguishing wait examples | `mechanisms/waits.md#small-distinguishing-examples` | `work/K0.2/public-fixture-specification.md` §22 (`K02-R16-01`), `review-16.md` |
+| K0.2 observable distinctions; epoch not pinnable across exchanges | `concepts/identity.md#writer-epoch` | `tests/fixtures/k0/public-fixture-specification.md` §19 (`K02-R13-01`), accepted by `work/K0.2/review-17.md` |
+| K0.2 five distinguishing wait examples | `mechanisms/waits.md#small-distinguishing-examples` | `tests/fixtures/k0/public-fixture-specification.md` §22 (`K02-R16-01`), `work/K0.2/review-16.md` |
 | K1.0 structural boundary; inventory agreement; fail-closed reading | `mechanisms/evidence.md#structural-evidence`, `docs/development/015-structural-evidence-rules.md` | `work/K1.0/*`, `K1.0-correction-01`, `K1.0-correction-02/review-01.md` |
 | K1.0-corr-02 set identity in comparison | `015-structural-evidence-rules.md` ("Comparing a set is not comparing a string"), `concepts/values.md#what-these-rules-do-not-cover` | `work/K1.0-correction-02/contract.md` |
 | K1.1 creation/ingress domain separation (`KC1-DEC-1`) | `concepts/identity.md#request-key-and-input-id`, `mechanisms/creation.md#later-input-has-a-destination` | `work/K1.1/review-15.md` `K11-R15-ID-01`; `K1.1-correction-01/contract.md`; `K1.1-reference-01` REF-1 |
@@ -185,9 +187,12 @@ naming an `OPEN(...)` marker claim that one exists.
 - The Outcome-acceptance transaction mechanism (a DB transaction, an append-only log, an
   in-memory compare-and-swap) — WS §7 "Left open", which accepts any of them only if the atomicity
   is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`.
-- Checkpoint storage and pinning, and which progress forms a given Driver needs — WS §9 "Left
-  open"; `concepts/state.md#checkpoint-and-locator`, `mechanisms/recovery.md#checkpoint-publication`.
-  Upload tickets plus a grace period are one option, not a requirement, as `recovery.md` states.
+- Checkpoint storage and pinning — WS §9 "Left open"; `concepts/state.md#checkpoint-and-locator`,
+  `mechanisms/recovery.md#checkpoint-publication`. Upload tickets plus a grace period are one
+  option, not a requirement, as `recovery.md` states.
+- Which progress forms a given Driver needs — the same WS §9 note, which scopes it to K1-era
+  fake/compatibility Drivers and says K1 itself needs only inline form (a). `concepts/state.md#progress`
+  and the Progress row of `mechanisms/integration.md#support-record` make it a per-Driver declaration.
 - Clock units, precision, instant source, and whether lease expiry uses heartbeat renewal or a
   fixed TTL — `OPEN(implementation)` in `concepts/operations.md#three-clocks`; WS §4 "Left open".
 - Batch maximum (only "finite, ≥ 1" is fixed) — `concepts/core.md#batch-reservation-and-acknowledgment`.
@@ -302,8 +307,11 @@ examples explain why a check was added and do not establish current build status
     physical redelivery from Kernel deduplication. Check the owner's conditions for
     retry and provider-side idempotency. Owner: `mechanisms/actions.md#retrying-an-action`.
 15. **Inferring API parameters from an atomic semantic binding.** Creation binding Execution ID,
-    Definition revision, authority and initial input in one accepted decision fixes *atomicity*, not
-    a signature, a field list or a wire shape. Owner: `creation.md#one-atomic-creation`.
+    Runtime contract, Definition revision, authority context and initial input in one accepted
+    decision fixes *atomicity*, not a signature, a field list or a wire shape. Owners:
+    `creation.md#one-atomic-creation` for the binding; `concepts/identity.md`'s opening (names never
+    fix API, wire or storage spelling) and `#acceptance-boundary-and-receipt` (a boundary is a
+    consistency requirement, not machinery) for the non-inference.
 16. **Creation request ID and Input ID are one domain.** They are separate; the initial Event keeps creation
     provenance and a creation receipt, and later ingress with the same key text is a new request.
     Evidence: `K11-R15-ID-01`.
@@ -343,7 +351,11 @@ examples explain why a check was added and do not establish current build status
     destroy is a separate operation; allocation may have succeeded with its handle lost. Owners:
     `concepts/state.md#resource-binding-and-attachment`, `resources.md#resource-operations`.
 25. **A session ID is a checkpoint.** Only if its contents cannot advance independently of accepted
-    progress. Owner: `concepts/state.md#checkpoint-and-locator`; WS PC-3.
+    progress. Nor is a locator that still finds the session enough to recover through: reattachment
+    also needs the Driver's exclusive-ownership or reconciliation declaration, and without one,
+    automatic takeover over a locator is refused. Owners: `concepts/state.md#checkpoint-and-locator`,
+    `#recovery-and-re-execution`; WS PC-3. Evidence: the `8df1963` state draft's reattachment row
+    dropped the declaration; restored before the `c46506c` pin.
 26. **Target specification is implementation status.** Every Layer-3 mechanism page names a gate; a
     gate is a contract, not a ship date. Status lives only in LEDGER and BASELINE, and **accepted,
     integrated and released are three different facts**. Owners: `MM/README.md#target-not-shipped`,
@@ -363,6 +375,12 @@ examples explain why a check was added and do not establish current build status
     by its formatting, reports agreement between things that disagree; a check that cannot read part
     of its input must fail, not skip. Owners: `015-structural-evidence-rules.md`,
     `evidence.md#structural-evidence`, `values.md#what-these-rules-do-not-cover`.
+31. **A checkpoint only has to exist by the time its reference is accepted.** It must exist before
+    the Outcome that names it is *proposed*: the native store and the Kernel's store share no
+    transaction. Acceptance pins it and rejection pins nothing, and it may not be collected while
+    acceptance is pending. Owners: `concepts/state.md#checkpoint-and-locator`,
+    `recovery.md#checkpoint-publication`; WS PC-2. Evidence: the `8df1963` state draft said
+    "accepted"; corrected before the `c46506c` pin.
 
 ## 6. Possible later reference split (proposal)
 
