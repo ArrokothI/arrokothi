@@ -52,6 +52,14 @@
  *    repairing a bad scalar.
  * 3. **Each root is measured on its own.** `values.md`: "Two sibling roots of 700 KiB each are not
  *    rejected solely because their envelope exceeds 1 MiB." Callers pass one root at a time.
+ * 4. **Refusing costs no more than accepting.** A live object can hold one member in many places,
+ *    which JSON text cannot: thirty-two arrays, each holding the next one twice, pass the depth limit
+ *    and stand for a value of over four billion arrays. The capture pass therefore keeps the root's
+ *    canonical byte count *while* it reads, counting every occurrence in full, and stops reading once
+ *    that count passes the size limit. Before this, the limit was checked only on the finished
+ *    canonical string, so such a value was expanded in full — time and memory doubling per level —
+ *    before it could be refused. The count is exact for content that is accepted, so it never refuses
+ *    a value the finished-bytes check would accept; that check stays as well.
  *
  * K1.0 assigned `packages/core/src/util/json.ts` to this packet as `DX-2` (migratable). It is not
  * extracted. The legacy `canonicalJson` in `packages/core/src/util/hash.ts` is an
@@ -333,6 +341,37 @@ const scalarValueCount = (input: string): number => {
 };
 
 /**
+ * Exact canonical bytes of a well-formed string: its two quotes plus its rule-4 escaped UTF-8 body.
+ *
+ * This is the byte count the JCS implementation's `JSON.stringify` spelling produces, computed
+ * without producing it, so the capture pass can charge a string against the size limit before any
+ * serialization runs. Called only after `isWellFormed` passed, so a high surrogate always has its
+ * pair. Same discipline as the two scans above.
+ */
+const canonicalStringBytes = (input: string): number => {
+  let bytes = 2;
+  for (let index = 0; index < input.length; index += 1) {
+    const unit = PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index]) as number;
+    if (unit < 0x20) {
+      // `\b`, `\t`, `\n`, `\f`, `\r` are two bytes; every other C0 control is the six-byte `\u00xx`.
+      bytes += unit === 0x08 || unit === 0x09 || unit === 0x0a || unit === 0x0c || unit === 0x0d ? 2 : 6;
+    } else if (unit === 0x22 || unit === 0x5c) {
+      bytes += 2;
+    } else if (unit < 0x80) {
+      bytes += 1;
+    } else if (unit < 0x800) {
+      bytes += 2;
+    } else if (unit >= 0xd800 && unit <= 0xdbff) {
+      bytes += 4;
+      index += 1;
+    } else {
+      bytes += 3;
+    }
+  }
+  return bytes;
+};
+
+/**
  * Records one located reason this value is not acceptable.
  *
  * Through `appendOwn`, not `push` and not `list[list.length] = issue`. Issue lists are built while
@@ -367,7 +406,52 @@ interface CaptureState {
    * linear scan is trivially cheap and consults nothing ambient.
    */
   readonly open: object[];
+  /**
+   * Canonical bytes of everything read so far, every occurrence of a shared member counted in full.
+   *
+   * For content that is accepted, each charge is one disjoint part of the root's canonical form —
+   * brackets, commas and colons when a container's structure is observed, a member name's quoted
+   * bytes, a scalar's spelling — so the count only ever grows toward the exact canonical size and
+   * never past it. Content that is refused for another reason is charged for the work of reading it
+   * (a refused string's length, a container's surplus names), which can only add to a count on a
+   * value that is refused anyway.
+   */
+  bytes: number;
+  /** Set once `bytes` passes the size limit; from then on nothing further is read. */
+  stopped: boolean;
 }
+
+/**
+ * Adds `bytes` to the root's running canonical size and reports whether reading may continue.
+ *
+ * The first time the count passes the limit, one root-located `too_many_bytes` issue is recorded and
+ * the pass stops: every later `capture` returns at once and every container loop ends. The reported
+ * size is a lower bound — the part of the value read before stopping — which is the point: nothing
+ * past the limit is read, so the refusal costs no more than a value at the limit would. `state` is a
+ * Kernel-created literal and `bytes`/`stopped` are its own data properties, so these writes consult
+ * no prototype.
+ */
+const charge = (state: CaptureState, bytes: number): boolean => {
+  if (state.stopped) return false;
+  state.bytes += bytes;
+  if (state.bytes > BOUNDARY_LIMITS.canonicalBytes) {
+    state.stopped = true;
+    pushIssue(state.issues, {
+      path: "",
+      code: "too_many_bytes",
+      message: `canonical form reaches at least ${state.bytes} bytes, above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,
+    });
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Canonical bytes of a container's own punctuation: its two brackets, one comma between each pair of
+ * entries and, for an object, one colon per member. Member names and values are charged separately.
+ */
+const containerStructureBytes = (entries: number, isObject: boolean): number =>
+  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);
 
 const isOpen = (state: CaptureState, container: object): boolean => {
   for (let index = 0; index < state.open.length; index += 1) {
@@ -496,24 +580,31 @@ function describedValue(
  *
  * Refusals are collected rather than thrown: `values.md` expects every reason a value was refused,
  * located, so a caller can fix all of them at once. A refused position stops contributing to the
- * snapshot but does not stop its siblings from being examined.
+ * snapshot but does not stop its siblings from being examined — with one exception. Once the running
+ * canonical size passes the limit (`charge`), reading stops outright, because examining the rest is
+ * exactly the unbounded work the limit exists to prevent. Reasons past that point are not collected.
  */
 function capture(value: unknown, path: string, level: number, state: CaptureState): Captured {
-  if (value === null) return null;
+  if (state.stopped) return REFUSED;
+  if (value === null) return charge(state, 4) ? null : REFUSED;
 
   const type = typeof value;
-  if (type === "boolean") return value as boolean;
+  if (type === "boolean") return charge(state, value === true ? 4 : 5) ? (value as boolean) : REFUSED;
   if (type === "number") {
     if (!PrimordialNumberIsFinite(value)) {
       pushIssue(state.issues, { path, code: "non_finite_number", message: "expected a finite number, received a non-finite number" });
       return REFUSED;
     }
-    return value as number;
+    // A template literal applies the abstract `ToString` to a number primitive — the same
+    // `Number::toString` spelling `JSON.stringify` emits for a finite number, `-0` as `0` — and
+    // consults no prototype or global on the way.
+    return charge(state, `${value as number}`.length) ? (value as number) : REFUSED;
   }
   if (type === "string") {
     const text = value as string;
     if (!isWellFormed(text)) {
       pushIssue(state.issues, { path, code: "lone_surrogate", message: "string contains an unpaired surrogate and has no UTF-8 encoding" });
+      charge(state, text.length);
       return REFUSED;
     }
     const length = scalarValueCount(text);
@@ -523,9 +614,10 @@ function capture(value: unknown, path: string, level: number, state: CaptureStat
         code: "string_too_long",
         message: `string is ${length} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
       });
+      charge(state, text.length);
       return REFUSED;
     }
-    return text;
+    return charge(state, canonicalStringBytes(text)) ? text : REFUSED;
   }
   if (type !== "object") {
     pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
@@ -632,7 +724,8 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
       break;
     }
   }
-  if (hasExtra || PrimordialGetOwnPropertySymbols(container).length > 0) {
+  const symbolCount = hasExtra ? 0 : PrimordialGetOwnPropertySymbols(container).length;
+  if (hasExtra || symbolCount > 0) {
     pushIssue(state.issues, { path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
     refused = true;
   }
@@ -667,6 +760,13 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
     }
   }
 
+  // Charged before any element is read, so an occurrence of a shared array costs budget in
+  // proportion to the listing just taken. An accepted array owns exactly its indices plus
+  // `length`, so the surplus and symbol terms are zero for it and the charge is its exact
+  // punctuation; they are non-zero only on an array already refused above.
+  const surplus = names.length - (length + 1);
+  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;
+
   // K11-R6-VAL-04: there is no scratch array between the one caller observation and the snapshot.
   //
   // The previous shape captured each accepted element into a holey `new Array(length)` with
@@ -683,6 +783,7 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   // contributing and the whole partially built array is discarded, exactly as before.
   const out: BoundaryValue[] = sizedList<BoundaryValue>(length);
   for (let index = 0; index < length; index += 1) {
+    if (state.stopped) return REFUSED;
     const where = element(path, index);
     const key = `${index}`;
     const member = describedValue(container, key, PrimordialGetOwnPropertyDescriptor(container, key), where, state);
@@ -724,7 +825,8 @@ function captureObject(container: object, path: string, entered: number, state: 
   }
 
   let refused = false;
-  if (PrimordialGetOwnPropertySymbols(container).length > 0) {
+  const symbolCount = PrimordialGetOwnPropertySymbols(container).length;
+  if (symbolCount > 0) {
     pushIssue(state.issues, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" });
     refused = true;
   }
@@ -767,8 +869,14 @@ function captureObject(container: object, path: string, entered: number, state: 
     refused = true;
   }
 
+  // Charged before any member is read, as for arrays. An accepted object's own names are exactly
+  // its enumerable members and it owns no symbols, so this is its exact punctuation; a larger
+  // listing, or any symbol, belongs to an object already refused above.
+  if (!charge(state, containerStructureBytes(names.length, true) + symbolCount)) return REFUSED;
+
   const captured: [string, BoundaryValue][] = [];
   for (let entryIndex = 0; entryIndex < enumerable.length; entryIndex += 1) {
+    if (state.stopped) return REFUSED;
     // Index access, not destructuring iteration: `for...of` over the pair would consult the
     // ambient `Symbol.iterator`.
     const pair = readAt(enumerable, entryIndex) as [string, PropertyDescriptor];
@@ -778,6 +886,7 @@ function captureObject(container: object, path: string, entered: number, state: 
     if (!isWellFormed(key)) {
       pushIssue(state.issues, { path: where, code: "lone_surrogate", message: "member name contains an unpaired surrogate" });
       refused = true;
+      if (!charge(state, key.length)) return REFUSED;
       continue;
     }
     const nameLength = scalarValueCount(key);
@@ -788,8 +897,11 @@ function captureObject(container: object, path: string, entered: number, state: 
         message: `member name is ${nameLength} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
       });
       refused = true;
+      if (!charge(state, key.length)) return REFUSED;
       continue;
     }
+    // The member name's quoted, escaped bytes, exactly as the member will be spelled.
+    if (!charge(state, canonicalStringBytes(key))) return REFUSED;
     const member = describedValue(container, key, descriptor, where, state);
     if (!member.ok) {
       refused = true;
@@ -1252,7 +1364,7 @@ function encode(value: BoundaryValue): string {
  * be answered by two different passes over the caller's object.
  */
 function accept(value: unknown): { readonly ok: true; readonly value: CanonicalValue } | { readonly ok: false; readonly issues: ValueIssue[] } {
-  const state: CaptureState = { issues: [], open: [] };
+  const state: CaptureState = { issues: [], open: [], bytes: 0, stopped: false };
   const snapshot = capture(value, "", 0, state);
   if (snapshot === REFUSED || state.issues.length > 0) {
     return {
@@ -1286,6 +1398,9 @@ function accept(value: unknown): { readonly ok: true; readonly value: CanonicalV
       ],
     };
   }
+  // The running count already refused anything over the limit, and for an accepted snapshot it equals
+  // this length. The limit is still enforced on the bytes themselves, which are the definition; the
+  // count is only what lets an over-limit value be refused without producing them.
   const canonicalBytes = PrimordialBufferByteLength(canonical, "utf8");
   if (canonicalBytes > BOUNDARY_LIMITS.canonicalBytes) {
     return {

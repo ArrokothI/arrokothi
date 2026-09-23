@@ -30,7 +30,7 @@ Now change the story twice, and watch the same comparison say no.
 - **A reordered list.** Suppose the retry were rebuilt by client code that sorts every array it touches, so `sections` arrives as `["budget","hiring"]`. That is a different value. The order of an array is part of what it says, and for this report it is the order of the sections. The same key with different content is a [conflict](identity.md#request-key-and-input-id): nothing new is created, and nothing is quietly updated.
 - **A dropped null.** Suppose the retry passed through a library that omits null fields, so `"reviewer": null` vanished. That is also a different value. "No reviewer" and "reviewer not mentioned" can mean different things. Unless the request's schema says it treats them alike, the protocol keeps them apart. Again, a conflict.
 
-Later in the week, the report's Agent proposes an [Outcome](core.md#outcome) whose progress includes the full text of the board minutes it retrieved: about three megabytes. The Kernel rejects the Outcome, and since an Outcome is accepted whole or not at all, nothing in it is accepted. Nothing is trimmed to fit, either. The Agent tries again with the minutes left in the document store and an [artifact reference](state.md#artifact-reference) in its progress, and the Outcome is accepted. Had the progress been 700 KiB and the Outcome's emissions another 700 KiB, that would have been accepted too: each value is measured on its own, and their sum is nobody's limit.
+Later in the week, the report's Agent proposes an [Outcome](core.md#outcome) whose progress includes the full text of the board minutes it retrieved: about three megabytes. The Kernel rejects the Outcome, and since an Outcome is accepted whole or not at all, nothing in it is accepted. Nothing is trimmed to fit, either. The Agent tries again with the minutes left in the document store and an [artifact reference](state.md#artifact-reference) in its progress, and the Outcome is accepted. Had the progress been 700 KiB and the Outcome's emissions another 700 KiB, both would have passed the size limit: each value is measured on its own, and no rule on this page limits their sum.
 
 Three different encodings touched this report, and it matters which is which:
 
@@ -53,7 +53,7 @@ A **codec** turns values into bytes and bytes back into values. The word gets us
 These three can change independently, and that independence is the point of naming them apart.
 
 - **Changing the transport codec** changes how values travel, and nothing else. A deployment can move from JSON text to a binary envelope, add compression, or pretty-print its logs, and every value that decodes to the same logical value stays equal to what it was. The report's gateway could re-spell every request it forwards, and no retry would ever turn into a conflict.
-- **Changing the progress codec** changes whether saved continuation can be read. That is why progress is [pinned to the codec version](state.md#progress) that wrote it, and why a change needs a [compatibility check](../mechanisms/recovery.md#compatibility-and-migration) before restored progress runs. The Kernel records which version was used. It never uses that version itself, because it never needs to know what the progress means. The [Runtime contract](core.md#runtime-contract) is a further, separate pin: the codec turns stored bytes into a value, and the contract says what that value means for resuming.
+- **Changing the progress codec** changes whether saved continuation can be read. That is why progress is [pinned to the codec version](state.md#progress) that wrote it, and why a change needs a [compatibility check](../mechanisms/recovery.md#compatibility-and-migration) before restored progress runs. The Kernel records which version was used and keeps it with the progress, but never decodes anything with it, because it never needs to know what the progress means. The [Runtime contract](core.md#runtime-contract) is a further, separate pin, and that page says why the two must not be confused.
 - **The canonical value encoding** changes only through an explicit, versioned amendment to the protocol. Neither of the other two may alter it.
 
 It helps to see what would break if any two were merged.
@@ -87,15 +87,19 @@ A **boundary-value root** is one whole value that the rules are applied to as a 
 
 The envelope around them is not a root. An Outcome is not one big value to be measured as a whole. It is a container of separate roots, each measured on its own, which is why the report's two 700 KiB fields passed. The envelope's own metadata adds nothing to the size of the roots it carries.
 
+The same holds when content is compared. A whole create request or a whole Outcome is the same as another only when every root equals the root in the same place, and a field that is absent differs from any field that is present. Joining the roots' canonical bytes into one string and comparing that is a different test, and a weaker one. Take an envelope with two optional value fields: one that carries `[1]` in the first and nothing in the second joins to exactly the same bytes as one that carries nothing in the first and `[1]` in the second.
+
 Three things are refused at this boundary, and all three are refused rather than repaired:
 
 - **A number that is not finite.** `NaN`, `Infinity` and `-Infinity` are refused. They are not turned into `null`, and not into a string.
-- **A string that is not well-formed Unicode.** A lone surrogate has no UTF-8 encoding. It is refused, not replaced with U+FFFD.
+- **A string that is not well-formed Unicode.** A lone surrogate has no UTF-8 encoding. It is refused, not replaced with U+FFFD. On the wire a malformed string can arrive in two ways, as an escape such as `\ud800` that names a lone surrogate, or as bytes that are not valid UTF-8, and both are refused. Many UTF-8 decoders substitute U+FFFD for bad bytes by default. That is the forbidden repair, and it would turn different byte sequences into one string.
 - **Anything outside the forms above.** Dates, byte arrays, functions and anything else a language might hand over are refused. None is coerced into something that happens to fit.
 
 The refusals come before any identity or equality is computed. The reason for refusing rather than repairing is that a repair makes a decision on the caller's behalf. If `NaN` became `null`, a request carrying `NaN` would compare equal to one carrying `null`. Two requests that meant different things would then be treated as the same request, and the caller would never find out.
 
 **Duplicate object keys** are a special case, because they exist only on the wire. Text like `{"a":1,"a":2}` can be written down, but no decoded object can hold two members named `a`, so a parser has to pick one and quietly discard the other. The protocol does not let it choose. A decoder rejects duplicate keys while it is decoding, before parsing has a chance to erase them. Every rule that follows can then assume a decoded value with nothing hidden in it.
+
+Two keys are duplicates when they decode to the same string, not when they are spelled alike: `{"a":1,"\u0061":2}` has a duplicate key. A check on the raw spellings misses that case. JavaScript's `JSON.parse`, like many parsers, keeps the last value without a word, so on its own it cannot be the decoder.
 
 A schema may constrain a value further: required fields, a numeric range, a string pattern. Those constraints narrow what a particular operation or payload accepts. They never widen what counts as a boundary value.
 
@@ -108,6 +112,8 @@ Data that is too large to cross inline is not squeezed across. It stays in an ap
 The central rule is short. **Two values are equal exactly when their canonical bytes are equal.** Everything the protocol calls "the same content" means this: a retried create request, a repeated input, a resubmitted Outcome, the arguments a person approved. However the values travelled, the comparison is made on canonical bytes.
 
 A **hash** of those bytes can make a comparison cheaper or give stored content a name. A hash can also notice an accidental mismatch. It proves nothing else. A matching hash is not evidence of who sent something, of permission, or of consent. If the report's gateway logged a SHA-256 of every request, those digests would be handy for spotting a corrupted retry. They could never stand in for the editor's approval of a publication.
+
+One use asks more of a hash. After a value's content is deleted, a [tombstone](state.md#retention-pin-and-tombstone) may keep only a digest of it, and that digest then decides alone whether a later request is an exact duplicate or a conflict. There it must resist deliberate collisions, not merely notice accidental ones, and it must cover the full canonical bytes. If someone can make a different request produce the same digest, that request is answered as a faithful retry.
 
 ### The rules
 
@@ -124,7 +130,7 @@ The canonical form follows [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785), t
 
 Rules 1 to 5 are JCS, adopted rather than reinterpreted. If this page and RFC 8785 ever seem to disagree, this page has a defect; ArrokothI has no variant of JCS. Rule 6 and the use of canonical bytes for equality and size are ArrokothI's own rules. They are not claims about what JCS says.
 
-Use an unmodified, conforming JCS implementation, not a serializer that is almost the same. "Almost" is exactly where two implementations stop agreeing on identity. A JCS library does not do the whole job, though. The boundary checks and the size limits still have to be enforced around it.
+Use an unmodified, conforming JCS implementation, not a serializer that is almost the same. "Almost" is exactly where two implementations stop agreeing on identity. A JCS library does not do the whole job, though. The boundary checks and the size limits still have to be enforced around it, and before it: a serializer built on `JSON.stringify` writes `NaN` as `null` without complaint, so the library must only ever see a value that has already passed the checks.
 
 ### The rules at work
 
@@ -138,7 +144,7 @@ The key comparison uses UTF-16 code units, and the choice shows up with characte
 
 In JavaScript, the default string comparison already works on UTF-16 code units, so ordinary sorting gets this right. In a language whose strings compare by code point or by UTF-8 bytes, each key has to be converted to UTF-16 before comparison. Otherwise that implementation computes a different identity for the same value, and a faithful retry becomes a conflict.
 
-**Strings.** A string keeps its characters and loses only optional escapes. `"A"` and `"A"` are the same one-character string, and the canonical form writes `A`. `"é"` and a raw `é` are the same string, and the canonical form writes the raw UTF-8 bytes. A tab is written `\t`, and U+001F is written `\u001f`.
+**Strings.** A string keeps its characters and loses only optional escapes. `"\u0041"` and `"A"` are the same one-character string, and the canonical form writes `A`. `"\u00e9"` and a raw `é` are the same string, and the canonical form writes the raw UTF-8 bytes. A tab is written `\t`, and U+001F is written `\u001f`.
 
 **Numbers.** A number is a binary64 value, so every spelling that decodes to the same binary64 value is the same number:
 
@@ -153,11 +159,11 @@ In JavaScript, the default string comparison already works on UTF-16 code units,
 
 The `+` in `1e+21` is part of the canonical bytes. It is easy to tidy away, and dropping it would make two implementations disagree about both identity and size.
 
-The same fact cuts the other way. A decimal spelling that carries more precision than binary64 can hold does not survive as written: if it decodes at all, what gets compared is the binary64 value it decodes to. An identifier that must survive digit for digit belongs in a string, not in a number.
+The same fact cuts the other way. A decimal spelling that carries more precision than binary64 can hold does not survive as written: if it decodes at all, what gets compared is the binary64 value it decodes to. `9007199254740993` and `9007199254740992` decode to the same binary64 value, so they are one value, and a request that changed one into the other would count as a faithful retry. An identifier that must survive digit for digit belongs in a string, not in a number. A spelling too large for binary64, such as `1e400`, has no finite value to decode to. It is refused like `Infinity`, not clamped to the largest finite number.
 
 **Absent and null.** `{}` and `{"answer":null}` are different values. Their canonical forms are `{}` and `{"answer":null}`, two bytes against fifteen. That difference is what makes the report's dropped `reviewer` a conflict rather than a retry.
 
-Two units of Unicode appear on this page, and they are deliberately different. Key *order* compares UTF-16 code units, because that is JCS's ordering rule. String *length*, in the limits below, counts Unicode scalar values, because that is a fair measure of text. Neither follows from the other, and each is fixed.
+Two units of Unicode appear on this page, and they are deliberately different. Key *order* compares UTF-16 code units, because that is JCS's ordering rule. String *length*, in the limits below, counts Unicode scalar values, because that is a fair measure of text. Neither follows from the other, and each is fixed. So the convenient count is wrong in both directions: JavaScript's `length` counts UTF-16 code units and reports 2 for `😀`, which is one scalar value, and a UTF-8 byte count reports 4.
 
 ## Fixed semantic limits
 
@@ -186,9 +192,13 @@ All four limits apply at once. A value exactly at a limit passes that limit, and
 
 A value over a limit is refused in the same way as any other malformed value. It is never truncated to fit. Truncation would accept content the sender never sent.
 
-These are *semantic* limits: they decide which values are valid. They make no promise about messages or bytes on the wire. No limit applies to the sum of a message's roots, and no transport's byte size is guaranteed. A deployment may impose tighter limits on its transport, such as a smaller maximum request body. It may not silently redefine these four. If a transport limit could change which values the protocol considers valid, two deployments of the same protocol could disagree about validity. These numbers change only through an explicit, versioned amendment to the protocol.
+Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
 
-Why fixed numbers, rather than a setting for each deployment? The accepted K0.1 decision states the limits at the semantic level, with exact units, so that a conformance fixture can build a case exactly at each limit and one past it, without waiting for any wire codec to exist. Fixed rules, fixed limits and fixed bytes together mean that "valid", "equal" and "too large" have one answer everywhere.
+These are *semantic* limits: they decide which values are valid. They make no promise about messages or bytes on the wire. No semantic limit applies to the sum of a message's roots, and no transport's byte size is guaranteed. A deployment may impose tighter limits on its transport, such as a smaller maximum request body. It may not silently redefine these four. If a transport limit could change which values the protocol considers valid, two deployments of the same protocol could disagree about validity. These numbers change only through an explicit, versioned amendment to the protocol.
+
+It follows that these limits do not protect anything from an oversized message. One Outcome can carry many roots, each just under 1 MiB. A deployment that accepts messages from a party it does not fully trust, such as a Runtime in an [Isolated Execution](operations.md#isolated-execution), has to bound whole messages in its transport. A message refused there was never delivered. Its values were not judged invalid.
+
+Why fixed numbers, rather than a setting for each deployment? The limits are stated at the semantic level, with exact units, so that a conformance fixture can build a case exactly at each limit and one past it, without waiting for any wire codec to exist. Fixed rules, fixed limits and fixed bytes together mean that "valid", "equal" and "too large" have one answer everywhere.
 
 ## In-process value capture
 
@@ -220,6 +230,8 @@ The caller's object is never consulted again. If the application submits `{count
 - **Objects** have the ordinary object prototype or a null prototype. They hold their content as own, enumerable data members with string keys.
 - **Arrays** have the ordinary array prototype. They hold an own data element at every position up to the length observed.
 
+A member named `__proto__` is an ordinary member, and the snapshot keeps it as data. Copying it by plain assignment would set the copy's prototype instead, and the member would silently vanish.
+
 Anything else is refused rather than silently dropped:
 
 - forms outside those two, such as class instances, Maps, Dates and typed arrays;
@@ -244,7 +256,7 @@ These are guarantees about accepting a value. They do not contain code that shar
 **The request envelope is read differently.** A call into the binding, such as a create or a submit, takes an envelope whose fields hold identity text, a destination, and payload values. The payloads are boundary values and are captured by the rules above. The envelope's own fields are observed under a different rule, and the difference goes in both directions:
 
 - **Inherited fields.** A field the envelope carries only through inheritance reads as missing, exactly as if it had been omitted. Ambient state somewhere up a prototype chain must not be able to supply a field the caller never wrote.
-- **Accessors.** An own accessor on the envelope may run. The envelope boundary observes it as the caller's own answer. A boundary value would refuse an accessor; the envelope does not.
+- **Accessors.** An own accessor on the envelope may run. The envelope boundary observes it as the caller's own answer. A boundary value would refuse an accessor; the envelope does not. Because an accessor can answer differently each time, each envelope field is read once, and that one answer is used for everything the call does with it: validation, authorization, lookup and what is recorded.
 
 Keep the two apart. The envelope rule decides which fields the caller supplied. The capture rules decide what value a supplied payload has.
 
@@ -254,7 +266,9 @@ The rules above compare boundary values, and they do only that. Several nearby c
 
 **Sets.** In a boundary value, `[1,2]` and `[2,1]` differ, because array order is meaningful. A schema may declare that a particular field is a set, where membership matters and order does not. That is a property of that schema, applied by whoever interprets it. It is not a second equality rule on this page. Comparing such a field by its printed text rather than by its members is a known defect, described in [comparing a set is not comparing a string](../../docs/development/015-structural-evidence-rules.md#comparing-a-set-is-not-comparing-a-string).
 
-**Meaning.** Canonical equality is sameness of the value, not of what it means. `37` and `"37"` are different values, even if an application reads them identically. Two strings that render as the same accented letter are different values if one uses a precomposed character and the other a base letter plus a combining accent: canonicalization changes how a value is spelled, never which characters it contains. Whether two different values mean the same thing is for a schema or the application to decide, before the value reaches the boundary.
+**Meaning.** Canonical equality is sameness of the value, not of what it means. `37` and `"37"` are different values, even if an application reads them identically. Two strings that render as the same accented letter are different values if one uses a precomposed character and the other a base letter plus a combining accent: canonicalization changes how a value is spelled, never which characters it contains. Whether two different values mean the same thing is for a schema or the application to decide, and canonicalization never decides it for them.
+
+The same gap runs the other way. Values that look identical on a screen can be different values, such as a domain spelled with a Latin `a` and one spelled with a Cyrillic `а`. Comparing canonical bytes can confirm that what runs is exactly the value that was approved. It cannot confirm that the person approving could tell it from the value they expected. What an approval has to show belongs to [exact action consent](../mechanisms/authority.md#exact-action-consent).
 
 **Progress.** The Kernel canonicalizes an inline progress value to measure and compare it, and nothing more. What the progress means belongs to the Runtime, its [progress codec](#codec) and its [Runtime contract](core.md#runtime-contract).
 
