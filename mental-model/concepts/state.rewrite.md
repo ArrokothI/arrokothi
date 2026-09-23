@@ -4,12 +4,12 @@ The pages before this one followed the weekly report through its exchanges: what
 
 A running Execution gathers information of many kinds. There is the point the Runtime had reached, and the record of what the Kernel decided. There are facts the application vouches for, conclusions a model drew from a document, and reminders the Runtime left for itself. There is a draft in a document store and a workspace full of downloaded figures. Once stored, these all look much the same — records with fields, objects with names — and it is tempting to call the lot "state" or "memory" and keep it all in one place. But they differ in the two ways that decide how each may be used: **who is answerable for the information**, and **what anyone may conclude from holding it**.
 
-The terms below name those differences. They are roles, not a filing system. A Runtime built on a foreign framework keeps its memory however that framework keeps it, and nothing requires it to sort anything into these categories. What the names give is agreement at the boundaries. When a piece of information passes from Runtime to Kernel, from one exchange to the next, or from a crashed host to its replacement, both sides can say what just crossed: a way to continue, a fact someone stands behind, or only a pointer to something held elsewhere.
+The terms below name those differences, and they are not all the same kind of term. The first and third groups name what the protocol carries or depends on, whoever wrote the Runtime. The middle group is optional: roles that ArrokothI's own reference facilities use for what a Runtime knows. A Runtime may adopt them or keep its framework's memory exactly as it is.
 
 There are ten terms, in three groups, and each group answers one question:
 
 - **How does the work continue?** — [progress](#progress), the [checkpoint and locator](#checkpoint-and-locator) that progress can carry, [recovery and re-execution](#recovery-and-re-execution), and the [Execution History](#execution-history) the Kernel keeps of its own decisions.
-- **What does the work know, and how far can that be trusted?** — [structured state](#structured-state), [Derived Semantic Memory](#derived-semantic-memory) and [Working Notes](#working-notes), in descending order of the weight each can bear.
+- **What does the work know, and who answers for it?** — [structured state](#structured-state), [Derived Semantic Memory](#derived-semantic-memory) and [Working Notes](#working-notes), in descending order of the weight each can bear. This group is optional.
 - **What does the work hold outside the protocol?** — the [artifact reference](#artifact-reference), the [resource binding and attachment](#resource-binding-and-attachment), and the [retention, pins and tombstones](#retention-pin-and-tombstone) that stop either from vanishing while something still needs it.
 
 This page says what each term means. Other pages specify how the terms behave together: [recovery](../mechanisms/recovery.md) covers continuing after a crash; [state and memory](../mechanisms/state.md) covers assertions, claims, notes and artifacts; [resources](../mechanisms/resources.md) covers bindings and cleanup; and [evidence](../mechanisms/evidence.md#retention-and-deletion) covers retention and deletion.
@@ -73,7 +73,7 @@ Progress takes one of three forms, and the forms differ in what they promise aft
 2. **An immutable checkpoint reference.** A pointer to saved native state from which the work can resume.
 3. **A locator for a still-running native job.** A way to find work that is carrying on somewhere else.
 
-The second and third forms are both small references into somebody else's store, and they are easy to mistake for each other; [the next section](#checkpoint-and-locator) is about that difference. What matters here is that a progress record keeps the three forms visibly distinct. Pack them into one opaque value and nobody can tell which promise a given continuation makes. Recovery is exactly when that becomes impossible to tell and matters most. A Driver's [support record](../mechanisms/integration.md#support-record) declares the progress format the Driver uses. Code whose whole continuation fits in the first form needs nothing more.
+The second and third forms are both small references into somebody else's store, and they are easy to mistake for each other; [the next section](#checkpoint-and-locator) is about that difference. What matters here is that a progress record keeps the three forms visibly distinct. Pack them into one opaque value and nobody can tell which promise a given continuation makes, and recovery is when that matters most. A Driver's [support record](../mechanisms/integration.md#support-record) declares the progress format the Driver uses. Code whose whole continuation fits in the first form needs nothing more.
 
 Every persisted form of progress is pinned to what can interpret it: the [Definition](core.md#definition) and [Runtime contract](core.md#runtime-contract) revisions, and the version of the progress [codec](values.md#codec), the format in which the Runtime or Driver stores continuation and reads it back. Change any of those and stored progress can stop being usable. Worse, it can go on decoding cleanly while meaning something new, which is why [compatibility](../mechanisms/recovery.md#compatibility-and-migration) is checked before restored progress is run.
 
@@ -96,6 +96,7 @@ The opposite mistake is treating a saved copy of the work as a way back into it.
 ### Recovery and re-execution
 
 **Recovery** reconstructs accepted truth and then, if the supported native contract allows it, continues the same logical work. Those are two jobs, done in a fixed order.
+
 - **Reconstructing** is mechanical. Whether there is anything to rebuild from depends only on whether the deployment's storage kept the Kernel's accepted records.
 - **Continuing** is not mechanical. The Kernel does not own the native work and cannot look at it, so the Driver's contract for the exact native phase decides.
 
@@ -114,6 +115,7 @@ Replay needs its precondition because an exchange may already have reached the w
 Restart-from-input stands apart from the other two: it does not continue the original at all. **A terminal lifetime never reopens.** When a completed, failed or cancelled report needs doing again, the new work is a new Execution that points back at the old one. That separation keeps a finished lifetime from acquiring new actions after its result was recorded. What a restart may and may not carry over from the original is set out in [compatibility and migration](../mechanisms/recovery.md#compatibility-and-migration).
 
 **Recovery-held** is what happens when no form of continuing can be shown to be safe. It is an inspectable operational condition: an Activation is still unresolved, and it cannot safely continue. The lifecycle state stays `RUNNING`.
+
 - **Not `WAITING`:** `WAITING` means an accepted Outcome declared something the Execution needs, and nobody declared anything here.
 - **Not failed:** the native work may still be alive, and may already have done something.
 
@@ -122,6 +124,7 @@ Holding with a visible reason is the honest report of that situation. [Inspectio
 ### Execution History
 
 **Execution History** is the Kernel's evidence of its own decisions and observations:
+
 - the input it accepted;
 - the Activations it dispatched;
 - the Outcomes it accepted or rejected, and the progress they installed;
@@ -136,9 +139,18 @@ The History is the Kernel's side of the story and only that side. That rules out
 
 Native traces, such as the Runtime's logs or a provider's record of a run, can be linked from the History so that an investigator can follow the story across the boundary. Linking a trace does not make it accepted truth: a trace is the Runtime's account, not the Kernel's decision. [What evidence proves](../mechanisms/evidence.md#what-evidence-proves) says what each kind of record establishes.
 
-## What the work knows, and how far that can be trusted
+## What the work knows, and who answers for it
 
-The next three terms cover information the Runtime works *with*, not information it continues *from*. All three can be stored identically — the same table, the same JSON — and they still cannot be used the same way, because they differ in whether anyone has taken responsibility for them being true. In descending order of the weight each can bear, they are an assertion, an inference and a note.
+The next three terms are optional. They name the roles in ArrokothI's reference facilities for keeping what a Runtime knows. In descending order of the weight each can bear, the roles are an assertion, an inference and a note. A Runtime may adopt those facilities or keep its framework's own memory. Either way, the Kernel stores none of the three and never reads them.
+
+What adoption buys is a set of promises kept by the facilities, not by the Kernel:
+
+- a claim becomes fact only through explicit, validated promotion;
+- a corrected claim stays explainable;
+- a child or branch inherits only what was explicitly selected for it;
+- whether notes survive a crash is decided in advance.
+
+[State and memory](../mechanisms/state.md) specifies those promises.
 
 ### Structured state
 
@@ -165,6 +177,7 @@ Neither inference nor promotion automatically grants authority. Suppose a docume
 **Working Notes** are bounded, Runtime-local scratch: plans, hypotheses and continuity notes that a Runtime keeps for itself. *Recheck Finance's sheet on Thursday* is a Working Note. So is a half-formed plan for section 2, or a hypothesis the Agent means to test.
 
 Three properties define Working Notes.
+
 - **Bounded:** notes are a scratchpad, not an ever-growing log.
 - **Local to the Runtime:** nobody else relies on them, and the Kernel does not see them.
 - **Optional:** a Runtime need not keep any. In particular, notes are not a required record of a model's private reasoning. A note is whatever the Runtime found worth writing down, not a transcript owed to anyone.
