@@ -39,6 +39,15 @@ list, not the creation identity's scope value. The creation key becomes `Creatio
 authority scopes of one producer. Identity components, their encoding and retry behavior are unchanged
 by the symbol cleanup.
 
+`inputIdKey(...)` and `creationRequestIdKey(...)` pack their parts with `packIdentity`, which
+length-prefixes each part rather than hashing it, so no choice of caller text makes two identities
+collide. A `Receipt` is a frozen in-memory record `{ boundary, token, position }`. `boundary` is one of
+the three implemented `ReceiptBoundary` values: `creation`, `input_ingress` or `dispatch_intent`.
+`token` is opaque to callers and derives only from the owning Execution and its position, so it reveals
+no coordinator-wide order. `position` is that Execution's own acceptance index, and creation is 1.
+Exact replay returns the same receipt object. Receipts have no serialized form yet. These are this
+implementation's choices for the representations `concepts/identity.md` leaves open.
+
 ## 1. Execution and Harness
 
 **Implemented capability.** Independent Execution identities; lifecycle transitions; serialized
