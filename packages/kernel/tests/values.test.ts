@@ -571,8 +571,8 @@ describe("K1.1-C3 the four semantic limits, at the limit and one over", () => {
 
   test("sibling roots are not summed", () => {
     const sevenHundredKiB: BoundaryValue = rootOfExactBytes(700 * 1024);
-    // values.md: two sibling roots of 700 KiB each are not rejected solely because their envelope
-    // exceeds 1 MiB. Each is measured on its own, which is what these two separate calls are.
+    // values.md, "Fixed semantic limits": two sibling roots of about 700 KiB each, in one Outcome,
+    // both pass. Each is measured on its own, which is what these two separate calls are.
     assert.deepEqual(issueCodes(sevenHundredKiB), []);
     assert.deepEqual(issueCodes(sevenHundredKiB), []);
   });

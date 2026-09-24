@@ -50,8 +50,8 @@
  *    a non-enumerable own property are all *rejected*, not skipped. Skipping them would make two
  *    different caller intentions canonicalize identically, which is the same failure class as
  *    repairing a bad scalar.
- * 3. **Each root is measured on its own.** `values.md`: "Two sibling roots of 700 KiB each are not
- *    rejected solely because their envelope exceeds 1 MiB." Callers pass one root at a time.
+ * 3. **Each root is measured on its own.** `values.md`, "Fixed semantic limits": "Two sibling roots
+ *    of about 700 KiB each, in one Outcome, both pass." Callers pass one root at a time.
  * 4. **Refusing costs no more than accepting.** A live object can hold one member in many places,
  *    which JSON text cannot: thirty-two arrays, each holding the next one twice, pass the depth limit
  *    and stand for a value of over four billion arrays. The capture pass therefore keeps the root's
