@@ -1,0 +1,152 @@
+▶ refusing a value costs no more than the size limit allows
+  ✖ the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it (45.368542ms)
+  ✔ a shared member is accepted, and counted in full at every place it appears (77.9835ms)
+  ✖ thirty-two arrays standing for four billion are refused after reading about a megabyte (60069.322208ms)
+  ✖ one long string shared across shared arrays is refused before a second megabyte is read (60022.1965ms)
+  ✖ a shared member refused for another reason is not re-read without bound either (60025.815ms)
+✖ refusing a value costs no more than the size limit allows (180248.781792ms)
+ℹ tests 5
+ℹ suites 1
+ℹ pass 1
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 180435.354875
+
+✖ failing tests:
+
+test at packages/kernel/tests/values.test.ts:631:3
+✖ the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it (45.368542ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /at least 1048577 bytes/. Input:
+  
+  'canonical form is 1048577 bytes, above the per-root limit of 1048576'
+  
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:658:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+      at Array.map (<anonymous>) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'canonical form is 1048577 bytes, above the per-root limit of 1048576',
+    expected: /at least 1048577 bytes/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/values.test.ts:671:3
+✖ thirty-two arrays standing for four billion are refused after reading about a megabyte (60069.322208ms)
+  Error: spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node ETIMEDOUT
+      at Object.spawnSync (node:internal/child_process:1104:20)
+      at spawnSync (node:child_process:911:24)
+      at execFileSync (node:child_process:954:15)
+      at inBoundedChild (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:621:20)
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:672:22)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12) {
+    errno: -60,
+    code: 'ETIMEDOUT',
+    syscall: 'spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node',
+    path: '/opt/homebrew/Cellar/node/25.2.1/bin/node',
+    spawnargs: [ '--experimental-strip-types', '--no-warnings', '--input-type=module', '-e', '\n      const { canonicalize, BOUNDARY_LIMITS } = await import("./packages/kernel/src/index.ts");\n      const started = performance.now();\n      \n      let visits = 0;\n      // The innermost array, observed once for each place it appears in the expanded value.\n      let value = new Proxy([], { getPrototypeOf(target) { visits += 1; return Reflect.getPrototypeOf(target); } });\n      for (let level = 0; level < 31; level += 1) value = [value, value];\n      const result = canonicalize(value);\n      console.log(JSON.stringify({\n        ok: result.ok,\n        codes: result.ok ? [] : result.issues.map((issue) => issue.code),\n        visits,\n        ms: performance.now() - started,\n      }));\n    \n    ' ],
+    error: Error: spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node ETIMEDOUT
+        at Object.spawnSync (node:internal/child_process:1104:20)
+        at spawnSync (node:child_process:911:24)
+        at execFileSync (node:child_process:954:15)
+        at inBoundedChild (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:621:20)
+        at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:672:22)
+        at Test.runInAsyncScope (node:async_hooks:213:14)
+        at Test.run (node:internal/test_runner/test:1106:25)
+        at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+        at Test.postRun (node:internal/test_runner/test:1235:19)
+        at Test.run (node:internal/test_runner/test:1163:12),
+    status: null,
+    signal: 'SIGTERM',
+    output: [ null, '', '' ],
+    pid: 39917,
+    stdout: '',
+    stderr: ''
+  }
+
+test at packages/kernel/tests/values.test.ts:693:3
+✖ one long string shared across shared arrays is refused before a second megabyte is read (60022.1965ms)
+  Error: spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node ETIMEDOUT
+      at Object.spawnSync (node:internal/child_process:1104:20)
+      at spawnSync (node:child_process:911:24)
+      at execFileSync (node:child_process:954:15)
+      at inBoundedChild (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:621:20)
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:694:22)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12) {
+    errno: -60,
+    code: 'ETIMEDOUT',
+    syscall: 'spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node',
+    path: '/opt/homebrew/Cellar/node/25.2.1/bin/node',
+    spawnargs: [ '--experimental-strip-types', '--no-warnings', '--input-type=module', '-e', '\n      const { canonicalize, BOUNDARY_LIMITS } = await import("./packages/kernel/src/index.ts");\n      const started = performance.now();\n      \n      const text = "x".repeat(BOUNDARY_LIMITS.stringScalarValues);\n      let visits = 0;\n      // Counts element observations of the inner array, which appears 4,096 times in the outer one.\n      const inner = new Proxy(new Array(BOUNDARY_LIMITS.containerEntries).fill(text), {\n        getOwnPropertyDescriptor(target, key) {\n          if (key !== "length") visits += 1;\n          return Reflect.getOwnPropertyDescriptor(target, key);\n        },\n      });\n      const result = canonicalize(new Array(BOUNDARY_LIMITS.containerEntries).fill(inner));\n      console.log(JSON.stringify({\n        ok: result.ok,\n        codes: result.ok ? [] : result.issues.map((issue) => issue.code),\n        visits,\n        ms: performance.now() - started,\n      }));\n    \n    ' ],
+    error: Error: spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node ETIMEDOUT
+        at Object.spawnSync (node:internal/child_process:1104:20)
+        at spawnSync (node:child_process:911:24)
+        at execFileSync (node:child_process:954:15)
+        at inBoundedChild (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:621:20)
+        at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:694:22)
+        at Test.runInAsyncScope (node:async_hooks:213:14)
+        at Test.run (node:internal/test_runner/test:1106:25)
+        at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+        at Test.postRun (node:internal/test_runner/test:1235:19)
+        at Test.run (node:internal/test_runner/test:1163:12),
+    status: null,
+    signal: 'SIGTERM',
+    output: [ null, '', '' ],
+    pid: 40345,
+    stdout: '',
+    stderr: ''
+  }
+
+test at packages/kernel/tests/values.test.ts:721:3
+✖ a shared member refused for another reason is not re-read without bound either (60025.815ms)
+  Error: spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node ETIMEDOUT
+      at Object.spawnSync (node:internal/child_process:1104:20)
+      at spawnSync (node:child_process:911:24)
+      at execFileSync (node:child_process:954:15)
+      at inBoundedChild (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:621:20)
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:722:22)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12) {
+    errno: -60,
+    code: 'ETIMEDOUT',
+    syscall: 'spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node',
+    path: '/opt/homebrew/Cellar/node/25.2.1/bin/node',
+    spawnargs: [ '--experimental-strip-types', '--no-warnings', '--input-type=module', '-e', '\n      const { canonicalize, BOUNDARY_LIMITS } = await import("./packages/kernel/src/index.ts");\n      const started = performance.now();\n      \n      // Too long to accept, so it has no canonical bytes of its own; reading it is still charged.\n      const text = "x".repeat(200000);\n      let visits = 0;\n      const inner = new Proxy(new Array(BOUNDARY_LIMITS.containerEntries).fill(text), {\n        getOwnPropertyDescriptor(target, key) {\n          if (key !== "length") visits += 1;\n          return Reflect.getOwnPropertyDescriptor(target, key);\n        },\n      });\n      const result = canonicalize(new Array(BOUNDARY_LIMITS.containerEntries).fill(inner));\n      console.log(JSON.stringify({\n        ok: result.ok,\n        codes: result.ok ? [] : result.issues.map((issue) => issue.code),\n        visits,\n        ms: performance.now() - started,\n      }));\n    \n    ' ],
+    error: Error: spawnSync /opt/homebrew/Cellar/node/25.2.1/bin/node ETIMEDOUT
+        at Object.spawnSync (node:internal/child_process:1104:20)
+        at spawnSync (node:child_process:911:24)
+        at execFileSync (node:child_process:954:15)
+        at inBoundedChild (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:621:20)
+        at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/29f003aa-9d9e-489c-8522-968f391e7c61/scratchpad/ablation/packages/kernel/tests/values.test.ts:722:22)
+        at Test.runInAsyncScope (node:async_hooks:213:14)
+        at Test.run (node:internal/test_runner/test:1106:25)
+        at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+        at Test.postRun (node:internal/test_runner/test:1235:19)
+        at Test.run (node:internal/test_runner/test:1163:12),
+    status: null,
+    signal: 'SIGTERM',
+    output: [ null, '', '' ],
+    pid: 40714,
+    stdout: '',
+    stderr: ''
+  }
