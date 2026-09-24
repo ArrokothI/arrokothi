@@ -1,0 +1,36 @@
+CONTROL        unablated copy: tests 382, pass 382, fail 0
+REJECTED       A1 acknowledge every queued Event, cursor-style
+               tests 382, pass 371, fail 11; failing: acceptance acknowledges exactly the reserved batch and installs everything else together | acknowledgment never reads progress: what progress says it handled changes nothing (R5-j6-2) | K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step | Events that arrived meanwhile are selected by the next exchange, in acceptance order
+REJECTED       A2 replay only while no exchange is open and the Execution is live (validation effectively first)
+               tests 382, pass 378, fail 4; failing: exact: the original receipt; changed: refused; either way the open exchange is untouched | K1.2-C11 a late Outcome for a resolved Activation never commits into the new exchange | a replay is answered even after the next exchange has started, and the new exchange is untouched | K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts
+REJECTED       A3 no writer-epoch fence
+               tests 382, pass 373, fail 9; failing: the Outcome oracle is deterministic: two control arms agree exactly | hidden Outcome, takeover, hold and terminal activity discloses nothing to A | K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls | an epoch that was never issued is refused, never taken as authority
+REJECTED       A4 takeover mints a new Activation ID
+               tests 382, pass 375, fail 7; failing: the Outcome oracle is deterministic: two control arms agree exactly | hidden Outcome, takeover, hold and terminal activity discloses nothing to A | K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls | an authorized takeover is the recovery decision that ends it, and the new attempt can answer
+REJECTED       A5 takeover leaves the epoch where it was
+               tests 382, pass 370, fail 12; failing: after a takeover: the superseded attempt's report settles its record, not the replacement's | K1.2-C11 a late delivery report settles only its own original attempt record | the Outcome oracle is deterministic: two control arms agree exactly | hidden Outcome, takeover, hold and terminal activity discloses nothing to A
+REJECTED       A6 Effects silently stripped instead of refusing the Outcome
+               tests 382, pass 377, fail 5; failing: changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch | K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts | the Kernel never redelivers or retries after refusing an Outcome (OA-5) | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole
+REJECTED       A7 no B-5 terminal disposition at complete/fail
+               tests 382, pass 378, fail 4; failing: every record inspection exposes is frozen, and every list around them is a fresh copy | K1.2-C12 retained Outcome evidence is immutable | `complete` acknowledges the batch and gives the rest a terminal disposition, in one decision | `fail` acknowledges the batch and gives the rest a terminal disposition, in one decision
+REJECTED       A8 terminal disposition recorded as acknowledgment
+               tests 382, pass 378, fail 4; failing: every record inspection exposes is frozen, and every list around them is a fresh copy | K1.2-C12 retained Outcome evidence is immutable | `complete` acknowledges the batch and gives the rest a terminal disposition, in one decision | `fail` acknowledges the batch and gives the rest a terminal disposition, in one decision
+REJECTED       A9 redelivery ignores recovery holds
+               tests 382, pass 380, fail 2; failing: while held, redelivery and takeover are refused; nothing is resent | K1.2-C9 unavailable pinned code holds the exchange, visibly | a report for the current attempt holds with a bounded diagnostic and changes nothing else | K1.2-C10 an unclassifiable response holds the exchange; it is never retried silently
+REJECTED       A10 takeover allowed while pinned code is unavailable
+               tests 382, pass 380, fail 2; failing: while held, redelivery and takeover are refused; nothing is resent | K1.2-C9 unavailable pinned code holds the exchange, visibly | a takeover does not clear a code hold alongside it; recovery must find the code first | K1.2-C10 an unclassifiable response holds the exchange; it is never retried silently
+REJECTED       A11 unknown envelope fields ignored
+               tests 382, pass 379, fail 3; failing: every content defect refuses the whole proposal and names itself | one refusal names every content issue, not only the first | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole | `complete` proposing an obligation is refused whole; with nothing outstanding it completes
+REJECTED       A12 Emission identity from a coordinator-wide counter
+               tests 382, pass 379, fail 3; failing: the Outcome oracle is deterministic: two control arms agree exactly | hidden Outcome, takeover, hold and terminal activity discloses nothing to A | K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls | Emission identity is a pure function of accepted identities
+REJECTED       A13 progress observed twice (validation and retention read separately)
+               tests 382, pass 381, fail 1; failing: each field is read exactly once, and the accepted decision is the one reading | K1.2-C13 envelope fields are own data, observed once
+REJECTED       A14 Emission capacity checked only after every element is read
+               tests 382, pass 381, fail 1; failing: an over-limit Emission list is refused without reading any element | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole
+REJECTED       A15 await accepted as continue
+               tests 382, pass 381, fail 1; failing: `await` is refused naming K1.3, and the wait is never read | K1.2-C7 Effects, obligations and waits are refused whole
+REJECTED       A16 an accepted Outcome keeps the exchange open (a second writer can commit)
+               tests 382, pass 354, fail 28; failing: after the next exchange started: the old report cannot touch the new exchange's attempts | K1.2-C11 a late delivery report settles only its own original attempt record | exact: the original receipt; changed: refused; either way the open exchange is untouched | K1.2-C11 a late Outcome for a resolved Activation never commits into the new exchange
+
+16/16 ablations rejected by the kernel suite.
+exit 0
