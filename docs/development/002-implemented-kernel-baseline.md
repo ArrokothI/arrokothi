@@ -52,6 +52,11 @@ no coordinator-wide order. `position` is that Execution's own acceptance index, 
 Exact replay returns the same receipt object. Receipts have no serialized form yet. These are this
 implementation's choices for the representations `concepts/identity.md` leaves open.
 
+Retention, as the in-memory coordinator publishes it: no creation key and no Input ID ever expires
+while the coordinator lives, and nothing survives it. Deduplication is therefore exact for the
+coordinator's lifetime, and no expired-key case exists. A profile that expires keys must publish
+its own expired-key policy before enabling expiry (`mechanisms/evidence.md#retention-and-deletion`).
+
 ## 1. Execution and Harness
 
 **Implemented capability.** Independent Execution identities; lifecycle transitions; serialized

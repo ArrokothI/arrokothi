@@ -66,10 +66,11 @@ neither starts a packet nor makes a mechanisms-wide rewrite a prerequisite for i
 
 ### Mechanism rewrite schedule
 
-Owner plan, 2026-09-23. Each mechanism page is rewritten once, soon after the packet that most
-defines its rules is accepted, into a shape built for lookup: scope, preconditions, guarantees and
-refusals, with examples where they settle a question. It is not rewritten into the concept pages'
-narrative voice, but it uses their vocabulary and the conventions below. Before a packet first
+Owner plan, 2026-09-23, amended 2026-09-24. Each mechanism page is rewritten once, soon after the
+packet that most defines its rules is accepted. It may use the concept pages' narrative voice, as the
+`creation.md` rewrite does, provided its scope, preconditions, guarantees and refusals stay easy to
+look up; that page closes with a summary table for the purpose. It uses the concept pages'
+vocabulary and the conventions below. Before a packet first
 implements a page, only a precision pass (undefined terms, ambiguities the contract depends on) is
 done. The development ledger, not this table, says whether a packet has been accepted.
 
