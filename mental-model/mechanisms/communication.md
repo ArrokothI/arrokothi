@@ -10,7 +10,7 @@ Three ways one Execution can involve someone else, each with a different obligat
 
 ## Children
 
-Child creation is an immutable [Effect](../concepts/actions.md#effect) binding Runtime/[Definition](../concepts/core.md#definition), explicit input, delegated authority, limits and selected resource/context handoff. Bind its stable request to one child ID, parent correlation and root budget reservation. A creation [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) proves existence, not completion. `spawn` skips immediate waiting, not obligation.
+Child creation is an immutable [Effect](../concepts/actions.md#effect) binding Runtime/[Definition](../concepts/core.md#definition) revisions and progress [codec](../concepts/values.md#codec) version, explicit input, delegated authority, limits and selected resource/context handoff. Bind its stable request to one child ID, parent correlation and root budget reservation. A creation [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) proves existence, not completion. `spawn` skips immediate waiting, not obligation.
 
 The [first profile](../concepts/operations.md#operating-profile-and-durability) uses one transactional authority domain. If fulfillment is async, record the creation/link/budget obligation atomically and fulfill it with a preallocated child ID. Retry/timeout cannot create a second child or debit twice. Cross-shard atomic creation needs a real protocol and is not promised here.
 
