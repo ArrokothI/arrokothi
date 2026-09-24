@@ -1,0 +1,18 @@
+
+> arrokothi-agent-kernel@0.8.1 test:archive-evidence
+> node --test --experimental-strip-types tests/archive/*.test.ts
+
+▶ K1.0 evidence records
+  ✔ every settled round's manifest is present and checked (3.8435ms)
+  ✔ every recorded digest is the digest of the file it names (29.433ms)
+  ✔ no token presented as a digest has an impossible length (6.416875ms)
+  ✔ the check is not vacuous: it rejects a manifest whose digest is wrong (0.673292ms)
+✔ K1.0 evidence records (41.471583ms)
+ℹ tests 4
+ℹ suites 1
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 147.443
