@@ -5,10 +5,11 @@ canonical concept/mechanism owners. Cleanup follows that expected mapping and ch
 affected dependencies; it does not repeat every rule in milestone prose.
 
 Adopted 2026-09-08 for the revised [architecture](../../mental-model/README.md). This document owns milestone
-scope and gates; the [work-packet ledger](007-work-packets.md) owns current implementation/review
-status and dependencies; current packet status is read there, not here. K0.1, the post-K0.1 process
-review and K0.2 are accepted, integrated and owner-closed. The [K0.2 receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.2/integration-01.md) records K0 closure, with the accepted
-benchmark E0 evidence; this establishes the contract/fixture gate, not a working target Kernel.
+scope and gates. Current packet and milestone status — acceptance, integration, closure and release —
+is owned by the [work-packet ledger](007-work-packets.md) and the records it links, and is not
+repeated here. For navigation, the K0 gate's decision and its benchmark E0 evidence are recorded in
+the [K0.2 receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.2/integration-01.md);
+that gate is a contract/fixture gate, not a working target Kernel.
 Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
