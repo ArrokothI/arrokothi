@@ -16,7 +16,7 @@ The [K0.1 worksheet](../tests/fixtures/k0/protocol-worksheet.md) is retained as 
 |---|---|
 | E-1–E-7 | [Value model, canonical bytes and limits](concepts/values.md) |
 | ID-1–ID-9 | [Core identity](concepts/core.md), [scoped identity/receipts](concepts/identity.md), [dispatch retries](mechanisms/execution-cycle.md) |
-| B-1–B-8, CL-1–CL-3, W-1–W-9 | [Waits, clocks and batch selection](mechanisms/waits.md) |
+| B-1–B-8, CL-1–CL-3, W-1–W-9 | [Waits, the wait clock and batch selection](mechanisms/waits.md) (B, W, CL-3 and CL-2's timeout-versus-result race); [three clocks](concepts/operations.md#three-clocks) and [timeout Event](concepts/core.md#timeout-event) (CL-1 and what an expiry proves) |
 | CX-1–CX-6 | [Lifecycle and cancellation](mechanisms/lifecycle.md) |
 | OA-1–OA-6, EF-1–EF-2 | [Outcome acceptance and K1 refusal](mechanisms/execution-cycle.md#outcome-acceptance) |
 | EF-3–EF-4 | [Four action dimensions](concepts/actions.md#settlement-and-reconciliation), [actions](mechanisms/actions.md) |
@@ -72,4 +72,4 @@ K2 owns concrete policy/consent representation and remote freshness. R1 owns act
 
 ## Writing references
 
-The rewrite follows the definition-before-composition approach in [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents), the local clarity plus deeper links in [MCP architecture](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture), and the explicit connection to earlier ideas in [Harness design for long-running apps](https://www.anthropic.com/engineering/harness-design-long-running-apps). These are writing references, not ArrokothI architecture authorities.
+The rewrite follows the definition-before-composition approach in [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents), the local clarity plus deeper links in [MCP architecture](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture), and the explicit connection to earlier ideas in [Harness design for long-running apps](https://www.anthropic.com/engineering/harness-design-long-running-apps). These are writing references, not ArrokothI architecture authorities. The [Workflow and Agent](concepts/roles.md#workflow) explanation additionally borrows the first article's line between workflows and agents, three of its workflow patterns as examples, and its advice to reach for an agent only when a workflow cannot express the work; those illustrate the canonical definitions and do not replace them.

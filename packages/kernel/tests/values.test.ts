@@ -585,6 +585,166 @@ describe("K1.1-C3 the four semantic limits, at the limit and one over", () => {
   });
 });
 
+describe("refusing a value costs no more than the size limit allows", () => {
+  /**
+   * `[prefix, pad, pad, …]` whose canonical form is exactly `target` bytes.
+   *
+   * The prefix goes first so the last pad is what crosses the limit in the one-over variant; each
+   * pad adds one comma, two quotes and its length.
+   */
+  const paddedToExactBytes = (prefix: BoundaryValue, target: number): BoundaryValue[] => {
+    const base = canonicalize([prefix]);
+    assert.ok(base.ok, "the prefix is a valid boundary value");
+    let remaining = target - base.value.canonicalBytes;
+    const root: BoundaryValue[] = [prefix];
+    while (remaining > 65_000 + 3 + 3) {
+      root.push("a".repeat(65_000));
+      remaining -= 65_000 + 3;
+    }
+    root.push("a".repeat(remaining - 3));
+    return root;
+  };
+
+  /**
+   * Runs `body` in a child process and returns the JSON it prints last.
+   *
+   * A regression here is exponential work inside one synchronous call, which would block this
+   * process's event loop so that no test timeout could ever fire. The child is killed instead, and
+   * the kill fails the test rather than hanging the suite.
+   */
+  const inBoundedChild = <T>(body: string): T => {
+    const probe = `
+      const { canonicalize, BOUNDARY_LIMITS } = await import("./packages/kernel/src/index.ts");
+      const started = performance.now();
+      ${body}
+    `;
+    const output = execFileSync(
+      process.execPath,
+      ["--experimental-strip-types", "--no-warnings", "--input-type=module", "-e", probe],
+      { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 60_000 },
+    );
+    return JSON.parse(output.trim().split("\n").pop() as string) as T;
+  };
+
+  type Probe = { ok: boolean; codes: string[]; visits: number; ms: number };
+
+  test("the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it", () => {
+    const quote = String.fromCharCode(0x22);
+    const backslash = String.fromCharCode(0x5c);
+    const controls = String.fromCharCode(0x00, 0x01, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x1f);
+    const wide = String.fromCharCode(0x7f, 0x80, 0x7ff, 0x800, 0xfffd, 0xffff);
+    const bare = Object.create(null) as Record<string, BoundaryValue>;
+    bare[`${controls}${quote}${backslash}/`] = [controls, `q${quote}b${backslash}s/`, wide, "é日😀"];
+    const prefix = {
+      names: bare,
+      numbers: [0, -0, 1, 0.1, 1e20, 1e21, 1e-6, 1e-7, 5e-324, -1.5e300, 2 ** 53 + 2],
+      literals: [null, true, false],
+      empty: [{}, [], ""],
+      own: JSON.parse('{"__proto__":{"x":[1]}}') as BoundaryValue,
+    } as BoundaryValue;
+
+    const atLimit = paddedToExactBytes(prefix, BOUNDARY_LIMITS.canonicalBytes);
+    const accepted = canonicalize(atLimit);
+    assert.ok(accepted.ok, "a value of exactly 1,048,576 canonical bytes is never refused by the running count");
+    assert.equal(accepted.value.canonicalBytes, BOUNDARY_LIMITS.canonicalBytes);
+
+    // The early refusal names its running count. Reaching exactly one byte over proves the count
+    // matched the canonical form byte for byte: an undercount would have left this to the finished-
+    // bytes check (whose message has no "at least"), and an overcount would have refused the value above.
+    const overLimit = [...atLimit.slice(0, -1), `${atLimit[atLimit.length - 1] as string}a`];
+    const issues = boundaryValueIssues(overLimit);
+    assert.deepEqual(issues.map((issue) => issue.code), ["too_many_bytes"]);
+    assert.equal(issues[0]?.path, "", "size belongs to the root");
+    assert.match(issues[0]?.message ?? "", new RegExp(`at least ${BOUNDARY_LIMITS.canonicalBytes + 1} bytes`));
+  });
+
+  test("a shared member is accepted, and counted in full at every place it appears", () => {
+    // Levels of `[v, v]` over `[]`: size(0) = 2 and size(k) = 2 * size(k - 1) + 3, so 5 * 2^k - 3.
+    let value: BoundaryValue = [];
+    for (let level = 0; level < 12; level += 1) value = [value, value];
+    const result = canonicalize(value);
+    assert.ok(result.ok, "sharing a member is not itself a reason to refuse");
+    assert.equal(result.value.canonicalBytes, 5 * 2 ** 12 - 3);
+    assert.equal(canonicalOf(result.value.value), result.value.canonical, "the retained structure re-canonicalizes to its identity");
+  });
+
+  test("thirty-two arrays standing for four billion are refused after reading about a megabyte", () => {
+    const observed = inBoundedChild<Probe>(`
+      let visits = 0;
+      // The innermost array, observed once for each place it appears in the expanded value.
+      let value = new Proxy([], { getPrototypeOf(target) { visits += 1; return Reflect.getPrototypeOf(target); } });
+      for (let level = 0; level < 31; level += 1) value = [value, value];
+      const result = canonicalize(value);
+      console.log(JSON.stringify({
+        ok: result.ok,
+        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
+        visits,
+        ms: performance.now() - started,
+      }));
+    `);
+    assert.equal(observed.ok, false);
+    assert.deepEqual(observed.codes, ["too_many_bytes"], "within the depth and entry limits, refused for size alone");
+    // Each occurrence of the innermost array is at least its own two bytes, so no more than half the
+    // limit's worth of them can be read before the count passes it. Unbounded, this is 2^31.
+    assert.ok(observed.visits <= BOUNDARY_LIMITS.canonicalBytes / 2, `read ${observed.visits} occurrences of the shared leaf`);
+    assert.ok(observed.ms < 20_000, `refused in ${Math.round(observed.ms)} ms`);
+  });
+
+  test("one long string shared across shared arrays is refused before a second megabyte is read", () => {
+    const observed = inBoundedChild<Probe>(`
+      const text = "x".repeat(BOUNDARY_LIMITS.stringScalarValues);
+      let visits = 0;
+      // Counts element observations of the inner array, which appears 4,096 times in the outer one.
+      const inner = new Proxy(new Array(BOUNDARY_LIMITS.containerEntries).fill(text), {
+        getOwnPropertyDescriptor(target, key) {
+          if (key !== "length") visits += 1;
+          return Reflect.getOwnPropertyDescriptor(target, key);
+        },
+      });
+      const result = canonicalize(new Array(BOUNDARY_LIMITS.containerEntries).fill(inner));
+      console.log(JSON.stringify({
+        ok: result.ok,
+        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
+        visits,
+        ms: performance.now() - started,
+      }));
+    `);
+    assert.equal(observed.ok, false);
+    assert.deepEqual(observed.codes, ["too_many_bytes"]);
+    // Each string is 65,538 canonical bytes, so the seventeenth passes the limit. Unbounded, this
+    // expands to about a terabyte.
+    const perString = BOUNDARY_LIMITS.stringScalarValues + 2;
+    assert.ok(observed.visits <= Math.ceil(BOUNDARY_LIMITS.canonicalBytes / perString) + 1, `read ${observed.visits} strings`);
+    assert.ok(observed.ms < 20_000, `refused in ${Math.round(observed.ms)} ms`);
+  });
+
+  test("a shared member refused for another reason is not re-read without bound either", () => {
+    const observed = inBoundedChild<Probe>(`
+      // Too long to accept, so it has no canonical bytes of its own; reading it is still charged.
+      const text = "x".repeat(200000);
+      let visits = 0;
+      const inner = new Proxy(new Array(BOUNDARY_LIMITS.containerEntries).fill(text), {
+        getOwnPropertyDescriptor(target, key) {
+          if (key !== "length") visits += 1;
+          return Reflect.getOwnPropertyDescriptor(target, key);
+        },
+      });
+      const result = canonicalize(new Array(BOUNDARY_LIMITS.containerEntries).fill(inner));
+      console.log(JSON.stringify({
+        ok: result.ok,
+        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
+        visits,
+        ms: performance.now() - started,
+      }));
+    `);
+    assert.equal(observed.ok, false);
+    assert.equal(observed.codes[0], "string_too_long", "the first reason is still the real one");
+    assert.equal(observed.codes[observed.codes.length - 1], "too_many_bytes", "and reading stopped at the byte limit");
+    assert.ok(observed.visits <= Math.ceil(BOUNDARY_LIMITS.canonicalBytes / 200_000) + 1, `read ${observed.visits} strings`);
+    assert.ok(observed.ms < 20_000, `refused in ${Math.round(observed.ms)} ms`);
+  });
+});
+
 describe("K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)", () => {
   test("an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot", () => {
     const previous = (Object.prototype as Record<string, unknown>).toJSON;

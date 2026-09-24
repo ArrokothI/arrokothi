@@ -8,11 +8,11 @@ To look one term up rather than read through, use the [reference index](../refer
 
 ## Reading path
 
-Seven pages in dependency order. This is not alphabetical, and not the order a file browser shows.
+Seven pages in dependency order. This is not alphabetical, and not the order a file browser shows. Every page is built the same way: a short introduction, a section called *A first example* that follows the same weekly report through the page's subject, and then one entry per term with its definition and the reasoning it needs. Each page ends by naming the next one.
 
 1. **[core.md](core.md)** — The pieces every other page assumes: the Kernel, an Execution, the Runtime that does the work and the Driver that adapts it, and the protocol objects that carry one exchange — Activation, Outcome, Event, and the mailbox and batch that Events travel in. Read first; little else parses without it.
 
-2. **[actions.md](actions.md)** — What an Execution can ask the world to do, from the Effect it proposes through admission and settlement to the evidence that comes back, plus the authority and consent that gate it. Read directly after `core.md`: its first term, Effect, is defined in terms of Outcome.
+2. **[actions.md](actions.md)** — What an Execution can ask the world to do, from the Effect it proposes through admission and settlement to the evidence that comes back, plus the authority and consent that gate it. Read directly after `core.md`: it starts with Operation, then defines Effect in terms of Outcome.
 
 3. **[identity.md](identity.md)** — The identifiers that make "is this the same request?" answerable: request keys and Input IDs, Runtime attempts and writer epochs, the several kinds of revision, and what a receipt does and does not prove. Read when you need to tell a retry from a new intention.
 

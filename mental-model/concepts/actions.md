@@ -1,6 +1,6 @@
 # Actions, authority and observations
 
-The [Kernel](core.md#kernel) records what has been accepted about an [Execution](core.md#execution). This page names the terms that appear when that Execution asks the world to do something — publish a report, read governed data, create a child, put a question to a person — and the terms that appear when it produces output that is not a request at all.
+The [Kernel](core.md#kernel) records what has been accepted about an [Execution](core.md#execution). This page names the terms that appear when that Execution asks the world to do something — publish a report, read governed data, create a child, put a question to a person — and the terms that appear when it produces output that is not a request at all. On these pages, **action** means Kernel-mediated work unless a sentence explicitly qualifies it as native.
 
 Each term is defined here and nowhere else. How they interact is specified elsewhere: [authority](../mechanisms/authority.md) owns the order in which permission is checked, [actions](../mechanisms/actions.md) owns how an accepted request becomes an attempt and then evidence, and [output](../mechanisms/output.md) owns how produced content becomes available to read. This page says what the pieces are.
 
@@ -29,8 +29,6 @@ The terms below follow that order. The same report is the running example.
 - **After a request exists** — [Withdrawal and compensation](#withdrawal-and-compensation).
 - **What is not an action** — [Emission, result and output obligation](#emission-result-and-output-obligation).
 
-On these pages, **action** means Kernel-mediated work unless a sentence explicitly qualifies it as native.
-
 ## Operation
 
 An **operation** is a named, versioned, pre-declared contract for one kind of Kernel-mediated work. The Kernel will not admit a request, a person will not be asked to approve one, and later evidence will not be interpreted, against a call that has no such contract.
@@ -43,9 +41,9 @@ The contract has five parts, and they answer five different questions:
 2. **Input and output schema.** The shape of arguments and results: `publish_report` takes `{ reportRef }` and returns `{ publishedAt }`.
 3. **Supported schema features.** Which parts of that shape are actually enforced, and how strictly — whether an argument carrying a property the schema does not name is refused or ignored, and whether a missing field can be filled in. <!-- OPEN(K2.2): the validator and the enforced schema subset. When K2.2 selects them: restate part 3 and the closing paragraph of this section in their terms, and delete this marker. rewrite-index.md §4 -->
 4. **Exact input meaning.** What a valid-looking argument truly asks for. `reportRef` must name the exact reviewed revision, not any string of the right shape.
-5. **Result-certainty behaviour.** What an attempt can ever prove afterwards: whether "definitely failed to publish" is even reachable, or whether every failed attempt stays [unknown](#settlement-and-reconciliation).
+5. **Result-certainty behavior.** What an attempt can ever prove afterwards: whether "definitely failed to publish" is even reachable, or whether every failed attempt stays [unknown](#settlement-and-reconciliation).
 
-The middle two parts are the ones a reader is most likely to skip, and they are the ones that do the work. A schema check only confirms shape. A human approving the action needs the meaning behind a valid shape, which is why [exact consent](#exact-consent) binds the validated arguments and not the plan that produced them. And the certainty declaration decides, afterwards, which of settlement's four dimensions an attempt can even reach. An operation with no way to query or retry safely can never move past "unknown," however the Kernel records it.
+The middle two parts are the ones a reader is most likely to skip, and they are the ones that do the work. A schema check only confirms shape. A human approving the action needs the meaning behind a valid shape, which is why [exact consent](#exact-consent) binds the validated arguments and not the plan that produced them. And the certainty declaration determines what evidence can establish on settlement's certainty axis, one of its four dimensions. An operation with no safe query or retry can still establish success or failure through authenticated evidence from the original attempt, even if it arrives late. Without trustworthy evidence, the result remains "unknown," however the Kernel records it.
 
 A model chooses from names it can read. Permission and evidence need names that do not drift. So an operation keeps its identity when it is shown under a friendlier label. A [projection](roles.md#projection-and-invocation-binding) may display `publish_report` as "Publish this week's report," but the caller still invoked the same operation. That matters because the label can change between requests, while a late reply must still resolve to the operation the caller actually saw, not to whatever the catalog offers under that label now.
 
@@ -87,7 +85,7 @@ An intent is a request that now exists. Whether it may run is a later, separate 
 
 ## Admission and physical action attempt
 
-**Admission** is the ordered decision that authorizes a concrete attempt under the Execution's [authority](#principal-and-authority), current policy, and required [consent](#exact-consent). It records that intent under current dispatch ownership. A **physical action attempt** is one invocation of that logical action through a trusted adapter.
+**Admission** is the ordered decision that authorizes a concrete attempt under the Execution's [authority](#principal-and-authority), current policy, and required [consent](#exact-consent). It records that intent under current dispatch ownership, meaning the current right to send this particular action. A **physical action attempt** is one invocation of that logical action through a trusted adapter.
 
 An accepted intent is a request that exists. Admission is whether that request may run *now*. The two must not be run together. An Execution that is allowed, in general, to publish is not therefore allowed to publish this draft to this account under today's policy, and a human's standing willingness to approve publications is not a yes to this one.
 
@@ -188,3 +186,5 @@ An **Emission** is accepted nonterminal output from an Outcome: the draft, a pro
 An **output obligation** makes accepted Emissions and results available for authorized, retention-bounded observation and replay. Nothing has to be pushed anywhere for it to be discharged: available-to-read is the whole promise, and the retained record itself keeps it.
 
 External delivery is a separate application-adapter responsibility. Getting the draft to a person or another service is ordinary mediated action work, with all the uncertainty that implies, and it can still be pending after the Execution has completed. If business completion depends on a delivery receipt, that receipt has to be requested and observed as an Effect like any other before completing. [Output](../mechanisms/output.md) owns acceptance, replay, retention and the line between observation and sending; [external delivery](../mechanisms/output.md#external-delivery) is the last of those, not a side effect of the first.
+
+Next in the reading order: [identity](identity.md) — how to tell a retry from a new request, and a current answer from a stale one.

@@ -30,6 +30,10 @@ The [strategy study](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b
 
 | Note | Scope |
 |---|---|
+| [Temporal comparison — 1. Architecture and implementation](temporal-01-architecture-comparison.md) | Repository-grounded comparison, exact source snapshots, target/implementation gap, and the relevance of Temporal Core SDK and CHASM. |
+| [Temporal comparison — 2. Protocol and failure semantics](temporal-02-protocol-and-failure-semantics.md) | Acceptance, replay, external uncertainty, fencing, consent, cancellation, and compatibility; distinguishes analogous names from equivalent contracts. |
+| [Temporal comparison — 3. Integration and experiments](temporal-03-integration-and-experiments.md) | Direct Temporal baseline, candidate substrate and native-Driver placements, and process-fault experiments under existing roadmap owners. |
+| [Temporal comparison — 4. Additional repositories and document proposals](temporal-04-other-candidates.md) | Pinned local review of Restate, DBOS and Temporal TypeScript SDK; eight proposed mental-model improvements for later review, preserving our native Agent/Workflow direction. |
 | [`mcp-arrokothi-semantic-mapping.md`](mcp-arrokothi-semantic-mapping.md) | MCP 2026-07-28 protocol-surface inventory and provisional mapping in both import and export directions. |
 | [`agent-caching-semantics-and-strategy.md`](agent-caching-semantics-and-strategy.md) | Agent caching survey across OpenClaw, Hermes Agent, Dify, LangGraph, and model providers; distinguishes optional caches, deterministic derived views, and invocation/recovery snapshots, then maps cache candidates and invalidation requirements onto ArrokothI. |
 | [`jit-capability-namespace-and-context-scouts.md`](jit-capability-namespace-and-context-scouts.md) | Research direction for hierarchical JIT discovery over authorized capabilities/knowledge/resources, progressive materialization, and read-only Context Scouts that use cheaper models to assemble provenance-preserving context for stronger primary Agents. |

@@ -1,6 +1,6 @@
 # Waiting for observations and selecting the next batch
 
-A [wait](../concepts/core.md#wait-subscription-and-generation) lets the Kernel pause dispatch until a declared observation or deadline permits another Activation. It does not represent an internal Runtime promise. This page is the single owner of eligibility, wait retirement, batch selection and the wait clock (K0.1 B-1–B-8, CL-1–CL-3 and W-1–W-9).
+A [wait](../concepts/core.md#wait-subscription-and-generation) lets the Kernel pause dispatch until a declared observation or deadline permits another Activation. It does not represent an internal Runtime promise. This page is the single owner of eligibility, wait retirement, batch selection and when the wait deadline is read (K0.1 B-1–B-8, W-1–W-9 and CL-3), including how a timeout and a later result both survive (CL-2). The three clocks and what an expiry does and does not prove (CL-1, CL-2) are defined in [three clocks](../concepts/operations.md#three-clocks) and [timeout Event](../concepts/core.md#timeout-event).
 
 **Status:** Required Kernel contract. Introduced by K1.3. This is target specification, not shipped behavior.
 
