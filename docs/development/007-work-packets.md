@@ -9,6 +9,11 @@ separately released by the owner on 2026-09-16 and has no implementation candida
 The 2026-09-22 owner instruction releases DOCS-CLEANUP-01 as bounded repository maintenance,
 without advancing any Kernel gate.
 
+**Owner hold on starting K1.2, 2026-09-23.** K1.2 stays released, but its implementation starts
+only after (1) independent review of K1.1-correction-02, DOCS-CLEANUP-01 and PLAN-01, (2) the
+owner's rewrite of `mental-model/mechanisms/creation.md`, and (3) an owner final check. A launcher
+must not start K1.2 before the owner records that these are done.
+
 Historical review rounds, invalidations and superseded holds remain in the [archive](archive.md);
 this page keeps current dispositions and pinned evidence locators.
 
@@ -161,9 +166,9 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k12); also inspect affected dependencies.
 
-**Dependencies:** K1.1. **Scope:** Implement whole-envelope validation, receipt replay/conflict, epoch/revision checks, whole-batch acknowledgment, progress recording, continue/complete/fail. Own authorized takeover as [identity](../../mental-model/concepts/identity.md) and the [retry-versus-takeover table](../../mental-model/mechanisms/execution-cycle.md) state it: the same Activation ID advances its writer epoch only through an authenticated control, the older attempt is fenced with no staleness window, and an ordinary retry never advances the epoch. Own the recovery hold for unavailable pinned progress code: the Execution stays RUNNING under an inspectable protocol-failure/recovery reason with progress and revision intact, and the hold clears when compatible code is available; this is [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) exchange handling, not K3 process-fault recovery, and claims no persistence. Record Emission identities and the typed terminal result at acceptance; output observation, replay and cursors stay K4.4. Refuse Effects as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) fixes for K1: the whole envelope is rejected, no Effect ID, denied-action or admission record is created, and the Activation stays open. Refuse `complete` proposing any obligation whole, since every obligation kind is unsupported before K2.3; refuse not-yet-supported waits until K1.3.
+**Dependencies:** K1.1. **Scope:** Implement whole-envelope validation, receipt replay/conflict, epoch/revision checks, whole-batch acknowledgment, progress recording, continue/complete/fail. Own authorized takeover as [identity](../../mental-model/concepts/identity.md) and the [retry-versus-takeover table](../../mental-model/mechanisms/execution-cycle.md) state it: the same Activation ID advances its writer epoch only through an authenticated control, the older attempt is fenced with no staleness window, and an ordinary retry never advances the epoch. Own the recovery hold for unavailable pinned progress code: the Execution stays RUNNING under an inspectable protocol-failure/recovery reason with progress and revision intact, and the hold clears when compatible code is available; this is [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) exchange handling, not K3 process-fault recovery, and claims no persistence. Record Emission identities and the typed terminal result at acceptance; output observation, replay and cursors stay K4.4. Refuse Effects as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) fixes for K1: the whole envelope is rejected, no Effect ID, denied-action or admission record is created, and the Activation stays open. Refuse `complete` proposing any obligation whole, since every obligation kind is unsupported before K2.3; refuse not-yet-supported waits until K1.3. Own the late-report cases the [delivery reporting boundary](../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary) assigns to K1.2: after the exchange resolves or is taken over, a late delivery report updates only its original retained operational record. After an accepted `continue`, the next dispatch is a new exchange, as the [retry-versus-takeover table](../../mental-model/mechanisms/execution-cycle.md#retry-versus-takeover) states: new Activation ID, newly selected batch, and a starting epoch per the implementation's recorded choice. No submission path resolves "the current Activation" or the current epoch on the caller's behalf; an Outcome names the exchange and attempt it answers (owner amendment PLAN-01).
 
-**Acceptance:** Stale/conflicting/malformed proposals change no accepted state; exact duplicate returns original receipt; one progress writer and typed terminal/output semantics. A stale-epoch proposal after takeover is refused while the new epoch commits; a retry-only sequence shows no epoch change. A missing-code hold is distinguishable by inspection from a failed or waiting Execution and reverts to ordinary progress without a new revision. An Effect-bearing envelope leaves no K2-style record that E2 attribution could mistake for a denial.
+**Acceptance:** Stale/conflicting/malformed proposals change no accepted state; exact duplicate returns original receipt; one progress writer and typed terminal/output semantics. A stale-epoch proposal after takeover is refused while the new epoch commits; a retry-only sequence shows no epoch change. A missing-code hold is distinguishable by inspection from a failed or waiting Execution and reverts to ordinary progress without a new revision. An Effect-bearing envelope leaves no K2-style record that E2 attribution could mistake for a denial. A late Outcome for an already resolved Activation returns its original receipt when it is an exact duplicate and is otherwise refused with no state change, including after the next exchange has started; it never commits into the new exchange. A late delivery report after resolution or takeover changes no receipt, epoch, reservation, acknowledgment or lifecycle.
 
 ### K1.3 — Wait and cancellation races
 
@@ -171,7 +176,7 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 
 **Dependencies:** K1.2. **Scope:** Implement finite any-of, input subscriptions, eligible unmatched accounting, wait generation/deadlines, out-of-band cancellation and terminal disposition. Of the three clocks in [operations](../../mental-model/concepts/operations.md), this packet implements wait deadlines and routes Execution-deadline expiry through the same cancellation path; scheduler leases remain K3. Matching consumes input already admitted by K1.1 ingress; this packet adds no second ingress rule.
 
-**Acceptance:** Before/during/after wait arrivals, stale timers, unmatched backlog and cancel/complete schedules lose no accepted input or wake and never reopen a terminal execution. A stale timer from a superseded wait generation is discarded with an inspectable reason and no state change; Execution-deadline expiry and explicit cancellation produce the same terminal disposition shape.
+**Acceptance:** Before/during/after wait arrivals, stale timers, unmatched backlog and cancel/complete schedules lose no accepted input or wake and never reopen a terminal execution. A stale timer from a superseded wait generation is discarded with an inspectable reason and no state change; Execution-deadline expiry and explicit cancellation produce the same terminal disposition shape. The five [small distinguishing examples](../../mental-model/mechanisms/waits.md#small-distinguishing-examples) pass as separate cases, since one example cannot tell the plausible wrong selection rules apart. A late delivery report after cancellation changes no logical state.
 
 ### K1.4 — Legacy bridge and K1/E1 gate
 
@@ -180,6 +185,8 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 **Dependencies:** K1.3. **Scope:** Integrate the new boundary with SDK host driving; bridge viable existing controllers as private Runtime machinery. Port useful conformance and document unsupported legacy features.
 
 **Acceptance:** Full K1/E1 matrix and K1.0 structural obligations pass, including actual accepted asynchronous exchange through the supported entry; legacy resumptions do not drive new Kernel types/stores. Existing supported behavior is preserved or explicitly migrated/refused.
+
+**Entry checks (owner amendment PLAN-01).** Before K1.3 closes, confirm with the benchmark owner that the E1 fixtures drive the new supported entry: K2.1 and R1.1 wait on this gate, and an unavailable fixture makes K1.4 BLOCKED_EXTERNAL rather than a reason to weaken E1. The K1.4 contract first assesses its own size; if the bridge/port and the gate cannot be reviewed coherently together, it proposes a split under the rule above, keeping `K1.4` as the bridge identity that sealed records and code comments already cite. Legacy names the bridge meets are routed through the [reference index's legacy rows](../../mental-model/reference.md#common-search-terms).
 
 ### K2.1 — Atomic Effect intents
 
@@ -193,7 +200,7 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k22); also inspect affected dependencies.
 
-**Dependencies:** K2.1. **Scope:** Select/license-review a mature validator and narrow schema subset; validate custom/stock/MCP paths. Bind final operation/input; define unknown operation and overlapping grants; order consent, withdrawal/revocation and dispatch epoch.
+**Dependencies:** K2.1. **Scope:** Select/license-review a mature validator and narrow schema subset; validate custom/stock/MCP paths. Bind final operation/input; define unknown operation and overlapping grants; order consent, withdrawal/revocation and dispatch epoch. Close the `OPEN(K2.2)` marker in [operation](../../mental-model/concepts/actions.md#operation) by stating the selected validator and enforced subset. Ordering the dispatch epoch meets the open question of whether an action dispatcher is its own concept (`OPEN(unassigned)` in [admission](../../mental-model/concepts/actions.md#admission-and-physical-action-attempt)); settle it with the owner or leave it explicitly open. For MCP paths, pin the MCP version and use items 8–9 of the [MCP mapping backlog](../research/mcp-arrokothi-semantic-mapping.md#9-research-and-experiment-backlog) as counterexamples: refuse rather than silently weaken an unsupported schema feature, and keep outcome certainty through protocol and tool errors.
 
 **Acceptance:** Zero executor calls for malformed/refused requests; stale ownership, payload/version/account change, duplicate approval, grant overlap and correction/admission races cannot bypass exact admission.
 
@@ -209,7 +216,7 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k24); also inspect affected dependencies.
 
-**Dependencies:** K2.3. **Scope:** Implement immutable human request/schema/eligible responder intent and authorized admission/disclosure with correlated denial; same-Outcome wait. Run all K2 and native-attribution controls.
+**Dependencies:** K2.3. **Scope:** Implement immutable human request/schema/eligible responder intent and authorized admission/disclosure with correlated denial; same-Outcome wait. Run all K2 and native-attribution controls. Give MCP's input-required/elicitation pattern an explicit disposition, mapped to human input requests or refused.
 
 **Acceptance:** Display settles nothing and is not consent; safe/unsafe/state-losing subjects get distinct attributed verdicts despite laboratory protection; complete K2/E2 gate passes.
 
@@ -217,7 +224,7 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r11); also inspect affected dependencies.
 
-**Dependencies:** K1.4. **Scope:** Probe Hermes unless the owner-selected application requires another Runtime; preserve native context/tools and declare identity, pause/output/cancel, resources and lost-submit behavior. Mediated paths additionally require K2.4.
+**Dependencies:** K1.4. **Scope:** Probe Hermes unless the owner-selected application requires another Runtime; preserve native context/tools and declare identity, pause/output/cancel, resources and lost-submit behavior. Mediated paths additionally require K2.4. In the support record, map which layer retries which operation (transport, substrate, Driver submission, native Runtime, provider SDK), whether identity survives recovery and which counters reset, and record each native feature as preserved, replaced, disabled or unsupported ([research P4/P7](../research/temporal-04-other-candidates.md#proposed-changes-to-mental-model-for-later-review)).
 
 **Acceptance:** Real native-only versus thin-Driver observations with fake model/services where feasible; every unsupported recovery/mediation capability refused or declared. Same-process-only is a valid bounded probe.
 
@@ -233,7 +240,7 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k31); also inspect affected dependencies.
 
-**Dependencies:** K2.4, R1.2. **Scope:** Build real worker/host kill control with surviving store/sink ledger. Pin the full 001 K3 crash matrix and measurement protocol. Select one mature comparator after API/operating/license review.
+**Dependencies:** K2.4, R1.2. **Scope:** Build real worker/host kill control with surviving store/sink ledger. Pin the full 001 K3 crash matrix and measurement protocol. Select one mature comparator after API/operating/license review. Use the [substrate prototype questions and rejection-capable comparison](../research/temporal-03-integration-and-experiments.md#what-a-substrate-prototype-must-establish) as input to the criteria the owner approves, including how a long history is bounded without losing Execution identity, deduplication windows, action obligations, input accounting or cursors.
 
 **Acceptance:** Fault triggers demonstrably kill processes; oracle survives independently; every K3 window, repeat plan, correctness and cost measurement is assigned before prototypes. Owner approves comparison criteria.
 
@@ -329,7 +336,7 @@ K1.1 test passes unchanged; the decisions state their relation to accepted mater
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k51); also inspect affected dependencies.
 
-**Dependencies:** K4.5. **Scope:** Implement measured mailbox/history/output/deduplication and host admission limits; expiration, replay/live, slow/disconnected readers, revoked access and capacity refusal.
+**Dependencies:** K4.5. **Scope:** Implement measured mailbox/history/output/deduplication and host admission limits; expiration, replay/live, slow/disconnected readers, revoked access and capacity refusal, including an output adapter over a native stream that silently skips expired data, which must still surface the explicit gap.
 
 **Acceptance:** Reject before acceptance on exhaustion; explicit expired/view-mismatched cursor gaps, retained terminal drain and separately pinned routing obligations; no subscriber blocking/unbounded retention.
 
@@ -413,6 +420,16 @@ remove obsolete working-tree copies; retain exact acceptance identities; decoupl
 checks from ordinary conformance; ignore concurrent owner rewrite drafts. No runtime migration,
 dependency removal, semantic change or milestone closure. Future dependency/legacy-code retirement
 remains assigned to its owning migration/release packet.
+
+### PLAN-01 — Pre-K1.2 planning and process amendments
+
+**Owner release:** explicit owner instruction, 2026-09-23. **Scope:** [contract](work/PLAN-01/contract.md).
+Record the owner's product sequence in 001; remove status prose from 001; align 001's K2 wording
+with the Effect vocabulary; amend K1.2–K1.4 and later packet seeds with the obligations found in
+review and research; place Layer-3 maintenance in the candidate, with delegated cleanup verifying
+it; update the role launchers accordingly; add legacy-name routing to the reference index; and
+confirm `mental-model/rewrite-index.md` as the maintained owner of open choices and editorial
+conventions. No Kernel semantics, gate, acceptance or release changes.
 
 ## Authoritative status
 

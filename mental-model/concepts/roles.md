@@ -6,7 +6,7 @@ The earlier terms had to be exact because Kernel and deployment guarantees are s
 
 Optional does not mean unconstrained, though. When a Runtime calls a model, sends content outside itself or loads a Skill, some of the entries below carry rules it must keep, and link to the pages that own them.
 
-ArrokothI is more than its Kernel, and these terms are also the vocabulary for its own optional [reference Runtime](../mechanisms/composition.md#reference-runtime-acceptance) facilities. A native framework keeps its own names.
+ArrokothI is more than its Kernel, and these terms are also the vocabulary for its own optional [reference Runtime](../mechanisms/composition.md#reference-runtime-acceptance) facilities. Those facilities are optional for Kernel conformance, not as a product direction: ArrokothI's own Agent and Workflow systems use this vocabulary, and the [roadmap's product sequence](../../docs/development/001-current-status-and-roadmap.md#sequence-and-ownership) places them after the Kernel/Driver foundation. A native framework keeps its own names.
 
 The terms fall into three groups, which do not build on one another:
 

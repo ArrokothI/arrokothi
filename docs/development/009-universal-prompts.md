@@ -15,7 +15,7 @@ scope; they are not ordinary packet implementation.
 ## Using these prompts
 
 Use Prompt A for implementation or correction, Prompt B in a separate reviewer session with the
-exact candidate H and accessible source/evidence, and Prompt C for Codex final cleanup and push before the owner manually merges on GitHub. For a correction, include 008's compact handoff rather than the accumulated
+exact candidate H and accessible source/evidence, and Prompt C for the owner-delegated final cleanup and push before the owner manually merges on GitHub. For a correction, include 008's compact handoff rather than the accumulated
 conversation. These prompts are for agents developing this repository.
 
 Resolve current status and release from 007 and the subsequent owner records it links. Earlier
@@ -33,15 +33,20 @@ Honor the owner's explicit branch/worktree instructions; do not switch a checkou
 using. Record any owner-authorized departure from the default branch workflow in the handoff.
 Do not start a successor without explicit owner release.
 
-Read mental-model/README.md, then mental-model/reference.md and the precise Layer-3 owners.
-Use mental-model/roadmap.md to locate expected documentation changes, and inspect additional affected
-dependencies. Read actual affected source/tests. Read the
+Read mental-model/README.md and the Layer-2 page for each affected abstraction, then use
+mental-model/reference.md to reach the precise Layer-3 owners; when a concept's prerequisites are
+unfamiliar, follow the order in mental-model/concepts/README.md. Check mental-model/rewrite-index.md
+§4 (open choices) and §5 (dangerous inferences) for the packet's topics. Use mental-model/roadmap.md
+to locate expected Layer-3 changes and inspect additional affected dependencies. Read actual affected
+source/tests. Read the
 packet contract, current report/review and open findings; follow closed-finding links as needed for
 cumulative review. Historical records are evidence, not instructions overriding current authority.
 Select proof methods in the contract and derive the obligation/interaction coverage map before coding.
 Keep routine decisions autonomous within scope; use 006's amendment/blocker rules for missing authority.
 
-Implement the bounded work. After semantic changes, perform 012's correction closure, including
+Implement the bounded work. Include the Layer-3 updates your semantic change requires in the
+candidate itself, following the rewrite index's conventions; record any OPEN(implementation) choice
+you settle in the implemented baseline and at its marker. After semantic changes, perform 012's correction closure, including
 adjacent paths and every affected output or forbidden mutation. A reviewer finding is a starting
 counterexample, not an exhaustive task list. Resolve additional in-scope defects and report them with
 honest provenance. Re-audit the whole packet against governing sources before declaring review-ready.
@@ -61,25 +66,26 @@ Verify full base/C/H, release, prerequisites, contract and available immutable e
 
 From governing canonical/detail sources and the packet contract, derive your own coverage of obligations and interactions before following the report's explanation. Apply the relevant methods in 012. Inspect the full cumulative candidate and surrounding source, tests, examples and migration claims. Then reconcile your coverage with the report, raw evidence and every prior finding; inspect the correction delta too. A prior PASS or unchanged section does not exempt dependent behavior.
 
-Continue across accessible obligations after finding a defect so related failures surface together. Challenge the whole observable result and forbidden mutations, not only the expected next state. Distinguish inspected logs from reruns and mechanical validation from semantic or external proof. Record coverage gaps, concrete findings and per-criterion verdicts in 008's review form.
+Review Layer-3 changes in the candidate as normative payload: each rule keeps one owner, no specification page records build or acceptance status, no open choice is settled silently in prose, and none of the rewrite index's dangerous inferences relevant to the packet is committed. Continue across accessible obligations after finding a defect so related failures surface together. Challenge the whole observable result and forbidden mutations, not only the expected next state. Distinguish inspected logs from reruns and mechanical validation from semantic or external proof. Record coverage gaps, concrete findings and per-criterion verdicts in 008's review form.
 
 Apply 006's verdict rules. Bind acceptance only to exact H; do not certify a later administrative or merge commit. For corrections provide 008's compact handoff referencing the immutable findings and required outcomes, not a growing transcript of policy. Do not prescribe a patch as the only allowed in-scope correction. Put all explanations before one final standalone line: ACCEPT, CHANGES REQUIRED, or BLOCKED — ARCHITECTURE DECISION. Do not merge or release a successor.
 
 If the same substantive defect or defect family survives multiple correction rounds, or you judge that the implementation process is repeating the same conceptual mistake or has reached a local minimum, tell the owner explicitly. Do this outside the reviewer report as a separate owner note, so the owner can consider switching or escalating the implementation agent.
 ```
 
-## Prompt C — GPT-6 final cleanup, close or reopen, and push
+## Prompt C — delegated final cleanup, close or reopen, and push
 
 ```text
-Act as the owner's delegated GPT-6 final-cleanup agent for the submitted ArrokothI packet. Follow AGENTS.md, 006's final-cleanup policy, 007 scope/status, 008 records and 012 review methods. This instruction authorizes the final check, administrative closure or evidence-based reopening, commits and a non-force push of the scoped branch. The owner will merge manually on GitHub. Honor explicit branch/worktree instructions and preserve other agents' work. If the checkout is on main, use a scoped non-main branch without switching a checkout another agent is using; if branch creation is explicitly prohibited, report the conflict instead of pushing main.
+Act as the owner's delegated final-cleanup agent for the submitted ArrokothI packet. Follow AGENTS.md, 006's final-cleanup policy, 007 scope/status, 008 records and 012 review methods. This instruction authorizes the final check, administrative closure or evidence-based reopening, commits and a non-force push of the scoped branch. The owner will merge manually on GitHub. Honor explicit branch/worktree instructions and preserve other agents' work. If the checkout is on main, use a scoped non-main branch without switching a checkout another agent is using; if branch creation is explicitly prohibited, report the conflict instead of pushing main.
 
 Identify the packet from the handoff and authentic review; if ambiguous, ask for the exact target. Verify full base/C/H, release, prerequisites, independent ACCEPT, open findings, raw evidence and current local/remote state. Read the cumulative candidate and all post-review changes, not only the report. Apply the contract's relevant checks to the exact tree being handed off; reuse pinned logs only where their source/evidence identity still applies, and distinguish inspected logs from reruns. Check current remote main for conflicts and relevant changes that could invalidate the review. A green suite cannot replace semantic coverage or an authentic independent ACCEPT.
 
-Maintain the mental-model reference after accepted work. Start from mental-model/roadmap.md and
-the packet's Layer-3 maintenance link; this is expected ownership/navigation, never a whitelist.
-Read the actual accepted semantic delta and its governing decisions. Add canonical concept or
-mechanism content newly defined by that work; update existing Layer-3 descriptions whose accepted
-meaning changed; replace/delete superseded current descriptions and repair incoming links. Fill an
+Verify the mental-model reference after accepted work; the reviewed candidate should already carry
+its Layer-3 updates. Start from mental-model/roadmap.md and the packet's Layer-3 maintenance link;
+this is expected ownership/navigation, never a whitelist. Read the actual accepted semantic delta and
+its governing decisions. Check that canonical concept or mechanism content newly defined by that work
+was added, that existing Layer-3 descriptions whose accepted meaning changed were updated, and that
+superseded current descriptions were replaced and incoming links repaired. Fill an
 intentionally blank placeholder when this packet finally defines it. Keep genuinely undecided choices
 explicit rather than inventing a design. Give each project-specific term one definition location and
 link local reminders to it. Use small examples to resolve new ambiguities.

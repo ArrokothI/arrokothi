@@ -6,11 +6,9 @@ affected dependencies; it does not repeat every rule in milestone prose.
 
 Adopted 2026-09-08 for the revised [architecture](../../mental-model/README.md). This document owns milestone
 scope and gates; the [work-packet ledger](007-work-packets.md) owns current implementation/review
-status and dependencies. K0.1, the post-K0.1 process review and K0.2 are accepted, integrated and
-owner-closed. The [K0.2 receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.2/integration-01.md) records K0 closure, with the accepted
+status and dependencies; current packet status is read there, not here. K0.1, the post-K0.1 process
+review and K0.2 are accepted, integrated and owner-closed. The [K0.2 receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.2/integration-01.md) records K0 closure, with the accepted
 benchmark E0 evidence; this establishes the contract/fixture gate, not a working target Kernel.
-The owner released **K1.0** on 2026-09-13 against built-but-unaccepted E1 preparation.
-**K1.0-correction-02 round 1 is independently ACCEPTED** at H `def91fb9f34ade40a65cbde999c0ffe192d18239`, over C `95d74530f37c7af8706ef92d29574425a39afcf1`, original base `c9a9ed7e6e538ab0542fc6a999426264abb6212a`. OpenAI GPT-5.6 Sol (High) recorded [review-01](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.0-correction-02/review-01.md) at A `4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0`, closing K10-CORR1-CLEANUP-01. [Delegated cleanup](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.0-correction-02/cleanup-01.md) is complete; integration is pending the owner's manual merge and verified push is supplied in the external handoff. The cumulative C1–C9 acceptance restores the current structural claim; both earlier ACCEPT/invalidation records remain historical. No E1 result or K1 milestone closure; `next_release: none`.
 Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
@@ -45,6 +43,16 @@ scheduled. Use this design routing when implementing:
 Build a fake Runtime and one accepted asynchronous exchange before improving Agent/Workflow features.
 Close the action boundary before durable dispatch. Try a real native boundary before selecting a
 persistent mechanism. Then test composition and operations under real process failure.
+
+**Product sequence (owner decision, 2026-09-23).** The Kernel/Driver foundation comes first: the
+asynchronous protocol, governed actions, native Driver probes, persistence, composition and
+operability (K1–K5 with R1). ArrokothI's own Agent and Workflow systems are built on that foundation
+afterwards, as Execution Runtimes behind the same Activation/Outcome boundary, and are evaluated with
+the Kernel held fixed. They are optional for Kernel conformance, because another Runtime may bring
+its own control flow, state and context; they are not optional as a product direction. R2 below
+stays the 1.0 slice, limited to the Agent/Workflow facilities the public applications need; the
+fuller native systems follow the foundation and are not 1.0 gates. This orders work only: it adds
+no Kernel concept, changes no gate and makes no release claim.
 
 ```text
 K0 contracts/public fixtures ──→ K1 asynchronous Execution ──→ K2 governed actions
@@ -147,7 +155,8 @@ admission; queued correction text alone does not
 stop dispatch. Unknown evidence can be refined by new immutable observations but cannot discharge
 ownership merely by being acknowledged. No external action rollback claim.
 
-Include the narrow human input-request operation in governed Effects: immutable request/schema and
+Include the narrow human input request in governed Effects — its own Effect shape, not an
+[operation](../../mental-model/concepts/actions.md#effect): immutable request/schema and
 eligible-responder binding, stable identity, same-Outcome wait reference, admission/disclosure policy,
 and correlated denial/refusal. Opening/displaying a request cannot settle its dependency or count as
 exact action consent. K2 proves these semantics with deterministic records; K4 completes the durable
@@ -273,7 +282,8 @@ computed terminal results with extraction → deterministic validation → child
 application state/artifact services and authorized bindings; no universal memory system. Preserve
 existing Agent quality tests with Kernel fixed and add Workflow value/branch tests independently.
 Improve native loops/context only when E3/E5 reveals a need. This work is not a prerequisite for
-K3 or for integrating an external Runtime.
+K3 or for integrating an external Runtime. ArrokothI's fuller own Agent/Workflow systems follow the
+foundation, as the product sequence above records; R2 does not have to anticipate them.
 
 **Exit:** public imports express the selected application without JSON-as-text or shared-memory
 transport detours. Keep unsupported legacy features documented. If a mature Workflow runtime already
