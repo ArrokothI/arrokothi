@@ -145,6 +145,18 @@ The [sealed contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2
 preserves its exact criteria and authority. Continuing rules live in the canonical
 reference and [structural evidence rules](015-structural-evidence-rules.md).
 
+### K1.1-correction-02 — Bounded refusal cost in value capture
+
+**Owner release:** explicit owner instruction, 2026-09-23. **Dependencies:** K1.1 as integrated.
+**Scope:** [contract](work/K1.1-correction-02/contract.md). Make reviewable the capture change that
+keeps a running canonical byte count and stops past the per-root limit, integrated in `66e9e84`
+before review, and record the three value obligations the values rewrite adopted
+([decision 01](work/K1.1-correction-02/decision-01.md)). The original K1.1 ACCEPT is unchanged.
+
+**Acceptance:** Refusing a shared-reference value stops after about the limit's worth of reading;
+the running count is exact, so no value the finished-bytes check accepts is refused; every prior
+K1.1 test passes unchanged; the decisions state their relation to accepted material.
+
 ### K1.2 — Outcome acceptance and receipts
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k12); also inspect affected dependencies.
