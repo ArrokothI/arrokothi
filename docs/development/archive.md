@@ -10,7 +10,7 @@ Historical evidence is preserved outside the normal checkout; it is not current 
 |---|---|
 | Source commit | `9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49` |
 | Git fallback | [Pinned pre-cleanup repository](https://github.com/ArrokothI/arrokothi/tree/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49) |
-| Local upload artifact | Repository root: `ultimate-legacy-2026-09-22.tar.gz` |
+| Local artifact | `ultimate-legacy-2026-09-22.tar.gz` and its `.sha256`, moved by the owner to owner-held storage outside the checkout; digest and full snapshot re-verified 2026-09-23 |
 | Archive SHA-256 | `8debcfefea80b20392a831eef2373146739eb8de04932ccfbd960e59087b5c8d` |
 | Archive size | 9,858,568 bytes |
 | Contents | 1,238 tracked regular files and four skill symlinks, at their original paths under `snapshot/` |

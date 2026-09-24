@@ -150,7 +150,7 @@ Do not rewrite history to pretend it was never accepted or keep releasing depend
 
 ## Owner-delegated final cleanup before manual merge
 
-Invoking Prompt C delegates final cleanup to Codex for the identified packet: final verification,
+Invoking Prompt C delegates final cleanup to the owner-selected cleanup agent for the identified packet: final verification,
 faithful review transcription, administrative completion, evidence-based reopening, scoped commits
 and a non-force branch push. This is a distinct owner-delegated role, not a new permission for the
 coding agent to self-accept. Record the owner instruction and actual role. Independent acceptance
@@ -258,14 +258,19 @@ occurred. A task profile does not exempt applicable repository policy.
 
 ## Maintaining the mental-model reference
 
-Accepted work maintains Layer 3: add newly defined concepts/mechanisms, update changed semantics,
-replace superseded current descriptions, fill placeholders that are now defined, and inspect related
-incoming/outgoing dependencies. Start at [the packet mapping](../../mental-model/roadmap.md); it is
+The candidate that changes semantics maintains Layer 3 as part of its payload, so the Layer-3 text is
+reviewed together with the code and tests that implement it: add newly defined concepts/mechanisms,
+update changed semantics, replace superseded current descriptions, fill placeholders that are now
+defined, and inspect related incoming/outgoing dependencies. Start at [the packet mapping](../../mental-model/roadmap.md); it is
 expected ownership, not a whitelist. Keep one canonical definition per project-specific term and
 update the reference index and links. Change Layer 1/2 only for a whole-system or major-abstraction
 change. Record accepted sources, changed owners, dependencies checked, examples and link validation.
+Follow the open-choice and editorial conventions in [the rewrite index](../../mental-model/rewrite-index.md):
+an implementation that settles an `OPEN(implementation)` choice records it in the implemented
+baseline and at the marker, and a gate that settles an `OPEN(<gate>)` choice states the rule and
+deletes the marker.
 
-[Prompt C](009-universal-prompts.md) includes this check in delegated final cleanup. Documentation
+[Prompt C](009-universal-prompts.md) verifies this maintenance in delegated final cleanup. Documentation
 content remains payload: updates absent from the reviewed candidate require a scoped documentation
 correction with new C/H and independent review before merge-ready, rather than being smuggled into
 H..A or self-accepted as administrative cleanup. Keep that documentation dependency separate from

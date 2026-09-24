@@ -1,0 +1,2 @@
+tests/fixtures/k0/protocol-worksheet.md identical_to_9fd2faa=yes c8c03dfabe9389f472fdfa83f90a699e2605e8cfa24670be3381d12889d2e3ee
+tests/fixtures/k0/public-fixture-specification.md identical_to_9fd2faa=yes c2c724429480fa4b73a6b16a473f7129e4c7261f1ff28815c132b1c362892517

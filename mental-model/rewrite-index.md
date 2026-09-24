@@ -1,7 +1,11 @@
-# Rewrite index (internal working artifact)
+# Rewrite index: open choices, inference hazards and editorial conventions
 
-Working notes for the `mental-model/` rewrite project. This file owns the editorial
-queue and the open-marker tracking convention below. It does not own architecture
+This file began as working notes for the `mental-model/` rewrite. Since that rewrite
+finished, it is the maintained owner of what implementation packets use while editing
+Layers 1–3: the editorial queue and house conventions (below), the open-choice
+inventory and `OPEN(...)` marker convention (§4), and the dangerous-inference
+reminders (§5). The [role launchers](../docs/development/009-universal-prompts.md)
+point here (owner decision, PLAN-01, 2026-09-23). It does not own architecture
 rules, implementation status, or roadmap acceptance. Linked owners take precedence
 over any reminder here.
 
@@ -11,7 +15,8 @@ learning path, use [concepts/README.md](concepts/README.md) and
 lives in [the architecture skill](../.agents/skills/arrokothi-architecture/SKILL.md);
 writing and rewrite checks live in
 [the documentation skill](../.agents/skills/technical-documentation/SKILL.md).
-Neither skill needs this entire working file loaded for every task.
+Neither skill needs this entire file loaded for every task; read the sections for
+the topic at hand.
 
 Precedence: Layer 3 (`concepts/`, `mechanisms/`) owns rules; Layer 1/2 summarize them.
 [The implemented baseline](../docs/development/002-implemented-kernel-baseline.md)
@@ -56,9 +61,32 @@ The page queue records writing progress, not independent architecture acceptance
 | [values](concepts/values.md) | Rewritten; the owner incorporated the audited draft in `6ef8bcd` |
 
 After the concepts are rewritten, the intended next phase is implementation, such
-as K1.2, under the existing packet eligibility and review process. Reassess whether
-mechanisms need explanatory rewriting after that implementation work. This plan
+as K1.2, under the existing packet eligibility and review process. This plan
 neither starts a packet nor makes a mechanisms-wide rewrite a prerequisite for it.
+
+### Mechanism rewrite schedule
+
+Owner plan, 2026-09-23. Each mechanism page is rewritten once, soon after the packet that most
+defines its rules is accepted, into a shape built for lookup: scope, preconditions, guarantees and
+refusals, with examples where they settle a question. It is not rewritten into the concept pages'
+narrative voice, but it uses their vocabulary and the conventions below. Before a packet first
+implements a page, only a precision pass (undefined terms, ambiguities the contract depends on) is
+done. The development ledger, not this table, says whether a packet has been accepted.
+
+| When | Mechanism pages | Research proposal folded in |
+|---|---|---|
+| Before K1.2 starts | `creation.md` (K1.1 defined it; nothing else touches it before K4) | — |
+| After K1.2 | `execution-cycle.md` | — |
+| After K1.3 | `waits.md`, `lifecycle.md` | — |
+| After K1.4 | `evidence.md` | — |
+| Before K2.1, precision only | `authority.md`, `actions.md`, the human-input section of `communication.md` | — |
+| After K2.4 | `authority.md`, `actions.md`, `external-protocols.md` | — |
+| After R1.2 | `integration.md` | P4 retry owners, P7 fidelity changes |
+| After K3.4 | `recovery.md`, `resources.md` | P8 compatibility counterexample |
+| After K4.5 | `communication.md`, `output.md` | P6 stream gap |
+| When R2 is scheduled | `composition.md`, `context.md`, `state.md` | P1–P3, P5 |
+
+Proposal IDs refer to [the Temporal study's proposals](../docs/research/temporal-04-other-candidates.md#proposed-changes-to-mental-model-for-later-review).
 
 The roles draft's two review questions, optional facilities versus required
 boundaries and the origin of Skill packages, are answered in the incorporated page:

@@ -9,6 +9,11 @@ separately released by the owner on 2026-09-16 and has no implementation candida
 The 2026-09-22 owner instruction releases DOCS-CLEANUP-01 as bounded repository maintenance,
 without advancing any Kernel gate.
 
+**Owner hold on starting K1.2, 2026-09-23.** K1.2 stays released, but its implementation starts
+only after (1) independent review of K1.1-correction-02, DOCS-CLEANUP-01 and PLAN-01, (2) the
+owner's rewrite of `mental-model/mechanisms/creation.md`, and (3) an owner final check. A launcher
+must not start K1.2 before the owner records that these are done.
+
 Historical review rounds, invalidations and superseded holds remain in the [archive](archive.md);
 this page keeps current dispositions and pinned evidence locators.
 
@@ -145,13 +150,25 @@ The [sealed contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2
 preserves its exact criteria and authority. Continuing rules live in the canonical
 reference and [structural evidence rules](015-structural-evidence-rules.md).
 
+### K1.1-correction-02 — Bounded refusal cost in value capture
+
+**Owner release:** explicit owner instruction, 2026-09-23. **Dependencies:** K1.1 as integrated.
+**Scope:** [contract](work/K1.1-correction-02/contract.md). Make reviewable the capture change that
+keeps a running canonical byte count and stops past the per-root limit, integrated in `66e9e84`
+before review, and record the three value obligations the values rewrite adopted
+([decision 01](work/K1.1-correction-02/decision-01.md)). The original K1.1 ACCEPT is unchanged.
+
+**Acceptance:** Refusing a shared-reference value stops after about the limit's worth of reading;
+the running count is exact, so no value the finished-bytes check accepts is refused; every prior
+K1.1 test passes unchanged; the decisions state their relation to accepted material.
+
 ### K1.2 — Outcome acceptance and receipts
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k12); also inspect affected dependencies.
 
-**Dependencies:** K1.1. **Scope:** Implement whole-envelope validation, receipt replay/conflict, epoch/revision checks, whole-batch acknowledgment, progress recording, continue/complete/fail. Own authorized takeover as [identity](../../mental-model/concepts/identity.md) and the [retry-versus-takeover table](../../mental-model/mechanisms/execution-cycle.md) state it: the same Activation ID advances its writer epoch only through an authenticated control, the older attempt is fenced with no staleness window, and an ordinary retry never advances the epoch. Own the recovery hold for unavailable pinned progress code: the Execution stays RUNNING under an inspectable protocol-failure/recovery reason with progress and revision intact, and the hold clears when compatible code is available; this is [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) exchange handling, not K3 process-fault recovery, and claims no persistence. Record Emission identities and the typed terminal result at acceptance; output observation, replay and cursors stay K4.4. Refuse Effects as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) fixes for K1: the whole envelope is rejected, no Effect ID, denied-action or admission record is created, and the Activation stays open. Refuse `complete` proposing any obligation whole, since every obligation kind is unsupported before K2.3; refuse not-yet-supported waits until K1.3.
+**Dependencies:** K1.1. **Scope:** Implement whole-envelope validation, receipt replay/conflict, epoch/revision checks, whole-batch acknowledgment, progress recording, continue/complete/fail. Own authorized takeover as [identity](../../mental-model/concepts/identity.md) and the [retry-versus-takeover table](../../mental-model/mechanisms/execution-cycle.md) state it: the same Activation ID advances its writer epoch only through an authenticated control, the older attempt is fenced with no staleness window, and an ordinary retry never advances the epoch. Own the recovery hold for unavailable pinned progress code: the Execution stays RUNNING under an inspectable protocol-failure/recovery reason with progress and revision intact, and the hold clears when compatible code is available; this is [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) exchange handling, not K3 process-fault recovery, and claims no persistence. Record Emission identities and the typed terminal result at acceptance; output observation, replay and cursors stay K4.4. Refuse Effects as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) fixes for K1: the whole envelope is rejected, no Effect ID, denied-action or admission record is created, and the Activation stays open. Refuse `complete` proposing any obligation whole, since every obligation kind is unsupported before K2.3; refuse not-yet-supported waits until K1.3. Own the late-report cases the [delivery reporting boundary](../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary) assigns to K1.2: after the exchange resolves or is taken over, a late delivery report updates only its original retained operational record. After an accepted `continue`, the next dispatch is a new exchange, as the [retry-versus-takeover table](../../mental-model/mechanisms/execution-cycle.md#retry-versus-takeover) states: new Activation ID, newly selected batch, and a starting epoch per the implementation's recorded choice. No submission path resolves "the current Activation" or the current epoch on the caller's behalf; an Outcome names the exchange and attempt it answers (owner amendment PLAN-01).
 
-**Acceptance:** Stale/conflicting/malformed proposals change no accepted state; exact duplicate returns original receipt; one progress writer and typed terminal/output semantics. A stale-epoch proposal after takeover is refused while the new epoch commits; a retry-only sequence shows no epoch change. A missing-code hold is distinguishable by inspection from a failed or waiting Execution and reverts to ordinary progress without a new revision. An Effect-bearing envelope leaves no K2-style record that E2 attribution could mistake for a denial.
+**Acceptance:** Stale/conflicting/malformed proposals change no accepted state; exact duplicate returns original receipt; one progress writer and typed terminal/output semantics. A stale-epoch proposal after takeover is refused while the new epoch commits; a retry-only sequence shows no epoch change. A missing-code hold is distinguishable by inspection from a failed or waiting Execution and reverts to ordinary progress without a new revision. An Effect-bearing envelope leaves no K2-style record that E2 attribution could mistake for a denial. A late Outcome for an already resolved Activation returns its original receipt when it is an exact duplicate and is otherwise refused with no state change, including after the next exchange has started; it never commits into the new exchange. A late delivery report after resolution or takeover changes no receipt, epoch, reservation, acknowledgment or lifecycle.
 
 ### K1.3 — Wait and cancellation races
 
@@ -159,7 +176,7 @@ reference and [structural evidence rules](015-structural-evidence-rules.md).
 
 **Dependencies:** K1.2. **Scope:** Implement finite any-of, input subscriptions, eligible unmatched accounting, wait generation/deadlines, out-of-band cancellation and terminal disposition. Of the three clocks in [operations](../../mental-model/concepts/operations.md), this packet implements wait deadlines and routes Execution-deadline expiry through the same cancellation path; scheduler leases remain K3. Matching consumes input already admitted by K1.1 ingress; this packet adds no second ingress rule.
 
-**Acceptance:** Before/during/after wait arrivals, stale timers, unmatched backlog and cancel/complete schedules lose no accepted input or wake and never reopen a terminal execution. A stale timer from a superseded wait generation is discarded with an inspectable reason and no state change; Execution-deadline expiry and explicit cancellation produce the same terminal disposition shape.
+**Acceptance:** Before/during/after wait arrivals, stale timers, unmatched backlog and cancel/complete schedules lose no accepted input or wake and never reopen a terminal execution. A stale timer from a superseded wait generation is discarded with an inspectable reason and no state change; Execution-deadline expiry and explicit cancellation produce the same terminal disposition shape. The five [small distinguishing examples](../../mental-model/mechanisms/waits.md#small-distinguishing-examples) pass as separate cases, since one example cannot tell the plausible wrong selection rules apart. A late delivery report after cancellation changes no logical state.
 
 ### K1.4 — Legacy bridge and K1/E1 gate
 
@@ -168,6 +185,8 @@ reference and [structural evidence rules](015-structural-evidence-rules.md).
 **Dependencies:** K1.3. **Scope:** Integrate the new boundary with SDK host driving; bridge viable existing controllers as private Runtime machinery. Port useful conformance and document unsupported legacy features.
 
 **Acceptance:** Full K1/E1 matrix and K1.0 structural obligations pass, including actual accepted asynchronous exchange through the supported entry; legacy resumptions do not drive new Kernel types/stores. Existing supported behavior is preserved or explicitly migrated/refused.
+
+**Entry checks (owner amendment PLAN-01).** Before K1.3 closes, confirm with the benchmark owner that the E1 fixtures drive the new supported entry: K2.1 and R1.1 wait on this gate, and an unavailable fixture makes K1.4 BLOCKED_EXTERNAL rather than a reason to weaken E1. The K1.4 contract first assesses its own size; if the bridge/port and the gate cannot be reviewed coherently together, it proposes a split under the rule above, keeping `K1.4` as the bridge identity that sealed records and code comments already cite. Legacy names the bridge meets are routed through the [reference index's legacy rows](../../mental-model/reference.md#common-search-terms).
 
 ### K2.1 — Atomic Effect intents
 
@@ -181,7 +200,7 @@ reference and [structural evidence rules](015-structural-evidence-rules.md).
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k22); also inspect affected dependencies.
 
-**Dependencies:** K2.1. **Scope:** Select/license-review a mature validator and narrow schema subset; validate custom/stock/MCP paths. Bind final operation/input; define unknown operation and overlapping grants; order consent, withdrawal/revocation and dispatch epoch.
+**Dependencies:** K2.1. **Scope:** Select/license-review a mature validator and narrow schema subset; validate custom/stock/MCP paths. Bind final operation/input; define unknown operation and overlapping grants; order consent, withdrawal/revocation and dispatch epoch. Close the `OPEN(K2.2)` marker in [operation](../../mental-model/concepts/actions.md#operation) by stating the selected validator and enforced subset. Ordering the dispatch epoch meets the open question of whether an action dispatcher is its own concept (`OPEN(unassigned)` in [admission](../../mental-model/concepts/actions.md#admission-and-physical-action-attempt)); settle it with the owner or leave it explicitly open. For MCP paths, pin the MCP version and use items 8–9 of the [MCP mapping backlog](../research/mcp-arrokothi-semantic-mapping.md#9-research-and-experiment-backlog) as counterexamples: refuse rather than silently weaken an unsupported schema feature, and keep outcome certainty through protocol and tool errors.
 
 **Acceptance:** Zero executor calls for malformed/refused requests; stale ownership, payload/version/account change, duplicate approval, grant overlap and correction/admission races cannot bypass exact admission.
 
@@ -197,7 +216,7 @@ reference and [structural evidence rules](015-structural-evidence-rules.md).
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k24); also inspect affected dependencies.
 
-**Dependencies:** K2.3. **Scope:** Implement immutable human request/schema/eligible responder intent and authorized admission/disclosure with correlated denial; same-Outcome wait. Run all K2 and native-attribution controls.
+**Dependencies:** K2.3. **Scope:** Implement immutable human request/schema/eligible responder intent and authorized admission/disclosure with correlated denial; same-Outcome wait. Run all K2 and native-attribution controls. Give MCP's input-required/elicitation pattern an explicit disposition, mapped to human input requests or refused.
 
 **Acceptance:** Display settles nothing and is not consent; safe/unsafe/state-losing subjects get distinct attributed verdicts despite laboratory protection; complete K2/E2 gate passes.
 
@@ -205,7 +224,7 @@ reference and [structural evidence rules](015-structural-evidence-rules.md).
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r11); also inspect affected dependencies.
 
-**Dependencies:** K1.4. **Scope:** Probe Hermes unless the owner-selected application requires another Runtime; preserve native context/tools and declare identity, pause/output/cancel, resources and lost-submit behavior. Mediated paths additionally require K2.4.
+**Dependencies:** K1.4. **Scope:** Probe Hermes unless the owner-selected application requires another Runtime; preserve native context/tools and declare identity, pause/output/cancel, resources and lost-submit behavior. Mediated paths additionally require K2.4. In the support record, map which layer retries which operation (transport, substrate, Driver submission, native Runtime, provider SDK), whether identity survives recovery and which counters reset, and record each native feature as preserved, replaced, disabled or unsupported ([research P4/P7](../research/temporal-04-other-candidates.md#proposed-changes-to-mental-model-for-later-review)).
 
 **Acceptance:** Real native-only versus thin-Driver observations with fake model/services where feasible; every unsupported recovery/mediation capability refused or declared. Same-process-only is a valid bounded probe.
 
@@ -221,7 +240,7 @@ reference and [structural evidence rules](015-structural-evidence-rules.md).
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k31); also inspect affected dependencies.
 
-**Dependencies:** K2.4, R1.2. **Scope:** Build real worker/host kill control with surviving store/sink ledger. Pin the full 001 K3 crash matrix and measurement protocol. Select one mature comparator after API/operating/license review.
+**Dependencies:** K2.4, R1.2. **Scope:** Build real worker/host kill control with surviving store/sink ledger. Pin the full 001 K3 crash matrix and measurement protocol. Select one mature comparator after API/operating/license review. Use the [substrate prototype questions and rejection-capable comparison](../research/temporal-03-integration-and-experiments.md#what-a-substrate-prototype-must-establish) as input to the criteria the owner approves, including how a long history is bounded without losing Execution identity, deduplication windows, action obligations, input accounting or cursors.
 
 **Acceptance:** Fault triggers demonstrably kill processes; oracle survives independently; every K3 window, repeat plan, correctness and cost measurement is assigned before prototypes. Owner approves comparison criteria.
 
@@ -317,7 +336,7 @@ reference and [structural evidence rules](015-structural-evidence-rules.md).
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k51); also inspect affected dependencies.
 
-**Dependencies:** K4.5. **Scope:** Implement measured mailbox/history/output/deduplication and host admission limits; expiration, replay/live, slow/disconnected readers, revoked access and capacity refusal.
+**Dependencies:** K4.5. **Scope:** Implement measured mailbox/history/output/deduplication and host admission limits; expiration, replay/live, slow/disconnected readers, revoked access and capacity refusal, including an output adapter over a native stream that silently skips expired data, which must still surface the explicit gap.
 
 **Acceptance:** Reject before acceptance on exhaustion; explicit expired/view-mismatched cursor gaps, retained terminal drain and separately pinned routing obligations; no subscriber blocking/unbounded retention.
 
@@ -402,6 +421,16 @@ checks from ordinary conformance; ignore concurrent owner rewrite drafts. No run
 dependency removal, semantic change or milestone closure. Future dependency/legacy-code retirement
 remains assigned to its owning migration/release packet.
 
+### PLAN-01 — Pre-K1.2 planning and process amendments
+
+**Owner release:** explicit owner instruction, 2026-09-23. **Scope:** [contract](work/PLAN-01/contract.md).
+Record the owner's product sequence in 001; remove status prose from 001; align 001's K2 wording
+with the Effect vocabulary; amend K1.2–K1.4 and later packet seeds with the obligations found in
+review and research; place Layer-3 maintenance in the candidate, with delegated cleanup verifying
+it; update the role launchers accordingly; add legacy-name routing to the reference index; and
+confirm `mental-model/rewrite-index.md` as the maintained owner of open choices and editorial
+conventions. No Kernel semantics, gate, acceptance or release changes.
+
 ## Authoritative status
 
 A dash means no evidence/acceptance exists. On change, replace the evidence cell with the relative
@@ -413,7 +442,7 @@ there is no second editable “done” checkbox in 001.
 
 | Packet | Status | Report / review / candidate |
 |---|---|---|
-| DOCS-CLEANUP-01 | IN_PROGRESS | Owner-released 2026-09-22; local cleanup and validation complete. [Contract](work/DOCS-CLEANUP-01/contract.md), [report](work/DOCS-CLEANUP-01/implementation-01.md). C/H and independent acceptance pending; cloud upload remains owner action. |
+| DOCS-CLEANUP-01 | ACCEPTED | H `0c82b2ffdf65b733c4e67b089e45b2529499b74f`; [independent review](work/DOCS-CLEANUP-01/review-01.md) (Codex, GPT-6, 2026-09-23), covering payload `99e75608434499e2cf5e9d3a6ae8b43bbe1103e7` plus `12c664bd3cc0b59c2b5669890aae53bb651c8c9e` with the owner-draft exclusions. [Contract](work/DOCS-CLEANUP-01/contract.md), [round 1](work/DOCS-CLEANUP-01/implementation-01.md), [round 2](work/DOCS-CLEANUP-01/implementation-02.md). Integration of the correction commit pending owner merge; cloud upload of the archive remains owner action. [Cleanup complete](work/DOCS-CLEANUP-01/cleanup-01.md); integration pending owner manual merge; `next_release: none`. |
 | K0.1-process-review | ACCEPTED | H `3736e580f435e0b9eb91ff49ebb75f6d7750dcaa`; [review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.1-process-review/review-04.md). Integrated `2833c222df7d587eb6b79275430b2653cd10019b`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.1-process-review/integration-01.md). Owner-closed. |
 | K0.1 | ACCEPTED | H `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.1/review-12.md). Integrated `42731300266eea00a9a24d867d5e82d9887c280d`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.1/integration-01.md). Owner-closed. |
 | K0.2 | ACCEPTED | H `90a6f37eaeb61009025449a1abc7e6d31dc1dbb2`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.2/review-17.md). Integrated `0535160e677231da41b06d9f822e62e2f0364dd1`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K0.2/integration-01.md). Owner-closed; K0/E0 closed. |
@@ -423,7 +452,9 @@ there is no second editable “done” checkbox in 001.
 | K1.1 | ACCEPTED | H `52b1600f3b42e3a360fdc3395178f1d147edf304`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/review-08.md). Integrated `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/integration-01.md). Includes accepted reference H9 below; cleanup complete, owner-closed. No E1/K1 closure. |
 | K1.1-correction-01 | ACCEPTED | H `52b1600f3b42e3a360fdc3395178f1d147edf304`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/review-08.md). Integrated `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/integration-01.md). All packet findings closed; reference cleanup closed KC1-CLEANUP-REF-01. Historical Node 22 test-cancellation limitation retained. |
 | K1.1-reference-01 | ACCEPTED | H `644dfffc7904176ee3a4f9943310cf926408a113`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-reference-01/review-08.md). Integrated `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-reference-01/integration-01.md). Cleanup complete; five non-blocking P3 observations and authentication limit remain in the review. |
-| K1.2 | PLANNED | Released by separate owner instruction on 2026-09-16; prerequisites (K1.1 as integrated, including correction-01 and reference-01) satisfied; ready for its implementation packet under 006 entry checks. No candidate, review, or acceptance exists yet. No E1 result or K1 closure. |
+| K1.1-correction-02 | ACCEPTED | H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e`; [independent review 03](work/K1.1-correction-02/review-03.md) (Codex, GPT-6, 2026-09-23), over C `1d5a3e11f3629a8fdc5070088255db8b0936f5ac`; KC2-R1-01 and KC2-R2-PROC-01 closed. Verified cumulative code base `227cd053244e0be52aca58ac26aac9519a8dd374` supersedes the erroneous full base string in earlier records. [Contract](work/K1.1-correction-02/contract.md), [round 3](work/K1.1-correction-02/implementation-03.md), [decision 01](work/K1.1-correction-02/decision-01.md); earlier reviews remain historical. Initial payload `66e9e84` integrated through PR #35 before review (disclosed departure); integration of accepted H remains pending owner merge. [Cleanup complete](work/K1.1-correction-02/cleanup-01.md); integration pending owner manual merge; `next_release: none`. |
+| PLAN-01 | ACCEPTED | H `eedd8aa50ab4ae71c9461136db543aa64f3e7916`; [independent review 02](work/PLAN-01/review-02.md) (Codex, GPT-6, 2026-09-23), covering the cumulative payload `7719424` plus `fabc641` and excluding the intervening K1.1-correction-02 commits; PLAN-R1-01 closed. Earlier [review 01](work/PLAN-01/review-01.md). [Contract](work/PLAN-01/contract.md), [round 1](work/PLAN-01/implementation-01.md), [round 2](work/PLAN-01/implementation-02.md). Integration pending owner merge. [Cleanup complete](work/PLAN-01/cleanup-01.md); integration pending owner manual merge; `next_release: none`. |
+| K1.2 | PLANNED | Released by separate owner instruction on 2026-09-16; prerequisites (K1.1 as integrated, including correction-01 and reference-01) satisfied; start remains held by the 2026-09-23 owner instruction above; the three independent reviews are complete, but the owner creation-page rewrite and recorded final check remain required under 006 entry checks. No candidate, review, or acceptance exists yet. No E1 result or K1 closure. |
 | K1.3 | PLANNED | — |
 | K1.4 | PLANNED | — |
 | K2.1 | PLANNED | — |

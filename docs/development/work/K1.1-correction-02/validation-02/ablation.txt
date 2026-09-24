@@ -1,0 +1,112 @@
+▶ refusing a value costs no more than the size limit allows
+  ✔ the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it (56.207708ms)
+  ✔ a shared member is accepted, and counted in full at every place it appears (81.87375ms)
+  ✔ thirty-two arrays standing for four billion are refused after reading about a megabyte (2095.02675ms)
+  ✔ one long string shared across shared arrays is refused before a second megabyte is read (111.249583ms)
+  ✔ a shared member refused for another reason is not re-read without bound either (102.071167ms)
+  ✖ one oversized string is refused after reading about the length limit, not its length (495.54625ms)
+  ✖ one oversized member name is refused after reading about the length limit, not its length (504.16025ms)
+  ✖ a shared oversized string is read about once, and a shared long one only until the byte limit (511.104125ms)
+  ✖ an oversized own-names listing is classified after at most one descriptor past the entry limit (10966.857791ms)
+  ✖ an array listing more names than any accepted array owns is refused without classifying each (1770.881042ms)
+✖ refusing a value costs no more than the size limit allows (16695.98375ms)
+ℹ tests 10
+ℹ suites 1
+ℹ pass 5
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16847.422041
+
+✖ failing tests:
+
+test at packages/kernel/tests/values.test.ts:763:3
+✖ one oversized string is refused after reading about the length limit, not its length (495.54625ms)
+  AssertionError [ERR_ASSERTION]: read 67108864 code units of a 33,554,432-unit string
+      at TestContext.<anonymous> (file://<ablation-worktree>/packages/kernel/tests/values.test.ts:778:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/values.test.ts:781:3
+✖ one oversized member name is refused after reading about the length limit, not its length (504.16025ms)
+  AssertionError [ERR_ASSERTION]: read 67108864 code units of a 33,554,432-unit name
+      at TestContext.<anonymous> (file://<ablation-worktree>/packages/kernel/tests/values.test.ts:796:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/values.test.ts:799:3
+✖ a shared oversized string is read about once, and a shared long one only until the byte limit (511.104125ms)
+  AssertionError [ERR_ASSERTION]: read 67124138 code units across 4,096 shared occurrences
+      at TestContext.<anonymous> (file://<ablation-worktree>/packages/kernel/tests/values.test.ts:818:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/values.test.ts:826:3
+✖ an oversized own-names listing is classified after at most one descriptor past the entry limit (10966.857791ms)
+  AssertionError [ERR_ASSERTION]: read 550000 descriptors of 550,000 names
+      at TestContext.<anonymous> (file://<ablation-worktree>/packages/kernel/tests/values.test.ts:856:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/values.test.ts:863:3
+✖ an array listing more names than any accepted array owns is refused without classifying each (1770.881042ms)
+  AssertionError [ERR_ASSERTION]: read 1000000 index descriptors of a 1,000,001-name listing
+      at TestContext.<anonymous> (file://<ablation-worktree>/packages/kernel/tests/values.test.ts:886:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
