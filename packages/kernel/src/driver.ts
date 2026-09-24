@@ -95,4 +95,25 @@ export interface DeliverySettlement {
 export interface ExecutionDriver {
   readonly driverId: string;
   deliver(activation: Activation, settlement: DeliverySettlement): undefined;
+  /**
+   * The Driver's phase-specific safe-replacement determination for takeover.
+   *
+   * Canonical owners: `identity.md#writer-epoch` ("authorizing takeover needs a separate guarantee
+   * from the Driver that native continuation is exclusive or otherwise safe to replace; absent that
+   * guarantee takeover is refused or held"), `recovery.md#decide-permission-before-replacing-work`
+   * (permission before replacement and fencing), `driver.md` ("native mutation needs its own
+   * exclusion or an explicit refusal to take over") and `kernel.md` ("the Driver must either exclude
+   * that attempt's native work from the session or refuse the takeover. The first does not imply the
+   * second").
+   *
+   * The Kernel rejects every later write from the superseded attempt; excluding its native work, or
+   * refusing the takeover when that cannot be done, stays with the Driver. Kernel fencing does not
+   * itself stop or exclude superseded native work. This is the in-process binding's owner for that
+   * prerequisite (K1.2-DEC-15): the Kernel calls this synchronously during `requestTakeover` with the
+   * current attempt's Activation, and advances the writer epoch only when it returns exactly `true`.
+   * Absent, non-`true`, or throwing means no guarantee was established, and the takeover is refused
+   * as `unsafe_replacement` rather than assumed. A `false` from a fake Driver in tests is the
+   * distinguishing case for that refusal.
+   */
+  isSafeToReplace?(activation: Activation): boolean;
 }

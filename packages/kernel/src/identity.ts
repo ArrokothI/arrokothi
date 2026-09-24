@@ -16,10 +16,21 @@
  * `namespace` is the trusted producer namespace: the first member of an Input ID and the scope of a
  * creation key. `scopes` are the authority scopes this caller may reach; an Execution is bound to
  * exactly one at creation, and a caller outside it cannot see the Execution at all.
+ *
+ * `controlScopes` is the separate control power `evidence.md` requires: inspection privilege does
+ * not grant re-execution or settlement privilege. A caller may inspect an Execution it can reach
+ * through `scopes`, but the three K1.2 exchange controls (takeover, recovery declaration,
+ * protocol-failure report) additionally require the Execution's scope in `controlScopes`. Absent
+ * (or not containing the scope) means inspect-only: the caller can read but cannot enter/clear
+ * holds or supersede an attempt. This is the in-process binding's Kernel-enforced distinction
+ * (K1.2-DEC-14); it introduces no universal token format or remote policy backend, which stay
+ * K2's (`authority.md`). Like `scopes`, this list is a trusted host input, not caller-observed
+ * state.
  */
 export interface AuthenticatedCaller {
   readonly namespace: string;
   readonly scopes: readonly string[];
+  readonly controlScopes?: readonly string[];
 }
 
 /**

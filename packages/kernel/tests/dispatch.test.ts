@@ -105,7 +105,7 @@ describe("K1.1-C4 what one dispatch intent pins", () => {
       baseProgressRevision: 0,
       batch: [created.initialEventId],
       receipt: result.receipt,
-      deliveries: [{ attempt: 1, status: "delivered", failure: null }],
+      deliveries: [{ attempt: 1, status: "delivered", failure: null, activationId: result.activationId, writerEpoch: 1 }],
     });
   });
 
@@ -273,7 +273,9 @@ describe("K1.1-C4 the intent is accepted before the send, and the send is not aw
     assert.deepEqual(view.activation?.batch, [created.initialEventId]);
     // A thrown Error object is not a primitive string, so the total diagnostic collapses to
     // the fixed text rather than reading `message` (KC1-ARCH-1).
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "Driver delivery failed", activationId: result.activationId, writerEpoch: 1 },
+    ]);
   });
 
   test("a Driver that reports failure records an operational failure, not a state change", () => {
@@ -283,7 +285,9 @@ describe("K1.1-C4 the intent is accepted before the send, and the send is not aw
 
     const view = accepted(kernel.inspect(author, created.executionId));
     assert.equal(view.state, "RUNNING", "a lost send does not resolve the exchange");
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "native submit lost" }]);
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "native submit lost", activationId: view.activation?.activationId as string, writerEpoch: 1 },
+    ]);
     assert.deepEqual(view.acknowledged, [], "and acknowledges nothing");
   });
 
@@ -404,8 +408,8 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     assert.deepEqual(view.activation?.batch, [created.initialEventId]);
     assert.deepEqual(view.queued, [created.initialEventId, ...late], "the late Event is queued and waiting for a later exchange");
     assert.deepEqual(view.activation?.deliveries, [
-      { attempt: 1, status: "delivered", failure: null },
-      { attempt: 2, status: "delivered", failure: null },
+      { attempt: 1, status: "delivered", failure: null, activationId: first.activationId, writerEpoch: 1 },
+      { attempt: 2, status: "delivered", failure: null, activationId: first.activationId, writerEpoch: 1 },
     ]);
   });
 
@@ -1063,7 +1067,9 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     const result = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     const view = accepted(kernel.inspect(author, created.executionId));
     assert.equal(view.state, "RUNNING", "a report changes no accepted state");
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "delivered", failure: null }]);
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "delivered", failure: null, activationId: result.activationId, writerEpoch: 1 },
+    ]);
     assert.equal(view.activation?.receipt.token, result.receipt.token, "the intent receipt is intact");
     assert.deepEqual(view.activation?.batch, [created.initialEventId], "the reserved batch is intact");
     assert.deepEqual(view.acknowledged, [], "a report acknowledges nothing");
@@ -1096,7 +1102,9 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     const result = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     const view = accepted(kernel.inspect(author, created.executionId));
     assert.equal(view.state, "RUNNING");
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "Driver delivery failed", activationId: result.activationId, writerEpoch: 1 },
+    ]);
     assert.equal(view.activation?.receipt.token, result.receipt.token);
     assert.deepEqual(view.activation?.batch, [created.initialEventId]);
     assert.deepEqual(view.acknowledged, []);
@@ -1115,7 +1123,9 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     const created = started(kernel);
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     const view = accepted(kernel.inspect(author, created.executionId));
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "delivered", failure: null }]);
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "delivered", failure: null, activationId: view.activation?.activationId as string, writerEpoch: 1 },
+    ]);
   });
 
   test("a throw followed by a late report retains the failure", () => {
@@ -1134,7 +1144,9 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     assert.ok(captured !== null, "the capability was supplied before the throw");
     (captured as DeliverySettlement).delivered();
     const view = accepted(kernel.inspect(author, created.executionId));
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "Driver delivery failed", activationId: view.activation?.activationId as string, writerEpoch: 1 },
+    ]);
   });
 
   test("duplicate and conflicting reports are inert after the first", () => {
@@ -1155,7 +1167,7 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     first.delivered();
     first.failed("late conflict");
     assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [
-      { attempt: 1, status: "delivered", failure: null },
+      { attempt: 1, status: "delivered", failure: null, activationId: `${created.executionId}/activation-1`, writerEpoch: 1 },
     ]);
 
     accepted(kernel.redeliver(author, created.executionId));
@@ -1164,8 +1176,8 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     second.delivered();
     second.failed("second failure");
     assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [
-      { attempt: 1, status: "delivered", failure: null },
-      { attempt: 2, status: "failed", failure: "first failure" },
+      { attempt: 1, status: "delivered", failure: null, activationId: `${created.executionId}/activation-1`, writerEpoch: 1 },
+      { attempt: 2, status: "failed", failure: "first failure", activationId: `${created.executionId}/activation-1`, writerEpoch: 1 },
     ]);
   });
 
@@ -1200,10 +1212,10 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     const detachedFail = sSecond.failed;
     detachedFail("second failed");
     assert.deepEqual(accepted(kernel.inspect(author, second.executionId)).activation?.deliveries, [
-      { attempt: 1, status: "failed", failure: "second failed" },
+      { attempt: 1, status: "failed", failure: "second failed", activationId: `${second.executionId}/activation-1`, writerEpoch: 1 },
     ]);
     assert.deepEqual(accepted(kernel.inspect(author, first.executionId)).activation?.deliveries, [
-      { attempt: 1, status: "delivered", failure: null },
+      { attempt: 1, status: "delivered", failure: null, activationId: `${first.executionId}/activation-1`, writerEpoch: 1 },
     ]);
   });
 
@@ -1244,7 +1256,9 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     assert.deepEqual(calls, { toString: 0, valueOf: 0, then: 0 }, "no coercion, getter, or thenable ran");
     const view = accepted(kernel.inspect(author, created.executionId));
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }]);
+    assert.deepEqual(view.activation?.deliveries, [
+      { attempt: 1, status: "failed", failure: "Driver delivery failed", activationId: view.activation?.activationId as string, writerEpoch: 1 },
+    ]);
     assert.deepEqual(
       accepted(kernel.inspect(author, created.executionId)).activation?.deliveries,
       view.activation?.deliveries,
@@ -1275,7 +1289,13 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     assert.equal(messageReads, 0, "the diagnostic never reads message");
     assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [
-      { attempt: 1, status: "failed", failure: "Driver delivery failed" },
+      {
+        attempt: 1,
+        status: "failed",
+        failure: "Driver delivery failed",
+        activationId: `${created.executionId}/activation-1`,
+        writerEpoch: 1,
+      },
     ]);
   });
 
@@ -1304,7 +1324,15 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
       accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
       assert.deepEqual(
         accepted(kernel.inspect(author, created.executionId)).activation?.deliveries,
-        [{ attempt: 1, status: "failed", failure: "Driver delivery failed" }],
+        [
+          {
+            attempt: 1,
+            status: "failed",
+            failure: "Driver delivery failed",
+            activationId: `${created.executionId}/activation-1`,
+            writerEpoch: 1,
+          },
+        ],
         entry.name,
       );
     }
@@ -1351,8 +1379,8 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     (settlements[0] as DeliverySettlement).failed("late failure");
     const view = accepted(kernel.inspect(author, created.executionId));
     assert.deepEqual(view.activation?.deliveries, [
-      { attempt: 1, status: "failed", failure: "late failure" },
-      { attempt: 2, status: "delivered", failure: null },
+      { attempt: 1, status: "failed", failure: "late failure", activationId: first.activationId, writerEpoch: 1 },
+      { attempt: 2, status: "delivered", failure: null, activationId: first.activationId, writerEpoch: 1 },
     ]);
     assert.equal(view.activation?.writerEpoch, 1, "reports never advance the epoch");
     assert.deepEqual(view.activation?.batch, [created.initialEventId], "nothing was re-selected");
@@ -1392,8 +1420,8 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     assert.equal(promiseSpeciesIsHostile(), false, "host state restored");
     const view = accepted(kernel.inspect(author, created.executionId));
     assert.deepEqual(view.activation?.deliveries, [
-      { attempt: 1, status: "delivered", failure: null },
-      { attempt: 2, status: "delivered", failure: null },
+      { attempt: 1, status: "delivered", failure: null, activationId: view.activation?.activationId as string, writerEpoch: 1 },
+      { attempt: 2, status: "delivered", failure: null, activationId: view.activation?.activationId as string, writerEpoch: 1 },
     ]);
   });
 
@@ -1418,7 +1446,13 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     assert.equal(thenCalls, 0, "no return-object property is read");
     const view = accepted(kernel.inspect(author, created.executionId));
-    assert.deepEqual(view.activation?.deliveries, [{ attempt: 1, status: "pending", failure: null }], "an absent explicit report remains pending");
+    assert.deepEqual(
+      view.activation?.deliveries,
+      [
+        { attempt: 1, status: "pending", failure: null, activationId: view.activation?.activationId as string, writerEpoch: 1 },
+      ],
+      "an absent explicit report remains pending",
+    );
     assert.equal(view.state, "RUNNING");
   });
 
@@ -1460,14 +1494,14 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
       state: string;
       activationId: string;
       batch: string[] | null;
-      deliveries: { attempt: number; status: string; failure: string | null }[] | null;
+      deliveries: { attempt: number; status: string; failure: string | null; activationId: string; writerEpoch: number }[] | null;
       acknowledged: unknown[];
     };
     assert.equal(observed.unhandled, 0, "the conforming Driver handled its own rejection on both attempts");
     assert.equal(observed.state, "RUNNING", "reports change no accepted state");
     assert.deepEqual(observed.deliveries, [
-      { attempt: 1, status: "failed", failure: "Driver delivery failed" },
-      { attempt: 2, status: "failed", failure: "Driver delivery failed" },
+      { attempt: 1, status: "failed", failure: "Driver delivery failed", activationId: observed.activationId, writerEpoch: 1 },
+      { attempt: 2, status: "failed", failure: "Driver delivery failed", activationId: observed.activationId, writerEpoch: 1 },
     ]);
     assert.equal((observed.batch ?? []).length, 1, "the reserved batch is intact");
     assert.deepEqual(observed.acknowledged, [], "a failure acknowledges nothing");

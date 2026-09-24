@@ -65,6 +65,7 @@ export type {
   ExecutionView,
   MailboxDisposition,
   MailboxEntryView,
+  RecoveryHistoryRecord,
   RecoveryHoldView,
   TerminalResultView,
 } from "./inspection.ts";

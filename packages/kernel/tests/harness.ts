@@ -272,7 +272,28 @@ export function inheritedIndexIsLive(index: number): boolean {
   return probe.length === 0 || !Object.prototype.hasOwnProperty.call(probe, `${index}`);
 }
 
-export const caller = (namespace: string, ...scopes: string[]): AuthenticatedCaller => ({
+/**
+ * A control-authorized caller: may inspect Executions in `scopes` and may also use the three
+ * K1.2 exchange controls there (K1.2-DEC-14).
+ *
+ * Existing suites use this for all operations, so they exercise the control-authorized arm. New
+ * distinguishing cases use `observer` for the inspect-only arm.
+ */
+export const caller = (namespace: string, ...scopes: string[]): AuthenticatedCaller => {
+  const resolved = scopes.length > 0 ? scopes : ["tenant-a"];
+  return {
+    namespace,
+    scopes: resolved,
+    controlScopes: [...resolved],
+  };
+};
+
+/**
+ * An inspect-only caller: may inspect Executions in `scopes` but holds no control power there
+ * (K1.2-DEC-14). Takeover, recovery declarations and protocol-failure reports from this caller are
+ * refused as `unauthorized_control` with no control-state mutation.
+ */
+export const observer = (namespace: string, ...scopes: string[]): AuthenticatedCaller => ({
   namespace,
   scopes: scopes.length > 0 ? scopes : ["tenant-a"],
 });
@@ -304,6 +325,11 @@ export function recordingDriver(driverId = "fake-recording"): RecordingDriver {
       settlement.delivered();
       return undefined;
     },
+    // K1.2-DEC-15: this fake declares the current phase safe to replace, so takeovers proceed.
+    // A Driver that cannot establish this refuses the takeover instead.
+    isSafeToReplace(): boolean {
+      return true;
+    },
   };
 }
 
@@ -333,17 +359,35 @@ export function delayedDriver(driverId = "fake-delayed"): DelayedDriver {
       recordOwn(settlements, settlement);
       return undefined;
     },
+    isSafeToReplace(): boolean {
+      return true;
+    },
     release(): void {
       while (settlements.length > 0) (settlements.pop() as DeliverySettlement).delivered();
     },
   };
 }
 
+/** A Driver that never establishes safe replacement (K1.2-DEC-15): takeovers are refused. */
+export const unsafeDriver = (driverId = "fake-unsafe"): ExecutionDriver => ({
+  driverId,
+  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
+    settlement.delivered();
+    return undefined;
+  },
+  isSafeToReplace(): boolean {
+    return false;
+  },
+});
+
 /** Throws synchronously from `deliver` (implicit failure report, no explicit report). */
 export const throwingDriver = (driverId = "fake-throwing"): ExecutionDriver => ({
   driverId,
   deliver(): undefined {
     throw new Error("native submit refused");
+  },
+  isSafeToReplace(): boolean {
+    return true;
   },
 });
 
@@ -353,6 +397,9 @@ export const failingDriver = (reason = "native submit lost", driverId = "fake-fa
   deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
     settlement.failed(reason);
     return undefined;
+  },
+  isSafeToReplace(): boolean {
+    return true;
   },
 });
 
@@ -373,6 +420,9 @@ export const asyncFailingDriver = (reason = "native submit lost", driverId = "fa
       },
     );
     return undefined;
+  },
+  isSafeToReplace(): boolean {
+    return true;
   },
 });
 

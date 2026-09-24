@@ -57,6 +57,18 @@ export interface DeliveryAttemptView {
   readonly attempt: number;
   readonly status: "pending" | "delivered" | "failed";
   readonly failure: string | null;
+  /**
+   * K1.2-DEC-16: exact attribution to the Activation attempt/dispatch intent it delivered.
+   *
+   * `identity.md#dispatch-and-delivery`: always say what was delivered and to whom. Ordinary
+   * redelivery keeps the same Activation ID and writer epoch; an authorized takeover keeps the
+   * Activation ID and advances the epoch. Each retained row therefore names the Activation ID and
+   * writer epoch it carried when it was sent, so a schedule with redeliveries before and after a
+   * takeover (attempts 1,2 at epoch 1, then 3,4 at epoch 2) remains reconstructible after the
+   * exchange's current epoch has moved on. A late report still settles only its own row.
+   */
+  readonly activationId: string;
+  readonly writerEpoch: number;
 }
 
 /** The unresolved exchange, if there is one. */
@@ -101,6 +113,15 @@ export interface ExchangeView {
  * declaration lacked a pinned Definition revision, Runtime contract revision or progress codec;
  * `protocol_failure` from a report that the current attempt's response could not be classified
  * (OA-6). At most one hold of each cause exists at a time.
+ *
+ * K1.2-DEC-17: each standing hold exposes its permitted next actions, computed from the same rules
+ * that refuse the corresponding controls, so an authorized reader can discover the legal transitions
+ * without probing with mutating operations. A code hold refuses redelivery and takeover and is
+ * cleared by an availability declaration covering every pin; a protocol-failure hold refuses
+ * redelivery but permits an authorized takeover; a valid Outcome from the current attempt ends
+ * either hold by resolving the exchange. When both holds stand, takeover is not permitted until the
+ * code hold clears. The vocabulary (`declare_code_availability`, `request_takeover`,
+ * `submit_outcome`) names the existing K1.2 operations, not a universal recovery API.
  */
 export interface RecoveryHoldView {
   readonly cause: "pinned_code_unavailable" | "protocol_failure";
@@ -108,6 +129,36 @@ export interface RecoveryHoldView {
   readonly activationId: string;
   /** The epoch that was current when the hold was recorded. */
   readonly writerEpoch: number;
+  /** The mutating operations an authorized reader may use next without being refused for the hold. */
+  readonly permittedNextActions: readonly string[];
+}
+
+/**
+ * One accepted recovery/control decision, retained as Execution History.
+ *
+ * K1.2-DEC-18: `state.md` names recovery decisions as History, and `evidence.md` requires
+ * authenticated recorded commands rather than ad-hoc stored-status edits. Each accepted decision
+ * that enters, changes, or ends a hold is retained here, on the owning Execution, after the
+ * standing hold changes or disappears — including after the exchange resolves and after the
+ * Execution ends. Idempotent duplicates (`changed: false`) append nothing; they replay/reference
+ * the existing record. This introduces no seventh receipt boundary: takeover and Outcome decisions
+ * keep their existing `dispatch_intent` and `outcome_acceptance` receipts, which this history
+ * references by causation (Activation ID and writer epoch) rather than duplicating.
+ */
+export interface RecoveryHistoryRecord {
+  readonly activationId: string;
+  /** The writer epoch current when the decision was made (for takeover clears, the superseded epoch). */
+  readonly writerEpoch: number;
+  readonly cause: "pinned_code_unavailable" | "protocol_failure";
+  readonly transition: "entered" | "updated" | "cleared_by_declaration" | "cleared_by_takeover" | "ended_by_outcome";
+  /** The hold reason at entry/update, or the clearing/ending explanation. */
+  readonly reason: string;
+  /** The authenticated control actor: the caller's namespace as the host established it. */
+  readonly actorNamespace: string;
+  /** The authority scope controlled: the Execution's scope, which the caller held control power over. */
+  readonly actorScope: string;
+  /** For `cleared_by_takeover`, the new writer epoch the takeover advanced to. */
+  readonly resultingEpoch?: number;
 }
 
 /**
@@ -160,6 +211,15 @@ export interface ExecutionView {
   readonly activation: ActivationView | null;
   /** Recovery holds on the unresolved exchange; empty when it can continue or when none is unresolved. */
   readonly recoveryHolds: readonly RecoveryHoldView[];
+  /**
+   * Accepted recovery/control decisions, oldest first (K1.2-DEC-18).
+   *
+   * Immutable, scoped to this Execution, and retained after the hold changes or disappears, after
+   * the exchange resolves, and after the Execution ends. Explains entering, updating, and clearing
+   * holds through declarations, takeovers, and accepted Outcomes, with the authenticated actor and
+   * exchange/epoch causation.
+   */
+  readonly recoveryHistory: readonly RecoveryHistoryRecord[];
   /** Exchanges that accepted Outcomes resolved, oldest first. */
   readonly exchanges: readonly ExchangeView[];
   /** Accepted Emissions, in the order their Outcomes were accepted and, within one, as proposed. */

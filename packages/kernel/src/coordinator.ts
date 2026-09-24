@@ -44,16 +44,19 @@
  * exact Outcome replay is answered from its record for as long as the coordinator lives
  * (K1.2-DEC-12).
  *
- * ## One Outcome acceptance, one synchronous decision
- *
- * `execution-cycle.md` leaves the transaction mechanism open provided the atomicity is real. Here it
- * is one synchronous call on a single-threaded, in-memory coordinator: every caller-owned field is
- * observed first, every record the decision needs is then built, and only then is anything mutated,
- * through load-time primitives that no caller observation can have replaced. No caller code runs
- * between the first check of accepted state and the last mutation, so a reentrant call made from a
- * getter during observation is ordered entirely before this decision's checks (K1.2-DEC-10). This is
- * atomicity within the process, not durability.
- */
+  * ## One Outcome acceptance, one synchronous decision
+  *
+  * `execution-cycle.md` leaves the transaction mechanism open provided the atomicity is real. Here it
+  * is one synchronous call on a single-threaded, in-memory coordinator: every caller-owned field is
+  * observed first, every record the decision needs is then built from Kernel data only, and only then
+  * is accepted state mutated, through load-time primitives that no caller observation can have
+  * replaced. The Outcome-acceptance receipt's position is read from the owning Execution's index
+  * while building and committed with the rest of the decision in the same synchronous run; no
+  * acceptance index advances before the decision's records are complete. No caller code runs
+  * between the first check of accepted state and the last mutation, so a reentrant call made from a
+  * getter during observation is ordered entirely before this decision's checks (K1.2-DEC-10). This is
+  * atomicity within the process, not durability.
+  */
 
 import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
 import {
@@ -100,6 +103,7 @@ import type {
   ExecutionView,
   MailboxDisposition,
   MailboxEntryView,
+  RecoveryHistoryRecord,
   RecoveryHoldView,
   TerminalResultView,
 } from "./inspection.ts";
@@ -335,6 +339,23 @@ interface DeliveryAttempt {
   readonly attempt: number;
   status: "pending" | "delivered" | "failed";
   failure: string | null;
+  /**
+   * K1.2-DEC-16: what this delivery carried and to whom, fixed when it was sent.
+   *
+   * Ordinary redelivery preserves both; a takeover preserves the Activation ID and advances the
+   * epoch. Each row therefore identifies its exact Activation attempt, so inspection can attribute
+   * every retained delivery across takeovers without assuming the exchange's current epoch.
+   */
+  readonly activationId: string;
+  readonly writerEpoch: number;
+}
+
+/** A stored hold: the reason and causation. Permitted actions are computed at inspection, not stored. */
+interface StoredHold {
+  readonly cause: "pinned_code_unavailable" | "protocol_failure";
+  readonly reason: string;
+  readonly activationId: string;
+  readonly writerEpoch: number;
 }
 
 /** The unresolved exchange: its current attempt, its pinned batch, its delivery log and its holds. */
@@ -346,8 +367,8 @@ interface ActivationRecord {
   readonly batch: readonly string[];
   /** Shared with the resolved-exchange record, so a late report still finds its original attempt. */
   readonly deliveries: DeliveryAttempt[];
-  codeHold: RecoveryHoldView | null;
-  protocolFailureHold: RecoveryHoldView | null;
+  codeHold: StoredHold | null;
+  protocolFailureHold: StoredHold | null;
 }
 
 /** An exchange an accepted Outcome resolved. */
@@ -419,6 +440,15 @@ interface ExecutionRecord {
    */
   nextRefusalPosition: number;
   activationsMinted: number;
+  /**
+   * Accepted recovery/control decisions, oldest first (K1.2-DEC-18).
+   *
+   * `state.md` names recovery decisions as Execution History; `evidence.md` requires authenticated
+   * recorded commands. Each accepted decision that enters, updates, or ends a hold appends one frozen
+   * record here, on the owning Execution, so it survives the hold changing or disappearing, the
+   * exchange resolving, and the Execution ending. Idempotent duplicates append nothing.
+   */
+  readonly recoveryHistory: RecoveryHistoryRecord[];
 }
 
 const DEFAULT_MAILBOX_CAPACITY = 1_024;
@@ -454,6 +484,99 @@ const PROTOCOL_FAILURE_FALLBACK = "no readable diagnostic was supplied";
 const DELIVERY_FAILURE_FALLBACK = "Driver delivery failed";
 
 const describeDeliveryFailure = (reason: unknown): string => boundDiagnostic(reason, DELIVERY_FAILURE_FALLBACK);
+
+/**
+ * K1.2-DEC-14: whether the caller holds control power over `scope`.
+ *
+ * `evidence.md`: inspection privilege does not grant re-execution or settlement privilege. Control
+ * is a separate power from visibility (`authority.md`: send, inspect, cancel, delegate, read, write
+ * and impersonate are separate powers). The host supplies both lists as trusted authentication
+ * context; the Kernel enforces the distinction.
+ *
+ * Full scan with no early exit, mirroring `mayReachScope`: work depends only on the list length,
+ * never on where a match sits, so an inspect-only caller and a control-authorized caller cost the
+ * same number of comparisons for the same list length.
+ */
+const mayControlScope = (caller: AuthenticatedCaller, scope: string): boolean => {
+  const controls = caller.controlScopes;
+  if (controls === undefined) return false;
+  let allowed = false;
+  for (let index = 0; index < controls.length; index += 1) {
+    if (controls[index] === scope) allowed = true;
+  }
+  return allowed;
+};
+
+/**
+ * K1.2-DEC-17: the single normative owner of held-exchange permitted actions.
+ *
+ * Both the enforcement below (redeliver refused while any hold stands; takeover refused while a
+ * code hold stands) and the inspection views (`holdsOf`) derive from this function, so they cannot
+ * drift apart. The vocabulary names existing K1.2 operations only:
+ * - `declare_code_availability`: `recoverExecution` with every pin covered;
+ * - `request_takeover`: `requestTakeover` (only when no code hold stands);
+ * - `submit_outcome`: a valid Outcome from the current attempt, which resolves the exchange and
+ *   ends its holds (a hold never fences acceptance; only the epoch and terminal state do).
+ */
+const DECLARE_CODE_AVAILABILITY = "declare_code_availability";
+const REQUEST_TAKEOVER = "request_takeover";
+const SUBMIT_OUTCOME = "submit_outcome";
+
+const permittedForHold = (cause: StoredHold["cause"], hasCodeHold: boolean): readonly string[] => {
+  if (cause === "pinned_code_unavailable") {
+    return PrimordialObjectFreeze([DECLARE_CODE_AVAILABILITY, SUBMIT_OUTCOME]);
+  }
+  // Protocol-failure hold: takeover permitted only when no code hold blocks it.
+  if (hasCodeHold) {
+    return PrimordialObjectFreeze([DECLARE_CODE_AVAILABILITY, SUBMIT_OUTCOME]);
+  }
+  return PrimordialObjectFreeze([REQUEST_TAKEOVER, SUBMIT_OUTCOME]);
+};
+
+/**
+ * K1.2-DEC-18: appends one accepted recovery/control decision to the owning Execution's history.
+ *
+ * The record is frozen here, so later caller mutation cannot alter retained evidence, and the list
+ * around it is the Execution's own (per-Execution order, no global counter). Idempotent duplicates
+ * never reach this helper: callers append only when `changed` is true or when a takeover/Outcome
+ * actually ends a hold.
+ */
+const appendRecoveryHistory = (
+  record: ExecutionRecord,
+  entry: {
+    readonly activationId: string;
+    readonly writerEpoch: number;
+    readonly cause: RecoveryHistoryRecord["cause"];
+    readonly transition: RecoveryHistoryRecord["transition"];
+    readonly reason: string;
+    readonly actorNamespace: string;
+    readonly actorScope: string;
+    readonly resultingEpoch?: number;
+  },
+): void => {
+  const stored: RecoveryHistoryRecord =
+    entry.resultingEpoch === undefined
+      ? PrimordialObjectFreeze({
+          activationId: entry.activationId,
+          writerEpoch: entry.writerEpoch,
+          cause: entry.cause,
+          transition: entry.transition,
+          reason: entry.reason,
+          actorNamespace: entry.actorNamespace,
+          actorScope: entry.actorScope,
+        })
+      : PrimordialObjectFreeze({
+          activationId: entry.activationId,
+          writerEpoch: entry.writerEpoch,
+          cause: entry.cause,
+          transition: entry.transition,
+          reason: entry.reason,
+          actorNamespace: entry.actorNamespace,
+          actorScope: entry.actorScope,
+          resultingEpoch: entry.resultingEpoch,
+        });
+  appendOwn(record.recoveryHistory, stored);
+};
 
 // -- Accepting content -------------------------------------------------------
 
@@ -798,6 +921,7 @@ export class ExecutionCoordinator {
       nextAcceptancePosition: 2,
       nextRefusalPosition: 1,
       activationsMinted: 0,
+      recoveryHistory: [],
     };
 
     mapSet(this.#executions, executionId, record);
@@ -1272,7 +1396,7 @@ export class ExecutionCoordinator {
     // above, and any other obligation-bearing field is refused as unknown. Its second half - every
     // owned action and child has a known disposition - has nothing to find here: no obligation kind
     // exists before K2, so no record can be outstanding. K2.3 adds the check over real records.
-    return ok(this.#accept(record, intent, capture.outcome));
+    return ok(this.#accept(record, intent, capture.outcome, caller));
   }
 
   /**
@@ -1284,14 +1408,22 @@ export class ExecutionCoordinator {
    * the moment this returns: there is no window in which its Outcome is still acceptable. The same
    * exchange is then delivered at the new epoch through a fresh capability.
    *
-   * What this does not do is the Driver's half of takeover. The Kernel rejects every later write from
-   * the superseded attempt; excluding its native work, or refusing the takeover when that cannot be
-   * done, stays with the Driver's recovery contract (`recovery.md`). The caller authorizing this has
-   * made that determination; the Kernel does not infer it from a lease or a silence.
+   * K1.2-DEC-14: the caller must hold control power over the Execution's scope, distinct from
+   * inspection visibility. An inspect-only principal is refused as `unauthorized_control` with no
+   * control-state mutation.
+   *
+   * K1.2-DEC-15: the Driver owns the safe-replacement prerequisite. The Kernel rejects every later
+   * write from the superseded attempt, but Kernel fencing does not itself stop or exclude superseded
+   * native work; the Driver must either exclude that attempt's native work or refuse the takeover.
+   * The Kernel advances the epoch only when the Driver's `isSafeToReplace` returns exactly `true`
+   * for the current attempt; absent, denied, or throwing means the takeover is refused as
+   * `unsafe_replacement` rather than assumed. The Kernel never infers safety from a lease or silence.
    */
   requestTakeover(caller: AuthenticatedCaller, executionId: string, request: TakeoverRequest): Result<TakeoverAccepted, RefusalRecord> {
     const record = this.#visible(caller, executionId);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
+    const control = this.#requireControl(caller, record);
+    if (control !== null) return err(control);
 
     const issues: LocatedIssue[] = [];
     const named = captureAttempt(request, issues);
@@ -1320,17 +1452,46 @@ export class ExecutionCoordinator {
         ),
       );
     }
+    let safe = false;
+    try {
+      safe = this.#driver.isSafeToReplace?.(exchange.activation) === true;
+    } catch {
+      safe = false;
+    }
+    if (!safe) {
+      return err(
+        this.#refusal(
+          "unsafe_replacement",
+          `Activation ${named.activationId} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded native work`,
+          record,
+        ),
+      );
+    }
 
     const writerEpoch = currentEpoch + 1;
     const receipt = this.#mint("dispatch_intent", record);
     // Same exchange, same pinned input, next attempt: a copy of the frozen Kernel-built Activation
     // with only the epoch changed. Object spread copies own data and consults no prototype.
     const activation: Activation = PrimordialObjectFreeze({ ...exchange.activation, writerEpoch });
+    const hadProtocolHold = exchange.protocolFailureHold !== null;
+    const clearedReason = hadProtocolHold ? exchange.protocolFailureHold?.reason ?? "" : "";
     exchange.activation = activation;
     exchange.receipt = receipt;
     // The failed response came from the superseded attempt; replacing the attempt is the recovery
     // decision OA-6 asks for (K1.2-DEC-7). A code hold is never cleared this way: it refused above.
     exchange.protocolFailureHold = null;
+    if (hadProtocolHold) {
+      appendRecoveryHistory(record, {
+        activationId: named.activationId,
+        writerEpoch: currentEpoch,
+        cause: "protocol_failure",
+        transition: "cleared_by_takeover",
+        reason: `takeover to writer epoch ${writerEpoch} cleared the protocol-failure hold: ${clearedReason}`,
+        actorNamespace: caller.namespace,
+        actorScope: record.scope,
+        resultingEpoch: writerEpoch,
+      });
+    }
     appendOwn(record.receipts, receipt);
 
     this.#deliver(exchange);
@@ -1355,10 +1516,19 @@ export class ExecutionCoordinator {
    * (PC-5). When every pin is available the code hold clears, and the exchange continues as it was -
    * redelivered or answered - without any new revision. This is exchange handling on an in-memory
    * coordinator, not K3 process-fault recovery, and it claims no persistence.
+   *
+   * K1.2-DEC-14: declaring availability is a control operation, distinct from inspection. An
+   * inspect-only principal is refused as `unauthorized_control` and changes no hold.
+   *
+   * K1.2-DEC-18: each accepted decision that enters, updates, or clears the code hold appends one
+   * immutable record to the Execution's recovery history, which survives the hold clearing, the
+   * exchange resolving, and the Execution ending. Idempotent duplicates append nothing.
    */
   recoverExecution(caller: AuthenticatedCaller, executionId: string, request: RecoveryRequest): Result<RecoveryDecision, RefusalRecord> {
     const record = this.#visible(caller, executionId);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
+    const control = this.#requireControl(caller, record);
+    if (control !== null) return err(control);
 
     const issues: LocatedIssue[] = [];
     const captured = captureRecovery(request, issues);
@@ -1381,10 +1551,21 @@ export class ExecutionCoordinator {
     let changed = false;
     if (missing === "") {
       if (exchange.codeHold !== null) {
+        const cleared = exchange.codeHold;
         exchange.codeHold = null;
         changed = true;
+        appendRecoveryHistory(record, {
+          activationId: pinned.activationId,
+          writerEpoch: pinned.writerEpoch,
+          cause: "pinned_code_unavailable",
+          transition: "cleared_by_declaration",
+          reason: `compatible code declared available; cleared hold that had reported: ${cleared.reason}`,
+          actorNamespace: caller.namespace,
+          actorScope: record.scope,
+        });
       }
     } else if (exchange.codeHold === null || exchange.codeHold.reason !== missing) {
+      const transition = exchange.codeHold === null ? ("entered" as const) : ("updated" as const);
       exchange.codeHold = PrimordialObjectFreeze({
         cause: "pinned_code_unavailable" as const,
         reason: missing,
@@ -1392,6 +1573,15 @@ export class ExecutionCoordinator {
         writerEpoch: pinned.writerEpoch,
       });
       changed = true;
+      appendRecoveryHistory(record, {
+        activationId: pinned.activationId,
+        writerEpoch: pinned.writerEpoch,
+        cause: "pinned_code_unavailable",
+        transition,
+        reason: missing,
+        actorNamespace: caller.namespace,
+        actorScope: record.scope,
+      });
     }
     return ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed });
   }
@@ -1405,10 +1595,18 @@ export class ExecutionCoordinator {
    * attempt and carries a bounded diagnostic; state, progress, epoch, batch and receipts are
    * untouched, and redelivery is refused while it stands. An authorized takeover, or a valid Outcome
    * from the current attempt, is what ends it.
+   *
+   * K1.2-DEC-14: reporting is a control operation, distinct from inspection. An inspect-only
+   * principal is refused as `unauthorized_control` and holds nothing.
+   *
+   * K1.2-DEC-18: the accepted report appends one immutable record to the Execution's recovery
+   * history. A repeated report while the hold stands changes nothing and appends nothing.
    */
   reportProtocolFailure(caller: AuthenticatedCaller, executionId: string, report: ProtocolFailureReport): Result<RecoveryDecision, RefusalRecord> {
     const record = this.#visible(caller, executionId);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
+    const control = this.#requireControl(caller, record);
+    if (control !== null) return err(control);
 
     const issues: LocatedIssue[] = [];
     const named = captureAttempt(report, issues);
@@ -1433,11 +1631,21 @@ export class ExecutionCoordinator {
     if (exchange.protocolFailureHold !== null) {
       return ok({ activationId: named.activationId, writerEpoch: currentEpoch, recoveryHolds: holdsOf(exchange), changed: false });
     }
+    const reason = `the response of the attempt at writer epoch ${currentEpoch} could not be classified as an Outcome: ${diagnostic}`;
     exchange.protocolFailureHold = PrimordialObjectFreeze({
       cause: "protocol_failure" as const,
-      reason: `the response of the attempt at writer epoch ${currentEpoch} could not be classified as an Outcome: ${diagnostic}`,
+      reason,
       activationId: named.activationId,
       writerEpoch: currentEpoch,
+    });
+    appendRecoveryHistory(record, {
+      activationId: named.activationId,
+      writerEpoch: currentEpoch,
+      cause: "protocol_failure",
+      transition: "entered",
+      reason,
+      actorNamespace: caller.namespace,
+      actorScope: record.scope,
     });
     return ok({ activationId: named.activationId, writerEpoch: currentEpoch, recoveryHolds: holdsOf(exchange), changed: true });
   }
@@ -1482,14 +1690,23 @@ export class ExecutionCoordinator {
   /**
    * Commits one validated Outcome as one decision (OA-4), and retains it for replay.
    *
-   * Every record is built first, from Kernel data only; the mutations follow in one run, through
-   * load-time primitives. Nothing here reads the caller's envelope - `outcome` is the capture - and
-   * nothing here reads the Runtime's progress: acknowledgment is the whole reserved batch because
-   * acceptance says so (`B-3`), not because progress was parsed for what it handled (R5-j6-2).
+   * K1.2-DEC-10: every caller-owned field was observed before this runs; here every record the
+   * decision needs is built first, from Kernel data only, and the mutations follow in one
+   * synchronous run, through load-time primitives. The Outcome-acceptance receipt's position is read
+   * from the owning Execution's index while building and committed with the rest of the decision;
+   * no acceptance index advances before the records are complete. Nothing here reads the caller's
+   * envelope - `outcome` is the capture - and nothing here reads the Runtime's progress:
+   * acknowledgment is the whole reserved batch because acceptance says so (`B-3`), not because
+   * progress was parsed for what it handled (R5-j6-2).
+   *
+   * K1.2-DEC-18: when the resolved exchange carried holds, each hold appends one `ended_by_outcome`
+   * record to the Execution's recovery history before the exchange is cleared, so the history still
+   * explains the hold after it disappears.
    */
-  #accept(record: ExecutionRecord, intent: ActivationRecord, outcome: CapturedOutcome): OutcomeAccepted {
+  #accept(record: ExecutionRecord, intent: ActivationRecord, outcome: CapturedOutcome, caller: AuthenticatedCaller): OutcomeAccepted {
     const activationId = intent.activation.activationId;
-    const receipt = this.#mint("outcome_acceptance", record);
+    const acceptancePosition = record.nextAcceptancePosition;
+    const receipt = mintReceipt("outcome_acceptance", acceptancePosition, record.executionId);
     const progressRevision = record.progressRevision + 1;
     const step = outcome.next.step;
     const nextState: ExecutionState = step === "continue" ? "READY" : step === "complete" ? "COMPLETED" : "FAILED";
@@ -1570,6 +1787,9 @@ export class ExecutionCoordinator {
     });
 
     // -- The decision, applied. Nothing below can refuse, and nothing below reads caller state.
+    // The acceptance index advances here, with the rest of the commit, not before building: a
+    // failure while building would otherwise leave a consumed position with no decision behind it.
+    record.nextAcceptancePosition = acceptancePosition + 1;
     for (let index = 0; index < toAcknowledge.length; index += 1) (readAt(toAcknowledge, index) as MailboxEntry).disposition = acknowledgment;
     for (let index = 0; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;
     record.acceptedProgress = outcome.progress.value;
@@ -1579,6 +1799,28 @@ export class ExecutionCoordinator {
     appendOwn(record.exchanges, resolved);
     mapSet(record.acceptedOutcomes, activationId, PrimordialObjectFreeze({ identity: outcome.identity, decision }));
     appendOwn(record.receipts, receipt);
+    if (intent.codeHold !== null) {
+      appendRecoveryHistory(record, {
+        activationId,
+        writerEpoch: intent.activation.writerEpoch,
+        cause: "pinned_code_unavailable",
+        transition: "ended_by_outcome",
+        reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the code hold that had reported: ${intent.codeHold.reason}`,
+        actorNamespace: caller.namespace,
+        actorScope: record.scope,
+      });
+    }
+    if (intent.protocolFailureHold !== null) {
+      appendRecoveryHistory(record, {
+        activationId,
+        writerEpoch: intent.activation.writerEpoch,
+        cause: "protocol_failure",
+        transition: "ended_by_outcome",
+        reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the protocol-failure hold that had reported: ${intent.protocolFailureHold.reason}`,
+        actorNamespace: caller.namespace,
+        actorScope: record.scope,
+      });
+    }
     record.activation = null;
     record.state = nextState;
 
@@ -1624,6 +1866,24 @@ export class ExecutionCoordinator {
   }
 
   /**
+   * K1.2-DEC-14: the control power check, after visibility.
+   *
+   * Visibility (`#visible`) answers "does it exist for this caller?" identically for hidden and
+   * missing. Only after that does this check answer "may this visible caller change control
+   * state?" A visible but inspect-only principal is refused as `unauthorized_control`, with the
+   * Execution named and no control-state mutation. An inspect-only principal must not be able to
+   * supersede an attempt, enter/clear a hold, or declare code availability.
+   */
+  #requireControl(caller: AuthenticatedCaller, record: ExecutionRecord): RefusalRecord | null {
+    if (mayControlScope(caller, record.scope)) return null;
+    return this.#refusal(
+      "unauthorized_control",
+      `caller may inspect Execution ${record.executionId} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,
+      record,
+    );
+  }
+
+  /**
    * Records one refusal and returns that same retained record.
    *
    * The caller's copy and the Execution's retained copy are deliberately the same object: a refusal
@@ -1655,7 +1915,13 @@ export class ExecutionCoordinator {
    * exchange can be redelivered with a new capability for the new attempt (KC1-ARCH-1).
    */
   #deliver(intent: ActivationRecord): void {
-    const attempt: DeliveryAttempt = { attempt: intent.deliveries.length + 1, status: "pending", failure: null };
+    const attempt: DeliveryAttempt = {
+      attempt: intent.deliveries.length + 1,
+      status: "pending",
+      failure: null,
+      activationId: intent.activation.activationId,
+      writerEpoch: intent.activation.writerEpoch,
+    };
     appendOwn(intent.deliveries, attempt);
     // Claimed before any reason is inspected: the first report wins, including reentrant
     // reports issued while a diagnostic is being bounded. Each closure captures only its
@@ -1710,13 +1976,40 @@ const toDeliveryView = (attempt: DeliveryAttempt): DeliveryAttemptView => ({
   attempt: attempt.attempt,
   status: attempt.status,
   failure: attempt.failure,
+  activationId: attempt.activationId,
+  writerEpoch: attempt.writerEpoch,
 });
 
-/** The holds on one unresolved exchange, code first, as own data. */
+/** The holds on one unresolved exchange, code first, as own data with computed permitted actions. */
 const holdsOf = (intent: ActivationRecord): RecoveryHoldView[] => {
   const holds: RecoveryHoldView[] = [];
-  if (intent.codeHold !== null) appendOwn(holds, intent.codeHold);
-  if (intent.protocolFailureHold !== null) appendOwn(holds, intent.protocolFailureHold);
+  const hasCodeHold = intent.codeHold !== null;
+  if (intent.codeHold !== null) {
+    const stored = intent.codeHold;
+    appendOwn(
+      holds,
+      PrimordialObjectFreeze({
+        cause: stored.cause,
+        reason: stored.reason,
+        activationId: stored.activationId,
+        writerEpoch: stored.writerEpoch,
+        permittedNextActions: permittedForHold(stored.cause, hasCodeHold),
+      }),
+    );
+  }
+  if (intent.protocolFailureHold !== null) {
+    const stored = intent.protocolFailureHold;
+    appendOwn(
+      holds,
+      PrimordialObjectFreeze({
+        cause: stored.cause,
+        reason: stored.reason,
+        activationId: stored.activationId,
+        writerEpoch: stored.writerEpoch,
+        permittedNextActions: permittedForHold(stored.cause, hasCodeHold),
+      }),
+    );
+  }
   return holds;
 };
 
@@ -1791,6 +2084,7 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     authorityContext: record.authorityContext,
     activation: record.activation === null ? null : toActivationView(record.activation),
     recoveryHolds: record.activation === null ? [] : holdsOf(record.activation),
+    recoveryHistory: copyOwn(record.recoveryHistory),
     exchanges: mapOwn(record.exchanges, toExchangeView),
     // The retained records are frozen at acceptance; the list around them is a fresh copy.
     emissions: copyOwn(record.emissions),

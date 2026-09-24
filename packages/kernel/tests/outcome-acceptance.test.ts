@@ -410,7 +410,7 @@ describe("K1.2-C4 one decision: the whole batch, the progress, the Emissions and
         batch: [initialEventId, correction],
         dispatchReceipt: dispatched.receipt,
         outcomeReceipt: answer.receipt,
-        deliveries: [{ attempt: 1, status: "delivered", failure: null }],
+        deliveries: [{ attempt: 1, status: "delivered", failure: null, activationId: dispatched.activationId, writerEpoch: 1 }],
       },
     ]);
     assert.equal(after.receipts[after.receipts.length - 1], answer.receipt);
@@ -507,7 +507,7 @@ describe("K1.2-C4 acceptance interacts with the K1.1 boundaries it completes", (
     const after = view(kernel, created.executionId);
     assert.equal(after.state, "COMPLETED");
     assert.deepEqual(after.acceptedProgress, { seen: 1 });
-    assert.deepEqual(after.exchanges[0]?.deliveries, [{ attempt: 1, status: "delivered", failure: null }]);
+    assert.deepEqual(after.exchanges[0]?.deliveries, [{ attempt: 1, status: "delivered", failure: null, activationId: dispatched.activationId, writerEpoch: 1 }]);
   });
 });
 

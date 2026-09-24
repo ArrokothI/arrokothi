@@ -50,7 +50,13 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
     );
     assert.equal(decision.changed, true);
     assert.deepEqual(decision.recoveryHolds, [
-      { cause: "pinned_code_unavailable", reason: "pinned Definition revision weekly-report@3 is unavailable", activationId: open.activationId, writerEpoch: 1 },
+      {
+        cause: "pinned_code_unavailable",
+        reason: "pinned Definition revision weekly-report@3 is unavailable",
+        activationId: open.activationId,
+        writerEpoch: 1,
+        permittedNextActions: ["declare_code_availability", "submit_outcome"],
+      },
     ]);
 
     const held = view(kernel, executionId);
@@ -58,9 +64,19 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
     assert.deepEqual(held.recoveryHolds, decision.recoveryHolds);
     assert.deepEqual(held.acceptedProgress, { cursor: 7 }, "never an empty or fresh state presented as restored");
     assert.equal(held.progressRevision, 1, "never a silent start-over");
-    const { recoveryHolds: _h, ...heldRest } = held;
-    const { recoveryHolds: _b, ...beforeRest } = before;
+    const { recoveryHolds: _h, recoveryHistory: _rh, ...heldRest } = held;
+    const { recoveryHolds: _b, recoveryHistory: _rb, ...beforeRest } = before;
     assert.deepEqual(heldRest, beforeRest, "only the hold changed");
+    assert.equal(held.recoveryHistory.length, 1);
+    assert.deepEqual(held.recoveryHistory[0], {
+      activationId: open.activationId,
+      writerEpoch: 1,
+      cause: "pinned_code_unavailable",
+      transition: "entered",
+      reason: "pinned Definition revision weekly-report@3 is unavailable",
+      actorNamespace: "app-a",
+      actorScope: "tenant-a",
+    });
   });
 
   test("the reason names every missing pin: Definition, Runtime contract and progress codec", () => {
@@ -119,9 +135,16 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
     assert.deepEqual(view(kernel, executionId), before);
 
     const missing = { activationId: open.activationId, available: { ...ALL_AVAILABLE, definitionRevisions: [] } };
-    accepted(kernel.recoverExecution(author, executionId, missing));
+    const firstMissing = accepted(kernel.recoverExecution(author, executionId, missing));
+    assert.equal(firstMissing.changed, true);
+    assert.deepEqual(firstMissing.recoveryHolds[0]?.permittedNextActions, ["declare_code_availability", "submit_outcome"]);
+    const afterFirst = view(kernel, executionId);
+    assert.equal(afterFirst.recoveryHolds.length, 1);
+    assert.equal(afterFirst.recoveryHistory.length, 1);
     assert.equal(accepted(kernel.recoverExecution(author, executionId, missing)).changed, false);
+    assert.deepEqual(view(kernel, executionId), afterFirst);
     assert.equal(view(kernel, executionId).recoveryHolds.length, 1);
+    assert.equal(view(kernel, executionId).recoveryHistory.length, 1);
   });
 
   test("a held Execution is distinguishable by inspection from a failed one and from a waiting one", () => {
@@ -188,11 +211,20 @@ describe("K1.2-C10 an unclassifiable response holds the exchange; it is never re
     assert.equal(hold?.cause, "protocol_failure");
     assert.match(hold?.reason ?? "", /^the response of the attempt at writer epoch 1 could not be classified as an Outcome: native said: x+$/);
     assert.ok((hold?.reason.length ?? 0) < 1_200, "the Driver's diagnostic keeps at most 1,024 code units");
+    assert.deepEqual(hold?.permittedNextActions, ["request_takeover", "submit_outcome"]);
 
     const after = view(kernel, executionId);
-    const { recoveryHolds: _h, ...afterRest } = after;
-    const { recoveryHolds: _b, ...beforeRest } = before;
+    const { recoveryHolds: _h, recoveryHistory: _rh, ...afterRest } = after;
+    const { recoveryHolds: _b, recoveryHistory: _rb, ...beforeRest } = before;
     assert.deepEqual(afterRest, beforeRest, "state, progress, epoch, batch, receipts and refusals are untouched");
+    assert.equal(after.recoveryHistory.length, 1);
+    assert.equal(after.recoveryHistory[0]?.cause, "protocol_failure");
+    assert.equal(after.recoveryHistory[0]?.transition, "entered");
+    assert.equal(after.recoveryHistory[0]?.activationId, open.activationId);
+    assert.equal(after.recoveryHistory[0]?.writerEpoch, 1);
+    assert.equal(after.recoveryHistory[0]?.actorNamespace, "app-a");
+    assert.equal(after.recoveryHistory[0]?.actorScope, "tenant-a");
+    assert.equal(after.recoveryHistory[0]?.reason, hold?.reason);
 
     assert.equal(refused(kernel.redeliver(author, executionId)).classification, "recovery_held");
     assert.equal(driver.seen.length, 2, "the Kernel resent nothing on its own, and refused the explicit resend");
@@ -248,9 +280,18 @@ describe("K1.2-C10 an unclassifiable response holds the exchange; it is never re
       view(kernel, executionId).recoveryHolds.map((hold) => hold.cause),
       ["pinned_code_unavailable", "protocol_failure"],
     );
+    assert.deepEqual(
+      view(kernel, executionId).recoveryHolds.map((hold) => hold.permittedNextActions),
+      [
+        ["declare_code_availability", "submit_outcome"],
+        ["declare_code_availability", "submit_outcome"],
+      ],
+      "takeover blocked by code hold",
+    );
     assert.equal(refused(kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 })).classification, "recovery_held");
     accepted(kernel.recoverExecution(author, executionId, { activationId: open.activationId, available: ALL_AVAILABLE }));
     assert.deepEqual(view(kernel, executionId).recoveryHolds.map((hold) => hold.cause), ["protocol_failure"], "code found; the failure still stands");
+    assert.deepEqual(view(kernel, executionId).recoveryHolds[0]?.permittedNextActions, ["request_takeover", "submit_outcome"]);
     accepted(kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 }));
     assert.deepEqual(view(kernel, executionId).recoveryHolds, []);
   });

@@ -83,18 +83,32 @@ the Execution to `READY`, `COMPLETED` or `FAILED`; at `complete`/`fail`, every E
 unacknowledged receives a terminal disposition in the same decision. The answer, `OutcomeAccepted`,
 carries the `outcome_acceptance` receipt and the decision's lists; inspection adds `acknowledged`,
 `terminalDispositions`, `emissions`, `result`, `exchanges` (resolved exchanges with their delivery
-attempts) and `recoveryHolds`.
+attempts, each naming its `activationId`/`writerEpoch`), `recoveryHolds` (each with its reason and
+`permittedNextActions`) and `recoveryHistory` (accepted recovery/control decisions retained after the
+hold changes or disappears).
 
 `requestTakeover(caller, executionId, { activationId, writerEpoch })` advances the named current epoch
-by one within the same exchange and delivers the same Activation at the new epoch.
+by one within the same exchange and delivers the same Activation at the new epoch, but only for a
+control-authorized caller (`AuthenticatedCaller.controlScopes` contains the Execution's scope;
+otherwise `unauthorized_control` with no state change) and only when the Driver's
+`isSafeToReplace(currentActivation)` returns exactly `true` (otherwise `unsafe_replacement`).
+Kernel fencing rejects later writes from the superseded attempt but does not itself stop or exclude
+superseded native work; the Driver's exclusion or refusal is what establishes that precondition
+(`identity.md#writer-epoch`, `recovery.md`, `driver.md`, `kernel.md`).
 `recoverExecution(caller, executionId, { activationId, available })` compares the exchange's pinned
 Definition revision, Runtime contract revision and progress codec with the declared
 `available.definitionRevisions`, `runtimeContractRevisions` and `progressCodecs`, and holds the
-exchange (`RUNNING`, `recoveryHolds` naming what is missing) or clears that hold.
+exchange (`RUNNING`, `recoveryHolds` naming what is missing and what may be done next) or clears that
+hold; it requires control authority (`unauthorized_control` otherwise). Each accepted decision that
+enters, updates, or clears a hold appends one frozen `RecoveryHistoryRecord` (actor, authority,
+exchange/epoch causation) to `recoveryHistory`.
 `reportProtocolFailure(caller, executionId, { activationId, writerEpoch, diagnostic? })` holds the
-current attempt's exchange because its response could not be classified. Redelivery is refused while
-any hold stands, takeover while a code hold stands; a takeover clears a protocol-failure hold, and an
-accepted Outcome of the current attempt resolves the exchange and ends its holds.
+current attempt's exchange because its response could not be classified; it requires control authority
+and appends to `recoveryHistory` on entry. Redelivery is refused while
+any hold stands, takeover while a code hold stands; a takeover clears a protocol-failure hold (recorded
+as `cleared_by_takeover`), and an
+accepted Outcome of the current attempt resolves the exchange and ends its holds (recorded as
+`ended_by_outcome`). Idempotent duplicates (`changed:false`) append no history.
 
 These are this in-process binding's choices where the architecture leaves the representation open
 (`mental-model/rewrite-index.md` §4):
@@ -103,7 +117,10 @@ These are this in-process binding's choices where the architecture leaves the re
   by exactly 1 per accepted takeover. Epochs are not comparable across Activation IDs.
 - **Outcome-acceptance transaction** (`mechanisms/execution-cycle.md#atomic-decisions-across-the-system`):
   one synchronous call on the single-threaded coordinator. Every caller-owned field is observed first,
-  every record is then built, and only then is anything mutated, through load-time primitives; a
+  every record the decision needs is then built from Kernel data only, and only then is accepted state
+  mutated — the Outcome-acceptance receipt's position is read while building and committed with the
+  rest of the decision, so no acceptance index advances before the records are complete — through
+  load-time primitives with no caller code between first check and last mutation; a
   getter that reenters the Kernel is ordered before the decision's checks. Atomic within the process,
   not durable.
 - **Per-entry disposition storage** (WS §3 "Left open"): each mailbox entry holds its own frozen
@@ -116,6 +133,19 @@ These are this in-process binding's choices where the architecture leaves the re
   reflects activity elsewhere. Output positions, reads and cursors are K4.4's.
 - **Declared limit**: `CoordinatorOptions.emissionsPerOutcome`, default 256, an operational bound
   checked before any Emission is read, not a semantic value limit.
+- **Control authority** (`evidence.md`, `authority.md`): `AuthenticatedCaller.controlScopes` is the
+  separate control power; the three exchange controls require it (`unauthorized_control` otherwise).
+  Outcome submission stays visibility-only.
+- **Driver safe replacement** (`identity.md#writer-epoch`, `recovery.md`, `driver.md`): takeover
+  advances only on `isSafeToReplace() === true` (`unsafe_replacement` otherwise); Kernel fencing does
+  not stop native work.
+- **Delivery attribution** (`identity.md#dispatch-and-delivery`): each delivery row names its
+  `activationId`/`writerEpoch`.
+- **Permitted actions** (`evidence.md`): each hold exposes `permittedNextActions` from the same rules
+  that refuse the controls (`declare_code_availability`/`request_takeover`/`submit_outcome`).
+- **Recovery history** (`state.md#execution-history`, `evidence.md`): `recoveryHistory` retains
+  entered/updated/cleared_by_declaration/cleared_by_takeover/ended_by_outcome with actor/authority and
+  exchange/epoch causation; duplicates append nothing; no seventh receipt.
 - **Retention**: accepted-Outcome records, resolved exchanges, Emissions and results are kept for the
   coordinator's lifetime, so an exact Outcome replay is answered for as long as the coordinator lives.
 

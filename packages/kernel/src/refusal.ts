@@ -48,7 +48,25 @@ export type RefusalClassification =
    */
   | "stale_exchange"
   /** The unresolved exchange is recovery-held; continuing it is refused until the hold clears. */
-  | "recovery_held";
+  | "recovery_held"
+  /**
+   * K1.2-DEC-14: the caller can see the Execution but holds no control power over its scope.
+   *
+   * `evidence.md`: inspection privilege does not grant re-execution or settlement privilege. The
+   * three exchange controls (takeover, recovery declaration, protocol-failure report) require the
+   * Execution's scope in the caller's `controlScopes`; a visible but inspect-only principal is
+   * refused here, with the Execution named (it passed visibility) and no control-state mutation.
+   */
+  | "unauthorized_control"
+  /**
+   * K1.2-DEC-15: the Driver did not establish safe replacement for a takeover.
+   *
+   * `identity.md#writer-epoch` and `recovery.md` require a separate Driver guarantee that native
+   * continuation is exclusive or otherwise safe to replace before the writer fence advances. Absent,
+   * denied, or throwing means the takeover is refused rather than assumed. Kernel fencing of stale
+   * writes does not itself stop superseded native work.
+   */
+  | "unsafe_replacement";
 
 /**
  * One refused request, retained and inspectable.

@@ -46,15 +46,15 @@ describe("K1.2-C11 a late delivery report settles only its own original attempt 
     const { kernel, executionId, dispatched, capability } = withDelayedDelivery();
     accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
     const before = view(kernel, executionId);
-    assert.deepEqual(before.exchanges[0]?.deliveries, [{ attempt: 1, status: "pending", failure: null }]);
+    assert.deepEqual(before.exchanges[0]?.deliveries, [{ attempt: 1, status: "pending", failure: null, activationId: dispatched.activationId, writerEpoch: 1 }]);
 
     capability.delivered();
     const after = view(kernel, executionId);
-    assert.deepEqual(after.exchanges[0]?.deliveries, [{ attempt: 1, status: "delivered", failure: null }]);
+    assert.deepEqual(after.exchanges[0]?.deliveries, [{ attempt: 1, status: "delivered", failure: null, activationId: dispatched.activationId, writerEpoch: 1 }]);
     assert.deepEqual(logicalState(after), logicalState(before), "no receipt, epoch, reservation, acknowledgment or lifecycle changed");
 
     capability.failed("too late to matter");
-    assert.deepEqual(view(kernel, executionId).exchanges[0]?.deliveries, [{ attempt: 1, status: "delivered", failure: null }], "first report wins");
+    assert.deepEqual(view(kernel, executionId).exchanges[0]?.deliveries, [{ attempt: 1, status: "delivered", failure: null, activationId: dispatched.activationId, writerEpoch: 1 }], "first report wins");
   });
 
   test("after the next exchange started: the old report cannot touch the new exchange's attempts", () => {
@@ -66,8 +66,8 @@ describe("K1.2-C11 a late delivery report settles only its own original attempt 
 
     capability.failed("native submit lost");
     const after = view(kernel, executionId);
-    assert.deepEqual(after.exchanges[0]?.deliveries, [{ attempt: 1, status: "failed", failure: "native submit lost" }]);
-    assert.deepEqual(after.activation?.deliveries, [{ attempt: 1, status: "pending", failure: null }], "the new exchange's own attempt is untouched");
+    assert.deepEqual(after.exchanges[0]?.deliveries, [{ attempt: 1, status: "failed", failure: "native submit lost", activationId: dispatched.activationId, writerEpoch: 1 }]);
+    assert.deepEqual(after.activation?.deliveries, [{ attempt: 1, status: "pending", failure: null, activationId: next.activationId, writerEpoch: 1 }], "the new exchange's own attempt is untouched");
     assert.deepEqual(logicalState(after), logicalState(before));
     assert.equal(driver.settlements.length, 2);
   });
@@ -77,15 +77,15 @@ describe("K1.2-C11 a late delivery report settles only its own original attempt 
     accepted(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 1 }));
     const before = view(kernel, executionId);
     assert.deepEqual(before.activation?.deliveries, [
-      { attempt: 1, status: "pending", failure: null },
-      { attempt: 2, status: "pending", failure: null },
+      { attempt: 1, status: "pending", failure: null, activationId: dispatched.activationId, writerEpoch: 1 },
+      { attempt: 2, status: "pending", failure: null, activationId: dispatched.activationId, writerEpoch: 2 },
     ]);
 
     capability.delivered();
     const after = view(kernel, executionId);
     assert.deepEqual(after.activation?.deliveries, [
-      { attempt: 1, status: "delivered", failure: null },
-      { attempt: 2, status: "pending", failure: null },
+      { attempt: 1, status: "delivered", failure: null, activationId: dispatched.activationId, writerEpoch: 1 },
+      { attempt: 2, status: "pending", failure: null, activationId: dispatched.activationId, writerEpoch: 2 },
     ]);
     assert.equal(after.activation?.writerEpoch, 2, "a late report from epoch 1 does not bring epoch 1 back");
     assert.deepEqual(logicalState(after), logicalState(before));

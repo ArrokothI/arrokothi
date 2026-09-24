@@ -120,6 +120,36 @@ const ablations = [
     find: "    record.activation = null;\n    record.state = nextState;",
     replace: "    record.state = nextState;",
   },
+  {
+    id: "B1 control falls back to visibility (inspect-only may take over, declare and report)",
+    file: "coordinator.ts",
+    find: "    if (mayControlScope(caller, record.scope)) return null;",
+    replace: "    return null;",
+  },
+  {
+    id: "B2 recovery history dropped (holds leave no History)",
+    file: "coordinator.ts",
+    find: "  appendOwn(record.recoveryHistory, stored);",
+    replace: "  void stored;",
+  },
+  {
+    id: "B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)",
+    file: "coordinator.ts",
+    find: "  return PrimordialObjectFreeze([REQUEST_TAKEOVER, SUBMIT_OUTCOME]);",
+    replace: "  return PrimordialObjectFreeze([DECLARE_CODE_AVAILABILITY, SUBMIT_OUTCOME]);",
+  },
+  {
+    id: "B4 delivery attribution lost (every delivery pinned to epoch 1)",
+    file: "coordinator.ts",
+    find: "      activationId: intent.activation.activationId,\n      writerEpoch: intent.activation.writerEpoch,\n    };",
+    replace: "      activationId: intent.activation.activationId,\n      writerEpoch: 1,\n    };",
+  },
+  {
+    id: "B5 acceptance index gaps (every Outcome consumes two positions)",
+    file: "coordinator.ts",
+    find: "    record.nextAcceptancePosition = acceptancePosition + 1;",
+    replace: "    record.nextAcceptancePosition = acceptancePosition + 2;",
+  },
 ];
 
 const applyOnce = (text, find, replace, label) => {

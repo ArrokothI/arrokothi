@@ -60,8 +60,8 @@ describe("K1.2-C8 an accepted takeover advances the epoch within the same exchan
     assert.equal(after.activation?.writerEpoch, 2);
     assert.equal(after.activation?.receipt, taken.receipt);
     assert.deepEqual(after.activation?.deliveries, [
-      { attempt: 1, status: "delivered", failure: null },
-      { attempt: 2, status: "delivered", failure: null },
+      { attempt: 1, status: "delivered", failure: null, activationId: dispatched.activationId, writerEpoch: 1 },
+      { attempt: 2, status: "delivered", failure: null, activationId: dispatched.activationId, writerEpoch: 2 },
     ]);
     assert.deepEqual(after.queued, [initialEventId, later.eventId], "a takeover acknowledges nothing");
     assert.equal(after.receipts[after.receipts.length - 1], taken.receipt);
@@ -180,6 +180,9 @@ describe("K1.2-C8 the takeover is ordered against the Outcome it could race", ()
           }
           return delayed.deliver(activation, settlement);
         },
+        isSafeToReplace(): boolean {
+          return true;
+        },
       },
     });
     const created = accepted(kernel.createExecution(author, createRequest()));
@@ -204,6 +207,9 @@ describe("K1.2-C8 the takeover is ordered against the Outcome it could race", ()
           }
           settlement.delivered();
           return undefined;
+        },
+        isSafeToReplace(): boolean {
+          return true;
         },
       },
     });

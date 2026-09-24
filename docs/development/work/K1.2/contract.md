@@ -51,6 +51,11 @@ recovery (K3); real Drivers and their phase contracts (R1).
 | Transitions, completion accounting, terminal states never reopen | [lifecycle](../../../../mental-model/mechanisms/lifecycle.md) |
 | Emission, terminal result, output obligation, Effect | [actions (concept)](../../../../mental-model/concepts/actions.md#emission-result-and-output-obligation), [output](../../../../mental-model/mechanisms/output.md#acceptance-makes-output-observable) |
 | Progress, pinned codec, recovery-held | [state (concept)](../../../../mental-model/concepts/state.md#progress), [recovery](../../../../mental-model/mechanisms/recovery.md#compatibility-and-migration) |
+| Recovery permission before replacement, Driver safe-replacement, Kernel fencing vs native exclusion | [recovery](../../../../mental-model/mechanisms/recovery.md#decide-permission-before-replacing-work), [identity](../../../../mental-model/concepts/identity.md#writer-epoch), [driver](../../../../mental-model/driver.md), [kernel](../../../../mental-model/kernel.md) |
+| Inspection, permitted next actions, authenticated recorded commands, control vs inspection privilege, retention | [evidence](../../../../mental-model/mechanisms/evidence.md) |
+| Separate powers (inspect vs control) | [authority](../../../../mental-model/mechanisms/authority.md) |
+| Execution History including recovery decisions | [state (concept)](../../../../mental-model/concepts/state.md#execution-history) |
+| Dispatch and delivery attribution (what was delivered and to whom) | [identity](../../../../mental-model/concepts/identity.md#dispatch-and-delivery), [execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary) |
 | Boundary values, per-root limits, one observation | [values](../../../../mental-model/concepts/values.md) |
 | Terminal ingress | [creation](../../../../mental-model/mechanisms/creation.md#when-the-destination-cannot-take-the-input) |
 
@@ -230,19 +235,26 @@ specification prose.
 | C8 repeated takeover | the same takeover sent twice | the second refused as stale; epoch advanced once | `takeover.test.ts` |
 | C8 pinned input | input accepted before takeover | stays queued and outside the batch | `takeover.test.ts` |
 | C8 reentrant takeover | a Driver that takes over from inside dispatch or redelivery | each answer describes the attempt that call delivered; the takeover stands and fences epoch 1 | `takeover.test.ts` |
+| C8 control privilege (evidence.md; DEC-14) | inspect-only principal vs control-authorized principal on takeover; outsider hidden vs missing | inspect-only refused `unauthorized_control` with no epoch/receipt/delivery change; outsider `unknown_destination` identical hidden/missing | `control-authority.test.ts`, `outcome-acceptance.test.ts` |
+| C8 safe replacement (identity.md writer-epoch; recovery.md; DEC-15) | takeover with safe Driver vs unsafe/absent/throwing Driver | safe advances epoch; unsafe/absent/throwing refused `unsafe_replacement` with no epoch/receipt/delivery change; fencing alone does not imply native exclusion | `control-authority.test.ts` |
 | C9 code hold | recover with a pinned revision or codec missing, then with all present | RUNNING, hold reason, same exchange/progress/revision; redeliver and takeover refused; then cleared; redeliver and accept at base+1 | `recovery.test.ts` |
 | C9 distinguishability | held versus FAILED versus waiting | state and hold differ | `recovery.test.ts` |
+| C9 permitted actions (evidence.md; DEC-17) | code hold, protocol hold, both; inspect permitted vs attempt redeliver/takeover/declare/Outcome | code `["declare_code_availability","submit_outcome"]`; protocol alone `["request_takeover","submit_outcome"]`; both `["declare_code_availability","submit_outcome"]`; inspected list predicts actual accept/refuse without probing | `hold-permitted.test.ts`, `recovery.test.ts` |
+| C9/C10 recorded recovery commands (evidence.md, state.md History; DEC-18) | enter code hold, change reason, clear by declaration, clear protocol by takeover, end by Outcome; idempotent duplicates | each accepted decision appends one frozen history record with actor/authority and exchange/epoch causation; history survives hold clearing, resolution, next dispatch and terminal; duplicates append nothing | `recovery-history.test.ts`, `recovery.test.ts`, `hold-permitted.test.ts` |
 | C10 protocol failure (OA-6) | report for the current attempt; stale report; redeliver while held; takeover; valid Outcome | hold with bounded diagnostic; stale refused; redeliver refused; takeover clears; Outcome clears | `recovery.test.ts` |
+| C10 control privilege | inspect-only vs control-authorized on recover and protocol report | inspect-only refused `unauthorized_control` with no hold/history change | `control-authority.test.ts` |
 | C11 late delivery report | delayed capability settled after resolution, after takeover, after the next dispatch | only its own attempt record changes | `late-reports.test.ts` |
 | C11 late Outcome | exact and changed Outcome for resolved A while B is unresolved | replay / conflict; B untouched | `late-reports.test.ts` |
-| C12 receipts | create → dispatch → Outcome → dispatch → takeover → Outcome | each boundary its own receipt and position; frozen; refusals mint none | `outcome-acceptance.test.ts`, `takeover.test.ts` |
-| C12 retained evidence immutable | mutate returned receipts, answers, views, dispositions | replay and inspection unchanged | `outcome-evidence.test.ts` |
-| C12 nondisclosure | hidden-scope Outcome/takeover/recover activity interposed between A's operations | every A-observable value equal across arms | `nondisclosure.test.ts` |
+| C11 exact delivery attribution (identity.md dispatch-and-delivery; DEC-16) | multiple redeliveries before and after takeover (1,2 at epoch1; 3,4 at epoch2) plus late reports from both epochs, out of order | each row names its activationId/writerEpoch `[1,1,2,2]`; late reports settle only their own row; resolved exchange retains epochs; new exchange has its own ID/epoch1 | `delivery-attribution.test.ts`, `late-reports.test.ts` |
+| C12 receipts | create → dispatch → Outcome → dispatch → takeover → Outcome | each boundary its own receipt and position; frozen; refusals mint none | `outcome-acceptance.test.ts`, `takeover.test.ts`, `transaction.test.ts` |
+| C12 retained evidence immutable | mutate returned receipts, answers, views, dispositions, holds/history/deliveries/refusals | replay and inspection unchanged | `outcome-evidence.test.ts`, `recovery-history.test.ts`, `recovery-evidence.test.ts` |
+| C12 nondisclosure | hidden-scope Outcome/takeover/recover activity interposed between A's operations | every A-observable value equal across arms, including holds/history/deliveries/control refusals | `nondisclosure.test.ts`, `recovery-evidence.test.ts` |
+| C12 transaction contiguity (DEC-10) | refused Outcomes, replays, redeliveries, then acceptances | refusals/replays/redeliveries consume no acceptance position; positions contiguous per Execution | `transaction.test.ts` |
 | C13 own-only, single observation | inherited envelope fields; throwing/revoked fields; getters counting reads; value root read once | missing, located refusal, one read per field | `outcome-hostile.test.ts` |
 | C13 ambient pollution during observation | a getter installing an inherited indexed accessor or descriptor-field pollution, or replacing a builtin, before commit | the accepted decision, acknowledgment list, Emission list and receipt are retained exactly | `outcome-hostile.test.ts` |
 | C14 zone rules | the import graph and inventory | no violation; document and policy agree | `tests/conformance/architecture/kernel-landing-zone.test.ts` |
 | C15 records | BASELINE, identity.md markers, rewrite-index §4 | choices recorded; markers kept; no status on Layer-3 pages | report checklist; link check |
-| All: distinguishing power | 16 plausible broken implementations applied to a copy of the package (cursor acknowledgment, validation-first replay, no epoch fence, takeover minting an ID or keeping the epoch, stripped Effects, missing or acknowledging B-5, holds ignored, unknown fields ignored, global Emission counter, double observation, late capacity check, `await` as `continue`, exchange left open) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
+| All: distinguishing power | 21 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
 
 ## Command plan
 
@@ -318,9 +330,12 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   (`output.md`: reject before commit, never accept then drop). This is an operational bound of the
   in-process binding, not a fifth semantic limit.
 - **K1.2-DEC-10 — transaction mechanism.** Validation and commit run in one synchronous call on the
-  single-threaded in-memory coordinator; every record is built before the first mutation, and the
-  mutations use only load-time primitives. This settles the §4 transaction-mechanism item for this
-  binding and claims no durability.
+  single-threaded in-memory coordinator; every caller-owned field is observed first, every record the
+  decision needs is then built from Kernel data only, and only then is accepted state mutated
+  (the Outcome-acceptance receipt's position is read while building and committed with the rest of
+  the decision; no acceptance index advances before the records are complete), through load-time
+  primitives with no caller code between first check and last mutation. This settles the §4
+  transaction-mechanism item for this binding and claims no durability.
 - **K1.2-DEC-11 — per-entry disposition storage.** Each mailbox entry holds its own frozen disposition:
   queued, acknowledged (naming the acknowledging Activation) or terminal (with its reason).
 - **K1.2-DEC-12 — retention.** Accepted-Outcome records, resolved exchanges, Emissions and results are
@@ -328,6 +343,42 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
 - **K1.2-DEC-13 — DX-4.** Not extracted and not needed: the Outcome envelope is a fixed shape
   validated in-zone, and the legacy value-schema language normalizes values, which `values.md`
   forbids. The row stays open for K2.2's operation schemas.
+- **K1.2-DEC-14 — control authority distinct from inspection (correction, K12-R1-AUTH-01).**
+  `AuthenticatedCaller.controlScopes` is the separate control power `evidence.md` requires
+  ("inspection privilege does not grant re-execution or settlement privilege"; `authority.md` lists
+  send/inspect/cancel/delegate/read/write/impersonate as separate powers). Visibility (`scopes`)
+  answers hidden-vs-missing identically; the three exchange controls (`requestTakeover`,
+  `recoverExecution`, `reportProtocolFailure`) additionally require the Execution's scope in
+  `controlScopes`, else `unauthorized_control` with no control-state mutation. Outcome submission
+  stays visibility-only so the Runtime path is preserved. Absent `controlScopes` means inspect-only
+  (default-deny). This is the binding's Kernel-enforced distinction, not a universal token format
+  (which stays K2's).
+- **K1.2-DEC-15 — Driver safe-replacement owner for takeover (correction, K12-R1-AUTH-01).**
+  `ExecutionDriver.isSafeToReplace(activation)` is the Driver's phase-specific determination that
+  native continuation is exclusive or otherwise safe to replace (`identity.md#writer-epoch`,
+  `recovery.md#decide-permission-before-replacing-work`, `driver.md`, `kernel.md`). The Kernel
+  advances the writer epoch only when it returns exactly `true`; absent, `false`, or throwing means
+  `unsafe_replacement` rather than assumption. Kernel fencing of stale writes does not itself stop
+  superseded native work. Fake Drivers in tests declare `true` when the phase is safe and `false`
+  when it is not.
+- **K1.2-DEC-16 — delivery-attempt attribution (correction, K12-R1-DELIVERY-01).** Each retained
+  delivery row names the `activationId` and `writerEpoch` it carried when sent
+  (`identity.md#dispatch-and-delivery`: always say what was delivered and to whom). Ordinary
+  redelivery preserves both; takeover preserves the Activation ID and advances the epoch. Late
+  reports still settle only their own row. No seventh receipt is introduced.
+- **K1.2-DEC-17 — held-exchange permitted actions (correction, K12-R1-HOLD-01).** Each standing hold
+  exposes `permittedNextActions` computed from the same rules that refuse the controls (one normative
+  owner): a code hold `["declare_code_availability","submit_outcome"]`; a protocol hold alone
+  `["request_takeover","submit_outcome"]`; either hold when a code hold stands
+  `["declare_code_availability","submit_outcome"]`. The vocabulary names existing K1.2 operations only,
+  not a universal recovery API.
+- **K1.2-DEC-18 — retained recovery history (correction, K12-R1-HISTORY-01).** Each accepted decision
+  that enters, updates (`updated` when the code-hold reason changes), or ends a hold appends one frozen
+  `RecoveryHistoryRecord` to the owning Execution's `recoveryHistory` (activationId, writerEpoch at
+  decision, cause, transition `entered`/`updated`/`cleared_by_declaration`/`cleared_by_takeover`/
+  `ended_by_outcome`, reason, `actorNamespace`/`actorScope`, and `resultingEpoch` for takeover clears).
+  It survives hold clearing, exchange resolution, next dispatch, and terminal state; idempotent
+  duplicates (`changed:false`) append nothing. No seventh receipt boundary is introduced.
 
 ## Unresolved obligations and limits
 
