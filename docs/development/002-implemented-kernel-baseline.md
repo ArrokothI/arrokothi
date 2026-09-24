@@ -17,7 +17,9 @@ It refuses new ordinary input to a terminal destination; exercising that through
 transition awaits K1.3. Boundary validation, limits and sealing are local; canonical bytes use the
 approved unmodified `canonicalize@3.0.0`. In-process capture keeps each root's canonical byte count
 while it reads and stops once that count passes the 1 MiB limit, so a live object that repeats one
-shared member is refused without being expanded in full (K1.1-correction-02). `ExecutionDriver.deliver` returns only `undefined` and
+shared member is refused without being expanded in full. Within one visit, a string or member name
+is read only until one scalar value past the length limit, and a container's own-names listing is
+classified only until it exceeds what an accepted container owns (K1.1-correction-02). `ExecutionDriver.deliver` returns only `undefined` and
 reports delivery through a Kernel-owned capability; the Kernel never observes a Driver-returned
 Promise.
 

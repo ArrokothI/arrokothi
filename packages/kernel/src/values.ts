@@ -59,7 +59,10 @@
  *    that count passes the size limit. Before this, the limit was checked only on the finished
  *    canonical string, so such a value was expanded in full — time and memory doubling per level —
  *    before it could be refused. The count is exact for content that is accepted, so it never refuses
- *    a value the finished-bytes check would accept; that check stays as well.
+ *    a value the finished-bytes check would accept; that check stays as well. The same bound holds
+ *    inside a single visit (KC2-R1-01): a string or member name is read only until its answer is
+ *    settled — at most one scalar value past the length limit — and a container's own-names listing
+ *    is classified only until it holds more names than an accepted container can own.
  *
  * K1.0 assigned `packages/core/src/util/json.ts` to this packet as `DX-2` (migratable). It is not
  * extracted. The legacy `canonicalJson` in `packages/core/src/util/hash.ts` is an
@@ -305,52 +308,47 @@ const child = (path: string, key: string): string => (path === "" ? key : `${pat
 const element = (path: string, index: number): string => `${path}[${index}]`;
 
 /**
- * Whether a string is well-formed Unicode.
+ * What one bounded pass over a string found. `ok` carries the string's exact canonical bytes.
  *
- * `values.md` rejects lone surrogates rather than repairing them, so this is written out rather than
- * taken from `String.prototype.isWellFormed`, which is newer than the `ES2023` library this
- * repository compiles against. A high surrogate must be followed by a low one and a low surrogate
- * must never appear alone; every other code unit is fine.
+ * Frozen singletons for the two refusals, so a refusal allocates nothing per string.
  */
-function isWellFormed(input: string): boolean {
-  // `String.prototype.charCodeAt` is invoked through the load-time reference: a capture-time
-  // side effect can replace the prototype method, and an index loop (not `for...of`, whose
-  // `Symbol.iterator` lookup is itself ambient) keeps the scan independent of it.
-  for (let index = 0; index < input.length; index += 1) {
-    const unit = PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index]) as number;
-    if (unit >= 0xd800 && unit <= 0xdbff) {
-      const next = index + 1 < input.length ? (PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index + 1]) as number) : -1;
-      if (next < 0xdc00 || next > 0xdfff) return false;
-      index += 1;
-    } else if (unit >= 0xdc00 && unit <= 0xdfff) return false;
-  }
-  return true;
-}
-
-/** Unicode scalar values, which is what the string limit counts — not UTF-16 code units. */
-const scalarValueCount = (input: string): number => {
-  // Same discipline as `isWellFormed`: no `for...of` (ambient `Symbol.iterator`) and no live
-  // prototype method. A high surrogate consumes its pair; anything else counts one.
-  let count = 0;
-  for (let index = 0; index < input.length; index += 1) {
-    const unit = PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index]) as number;
-    if (unit >= 0xd800 && unit <= 0xdbff) index += 1;
-    count += 1;
-  }
-  return count;
-};
+type StringScan =
+  | { readonly kind: "ok"; readonly bytes: number }
+  | { readonly kind: "lone_surrogate" }
+  | { readonly kind: "too_long" };
+const LONE_SURROGATE: StringScan = PrimordialObjectFreeze({ kind: "lone_surrogate" } as const);
+const TOO_LONG: StringScan = PrimordialObjectFreeze({ kind: "too_long" } as const);
 
 /**
- * Exact canonical bytes of a well-formed string: its two quotes plus its rule-4 escaped UTF-8 body.
+ * Checks well-formedness, counts Unicode scalar values and sizes the canonical form in one pass that
+ * stops as soon as the string is known to be refused (KC2-R1-01).
  *
- * This is the byte count the JCS implementation's `JSON.stringify` spelling produces, computed
- * without producing it, so the capture pass can charge a string against the size limit before any
- * serialization runs. Called only after `isWellFormed` passed, so a high surrogate always has its
- * pair. Same discipline as the two scans above.
+ * These were three full scans, all run before any charge against the size limit, so a
+ * 33,554,432-character string cost 67,108,864 character reads before it was refused. This pass reads
+ * code units only until the answer is settled: an unpaired surrogate ends it, and so does the 65,537th
+ * scalar value, because a string that long is refused whatever follows. At most
+ * `2 * (stringScalarValues + 1)` code units are ever read, which is no more than accepting a string at
+ * the limit costs. A string refused for length is therefore reported as longer than the limit, not by
+ * its exact length, and an unpaired surrogate past that point is not reported; either way the string
+ * is refused.
+ *
+ * `values.md` rejects lone surrogates rather than repairing them, so well-formedness is checked here
+ * rather than taken from `String.prototype.isWellFormed`, which is newer than the `ES2023` library this
+ * repository compiles against. A high surrogate must be followed by a low one and a low surrogate must
+ * never appear alone. The byte count is the one the JCS implementation's `JSON.stringify` spelling
+ * produces, computed without producing it: rule-4 escapes, then UTF-8.
+ *
+ * `String.prototype.charCodeAt` is invoked through the load-time reference: a capture-time side effect
+ * can replace the prototype method, and an index loop (not `for...of`, whose `Symbol.iterator` lookup
+ * is itself ambient) keeps the scan independent of it.
  */
-const canonicalStringBytes = (input: string): number => {
+const scanBoundaryString = (input: string): StringScan => {
+  const units = input.length;
+  let scalars = 0;
   let bytes = 2;
-  for (let index = 0; index < input.length; index += 1) {
+  for (let index = 0; index < units; index += 1) {
+    scalars += 1;
+    if (scalars > BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;
     const unit = PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index]) as number;
     if (unit < 0x20) {
       // `\b`, `\t`, `\n`, `\f`, `\r` are two bytes; every other C0 control is the six-byte `\u00xx`.
@@ -362,13 +360,17 @@ const canonicalStringBytes = (input: string): number => {
     } else if (unit < 0x800) {
       bytes += 2;
     } else if (unit >= 0xd800 && unit <= 0xdbff) {
+      const next = index + 1 < units ? (PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index + 1]) as number) : -1;
+      if (next < 0xdc00 || next > 0xdfff) return LONE_SURROGATE;
       bytes += 4;
       index += 1;
+    } else if (unit >= 0xdc00 && unit <= 0xdfff) {
+      return LONE_SURROGATE;
     } else {
       bytes += 3;
     }
   }
-  return bytes;
+  return { kind: "ok", bytes };
 };
 
 /**
@@ -496,13 +498,13 @@ const closeContainer = (state: CaptureState, container: object): void => {
  * above `"4294967294"`) is therefore excluded exactly as the definition requires.
  */
 const isArrayIndex = (name: string): boolean => {
-  if (name.length === 0) return false;
+  // Length first, so a caller-supplied name of any size is classified after at most ten reads.
+  if (name.length === 0 || name.length > 10) return false;
   for (let index = 0; index < name.length; index += 1) {
     const unit = name[index] as string;
     if (unit < "0" || unit > "9") return false;
   }
   if (name.length > 1 && (name[0] as string) === "0") return false;
-  if (name.length > 10) return false;
   if (name.length === 10 && name > "4294967294") return false;
   return true;
 };
@@ -602,22 +604,24 @@ function capture(value: unknown, path: string, level: number, state: CaptureStat
   }
   if (type === "string") {
     const text = value as string;
-    if (!isWellFormed(text)) {
+    const scan = scanBoundaryString(text);
+    if (scan.kind === "lone_surrogate") {
       pushIssue(state.issues, { path, code: "lone_surrogate", message: "string contains an unpaired surrogate and has no UTF-8 encoding" });
       charge(state, text.length);
       return REFUSED;
     }
-    const length = scalarValueCount(text);
-    if (length > BOUNDARY_LIMITS.stringScalarValues) {
+    if (scan.kind === "too_long") {
       pushIssue(state.issues, {
         path,
         code: "string_too_long",
-        message: `string is ${length} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
+        message: `string has more than ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values, the limit`,
       });
+      // Charged at its full length, which is free to read and never less than the reading the scan
+      // did, so repeated occurrences of one refused string exhaust the budget quickly.
       charge(state, text.length);
       return REFUSED;
     }
-    return charge(state, canonicalStringBytes(text)) ? text : REFUSED;
+    return charge(state, scan.bytes) ? text : REFUSED;
   }
   if (type !== "object") {
     pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
@@ -715,9 +719,16 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   // uses index loops rather than `filter`/`for...of`/`push`, because `Array.prototype` methods
   // and `Symbol.iterator` are themselves mutable mid-pass. `names` is an engine-built list
   // (`CreateArrayFromList`, own data, dense), so its element reads are own reads.
+  //
+  // Both name scans are bounded by the entry limit, not by the listing (KC2-R1-01). An accepted array
+  // owns exactly its indices below `length` plus `length` itself, and `length` is at most
+  // `containerEntries` here, so a listing longer than `containerEntries + 1` names is refused as one
+  // aggregate reason without classifying each name. The engine's own-names listing is the one step
+  // proportional to the array's size.
   const names = PrimordialGetOwnPropertyNames(container) as string[];
-  let hasExtra = false;
-  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;
+  let hasExtra = overlong;
+  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {
     const name = names[nameIndex] as string;
     if (name !== "length" && !isArrayIndex(name)) {
       hasExtra = true;
@@ -725,7 +736,14 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
     }
   }
   const symbolCount = hasExtra ? 0 : PrimordialGetOwnPropertySymbols(container).length;
-  if (hasExtra || symbolCount > 0) {
+  if (overlong) {
+    pushIssue(state.issues, {
+      path,
+      code: "unrepresentable_member",
+      message: `array lists ${names.length} own names, more than an array of at most ${BOUNDARY_LIMITS.containerEntries} entries owns; canonical form would silently drop the rest`,
+    });
+    refused = true;
+  } else if (hasExtra || symbolCount > 0) {
     pushIssue(state.issues, { path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
     refused = true;
   }
@@ -737,7 +755,7 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   // property behind the listing (`unstable_representation`, like the object half); a backed
   // index outside `length` is state canonical array form would silently drop
   // (`unrepresentable_member`). Both refuse; neither is normalized.
-  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {
     const name = names[nameIndex] as string;
     if (name === "length" || !isArrayIndex(name)) continue;
     const numeric = arrayIndexValue(name);
@@ -837,10 +855,18 @@ function captureObject(container: object, path: string, entered: number, state: 
   // is ambient and mutable mid-pass. `names` is engine-built (`CreateArrayFromList`), so it is
   // dense own data and its element reads consult no prototype; `enumerable` and `captured` below
   // are Kernel-grown and therefore go through `own-array.ts` in both directions.
+  //
+  // The descriptor reads are bounded by the entry limit, not by the listing (KC2-R1-01). An accepted
+  // object owns at most `containerEntries` names, all enumerable, so once `containerEntries + 1`
+  // descriptors have been read the object is certainly refused, and a reason is already recorded:
+  // either more than `containerEntries` of them were enumerable, or one was non-enumerable or not
+  // owned. The remaining names are not read. The engine's own-names listing itself is the one step
+  // proportional to the object's size, and no Kernel code can make it smaller.
   const names = PrimordialGetOwnPropertyNames(container) as string[];
+  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;
   const enumerable: [string, PropertyDescriptor][] = [];
   let nonEnumerable = false;
-  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+  for (let nameIndex = 0; nameIndex < readable; nameIndex += 1) {
     const name = names[nameIndex] as string;
     const descriptor = PrimordialGetOwnPropertyDescriptor(container, name);
     if (descriptor === undefined) {
@@ -864,7 +890,10 @@ function captureObject(container: object, path: string, entered: number, state: 
     pushIssue(state.issues, {
       path,
       code: "too_many_entries",
-      message: `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
+      message:
+        readable < names.length
+          ? `object has more than ${BOUNDARY_LIMITS.containerEntries} members, the limit; it lists ${names.length} own names`
+          : `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
     });
     refused = true;
   }
@@ -883,25 +912,25 @@ function captureObject(container: object, path: string, entered: number, state: 
     const key = pair[0];
     const descriptor = pair[1];
     const where = child(path, key);
-    if (!isWellFormed(key)) {
+    const keyScan = scanBoundaryString(key);
+    if (keyScan.kind === "lone_surrogate") {
       pushIssue(state.issues, { path: where, code: "lone_surrogate", message: "member name contains an unpaired surrogate" });
       refused = true;
       if (!charge(state, key.length)) return REFUSED;
       continue;
     }
-    const nameLength = scalarValueCount(key);
-    if (nameLength > BOUNDARY_LIMITS.stringScalarValues) {
+    if (keyScan.kind === "too_long") {
       pushIssue(state.issues, {
         path: where,
         code: "string_too_long",
-        message: `member name is ${nameLength} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
+        message: `member name has more than ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values, the limit`,
       });
       refused = true;
       if (!charge(state, key.length)) return REFUSED;
       continue;
     }
     // The member name's quoted, escaped bytes, exactly as the member will be spelled.
-    if (!charge(state, canonicalStringBytes(key))) return REFUSED;
+    if (!charge(state, keyScan.bytes)) return REFUSED;
     const member = describedValue(container, key, descriptor, where, state);
     if (!member.ok) {
       refused = true;

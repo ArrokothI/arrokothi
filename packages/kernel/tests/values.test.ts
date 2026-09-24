@@ -612,8 +612,9 @@ describe("refusing a value costs no more than the size limit allows", () => {
    * process's event loop so that no test timeout could ever fire. The child is killed instead, and
    * the kill fails the test rather than hanging the suite.
    */
-  const inBoundedChild = <T>(body: string): T => {
+  const inBoundedChild = <T>(body: string, prelude = ""): T => {
     const probe = `
+      ${prelude}
       const { canonicalize, BOUNDARY_LIMITS } = await import("./packages/kernel/src/index.ts");
       const started = performance.now();
       ${body}
@@ -742,6 +743,149 @@ describe("refusing a value costs no more than the size limit allows", () => {
     assert.equal(observed.codes[observed.codes.length - 1], "too_many_bytes", "and reading stopped at the byte limit");
     assert.ok(observed.visits <= Math.ceil(BOUNDARY_LIMITS.canonicalBytes / 200_000) + 1, `read ${observed.visits} strings`);
     assert.ok(observed.ms < 20_000, `refused in ${Math.round(observed.ms)} ms`);
+  });
+
+  // KC2-R1-01. The tests above bound how often a shared member is re-read; these bound the reading
+  // inside one visit. Each count comes from a wrapper installed before the module loads, so it sees
+  // exactly the reads the Kernel's own captured primordials make, and nothing the probe itself does.
+  const countingCharCodeAt = `
+    const originalCharCodeAt = String.prototype.charCodeAt;
+    globalThis.__reads = 0;
+    String.prototype.charCodeAt = function (index) {
+      globalThis.__reads += 1;
+      return Reflect.apply(originalCharCodeAt, this, [index]);
+    };
+  `;
+  const restoreCharCodeAt = "String.prototype.charCodeAt = originalCharCodeAt;";
+  type ReadProbe = { ok: boolean; codes: string[]; reads: number; ms: number };
+  const stringReadBound = 2 * (BOUNDARY_LIMITS.stringScalarValues + 1);
+
+  test("one oversized string is refused after reading about the length limit, not its length", () => {
+    const observed = inBoundedChild<ReadProbe>(`
+      ${restoreCharCodeAt}
+      const text = "a".repeat(33_554_432);
+      globalThis.__reads = 0;
+      const result = canonicalize(text);
+      console.log(JSON.stringify({
+        ok: result.ok,
+        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
+        reads: globalThis.__reads,
+        ms: performance.now() - started,
+      }));
+    `, countingCharCodeAt);
+    assert.equal(observed.ok, false);
+    assert.equal(observed.codes[0], "string_too_long");
+    assert.ok(observed.reads <= stringReadBound, `read ${observed.reads} code units of a 33,554,432-unit string`);
+  });
+
+  test("one oversized member name is refused after reading about the length limit, not its length", () => {
+    const observed = inBoundedChild<ReadProbe>(`
+      ${restoreCharCodeAt}
+      const key = "k".repeat(33_554_432);
+      globalThis.__reads = 0;
+      const result = canonicalize({ [key]: null });
+      console.log(JSON.stringify({
+        ok: result.ok,
+        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
+        reads: globalThis.__reads,
+        ms: performance.now() - started,
+      }));
+    `, countingCharCodeAt);
+    assert.equal(observed.ok, false);
+    assert.equal(observed.codes[0], "string_too_long");
+    assert.ok(observed.reads <= stringReadBound, `read ${observed.reads} code units of a 33,554,432-unit name`);
+  });
+
+  test("a shared oversized string is read about once, and a shared long one only until the byte limit", () => {
+    const observed = inBoundedChild<{ huge: ReadProbe; long: ReadProbe }>(`
+      ${restoreCharCodeAt}
+      const measure = (value) => {
+        globalThis.__reads = 0;
+        const result = canonicalize(value);
+        return {
+          ok: result.ok,
+          codes: result.ok ? [] : result.issues.map((issue) => issue.code),
+          reads: globalThis.__reads,
+          ms: performance.now() - started,
+        };
+      };
+      const huge = measure(new Array(BOUNDARY_LIMITS.containerEntries).fill("a".repeat(33_554_432)));
+      const long = measure(new Array(BOUNDARY_LIMITS.containerEntries).fill("a".repeat(70_000)));
+      console.log(JSON.stringify({ huge, long }));
+    `, countingCharCodeAt);
+    assert.equal(observed.huge.ok, false);
+    assert.equal(observed.huge.codes[observed.huge.codes.length - 1], "too_many_bytes");
+    assert.ok(observed.huge.reads <= stringReadBound, `read ${observed.huge.reads} code units across 4,096 shared occurrences`);
+    // Each refused occurrence is charged its 70,000-unit length, so the byte limit ends the pass after
+    // at most ceil(limit / 70,000) + 1 visits, each reading at most the per-string bound.
+    const visits = Math.ceil(BOUNDARY_LIMITS.canonicalBytes / 70_000) + 1;
+    assert.equal(observed.long.codes[observed.long.codes.length - 1], "too_many_bytes");
+    assert.ok(observed.long.reads <= visits * stringReadBound, `read ${observed.long.reads} code units`);
+  });
+
+  test("an oversized own-names listing is classified after at most one descriptor past the entry limit", () => {
+    const observed = inBoundedChild<{ single: ReadProbe; shared: ReadProbe; justOver: ReadProbe }>(`
+      const counted = (target) => {
+        const handle = { reads: 0 };
+        const proxy = new Proxy(target, {
+          getOwnPropertyDescriptor(inner, key) {
+            handle.reads += 1;
+            return Reflect.getOwnPropertyDescriptor(inner, key);
+          },
+        });
+        return { handle, proxy };
+      };
+      const report = (result, reads) => ({
+        ok: result.ok,
+        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
+        reads,
+        ms: performance.now() - started,
+      });
+      const big = Object.fromEntries(Array.from({ length: 550_000 }, (_, i) => ["k" + i, 0]));
+      const one = counted(big);
+      const single = report(canonicalize(one.proxy), one.handle.reads);
+      const two = counted(big);
+      const shared = report(canonicalize(new Array(64).fill(two.proxy)), two.handle.reads);
+      const over = counted(Object.fromEntries(Array.from({ length: BOUNDARY_LIMITS.containerEntries + 1 }, (_, i) => ["k" + i, 0])));
+      const justOver = report(canonicalize(over.proxy), over.handle.reads);
+      console.log(JSON.stringify({ single, shared, justOver }));
+    `);
+    const bound = BOUNDARY_LIMITS.containerEntries + 1;
+    assert.equal(observed.single.ok, false);
+    assert.equal(observed.single.codes[0], "too_many_entries");
+    assert.ok(observed.single.reads <= bound, `read ${observed.single.reads} descriptors of 550,000 names`);
+    assert.ok(observed.shared.reads <= bound, `read ${observed.shared.reads} descriptors across 64 shared occurrences`);
+    // At exactly one over, every name is still read and the reason is the same as before the bound.
+    assert.deepEqual(observed.justOver.codes, ["too_many_entries"]);
+    assert.equal(observed.justOver.reads, bound);
+  });
+
+  test("an array listing more names than any accepted array owns is refused without classifying each", () => {
+    const observed = inBoundedChild<ReadProbe>(`
+      const listed = ["length", ...Array.from({ length: 1_000_000 }, (_, i) => String(i))];
+      let reads = 0;
+      const proxy = new Proxy([], {
+        ownKeys: () => listed,
+        getOwnPropertyDescriptor(inner, key) {
+          if (key !== "length") reads += 1;
+          return Reflect.getOwnPropertyDescriptor(inner, key);
+        },
+      });
+      const result = canonicalize(proxy);
+      // Only the first codes are printed: an unbounded implementation reports one issue per listed
+      // name, and printing a million of them would fail this probe for the wrong reason.
+      console.log(JSON.stringify({
+        ok: result.ok,
+        codes: result.ok ? [] : result.issues.slice(0, 3).map((issue) => issue.code),
+        issues: result.ok ? 0 : result.issues.length,
+        reads,
+        ms: performance.now() - started,
+      }));
+    `);
+    assert.equal(observed.ok, false);
+    assert.ok(observed.reads < 10, `read ${observed.reads} index descriptors of a 1,000,001-name listing`);
+    // One aggregate reason: the listing holds more names than an array of at most 4,096 entries owns.
+    assert.equal(observed.codes[0], "unrepresentable_member");
   });
 });
 
