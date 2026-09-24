@@ -1,0 +1,29 @@
+{
+ "string 1048576": {
+  "reads": 65536,
+  "codes": [
+   "string_too_long"
+  ]
+ },
+ "string 8388608": {
+  "reads": 65536,
+  "codes": [
+   "string_too_long",
+   "too_many_bytes"
+  ]
+ },
+ "string 33554432": {
+  "reads": 65536,
+  "codes": [
+   "string_too_long",
+   "too_many_bytes"
+  ]
+ },
+ "object 550000 names": {
+  "descriptorReads": 4097,
+  "codes": [
+   "too_many_entries",
+   "too_many_bytes"
+  ]
+ }
+}
