@@ -32,7 +32,7 @@ Declare bytes/count/age limits, replay and deduplication periods, and deletion b
 
 ## Observation does not send input
 
-Reading [child](../concepts/operations.md#child-and-ownership) progress leaves the parent's [mailbox](../concepts/core.md#mailbox), wait and progress unchanged. If the parent Runtime must react, use an explicit message or an application output-to-input bridge with read/disclosure **and** destination input/send authority. The bridge binds actual producer provenance and source-output causation; it cannot impersonate the child or manufacture settlement evidence. A durable bridge owns its cursor/routing checkpoint, stable destination key and retention/deduplication limits. Automatic forwarding is not part of the minimum profile.
+Reading [child](../concepts/operations.md#child-and-ownership) progress leaves the parent's [mailbox](../concepts/core.md#mailbox), wait and progress unchanged. If the parent Runtime must react, use an explicit message or an application output-to-input bridge with read/disclosure **and** destination input/send authority. The bridge binds actual producer provenance and source-output causation; it cannot impersonate the child or manufacture settlement evidence. A durable bridge owns its cursor/routing checkpoint, stable destination key and retention/deduplication limits. Automatic forwarding is optional; no implementation is required to provide it.
 
 For example, the UI can show “3 sources checked” without waking the parent. A child asking “which region should I search?” explicitly sends a message that may wake a matching parent wait. Child completion has its own required terminal routing contract in [communication](communication.md#children).
 

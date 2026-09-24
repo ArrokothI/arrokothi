@@ -150,7 +150,7 @@ A Skill is assembled in one place to be loaded in another. It may be written by 
 
 The manifest is a request, never a grant. A manifest listing `publish_report` says what the package would like to use. It reads like configuration, and that is the hazard: configuration records a decision the operator made, while a manifest records what the package's author wanted, even when author and operator are on the same team. Enabling the package is the deployment's decision, and it decides only that: what the package may then do is still bounded by the Execution's [authority](actions.md#principal-and-authority) and current policy. Preflight checks whether what a manifest names is present and resolvable, not whether it is permitted, and an imported list of allowed tools cannot widen that bound. The manifest is one case of the wider rule that [content is not authority](../mechanisms/authority.md#content-is-not-authority).
 
-The package's contents follow the same distinction. Its descriptions are content: they can shape what a Runtime proposes and can settle nothing. Its scripts run only under the execution profile stated for them. And credentials, local sessions and private memory do not belong in a package at all, because whatever is packed into it reaches everywhere it is loaded. [Notes, controls and packages](../mechanisms/composition.md#notes-controls-and-packages) owns what a deployment pins before enabling one.
+The package's contents follow the same distinction. Its descriptions are content: they can shape what a Runtime proposes and can settle nothing. Its scripts run only where the Runtime and isolation requirements stated for them are met. And credentials, local sessions and private memory do not belong in a package at all, because whatever is packed into it reaches everywhere it is loaded. [Notes, controls and packages](../mechanisms/composition.md#notes-controls-and-packages) owns what a deployment pins before enabling one.
 
 This repository also contains coding-agent workflow skills under `.agents/skills/`. They are tooling for people and agents working *on* ArrokothI, not runtime Skills, and not part of the architecture this page describes.
 
@@ -168,6 +168,4 @@ An async handle is not permission, and it is not a [correlation identifier](oper
 
 None of the three implies a new mandatory Kernel entity, and none requires a portable descriptor hierarchy that every Runtime must adopt.
 
----
-
-In short: a Runtime may build these pieces under any names, or not at all. Three things hold regardless: a name in a model's reply means the operation it was bound to when the model saw it, content already sent cannot be taken back, and a Skill's manifest grants nothing.
+Next in the reading order: [state](state.md) — what an Execution keeps, and who stands behind each thing it keeps.

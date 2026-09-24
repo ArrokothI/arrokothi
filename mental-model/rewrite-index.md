@@ -53,7 +53,7 @@ The page queue records writing progress, not independent architecture acceptance
 | [operations](concepts/operations.md) | Rewritten, as reported by the owner |
 | [roles](concepts/roles.md) | Rewritten; the owner incorporated the audited draft in `f645146` |
 | [state](concepts/state.md) | Rewritten; the owner incorporated the audited draft in `c46506c` |
-| [values](concepts/values.md) | Next target, and the last concept rewrite; preserve exact algorithms and limits |
+| [values](concepts/values.md) | Rewritten; the owner incorporated the audited draft in `6ef8bcd` |
 
 After the concepts are rewritten, the intended next phase is implementation, such
 as K1.2, under the existing packet eligibility and review process. Reassess whether
@@ -65,8 +65,73 @@ boundaries and the origin of Skill packages, are answered in the incorporated pa
 see its opening on why optional does not mean unconstrained, and
 [Skill and package](concepts/roles.md#skill-and-package). The incorporated state page
 leaves checkpoint storage and pinning open in prose, with no marker, as its §4 line
-records. For values, the one remaining page, §4 lists the worksheet's open
-representation choices it touches: the transport codec and the storage layout/engine.
+records. The values page likewise leaves the transport codec and the storage
+layout/engine open in prose, with no marker.
+
+### Final cross-page pass and house conventions
+
+On 2026-09-23 one editor proofread Layers 1 and 2, the reference index and all seven
+concept pages together, for tone, vocabulary and reading order. This was self-review
+against the owners, not an independent audit. It changed no rule. It did correct four
+summaries that had drifted from their owners:
+
+- `kernel.md` said a takeover fences a stale writer before it can mutate a native
+  session. `mechanisms/recovery.md` owns two separate duties there: Kernel rejection of
+  stale writes, and Driver exclusion of native mutation (or refusal of the takeover).
+- `kernel.md` called child creation a mediated *operation*. An operation is a defined
+  term, and `concepts/actions.md#effect` says child creation points at none.
+- `kernel.md` said recovery's second question is "never answered automatically". A
+  Driver's phase contract can answer it; what never answers it is the Kernel alone,
+  or a lapsed lease.
+- `deployment.md` pointed the isolation/mediation counterexample at `actions.md`.
+  Its owner is `concepts/operations.md#isolated-execution` (§5.22).
+
+Later edits to Layers 1–3 should keep these conventions:
+
+- **One voice across the three layers.** Plain explanatory prose in the present tense,
+  with no contractions, American spelling, straight quotes and spaced em dashes. The
+  layers differ in depth, not in voice.
+- **Bold marks a definition site.** It also marks list lead-ins, and the terms that a
+  concept page's first example introduces. Layers 1 and 2 never bold a term as a
+  definition. A phrase whose meaning follows from defined words needs no entry of
+  its own. Owner decision, 2026-09-23: *mediated tool* ("mediated" plus the ordinary
+  word "tool") and *minimum profile* were removed as terms rather than defined. Neither
+  was implemented, and neither named a distinction the existing terms lack. The
+  support record already declares which native tools a Driver routes through the
+  Kernel. Every *minimum profile* use meant "optional, and refused explicitly when
+  unsupported", and the name wrongly suggested a kind of operating profile. They can
+  come back if a real need appears. A returning *minimum profile* would be a
+  feature-support level owned by S1, under a name without "profile" in it.
+- **One running example.** Every page uses the weekly report and the same cast: the
+  editor, the publication service, `publish_report`, the creation key `report-17`, the
+  laptop and Postgres-backed production deployments, and the Workflow and Agent teams.
+- **Navigation.** Each Layer-2 and concept page ends with a "Next in the reading
+  order" line. Each concept page opens with a short introduction and *A first example*.
+  Group headings (`##`) hold term entries (`###`) where a page has groups.
+- **Vocabulary settled in this pass.** *Native* is glossed once, in `README.md`.
+  *Durable* and *pin* each have two senses, stated in
+  `concepts/operations.md#operating-profile-and-durability` and
+  `concepts/state.md#retention-pin-and-tombstone`. The following choices apply:
+  - *compliance*, never *obedience*, for what acknowledgment does not establish;
+  - a Runtime *submits* an Outcome; it never *yields* one;
+  - *model call*, never *LLM call*;
+  - *Kernel Worker*, never *coordinator*, for a process performing Kernel transitions;
+  - *accepted state*, never *accepted truth*;
+  - *the in-process binding*, never *the implementation*, for the TypeScript binding;
+  - *worker* is always qualified;
+  - *Emission* is capitalized.
+
+  `reference.md#common-search-terms` routes these words to their owners.
+- **Left for the mechanisms pass.** Some terms are undefined or have drifted on
+  mechanism pages:
+  - *coordinator*, in `execution-cycle.md` and `resources.md`;
+  - *accepted truth*, in `execution-cycle.md`;
+  - *lab*/*laboratory*, in `evidence.md`;
+  - *RuntimeStore*, in `communication.md`;
+  - *execution profile*, in `composition.md`;
+  - lowercase *emissions*.
+
+  The concept pages now avoid all of these.
 
 ## 1. Concept index
 
@@ -221,7 +286,7 @@ naming an `OPEN(...)` marker claim that one exists.
   K3 (`MM/deployment.md#check-what-a-durable-substrate-retries-on-its-own`).
 - Isolation backend — D1. Supported versions and tested protocol subsets — S1.
 - Multi-approver policy; `reply_and_ask`; arbitrary detachment; richer joins; context IR — optional
-  or refusable in the minimum profile (`mechanisms/authority.md`, `communication.md`,
+  and refused explicitly when unsupported (`mechanisms/authority.md`, `communication.md`,
   `composition.md`, `concepts/operations.md#child-and-ownership`).
 - Whether **richer supervision, or detached and supervisory services, are needed at all** —
   `docs/future-plan.md` Q3, unanswered; WS §14 records it as "not answered here" and puts

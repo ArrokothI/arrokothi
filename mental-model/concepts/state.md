@@ -49,13 +49,13 @@ The Kernel now has to decide what happens to the unanswered Activation, and it d
 
 Suppose this Runtime's Driver declares that an exchange in this phase reaches nothing outside the Runtime except model calls and new draft objects in the store. Suppose also that the application has accepted the cost of repeating those. Then **replay** is safe. A replacement attempt is given the same exchange: the same Activation, the same pinned progress, the same batch. The dead host's attempt is [fenced](identity.md#writer-epoch) off, so the Kernel will refuse anything it submits if it ever returns. The Driver's declaration made that decision possible; the lapse of a lease could not have.
 
-Change one fact and the answer changes. Suppose the Agent could also send e-mail natively in this phase. Then nobody could prove that the dead host had not already sent the report to the board. The Driver cannot establish that continuing is safe, so the Execution stays `RUNNING` but **recovery-held**, and the reason is visible to anyone who inspects it.
+Change one fact and the answer changes. Suppose the Agent could also send email natively in this phase. Then nobody could prove that the dead host had not already sent the report to the board. The Driver cannot establish that continuing is safe, so the Execution stays `RUNNING` but **recovery-held**, and the reason is visible to anyone who inspects it.
 
 Now suppose another team runs a similar Agent inside a session hosted by its model provider, and that team's progress holds only the session's ID. When that team's host died, the provider kept the session running. By the time recovery looks, the session has taken four more steps that no Outcome proposed and the Kernel never accepted. The ID still finds the session, so it is a **locator**. It may be possible to reattach to the session and learn what it did. What cannot be done is to resume from the point the Kernel accepted, because nothing preserved that point. A **checkpoint** would have preserved it.
 
 **Friday.** The report completes. From here on, what keeps any of its information available is **retention**: each kind of record is kept for its declared period, and none of them forever. Eventually the report's original input is deleted. After that, a **deduplication tombstone** can still bind the original create request's identity to its content, so that a very late exact duplicate is recognized as a duplicate and not taken for a new request.
 
-Apart from the labels that open each day and each list item, every bold word in that story is a term this page defines. The rest of the page makes each one exact.
+Each term that story introduced has an entry below, and the rest of the page makes each one exact.
 
 ## How the work continues
 
@@ -95,7 +95,7 @@ The opposite mistake is treating a saved copy of the work as a way back into it.
 
 ### Recovery and re-execution
 
-**Recovery** reconstructs accepted truth and then, if the supported native contract allows it, continues the same logical work. Those are two jobs, done in a fixed order.
+**Recovery** reconstructs accepted state and then, if the supported native contract allows it, continues the same logical work. Those are two jobs, done in a fixed order.
 
 - **Reconstructing** is mechanical. Whether there is anything to rebuild from depends only on whether the deployment's storage kept the Kernel's accepted records.
 - **Continuing** is not mechanical. The Kernel does not own the native work and cannot look at it, so the Driver's contract for the exact native phase decides.
@@ -110,7 +110,7 @@ Continuing the same work can take several forms, each with its own precondition.
 | **Replay** | Performs the same immutable exchange again: same Activation, same pinned input | The contract for that exact phase proves that repeating it is safe |
 | **Restart-from-input** | Starts an explicitly authorized *new* Execution, linked by causation to the original | Someone with the authority to create that Execution decides to |
 
-Replay needs its precondition because an exchange may already have reached the world, and the repeat reaches it again. In the report's example, repeated model calls are billed twice, and a repeated native e-mail is sent twice.
+Replay needs its precondition because an exchange may already have reached the world, and the repeat reaches it again. In the report's example, repeated model calls are billed twice, and a repeated native email is sent twice.
 
 Restart-from-input stands apart from the other two: it does not continue the original at all. **A terminal lifetime never reopens.** When a completed, failed or cancelled report needs doing again, the new work is a new Execution that points back at the old one. That separation keeps a finished lifetime from acquiring new actions after its result was recorded. What a restart may and may not carry over from the original is set out in [compatibility and migration](../mechanisms/recovery.md#compatibility-and-migration).
 
@@ -137,7 +137,7 @@ The History is the Kernel's side of the story and only that side. That rules out
 - **Not a business database.** The headcount lives in the HR system. The History can show that an Outcome was accepted, but it holds none of the application's own records.
 - **Not an automatic replay engine.** Some durable engines rebuild state by rerunning code against a recorded history of their steps. The Execution History records decisions, not the Runtime's steps, so rerunning arbitrary Runtime code against it reproduces nothing. A Runtime that recovers by replaying history does so against its own pinned history, under its Driver's contract.
 
-Native traces, such as the Runtime's logs or a provider's record of a run, can be linked from the History so that an investigator can follow the story across the boundary. Linking a trace does not make it accepted truth: a trace is the Runtime's account, not the Kernel's decision. [What evidence proves](../mechanisms/evidence.md#what-evidence-proves) says what each kind of record establishes.
+Native traces, such as the Runtime's logs or a provider's record of a run, can be linked from the History so that an investigator can follow the story across the boundary. Linking a trace does not make it part of the accepted record: a trace is the Runtime's account, not the Kernel's decision. [What evidence proves](../mechanisms/evidence.md#what-evidence-proves) says what each kind of record establishes.
 
 ## What the work knows, and who answers for it
 
@@ -221,6 +221,8 @@ Creation has an asymmetry of its own. A resource can be allocated successfully a
 
 **Retention** is the declared period or condition under which data stays available. A **pin** prevents deletion while an accepted or in-use reference still requires the data under its retention contract. A **deduplication tombstone** keeps the permitted binding between an identity and its content after the full payload has been deleted.
 
+This is the retention sense of *pin*. Earlier pages also say that an Activation *pins* its progress and batch, or that creation *pins* a Definition revision, meaning it fixes one exact version so that everyone later resolves the same thing. The two senses meet but do not coincide: fixing a version says which data is meant, and a retention pin keeps that data from being deleted while something still needs it.
+
 Each of the three is a promise with limits, and the limits are the point.
 
 - **Retention is declared,** which means written down, not assumed. A supported profile [publishes](../deployment.md#what-a-supported-profile-publishes) its retention windows, and the report's accepted progress, its artifacts, its receipts and its traces can each have a different window.
@@ -228,3 +230,5 @@ Each of the three is a promise with limits, and the limits are the point.
 - **A tombstone keeps enough to recognize, not enough to restore.** After the report's input is deleted, a tombstone can still bind the create request's identity to its content, so an exact duplicate can be told apart from a conflicting request. It cannot replay the request. It does not make the content anonymous either: a hash of a short or guessable value can often be reversed by trying the candidates.
 
 So neither a pin nor a tombstone implies unlimited retention, replay, or anonymity of hashes. What happens when retention ends belongs to [evidence retention](../mechanisms/evidence.md#retention-and-deletion). That covers how deletion is reported, and why a record that no longer exists must say so, not answer as if nothing had happened. Cleanup of the resources themselves belongs to [resources](../mechanisms/resources.md#capacity-cancellation-and-retention).
+
+Next in the reading order: [values](values.md) — the exact rules for when two values are the same, and how large one may be.

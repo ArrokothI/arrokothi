@@ -8,7 +8,7 @@ To look one term up rather than read through, use the [reference index](../refer
 
 ## Reading path
 
-Seven pages in dependency order. This is not alphabetical, and not the order a file browser shows.
+Seven pages in dependency order. This is not alphabetical, and not the order a file browser shows. Every page is built the same way: a short introduction, a section called *A first example* that follows the same weekly report through the page's subject, and then one entry per term with its definition and the reasoning it needs. Each page ends by naming the next one.
 
 1. **[core.md](core.md)** — The pieces every other page assumes: the Kernel, an Execution, the Runtime that does the work and the Driver that adapts it, and the protocol objects that carry one exchange — Activation, Outcome, Event, and the mailbox and batch that Events travel in. Read first; little else parses without it.
 

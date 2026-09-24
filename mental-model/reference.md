@@ -1,15 +1,15 @@
 # Reference index
 
-Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtime.md), [Driver](driver.md) and [Deployment](deployment.md). This page is the **lookup table**, for someone who already knows the architecture and wants one term or one page. If you are learning Layer 3 for the first time instead, the reading paths live with the pages they order: [`concepts/README.md`](concepts/README.md) and [`mechanisms/README.md`](mechanisms/README.md). Layer 3 is precise target/reference material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
+Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtime.md), [Driver](driver.md) and [Deployment](deployment.md). This page is the **lookup table**, for someone who already knows the architecture and wants one term or one page. Layer 3 is precise target/reference material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
 
 ## Where the reading order lives
 
-Each directory's README owns its own reading path, says what every page in it does, and gives the reason each page sits where it does:
+If you are learning Layer 3 for the first time, read it through the reading paths, each owned by its directory's README, which also says what every page in it does and why it sits where it does:
 
 - [`concepts/README.md`](concepts/README.md) — seven pages in dependency order, `core` first.
 - [`mechanisms/README.md`](mechanisms/README.md) — sixteen pages in six groups, `creation` first.
 
-Both orders track actual term dependency, not alphabetical or directory order, so opening the folders in a file browser will not give you either sequence. The “Find a mechanism” table below lists the mechanism pages in that same reading order, so it doubles as a lookup for anyone who already knows the architecture.
+Both orders track actual term dependency, not alphabetical or directory order, so opening the folders in a file browser will not give you either sequence. The "Find a mechanism" table below lists the mechanism pages in that same reading order, so it doubles as a lookup for anyone who already knows the architecture.
 
 Not every mechanism has a matching concept page and vice versa: `context` is a mechanism with no `concepts/context.md`, because its vocabulary lives in `concepts/roles.md` instead. The reverse also happens. Matching basenames (`actions`, `state`) mean the subject was large enough to split; they are not a promise that every subject splits.
 
@@ -17,7 +17,7 @@ Not every mechanism has a matching concept page and vice versa: `context` is a m
 
 Three conventions, so a path tells you what you are opening.
 
-- **`concepts/` owns canonical vocabulary and its local invariants; `mechanisms/` owns how several concepts interact.** This is closer to the real split than “concepts define, mechanisms compose”: `concepts/values.md` states the actual canonical-encoding algorithm, and `concepts/identity.md` states substantive epoch/duplicate/retention rules, not bare definitions. Where a subject splits across both directories — `actions` and `state` — the concept page is the sole definition of the terms and the mechanism page is the sole specification of how they interact. The shared name is deliberate; the directory says which half you are in.
+- **`concepts/` owns canonical vocabulary and its local invariants; `mechanisms/` owns how several concepts interact.** This is closer to the real split than "concepts define, mechanisms compose": `concepts/values.md` states the actual canonical-encoding algorithm, and `concepts/identity.md` states substantive epoch/duplicate/retention rules, not bare definitions. Where a subject splits across both directories — `actions` and `state` — the concept page is the sole definition of the terms and the mechanism page is the sole specification of how they interact. The shared name is deliberate; the directory says which half you are in.
 - **Layer-2 files use the short names.** `runtime.md` and `driver.md` cover the *Execution Runtime* and *Execution Driver*, whose formal names and shorthands are fixed in [core vocabulary](concepts/core.md#execution-runtime). Role vocabulary for Agents, Workflows and Stages is [`concepts/roles.md`](concepts/roles.md), a different subject from the Layer-2 `runtime.md`.
 - **Each mechanism page carries a Status line** naming whether it is a required Kernel contract, a per-Driver obligation or an optional Runtime design, and which development gate introduces it. It is the first thing after the title on most pages, and follows a short framing paragraph on `lifecycle.md`, `context.md` and `communication.md`. Concept pages carry no Status line: they define vocabulary, and a term is not a commitment to build anything. A concept page you reached directly still describes target specification, not shipped behavior — see [Target, not shipped](README.md#target-not-shipped).
 
@@ -169,12 +169,17 @@ current owner, never the retired page, for what a rule is today.
 | output obligation, output subscription | [Output obligation](concepts/actions.md#emission-result-and-output-obligation), [replay](mechanisms/output.md) |
 | boundary, receipt, acceptance position | [Acceptance and receipt](concepts/identity.md#acceptance-boundary-and-receipt) |
 | worker, runtime, host | [Runtime](concepts/core.md#execution-runtime), [local worker](concepts/roles.md#local-worker), [host roles](concepts/operations.md) |
-| Agent, Workflow, Stage, Skill, “runtime concepts”, authoring | [Roles vocabulary](concepts/roles.md) |
+| Agent, Workflow, Stage, Skill, "runtime concepts", authoring | [Roles vocabulary](concepts/roles.md) |
+| native, ambient access | *Native* is glossed in [the overview](README.md#four-pieces-to-remember); acting through powers a host already holds is [ambient native action](concepts/actions.md#exposure-and-mediation) |
+| durable, durability, persistent | A durability claim names which facts survive which failures for how long: [operating profile and durability](concepts/operations.md#operating-profile-and-durability), which also explains *durable owner* and *durable request* |
+| pin, pinned | Two senses: fixing one exact version ([revision](concepts/identity.md#revision)) and keeping data from deletion ([retention pin](concepts/state.md#retention-pin-and-tombstone)) |
+| durable substrate, Temporal, Restate | [What a substrate retries on its own](deployment.md#check-what-a-durable-substrate-retries-on-its-own) |
 | Structured Memory | [Structured state](concepts/state.md#structured-state) — the older name for the same role |
+| detached spawn, detached child | In 0.8.x code and tests, a child spawned without the parent waiting for it. The target vocabulary calls that a [spawn](concepts/operations.md#child-and-ownership), which the parent still owns and must account for; *detachment* there means transferring that responsibility to a named owner. |
 | ControllerResumption, interleave, Harness, closed Agent/Workflow union | Legacy implementation vocabulary, still live in 0.8.x code and `tests/conformance/`, with no page here that owns it. [Implemented baseline](../docs/development/002-implemented-kernel-baseline.md) describes what exists; [structural evidence](mechanisms/evidence.md#structural-evidence) explains why a name in the current tree is not evidence about the target. Controller-local resumption is replaced by the [Activation](concepts/core.md#activation)/[Outcome](concepts/core.md#outcome) exchange, not renamed into it. |
 
-A term in this second group is a name you will meet in running code or in `AGENTS.md`, not a term
-these pages define. It is listed so the path from the code to the page that owns the concept now
-exists at all; deleting the row does not retire the name.
+The last three rows name things you will meet in running code or in `AGENTS.md`, not terms these
+pages define. They are listed so the path from the code to the page that owns the concept now
+exists at all; deleting a row does not retire the name.
 
 Ordinary words such as process, queue, model, database and transport retain their normal engineering meanings unless qualified above. This index introduces no universal object hierarchy. [Sources and open choices](sources.md) records provenance, accepted decision coverage, usability findings and intentionally unselected implementation choices.

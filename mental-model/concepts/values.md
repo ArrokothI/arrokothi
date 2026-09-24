@@ -30,7 +30,7 @@ Now change the story twice, and watch the same comparison say no.
 - **A reordered list.** Suppose the retry were rebuilt by client code that sorts every array it touches, so `sections` arrives as `["budget","hiring"]`. That is a different value. The order of an array is part of what it says, and for this report it is the order of the sections. The same key with different content is a [conflict](identity.md#request-key-and-input-id): nothing new is created, and nothing is quietly updated.
 - **A dropped null.** Suppose the retry passed through a library that omits null fields, so `"reviewer": null` vanished. That is also a different value. "No reviewer" and "reviewer not mentioned" can mean different things. Unless the request's schema says it treats them alike, the protocol keeps them apart. Again, a conflict.
 
-Later in the week, the report's Agent proposes an [Outcome](core.md#outcome) whose progress includes the full text of the board minutes it retrieved: about three megabytes. The Kernel rejects the Outcome, and since an Outcome is accepted whole or not at all, nothing in it is accepted. Nothing is trimmed to fit, either. The Agent tries again with the minutes left in the document store and an [artifact reference](state.md#artifact-reference) in its progress, and the Outcome is accepted. Had the progress been 700 KiB and the Outcome's emissions another 700 KiB, both would have passed the size limit: each value is measured on its own, and no rule on this page limits their sum.
+Later in the week, the report's Agent proposes an [Outcome](core.md#outcome) whose progress includes the full text of the board minutes it retrieved: about three megabytes. The Kernel rejects the Outcome, and since an Outcome is accepted whole or not at all, nothing in it is accepted. Nothing is trimmed to fit, either. The Agent tries again with the minutes left in the document store and an [artifact reference](state.md#artifact-reference) in its progress, and the Outcome is accepted. Had the progress been 700 KiB and the Outcome's Emissions another 700 KiB, both would have passed the size limit: each value is measured on its own, and no rule on this page limits their sum.
 
 Three different encodings touched this report, and it matters which is which:
 
@@ -76,7 +76,7 @@ Not every piece of data in a running system is the protocol's business. A model'
 - a string of well-formed Unicode;
 - an array or an object whose members are, recursively, boundary values.
 
-In other words, JSON's data model, with every ambiguous corner closed. That is enough to express configuration, arguments, progress, emissions and the payload of an Event, in a shape that ordinary transports and languages already carry.
+In other words, JSON's data model, with every ambiguous corner closed. That is enough to express configuration, arguments, progress, Emissions and the payload of an Event, in a shape that ordinary transports and languages already carry.
 
 A **boundary-value root** is one whole value that the rules are applied to as a unit. The roots are:
 
@@ -275,3 +275,5 @@ The same gap runs the other way. Values that look identical on a screen can be d
 **Transport and storage.** How values travel and how they are stored are implementation choices, as the [codec](#codec) section says. So is whether a deployment writes canonical bytes anywhere at all.
 
 **Authority.** No comparison on this page grants anything. Equal canonical bytes, or a matching hash, establish that two values are the same value. They say nothing about who sent it, whether it was permitted, or whether anyone approved it. [Content is not authority](../mechanisms/authority.md#content-is-not-authority) owns that boundary.
+
+This is the last concept page. The [mechanism reading path](../mechanisms/README.md) comes next: it specifies how the terms defined on these seven pages behave together.
