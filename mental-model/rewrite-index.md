@@ -213,6 +213,7 @@ owner pages' own scope statements and correct whichever is wrong, in the same co
 | K0.2 five distinguishing wait examples | `mechanisms/waits.md#small-distinguishing-examples` | `tests/fixtures/k0/public-fixture-specification.md` §22 (`K02-R16-01`), `work/K0.2/review-16.md` |
 | K1.0 structural boundary; inventory agreement; fail-closed reading | `mechanisms/evidence.md#structural-evidence`, `docs/development/015-structural-evidence-rules.md` | `work/K1.0/*`, `K1.0-correction-01`, `K1.0-correction-02/review-01.md` |
 | K1.0-corr-02 set identity in comparison | `015-structural-evidence-rules.md` ("Comparing a set is not comparing a string"), `concepts/values.md#what-these-rules-do-not-cover` | `work/K1.0-correction-02/contract.md` |
+| K1.1 progress codec bound at creation (K1.1-C1), adopted as creation's sixth fact by owner decision 2026-09-24 | `mechanisms/creation.md#one-atomic-creation`; `concepts/state.md#progress` points to it | `work/K1.1/contract.md` C1 (codec among the bound facts) and C4 (dispatch never infers it); WS PC-4 required the pin but not where the first one comes from |
 | K1.1 creation/ingress domain separation (`KC1-DEC-1`) | `concepts/identity.md#request-key-and-input-id`, `mechanisms/creation.md#later-input-has-a-destination` | `work/K1.1/review-15.md` `K11-R15-ID-01`; `K1.1-correction-01/contract.md`; `K1.1-reference-01` REF-1 |
 | K1.1 in-process value capture (C3, `KC1-DEC-3`), and its distinction from request-envelope own-field observation (`KC1-DEC-6`) | `concepts/values.md#in-process-value-capture` | `work/K1.1/contract.md` C3; `K1.1-correction-01` review-08 C3; `K1.1-reference-01` REF-2, and its review-02 row "Envelope ≠ value capture" |
 | K1.1 delivery reporting (`KC1-ARCH-1`) | `mechanisms/execution-cycle.md#delivery-reporting-boundary` (+ link from `mechanisms/integration.md`) | `work/K1.1-correction-01/decision-01.md` incl. its superseding note; `review-08.md`; roadmap §K1.1-correction-01 |
@@ -401,11 +402,11 @@ examples explain why a check was added and do not establish current build status
     physical redelivery from Kernel deduplication. Check the owner's conditions for
     retry and provider-side idempotency. Owner: `mechanisms/actions.md#retrying-an-action`.
 15. **Inferring API parameters from an atomic semantic binding.** Creation binding Execution ID,
-    Runtime contract, Definition revision, authority context and initial input in one accepted
-    decision fixes *atomicity*, not a signature, a field list or a wire shape. Owners:
-    `creation.md#one-atomic-creation` for the binding; `concepts/identity.md`'s opening (names never
-    fix API, wire or storage spelling) and `#acceptance-boundary-and-receipt` (a boundary is a
-    consistency requirement, not machinery) for the non-inference.
+    Runtime contract, Definition revision, progress codec version, authority context and initial
+    input in one accepted decision fixes *atomicity*, not a signature, a field list or a wire
+    shape. Owners: `creation.md#one-atomic-creation` for the binding; `concepts/identity.md`'s
+    opening (names never fix API, wire or storage spelling) and `#acceptance-boundary-and-receipt`
+    (a boundary is a consistency requirement, not machinery) for the non-inference.
 16. **Creation request ID and Input ID are one domain.** They are separate; the initial Event keeps creation
     provenance and a creation receipt, and later ingress with the same key text is a new request.
     Evidence: `K11-R15-ID-01`.

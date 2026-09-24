@@ -27,7 +27,7 @@ The same report appears throughout as the running example. [The worked trace](..
 
 ## Who is involved
 
-Six terms name the parties and what an Execution is bound to: the Kernel that accepts, the Execution it accepts things about, the Runtime that does the work, the Driver between them, and the two revisions an Execution pins when it is created.
+Six terms name the parties and what an Execution is bound to: the Kernel that accepts, the Execution it accepts things about, the Runtime that does the work, the Driver between them, and the Definition and Runtime contract, whose revisions an Execution pins when it is created.
 
 ### Kernel
 
@@ -93,7 +93,7 @@ The identities on the two sides do not line up one-to-one either. Each Driver de
 
 How many Executions one Driver serves is not yet established. <!-- OPEN(unassigned): how many Executions one Driver serves. Only the two facts below are settled. Whoever assigns an owner: state the rule here and delete this marker; until then prose must not imply an arrangement. rewrite-index.md §4 -->
 
-Two facts bound the question without answering it. A Driver adapts one particular Runtime, not one particular Execution. And what an Execution pins at [creation](../mechanisms/creation.md#one-atomic-creation) is the [Runtime contract](#runtime-contract) revision, not an adapter — that binding names no Driver at all — so it neither requires nor forbids a Driver per Execution.
+Two facts bound the question without answering it. A Driver adapts one particular Runtime, not one particular Execution. And what an Execution pins at [creation](../mechanisms/creation.md#one-atomic-creation) are revisions, the [Runtime contract](#runtime-contract)'s among them, not an adapter — that binding names no Driver at all — so it neither requires nor forbids a Driver per Execution.
 
 Whether a deployment shares one Driver across many Executions, builds one per Execution, or replaces the Driver behind a long-lived Execution, is not decided here. The absence of a rule is an open question, not permission to assume whichever arrangement is convenient.
 
