@@ -100,13 +100,16 @@ export const inputIdKey = (id: InputId): string => packIdentity([id.producerName
 export const creationRequestIdKey = (id: CreationRequestId): string => packIdentity([id.producerNamespace, id.scope, id.requestKey]);
 
 /**
- * The acceptance boundaries this packet implements.
+ * The acceptance boundaries this package implements.
  *
- * `identity.md` names six receipt scopes. Three of them belong to boundaries no accepted packet has
- * built - Outcome acceptance is K1.2's, Effect admission and settlement are K2's, child and message
- * operations are K4's - so this union has three members rather than a placeholder for each.
+ * `identity.md` names six receipt scopes. K1.1 built creation/input ingress (two members here,
+ * because the creation receipt also covers the initial input) and dispatch intent; K1.2 adds Outcome
+ * acceptance. The other three belong to boundaries no packet has built yet - Effect admission and
+ * settlement are K2's, child and message operations are K4's - so this union has no placeholder for
+ * them. An authorized takeover re-records the dispatch intent's current attempt and is receipted at
+ * that boundary rather than inventing a seventh (K1.2-DEC-6).
  */
-export type ReceiptBoundary = "creation" | "input_ingress" | "dispatch_intent";
+export type ReceiptBoundary = "creation" | "input_ingress" | "dispatch_intent" | "outcome_acceptance";
 
 /**
  * Evidence that one specific request was accepted at one named boundary.
@@ -139,6 +142,7 @@ const BOUNDARY_PREFIX: Record<ReceiptBoundary, string> = {
   creation: "crt",
   input_ingress: "inp",
   dispatch_intent: "dsp",
+  outcome_acceptance: "out",
 };
 
 /**

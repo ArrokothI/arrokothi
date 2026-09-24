@@ -12,9 +12,11 @@ and incremental migration notes are preserved in the [archive](archive.md).
 
 The private `@arrokothi/kernel` package separately implements an in-memory `ExecutionCoordinator`:
 atomic creation with initial input, post-creation ingress under the Input ID triple, separate
-receipts, batch reservation, asynchronous Driver dispatch, ordinary redelivery and scoped inspection.
-It refuses new ordinary input to a terminal destination; exercising that through a live terminal
-transition awaits K1.3. Boundary validation, limits and sealing are local; canonical bytes use the
+receipts, batch reservation, asynchronous Driver dispatch, ordinary redelivery and scoped inspection;
+and Outcome acceptance with replay and conflict, whole-batch acknowledgment, progress, Emissions,
+`continue`/`complete`/`fail`, terminal disposition of unprocessed input, authorized takeover and
+inspectable recovery holds ([Outcome acceptance API](#outcome-acceptance-api)). It refuses new
+ordinary input to a terminal destination. Boundary validation, limits and sealing are local; canonical bytes use the
 approved unmodified `canonicalize@3.0.0`. In-process capture keeps each root's canonical byte count
 while it reads and stops once that count passes the 1 MiB limit, so a live object that repeats one
 shared member is refused without being expanded in full. Within one visit, a string or member name
@@ -23,10 +25,10 @@ classified only until it exceeds what an accepted container owns (K1.1-correctio
 reports delivery through a Kernel-owned capability; the Kernel never observes a Driver-returned
 Promise.
 
-Outcome acceptance and the recovery hold belong to K1.2; out-of-band cancellation, terminal
-disposition, waits and deadlines to K1.3; Effects to K2. Those unimplemented surfaces refuse by name.
-No supported SDK consumer is routed through the private target package yet; K1.4 owns that bridge.
-This cleanup changes documentation/evidence locations, not any executable capability.
+Out-of-band cancellation and its terminal disposition, waits and deadlines belong to K1.3; Effects to
+K2. Those unimplemented surfaces refuse by name, and an Outcome proposing an Effect or a wait is
+refused whole. No supported SDK consumer is routed through the private target package yet; K1.4 owns
+that bridge.
 
 ## Request identity API
 
@@ -46,7 +48,8 @@ by the symbol cleanup.
 `inputIdKey(...)` and `creationRequestIdKey(...)` pack their parts with `packIdentity`, which
 length-prefixes each part rather than hashing it, so no choice of caller text makes two identities
 collide. A `Receipt` is a frozen in-memory record `{ boundary, token, position }`. `boundary` is one of
-the three implemented `ReceiptBoundary` values: `creation`, `input_ingress` or `dispatch_intent`.
+the four implemented `ReceiptBoundary` values: `creation`, `input_ingress`, `dispatch_intent` or
+`outcome_acceptance`.
 `token` is opaque to callers and derives only from the owning Execution and its position, so it reveals
 no coordinator-wide order. `position` is that Execution's own acceptance index, and creation is 1.
 Exact replay returns the same receipt object. Receipts have no serialized form yet. These are this
@@ -56,6 +59,65 @@ Retention, as the in-memory coordinator publishes it: no creation key and no Inp
 while the coordinator lives, and nothing survives it. Deduplication is therefore exact for the
 coordinator's lifetime, and no expired-key case exists. A profile that expires keys must publish
 its own expired-key policy before enabling expiry (`mechanisms/evidence.md#retention-and-deletion`).
+
+## Outcome acceptance API
+
+`ExecutionCoordinator.submitOutcome(caller, envelope)` takes an `OutcomeEnvelope`:
+`executionId`, `activationId`, `writerEpoch`, `baseProgressRevision`, `progress`, optional
+`emissions` (each `{ emissionKey, value }`), optional `effects` and `next` (`{ step: "continue" }`,
+`{ step: "complete", result }`, `{ step: "fail", error }`; `{ step: "await", wait }` is refused until
+K1.3). The envelope names the exchange and the attempt it answers; nothing is defaulted from the
+current exchange. Every field is read once from the envelope's own data, and each value root
+(progress, each Emission value, the result or error) is captured once and measured on its own. An own
+field the binding does not know is refused rather than ignored, as is any non-empty `effects`.
+
+The order is `execution-cycle.md`'s: the caller is scoped to the named Execution before anything else
+is read; an already accepted Outcome under the same Activation ID is looked up next, and an exact
+duplicate (equal captured content) returns the original receipt and decision while anything else is
+refused as `duplicate_conflict`; then terminal state, then the exchange's current Activation ID, writer
+epoch and base progress revision (`stale_exchange`), then content (`malformed_envelope`, or
+`capacity_exhausted` above the declared Emission limit). An accepted Outcome acknowledges the whole
+reserved batch, installs the progress under revision base + 1, records each Emission, records the
+typed result (`kind: "completed"` or `"failed"`) for `complete`/`fail`, resolves the exchange and moves
+the Execution to `READY`, `COMPLETED` or `FAILED`; at `complete`/`fail`, every Event still
+unacknowledged receives a terminal disposition in the same decision. The answer, `OutcomeAccepted`,
+carries the `outcome_acceptance` receipt and the decision's lists; inspection adds `acknowledged`,
+`terminalDispositions`, `emissions`, `result`, `exchanges` (resolved exchanges with their delivery
+attempts) and `recoveryHolds`.
+
+`requestTakeover(caller, executionId, { activationId, writerEpoch })` advances the named current epoch
+by one within the same exchange and delivers the same Activation at the new epoch.
+`recoverExecution(caller, executionId, { activationId, available })` compares the exchange's pinned
+Definition revision, Runtime contract revision and progress codec with the declared
+`available.definitionRevisions`, `runtimeContractRevisions` and `progressCodecs`, and holds the
+exchange (`RUNNING`, `recoveryHolds` naming what is missing) or clears that hold.
+`reportProtocolFailure(caller, executionId, { activationId, writerEpoch, diagnostic? })` holds the
+current attempt's exchange because its response could not be classified. Redelivery is refused while
+any hold stands, takeover while a code hold stands; a takeover clears a protocol-failure hold, and an
+accepted Outcome of the current attempt resolves the exchange and ends its holds.
+
+These are this in-process binding's choices where the architecture leaves the representation open
+(`mental-model/rewrite-index.md` §4):
+
+- **Writer epoch** (`concepts/identity.md#writer-epoch`): an integer, 1 at each new exchange, advanced
+  by exactly 1 per accepted takeover. Epochs are not comparable across Activation IDs.
+- **Outcome-acceptance transaction** (`mechanisms/execution-cycle.md#atomic-decisions-across-the-system`):
+  one synchronous call on the single-threaded coordinator. Every caller-owned field is observed first,
+  every record is then built, and only then is anything mutated, through load-time primitives; a
+  getter that reenters the Kernel is ordered before the decision's checks. Atomic within the process,
+  not durable.
+- **Per-entry disposition storage** (WS §3 "Left open"): each mailbox entry holds its own frozen
+  disposition, `queued`, `acknowledged` (naming the acknowledging Activation) or `terminal` (with its
+  reason).
+- **Takeover evidence**: a takeover re-records the dispatch intent's current attempt and mints a
+  `dispatch_intent` receipt; it introduces no new receipt boundary.
+- **Emission and result identity**: `emission-…` and `result-…` IDs are packed from the Execution ID,
+  the Activation ID and, for an Emission, its key, so a replay cannot mint another and no identity
+  reflects activity elsewhere. Output positions, reads and cursors are K4.4's.
+- **Declared limit**: `CoordinatorOptions.emissionsPerOutcome`, default 256, an operational bound
+  checked before any Emission is read, not a semantic value limit.
+- **Retention**: accepted-Outcome records, resolved exchanges, Emissions and results are kept for the
+  coordinator's lifetime, so an exact Outcome replay is answered for as long as the coordinator lives.
 
 ## 1. Execution and Harness
 

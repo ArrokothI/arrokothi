@@ -5,9 +5,10 @@
  * silently drop or endlessly retry it" - so it has a classification a caller can branch on, a reason
  * a person can read, and a retained position on the Execution it concerns.
  *
- * The classifications an Outcome can be refused under live with Outcome acceptance in K1.2.
  * `duplicate_conflict` is shared: `identity.md` gives it one meaning - the same submitted identity
- * with different content - at every boundary that has an identity.
+ * with different content - at every boundary that has an identity, the Outcome boundary included.
+ * The Outcome-specific classifications (`malformed_envelope`, `stale_exchange`) use the K0.2 public
+ * fixture's vocabulary, so the K1.4 port is wiring rather than translation.
  */
 
 export type RefusalClassification =
@@ -33,8 +34,21 @@ export type RefusalClassification =
   | "invalid_batch_bound"
   /** An Activation for this Execution is still unresolved, and there may be only one. */
   | "exchange_unresolved"
-  /** There is no unresolved Activation to redeliver. */
-  | "no_unresolved_exchange";
+  /** There is no unresolved Activation for this request to act on. */
+  | "no_unresolved_exchange"
+  /**
+   * OA-3 whole-envelope validation refused an Outcome's content: a malformed value, a missing or
+   * unknown field, a duplicate Emission key, an unsupported next step, or a proposed Effect before
+   * K2 (EF-2). Nothing of the proposal was accepted.
+   */
+  | "malformed_envelope"
+  /**
+   * OA-3: the proposal or control names an Activation that is not the unresolved exchange, a writer
+   * epoch that is not the current one, or a base progress revision the exchange was not pinned at.
+   */
+  | "stale_exchange"
+  /** The unresolved exchange is recovery-held; continuing it is refused until the hold clears. */
+  | "recovery_held";
 
 /**
  * One refused request, retained and inspectable.

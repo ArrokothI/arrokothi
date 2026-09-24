@@ -2,7 +2,7 @@
   "name": "@arrokothi/kernel",
   "version": "0.8.1",
   "private": true,
-  "description": "Target Kernel (private, in-memory K1.1 only): atomic creation with initial input, post-creation input ingress, batch reservation with asynchronous Driver dispatch/redelivery, and inspection. Outcome acceptance (K1.2), cancellation/waits/deadlines (K1.3), Effects (K2) and later boundaries refuse by name.",
+  "description": "Target Kernel (private, in-memory, K1.1 and K1.2): atomic creation with initial input, post-creation input ingress, batch reservation with asynchronous Driver dispatch/redelivery, inspection, and Outcome acceptance with receipts, takeover and recovery holds. Cancellation/waits/deadlines (K1.3), Effects (K2) and later boundaries refuse by name.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

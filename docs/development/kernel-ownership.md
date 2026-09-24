@@ -15,7 +15,7 @@ unzoned and carries no new rule from this packet.
 
 | Zone id | Roots | Owner and status |
 |---|---|---|
-| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; every later boundary refuses by name.** |
+| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |
 | `legacy-core` | `packages/core/src` | The current 0.8.x `Harness`/controller implementation. Explicitly legacy, fully supported, unchanged by this packet. |
 | `runtime-integrations` | `packages/agents/strands/src`, `packages/models/gemini/src`, `packages/retrieval/local/src`, `packages/interoperability/mcp/src` | Provider and Runtime adapters. Depend inward on `legacy-core` today. |
 | `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |
@@ -41,14 +41,18 @@ reading a Kernel-owned list one owning module (`own-array.ts`, K11-R6-STATE-02);
 internal to the zone and adds no exported name. Its base is `777b9955fb3a443f700b4f3d1f4f2aef1869345b`
 and its own row is true only of its candidate tree. The other three zones are unchanged by K1.1 as well: it moves and
 edits no source in them (base→payload touches none of their files, verified by
-`git diff --name-only`), so those rows reproduce at either tree. What has **not** changed across
-either packet is the target zone's legacy column: it still reaches no legacy code. Its third-party
-column gains exactly one entry in K1.1 round 3: the owner-approved JCS implementation
-`canonicalize` (see below).
+`git diff --name-only`), so those rows reproduce at either tree. **K1.2** raised `target-kernel` from 11
+to 13 `.ts` files: `outcome.ts` reads the Outcome envelope and the exchange controls, and
+`envelope.ts` holds the own-field observation helpers K1.1 wrote inside `coordinator.ts`, moved so both
+boundaries share one copy. Both are internal to the zone; K1.2 adds exported types but no exported
+runtime name. It edits no source in the other three zones either, so their rows are unchanged. What has
+**not** changed across these packets is the target zone's legacy column: it still reaches no legacy code.
+Its third-party column gains exactly one entry in K1.1 round 3: the owner-approved JCS implementation
+`canonicalize` (see below); K1.2 adds none.
 
 | Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |
 |---|---|---|---|
-| `target-kernel` | 11 | nothing | `canonicalize` |
+| `target-kernel` | 13 | nothing | `canonicalize` |
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
 | `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |
@@ -163,3 +167,18 @@ builtins and, since round 3, the single owner-approved third-party specifier `ca
   carries no `DefinitionKind` and no Agent/Workflow discriminator; which code can interpret an
   Execution's progress is answered by the pinned Definition revision, Runtime contract revision and
   progress codec. `packages/kernel/tests/boundary.test.ts` holds the zone's sources to that.
+
+## K1.2 disposition of its assigned row
+
+K1.2 owns one deferred row, DX-4. As for K1.1's rows, the assignment names an owner, not a promise to
+preserve the behaviour. No entry was added to `TARGET_KERNEL_ALLOWED_LEAVES`, and no third-party
+specifier was added.
+
+- **DX-4** (`schema/value-schema.ts`, migratable) — **not extracted, and not needed.** Whole-envelope
+  Outcome validation checks one fixed shape, which `packages/kernel/src/outcome.ts` reads field by field
+  from the envelope's own data, capturing each value root once through `values.ts`. A general schema
+  language adds nothing to that. The legacy module would also bring in its optional lossless coercion
+  (`"420"` becoming `420`), which [values](../../mental-model/concepts/values.md) forbids at a Kernel
+  boundary: a value is validated, never repaired. The row stays open for the packet that first validates
+  operation arguments against a schema; K2.2 selects that validator and its enforced subset
+  (`OPEN(K2.2)` in [operation](../../mental-model/concepts/actions.md#operation)).

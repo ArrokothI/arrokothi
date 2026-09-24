@@ -255,10 +255,9 @@ describe("K1.1-C4 what one dispatch intent pins", () => {
     assert.deepEqual({ ...hidden }, { ...missing });
     assert.equal(hidden.position, 0);
 
-    // K11-R1-SCOPE-01: dispatch to a terminal destination remains refused with
-    // `terminal_destination`, but no terminal state is reachable in K1.1 — manufacturing one
-    // via cancellation is K1.3's. The rule is specified and the check remains in `dispatch`;
-    // its live-terminal exercise awaits K1.3 rather than a K1.1-constructed terminal.
+    // K11-R1-SCOPE-01: dispatch to a terminal destination is refused with `terminal_destination`.
+    // K1.1 could only specify it; K1.2 exercises it live after an accepted `complete`
+    // (`terminal.test.ts`), and the cancellation path to `CANCELLED` stays K1.3's.
   });
 });
 
@@ -430,15 +429,15 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     assert.equal(hidden.position, 0);
   });
 
-  test("nothing in this packet advances a writer epoch", () => {
+  test("ordinary redelivery never advances a writer epoch", () => {
     const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
     const created = started(kernel);
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     for (let attempt = 0; attempt < 3; attempt += 1) {
       assert.equal(accepted(kernel.redeliver(author, created.executionId)).writerEpoch, 1);
     }
-    // The authorized takeover that does advance it is K1.2's, and this surface says so.
-    assert.throws(() => kernel.requestTakeover(), /K1\.2 owns this surface/);
+    // Only an accepted takeover advances it (K1.2-C8, `takeover.test.ts`); K1.1 pinned here that
+    // the surface then refused as K1.2's.
     assert.equal(accepted(kernel.inspect(author, created.executionId)).activation?.writerEpoch, 1);
   });
 

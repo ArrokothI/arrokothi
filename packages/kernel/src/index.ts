@@ -3,17 +3,18 @@
  *
  * This package is the enforced location for Kernel work under the target
  * [Activation/Outcome protocol](../../../mental-model/mechanisms/execution-cycle.md). K1.0 created it
- * as a refusal-only landing zone; K1.1 implements its first protocol boundaries: atomic creation
- * with initial input, post-creation input ingress under the Input ID triple (including refusal of
- * new ordinary input to a terminal destination, whose live-terminal exercise awaits K1.3), batch
- * reservation and asynchronous Driver dispatch, ordinary redelivery, and the inspection that makes
- * those facts observable.
+ * as a refusal-only landing zone. K1.1 implemented its first protocol boundaries: atomic creation
+ * with initial input, post-creation input ingress under the Input ID triple, batch reservation and
+ * asynchronous Driver dispatch, ordinary redelivery, and the inspection that makes those facts
+ * observable. K1.2 adds Outcome acceptance: replay and conflict, whole-envelope validation, the
+ * atomic commit of acknowledgment, progress, Emissions and the next step, `continue`/`complete`/
+ * `fail` with the terminal disposition of unprocessed input, authorized takeover, and the
+ * inspectable recovery holds for unavailable pinned code and for unclassifiable responses.
  *
- * **It is not a working Kernel yet.** Outcome acceptance is K1.2's, so nothing here installs
- * progress, acknowledges an Event or ends an Execution with a result; out-of-band cancellation and
- * terminal disposition, waits and deadlines are K1.3's; Effects are K2's; the legacy bridge, the
- * SDK host entry and the E1 gate are K1.4's. Every surface those packets own refuses by name rather
- * than answering with a no-op. The boundary this package is held to is recorded in
+ * **It is not a working Kernel yet.** Out-of-band cancellation, waits and deadlines are K1.3's;
+ * Effects are K2's; the legacy bridge, the SDK host entry and the E1 gate are K1.4's. Every surface
+ * those packets own refuses by name rather than answering with a no-op, and an Outcome proposing an
+ * Effect or a wait is refused whole. The boundary this package is held to is recorded in
  * `docs/development/kernel-ownership.md` and enforced by
  * `tests/conformance/architecture/kernel-landing-zone.test.ts`: nothing here may import
  * `@arrokothi/core`, any provider or Runtime integration, or the SDK. External reach is `node:`
@@ -35,8 +36,21 @@ export type {
   DispatchOptions,
   InputAccepted,
   InputContent,
+  OutcomeAccepted,
+  RecoveryDecision,
   SubmitInputRequest,
+  TakeoverAccepted,
 } from "./coordinator.ts";
+
+export type {
+  CodeAvailability,
+  EmissionProposal,
+  OutcomeEnvelope,
+  OutcomeNext,
+  ProtocolFailureReport,
+  RecoveryRequest,
+  TakeoverRequest,
+} from "./outcome.ts";
 
 export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
 
@@ -46,9 +60,13 @@ export type { AuthenticatedCaller, CreationRequestId, InputId, Receipt, ReceiptB
 export type {
   ActivationView,
   DeliveryAttemptView,
+  EmissionView,
+  ExchangeView,
   ExecutionView,
   MailboxDisposition,
   MailboxEntryView,
+  RecoveryHoldView,
+  TerminalResultView,
 } from "./inspection.ts";
 
 export { TERMINAL_STATES, isTerminal } from "./lifecycle.ts";

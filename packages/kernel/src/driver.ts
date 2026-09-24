@@ -10,8 +10,8 @@
  *   codec below, and by nothing else. The legacy closed `DefinitionKind` controller port is refused
  *   rather than carried forward (`DX-12`).
  * - **Delivery is not an exchange.** `deliver` returns nothing the Kernel interprets. An Outcome is
- *   submitted through its own boundary, which K1.2 owns; a dispatch acknowledgment, a heartbeat or a
- *   diagnostic stream is operational traffic and is not an Outcome.
+ *   submitted through its own boundary (`ExecutionCoordinator.submitOutcome`); a dispatch
+ *   acknowledgment, a heartbeat or a diagnostic stream is operational traffic and is not an Outcome.
  */
 
 import type { BoundaryValue } from "./values.ts";
@@ -42,7 +42,10 @@ export interface ActivationEvent {
 export interface Activation {
   readonly executionId: string;
   readonly activationId: string;
-  /** Which Runtime attempt may have an Outcome accepted for this exchange. K1.1 never advances it. */
+  /**
+   * Which Runtime attempt may have an Outcome accepted for this exchange. 1 at each new exchange in
+   * this binding; only an accepted takeover advances it, and then by one (K1.2-DEC-5).
+   */
   readonly writerEpoch: number;
   /** The accepted progress revision this exchange starts from. */
   readonly baseProgressRevision: number;
@@ -53,9 +56,10 @@ export interface Activation {
   /**
    * Runtime-owned continuation, returned unchanged.
    *
-   * Progress is installed only by Outcome acceptance, which is K1.2's, so at this packet every
-   * Activation carries `null` at base revision 0. `state.md`'s checkpoint and locator forms need a
-   * real Driver and are R1's; K1's fake Runtime requires only the inline form.
+   * Only Outcome acceptance installs progress: the first exchange carries `null` at base revision 0,
+   * and each later one the progress its predecessor's accepted Outcome proposed, exactly as captured.
+   * `state.md`'s checkpoint and locator forms need a real Driver and are R1's; this binding carries
+   * the inline form.
    */
   readonly acceptedProgress: BoundaryValue | null;
   /** The exact batch reserved for this exchange, in per-Execution acceptance order. */

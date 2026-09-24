@@ -268,20 +268,27 @@ naming an `OPEN(...)` marker claim that one exists.
   combines caller context with the creation key and covers the complete creation content. The
   implementation records its own answer in BASELINE `#request-identity-api`.
 - Writer-epoch representation, and **whether it resets across a later Activation** —
-  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. (K1.1-DEC-2 chose one epoch per
-  exchange starting at 1 — an *implementation* choice, not architecture.)
+  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. The
+  in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`: an integer restarting at
+  1 for each new exchange, advanced by exactly 1 per accepted takeover — an *implementation* choice,
+  not architecture.
 - Wait generation representation; declared-input-subscription spelling — `mechanisms/waits.md#declare-what-can-wake-the-execution`,
   WS W-9/§5. WS assigns the subscription spelling to K1.3.
 - Timeout Event wire kind token, discriminant, encoded schema, storage layout and timer
   mechanism — WS W-9 "Left open", which says K1.3 chooses them.
 - Per-entry batch disposition storage, and how a wait-ended readiness is stored — WS §3 "Left
-  open" (after B-8); `mechanisms/waits.md`.
+  open" (after B-8); `mechanisms/waits.md`. The in-process binding's choice for disposition storage,
+  recorded in BASELINE `#outcome-acceptance-api`: each mailbox entry holds its own frozen disposition.
+  Wait-ended readiness storage stays K1.3's.
 - Cancellation-request storage, rejection encoding and physical interruption mechanics — WS §6
   "Left open"; `mechanisms/lifecycle.md#cancellation-order`. A pending/applied marker may not
   change the acceptance order.
 - The Outcome-acceptance transaction mechanism (a DB transaction, an append-only log, an
   in-memory compare-and-swap) — WS §7 "Left open", which accepts any of them only if the atomicity
-  is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`.
+  is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`. The in-process
+  binding's choice, recorded in BASELINE `#outcome-acceptance-api`: one synchronous call that observes
+  all caller-owned fields, builds every record and only then mutates — atomic within the process, not
+  durable.
 - Checkpoint storage and pinning — WS §9 "Left open"; `concepts/state.md#checkpoint-and-locator`,
   `mechanisms/recovery.md#checkpoint-publication`. Upload tickets plus a grace period are one
   option, not a requirement, as `recovery.md` states.

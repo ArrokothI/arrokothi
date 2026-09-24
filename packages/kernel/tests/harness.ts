@@ -15,6 +15,7 @@ import type {
   CreateExecutionRequest,
   DeliverySettlement,
   ExecutionDriver,
+  OutcomeEnvelope,
 } from "../src/index.ts";
 import { defineAt, restoreDescriptor } from "../src/own-array.ts";
 
@@ -443,3 +444,32 @@ export function refused<E>(result: { ok: true; value: unknown } | { ok: false; e
   if (result.ok) throw new Error("expected a refusal, but the request was accepted");
   return result.error;
 }
+
+/** What an Outcome answers: the exchange and the attempt, as a dispatch or takeover reported them. */
+export interface AnsweredExchange {
+  readonly activationId: string;
+  readonly writerEpoch: number;
+  readonly baseProgressRevision: number;
+}
+
+/**
+ * A well-formed `continue` Outcome answering `exchange`, with one thing varied per test.
+ *
+ * It names the exchange explicitly, as every submission must (PLAN-01); the builder never looks the
+ * current exchange up, so a test that wants a stale answer passes the stale identities.
+ */
+export const outcomeFor = (
+  executionId: string,
+  exchange: AnsweredExchange,
+  overrides: Partial<Record<keyof OutcomeEnvelope, unknown>> & Record<string, unknown> = {},
+): OutcomeEnvelope =>
+  ({
+    executionId,
+    activationId: exchange.activationId,
+    writerEpoch: exchange.writerEpoch,
+    baseProgressRevision: exchange.baseProgressRevision,
+    progress: { phase: "draft", draftRef: "draft-1" },
+    next: { step: "continue" },
+    ...overrides,
+  }) as OutcomeEnvelope;
+
