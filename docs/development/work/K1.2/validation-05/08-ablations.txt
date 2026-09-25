@@ -1,0 +1,72 @@
+candidate C: aa8709673e6d53455f226d0fc01bdca6fb55e600
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /private/tmp/k12-r5-csjhg5od/checkout
+command: node docs/development/work/K1.2/ablations.mjs
+environment: {"node": "v26.8.1", "npm": "11.19.0", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t15.6.1\nBuildVersion:\t\t24G90", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "434f5ef165b0db0abbc8deeb8f24d40542c3ec26690d1db8126a314c57140eba", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T05:01:40.157112+00:00
+finished-utc: 2026-09-25T05:03:21.056597+00:00
+output-bytes: 10411
+output-sha256: b2a410353f4db11e8028cbd94969cb706b6e1d3f49b9ded3631e4cefe19b76f4
+--- output begins ---
+CONTROL        unablated copy: tests 448, pass 448, fail 0
+REJECTED       A1 acknowledge every queued Event, cursor-style
+               tests 448, pass 435, fail 13; failing: acceptance acknowledges exactly the reserved batch and installs everything else together | acknowledgment never reads progress: what progress says it handled changes nothing (R5-j6-2) | K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step | Events that arrived meanwhile are selected by the next exchange, in acceptance order
+REJECTED       A2 replay only while no exchange is open and the Execution is live (validation effectively first)
+               tests 448, pass 444, fail 4; failing: exact: the original receipt; changed: refused; either way the open exchange is untouched | K1.2-C11 a late Outcome for a resolved Activation never commits into the new exchange | a replay is answered even after the next exchange has started, and the new exchange is untouched | K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts
+REJECTED       A3 no writer-epoch fence
+               tests 448, pass 436, fail 12; failing: the Outcome oracle is deterministic: two control arms agree exactly | hidden Outcome, takeover, hold and terminal activity discloses nothing to A | K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls | an epoch that was never issued is refused, never taken as authority
+REJECTED       A4 takeover mints a new Activation ID
+               tests 448, pass 430, fail 18; failing: Test A "mixed redeliveries across takeover retain exact attribution" | Test B "late reports settle only their own row across epochs" | Test C "resolved exchange retains per-delivery epochs" | Test D "new exchange after continue has its own attribution"
+REJECTED       A5 takeover leaves the epoch where it was
+               tests 448, pass 418, fail 30; failing: observer takeover refused unauthorized_control; author takeover succeeds epoch 2 | K12-R1-AUTH-01 visible caller without control vs control on all three controls | recordingDriver (safe) accepted | delayedDriver (safe) accepted
+REJECTED       A6 Effects silently stripped instead of refusing the Outcome
+               tests 448, pass 443, fail 5; failing: changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch | K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts | the Kernel never redelivers or retries after refusing an Outcome (OA-5) | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole
+REJECTED       A7 no B-5 terminal disposition at complete/fail
+               tests 448, pass 442, fail 6; failing: every record inspection exposes is frozen, and every list around them is a fresh copy | K1.2-C12 retained Outcome evidence is immutable | correct-looking complete commits no result, no B-5, and leaves the attempt answerable | K12-R3-AUTH-02 visibility-only terminal Outcome is refused
+REJECTED       A8 terminal disposition recorded as acknowledgment
+               tests 448, pass 442, fail 6; failing: every record inspection exposes is frozen, and every list around them is a fresh copy | K1.2-C12 retained Outcome evidence is immutable | correct-looking complete commits no result, no B-5, and leaves the attempt answerable | K12-R3-AUTH-02 visibility-only terminal Outcome is refused
+REJECTED       A9 redelivery ignores recovery holds
+               tests 448, pass 442, fail 6; failing: a) code hold permits declare_code_availability and submit_outcome; redeliver/takeover refused, declaration clears | b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears | c) both holds read declare_code_availability + submit_outcome; takeover blocked until code clears | K12-R1-HOLD-01 permitted actions predict the controls that work
+REJECTED       A10 takeover allowed while pinned code is unavailable
+               tests 448, pass 442, fail 6; failing: a) code hold permits declare_code_availability and submit_outcome; redeliver/takeover refused, declaration clears | c) both holds read declare_code_availability + submit_outcome; takeover blocked until code clears | K12-R1-HOLD-01 permitted actions predict the controls that work | B accepts/refusals including control refusals do not shift A's positions
+REJECTED       A11 unknown envelope fields ignored
+               tests 448, pass 445, fail 3; failing: every content defect refuses the whole proposal and names itself | one refusal names every content issue, not only the first | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole | `complete` proposing an obligation is refused whole; with nothing outstanding it completes
+REJECTED       A12 Emission identity from a coordinator-wide counter
+               tests 448, pass 445, fail 3; failing: the Outcome oracle is deterministic: two control arms agree exactly | hidden Outcome, takeover, hold and terminal activity discloses nothing to A | K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls | Emission identity is a pure function of accepted identities
+REJECTED       A13 progress observed twice (validation and retention read separately)
+               tests 448, pass 447, fail 1; failing: each field is read exactly once, and the accepted decision is the one reading | K1.2-C13 envelope fields are own data, observed once
+REJECTED       A14 Emission capacity checked only after every element is read
+               tests 448, pass 447, fail 1; failing: an over-limit Emission list is refused without reading any element | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole
+REJECTED       A15 await accepted as continue
+               tests 448, pass 447, fail 1; failing: `await` is refused naming K1.3, and the wait is never read | K1.2-C7 Effects, obligations and waits are refused whole
+REJECTED       A16 an accepted Outcome keeps the exchange open (a second writer can commit)
+               tests 448, pass 394, fail 54; failing: Test C "resolved exchange retains per-delivery epochs" | Test D "new exchange after continue has its own attribution" | K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution | ended_by_outcome records attempt_submission, never a control claim
+REJECTED       B1 control falls back to visibility (inspect-only may take over, declare and report)
+               tests 448, pass 439, fail 9; failing: observer takeover refused unauthorized_control; author takeover succeeds epoch 2 | observer recover refused unauthorized_control; author recover creates hold | observer report refused unauthorized_control; author report creates hold | K12-R1-AUTH-01 visible caller without control vs control on all three controls
+REJECTED       B2 recovery history dropped (holds leave no History)
+               tests 448, pass 426, fail 22; failing: ended_by_outcome records attempt_submission, never a control claim | K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully | entered, protocol entered, and cleared_by_takeover are control-origin | K12-R3-HISTORY-02 explicit control transitions still record control authority
+REJECTED       B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)
+               tests 448, pass 443, fail 5; failing: b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears | b) protocol hold ends by valid Outcome (fresh Execution) | c) both holds read declare_code_availability + submit_outcome; takeover blocked until code clears | K12-R1-HOLD-01 permitted actions predict the controls that work
+REJECTED       B4 delivery attribution lost (every delivery pinned to epoch 1)
+               tests 448, pass 439, fail 9; failing: Test A "mixed redeliveries across takeover retain exact attribution" | Test B "late reports settle only their own row across epochs" | Test C "resolved exchange retains per-delivery epochs" | Test D "new exchange after continue has its own attribution"
+REJECTED       B5 acceptance index gaps (every Outcome consumes two positions)
+               tests 448, pass 445, fail 3; failing: each accepted boundary mints its own receipt at the Execution's next position; refusals mint none | K1.2-C12 Outcome acceptance has its own receipts | Test A "refusals consume no acceptance position" | K12-R1-DOC-01 refusals consume no acceptance position
+REJECTED       B6 no post-callback revalidation (outer takeover commits on stale pre-callback state)
+               tests 448, pass 444, fail 4; failing: inner takeover commits epoch 2; the outer stale arm refuses with no orphan receipt or delivery | K12-R2-TAKEOVER-01 a nested takeover inside isSafeToReplace commits once | a current continue Outcome resolves; the outer takeover refuses with no receipt or delivery | a terminal complete inside the callback ends the Execution; the outer takeover is refused
+REJECTED       B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)
+               tests 448, pass 440, fail 8; failing: ended_by_outcome records attempt_submission, never a control claim | K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully | exact replay after a hold-ending Outcome appends nothing | K12-R3-HISTORY-02 replay and refused submissions grow no History
+REJECTED       B8 ordinary visibility authorizes Outcome submission (no attempt grant required)
+               tests 448, pass 441, fail 7; failing: visibility-only caller submitting at a valid epoch is refused without the attempt grant | K12-R1-AUTH-01 observer Outcome without grant is refused (K12-R3-AUTH-02) | an unauthorized Outcome submission appends no History | K12-R3-HISTORY-02 replay and refused submissions grow no History
+REJECTED       B9 hold-ending History claims control power for a Runtime submission
+               tests 448, pass 444, fail 4; failing: ended_by_outcome records attempt_submission, never a control claim | K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully | editing a returned ended_by_outcome record changes no retained evidence | K12-R3-HISTORY-02 history records stay frozen snapshots
+
+25/25 ablations rejected by the kernel suite.
+
+--- output ends ---
+exit 0
