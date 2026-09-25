@@ -1,0 +1,56 @@
+candidate C: 61059a3e43d7057de9be29f101a65ebed9416ae2
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12-r8-valid/checkout
+command: node docs/development/work/K1.2/checks-07.mjs
+environment: {"node":"v25.2.1","npm":"11.6.2","typescript":"5.9.3","OS":"ProductName:\t\tmacOS\\nProductVersion:\t\t26.6.2\\nBuildVersion:\t\t25G83","arch":"arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs":"90996ac232a3d661d190e101836d9536032bdfc319d97de606b63a6aae473ba5","docs/development/work/K1.2/checks-07.mjs":"dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88","docs/development/work/K1.2/contract.md":"62a637b4d3eddb308de78cc23f3985b43e168a1cdebb0b729503dc78a0e52741","docs/development/work/K1.2/decision-01.md":"0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9","mental-model/mechanisms/execution-cycle.md":"e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091","package-lock.json":"a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d","package.json":"081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1","packages/kernel/package.json":"47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5","packages/kernel/tests/submission-lifetime.test.ts":"f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401","tsconfig.json":"596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI":"<unset>","LANG":"C.UTF-8","LC_ALL":"<unset>","NODE_ENV":"<unset>","NODE_OPTIONS":"<unset>","TZ":"<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T18:57:41.723Z
+finished-utc: 2026-09-25T18:57:45.342Z
+output-bytes: 2307
+output-sha256: f375b7c5999b42b5e53a51d04974aef7307869f95e5bccc093fcc0e6e4d85316
+--- output begins ---
+PASS: all runtime source bytes unchanged from H5 (retained through H6).
+PASS: all 30 pre-existing kernel test/helper files retain their printed syntax, including assertions.
+PASS: all 25 prior ablations plus B10/B11 and runner unchanged.
+PASS: 66 sealed historical files unchanged from H6.
+PASS: removed rewrite drafts remain absent.
+PASS: Layer-3/index changes are exactly the authorized canonical set (7 paths).
+PASS: cumulative candidate changes no legacy/SDK/integration source.
+PASS: 462 local links/anchors in changed contract, decision, blocker, baseline and canonical pages.
+Correction delta:
+.../development/002-implemented-kernel-baseline.md |    6 +-
+ docs/development/007-work-packets.md               |    2 +-
+ docs/development/README.md                         |    3 +-
+ docs/development/work/K1.2/checks-07.mjs           |   63 +
+ docs/development/work/K1.2/contract.md             |   18 +-
+ docs/development/work/K1.2/decision-01.md          |   88 +
+ docs/development/work/K1.2/implementation-07.md    |   99 +
+ docs/development/work/K1.2/review-07-merged.md     |  215 ++
+ .../K1.2/validation-07/01-tree-and-environment.txt |   28 +
+ .../work/K1.2/validation-07/02-typecheck.txt       |   22 +
+ .../work/K1.2/validation-07/03-test-full.txt       | 3370 ++++++++++++++++++++
+ .../work/K1.2/validation-07/04-test-kernel.txt     |  713 +++++
+ .../K1.2/validation-07/05-test-conformance.txt     | 2541 +++++++++++++++
+ .../work/K1.2/validation-07/06-test-sdk.txt        |   53 +
+ .../K1.2/validation-07/07-check-builder-docs.txt   |   24 +
+ .../work/K1.2/validation-07/08-ablations.txt       |   76 +
+ .../validation-07/09-preservation-and-links.txt    |   42 +
+ .../10-authority-and-candidate-context.txt         |  645 ++++
+ mental-model/concepts/core.md                      |    2 +-
+ mental-model/concepts/identity.md                  |    2 +
+ mental-model/mechanisms/execution-cycle.md         |   48 +-
+ mental-model/mechanisms/integration.md             |    2 +-
+ mental-model/reference.md                          |    2 +
+ mental-model/rewrite-index.md                      |   12 +
+ mental-model/sources.md                            |    2 +
+ 25 files changed, 8050 insertions(+), 28 deletions(-)
+Cumulative candidate:
+131 files changed, 61265 insertions(+), 418 deletions(-)
+
+--- output ends ---
+exit 0
