@@ -21,11 +21,13 @@
  * not grant re-execution or settlement privilege. A caller may inspect an Execution it can reach
  * through `scopes`, but the three K1.2 exchange controls (takeover, recovery declaration,
  * protocol-failure report) additionally require the Execution's scope in `controlScopes`. Absent
- * (or not containing the scope) means inspect-only: the caller can read but cannot enter/clear
- * holds or supersede an attempt. This is the in-process binding's Kernel-enforced distinction
- * (K1.2-DEC-14); it introduces no universal token format or remote policy backend, which stay
- * K2's (`authority.md`). Like `scopes`, this list is a trusted host input, not caller-observed
- * state.
+ * (or not containing the scope) denies these explicit control commands, not all state-changing
+ * paths. A caller with visibility and the current attempt's separate `SubmissionGrant` may submit
+ * a fresh Outcome without `controlScopes`; accepting it resolves the exchange and may end its
+ * holds (K1.2-DEC-20). Visibility alone is insufficient for a fresh Outcome. This is the in-process
+ * binding's Kernel-enforced distinction (K1.2-DEC-14); it introduces no universal token format or
+ * remote policy backend, which stay K2's (`authority.md`). Like `scopes`, this list is a trusted
+ * host input, not caller-observed state.
  */
 export interface AuthenticatedCaller {
   readonly namespace: string;

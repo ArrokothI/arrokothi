@@ -158,8 +158,10 @@ These are this in-process binding's choices where the architecture leaves the re
   checked before any Emission is read, not a semantic value limit.
 - **Control authority** (`evidence.md`, `authority.md`): `AuthenticatedCaller.controlScopes` is the
   separate control power; the three exchange controls require it (`unauthorized_control` otherwise).
-  Outcome submission requires visibility plus the attempt grant — never visibility alone, never
-  general control power alone.
+  A fresh Outcome requires visibility plus the separate current-attempt grant; `controlScopes`
+  is not required and cannot substitute for that grant. A visible grant holder without general
+  control authority can submit an accepted Outcome that resolves the exchange and ends its holds.
+  Replay/conflict retain the ordering described above.
 - **Driver safe replacement** (`identity.md#writer-epoch`, `recovery.md`, `driver.md`): takeover
   advances only on `isSafeToReplace() === true` (`unsafe_replacement` otherwise); Kernel fencing does
   not stop native work.

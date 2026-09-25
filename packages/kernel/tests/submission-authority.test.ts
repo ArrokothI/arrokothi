@@ -3,7 +3,7 @@
  *
  * Canonical owners: `execution-cycle.md` (the Kernel sends an Activation through the Driver; the
  * Runtime returns the Outcome — a proposal until accepted), `evidence.md` (inspection privilege
- * grants no re-execution power; H3's own binding calls a grant-less caller inspect-only),
+ * grants no attempt-submission or general control power),
  * `identity.md#writer-epoch` (only the current attempt's Outcome may commit), C10 (a protocol hold
  * ends through an authorized takeover or a valid Outcome *from the current attempt*).
  *

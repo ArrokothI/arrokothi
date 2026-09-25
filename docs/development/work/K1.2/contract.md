@@ -10,8 +10,8 @@ PLAN-01 amendment and the owner's 2026-09-24 B-5 scope amendment.
 `52b1600f3b42e3a360fdc3395178f1d147edf304` and integrated in `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`;
 K1.1-correction-02 accepted at H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e` and integrated in
 `954d31b00eb7f2412c22ccf7d4d079699f0c4032`. All are ancestors of the base.
-**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 4.**
-**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25.
+**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 5.**
+**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25; round-5 wording correction by Codex (GPT-6), 2026-09-25.
 
 ## Entry and owner release
 
@@ -235,7 +235,7 @@ specification prose.
 | C8 repeated takeover | the same takeover sent twice | the second refused as stale; epoch advanced once | `takeover.test.ts` |
 | C8 pinned input | input accepted before takeover | stays queued and outside the batch | `takeover.test.ts` |
 | C8 reentrant takeover | a Driver that takes over from inside dispatch or redelivery | each answer describes the attempt that call delivered; the takeover stands and fences epoch 1 | `takeover.test.ts` |
-| C8 control privilege (evidence.md; DEC-14) | inspect-only principal vs control-authorized principal on takeover; outsider hidden vs missing | inspect-only refused `unauthorized_control` with no epoch/receipt/delivery change; outsider `unknown_destination` identical hidden/missing | `control-authority.test.ts`, `outcome-acceptance.test.ts` |
+| C8 control privilege (evidence.md; DEC-14) | visible principal lacking control authority vs control-authorized principal on takeover; outsider hidden vs missing | caller lacking control authority refused by the command as `unauthorized_control` with no epoch/receipt/delivery change; outsider `unknown_destination` identical hidden/missing | `control-authority.test.ts`, `outcome-acceptance.test.ts` |
 | C8 safe replacement (identity.md writer-epoch; recovery.md; DEC-15) | takeover with safe Driver vs unsafe/absent/throwing Driver | safe advances epoch; unsafe/absent/throwing refused `unsafe_replacement` with no epoch/receipt/delivery change; fencing alone does not imply native exclusion | `control-authority.test.ts` |
 | C8 revalidation after safety callback (DEC-19) | `isSafeToReplace` reentering nested takeover for same Activation/epoch then `true`; submitting valid current Outcome (incl. terminal `complete`/`fail`) then `true`; establishing a code hold then `true` | at most one takeover commits; outer stale arm refused (`stale_exchange` / `no_unresolved_exchange` / `terminal_destination` / `recovery_held`) with no orphan receipt, extra delivery, or overwritten evidence; whole result asserted | `takeover-reentrancy.test.ts` |
 | C9 code hold | recover with a pinned revision or codec missing, then with all present | RUNNING, hold reason, same exchange/progress/revision; redeliver and takeover refused; then cleared; redeliver and accept at base+1 | `recovery.test.ts` |
@@ -243,8 +243,8 @@ specification prose.
 | C9 permitted actions (evidence.md; DEC-17) | code hold, protocol hold, both; inspect permitted vs attempt redeliver/takeover/declare/Outcome | code `["declare_code_availability","submit_outcome"]`; protocol alone `["request_takeover","submit_outcome"]`; both `["declare_code_availability","submit_outcome"]`; inspected list predicts actual accept/refuse without probing | `hold-permitted.test.ts`, `recovery.test.ts` |
 | C9/C10 recorded recovery commands (evidence.md, state.md History; DEC-18) | enter code hold, change reason, clear by declaration, clear protocol by takeover, end by Outcome; idempotent duplicates | each accepted decision appends one frozen history record with `authority` (`control` vs `attempt_submission`), actor, and exchange/epoch causation; history survives hold clearing, resolution, next dispatch and terminal; duplicates append nothing | `recovery-history.test.ts`, `history-attribution.test.ts`, `recovery.test.ts`, `hold-permitted.test.ts` |
 | C10 protocol failure (OA-6) | report for the current attempt; stale report; redeliver while held; takeover; grant-authorized valid Outcome | hold with bounded diagnostic; stale refused; redeliver refused; takeover clears; Outcome clears | `recovery.test.ts` |
-| C10 control privilege | inspect-only vs control-authorized on recover and protocol report | inspect-only refused `unauthorized_control` with no hold/history change | `control-authority.test.ts` |
-| C10 submission authority (DEC-20) | visibility-only `continue`, terminal `complete`/`fail`, and hold-ending Outcomes with forged/absent grants; same Outcomes with the attempt grant; old grant after takeover; hidden/missing callers | grant-less refused `unauthorized_submission` with zero accepted-state mutation (lifecycle, holds, history, receipts, B-5 unchanged; attempt still answerable); grant-holding proposal accepted; retired grant cannot commit (`stale_exchange` fencing preserved); hidden≡missing `unknown_destination`; views expose no grant | `submission-authority.test.ts` |
+| C10 control privilege | visible caller lacking control authority vs control-authorized on recover and protocol report | caller lacking control authority refused by the command as `unauthorized_control` with no hold/history change | `control-authority.test.ts` |
+| C10 submission authority (DEC-20) | visible caller without a current attempt grant submits `continue`, terminal `complete`/`fail`, and hold-ending Outcomes with forged/absent grants; same Outcomes with the attempt grant; old grant after takeover; hidden/missing callers | grant-less refused `unauthorized_submission` with zero accepted-state mutation (lifecycle, holds, history, receipts, B-5 unchanged; attempt still answerable); grant-holding proposal accepted; retired grant cannot commit (`stale_exchange` fencing preserved); hidden≡missing `unknown_destination`; views expose no grant | `submission-authority.test.ts` |
 | C11 late delivery report | delayed capability settled after resolution, after takeover, after the next dispatch | only its own attempt record changes | `late-reports.test.ts` |
 | C11 late Outcome | exact and changed Outcome for resolved A while B is unresolved | replay / conflict; B untouched | `late-reports.test.ts` |
 | C11 exact delivery attribution (identity.md dispatch-and-delivery; DEC-16) | multiple redeliveries before and after takeover (1,2 at epoch1; 3,4 at epoch2) plus late reports from both epochs, out of order | each row names its activationId/writerEpoch `[1,1,2,2]`; late reports settle only their own row; resolved exchange retains epochs; new exchange has its own ID/epoch1 | `delivery-attribution.test.ts`, `late-reports.test.ts` |
@@ -286,16 +286,16 @@ vocabulary is repository material, not third-party.
 
 Routine implementation choices under 007, recorded so a reviewer can rule on them.
 
-- **K1.2-DEC-1 — the Outcome envelope.** `submitOutcome(caller, envelope)` takes `executionId`,
-  `activationId`, `writerEpoch`, `baseProgressRevision`, `progress`, optional `emissions`
+- **K1.2-DEC-1 — the Outcome envelope.** `submitOutcome(caller, envelope, submission)` (DEC-20) takes
+  an envelope with `executionId`, `activationId`, `writerEpoch`, `baseProgressRevision`, `progress`, optional `emissions`
   (`{ emissionKey, value }` each), optional `effects` and `next` (`continue`, `await`,
   `complete` with `result`, `fail` with `error`). Absent and empty `emissions`/`effects` mean the same
   thing. An unknown own field on the envelope, on `next` or on an Emission is refused rather than
   ignored, because ignoring it would silently strip part of a proposal (EF-1's rule, generalized).
   Nothing is defaulted from the current exchange (PLAN-01).
 - **K1.2-DEC-2 — order inside validation.** After scope (OA-1) and the replay lookup (OA-2): terminal
-  state, then exchange currency (Activation, epoch, base revision), then content. Every group rejects
-  the whole proposal; the classification names the first failing group, and content issues are
+  state, then exchange currency (Activation, epoch, base revision), then the separate current-attempt
+  submission grant (DEC-20), then content. Every group rejects the whole proposal; the classification names the first failing group, and content issues are
   reported together. A submission that no longer answers the current exchange is told so first,
   because that is what its sender can act on.
 - **K1.2-DEC-3 — accepted-Outcome identity.** An accepted Outcome is found by (Execution, Activation
@@ -356,10 +356,14 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   send/inspect/cancel/delegate/read/write/impersonate as separate powers). Visibility (`scopes`)
   answers hidden-vs-missing identically; the three exchange controls (`requestTakeover`,
   `recoverExecution`, `reportProtocolFailure`) additionally require the Execution's scope in
-  `controlScopes`, else `unauthorized_control` with no control-state mutation. Outcome submission
-  stays visibility-only so the Runtime path is preserved. Absent `controlScopes` means inspect-only
-  (default-deny). This is the binding's Kernel-enforced distinction, not a universal token format
-  (which stays K2's).
+  `controlScopes`, else `unauthorized_control` with no control-state mutation through those commands.
+  Absent `controlScopes` (or absence of the Execution's scope from it) denies these explicit controls;
+  it does not make the principal globally read-only. For a fresh Outcome, visibility is necessary
+  but insufficient: DEC-20 requires the separate current-attempt `SubmissionGrant`, without requiring
+  `controlScopes`. A visible grant holder may therefore submit a valid Outcome that resolves the
+  exchange and ends its holds despite lacking general control authority. Exact replay/conflict still
+  precede fresh authority checks under DEC-20. This is the binding's Kernel-enforced distinction,
+  not a universal token format (which stays K2's).
 - **K1.2-DEC-15 — Driver safe-replacement owner for takeover (correction, K12-R1-AUTH-01).**
   `ExecutionDriver.isSafeToReplace(activation)` is the Driver's phase-specific determination that
   native continuation is exclusive or otherwise safe to replace (`identity.md#writer-epoch`,

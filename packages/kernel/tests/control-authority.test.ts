@@ -6,10 +6,10 @@
  * replacement prerequisite), `kernel.md` (fencing does not stop native work).
  *
  * Covers:
- * - inspect-only (`observer`) vs control (`caller`) on takeover/recover/report;
+ * - visible caller lacking control (`observer`) vs control (`caller`) on takeover/recover/report;
  * - safe-replacement gating (`isSafeToReplace` exactly true, absent/false/throwing refused);
  * - visibility before control (hidden ≡ missing, no record);
- * - Runtime Outcome path preserved for inspect-only callers;
+ * - visibility alone cannot authorize a fresh Outcome; the separate current attempt grant is required;
  * - control is per-scope.
  */
 
@@ -58,7 +58,7 @@ function withoutRefusals(view: ExecutionView): Omit<ExecutionView, "refusals"> {
   return rest;
 }
 
-describe("K12-R1-AUTH-01 inspect-only vs control on all three controls", () => {
+describe("K12-R1-AUTH-01 visible caller without control vs control on all three controls", () => {
   test("observer can inspect OK", () => {
     const { kernel, executionId } = freshDispatched("auth-inspect-1");
     const byAuthor = viewAs(kernel, author, executionId);

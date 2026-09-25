@@ -47,15 +47,21 @@ export type RefusalClassification =
    * epoch that is not the current one, or a base progress revision the exchange was not pinned at.
    */
   | "stale_exchange"
-  /** The unresolved exchange is recovery-held; continuing it is refused until the hold clears. */
+  /**
+   * The unresolved exchange is recovery-held: redelivery is refused while any hold stands, and
+   * takeover while a code hold stands. A valid current-attempt Outcome may still resolve the
+   * exchange and end its holds, with visibility and the separate submission grant (K1.2-DEC-20).
+   */
   | "recovery_held"
   /**
    * K1.2-DEC-14: the caller can see the Execution but holds no control power over its scope.
    *
    * `evidence.md`: inspection privilege does not grant re-execution or settlement privilege. The
    * three exchange controls (takeover, recovery declaration, protocol-failure report) require the
-   * Execution's scope in the caller's `controlScopes`; a visible but inspect-only principal is
-   * refused here, with the Execution named (it passed visibility) and no control-state mutation.
+   * Execution's scope in the caller's `controlScopes`; a visible principal lacking it is refused
+   * by these commands, with the Execution named and no control-state mutation. This says nothing
+   * about the separate attempt-submission authority: visibility plus the current `SubmissionGrant`
+   * may authorize an Outcome that resolves the exchange and ends its holds (K1.2-DEC-20).
    */
   | "unauthorized_control"
   /**

@@ -278,7 +278,8 @@ export function inheritedIndexIsLive(index: number): boolean {
  * K1.2 exchange controls there (K1.2-DEC-14).
  *
  * Existing suites use this for all operations, so they exercise the control-authorized arm. New
- * distinguishing cases use `observer` for the inspect-only arm.
+ * distinguishing cases use `observer` for the arm lacking control authority. Outcome submission
+ * separately requires the current attempt grant for either caller (K1.2-DEC-20).
  */
 export const caller = (namespace: string, ...scopes: string[]): AuthenticatedCaller => {
   const resolved = scopes.length > 0 ? scopes : ["tenant-a"];
@@ -290,9 +291,10 @@ export const caller = (namespace: string, ...scopes: string[]): AuthenticatedCal
 };
 
 /**
- * An inspect-only caller: may inspect Executions in `scopes` but holds no control power there
+ * A caller with visibility: may inspect Executions in `scopes` but holds no control power there
  * (K1.2-DEC-14). Takeover, recovery declarations and protocol-failure reports from this caller are
- * refused as `unauthorized_control` with no control-state mutation.
+ * refused as `unauthorized_control` with no control-state mutation. The caller may separately
+ * receive a current attempt grant and submit an Outcome that ends holds (K1.2-DEC-20).
  */
 export const observer = (namespace: string, ...scopes: string[]): AuthenticatedCaller => ({
   namespace,

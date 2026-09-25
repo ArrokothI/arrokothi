@@ -505,8 +505,8 @@ const describeDeliveryFailure = (reason: unknown): string => boundDiagnostic(rea
  * context; the Kernel enforces the distinction.
  *
  * Full scan with no early exit, mirroring `mayReachScope`: work depends only on the list length,
- * never on where a match sits, so an inspect-only caller and a control-authorized caller cost the
- * same number of comparisons for the same list length.
+ * never on where a match sits: callers with and without control authority cost the same number
+ * of comparisons for the same list length.
  */
 const mayControlScope = (caller: AuthenticatedCaller, scope: string): boolean => {
   const controls = caller.controlScopes;
@@ -1476,8 +1476,9 @@ export class ExecutionCoordinator {
    * exchange is then delivered at the new epoch through a fresh capability.
    *
    * K1.2-DEC-14: the caller must hold control power over the Execution's scope, distinct from
-   * inspection visibility. An inspect-only principal is refused as `unauthorized_control` with no
-   * control-state mutation.
+   * inspection visibility. A principal lacking that control authority is refused by this command
+   * as `unauthorized_control` with no control-state mutation. A submission grant does not authorize
+   * this takeover command.
    *
    * K1.2-DEC-15: the Driver owns the safe-replacement prerequisite. The Kernel rejects every later
    * write from the superseded attempt, but Kernel fencing does not itself stop or exclude superseded
@@ -1653,8 +1654,9 @@ export class ExecutionCoordinator {
    * redelivered or answered - without any new revision. This is exchange handling on an in-memory
    * coordinator, not K3 process-fault recovery, and it claims no persistence.
    *
-   * K1.2-DEC-14: declaring availability is a control operation, distinct from inspection. An
-   * inspect-only principal is refused as `unauthorized_control` and changes no hold.
+   * K1.2-DEC-14: declaring availability requires control authority in addition to visibility. A
+   * caller lacking it is refused by this command as `unauthorized_control` and changes no hold.
+   * Separately, an accepted Outcome bearing the current attempt grant may end the hold (DEC-20).
    *
    * K1.2-DEC-18: each accepted decision that enters, updates, or clears the code hold appends one
    * immutable record to the Execution's recovery history, which survives the hold clearing, the
@@ -1734,8 +1736,9 @@ export class ExecutionCoordinator {
    * untouched, and redelivery is refused while it stands. An authorized takeover, or a valid Outcome
    * from the current attempt, is what ends it.
    *
-   * K1.2-DEC-14: reporting is a control operation, distinct from inspection. An inspect-only
-   * principal is refused as `unauthorized_control` and holds nothing.
+   * K1.2-DEC-14: reporting requires control authority in addition to visibility. A caller lacking
+   * it is refused by this command as `unauthorized_control` and enters no hold. A submission grant
+   * authorizes the separate Outcome path (DEC-20), not this control command.
    *
    * K1.2-DEC-18: the accepted report appends one immutable record to the Execution's recovery
    * history. A repeated report while the hold stands changes nothing and appends nothing.
@@ -2041,10 +2044,12 @@ export class ExecutionCoordinator {
    * K1.2-DEC-14: the control power check, after visibility.
    *
    * Visibility (`#visible`) answers "does it exist for this caller?" identically for hidden and
-   * missing. Only after that does this check answer "may this visible caller change control
-   * state?" A visible but inspect-only principal is refused as `unauthorized_control`, with the
-   * Execution named and no control-state mutation. An inspect-only principal must not be able to
-   * supersede an attempt, enter/clear a hold, or declare code availability.
+   * missing. Only after that does this helper check authority for the three explicit commands:
+   * takeover, recovery declaration and protocol-failure report. A visible caller without the
+   * Execution's scope in `controlScopes` is refused as `unauthorized_control`, with the Execution
+   * named and no control-state mutation through those commands. This does not gate Outcome
+   * submission: visibility plus the separate current-attempt `SubmissionGrant` can authorize a
+   * valid Outcome whose acceptance resolves the exchange and ends its holds (K1.2-DEC-20).
    */
   #requireControl(caller: AuthenticatedCaller, record: ExecutionRecord): RefusalRecord | null {
     if (mayControlScope(caller, record.scope)) return null;
