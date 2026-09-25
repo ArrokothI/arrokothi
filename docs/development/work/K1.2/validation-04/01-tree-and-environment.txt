@@ -1,0 +1,23 @@
+candidate C: da82de9de1e51c4b1980e4450a6daf1126945ad2
+base: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+command: git status --porcelain; git rev-parse HEAD; git log --oneline -3; node --version; npm --version; sw_vers; uname -m; date -u
+environment: v25.2.1, npm 11.6.2, macOS 26.6.2 25G83 arm64
+config: default CoordinatorOptions (mailboxCapacity 1024, emissionsPerOutcome 256); no external fixtures
+output-sha256: 36d1fb57a3b2f17e673fa226622db73e79c5dfb8c9474590ff05743bea7bbd05
+--- output begins ---
+da82de9de1e51c4b1980e4450a6daf1126945ad2
+da82de9 correct(K1.2): attempt-bound Outcome submission authority, truthful history, accept inventory
+7f08677 review(K1.2): merge second round-3 review
+ee3b514 docs(K1.2): correct round-2 review SHA transcription
+v25.2.1
+11.6.2
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+arm64
+Fri Sep 25 02:07:32 UTC 2026
+
+--- output ends ---
+exit 0
+2026-09-25T02:07:31Z
