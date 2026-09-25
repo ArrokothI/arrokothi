@@ -1,0 +1,25 @@
+candidate C: b1c2e3bdad1ab9352e8a95307593cce654bc3e3c
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /tmp/k12-c10-valid
+command: npm run check:builder-docs
+environment: {"node": "v25.2.1", "npm": "11.6.2", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "3f50d87fbb21e9a131121080763e1ae761d6bc5a3412fecfb3776a99da0ad9b8", "docs/development/work/K1.2/checks-07.mjs": "dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88", "docs/development/work/K1.2/contract.md": "3cefba9853e41e457a6e92064d8e17ea823d461cecd39c7b239277426310b69f", "docs/development/work/K1.2/decision-01.md": "0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9", "mental-model/mechanisms/execution-cycle.md": "e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "packages/kernel/tests/submission-authority.test.ts": "9e0614a2ef467a46b51e35115538526df78aa661bf6d7b4c3d07c6ba6c9fd02f", "packages/kernel/tests/submission-lifetime.test.ts": "f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "<unset>", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T22:28:50.486Z
+finished-utc: 2026-09-25T22:28:51.058Z
+output-bytes: 305
+output-sha256: 304929eafe6b6d788e88fd06def9442dc62373bc709e2a6d7613215fa0d5426c
+--- output begins ---
+$ npm run check:builder-docs
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 72 Markdown files, 1784 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+[command exit 0]
+--- output ends ---
+exit 0

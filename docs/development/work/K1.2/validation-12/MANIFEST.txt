@@ -1,0 +1,33 @@
+K1.2 round-12 validation manifest
+candidate C: b1c2e3bdad1ab9352e8a95307593cce654bc3e3c
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+manifest-created-utc: 2026-09-25T22:36:00Z
+
+# sha256 of validation-12 evidence files (from docs/development/work/K1.2/, run: sha256sum validation-12/<file>):
+27d26a252a9902cada0b43de55997f970697298f6d0ecf852ec9b481983ad3a0  validation-12/01-tree-and-environment.txt
+32f064273304ab75b9d1b354be3888774553708b9c25366de980a99c308174f5  validation-12/02-typecheck.txt
+6a0bc0bfd480e5fd11bb6ef5b60351ac04692e4b92462cbffb020ce554c9a753  validation-12/03-test-full.txt
+7fd2777cc7bd56b35fcd752fc48f06a4f0180763c5b9c3054fc98a76d525a49d  validation-12/04-test-kernel.txt
+477b03309a400524d26736f9e3bc9ccb428865806cc98156ea5b64d7c34deba6  validation-12/05-test-conformance.txt
+d1e288fcfba01a5d10a12ef88c284362c31fc95496a0c633ef7730a460504760  validation-12/06-test-sdk.txt
+988e04c3e2b75aff16b5b442ac1aa17090a453a52e36f0d2081f0825e487a105  validation-12/07-check-builder-docs.txt
+8d7bb3ad9655954e4ef027c524416788cabeeae9653c17680a023ca8d29e935b  validation-12/08-ablations.txt
+4c35ddd898a9bdc429d74f76f7134a52e44e231176f137e251c4c005f0f2eb51  validation-12/09-reviewer-ablations.txt
+2c556cf49fb2b6a15237d0b2b6fa76e72198c2a1ad79108f61a88f129ff61c90  validation-12/10-probes.txt
+edbfe4ac34e92a3db00910239e18ffe9ba6600c74df4d262818be3269e07caf6  validation-12/11-preservation-and-links.txt
+8a1e0e7f1b41d094de9bcae36459c6d96beb9d224a0566c1acd7a712394acb88  validation-12/12-authority-and-candidate-context.txt
+
+# sha256 of C10 payload/config files at C (run: git show b1c2e3bdad1ab9352e8a95307593cce654bc3e3c:<path> | sha256sum):
+3f50d87fbb21e9a131121080763e1ae761d6bc5a3412fecfb3776a99da0ad9b8  docs/development/work/K1.2/ablations.mjs
+dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88  docs/development/work/K1.2/checks-07.mjs
+3cefba9853e41e457a6e92064d8e17ea823d461cecd39c7b239277426310b69f  docs/development/work/K1.2/contract.md
+0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9  docs/development/work/K1.2/decision-01.md
+e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091  mental-model/mechanisms/execution-cycle.md
+a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d  package-lock.json
+081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1  package.json
+47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5  packages/kernel/package.json
+faec31543686c02e416ecdcc531cc0bfec1e1f3a5d14ee0c6c9f8324bc413562  packages/kernel/src/coordinator.ts
+9e0614a2ef467a46b51e35115538526df78aa661bf6d7b4c3d07c6ba6c9fd02f  packages/kernel/tests/submission-authority.test.ts
+f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401  packages/kernel/tests/submission-lifetime.test.ts
+596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4  tsconfig.json

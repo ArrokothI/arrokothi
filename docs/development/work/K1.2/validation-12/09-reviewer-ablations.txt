@@ -1,0 +1,47 @@
+candidate C: b1c2e3bdad1ab9352e8a95307593cce654bc3e3c
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /tmp/k12-c10-valid
+command: node docs/development/work/K1.2/review-09/ablations-reviewer.mjs
+environment: {"node": "v25.2.1", "npm": "11.6.2", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "3f50d87fbb21e9a131121080763e1ae761d6bc5a3412fecfb3776a99da0ad9b8", "docs/development/work/K1.2/checks-07.mjs": "dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88", "docs/development/work/K1.2/contract.md": "3cefba9853e41e457a6e92064d8e17ea823d461cecd39c7b239277426310b69f", "docs/development/work/K1.2/decision-01.md": "0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9", "mental-model/mechanisms/execution-cycle.md": "e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "packages/kernel/tests/submission-authority.test.ts": "9e0614a2ef467a46b51e35115538526df78aa661bf6d7b4c3d07c6ba6c9fd02f", "packages/kernel/tests/submission-lifetime.test.ts": "f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "<unset>", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T22:33:10.299Z
+finished-utc: 2026-09-25T22:34:36.308Z
+output-bytes: 4918
+output-sha256: e5e4519aca9ad62d921e90f6c3643c88a85bb35e59deadd51a03400d9c67ddd7
+--- output begins ---
+$ node docs/development/work/K1.2/review-09/ablations-reviewer.mjs
+CONTROL        unablated copy: tests 457, pass 457, fail 0
+REJECTED       R1 content validated before submission authority (grant check moved after content)
+               tests 457, pass 453, fail 4; failing: grant-less and forged current proposals with invalid content are unauthorized without content disclosure | over-capacity proposals without authority are unauthorized, not capacity disclosures | K12-R9 authority before content on a well-formed current claim (Case A) | missing, fractional, and negative epoch/base variants never leak content before authority
+NOT APPLICABLE R2 submission authority checked before exchange currency (stale attempt told unauthorized)
+               extra span not found exactly once
+REJECTED       R3 exact replay requires the current grant
+               tests 457, pass 440, fail 17; failing: exact replay after a hold-ending Outcome appends nothing | K12-R3-HISTORY-02 replay and refused submissions grow no History | exact: the original receipt; changed: refused; either way the open exchange is untouched | K1.2-C11 a late Outcome for a resolved Activation never commits into the new exchange
+REJECTED       R4 grant compared by fields, not reference
+               tests 457, pass 448, fail 9; failing: visibility-only caller submitting at a valid epoch is refused without the attempt grant | K12-R1-AUTH-01 observer Outcome without grant is refused (K12-R3-AUTH-02) | an unauthorized Outcome submission appends no History | K12-R3-HISTORY-02 replay and refused submissions grow no History
+REJECTED       R5 takeover keeps the superseded attempt's grant
+               tests 457, pass 453, fail 4; failing: forged grant after takeover is unauthorized, retired grant is stale or silent | K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing | after takeover the retired grant cannot commit while the new grant can | K12-R3-AUTH-02 old attempt authority dies with its epoch
+REJECTED       R6 base-revision currency not checked
+               tests 457, pass 456, fail 1; failing: a base progress revision the exchange was not pinned at is stale | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole
+REJECTED       R7 accepted-Outcome identity ignores the writer epoch (changed-epoch resubmission replays)
+               tests 457, pass 455, fail 2; failing: changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch | K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts | after the new epoch's Outcome is accepted, the old attempt's late Outcome conflicts and changes nothing | K1.2-C8 an accepted takeover advances the epoch within the same exchange
+REJECTED       R8 a code hold fences Outcome acceptance
+               tests 457, pass 445, fail 12; failing: ended_by_outcome records attempt_submission, never a control claim | K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully | exact replay after a hold-ending Outcome appends nothing | K12-R3-HISTORY-02 replay and refused submissions grow no History
+REJECTED       R9 unauthorized_submission refusal not recorded on the Execution
+               tests 457, pass 451, fail 6; failing: correct-looking continue with a forged grant commits nothing | K12-R3-AUTH-02 visibility-only continuing Outcome is refused | grant-less and forged current proposals with invalid content are unauthorized without content disclosure | over-capacity proposals without authority are unauthorized, not capacity disclosures
+REJECTED       R10 B-5 terminal disposition also given at continue
+               tests 457, pass 452, fail 5; failing: acceptance acknowledges exactly the reserved batch and installs everything else together | acknowledgment never reads progress: what progress says it handled changes nothing (R5-j6-2) | K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step | Events that arrived meanwhile are selected by the next exchange, in acceptance order
+REJECTED       R11 protocol-failure report accepted for a superseded epoch
+               tests 457, pass 456, fail 1; failing: a repeated report changes nothing; a stale report cannot hold the exchange | K1.2-C10 an unclassifiable response holds the exchange; it is never retried silently
+REJECTED       R12 dispatch mints the grant only on first Execution dispatch (next exchange reuses previous grant object)
+               tests 457, pass 441, fail 16; failing: a) code hold does not fence a valid Outcome: submitOutcome ends the hold with progressRevision+1 | b) protocol hold ends by valid Outcome (fresh Execution) | c) valid Outcome while both held ends both (fresh Execution) | K12-R1-HOLD-01 permitted actions predict the controls that work
+
+11/12 ablations rejected by the kernel suite.
+[command exit 1]
+--- output ends ---
+exit 1
