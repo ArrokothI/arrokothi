@@ -217,7 +217,7 @@ owner pages' own scope statements and correct whichever is wrong, in the same co
 | K1.1 creation/ingress domain separation (`KC1-DEC-1`) | `concepts/identity.md#request-key-and-input-id`, `mechanisms/creation.md#later-input-has-a-destination` | `work/K1.1/review-15.md` `K11-R15-ID-01`; `K1.1-correction-01/contract.md`; `K1.1-reference-01` REF-1 |
 | K1.1 in-process value capture (C3, `KC1-DEC-3`), and its distinction from request-envelope own-field observation (`KC1-DEC-6`) | `concepts/values.md#in-process-value-capture` | `work/K1.1/contract.md` C3; `K1.1-correction-01` review-08 C3; `K1.1-reference-01` REF-2, and its review-02 row "Envelope ≠ value capture" |
 | K1.1 delivery reporting (`KC1-ARCH-1`) | `mechanisms/execution-cycle.md#delivery-reporting-boundary` (+ link from `mechanisms/integration.md`) | `work/K1.1-correction-01/decision-01.md` incl. its superseding note; `review-08.md`; roadmap §K1.1-correction-01 |
-| K1.2 attempt-submission carrier extension | `mechanisms/execution-cycle.md#delivery-reporting-boundary`, `#retry-versus-takeover`, `#outcome-acceptance` (single owner; links from `concepts/identity.md#writer-epoch`, `concepts/core.md#execution-driver`, `mechanisms/integration.md`) | Owner decision 2026-09-25, `work/K1.2/decision-01.md`, resolving `work/K1.2/blocker-01.md`; historical KC1-ARCH-1 record sealed; in-process `SubmissionGrant` recorded in BASELINE `#outcome-acceptance-api` |
+| K1.2 submission authority and the in-process carrier extension | `mechanisms/execution-cycle.md#submission-authority` (links from `#delivery-reporting-boundary`, `#retry-versus-takeover`, `#outcome-acceptance`, `concepts/identity.md#writer-epoch`, `concepts/core.md#execution-driver`, `mechanisms/integration.md`) | Owner decision 2026-09-25, `work/K1.2/decision-01.md`, resolving `work/K1.2/blocker-01.md`; historical KC1-ARCH-1 record sealed; in-process `SubmissionGrant` recorded in BASELINE `#outcome-acceptance-api` |
 | Status ownership moved off specification pages | `MM/README.md#how-these-pages-are-organized`, `#target-not-shipped` | `K1.1-reference-01` REF-3, `review-02.md` `REF1-R1-CONV-01` |
 | Architecture-level decisions and their counterexamples | The Layer-3 owner of each rule, found through `MM/reference.md`; provenance in `MM/sources.md` | Retired `docs/development/004-architecture-review.md` (decisions table), refined by `005-detail-design-review.md` |
 | Packet status / accepted / integrated / released | LEDGER only | `006-development-process.md#status-transitions`; `014-owner-progress-summary.md` is the readable account |
@@ -273,12 +273,17 @@ naming an `OPEN(...)` marker claim that one exists.
   in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`: an integer restarting at
   1 for each new exchange, advanced by exactly 1 per accepted takeover — an *implementation* choice,
   not architecture.
-- Attempt-submission authority carrier — no `OPEN(...)` marker; the architecture fixes the
-  per-attempt lifetime and the acceptance order in `mechanisms/execution-cycle.md`, while the
-  carrier is the in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`:
+- How submission authority is represented — no `OPEN(...)` marker; the architecture fixes its
+  per-attempt lifetime and its place in the acceptance order in
+  `mechanisms/execution-cycle.md#submission-authority`, while the representation is each binding's
+  choice. The in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`:
   one frozen `SubmissionGrant` per writer-epoch attempt, supplied as the third `deliver`
   argument and required back by reference identity. That choice fixes no universal token,
   wire format, remote credential, or K2 policy language.
+- **How submission authority survives a Kernel restart** in a persistent profile, so that
+  redelivery after recovery keeps the same attempt's authority while a superseded attempt's stays
+  dead — `OPEN(K3)` in `mechanisms/execution-cycle.md#submission-authority`. The in-process binding
+  has no restart.
 - Wait generation representation; declared-input-subscription spelling — `mechanisms/waits.md#declare-what-can-wake-the-execution`,
   WS W-9/§5. WS assigns the subscription spelling to K1.3.
 - Timeout Event wire kind token, discriminant, encoded schema, storage layout and timer

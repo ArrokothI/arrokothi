@@ -165,7 +165,8 @@ current owner, never the retired page, for what a rule is today.
 |---|---|
 | attempt envelope, exchange | [Activation/attempt/epoch](concepts/identity.md#writer-epoch) |
 | delivery, Execution dispatch | [Qualified dispatch and delivery](concepts/identity.md#dispatch-and-delivery) |
-| submission authority, SubmissionGrant, delivery reporting | [Delivery, retry/takeover, and Outcome acceptance](mechanisms/execution-cycle.md#delivery-reporting-boundary); the semantic fence is [writer epoch](concepts/identity.md#writer-epoch); the in-process carrier is recorded in BASELINE `#outcome-acceptance-api` |
+| submission authority, SubmissionGrant | [Submission authority](mechanisms/execution-cycle.md#submission-authority); `SubmissionGrant` is the in-process representation, recorded in the [implemented baseline](../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api) |
+| delivery report, reporting capability, DeliverySettlement | [Delivery reporting boundary](mechanisms/execution-cycle.md#delivery-reporting-boundary) |
 | canonical, canonicalization, codec, equality | [Values](concepts/values.md) |
 | output obligation, output subscription | [Output obligation](concepts/actions.md#emission-result-and-output-obligation), [replay](mechanisms/output.md) |
 | boundary, receipt, acceptance position | [Acceptance and receipt](concepts/identity.md#acceptance-boundary-and-receipt) |
