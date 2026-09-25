@@ -27,7 +27,8 @@ requires reconstructing a rule from an old review. Preserve sealed bytes when ar
 
 The target uses asynchronous Activation/Outcome exchange with opaque Runtime progress. The supported
 SDK still uses the legacy core; the private target package currently supplies creation, ingress,
-reservation and dispatch only. Resolve all current acceptance and release through 007.
+reservation, dispatch/redelivery, Outcome acceptance with receipts, authorized takeover and recovery holds
+(waits/deadlines stay K1.3, Effects K2). Resolve all current acceptance and release through 007.
 
 When implementing a packet, maintain its code, conformance, baseline and affected guides together.
 Retire replaced legacy material only when its consumers have migrated or its support is explicitly

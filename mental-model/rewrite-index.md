@@ -282,7 +282,7 @@ naming an `OPEN(...)` marker claim that one exists.
   wire format, remote credential, or K2 policy language.
 - **How submission authority survives a Kernel restart** in a persistent profile, so that
   redelivery after recovery keeps the same attempt's authority while a superseded attempt's stays
-  dead — `OPEN(K3)` in `mechanisms/execution-cycle.md#submission-authority`. The in-process binding
+  dead — `OPEN(K3.2)` in `mechanisms/execution-cycle.md#submission-authority`. The in-process binding
   has no restart.
 - Wait generation representation; declared-input-subscription spelling — `mechanisms/waits.md#declare-what-can-wake-the-execution`,
   WS W-9/§5. WS assigns the subscription spelling to K1.3.
