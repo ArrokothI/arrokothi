@@ -1,0 +1,42 @@
+candidate C: 03a4afffff55050aca5a463694b47c2e60e19bd9
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12-r7-tJ8bc0/checkout
+command: node docs/development/work/K1.2/checks-07.mjs
+environment: {"node":"v25.2.1","npm":"11.6.2","typescript":"5.9.3","OS":"ProductName:\t\tmacOS\\nProductVersion:\t\t26.6.2\\nBuildVersion:\t\t25G83","arch":"arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs":"90996ac232a3d661d190e101836d9536032bdfc319d97de606b63a6aae473ba5","docs/development/work/K1.2/checks-07.mjs":"dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88","docs/development/work/K1.2/contract.md":"62a637b4d3eddb308de78cc23f3985b43e168a1cdebb0b729503dc78a0e52741","docs/development/work/K1.2/decision-01.md":"0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9","mental-model/mechanisms/execution-cycle.md":"c52e596b8e80798aa771763b9523775a8b59f03e3349e53c354e78c129cd506f","package-lock.json":"a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d","package.json":"081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1","packages/kernel/package.json":"47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5","packages/kernel/tests/submission-lifetime.test.ts":"f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401","tsconfig.json":"596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI":"<unset>","LANG":"C.UTF-8","LC_ALL":"<unset>","NODE_ENV":"<unset>","NODE_OPTIONS":"<unset>","TZ":"<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T17:40:49.452Z
+finished-utc: 2026-09-25T17:40:52.856Z
+output-bytes: 1434
+output-sha256: 953c5bb8e43f3e34212885a656015a04faea97c4f58443792f7d2364c60a74cc
+--- output begins ---
+PASS: all runtime source bytes unchanged from H5 (retained through H6).
+PASS: all 30 pre-existing kernel test/helper files retain their printed syntax, including assertions.
+PASS: all 25 prior ablations plus B10/B11 and runner unchanged.
+PASS: 66 sealed historical files unchanged from H6.
+PASS: removed rewrite drafts remain absent.
+PASS: Layer-3/index changes are exactly the authorized canonical set (7 paths).
+PASS: cumulative candidate changes no legacy/SDK/integration source.
+PASS: 452 local links/anchors in changed contract, decision, blocker, baseline and canonical pages.
+Correction delta:
+.../development/002-implemented-kernel-baseline.md |  6 +-
+ docs/development/work/K1.2/checks-07.mjs           | 63 ++++++++++++++++
+ docs/development/work/K1.2/contract.md             | 18 +++--
+ docs/development/work/K1.2/decision-01.md          | 88 ++++++++++++++++++++++
+ mental-model/concepts/core.md                      |  2 +-
+ mental-model/concepts/identity.md                  |  2 +
+ mental-model/mechanisms/execution-cycle.md         | 35 +++++----
+ mental-model/mechanisms/integration.md             |  2 +-
+ mental-model/reference.md                          |  1 +
+ mental-model/rewrite-index.md                      |  7 ++
+ mental-model/sources.md                            |  2 +
+ 11 files changed, 203 insertions(+), 23 deletions(-)
+Cumulative candidate:
+118 files changed, 53419 insertions(+), 414 deletions(-)
+
+--- output ends ---
+exit 0
