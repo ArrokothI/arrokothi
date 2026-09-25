@@ -178,6 +178,18 @@ const ablations = [
     find: "          cause: \"pinned_code_unavailable\" as const,\n          transition: \"ended_by_outcome\" as const,\n          authority: \"attempt_submission\" as const,",
     replace: "          cause: \"pinned_code_unavailable\" as const,\n          transition: \"ended_by_outcome\" as const,\n          authority: \"control\" as const,",
   },
+  {
+    id: "B10 ordinary redelivery rotates the Runtime attempt grant",
+    file: "coordinator.ts",
+    find: "    const resent = intent.activation;",
+    replace: "    intent.submission = mintSubmission(intent.activation.executionId, intent.activation.activationId, intent.activation.writerEpoch);\n    const resent = intent.activation;",
+  },
+  {
+    id: "B11 redelivery rotates only a takeover attempt grant",
+    file: "coordinator.ts",
+    find: "    const resent = intent.activation;",
+    replace: "    if (intent.activation.writerEpoch > 1) intent.submission = mintSubmission(intent.activation.executionId, intent.activation.activationId, intent.activation.writerEpoch);\n    const resent = intent.activation;",
+  },
 ];
 
 const applyOnce = (text, find, replace, label) => {

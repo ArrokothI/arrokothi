@@ -2,7 +2,7 @@
  * Controlled fakes for the K1.1 cases.
  *
  * 012's deterministic-execution method asks for "controlled fakes and explicit barriers": the
- * Drivers here never do work of their own, and the one that delays holds its promise until a test
+ * Drivers here never do work of their own, and the one that delays retains its reporting capability until a test
  * releases it, so "the coordinator did not wait" is an observed fact rather than a timing accident.
  *
  * Nothing here re-derives protocol behaviour. A fake that decided what the Kernel should have done
@@ -320,10 +320,12 @@ export interface RecordingDriver extends ExecutionDriver {
 }
 
 /**
- * The latest submission grant recorded for one Activation: the current attempt's authority.
+ * The latest grant observed by this fake Driver for one Activation, for ordinary test setup.
  *
- * Redeliveries record the same grant object again, so scanning from the end always finds the
- * attempt's live authority; a takeover records a fresh grant that supersedes earlier rows.
+ * This lookup does not prove grant lifetime or validity: it also returns a rotated grant from a
+ * broken redelivery, or an old grant after resolution. Tests of preservation/retirement must save
+ * the earlier delivery's reference before the transition and submit that saved reference.
+ * `submission-lifetime.test.ts` records Driver arguments directly and never uses this helper.
  * Reads through the hardened accessor so an inherited indexed trap left live by an earlier
  * hostile window cannot substitute a different grant.
  */
@@ -580,4 +582,3 @@ export const outcomeFor = (
     next: { step: "continue" },
     ...overrides,
   }) as OutcomeEnvelope;
-

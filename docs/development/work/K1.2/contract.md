@@ -10,8 +10,8 @@ PLAN-01 amendment and the owner's 2026-09-24 B-5 scope amendment.
 `52b1600f3b42e3a360fdc3395178f1d147edf304` and integrated in `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`;
 K1.1-correction-02 accepted at H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e` and integrated in
 `954d31b00eb7f2412c22ccf7d4d079699f0c4032`. All are ancestors of the base.
-**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 5.**
-**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25; round-5 wording correction by Codex (GPT-6), 2026-09-25.
+**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 6.**
+**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25; round-5 wording correction and round-6 evidence correction/architecture blocker by Codex (GPT-6), 2026-09-25.
 
 ## Entry and owner release
 
@@ -232,6 +232,7 @@ specification prose.
 | C7 waits | `await` with any wait | refused naming K1.3; the wait is never read | `outcome-acceptance.test.ts` |
 | C8 takeover (ID-3/ID-4/ID-9) | takeover naming the current epoch; old-epoch Outcome; new-epoch Outcome | same Activation ID and batch, epoch+1, dispatch-intent receipt, delivery at the new epoch; old Outcome `stale_exchange`; new one accepted | `takeover.test.ts` |
 | C8 retry-only | redeliver several times, then accept | epoch unchanged throughout | `takeover.test.ts` |
+| C8 attempt authority lifetime (DEC-20) | capture the first delivery's grant before ordinary redeliveries; repeat with the grant captured at takeover before redelivering that attempt | accept with the saved reference in both schedules; takeover's grant differs from the retired grant; each delivery has a distinct reporting capability; retired authority stays fenced; hold-ending History distinguishes attempt submission from control | `submission-lifetime.test.ts`; B10/B11 in `ablations.mjs` |
 | C8 repeated takeover | the same takeover sent twice | the second refused as stale; epoch advanced once | `takeover.test.ts` |
 | C8 pinned input | input accepted before takeover | stays queued and outside the batch | `takeover.test.ts` |
 | C8 reentrant takeover | a Driver that takes over from inside dispatch or redelivery | each answer describes the attempt that call delivered; the takeover stands and fences epoch 1 | `takeover.test.ts` |
@@ -256,7 +257,7 @@ specification prose.
 | C13 ambient pollution during observation | a getter installing an inherited indexed accessor or descriptor-field pollution, or replacing a builtin, before commit | the accepted decision, acknowledgment list, Emission list and receipt are retained exactly | `outcome-hostile.test.ts` |
 | C14 zone rules | the import graph and inventory | no violation; document and policy agree | `tests/conformance/architecture/kernel-landing-zone.test.ts` |
 | C15 records | BASELINE, identity.md markers, rewrite-index §4 | choices recorded; markers kept; no status on Layer-3 pages | report checklist; link check |
-| All: distinguishing power | 25 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped, B8 Outcome submission without attempt grant, B9 hold-ending History claims control power) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
+| All: distinguishing power | 27 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped, B8 Outcome submission without attempt grant, B9 hold-ending History claims control power, B10 every redelivery rotates the submission grant, B11 only post-takeover redelivery rotates it) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
 
 ## Command plan
 
