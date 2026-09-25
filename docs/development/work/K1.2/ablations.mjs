@@ -76,6 +76,10 @@ const ablations = [
     file: "coordinator.ts",
     find: "    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",",
     replace: "    if (false) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",",
+    suffix: {
+      find: "    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);",
+      replace: "    const postCallbackHold: StoredHold | null = null;",
+    },
   },
   {
     id: "A11 unknown envelope fields ignored",
@@ -150,6 +154,18 @@ const ablations = [
     find: "    record.nextAcceptancePosition = acceptancePosition + 1;",
     replace: "    record.nextAcceptancePosition = acceptancePosition + 2;",
   },
+  {
+    id: "B6 no post-callback revalidation (outer takeover commits on stale pre-callback state)",
+    file: "coordinator.ts",
+    find: "    // -- K1.2-DEC-19 revalidation: the safety callback above can synchronously reenter this\n    // coordinator and replace what was checked (nested takeover advancing the epoch, an Outcome\n    // resolving the exchange, a recovery declaration holding it). Re-establish that the same\n    // unresolved exchange at the same current epoch still governs, before minting anything. No\n    // Driver/host code runs between this block and the commit below.\n    if (isTerminal(record.state)) {\n      return err(\n        this.#refusal(\n          \"terminal_destination\",\n          `Execution ${record.executionId} ended as ${record.state}; there is no exchange to take over`,\n          record,\n        ),\n      );\n    }\n    if (record.activation !== exchange) {\n      if (record.activation === null) {\n        return err(\n          this.#refusal(\n            \"no_unresolved_exchange\",\n            `Activation ${named.activationId} resolved while establishing safe replacement; there is no unresolved exchange to take over`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${named.activationId} is not the unresolved exchange of Execution ${record.executionId}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${named.activationId}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    // The pre-callback hold check above narrows `exchange.codeHold` to null for the rest of this\n    // flow, but the callback may have replaced it synchronously. Read it back through a helper\n    // whose declared return type restores the full union, so a hold established during the callback\n    // is honored rather than acted on from the earlier no-hold observation.\n    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);\n    if (postCallbackHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${named.activationId} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,\n          record,\n        ),\n      );\n    }\n",
+    replace: "",
+  },
+  {
+    id: "B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)",
+    file: "coordinator.ts",
+    find: "    appendAllOwn(record.recoveryHistory, historyToAppend);",
+    replace: "    void historyToAppend;",
+  },
 ];
 
 const applyOnce = (text, find, replace, label) => {
@@ -160,7 +176,10 @@ const applyOnce = (text, find, replace, label) => {
 
 /** Runs the whole kernel suite in `work` and reads its counts. `--test` expands the glob itself. */
 const runSuite = (work) => {
-  const run = spawnSync(process.execPath, ["--test", "--experimental-strip-types", "--no-warnings", "packages/kernel/tests/*.test.ts"], {
+  // `--test-reporter=spec` is forced so piped runs report the same `ℹ`/`✖` lines on every
+  // platform (K12-R2-PROC-01): without it some Node versions emit TAP when piped, which this
+  // parser does not read.
+  const run = spawnSync(process.execPath, ["--test", "--test-reporter=spec", "--experimental-strip-types", "--no-warnings", "packages/kernel/tests/*.test.ts"], {
     cwd: work,
     encoding: "utf8",
     timeout: 600_000,

@@ -10,8 +10,8 @@ PLAN-01 amendment and the owner's 2026-09-24 B-5 scope amendment.
 `52b1600f3b42e3a360fdc3395178f1d147edf304` and integrated in `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`;
 K1.1-correction-02 accepted at H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e` and integrated in
 `954d31b00eb7f2412c22ccf7d4d079699f0c4032`. All are ancestors of the base.
-**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 1.**
-**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24.
+**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 3.**
+**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24.
 
 ## Entry and owner release
 
@@ -237,6 +237,7 @@ specification prose.
 | C8 reentrant takeover | a Driver that takes over from inside dispatch or redelivery | each answer describes the attempt that call delivered; the takeover stands and fences epoch 1 | `takeover.test.ts` |
 | C8 control privilege (evidence.md; DEC-14) | inspect-only principal vs control-authorized principal on takeover; outsider hidden vs missing | inspect-only refused `unauthorized_control` with no epoch/receipt/delivery change; outsider `unknown_destination` identical hidden/missing | `control-authority.test.ts`, `outcome-acceptance.test.ts` |
 | C8 safe replacement (identity.md writer-epoch; recovery.md; DEC-15) | takeover with safe Driver vs unsafe/absent/throwing Driver | safe advances epoch; unsafe/absent/throwing refused `unsafe_replacement` with no epoch/receipt/delivery change; fencing alone does not imply native exclusion | `control-authority.test.ts` |
+| C8 revalidation after safety callback (DEC-19) | `isSafeToReplace` reentering nested takeover for same Activation/epoch then `true`; submitting valid current Outcome (incl. terminal `complete`/`fail`) then `true`; establishing a code hold then `true` | at most one takeover commits; outer stale arm refused (`stale_exchange` / `no_unresolved_exchange` / `terminal_destination` / `recovery_held`) with no orphan receipt, extra delivery, or overwritten evidence; whole result asserted | `takeover-reentrancy.test.ts` |
 | C9 code hold | recover with a pinned revision or codec missing, then with all present | RUNNING, hold reason, same exchange/progress/revision; redeliver and takeover refused; then cleared; redeliver and accept at base+1 | `recovery.test.ts` |
 | C9 distinguishability | held versus FAILED versus waiting | state and hold differ | `recovery.test.ts` |
 | C9 permitted actions (evidence.md; DEC-17) | code hold, protocol hold, both; inspect permitted vs attempt redeliver/takeover/declare/Outcome | code `["declare_code_availability","submit_outcome"]`; protocol alone `["request_takeover","submit_outcome"]`; both `["declare_code_availability","submit_outcome"]`; inspected list predicts actual accept/refuse without probing | `hold-permitted.test.ts`, `recovery.test.ts` |
@@ -249,12 +250,12 @@ specification prose.
 | C12 receipts | create → dispatch → Outcome → dispatch → takeover → Outcome | each boundary its own receipt and position; frozen; refusals mint none | `outcome-acceptance.test.ts`, `takeover.test.ts`, `transaction.test.ts` |
 | C12 retained evidence immutable | mutate returned receipts, answers, views, dispositions, holds/history/deliveries/refusals | replay and inspection unchanged | `outcome-evidence.test.ts`, `recovery-history.test.ts`, `recovery-evidence.test.ts` |
 | C12 nondisclosure | hidden-scope Outcome/takeover/recover activity interposed between A's operations | every A-observable value equal across arms, including holds/history/deliveries/control refusals | `nondisclosure.test.ts`, `recovery-evidence.test.ts` |
-| C12 transaction contiguity (DEC-10) | refused Outcomes, replays, redeliveries, then acceptances | refusals/replays/redeliveries consume no acceptance position; positions contiguous per Execution | `transaction.test.ts` |
+| C12 transaction contiguity (DEC-10) | refused Outcomes, replays, redeliveries, then acceptances; Outcomes ending one hold and both holds | refusals/replays/redeliveries consume no acceptance position; positions contiguous per Execution; hold-ending history committed atomically in the same decision | `transaction.test.ts` |
 | C13 own-only, single observation | inherited envelope fields; throwing/revoked fields; getters counting reads; value root read once | missing, located refusal, one read per field | `outcome-hostile.test.ts` |
 | C13 ambient pollution during observation | a getter installing an inherited indexed accessor or descriptor-field pollution, or replacing a builtin, before commit | the accepted decision, acknowledgment list, Emission list and receipt are retained exactly | `outcome-hostile.test.ts` |
 | C14 zone rules | the import graph and inventory | no violation; document and policy agree | `tests/conformance/architecture/kernel-landing-zone.test.ts` |
 | C15 records | BASELINE, identity.md markers, rewrite-index §4 | choices recorded; markers kept; no status on Layer-3 pages | report checklist; link check |
-| All: distinguishing power | 21 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
+| All: distinguishing power | 23 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
 
 ## Command plan
 
@@ -331,7 +332,9 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   in-process binding, not a fifth semantic limit.
 - **K1.2-DEC-10 — transaction mechanism.** Validation and commit run in one synchronous call on the
   single-threaded in-memory coordinator; every caller-owned field is observed first, every record the
-  decision needs is then built from Kernel data only, and only then is accepted state mutated
+  decision needs is then built from Kernel data only — receipt, Emissions, result, dispositions,
+  resolved exchange, Outcome decision, and any hold-ending history records — and only then is accepted
+  state mutated
   (the Outcome-acceptance receipt's position is read while building and committed with the rest of
   the decision; no acceptance index advances before the records are complete), through load-time
   primitives with no caller code between first check and last mutation. This settles the §4
@@ -379,6 +382,16 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   `ended_by_outcome`, reason, `actorNamespace`/`actorScope`, and `resultingEpoch` for takeover clears).
   It survives hold clearing, exchange resolution, next dispatch, and terminal state; idempotent
   duplicates (`changed:false`) append nothing. No seventh receipt boundary is introduced.
+- **K1.2-DEC-19 — takeover commit revalidation after the safety callback (correction, K12-R2-TAKEOVER-01).**
+  `isSafeToReplace` is trusted same-process Driver/host code that can synchronously reenter the
+  coordinator, so state validated before the callback (unresolved exchange, current epoch, no code
+  hold) is re-established immediately before commit with no further reentrant code between that final
+  validation and the mutations. A nested takeover advancing the epoch makes the outer arm
+  `stale_exchange`; an Outcome resolving the exchange makes it `no_unresolved_exchange` (or
+  `terminal_destination` when terminal); a newly established code hold makes it `recovery_held`.
+  At most one takeover decision commits per request; no orphan receipt, extra delivery, or overwrite
+  of accepted evidence. The classifications reuse the existing refusal vocabulary; no new receipt
+  boundary is introduced.
 
 ## Unresolved obligations and limits
 

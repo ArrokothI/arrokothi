@@ -113,7 +113,9 @@ export interface ExecutionDriver {
    * current attempt's Activation, and advances the writer epoch only when it returns exactly `true`.
    * Absent, non-`true`, or throwing means no guarantee was established, and the takeover is refused
    * as `unsafe_replacement` rather than assumed. A `false` from a fake Driver in tests is the
-   * distinguishing case for that refusal.
+   * distinguishing case for that refusal. Because this callback can synchronously reenter the
+   * coordinator, the Kernel revalidates the same unresolved exchange, current epoch, and hold state
+   * after it returns and before committing (K1.2-DEC-19).
    */
   isSafeToReplace?(activation: Activation): boolean;
 }

@@ -226,8 +226,7 @@ describe("K12-R1-DOC-01 hostile pollution during observation cannot split the co
 });
 
 describe("K12-R1-DOC-01 reentrant Outcome during observation ordered before outer checks", () => {
-  test('Test D "reentrant Outcome during observation ordered before outer checks"', () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+  test('Test D "reentrant Outcome during observation ordered before outer checks"', () => {    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const executionId = created.executionId;
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
@@ -252,5 +251,94 @@ describe("K12-R1-DOC-01 reentrant Outcome during observation ordered before oute
     assert.equal(after.receipts[after.receipts.length - 1]?.boundary, "outcome_acceptance");
     assert.equal(after.refusals.length, 1, "only the outer refusal was recorded");
     assert.equal(after.refusals[0]?.classification, "duplicate_conflict");
+  });
+});
+
+describe("K12-R1-DOC-01 an Outcome ending one hold commits its history atomically", () => {
+  test('Test E "Outcome ending one hold commits history in the same decision"', () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const executionId = created.executionId;
+    const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+
+    const held = accepted(
+      kernel.recoverExecution(author, executionId, {
+        activationId: dispatched.activationId,
+        available: { definitionRevisions: [], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] },
+      }),
+    );
+    assert.equal(held.changed, true);
+    assert.equal(view(kernel, executionId).recoveryHistory.length, 1);
+
+    // One decision: acknowledgment, progress, receipt, and the hold-ending history record together.
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { cursor: 1 } })));
+    assert.equal(answer.receipt.position, 3);
+    assert.deepEqual([...answer.acknowledged], [created.initialEventId]);
+
+    const after = view(kernel, executionId);
+    assert.deepEqual(after.recoveryHolds, [], "the hold is gone");
+    assert.equal(after.recoveryHistory.length, 2, "entered plus ended_by_outcome");
+    assert.equal(after.recoveryHistory[0]?.transition, "entered");
+    assert.equal(after.recoveryHistory[1]?.transition, "ended_by_outcome");
+    assert.equal(after.recoveryHistory[1]?.cause, "pinned_code_unavailable");
+    assert.equal(after.recoveryHistory[1]?.writerEpoch, 1);
+    assert.equal(after.recoveryHistory[1]?.actorNamespace, "app-a");
+    assert.deepEqual(after.acceptedProgress, { cursor: 1 });
+    assert.equal(after.progressRevision, 1);
+    assert.equal(after.exchanges.length, 1);
+    assert.deepEqual(
+      after.receipts.map((receipt) => receipt.position),
+      [1, 2, 3],
+      "the history record consumed no extra acceptance position",
+    );
+    assert.deepEqual(
+      after.receipts.map((receipt) => receipt.boundary),
+      ["creation", "dispatch_intent", "outcome_acceptance"],
+    );
+  });
+});
+
+describe("K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically", () => {
+  test('Test F "Outcome ending both holds commits both history records"', () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const executionId = created.executionId;
+    const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+
+    accepted(
+      kernel.recoverExecution(author, executionId, {
+        activationId: dispatched.activationId,
+        available: { definitionRevisions: [], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] },
+      }),
+    );
+    accepted(
+      kernel.reportProtocolFailure(author, executionId, {
+        activationId: dispatched.activationId,
+        writerEpoch: 1,
+        diagnostic: "unreadable",
+      }),
+    );
+    assert.equal(view(kernel, executionId).recoveryHistory.length, 2);
+
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { cursor: 9 } })));
+    assert.equal(answer.receipt.position, 3);
+
+    const after = view(kernel, executionId);
+    assert.deepEqual(after.recoveryHolds, []);
+    assert.equal(after.recoveryHistory.length, 4, "two entries plus two ended_by_outcome records");
+    assert.deepEqual(
+      after.recoveryHistory.map((record) => record.transition),
+      ["entered", "entered", "ended_by_outcome", "ended_by_outcome"],
+    );
+    assert.deepEqual(
+      after.recoveryHistory.slice(2).map((record) => record.cause),
+      ["pinned_code_unavailable", "protocol_failure"],
+    );
+    assert.deepEqual(after.acceptedProgress, { cursor: 9 });
+    assert.deepEqual(
+      after.receipts.map((receipt) => receipt.position),
+      [1, 2, 3],
+      "both history records rode the same decision",
+    );
   });
 });

@@ -48,14 +48,15 @@
   *
   * `execution-cycle.md` leaves the transaction mechanism open provided the atomicity is real. Here it
   * is one synchronous call on a single-threaded, in-memory coordinator: every caller-owned field is
-  * observed first, every record the decision needs is then built from Kernel data only, and only then
-  * is accepted state mutated, through load-time primitives that no caller observation can have
-  * replaced. The Outcome-acceptance receipt's position is read from the owning Execution's index
-  * while building and committed with the rest of the decision in the same synchronous run; no
-  * acceptance index advances before the decision's records are complete. No caller code runs
-  * between the first check of accepted state and the last mutation, so a reentrant call made from a
-  * getter during observation is ordered entirely before this decision's checks (K1.2-DEC-10). This is
-  * atomicity within the process, not durability.
+  * observed first, every record the decision needs — receipt, Emissions, result, dispositions,
+  * resolved exchange, Outcome decision, and any hold-ending history records — is then built from
+  * Kernel data only, and only then is accepted state mutated, through load-time primitives that no
+  * caller observation can have replaced. The Outcome-acceptance receipt's position is read from the
+  * owning Execution's index while building and committed with the rest of the decision in the same
+  * synchronous run; no acceptance index advances before the decision's records are complete. No
+  * caller code runs between the first check of accepted state and the last mutation, so a reentrant
+  * call made from a getter during observation is ordered entirely before this decision's checks
+  * (K1.2-DEC-10). This is atomicity within the process, not durability.
   */
 
 import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
@@ -532,6 +533,16 @@ const permittedForHold = (cause: StoredHold["cause"], hasCodeHold: boolean): rea
   }
   return PrimordialObjectFreeze([REQUEST_TAKEOVER, SUBMIT_OUTCOME]);
 };
+
+/**
+ * Reads back an exchange's code hold with the full union type.
+ *
+ * A hold check earlier in the same call narrows `exchange.codeHold` to null for the rest of that
+ * flow, but a Driver/host callback in between may have replaced it synchronously. Reading through
+ * this helper restores the full `StoredHold | null` union so post-callback revalidation honors a
+ * newly established hold (K1.2-DEC-19) instead of acting on the earlier observation.
+ */
+const currentHoldOf = (exchange: ActivationRecord): StoredHold | null => exchange.codeHold;
 
 /**
  * K1.2-DEC-18: appends one accepted recovery/control decision to the owning Execution's history.
@@ -1418,6 +1429,15 @@ export class ExecutionCoordinator {
    * The Kernel advances the epoch only when the Driver's `isSafeToReplace` returns exactly `true`
    * for the current attempt; absent, denied, or throwing means the takeover is refused as
    * `unsafe_replacement` rather than assumed. The Kernel never infers safety from a lease or silence.
+   *
+   * K1.2-DEC-19: the safety callback is trusted same-process Driver/host code that can synchronously
+   * reenter this coordinator (nested takeover, Outcome submission, recovery declaration). State
+   * observed before the callback is therefore re-established immediately before commit — same
+   * unresolved exchange, same current writer epoch, no terminal state, no code hold — with no
+   * further reentrant code between that final validation and the mutations below. An exchange that
+   * resolved, advanced, ended, or became held during the callback makes this request refuse
+   * (`stale_exchange`, `no_unresolved_exchange`, `terminal_destination`, or `recovery_held`) instead
+   * of minting an orphan receipt, delivering another attempt, or overwriting accepted evidence.
    */
   requestTakeover(caller: AuthenticatedCaller, executionId: string, request: TakeoverRequest): Result<TakeoverAccepted, RefusalRecord> {
     const record = this.#visible(caller, executionId);
@@ -1463,6 +1483,62 @@ export class ExecutionCoordinator {
         this.#refusal(
           "unsafe_replacement",
           `Activation ${named.activationId} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded native work`,
+          record,
+        ),
+      );
+    }
+
+    // -- K1.2-DEC-19 revalidation: the safety callback above can synchronously reenter this
+    // coordinator and replace what was checked (nested takeover advancing the epoch, an Outcome
+    // resolving the exchange, a recovery declaration holding it). Re-establish that the same
+    // unresolved exchange at the same current epoch still governs, before minting anything. No
+    // Driver/host code runs between this block and the commit below.
+    if (isTerminal(record.state)) {
+      return err(
+        this.#refusal(
+          "terminal_destination",
+          `Execution ${record.executionId} ended as ${record.state}; there is no exchange to take over`,
+          record,
+        ),
+      );
+    }
+    if (record.activation !== exchange) {
+      if (record.activation === null) {
+        return err(
+          this.#refusal(
+            "no_unresolved_exchange",
+            `Activation ${named.activationId} resolved while establishing safe replacement; there is no unresolved exchange to take over`,
+            record,
+          ),
+        );
+      }
+      return err(
+        this.#refusal(
+          "stale_exchange",
+          `Activation ${named.activationId} is not the unresolved exchange of Execution ${record.executionId}`,
+          record,
+        ),
+      );
+    }
+    if (exchange.activation.writerEpoch !== currentEpoch) {
+      return err(
+        this.#refusal(
+          "stale_exchange",
+          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${named.activationId}; a takeover names the attempt it supersedes and advances past it once`,
+          record,
+        ),
+      );
+    }
+    // The pre-callback hold check above narrows `exchange.codeHold` to null for the rest of this
+    // flow, but the callback may have replaced it synchronously. Read it back through a helper
+    // whose declared return type restores the full union, so a hold established during the callback
+    // is honored rather than acted on from the earlier no-hold observation.
+    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);
+    if (postCallbackHold !== null) {
+      return err(
+        this.#refusal(
+          "recovery_held",
+          `Activation ${named.activationId} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,
           record,
         ),
       );
@@ -1699,9 +1775,9 @@ export class ExecutionCoordinator {
    * acknowledgment is the whole reserved batch because acceptance says so (`B-3`), not because
    * progress was parsed for what it handled (R5-j6-2).
    *
-   * K1.2-DEC-18: when the resolved exchange carried holds, each hold appends one `ended_by_outcome`
-   * record to the Execution's recovery history before the exchange is cleared, so the history still
-   * explains the hold after it disappears.
+   * K1.2-DEC-18: when the resolved exchange carried holds, each hold contributes one
+   * `ended_by_outcome` record built with the other decision records before any mutation, so the
+   * history still explains the hold after it disappears.
    */
   #accept(record: ExecutionRecord, intent: ActivationRecord, outcome: CapturedOutcome, caller: AuthenticatedCaller): OutcomeAccepted {
     const activationId = intent.activation.activationId;
@@ -1786,6 +1862,39 @@ export class ExecutionCoordinator {
       terminalDispositions: PrimordialObjectFreeze(endedIds),
     });
 
+    // The hold-ending history records are decision records too (K1.2-DEC-18): frozen here from
+    // pre-mutation state alongside everything else, so the apply phase below only appends prebuilt
+    // records and constructs nothing after mutation has started.
+    const historyToAppend: RecoveryHistoryRecord[] = [];
+    if (intent.codeHold !== null) {
+      appendOwn(
+        historyToAppend,
+        PrimordialObjectFreeze({
+          activationId,
+          writerEpoch: intent.activation.writerEpoch,
+          cause: "pinned_code_unavailable" as const,
+          transition: "ended_by_outcome" as const,
+          reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the code hold that had reported: ${intent.codeHold.reason}`,
+          actorNamespace: caller.namespace,
+          actorScope: record.scope,
+        }),
+      );
+    }
+    if (intent.protocolFailureHold !== null) {
+      appendOwn(
+        historyToAppend,
+        PrimordialObjectFreeze({
+          activationId,
+          writerEpoch: intent.activation.writerEpoch,
+          cause: "protocol_failure" as const,
+          transition: "ended_by_outcome" as const,
+          reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the protocol-failure hold that had reported: ${intent.protocolFailureHold.reason}`,
+          actorNamespace: caller.namespace,
+          actorScope: record.scope,
+        }),
+      );
+    }
+
     // -- The decision, applied. Nothing below can refuse, and nothing below reads caller state.
     // The acceptance index advances here, with the rest of the commit, not before building: a
     // failure while building would otherwise leave a consumed position with no decision behind it.
@@ -1799,28 +1908,7 @@ export class ExecutionCoordinator {
     appendOwn(record.exchanges, resolved);
     mapSet(record.acceptedOutcomes, activationId, PrimordialObjectFreeze({ identity: outcome.identity, decision }));
     appendOwn(record.receipts, receipt);
-    if (intent.codeHold !== null) {
-      appendRecoveryHistory(record, {
-        activationId,
-        writerEpoch: intent.activation.writerEpoch,
-        cause: "pinned_code_unavailable",
-        transition: "ended_by_outcome",
-        reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the code hold that had reported: ${intent.codeHold.reason}`,
-        actorNamespace: caller.namespace,
-        actorScope: record.scope,
-      });
-    }
-    if (intent.protocolFailureHold !== null) {
-      appendRecoveryHistory(record, {
-        activationId,
-        writerEpoch: intent.activation.writerEpoch,
-        cause: "protocol_failure",
-        transition: "ended_by_outcome",
-        reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the protocol-failure hold that had reported: ${intent.protocolFailureHold.reason}`,
-        actorNamespace: caller.namespace,
-        actorScope: record.scope,
-      });
-    }
+    appendAllOwn(record.recoveryHistory, historyToAppend);
     record.activation = null;
     record.state = nextState;
 

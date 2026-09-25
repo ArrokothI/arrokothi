@@ -92,6 +92,12 @@ by one within the same exchange and delivers the same Activation at the new epoc
 control-authorized caller (`AuthenticatedCaller.controlScopes` contains the Execution's scope;
 otherwise `unauthorized_control` with no state change) and only when the Driver's
 `isSafeToReplace(currentActivation)` returns exactly `true` (otherwise `unsafe_replacement`).
+Because that callback can synchronously reenter the coordinator, the Kernel revalidates the same
+unresolved exchange, current epoch, and hold state after it returns and before committing, with no
+further reentrant code in between; a nested takeover, resolving Outcome, terminal end, or newly
+established code hold makes the outer request refuse (`stale_exchange`, `no_unresolved_exchange`,
+`terminal_destination`, or `recovery_held`) with no orphan receipt, extra delivery, or overwritten
+evidence. At most one takeover commits per request.
 Kernel fencing rejects later writes from the superseded attempt but does not itself stop or exclude
 superseded native work; the Driver's exclusion or refusal is what establishes that precondition
 (`identity.md#writer-epoch`, `recovery.md`, `driver.md`, `kernel.md`).
@@ -117,9 +123,11 @@ These are this in-process binding's choices where the architecture leaves the re
   by exactly 1 per accepted takeover. Epochs are not comparable across Activation IDs.
 - **Outcome-acceptance transaction** (`mechanisms/execution-cycle.md#atomic-decisions-across-the-system`):
   one synchronous call on the single-threaded coordinator. Every caller-owned field is observed first,
-  every record the decision needs is then built from Kernel data only, and only then is accepted state
-  mutated — the Outcome-acceptance receipt's position is read while building and committed with the
-  rest of the decision, so no acceptance index advances before the records are complete — through
+  every record the decision needs — receipt, Emissions, result, dispositions, resolved exchange,
+  Outcome decision, and any hold-ending history records — is then built from Kernel data only, and
+  only then is accepted state mutated — the Outcome-acceptance receipt's position is read while
+  building and committed with the rest of the decision, so no acceptance index advances before the
+  records are complete — through
   load-time primitives with no caller code between first check and last mutation; a
   getter that reenters the Kernel is ordered before the decision's checks. Atomic within the process,
   not durable.
