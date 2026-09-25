@@ -16,8 +16,9 @@ import type {
   DeliverySettlement,
   ExecutionDriver,
   OutcomeEnvelope,
+  SubmissionGrant,
 } from "../src/index.ts";
-import { defineAt, restoreDescriptor } from "../src/own-array.ts";
+import { defineAt, readAt, restoreDescriptor } from "../src/own-array.ts";
 
 /**
  * The `Object.prototype` state before descriptor-field pollution, so it can be restored exactly.
@@ -312,16 +313,40 @@ export const createRequest = (overrides: Partial<CreateExecutionRequest> = {}): 
 
 export interface RecordingDriver extends ExecutionDriver {
   readonly seen: Activation[];
+  /** Every submission grant handed over with a delivery, in delivery order (K1.2-DEC-20). */
+  readonly submissions: SubmissionGrant[];
 }
+
+/**
+ * The latest submission grant recorded for one Activation: the current attempt's authority.
+ *
+ * Redeliveries record the same grant object again, so scanning from the end always finds the
+ * attempt's live authority; a takeover records a fresh grant that supersedes earlier rows.
+ * Reads through the hardened accessor so an inherited indexed trap left live by an earlier
+ * hostile window cannot substitute a different grant.
+ */
+export const submissionFor = (
+  driver: { readonly submissions: readonly SubmissionGrant[] },
+  activationId: string,
+): SubmissionGrant => {
+  for (let index = driver.submissions.length - 1; index >= 0; index -= 1) {
+    const grant = readAt(driver.submissions, index) as SubmissionGrant | undefined;
+    if (grant !== undefined && grant.activationId === activationId) return grant;
+  }
+  throw new Error(`no submission grant recorded for Activation ${activationId}`);
+};
 
 /** Records every Activation handed to it and reports delivered synchronously. */
 export function recordingDriver(driverId = "fake-recording"): RecordingDriver {
   const seen: Activation[] = [];
+  const submissions: SubmissionGrant[] = [];
   return {
     driverId,
     seen,
-    deliver(activation: Activation, settlement: DeliverySettlement): undefined {
+    submissions,
+    deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
       recordOwn(seen, activation);
+      recordOwn(submissions, submission);
       settlement.delivered();
       return undefined;
     },
@@ -336,6 +361,8 @@ export function recordingDriver(driverId = "fake-recording"): RecordingDriver {
 export interface DelayedDriver extends ExecutionDriver {
   readonly seen: Activation[];
   readonly settlements: DeliverySettlement[];
+  /** Every submission grant handed over with a delivery, in delivery order (K1.2-DEC-20). */
+  readonly submissions: SubmissionGrant[];
   /** Reports delivered for every captured settlement still outstanding. */
   release(): void;
 }
@@ -350,13 +377,16 @@ export interface DelayedDriver extends ExecutionDriver {
 export function delayedDriver(driverId = "fake-delayed"): DelayedDriver {
   const seen: Activation[] = [];
   const settlements: DeliverySettlement[] = [];
+  const submissions: SubmissionGrant[] = [];
   return {
     driverId,
     seen,
     settlements,
-    deliver(activation: Activation, settlement: DeliverySettlement): undefined {
+    submissions,
+    deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
       recordOwn(seen, activation);
       recordOwn(settlements, settlement);
+      recordOwn(submissions, submission);
       return undefined;
     },
     isSafeToReplace(): boolean {
@@ -369,39 +399,57 @@ export function delayedDriver(driverId = "fake-delayed"): DelayedDriver {
 }
 
 /** A Driver that never establishes safe replacement (K1.2-DEC-15): takeovers are refused. */
-export const unsafeDriver = (driverId = "fake-unsafe"): ExecutionDriver => ({
-  driverId,
-  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
-    settlement.delivered();
-    return undefined;
-  },
-  isSafeToReplace(): boolean {
-    return false;
-  },
-});
+export const unsafeDriver = (driverId = "fake-unsafe"): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      settlement.delivered();
+      return undefined;
+    },
+    isSafeToReplace(): boolean {
+      return false;
+    },
+  };
+};
 
 /** Throws synchronously from `deliver` (implicit failure report, no explicit report). */
-export const throwingDriver = (driverId = "fake-throwing"): ExecutionDriver => ({
-  driverId,
-  deliver(): undefined {
-    throw new Error("native submit refused");
-  },
-  isSafeToReplace(): boolean {
-    return true;
-  },
-});
+export const throwingDriver = (driverId = "fake-throwing"): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, _settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      throw new Error("native submit refused");
+    },
+    isSafeToReplace(): boolean {
+      return true;
+    },
+  };
+};
 
 /** Reports failed synchronously with a primitive string reason (retained, bounded). */
-export const failingDriver = (reason = "native submit lost", driverId = "fake-failing"): ExecutionDriver => ({
-  driverId,
-  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
-    settlement.failed(reason);
-    return undefined;
-  },
-  isSafeToReplace(): boolean {
-    return true;
-  },
-});
+export const failingDriver = (
+  reason = "native submit lost",
+  driverId = "fake-failing",
+): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      settlement.failed(reason);
+      return undefined;
+    },
+    isSafeToReplace(): boolean {
+      return true;
+    },
+  };
+};
 
 /**
  * A conforming Driver with internal asynchronous work (KC1-ARCH-1).
@@ -410,21 +458,29 @@ export const failingDriver = (reason = "native submit lost", driverId = "fake-fa
  * the failure through the capability. No promise crosses into Kernel observation, so no
  * unhandled rejection can escape from the reporting mechanism itself.
  */
-export const asyncFailingDriver = (reason = "native submit lost", driverId = "fake-async-failing"): ExecutionDriver => ({
-  driverId,
-  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
-    Promise.reject(new Error(reason)).then(
-      () => {},
-      (error: unknown) => {
-        settlement.failed(error);
-      },
-    );
-    return undefined;
-  },
-  isSafeToReplace(): boolean {
-    return true;
-  },
-});
+export const asyncFailingDriver = (
+  reason = "native submit lost",
+  driverId = "fake-async-failing",
+): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      Promise.reject(new Error(reason)).then(
+        () => {},
+        (error: unknown) => {
+          settlement.failed(error);
+        },
+      );
+      return undefined;
+    },
+    isSafeToReplace(): boolean {
+      return true;
+    },
+  };
+};
 
 /** The holder of the Array iterator `next` the exact JCS call reads (K11-R16-VAL-01). */
 export const arrayIteratorPrototype = (): object => Object.getPrototypeOf([][Symbol.iterator]()) as object;

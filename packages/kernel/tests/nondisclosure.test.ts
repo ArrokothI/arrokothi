@@ -32,7 +32,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator } from "../src/index.ts";
-import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
+import { accepted, caller, createRequest, recordingDriver, refused, submissionFor, type RecordingDriver } from "./harness.ts";
 
 const scopeA = "tenant-a";
 const scopeB = "tenant-b";
@@ -485,15 +485,16 @@ describe("K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path"
  * identities, positions from A's own Execution record. The hidden window runs B's whole K1.2 surface
  * (accept, conflict, stale, takeover, hold, report, complete) between A's steps.
  */
-function runOutcomeArm(hidden: (kernel: ExecutionCoordinator, round: number) => void): { serialized: string[] } {
-  const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+function runOutcomeArm(hidden: (kernel: ExecutionCoordinator, round: number, driver: RecordingDriver) => void): { serialized: string[] } {
+  const driver = recordingDriver();
+  const kernel = new ExecutionCoordinator({ driver });
   const serialized: string[] = [];
   const record = (value: unknown): void => {
     serialized.push(JSON.stringify(value));
   };
 
   const created = accepted(kernel.createExecution(authorA, createRequest({ creationKey: "a-outcomes" })));
-  hidden(kernel, 0);
+  hidden(kernel, 0, driver);
   const first = accepted(kernel.dispatch(authorA, created.executionId, { bound: 1 }));
   const envelope = {
     executionId: created.executionId,
@@ -504,17 +505,17 @@ function runOutcomeArm(hidden: (kernel: ExecutionCoordinator, round: number) => 
     emissions: [{ emissionKey: "draft", value: { pages: 12 } }],
     next: { step: "continue" as const },
   };
-  record(accepted(kernel.submitOutcome(authorA, envelope)));
-  hidden(kernel, 1);
-  record(accepted(kernel.submitOutcome(authorA, envelope)));
-  record(refused(kernel.submitOutcome(authorA, { ...envelope, progress: { phase: "changed" } })));
+  record(accepted(kernel.submitOutcome(authorA, envelope, submissionFor(driver, first.activationId))));
+  hidden(kernel, 1, driver);
+  record(accepted(kernel.submitOutcome(authorA, envelope, submissionFor(driver, first.activationId))));
+  record(refused(kernel.submitOutcome(authorA, { ...envelope, progress: { phase: "changed" } }, submissionFor(driver, first.activationId))));
   const second = accepted(kernel.dispatch(authorA, created.executionId, { bound: 1 }));
   record(second);
-  hidden(kernel, 2);
-  record(refused(kernel.submitOutcome(authorA, { ...envelope, activationId: second.activationId, writerEpoch: 2, baseProgressRevision: 1 })));
+  hidden(kernel, 2, driver);
+  record(refused(kernel.submitOutcome(authorA, { ...envelope, activationId: second.activationId, writerEpoch: 2, baseProgressRevision: 1 }, submissionFor(driver, second.activationId))));
   record(accepted(kernel.reportProtocolFailure(authorA, created.executionId, { activationId: second.activationId, writerEpoch: 1, diagnostic: "unreadable" })));
   record(accepted(kernel.requestTakeover(authorA, created.executionId, { activationId: second.activationId, writerEpoch: 1 })));
-  hidden(kernel, 3);
+  hidden(kernel, 3, driver);
   record(
     accepted(
       kernel.recoverExecution(authorA, created.executionId, {
@@ -539,17 +540,17 @@ function runOutcomeArm(hidden: (kernel: ExecutionCoordinator, round: number) => 
         writerEpoch: 2,
         baseProgressRevision: 1,
         next: { step: "complete", result: { report: "week 37" } },
-      }),
+      }, submissionFor(driver, second.activationId)),
     ),
   );
-  hidden(kernel, 4);
+  hidden(kernel, 4, driver);
   record(accepted(kernel.inspect(authorA, created.executionId)));
   record(kernel.visibleExecutions(authorA));
   return { serialized };
 }
 
 /** B's whole K1.2 surface, in its own scope, on its own Execution. */
-function hiddenOutcomeActivity(kernel: ExecutionCoordinator, round: number): void {
+function hiddenOutcomeActivity(kernel: ExecutionCoordinator, round: number, driver: RecordingDriver): void {
   const hidden = accepted(kernel.createExecution(authorB, bCreate(`outcomes-${round}`)));
   const dispatched = accepted(kernel.dispatch(authorB, hidden.executionId, { bound: 1 }));
   const envelope = {
@@ -561,9 +562,9 @@ function hiddenOutcomeActivity(kernel: ExecutionCoordinator, round: number): voi
     emissions: [{ emissionKey: "draft", value: { hidden: round } }],
     next: { step: "continue" as const },
   };
-  refused(kernel.submitOutcome(authorB, { ...envelope, writerEpoch: 9 }));
-  accepted(kernel.submitOutcome(authorB, envelope));
-  refused(kernel.submitOutcome(authorB, { ...envelope, progress: { hidden: "conflict" } }));
+  refused(kernel.submitOutcome(authorB, { ...envelope, writerEpoch: 9 }, submissionFor(driver, dispatched.activationId)));
+  accepted(kernel.submitOutcome(authorB, envelope, submissionFor(driver, dispatched.activationId)));
+  refused(kernel.submitOutcome(authorB, { ...envelope, progress: { hidden: "conflict" } }, submissionFor(driver, dispatched.activationId)));
   const next = accepted(kernel.dispatch(authorB, hidden.executionId, { bound: 1 }));
   accepted(kernel.reportProtocolFailure(authorB, hidden.executionId, { activationId: next.activationId, writerEpoch: 1 }));
   accepted(kernel.requestTakeover(authorB, hidden.executionId, { activationId: next.activationId, writerEpoch: 1 }));
@@ -574,7 +575,7 @@ function hiddenOutcomeActivity(kernel: ExecutionCoordinator, round: number): voi
     }),
   );
   accepted(
-    kernel.submitOutcome(authorB, { ...envelope, activationId: next.activationId, writerEpoch: 2, baseProgressRevision: 1, next: { step: "fail", error: { hidden: true } } }),
+    kernel.submitOutcome(authorB, { ...envelope, activationId: next.activationId, writerEpoch: 2, baseProgressRevision: 1, next: { step: "fail", error: { hidden: true } } }, submissionFor(driver, next.activationId)),
   );
   // And A's own identities used against A's Execution text by the hidden producer namespace clone:
   // the same key text under the hidden scope names a different Execution entirely.

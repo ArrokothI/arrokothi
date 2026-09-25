@@ -62,11 +62,12 @@ its own expired-key policy before enabling expiry (`mechanisms/evidence.md#reten
 
 ## Outcome acceptance API
 
-`ExecutionCoordinator.submitOutcome(caller, envelope)` takes an `OutcomeEnvelope`:
+`ExecutionCoordinator.submitOutcome(caller, envelope, submission)` takes an `OutcomeEnvelope`:
 `executionId`, `activationId`, `writerEpoch`, `baseProgressRevision`, `progress`, optional
 `emissions` (each `{ emissionKey, value }`), optional `effects` and `next` (`{ step: "continue" }`,
 `{ step: "complete", result }`, `{ step: "fail", error }`; `{ step: "await", wait }` is refused until
-K1.3). The envelope names the exchange and the attempt it answers; nothing is defaulted from the
+K1.3), plus the attempt-bound `SubmissionGrant` the Kernel handed to the Driver with the current
+attempt. The envelope names the exchange and the attempt it answers; nothing is defaulted from the
 current exchange. Every field is read once from the envelope's own data, and each value root
 (progress, each Emission value, the result or error) is captured once and measured on its own. An own
 field the binding does not know is refused rather than ignored, as is any non-empty `effects`.
@@ -75,8 +76,13 @@ The order is `execution-cycle.md`'s: the caller is scoped to the named Execution
 is read; an already accepted Outcome under the same Activation ID is looked up next, and an exact
 duplicate (equal captured content) returns the original receipt and decision while anything else is
 refused as `duplicate_conflict`; then terminal state, then the exchange's current Activation ID, writer
-epoch and base progress revision (`stale_exchange`), then content (`malformed_envelope`, or
-`capacity_exhausted` above the declared Emission limit). An accepted Outcome acknowledges the whole
+epoch and base progress revision (`stale_exchange`), then the submission grant: only a proposal
+presenting the exchange's current grant — by reference identity, never by fields — is the current
+attempt answering, and anything else is refused as `unauthorized_submission` with no accepted-state
+mutation beyond the recorded refusal; then content (`malformed_envelope`, or
+`capacity_exhausted` above the declared Emission limit). Scope is still required alongside the grant;
+replay and conflict precede authority because they answer from retained evidence without accepting
+anything. An accepted Outcome acknowledges the whole
 reserved batch, installs the progress under revision base + 1, records each Emission, records the
 typed result (`kind: "completed"` or `"failed"`) for `complete`/`fail`, resolves the exchange and moves
 the Execution to `READY`, `COMPLETED` or `FAILED`; at `complete`/`fail`, every Event still
@@ -123,19 +129,28 @@ These are this in-process binding's choices where the architecture leaves the re
   by exactly 1 per accepted takeover. Epochs are not comparable across Activation IDs.
 - **Outcome-acceptance transaction** (`mechanisms/execution-cycle.md#atomic-decisions-across-the-system`):
   one synchronous call on the single-threaded coordinator. Every caller-owned field is observed first,
-  every record the decision needs — receipt, Emissions, result, dispositions, resolved exchange,
-  Outcome decision, and any hold-ending history records — is then built from Kernel data only, and
-  only then is accepted state mutated — the Outcome-acceptance receipt's position is read while
-  building and committed with the rest of the decision, so no acceptance index advances before the
-  records are complete — through
-  load-time primitives with no caller code between first check and last mutation; a
+  every retained decision record the acceptance needs — receipt, Emissions, result, dispositions,
+  resolved exchange, Outcome decision, hold-ending history records, and the retained accepted-Outcome
+  wrapper binding the captured identity to the decision for replay — is then built from Kernel data
+  only, and only then is accepted state mutated by inserting those prebuilt records — the
+  Outcome-acceptance receipt's position is read while building and committed with the rest of the
+  decision, so no acceptance index advances before the records are complete — through
+  load-time primitives with no caller code between first check and last mutation; the apply phase
+  constructs no retained record, and the only post-mutation construction is the returned answer
+  projection, which is not retained state. A
   getter that reenters the Kernel is ordered before the decision's checks. Atomic within the process,
   not durable.
 - **Per-entry disposition storage** (WS §3 "Left open"): each mailbox entry holds its own frozen
   disposition, `queued`, `acknowledged` (naming the acknowledging Activation) or `terminal` (with its
   reason).
 - **Takeover evidence**: a takeover re-records the dispatch intent's current attempt and mints a
-  `dispatch_intent` receipt; it introduces no new receipt boundary.
+  `dispatch_intent` receipt; it introduces no new receipt boundary. It also mints the new attempt's
+  submission grant and retires the old one.
+- **Submission authority** (`execution-cycle.md`, `identity.md`, `evidence.md`): one frozen
+  `SubmissionGrant` per writer-epoch attempt, handed to the Driver with the Activation and required
+  back by reference identity on `submitOutcome` (`unauthorized_submission` otherwise); never
+  inspected; redelivery preserves it, takeover replaces it. Not K2 policy — one unforgeable
+  reference per attempt.
 - **Emission and result identity**: `emission-…` and `result-…` IDs are packed from the Execution ID,
   the Activation ID and, for an Emission, its key, so a replay cannot mint another and no identity
   reflects activity elsewhere. Output positions, reads and cursors are K4.4's.
@@ -143,7 +158,8 @@ These are this in-process binding's choices where the architecture leaves the re
   checked before any Emission is read, not a semantic value limit.
 - **Control authority** (`evidence.md`, `authority.md`): `AuthenticatedCaller.controlScopes` is the
   separate control power; the three exchange controls require it (`unauthorized_control` otherwise).
-  Outcome submission stays visibility-only.
+  Outcome submission requires visibility plus the attempt grant — never visibility alone, never
+  general control power alone.
 - **Driver safe replacement** (`identity.md#writer-epoch`, `recovery.md`, `driver.md`): takeover
   advances only on `isSafeToReplace() === true` (`unsafe_replacement` otherwise); Kernel fencing does
   not stop native work.
@@ -152,8 +168,10 @@ These are this in-process binding's choices where the architecture leaves the re
 - **Permitted actions** (`evidence.md`): each hold exposes `permittedNextActions` from the same rules
   that refuse the controls (`declare_code_availability`/`request_takeover`/`submit_outcome`).
 - **Recovery history** (`state.md#execution-history`, `evidence.md`): `recoveryHistory` retains
-  entered/updated/cleared_by_declaration/cleared_by_takeover/ended_by_outcome with actor/authority and
-  exchange/epoch causation; duplicates append nothing; no seventh receipt.
+  entered/updated/cleared_by_declaration/cleared_by_takeover/ended_by_outcome with an explicit
+  `authority` (`control` for checked control power, `attempt_submission` for a grant-authorized
+  Runtime proposal that claims no general control power), actor, and exchange/epoch causation;
+  duplicates append nothing; no seventh receipt.
 - **Retention**: accepted-Outcome records, resolved exchanges, Emissions and results are kept for the
   coordinator's lifetime, so an exact Outcome replay is answered for as long as the coordinator lives.
 

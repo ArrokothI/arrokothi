@@ -17,7 +17,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, type CodeAvailability, type ExecutionView } from "../src/index.ts";
-import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused } from "./harness.ts";
+import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -35,7 +35,7 @@ function progressedAndOpen() {
   const kernel = new ExecutionCoordinator({ driver });
   const created = accepted(kernel.createExecution(author, createRequest()));
   const first = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } })));
+  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } }), submissionFor(driver, first.activationId)));
   const open = accepted(kernel.dispatch(author, created.executionId, { bound: 4 }));
   return { kernel, driver, executionId: created.executionId, open };
 }
@@ -74,6 +74,7 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
       cause: "pinned_code_unavailable",
       transition: "entered",
       reason: "pinned Definition revision weekly-report@3 is unavailable",
+      authority: "control",
       actorNamespace: "app-a",
       actorScope: "tenant-a",
     });
@@ -124,7 +125,7 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
     const resent = accepted(kernel.redeliver(author, executionId));
     assert.equal(resent.activationId, open.activationId);
     assert.deepEqual(driver.seen[driver.seen.length - 1]?.acceptedProgress, { cursor: 7 });
-    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } })));
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } }), submissionFor(driver, open.activationId)));
     assert.equal(answer.progressRevision, 2);
   });
 
@@ -151,7 +152,7 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
     const held = progressedAndOpen();
     accepted(held.kernel.recoverExecution(author, held.executionId, { activationId: held.open.activationId, available: { ...ALL_AVAILABLE, definitionRevisions: [] } }));
     const failed = progressedAndOpen();
-    accepted(failed.kernel.submitOutcome(author, outcomeFor(failed.executionId, failed.open, { next: { step: "fail", error: { code: "x" } } })));
+    accepted(failed.kernel.submitOutcome(author, outcomeFor(failed.executionId, failed.open, { next: { step: "fail", error: { code: "x" } } }), submissionFor(failed.driver, failed.open.activationId)));
 
     const heldView = view(held.kernel, held.executionId);
     const failedView = view(failed.kernel, failed.executionId);
@@ -169,7 +170,7 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
   });
 
   test("a recovery request names the exchange; one for another exchange, or with no exchange open, is refused", () => {
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
     assert.equal(
       refused(kernel.recoverExecution(author, executionId, { activationId: `${executionId}/activation-1`, available: ALL_AVAILABLE })).classification,
       "stale_exchange",
@@ -179,7 +180,7 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
         .classification,
       "malformed_value",
     );
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
     assert.equal(
       refused(kernel.recoverExecution(author, executionId, { activationId: open.activationId, available: ALL_AVAILABLE })).classification,
       "no_unresolved_exchange",
@@ -190,9 +191,9 @@ describe("K1.2-C9 unavailable pinned code holds the exchange, visibly", () => {
     // `state.md` defines recovery-held as an unresolved Activation that cannot safely continue. Only
     // the writer epoch and terminal state fence acceptance (K1.2-DEC-7); an answer from the attempt
     // that still holds the epoch is accepted, and with the exchange resolved there is nothing held.
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
     accepted(kernel.recoverExecution(author, executionId, { activationId: open.activationId, available: { ...ALL_AVAILABLE, definitionRevisions: [] } }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
     const after = view(kernel, executionId);
     assert.equal(after.state, "READY");
     assert.deepEqual(after.recoveryHolds, []);
@@ -269,7 +270,7 @@ describe("K1.2-C10 an unclassifiable response holds the exchange; it is never re
     assert.equal(taken.writerEpoch, 2);
     assert.deepEqual(view(kernel, executionId).recoveryHolds, [], "replacing the attempt that produced the failure clears its hold");
     assert.equal(driver.seen[driver.seen.length - 1]?.writerEpoch, 2);
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...open, writerEpoch: 2 })));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...open, writerEpoch: 2 }), submissionFor(driver, open.activationId)));
   });
 
   test("a takeover does not clear a code hold alongside it; recovery must find the code first", () => {
@@ -297,9 +298,9 @@ describe("K1.2-C10 an unclassifiable response holds the exchange; it is never re
   });
 
   test("a valid Outcome from the current attempt also ends it", () => {
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
     accepted(kernel.reportProtocolFailure(author, executionId, { activationId: open.activationId, writerEpoch: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
     assert.deepEqual(view(kernel, executionId).recoveryHolds, []);
   });
 });

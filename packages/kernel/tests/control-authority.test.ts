@@ -294,13 +294,21 @@ describe("K12-R1-AUTH-01 visibility before control", () => {
   });
 });
 
-describe("K12-R1-AUTH-01 observer CAN submit valid Outcome", () => {
-  test("visibility-only caller submits Outcome at valid epoch", () => {
+describe("K12-R1-AUTH-01 observer Outcome without grant is refused (K12-R3-AUTH-02)", () => {
+  test("visibility-only caller submitting at a valid epoch is refused without the attempt grant", () => {
     const { kernel, executionId, dispatched } = freshDispatched("observer-outcome-1");
+    const before = viewAs(kernel, author, executionId);
     const outcome = outcomeFor(executionId, dispatched);
-    const ok = accepted(kernel.submitOutcome(obs, outcome));
-    assert.equal(ok.progressRevision, 1, "control gating does not block Runtime Outcome");
-    assert.equal(viewAs(kernel, author, executionId).progressRevision, 1);
+    const forged = { executionId, activationId: dispatched.activationId, writerEpoch: 1 } as never;
+    const refusal = refused(kernel.submitOutcome(obs, outcome, forged));
+    assert.equal(refusal.classification, "unauthorized_submission");
+    assert.equal(refusal.executionId, executionId);
+    const after = viewAs(kernel, author, executionId);
+    assert.deepEqual(after.recoveryHolds, []);
+    assert.deepEqual(after.recoveryHistory, []);
+    assert.equal(after.progressRevision, before.progressRevision);
+    assert.equal(after.state, before.state);
+    assert.equal(after.activation?.writerEpoch, 1, "the real attempt remains answerable");
   });
 });
 

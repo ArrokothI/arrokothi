@@ -166,6 +166,18 @@ const ablations = [
     find: "    appendAllOwn(record.recoveryHistory, historyToAppend);",
     replace: "    void historyToAppend;",
   },
+  {
+    id: "B8 ordinary visibility authorizes Outcome submission (no attempt grant required)",
+    file: "coordinator.ts",
+    find: "    if (submission !== intent.submission) {",
+    replace: "    if (false) {",
+  },
+  {
+    id: "B9 hold-ending History claims control power for a Runtime submission",
+    file: "coordinator.ts",
+    find: "          cause: \"pinned_code_unavailable\" as const,\n          transition: \"ended_by_outcome\" as const,\n          authority: \"attempt_submission\" as const,",
+    replace: "          cause: \"pinned_code_unavailable\" as const,\n          transition: \"ended_by_outcome\" as const,\n          authority: \"control\" as const,",
+  },
 ];
 
 const applyOnce = (text, find, replace, label) => {

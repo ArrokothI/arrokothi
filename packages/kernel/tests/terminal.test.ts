@@ -17,7 +17,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, type ExecutionView } from "../src/index.ts";
-import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused } from "./harness.ts";
+import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -35,20 +35,21 @@ const correction = (destination: string, requestKey: string, text = requestKey) 
  * accepted before reservation and excluded by the bound, one accepted after reservation.
  */
 function withBacklog() {
-  const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+  const driver = recordingDriver();
+  const kernel = new ExecutionCoordinator({ driver });
   const created = accepted(kernel.createExecution(author, createRequest()));
   const early = accepted(kernel.submitInput(author, correction(created.executionId, "early")));
   const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
   const late = accepted(kernel.submitInput(author, correction(created.executionId, "late")));
-  return { kernel, executionId: created.executionId, initialEventId: created.initialEventId, early, late, dispatched };
+  return { kernel, driver, executionId: created.executionId, initialEventId: created.initialEventId, early, late, dispatched };
 }
 
 describe("K1.2-C6 B-5: an accepted `complete` or `fail` disposes of every Event still unacknowledged", () => {
   for (const step of ["complete", "fail"] as const) {
     test(`\`${step}\` acknowledges the batch and gives the rest a terminal disposition, in one decision`, () => {
-      const { kernel, executionId, initialEventId, early, late, dispatched } = withBacklog();
+      const { kernel, driver, executionId, initialEventId, early, late, dispatched } = withBacklog();
       const next = step === "complete" ? { step, result: { report: "week 37" } } : { step, error: { code: "sources_unavailable" } };
-      const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next })));
+      const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
 
       const state = step === "complete" ? "COMPLETED" : "FAILED";
       assert.equal(answer.nextState, state);
@@ -69,15 +70,15 @@ describe("K1.2-C6 B-5: an accepted `complete` or `fail` disposes of every Event 
   }
 
   test("`continue` disposes of nothing: queued input stays queued for the next exchange", () => {
-    const { kernel, executionId, early, late, dispatched } = withBacklog();
-    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    const { kernel, driver, executionId, early, late, dispatched } = withBacklog();
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     assert.deepEqual(answer.terminalDispositions, []);
     assert.deepEqual(view(kernel, executionId).queued, [early.eventId, late.eventId]);
   });
 
   test("a refused terminal proposal disposes of nothing", () => {
-    const { kernel, executionId, early, late, dispatched } = withBacklog();
-    refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 3 }, { next: { step: "complete", result: 1 } })));
+    const { kernel, driver, executionId, early, late, dispatched } = withBacklog();
+    refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 3 }, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
     const after = view(kernel, executionId);
     assert.equal(after.state, "RUNNING");
     assert.deepEqual(after.terminalDispositions, []);
@@ -87,8 +88,8 @@ describe("K1.2-C6 B-5: an accepted `complete` or `fail` disposes of every Event 
 
 describe("K1.2-C6 live terminal ingress", () => {
   test("new input to an ended Execution is refused and not queued; earlier input keeps its record", () => {
-    const { kernel, executionId, early, dispatched } = withBacklog();
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } })));
+    const { kernel, driver, executionId, early, dispatched } = withBacklog();
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
     const before = view(kernel, executionId);
 
     const refusal = refused(kernel.submitInput(author, correction(executionId, "after-the-end")));
@@ -110,11 +111,12 @@ describe("K1.2-C6 live terminal ingress", () => {
   });
 
   test("the same holds after `fail`, and an acknowledged Event replays as acknowledged", () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const first = accepted(kernel.submitInput(author, correction(created.executionId, "first")));
     const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched, { next: { step: "fail", error: { code: "x" } } })));
+    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched, { next: { step: "fail", error: { code: "x" } } }), submissionFor(driver, dispatched.activationId)));
 
     assert.equal(refused(kernel.submitInput(author, correction(created.executionId, "new"))).classification, "terminal_destination");
     const replay = accepted(kernel.submitInput(author, correction(created.executionId, "first")));
@@ -125,8 +127,8 @@ describe("K1.2-C6 live terminal ingress", () => {
 
 describe("K1.2-C5 a terminal lifetime never reopens", () => {
   test("dispatch, redelivery, a new Outcome, takeover, recovery and protocol reports are all refused", () => {
-    const { kernel, executionId, dispatched } = withBacklog();
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } })));
+    const { kernel, driver, executionId, dispatched } = withBacklog();
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
     const before = view(kernel, executionId);
     const named = { activationId: dispatched.activationId, writerEpoch: 1 };
     const available = { definitionRevisions: ["weekly-report@3"], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] };
@@ -134,7 +136,7 @@ describe("K1.2-C5 a terminal lifetime never reopens", () => {
     const outcomes: [string, { ok: boolean; error?: { classification: string } }][] = [
       ["dispatch", kernel.dispatch(author, executionId, { bound: 1 })],
       ["redeliver", kernel.redeliver(author, executionId)],
-      ["new Outcome", kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, activationId: `${executionId}/activation-2`, baseProgressRevision: 1 }))],
+      ["new Outcome", kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, activationId: `${executionId}/activation-2`, baseProgressRevision: 1 }), submissionFor(driver, dispatched.activationId))],
       ["takeover", kernel.requestTakeover(author, executionId, named)],
       ["recover", kernel.recoverExecution(author, executionId, { activationId: dispatched.activationId, available })],
       ["protocol failure", kernel.reportProtocolFailure(author, executionId, named)],
@@ -162,11 +164,11 @@ describe("K1.2-C5 a terminal lifetime never reopens", () => {
   });
 
   test("an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check", () => {
-    const { kernel, executionId, dispatched } = withBacklog();
+    const { kernel, driver, executionId, dispatched } = withBacklog();
     const envelope = outcomeFor(executionId, dispatched, { next: { step: "complete", result: { report: "week 37" } } });
-    const first = accepted(kernel.submitOutcome(author, envelope));
+    const first = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     const before = view(kernel, executionId);
-    const again = accepted(kernel.submitOutcome(author, envelope));
+    const again = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     assert.equal(again.replayed, true);
     assert.equal(again.receipt, first.receipt);
     assert.equal(again.nextState, "COMPLETED");
@@ -177,12 +179,13 @@ describe("K1.2-C5 a terminal lifetime never reopens", () => {
 describe("K1.2-C5 the terminal result is typed", () => {
   test("`complete` records a result and `fail` an error, distinguishable by kind and retained as captured", () => {
     const outcomes = (["complete", "fail"] as const).map((step) => {
-      const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+      const driver = recordingDriver();
+      const kernel = new ExecutionCoordinator({ driver });
       const created = accepted(kernel.createExecution(author, createRequest()));
       const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
       const value = { report: "week 37", pages: 12 };
       const next = step === "complete" ? { step, result: value } : { step, error: value };
-      const answer = accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched, { next })));
+      const answer = accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
       return { answer, result: view(kernel, created.executionId).result, dispatched };
     });
     const [completed, failed] = outcomes;
@@ -198,10 +201,11 @@ describe("K1.2-C5 the terminal result is typed", () => {
   });
 
   test("a `continue` records no result", () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched)));
+    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     assert.equal(view(kernel, created.executionId).result, null);
   });
 });

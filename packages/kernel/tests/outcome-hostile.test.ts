@@ -32,6 +32,7 @@ import {
   recordingDriver,
   refused,
   revokedProxy,
+  submissionFor,
   trapInheritedIndices,
   type DescriptorPollution,
   type InheritedIndexTrap,
@@ -68,28 +69,30 @@ function withSideEffect(envelope: OutcomeEnvelope, field: keyof OutcomeEnvelope,
 
 /** A dispatched Execution with a two-Event batch and one Event outside it. */
 function open() {
-  const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+  const driver = recordingDriver();
+  const kernel = new ExecutionCoordinator({ driver });
   const created = accepted(kernel.createExecution(author, createRequest()));
   const second = accepted(kernel.submitInput(author, { destination: created.executionId, requestKey: "second", kind: "k", payload: 2 }));
   const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
   const outside = accepted(kernel.submitInput(author, { destination: created.executionId, requestKey: "outside", kind: "k", payload: 3 }));
-  return { kernel, executionId: created.executionId, batch: [created.initialEventId, second.eventId], outside: outside.eventId, dispatched };
+  return { kernel, driver, executionId: created.executionId, batch: [created.initialEventId, second.eventId], outside: outside.eventId, dispatched };
 }
 
 describe("K1.2-C13 envelope fields are own data, observed once", () => {
   test("a field present only on a prototype reads as missing, never as the caller's", () => {
-    const { kernel, executionId, dispatched } = open();
+    const { kernel, driver, executionId, dispatched } = open();
     const own = outcomeFor(executionId, dispatched);
+    const grant = submissionFor(driver, dispatched.activationId);
     const { writerEpoch: _omit, ...withoutEpoch } = own;
     const saved = Object.getOwnPropertyDescriptor(Object.prototype, "writerEpoch");
     Object.defineProperty(Object.prototype, "writerEpoch", { value: 1, configurable: true, writable: true });
     try {
-      const refusal = refused(kernel.submitOutcome(author, withoutEpoch as OutcomeEnvelope));
+      const refusal = refused(kernel.submitOutcome(author, withoutEpoch as OutcomeEnvelope, grant));
       assert.equal(refusal.classification, "malformed_envelope");
       assert.match(refusal.reason, /writerEpoch not_a_count/);
       // An envelope that inherits its whole content from a prototype owns nothing to accept.
       const inherited = Object.create(own) as OutcomeEnvelope;
-      assert.equal(refused(kernel.submitOutcome(author, inherited)).classification, "unknown_destination");
+      assert.equal(refused(kernel.submitOutcome(author, inherited, grant)).classification, "unknown_destination");
     } finally {
       if (saved === undefined) delete (Object.prototype as Record<string, unknown>).writerEpoch;
       else Object.defineProperty(Object.prototype, "writerEpoch", saved);
@@ -98,7 +101,8 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
   });
 
   test("each field is read exactly once, and the accepted decision is the one reading", () => {
-    const { kernel, executionId, dispatched } = open();
+    const { kernel, driver, executionId, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     const reads: Record<string, number> = {};
     const envelope: Record<string, unknown> = {};
     const fields: Record<string, unknown> = {
@@ -121,13 +125,14 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
         enumerable: true,
       });
     }
-    accepted(kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope));
+    accepted(kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope, grant));
     assert.deepEqual(reads, { executionId: 1, activationId: 1, writerEpoch: 1, baseProgressRevision: 1, progress: 1, emissions: 1, effects: 1, next: 1 });
     assert.deepEqual(view(kernel, executionId).acceptedProgress, { phase: "first reading" });
   });
 
   test("a field whose observation throws is a located refusal, not an escaping exception", () => {
-    const { kernel, executionId, dispatched } = open();
+    const { kernel, driver, executionId, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     const cases: [string, Record<string, unknown>, RegExp][] = [
       ["a throwing progress getter", Object.defineProperty({ ...outcomeFor(executionId, dispatched) }, "progress", { get() { throw new Error("boom"); }, enumerable: true }), /progress unstable_representation/],
       ["a revoked next", { ...outcomeFor(executionId, dispatched), next: revokedProxy() }, /next unsupported_form/],
@@ -142,22 +147,23 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
     for (const [label, envelope, reason] of cases) {
       let result: ReturnType<ExecutionCoordinator["submitOutcome"]> | undefined;
       assert.doesNotThrow(() => {
-        result = kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope);
+        result = kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope, grant);
       }, label);
       const refusal = refused(result as NonNullable<typeof result>);
       assert.equal(refusal.classification, "malformed_envelope", label);
       assert.match(refusal.reason, reason, label);
     }
     // An envelope whose execution identity cannot be read answers as an unknown destination.
-    assert.equal(refused(kernel.submitOutcome(author, revokedProxy() as OutcomeEnvelope)).classification, "unknown_destination");
-    assert.equal(refused(kernel.submitOutcome(author, null as unknown as OutcomeEnvelope)).classification, "unknown_destination");
+    assert.equal(refused(kernel.submitOutcome(author, revokedProxy() as OutcomeEnvelope, grant)).classification, "unknown_destination");
+    assert.equal(refused(kernel.submitOutcome(author, null as unknown as OutcomeEnvelope, grant)).classification, "unknown_destination");
     assert.equal(view(kernel, executionId).progressRevision, 0);
   });
 });
 
 describe("K1.2-C13 pollution installed during observation cannot steer the decision", () => {
   test("an inherited indexed accessor on Array.prototype drops nothing from the accepted lists", () => {
-    const { kernel, executionId, batch, outside, dispatched } = open();
+    const { kernel, driver, executionId, batch, outside, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     let trap: InheritedIndexTrap | undefined;
     let liveAcrossTheCall = false;
     // Positions the acknowledgment list, the Emission-ID list, the Emission records and the
@@ -177,7 +183,7 @@ describe("K1.2-C13 pollution installed during observation cannot steer the decis
     let answer: ReturnType<typeof accepted<{ acknowledged: readonly string[]; emissionIds: readonly string[] }>>;
     let swallowedByTheCall = -1;
     try {
-      answer = accepted(kernel.submitOutcome(author, envelope));
+      answer = accepted(kernel.submitOutcome(author, envelope, grant));
       // Counted before the liveness probe, whose own control write the trap swallows by design.
       swallowedByTheCall = trap?.swallowed.length ?? -1;
       liveAcrossTheCall = inheritedIndexIsLive(0);
@@ -196,7 +202,8 @@ describe("K1.2-C13 pollution installed during observation cannot steer the decis
   });
 
   test("inherited descriptor fields on Object.prototype cannot make the commit throw or run a getter", () => {
-    const { kernel, executionId, batch, dispatched } = open();
+    const { kernel, driver, executionId, batch, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     let pollution: DescriptorPollution | undefined;
     let hostileAcrossTheCall = false;
     const envelope = withSideEffect(outcomeFor(executionId, dispatched, { emissions: [{ emissionKey: "a", value: 1 }] }), "next", () => {
@@ -204,7 +211,7 @@ describe("K1.2-C13 pollution installed during observation cannot steer the decis
     });
     let result: ReturnType<ExecutionCoordinator["submitOutcome"]> | undefined;
     try {
-      result = kernel.submitOutcome(author, envelope);
+      result = kernel.submitOutcome(author, envelope, grant);
       hostileAcrossTheCall = descriptorConversionIsHostile();
     } finally {
       pollution?.restore();
@@ -215,7 +222,8 @@ describe("K1.2-C13 pollution installed during observation cannot steer the decis
   });
 
   test("builtins replaced mid-observation are not consulted by the checks or the commit", () => {
-    const { kernel, executionId, batch, dispatched } = open();
+    const { kernel, driver, executionId, batch, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     const saved = {
       push: Array.prototype.push,
       map: Array.prototype.map,
@@ -245,7 +253,7 @@ describe("K1.2-C13 pollution installed during observation cannot steer the decis
     });
     let result: ReturnType<ExecutionCoordinator["submitOutcome"]> | undefined;
     try {
-      result = kernel.submitOutcome(author, envelope);
+      result = kernel.submitOutcome(author, envelope, grant);
     } finally {
       Array.prototype.push = saved.push;
       Array.prototype.map = saved.map;
@@ -262,28 +270,30 @@ describe("K1.2-C13 pollution installed during observation cannot steer the decis
     assert.ok(Object.isFrozen(answer.receipt));
     assert.ok(Object.isFrozen(answer.acknowledged));
     // The retained decision is really retained: an exact replay after restoring finds it.
-    assert.equal(accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [{ emissionKey: "a", value: 1 }] }))).replayed, true);
+    assert.equal(accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [{ emissionKey: "a", value: 1 }] }), grant)).replayed, true);
   });
 });
 
 describe("K1.2-C13 a getter that reenters the Kernel is ordered before this decision", () => {
   test("a takeover made from inside observation fences the Outcome being observed", () => {
-    const { kernel, executionId, dispatched } = open();
+    const { kernel, driver, executionId, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     const envelope = withSideEffect(outcomeFor(executionId, dispatched), "next", () => {
       accepted(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 1 }));
     });
-    const refusal = refused(kernel.submitOutcome(author, envelope));
+    const refusal = refused(kernel.submitOutcome(author, envelope, grant));
     assert.equal(refusal.classification, "stale_exchange", "the checks read the state the reentrant takeover left");
     assert.equal(view(kernel, executionId).progressRevision, 0);
   });
 
   test("an identical Outcome accepted from inside observation makes the outer one a replay", () => {
-    const { kernel, executionId, dispatched } = open();
+    const { kernel, driver, executionId, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     let inner: ReturnType<ExecutionCoordinator["submitOutcome"]> | undefined;
     const envelope = withSideEffect(outcomeFor(executionId, dispatched), "next", () => {
-      inner = kernel.submitOutcome(author, outcomeFor(executionId, dispatched));
+      inner = kernel.submitOutcome(author, outcomeFor(executionId, dispatched), grant);
     });
-    const outer = accepted(kernel.submitOutcome(author, envelope));
+    const outer = accepted(kernel.submitOutcome(author, envelope, grant));
     const first = accepted(inner as NonNullable<typeof inner>);
     assert.equal(outer.replayed, true);
     assert.equal(outer.receipt, first.receipt);
@@ -291,11 +301,12 @@ describe("K1.2-C13 a getter that reenters the Kernel is ordered before this deci
   });
 
   test("a different Outcome accepted from inside observation makes the outer one a conflict", () => {
-    const { kernel, executionId, dispatched } = open();
+    const { kernel, driver, executionId, dispatched } = open();
+    const grant = submissionFor(driver, dispatched.activationId);
     const envelope = withSideEffect(outcomeFor(executionId, dispatched, { progress: { phase: "outer" } }), "next", () => {
-      accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { phase: "inner" } })));
+      accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { phase: "inner" } }), grant));
     });
-    assert.equal(refused(kernel.submitOutcome(author, envelope)).classification, "duplicate_conflict");
+    assert.equal(refused(kernel.submitOutcome(author, envelope, grant)).classification, "duplicate_conflict");
     assert.deepEqual(view(kernel, executionId).acceptedProgress, { phase: "inner" });
   });
 });

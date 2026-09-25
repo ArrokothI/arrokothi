@@ -15,8 +15,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type ExecutionView, type OutcomeEnvelope } from "../src/index.ts";
-import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, type RecordingDriver } from "./harness.ts";
+import { ExecutionCoordinator, type ExecutionView, type OutcomeEnvelope, type SubmissionGrant } from "../src/index.ts";
+import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor, type RecordingDriver } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 const outsider = caller("app-c", "tenant-c");
@@ -58,7 +58,7 @@ function assertRefusedWhole(before: ExecutionView, after: ExecutionView, classif
 
 describe("K1.2-C1 authenticate and scope before any content is read", () => {
   test("a hidden Execution and a missing one refuse identically, with no content read", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const before = view(kernel, executionId);
 
@@ -81,8 +81,8 @@ describe("K1.2-C1 authenticate and scope before any content is read", () => {
       },
     ) as OutcomeEnvelope;
 
-    const hidden = refused(kernel.submitOutcome(outsider, envelope));
-    const missing = refused(kernel.submitOutcome(outsider, { ...outcomeFor("execution-404", dispatched) }));
+    const hidden = refused(kernel.submitOutcome(outsider, envelope, submissionFor(driver, dispatched.activationId)));
+    const missing = refused(kernel.submitOutcome(outsider, { ...outcomeFor("execution-404", dispatched) }, submissionFor(driver, dispatched.activationId)));
     assert.deepEqual({ ...hidden }, { ...missing });
     assert.equal(hidden.classification, "unknown_destination");
     assert.equal(hidden.position, 0);
@@ -112,13 +112,13 @@ describe("K1.2-C1 authenticate and scope before any content is read", () => {
   });
 
   test("a caller that lost the scope is refused rather than handed the retained decision", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const envelope = outcomeFor(executionId, dispatched);
-    accepted(kernel.submitOutcome(author, envelope));
+    accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
 
     const revoked = caller("app-a", "tenant-other");
-    const refusal = refused(kernel.submitOutcome(revoked, envelope));
+    const refusal = refused(kernel.submitOutcome(revoked, envelope, submissionFor(driver, envelope.activationId)));
     assert.equal(refusal.classification, "unknown_destination");
     assert.equal(refusal.executionId, null);
   });
@@ -126,14 +126,14 @@ describe("K1.2-C1 authenticate and scope before any content is read", () => {
 
 describe("K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts", () => {
   test("an exact duplicate returns the original receipt and decision, and changes nothing", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const envelope = outcomeFor(executionId, dispatched, { emissions: [{ emissionKey: "draft", value: { pages: 12 } }] });
-    const first = accepted(kernel.submitOutcome(author, envelope));
+    const first = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     assert.equal(first.replayed, false);
     const after = view(kernel, executionId);
 
-    const again = accepted(kernel.submitOutcome(author, envelope));
+    const again = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     assert.equal(again.replayed, true);
     assert.equal(again.receipt, first.receipt, "the same retained receipt object, not a reconstruction");
     const { replayed: _a, ...firstDecision } = first;
@@ -143,25 +143,25 @@ describe("K1.2-C2 an exact duplicate replays; anything else under an accepted id
   });
 
   test("a replay is answered even after the next exchange has started, and the new exchange is untouched", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const envelope = outcomeFor(executionId, first);
-    const accepted1 = accepted(kernel.submitOutcome(author, envelope));
+    const accepted1 = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     input(kernel, executionId, "c1");
     const second = accepted(kernel.dispatch(author, executionId, { bound: 4 }));
     assert.notEqual(second.activationId, first.activationId);
     const before = view(kernel, executionId);
 
-    const replay = accepted(kernel.submitOutcome(author, envelope));
+    const replay = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     assert.equal(replay.receipt, accepted1.receipt);
     assert.deepEqual(view(kernel, executionId), before, "the open exchange kept its batch, epoch, state and dispositions");
   });
 
   test("changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const envelope = outcomeFor(executionId, dispatched);
-    accepted(kernel.submitOutcome(author, envelope));
+    accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
 
     const variants: [string, OutcomeEnvelope][] = [
       ["changed progress", { ...envelope, progress: { phase: "other" } }],
@@ -175,17 +175,17 @@ describe("K1.2-C2 an exact duplicate replays; anything else under an accepted id
     ];
     for (const [label, variant] of variants) {
       const before = view(kernel, executionId);
-      const refusal = refused(kernel.submitOutcome(author, variant));
+      const refusal = refused(kernel.submitOutcome(author, variant, submissionFor(driver, variant.activationId)));
       assert.equal(refusal.classification, "duplicate_conflict", label);
       assertRefusedWhole(before, view(kernel, executionId), "duplicate_conflict");
     }
   });
 
   test("absent and empty Emission and Effect lists are the same content", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
-    const first = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [], effects: [] })));
-    const again = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    const first = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [], effects: [] }), submissionFor(driver, dispatched.activationId)));
+    const again = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     assert.equal(again.replayed, true);
     assert.equal(again.receipt, first.receipt);
   });
@@ -193,53 +193,53 @@ describe("K1.2-C2 an exact duplicate replays; anything else under an accepted id
 
 describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused whole", () => {
   test("an Activation ID that is not the open exchange is stale, and the exchange stays answerable", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const before = view(kernel, executionId);
 
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, activationId: `${dispatched.activationId}-other` })));
+    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, activationId: `${dispatched.activationId}-other` }), submissionFor(driver, dispatched.activationId)));
     assert.equal(refusal.classification, "stale_exchange");
     assertRefusedWhole(before, view(kernel, executionId), "stale_exchange");
 
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
   });
 
   test("an epoch that was never issued is refused, never taken as authority", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const before = view(kernel, executionId);
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 })));
+    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }), submissionFor(driver, dispatched.activationId)));
     assert.equal(refusal.classification, "stale_exchange");
     assert.match(refusal.reason, /has not been issued/);
     assertRefusedWhole(before, view(kernel, executionId), "stale_exchange");
   });
 
   test("a base progress revision the exchange was not pinned at is stale", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
     const second = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     assert.equal(second.baseProgressRevision, 1);
     const before = view(kernel, executionId);
 
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...second, baseProgressRevision: 0 })));
+    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...second, baseProgressRevision: 0 }), submissionFor(driver, second.activationId)));
     assert.equal(refusal.classification, "stale_exchange");
     assertRefusedWhole(before, view(kernel, executionId), "stale_exchange");
   });
 
   test("with no exchange open, an Outcome answers nothing", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
     const before = view(kernel, executionId);
     assert.equal(before.state, "READY");
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...first, activationId: `${executionId}/activation-2` })));
+    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...first, activationId: `${executionId}/activation-2` }), submissionFor(driver, first.activationId)));
     assert.equal(refusal.classification, "stale_exchange");
     assertRefusedWhole(before, view(kernel, executionId), "stale_exchange");
   });
 
   test("the exchange and attempt are named explicitly, never defaulted from the current one (PLAN-01)", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const omit = (field: keyof OutcomeEnvelope): OutcomeEnvelope => {
       const envelope: Record<string, unknown> = { ...outcomeFor(executionId, dispatched) };
@@ -248,7 +248,7 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
     };
     for (const field of ["writerEpoch", "baseProgressRevision", "activationId"] as const) {
       const before = view(kernel, executionId);
-      const refusal = refused(kernel.submitOutcome(author, omit(field)));
+      const refusal = refused(kernel.submitOutcome(author, omit(field), submissionFor(driver, dispatched.activationId)));
       assert.equal(refusal.classification, "malformed_envelope", field);
       assert.match(refusal.reason, new RegExp(field));
       assertRefusedWhole(before, view(kernel, executionId), "malformed_envelope");
@@ -256,7 +256,7 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
   });
 
   test("every content defect refuses the whole proposal and names itself", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const base = outcomeFor(executionId, dispatched);
     const cases: [string, Record<string, unknown>, RegExp][] = [
@@ -280,20 +280,20 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
     ];
     for (const [label, envelope, reason] of cases) {
       const before = view(kernel, executionId);
-      const refusal = refused(kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope));
+      const refusal = refused(kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope, submissionFor(driver, dispatched.activationId)));
       assert.equal(refusal.classification, "malformed_envelope", label);
       assert.match(refusal.reason, reason, label);
       assertRefusedWhole(before, view(kernel, executionId), "malformed_envelope");
     }
     // Refusing all of those left the exchange open for a corrected proposal from the same attempt.
-    accepted(kernel.submitOutcome(author, base));
+    accepted(kernel.submitOutcome(author, base, submissionFor(driver, base.activationId)));
   });
 
   test("one refusal names every content issue, not only the first", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const refusal = refused(
-      kernel.submitOutcome(author, { ...outcomeFor(executionId, dispatched), progress: Number.POSITIVE_INFINITY, next: { step: "pause" }, extra: 1 } as never),
+      kernel.submitOutcome(author, { ...outcomeFor(executionId, dispatched), progress: Number.POSITIVE_INFINITY, next: { step: "pause" }, extra: 1 } as never, submissionFor(driver, dispatched.activationId)),
     );
     assert.match(refusal.reason, /progress non_finite_number/);
     assert.match(refusal.reason, /next\.step unsupported_form/);
@@ -301,21 +301,21 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
   });
 
   test("more Emissions than the declared limit are refused before commit as a capacity refusal", () => {
-    const { kernel, executionId } = created({ emissionsPerOutcome: 2 });
+    const { kernel, driver, executionId } = created({ emissionsPerOutcome: 2 });
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const three = [1, 2, 3].map((n) => ({ emissionKey: `e${n}`, value: n }));
     const before = view(kernel, executionId);
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: three })));
+    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: three }), submissionFor(driver, dispatched.activationId)));
     assert.equal(refusal.classification, "capacity_exhausted");
     assert.match(refusal.reason, /3 Emissions, above the declared limit of 2/);
     assertRefusedWhole(before, view(kernel, executionId), "capacity_exhausted");
 
-    const two = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: three.slice(0, 2) })));
+    const two = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: three.slice(0, 2) }), submissionFor(driver, dispatched.activationId)));
     assert.equal(two.emissionIds.length, 2, "exactly at the limit is accepted");
   });
 
   test("an over-limit Emission list is refused without reading any element", () => {
-    const { kernel, executionId } = created({ emissionsPerOutcome: 2 });
+    const { kernel, driver, executionId } = created({ emissionsPerOutcome: 2 });
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     let elementReads = 0;
     const list = new Proxy([{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 2 }, { emissionKey: "c", value: 3 }], {
@@ -324,7 +324,7 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
         return Reflect.get(target, property, receiver);
       },
     });
-    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: list }))).classification, "capacity_exhausted");
+    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: list }), submissionFor(driver, dispatched.activationId))).classification, "capacity_exhausted");
     assert.equal(elementReads, 0);
   });
 
@@ -343,7 +343,7 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
       outcomeFor(executionId, dispatched, { progress: undefined }),
       outcomeFor(executionId, dispatched, { effects: [{ operation: "publish_report" }] }),
     ]) {
-      refused(kernel.submitOutcome(author, bad));
+      refused(kernel.submitOutcome(author, bad, submissionFor(driver, bad.activationId)));
     }
     assert.equal(driver.seen.length, seen, "no delivery was made on the Kernel's own initiative");
     assert.deepEqual(view(kernel, executionId).activation?.deliveries, deliveries, "and no delivery attempt was recorded");
@@ -352,7 +352,7 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
 
 describe("K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step", () => {
   test("acceptance acknowledges exactly the reserved batch and installs everything else together", () => {
-    const { kernel, executionId, initialEventId } = created();
+    const { kernel, driver, executionId, initialEventId } = created();
     const correction = input(kernel, executionId, "c1");
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 2 }));
     assert.deepEqual(dispatched.batch, [initialEventId, correction]);
@@ -369,6 +369,7 @@ describe("K1.2-C4 one decision: the whole batch, the progress, the Emissions and
             { emissionKey: "note", value: "sources checked" },
           ],
         }),
+        submissionFor(driver, dispatched.activationId),
       ),
     );
 
@@ -417,7 +418,7 @@ describe("K1.2-C4 one decision: the whole batch, the progress, the Emissions and
   });
 
   test("acknowledgment never reads progress: what progress says it handled changes nothing (R5-j6-2)", () => {
-    const { kernel, executionId, initialEventId } = created();
+    const { kernel, driver, executionId, initialEventId } = created();
     const correction = input(kernel, executionId, "c1");
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     assert.deepEqual(dispatched.batch, [initialEventId]);
@@ -429,6 +430,7 @@ describe("K1.2-C4 one decision: the whole batch, the progress, the Emissions and
       kernel.submitOutcome(
         author,
         outcomeFor(executionId, dispatched, { progress: { refused: [initialEventId], handled: [correction], acknowledge: [] } }),
+        submissionFor(driver, dispatched.activationId),
       ),
     );
     const after = view(kernel, executionId);
@@ -437,22 +439,22 @@ describe("K1.2-C4 one decision: the whole batch, the progress, the Emissions and
   });
 
   test("one exchange has one accepted Outcome: a second, different one conflicts", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { phase: "second writer" } })));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { phase: "second writer" } }), submissionFor(driver, dispatched.activationId)));
     assert.equal(refusal.classification, "duplicate_conflict");
     assert.equal(view(kernel, executionId).progressRevision, 1);
   });
 
   test("Emission identity is a pure function of accepted identities", () => {
     const run = (): { ids: readonly string[]; other: readonly string[] } => {
-      const { kernel, executionId } = created();
+      const { kernel, driver, executionId } = created();
       // Unrelated activity on the same coordinator first: it must not shift any identity.
       accepted(kernel.createExecution(author, createRequest({ creationKey: "unrelated" })));
       const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
       const answer = accepted(
-        kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 1 }] })),
+        kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 1 }] }), submissionFor(driver, dispatched.activationId)),
       );
       return { ids: answer.emissionIds, other: [] };
     };
@@ -473,7 +475,7 @@ describe("K1.2-C4 acceptance interacts with the K1.1 boundaries it completes", (
     const full = refused(kernel.submitInput(author, { destination: created.executionId, requestKey: "c2", kind: "k", payload: 2 }));
     assert.equal(full.classification, "capacity_exhausted", "reserved Events still count: reservation is not acknowledgment");
 
-    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched)));
+    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     const room = accepted(kernel.submitInput(author, { destination: created.executionId, requestKey: "c2", kind: "k", payload: 2 }));
     assert.equal(room.replayed, false, "the acknowledged batch no longer occupies the mailbox's declared capacity");
   });
@@ -483,10 +485,12 @@ describe("K1.2-C4 acceptance interacts with the K1.1 boundaries it completes", (
     // `deliver` returns. The intent is recorded before the Driver is called, so the Outcome finds
     // its exchange open; the dispatch answer still describes the exchange it created.
     let answered: ReturnType<ExecutionCoordinator["submitOutcome"]> | undefined;
+    const grants: SubmissionGrant[] = [];
     const kernel: ExecutionCoordinator = new ExecutionCoordinator({
       driver: {
         driverId: "inline-runtime",
-        deliver(activation, settlement) {
+        deliver(activation, settlement, g) {
+          grants.push(g);
           settlement.delivered();
           answered = kernel.submitOutcome(author, {
             executionId: activation.executionId,
@@ -495,7 +499,7 @@ describe("K1.2-C4 acceptance interacts with the K1.1 boundaries it completes", (
             baseProgressRevision: activation.baseProgressRevision,
             progress: { seen: activation.events.length },
             next: { step: "complete", result: { report: "week 37" } },
-          });
+          }, grants[grants.length - 1] as SubmissionGrant);
           return undefined;
         },
       },
@@ -516,7 +520,7 @@ describe("K1.2-C5 after `continue`, the next dispatch is a new exchange", () => 
     const { kernel, driver, executionId } = created();
     const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const progress = { phase: "draft", draftRef: "draft-1" };
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress })));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress }), submissionFor(driver, first.activationId)));
 
     const second = accepted(kernel.dispatch(author, executionId, { bound: 4 }));
     assert.notEqual(second.activationId, first.activationId, "a new exchange, not the old one resent");
@@ -536,11 +540,11 @@ describe("K1.2-C5 after `continue`, the next dispatch is a new exchange", () => 
   });
 
   test("Events that arrived meanwhile are selected by the next exchange, in acceptance order", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const a = input(kernel, executionId, "a");
     const b = input(kernel, executionId, "b");
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
     const second = accepted(kernel.dispatch(author, executionId, { bound: 4 }));
     assert.deepEqual(second.batch, [a, b]);
   });
@@ -548,7 +552,7 @@ describe("K1.2-C5 after `continue`, the next dispatch is a new exchange", () => 
 
 describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
   test("an Effect-bearing Outcome is refused at envelope validation and leaves no action record", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const before = view(kernel, executionId);
     const refusal = refused(
@@ -558,6 +562,7 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
           effects: [{ proposalKey: "publish", operation: "publish_report", input: { draftRef: "draft-1" } }],
           emissions: [{ emissionKey: "draft", value: 1 }],
         }),
+        submissionFor(driver, dispatched.activationId),
       ),
     );
     assert.equal(refusal.classification, "malformed_envelope", "an envelope refusal, not a denial");
@@ -582,11 +587,11 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
     );
     assert.notEqual(after.activation, null, "the Activation stays open");
     // A corrected Outcome from the same attempt is then accepted.
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
   });
 
   test("the Effect list is refused by its length alone; no proposal is read", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     let reads = 0;
     const effects = Object.defineProperty([] as unknown[], "0", {
@@ -596,12 +601,12 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
       },
       enumerable: true,
     });
-    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { effects }))).classification, "malformed_envelope");
+    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { effects }), submissionFor(driver, dispatched.activationId))).classification, "malformed_envelope");
     assert.equal(reads, 0);
   });
 
   test("`complete` proposing an obligation is refused whole; with nothing outstanding it completes", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     for (const envelope of [
       outcomeFor(executionId, dispatched, { effects: [{ operation: "publish_report" }], next: { step: "complete", result: { ok: true } } }),
@@ -609,16 +614,16 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
       outcomeFor(executionId, dispatched, { next: { step: "complete", result: { ok: true }, transfer: "owner-b" } }),
     ]) {
       const before = view(kernel, executionId);
-      assert.equal(refused(kernel.submitOutcome(author, envelope)).classification, "malformed_envelope");
+      assert.equal(refused(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId))).classification, "malformed_envelope");
       assertRefusedWhole(before, view(kernel, executionId), "malformed_envelope");
     }
     // Every obligation kind is unsupported before K2.3, so the completion accounting check finds
     // nothing outstanding and a plain `complete` is accepted.
-    assert.equal(accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: { ok: true } } }))).nextState, "COMPLETED");
+    assert.equal(accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: { ok: true } } }), submissionFor(driver, dispatched.activationId))).nextState, "COMPLETED");
   });
 
   test("`await` is refused naming K1.3, and the wait is never read", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     let reads = 0;
     const next = Object.defineProperty({ step: "await" }, "wait", {
@@ -629,7 +634,7 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
       enumerable: true,
     });
     const before = view(kernel, executionId);
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next })));
+    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
     assert.equal(refusal.classification, "malformed_envelope");
     assert.match(refusal.reason, /not supported before K1\.3/);
     assert.equal(reads, 0);
@@ -640,13 +645,13 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
 
 describe("K1.2-C12 Outcome acceptance has its own receipts", () => {
   test("each accepted boundary mints its own receipt at the Execution's next position; refusals mint none", () => {
-    const { kernel, executionId } = created();
+    const { kernel, driver, executionId } = created();
     const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
-    const outcome1 = accepted(kernel.submitOutcome(author, outcomeFor(executionId, first)));
-    refused(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress: "conflict" })));
+    const outcome1 = accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
+    refused(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress: "conflict" }), submissionFor(driver, first.activationId)));
     const second = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
-    refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...second, writerEpoch: 5 })));
-    const outcome2 = accepted(kernel.submitOutcome(author, outcomeFor(executionId, second, { next: { step: "complete", result: 1 } })));
+    refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...second, writerEpoch: 5 }), submissionFor(driver, second.activationId)));
+    const outcome2 = accepted(kernel.submitOutcome(author, outcomeFor(executionId, second, { next: { step: "complete", result: 1 } }), submissionFor(driver, second.activationId)));
 
     const receipts = view(kernel, executionId).receipts;
     assert.deepEqual(

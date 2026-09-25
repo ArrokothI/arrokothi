@@ -48,18 +48,21 @@
   *
   * `execution-cycle.md` leaves the transaction mechanism open provided the atomicity is real. Here it
   * is one synchronous call on a single-threaded, in-memory coordinator: every caller-owned field is
-  * observed first, every record the decision needs — receipt, Emissions, result, dispositions,
-  * resolved exchange, Outcome decision, and any hold-ending history records — is then built from
-  * Kernel data only, and only then is accepted state mutated, through load-time primitives that no
-  * caller observation can have replaced. The Outcome-acceptance receipt's position is read from the
-  * owning Execution's index while building and committed with the rest of the decision in the same
-  * synchronous run; no acceptance index advances before the decision's records are complete. No
-  * caller code runs between the first check of accepted state and the last mutation, so a reentrant
-  * call made from a getter during observation is ordered entirely before this decision's checks
-  * (K1.2-DEC-10). This is atomicity within the process, not durability.
+  * observed first, every retained decision record the acceptance needs — receipt, Emissions, result,
+  * dispositions, resolved exchange, Outcome decision, hold-ending history records, and the retained
+  * accepted-Outcome wrapper for replay — is then built from Kernel data only, and only then is
+  * accepted state mutated by inserting those prebuilt records, through load-time primitives that no
+  * caller observation can have replaced. The apply phase constructs nothing retained; the only
+  * post-mutation construction is the returned answer projection spreading the retained decision.
+  * The Outcome-acceptance receipt's position is read from the owning Execution's index while building
+  * and committed with the rest of the decision in the same synchronous run; no acceptance index
+  * advances before the decision's records are complete. No caller code runs between the first check
+  * of accepted state and the last mutation, so a reentrant call made from a getter during observation
+  * is ordered entirely before this decision's checks (K1.2-DEC-10). This is atomicity within the
+  * process, not durability.
   */
 
-import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
+import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
 import {
   acceptIdentityText,
   appendIssue,
@@ -365,6 +368,13 @@ interface ActivationRecord {
   activation: Activation;
   /** The current attempt's dispatch-intent receipt. */
   receipt: Receipt;
+  /**
+   * The current attempt's submission grant (K1.2-DEC-20). Minted per writer epoch, handed to the
+   * Driver with the Activation, and required back on `submitOutcome`. Redelivery preserves the
+   * attempt and therefore its grant; a takeover mints a fresh one and retires this. Compared by
+   * reference identity, never by fields, and never exposed through inspection.
+   */
+  submission: SubmissionGrant;
   readonly batch: readonly string[];
   /** Shared with the resolved-exchange record, so a late report still finds its original attempt. */
   readonly deliveries: DeliveryAttempt[];
@@ -545,6 +555,18 @@ const permittedForHold = (cause: StoredHold["cause"], hasCodeHold: boolean): rea
 const currentHoldOf = (exchange: ActivationRecord): StoredHold | null => exchange.codeHold;
 
 /**
+ * Mints one attempt-bound submission grant (K1.2-DEC-20).
+ *
+ * One grant per writer-epoch attempt, frozen at mint. The Kernel hands it to the Driver with the
+ * Activation and requires that same reference back on `submitOutcome`; identity comparison makes a
+ * forged look-alike, however faithfully copied from inspection, fail. Grants carry the attempt
+ * coordinates as readable fields for Driver/test routing, but those fields authorize nothing — only
+ * reference identity against the exchange's current grant does.
+ */
+const mintSubmission = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>
+  PrimordialObjectFreeze({ executionId, activationId, writerEpoch });
+
+/**
  * K1.2-DEC-18: appends one accepted recovery/control decision to the owning Execution's history.
  *
  * The record is frozen here, so later caller mutation cannot alter retained evidence, and the list
@@ -560,6 +582,7 @@ const appendRecoveryHistory = (
     readonly cause: RecoveryHistoryRecord["cause"];
     readonly transition: RecoveryHistoryRecord["transition"];
     readonly reason: string;
+    readonly authority: RecoveryHistoryRecord["authority"];
     readonly actorNamespace: string;
     readonly actorScope: string;
     readonly resultingEpoch?: number;
@@ -573,6 +596,7 @@ const appendRecoveryHistory = (
           cause: entry.cause,
           transition: entry.transition,
           reason: entry.reason,
+          authority: entry.authority,
           actorNamespace: entry.actorNamespace,
           actorScope: entry.actorScope,
         })
@@ -582,6 +606,7 @@ const appendRecoveryHistory = (
           cause: entry.cause,
           transition: entry.transition,
           reason: entry.reason,
+          authority: entry.authority,
           actorNamespace: entry.actorNamespace,
           actorScope: entry.actorScope,
           resultingEpoch: entry.resultingEpoch,
@@ -1179,6 +1204,10 @@ export class ExecutionCoordinator {
     const intent: ActivationRecord = {
       activation,
       receipt,
+      // One submission grant for this exchange's first attempt (K1.2-DEC-20): handed to the Driver
+      // with the Activation and required back on `submitOutcome`. Redelivery reuses it; only a
+      // takeover replaces it.
+      submission: mintSubmission(record.executionId, activationId, 1),
       batch: PrimordialObjectFreeze(batchIds),
       deliveries: [],
       codeHold: null,
@@ -1296,23 +1325,37 @@ export class ExecutionCoordinator {
    *
    * 1. **Authenticate and scope** before anything else is read (OA-1). `executionId` is the one field
    *    read first, because scoping needs it; a hidden Execution answers exactly as a missing one.
+   *    The caller must still reach the Execution's scope: the submission grant below is an additional
+   *    requirement, never a substitute for visibility.
    * 2. **Look for an already accepted Outcome** under this Activation ID, before fresh validation
    *    (OA-2). An exact duplicate returns the original decision and receipt, with no mutation, even
    *    after the exchange resolved, the next one started or the Execution ended. Any other content
-   *    under that identity is a conflict, never a merge.
+   *    under that identity is a conflict, never a merge. Neither path accepts anything, so neither
+   *    requires the submission grant; both answer from retained evidence the caller could inspect.
    * 3. **Validate the whole envelope** (OA-3): not terminal; the Activation, writer epoch and base
-   *    revision the envelope names are the unresolved exchange's own; then the content. Any failure
-   *    refuses the whole proposal and leaves the exchange open for a corrected one (K1.2-DEC-2).
+   *    revision the envelope names are the unresolved exchange's own; then the attempt's submission
+   *    grant (K1.2-DEC-20); then the content. Any failure refuses the whole proposal and leaves the
+   *    exchange open for a corrected one (K1.2-DEC-2). Stale/terminal currency keeps its existing
+   *    refusal vocabulary, so takeover fencing is unchanged: only a proposal that is current yet
+   *    grant-less is refused as `unauthorized_submission`.
    * 4. **Commit** everything in one decision (OA-4): acknowledge the whole batch, install progress,
    *    record Emissions, the terminal result and the next state, and give each Event still
    *    unacknowledged at `complete` or `fail` its terminal disposition (`B-5`).
    * 5. **Return** the receipt.
    *
+   * An Outcome is a proposal from the Runtime answering the Activation the Driver delivered — never
+   * from bare inspection. The submission grant handed to the Driver with the current attempt must be
+   * presented back here by reference identity; inspected coordinates alone authorize nothing.
+   *
    * Every caller observation happens before step 2's lookup, so a getter that reenters the Kernel
    * is ordered before this decision's checks rather than inside them (K1.2-DEC-10). A refusal is
    * recorded and returned; the Kernel never redelivers or retries on its own (OA-5).
    */
-  submitOutcome(caller: AuthenticatedCaller, envelope: OutcomeEnvelope): Result<OutcomeAccepted, RefusalRecord> {
+  submitOutcome(
+    caller: AuthenticatedCaller,
+    envelope: OutcomeEnvelope,
+    submission: SubmissionGrant,
+  ): Result<OutcomeAccepted, RefusalRecord> {
     const executionSeen = observeOwn(envelope, "executionId");
     if (executionSeen.threw) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
     const record = this.#visible(caller, executionSeen.observed as string);
@@ -1384,6 +1427,19 @@ export class ExecutionCoordinator {
         this.#refusal(
           "stale_exchange",
           `Outcome for Activation ${activationId}: base progress revision ${claim.baseProgressRevision} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
+          record,
+        ),
+      );
+    }
+    // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing
+    // keeps its stale/terminal vocabulary. The grant is compared by reference identity against the
+    // exchange's current grant: a forged look-alike, a grant retired by takeover, or no grant at
+    // all fails this check. Inspection visibility alone therefore cannot speak as the attempt.
+    if (submission !== intent.submission) {
+      return err(
+        this.#refusal(
+          "unauthorized_submission",
+          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
           record,
         ),
       );
@@ -1549,6 +1605,9 @@ export class ExecutionCoordinator {
     // Same exchange, same pinned input, next attempt: a copy of the frozen Kernel-built Activation
     // with only the epoch changed. Object spread copies own data and consults no prototype.
     const activation: Activation = PrimordialObjectFreeze({ ...exchange.activation, writerEpoch });
+    // A fresh submission grant for the new attempt (K1.2-DEC-20): the superseded attempt's grant is
+    // retired with it, so the old attempt cannot regain proposal power.
+    exchange.submission = mintSubmission(record.executionId, named.activationId, writerEpoch);
     const hadProtocolHold = exchange.protocolFailureHold !== null;
     const clearedReason = hadProtocolHold ? exchange.protocolFailureHold?.reason ?? "" : "";
     exchange.activation = activation;
@@ -1563,6 +1622,7 @@ export class ExecutionCoordinator {
         cause: "protocol_failure",
         transition: "cleared_by_takeover",
         reason: `takeover to writer epoch ${writerEpoch} cleared the protocol-failure hold: ${clearedReason}`,
+        authority: "control",
         actorNamespace: caller.namespace,
         actorScope: record.scope,
         resultingEpoch: writerEpoch,
@@ -1636,6 +1696,7 @@ export class ExecutionCoordinator {
           cause: "pinned_code_unavailable",
           transition: "cleared_by_declaration",
           reason: `compatible code declared available; cleared hold that had reported: ${cleared.reason}`,
+          authority: "control",
           actorNamespace: caller.namespace,
           actorScope: record.scope,
         });
@@ -1655,6 +1716,7 @@ export class ExecutionCoordinator {
         cause: "pinned_code_unavailable",
         transition,
         reason: missing,
+        authority: "control",
         actorNamespace: caller.namespace,
         actorScope: record.scope,
       });
@@ -1720,6 +1782,7 @@ export class ExecutionCoordinator {
       cause: "protocol_failure",
       transition: "entered",
       reason,
+      authority: "control",
       actorNamespace: caller.namespace,
       actorScope: record.scope,
     });
@@ -1766,11 +1829,25 @@ export class ExecutionCoordinator {
   /**
    * Commits one validated Outcome as one decision (OA-4), and retains it for replay.
    *
-   * K1.2-DEC-10: every caller-owned field was observed before this runs; here every record the
-   * decision needs is built first, from Kernel data only, and the mutations follow in one
-   * synchronous run, through load-time primitives. The Outcome-acceptance receipt's position is read
-   * from the owning Execution's index while building and committed with the rest of the decision;
-   * no acceptance index advances before the records are complete. Nothing here reads the caller's
+   * K1.2-DEC-10: every caller-owned field was observed before this runs. The complete
+   * construction inventory of this method is:
+   *
+   * - pre-apply retained decision records, built first from Kernel data only: the receipt
+   *   (position read, not yet committed), the per-Emission records and IDs, the terminal result,
+   *   the acknowledgment/terminal dispositions, the acknowledged/ended ID lists, the resolved
+   *   exchange, the Outcome decision, any hold-ending history records, and the retained
+   *   `AcceptedOutcomeRecord` wrapper binding the captured identity to the decision;
+   * - transient planning allocations, not semantic records: the acknowledge/end entry lists, the
+   *   batch-membership closure, loop indices;
+   * - apply-phase retained insertions/mutations only: the acceptance-index advance, disposition
+   *   installs, progress/revision install, Emission/result/exchange/accepted-outcome/receipt/history
+   *   insertions, and the exchange resolution with the next state — every inserted record prebuilt;
+   * - post-apply answer projection only: `{ ...decision, replayed: false }`, a fresh object
+   *   spreading the retained decision for the caller, which is not retained state.
+   *
+   * The mutations run in one synchronous pass through load-time primitives. The Outcome-acceptance
+   * receipt's position is read while building and committed with the rest of the decision; no
+   * acceptance index advances before the records are complete. Nothing here reads the caller's
    * envelope - `outcome` is the capture - and nothing here reads the Runtime's progress:
    * acknowledgment is the whole reserved batch because acceptance says so (`B-3`), not because
    * progress was parsed for what it handled (R5-j6-2).
@@ -1874,6 +1951,7 @@ export class ExecutionCoordinator {
           writerEpoch: intent.activation.writerEpoch,
           cause: "pinned_code_unavailable" as const,
           transition: "ended_by_outcome" as const,
+          authority: "attempt_submission" as const,
           reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the code hold that had reported: ${intent.codeHold.reason}`,
           actorNamespace: caller.namespace,
           actorScope: record.scope,
@@ -1888,12 +1966,18 @@ export class ExecutionCoordinator {
           writerEpoch: intent.activation.writerEpoch,
           cause: "protocol_failure" as const,
           transition: "ended_by_outcome" as const,
+          authority: "attempt_submission" as const,
           reason: `accepted Outcome at writer epoch ${intent.activation.writerEpoch} resolved the exchange and ended the protocol-failure hold that had reported: ${intent.protocolFailureHold.reason}`,
           actorNamespace: caller.namespace,
           actorScope: record.scope,
         }),
       );
     }
+
+    // The replay index entry is itself a retained decision record (OA-2: the exact replay answers
+    // from it; K1.2-DEC-12 retains accepted-Outcome records): frozen here with the other decision
+    // records, so the apply phase below only inserts the prebuilt wrapper.
+    const stored: AcceptedOutcomeRecord = PrimordialObjectFreeze({ identity: outcome.identity, decision });
 
     // -- The decision, applied. Nothing below can refuse, and nothing below reads caller state.
     // The acceptance index advances here, with the rest of the commit, not before building: a
@@ -1906,7 +1990,7 @@ export class ExecutionCoordinator {
     appendAllOwn(record.emissions, emissionRecords);
     if (result !== null) record.result = result;
     appendOwn(record.exchanges, resolved);
-    mapSet(record.acceptedOutcomes, activationId, PrimordialObjectFreeze({ identity: outcome.identity, decision }));
+    mapSet(record.acceptedOutcomes, activationId, stored);
     appendOwn(record.receipts, receipt);
     appendAllOwn(record.recoveryHistory, historyToAppend);
     record.activation = null;
@@ -1994,7 +2078,9 @@ export class ExecutionCoordinator {
    * Hands an Activation to the Driver with a Kernel-owned reporting capability.
    *
    * The attempt is recorded before the Driver is invoked, and a fresh frozen capability
-   * bound to that exact attempt is supplied. Only an explicit `delivered()`/`failed()`
+   * bound to that exact attempt is supplied, together with the attempt's submission grant
+   * (K1.2-DEC-20): the Driver presents that grant back when the Runtime answers, which is what
+   * authorizes the proposal as the current attempt's. Only an explicit `delivered()`/`failed()`
    * report settles the attempt; returning normally leaves it `pending` and the return
    * value is never read, classified, or subscribed to. A synchronous throw is an implicit
    * failure report through the same first-report rule: a report followed by a throw keeps
@@ -2028,8 +2114,10 @@ export class ExecutionCoordinator {
     });
     try {
       // The return value is intentionally ignored: no observation, no assimilation, no
-      // Promise creation, and no constructor/species sanitization on this path.
-      this.#driver.deliver(intent.activation, settlement);
+      // Promise creation, and no constructor/species sanitization on this path. The submission
+      // grant travels as a Kernel-created reference the Driver holds and presents back; reading
+      // it here passes the reference, never caller-owned content.
+      this.#driver.deliver(intent.activation, settlement, intent.submission);
     } catch (error) {
       if (attempt.status !== "pending") return;
       attempt.status = "failed";

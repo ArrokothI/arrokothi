@@ -287,8 +287,11 @@ naming an `OPEN(...)` marker claim that one exists.
   in-memory compare-and-swap) — WS §7 "Left open", which accepts any of them only if the atomicity
   is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`. The in-process
   binding's choice, recorded in BASELINE `#outcome-acceptance-api`: one synchronous call that observes
-  all caller-owned fields, builds every record and only then mutates — atomic within the process, not
-  durable.
+  all caller-owned fields, builds every retained decision record (receipt, Emissions, result,
+  dispositions, resolved exchange, Outcome decision, hold-ending history records, and the retained
+  accepted-Outcome wrapper for replay) and only then mutates by inserting those prebuilt records —
+  atomic within the process, not durable. The apply phase constructs no retained record; only the
+  returned answer projection is built after mutation, and it is not retained state.
 - Checkpoint storage and pinning — WS §9 "Left open"; `concepts/state.md#checkpoint-and-locator`,
   `mechanisms/recovery.md#checkpoint-publication`. Upload tickets plus a grace period are one
   option, not a requirement, as `recovery.md` states.

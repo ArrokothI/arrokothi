@@ -10,8 +10,8 @@ PLAN-01 amendment and the owner's 2026-09-24 B-5 scope amendment.
 `52b1600f3b42e3a360fdc3395178f1d147edf304` and integrated in `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`;
 K1.1-correction-02 accepted at H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e` and integrated in
 `954d31b00eb7f2412c22ccf7d4d079699f0c4032`. All are ancestors of the base.
-**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 3.**
-**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24.
+**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 4.**
+**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25.
 
 ## Entry and owner release
 
@@ -241,21 +241,22 @@ specification prose.
 | C9 code hold | recover with a pinned revision or codec missing, then with all present | RUNNING, hold reason, same exchange/progress/revision; redeliver and takeover refused; then cleared; redeliver and accept at base+1 | `recovery.test.ts` |
 | C9 distinguishability | held versus FAILED versus waiting | state and hold differ | `recovery.test.ts` |
 | C9 permitted actions (evidence.md; DEC-17) | code hold, protocol hold, both; inspect permitted vs attempt redeliver/takeover/declare/Outcome | code `["declare_code_availability","submit_outcome"]`; protocol alone `["request_takeover","submit_outcome"]`; both `["declare_code_availability","submit_outcome"]`; inspected list predicts actual accept/refuse without probing | `hold-permitted.test.ts`, `recovery.test.ts` |
-| C9/C10 recorded recovery commands (evidence.md, state.md History; DEC-18) | enter code hold, change reason, clear by declaration, clear protocol by takeover, end by Outcome; idempotent duplicates | each accepted decision appends one frozen history record with actor/authority and exchange/epoch causation; history survives hold clearing, resolution, next dispatch and terminal; duplicates append nothing | `recovery-history.test.ts`, `recovery.test.ts`, `hold-permitted.test.ts` |
-| C10 protocol failure (OA-6) | report for the current attempt; stale report; redeliver while held; takeover; valid Outcome | hold with bounded diagnostic; stale refused; redeliver refused; takeover clears; Outcome clears | `recovery.test.ts` |
+| C9/C10 recorded recovery commands (evidence.md, state.md History; DEC-18) | enter code hold, change reason, clear by declaration, clear protocol by takeover, end by Outcome; idempotent duplicates | each accepted decision appends one frozen history record with `authority` (`control` vs `attempt_submission`), actor, and exchange/epoch causation; history survives hold clearing, resolution, next dispatch and terminal; duplicates append nothing | `recovery-history.test.ts`, `history-attribution.test.ts`, `recovery.test.ts`, `hold-permitted.test.ts` |
+| C10 protocol failure (OA-6) | report for the current attempt; stale report; redeliver while held; takeover; grant-authorized valid Outcome | hold with bounded diagnostic; stale refused; redeliver refused; takeover clears; Outcome clears | `recovery.test.ts` |
 | C10 control privilege | inspect-only vs control-authorized on recover and protocol report | inspect-only refused `unauthorized_control` with no hold/history change | `control-authority.test.ts` |
+| C10 submission authority (DEC-20) | visibility-only `continue`, terminal `complete`/`fail`, and hold-ending Outcomes with forged/absent grants; same Outcomes with the attempt grant; old grant after takeover; hidden/missing callers | grant-less refused `unauthorized_submission` with zero accepted-state mutation (lifecycle, holds, history, receipts, B-5 unchanged; attempt still answerable); grant-holding proposal accepted; retired grant cannot commit (`stale_exchange` fencing preserved); hidden≡missing `unknown_destination`; views expose no grant | `submission-authority.test.ts` |
 | C11 late delivery report | delayed capability settled after resolution, after takeover, after the next dispatch | only its own attempt record changes | `late-reports.test.ts` |
 | C11 late Outcome | exact and changed Outcome for resolved A while B is unresolved | replay / conflict; B untouched | `late-reports.test.ts` |
 | C11 exact delivery attribution (identity.md dispatch-and-delivery; DEC-16) | multiple redeliveries before and after takeover (1,2 at epoch1; 3,4 at epoch2) plus late reports from both epochs, out of order | each row names its activationId/writerEpoch `[1,1,2,2]`; late reports settle only their own row; resolved exchange retains epochs; new exchange has its own ID/epoch1 | `delivery-attribution.test.ts`, `late-reports.test.ts` |
 | C12 receipts | create → dispatch → Outcome → dispatch → takeover → Outcome | each boundary its own receipt and position; frozen; refusals mint none | `outcome-acceptance.test.ts`, `takeover.test.ts`, `transaction.test.ts` |
-| C12 retained evidence immutable | mutate returned receipts, answers, views, dispositions, holds/history/deliveries/refusals | replay and inspection unchanged | `outcome-evidence.test.ts`, `recovery-history.test.ts`, `recovery-evidence.test.ts` |
+| C12 retained evidence immutable | mutate returned receipts, answers, views, dispositions, holds/history/deliveries/refusals | replay and inspection unchanged | `outcome-evidence.test.ts`, `recovery-history.test.ts`, `recovery-evidence.test.ts`, `history-attribution.test.ts` |
 | C12 nondisclosure | hidden-scope Outcome/takeover/recover activity interposed between A's operations | every A-observable value equal across arms, including holds/history/deliveries/control refusals | `nondisclosure.test.ts`, `recovery-evidence.test.ts` |
 | C12 transaction contiguity (DEC-10) | refused Outcomes, replays, redeliveries, then acceptances; Outcomes ending one hold and both holds | refusals/replays/redeliveries consume no acceptance position; positions contiguous per Execution; hold-ending history committed atomically in the same decision | `transaction.test.ts` |
 | C13 own-only, single observation | inherited envelope fields; throwing/revoked fields; getters counting reads; value root read once | missing, located refusal, one read per field | `outcome-hostile.test.ts` |
 | C13 ambient pollution during observation | a getter installing an inherited indexed accessor or descriptor-field pollution, or replacing a builtin, before commit | the accepted decision, acknowledgment list, Emission list and receipt are retained exactly | `outcome-hostile.test.ts` |
 | C14 zone rules | the import graph and inventory | no violation; document and policy agree | `tests/conformance/architecture/kernel-landing-zone.test.ts` |
 | C15 records | BASELINE, identity.md markers, rewrite-index §4 | choices recorded; markers kept; no status on Layer-3 pages | report checklist; link check |
-| All: distinguishing power | 23 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
+| All: distinguishing power | 25 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped, B8 Outcome submission without attempt grant, B9 hold-ending History claims control power) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
 
 ## Command plan
 
@@ -331,13 +332,16 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   (`output.md`: reject before commit, never accept then drop). This is an operational bound of the
   in-process binding, not a fifth semantic limit.
 - **K1.2-DEC-10 — transaction mechanism.** Validation and commit run in one synchronous call on the
-  single-threaded in-memory coordinator; every caller-owned field is observed first, every record the
-  decision needs is then built from Kernel data only — receipt, Emissions, result, dispositions,
-  resolved exchange, Outcome decision, and any hold-ending history records — and only then is accepted
-  state mutated
+  single-threaded in-memory coordinator; every caller-owned field is observed first, every retained
+  decision record the acceptance needs is then built from Kernel data only — receipt, Emissions,
+  result, dispositions, resolved exchange, Outcome decision, hold-ending history records, and the
+  retained accepted-Outcome wrapper binding the captured identity to the decision for replay — and
+  only then is accepted state mutated by inserting those prebuilt records
   (the Outcome-acceptance receipt's position is read while building and committed with the rest of
   the decision; no acceptance index advances before the records are complete), through load-time
-  primitives with no caller code between first check and last mutation. This settles the §4
+  primitives with no caller code between first check and last mutation. The apply phase constructs
+  no retained record; the only post-mutation construction is the returned answer projection
+  (`{ ...decision, replayed: false }`), which is not retained state. This settles the §4
   transaction-mechanism item for this binding and claims no durability.
 - **K1.2-DEC-11 — per-entry disposition storage.** Each mailbox entry holds its own frozen disposition:
   queued, acknowledged (naming the acknowledging Activation) or terminal (with its reason).
@@ -375,13 +379,33 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   `["request_takeover","submit_outcome"]`; either hold when a code hold stands
   `["declare_code_availability","submit_outcome"]`. The vocabulary names existing K1.2 operations only,
   not a universal recovery API.
-- **K1.2-DEC-18 — retained recovery history (correction, K12-R1-HISTORY-01).** Each accepted decision
-  that enters, updates (`updated` when the code-hold reason changes), or ends a hold appends one frozen
-  `RecoveryHistoryRecord` to the owning Execution's `recoveryHistory` (activationId, writerEpoch at
-  decision, cause, transition `entered`/`updated`/`cleared_by_declaration`/`cleared_by_takeover`/
-  `ended_by_outcome`, reason, `actorNamespace`/`actorScope`, and `resultingEpoch` for takeover clears).
-  It survives hold clearing, exchange resolution, next dispatch, and terminal state; idempotent
+- **K1.2-DEC-18 — retained recovery history (correction, K12-R1-HISTORY-01; attribution corrected for K12-R3-HISTORY-02).**
+  Each accepted decision that enters, updates (`updated` when the code-hold reason changes), or ends
+  a hold appends one frozen `RecoveryHistoryRecord` to the owning Execution's `recoveryHistory`
+  (activationId, writerEpoch at decision, cause, transition `entered`/`updated`/
+  `cleared_by_declaration`/`cleared_by_takeover`/`ended_by_outcome`, reason, `authority`,
+  `actorNamespace`/`actorScope`, and `resultingEpoch` for takeover clears). `authority` is `control`
+  when the Kernel checked control power over the Execution's scope (declarations, protocol reports,
+  takeovers) and `attempt_submission` when the accepted Outcome presented the current attempt's
+  submission grant — a valid Runtime proposal that is not by itself general control power; the two
+  are never conflated, and `actorScope` factually names the Execution's scope in both cases. History
+  survives hold clearing, exchange resolution, next dispatch, and terminal state; idempotent
   duplicates (`changed:false`) append nothing. No seventh receipt boundary is introduced.
+- **K1.2-DEC-20 — attempt-bound Outcome-submission authority (correction, K12-R3-AUTH-02).**
+  `submitOutcome(caller, envelope, submission)` requires the `SubmissionGrant` the Kernel minted for
+  the current writer-epoch attempt and handed to the Driver with the Activation
+  (`execution-cycle.md`: the Kernel sends an Activation through the Driver; the Runtime returns the
+  Outcome). Authority is reference identity against the exchange's current grant — never field
+  comparison — so inspected coordinates authorize nothing and forged look-alikes fail. Scope
+  (OA-1) is still required and still precedes everything; exact replay and conflict (OA-2) precede
+  authority because they return or refuse on retained evidence without accepting anything; terminal
+  and currency (stale/terminal vocabulary, so takeover fencing is unchanged) precede authority, so
+  only a current-yet-grant-less proposal is refused as `unauthorized_submission` with no
+  accepted-state mutation beyond the recorded refusal. Redelivery preserves the attempt and its
+  grant; takeover mints a fresh grant and retires the old one, so a superseded attempt cannot regain
+  proposal power. Grants are frozen at mint and never exposed through inspection. This is not K2
+  policy: no token format, grant language, or remote backend — one unforgeable reference per
+  attempt, which is all K1.2 needs to establish who may validly answer the current Activation.
 - **K1.2-DEC-19 — takeover commit revalidation after the safety callback (correction, K12-R2-TAKEOVER-01).**
   `isSafeToReplace` is trusted same-process Driver/host code that can synchronously reenter the
   coordinator, so state validated before the callback (unresolved exchange, current epoch, no code

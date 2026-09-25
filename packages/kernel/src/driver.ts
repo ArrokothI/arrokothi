@@ -92,9 +92,32 @@ export interface DeliverySettlement {
   failed(reason: unknown): void;
 }
 
+/**
+ * Unforgeable attempt-bound Outcome-submission authority (K1.2-DEC-20).
+ *
+ * The Kernel mints one grant per writer-epoch attempt, hands it to the Driver together with the
+ * Activation, and requires that same grant back on `submitOutcome`. Authority is established by
+ * reference identity against the exchange's current grant — never by comparing fields — so a
+ * principal that merely inspected the Activation ID, writer epoch, and base revision cannot
+ * fabricate a proposal, and a forged look-alike object is refused. Ordinary redelivery preserves
+ * the attempt and therefore its grant; an authorized takeover mints a fresh grant for the new
+ * epoch and retires the old one, so the superseded attempt cannot regain proposal power. Grants
+ * are frozen at mint and never exposed through inspection.
+ */
+export interface SubmissionGrant {
+  readonly executionId: string;
+  readonly activationId: string;
+  readonly writerEpoch: number;
+}
+
 export interface ExecutionDriver {
   readonly driverId: string;
-  deliver(activation: Activation, settlement: DeliverySettlement): undefined;
+  /**
+   * Receives the Activation, a Kernel-owned delivery-reporting capability, and the current
+   * attempt's submission grant, and returns only `undefined` (KC1-ARCH-1). The grant authorizes
+   * Outcomes proposed as this attempt; the Driver presents it back when the Runtime answers.
+   */
+  deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined;
   /**
    * The Driver's phase-specific safe-replacement determination for takeover.
    *

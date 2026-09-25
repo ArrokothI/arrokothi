@@ -21,6 +21,7 @@ import {
   polluteDescriptorFields,
   recordingDriver,
   refused,
+  submissionFor,
   trapInheritedIndices,
   type DescriptorPollution,
   type InheritedIndexTrap,
@@ -56,12 +57,14 @@ function withSideEffect(envelope: OutcomeEnvelope, field: keyof OutcomeEnvelope,
 
 describe("K12-R1-DOC-01 refusals consume no acceptance position", () => {
   test('Test A "refusals consume no acceptance position"', () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     assert.equal(created.receipt.position, 1);
     const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     assert.equal(dispatched.receipt.position, 2);
     const executionId = created.executionId;
+    const grant = submissionFor(driver, dispatched.activationId);
 
     const baseReceipts = view(kernel, executionId).receipts.length;
     const baseRefusals = view(kernel, executionId).refusals.length;
@@ -69,20 +72,20 @@ describe("K12-R1-DOC-01 refusals consume no acceptance position", () => {
     assert.equal(baseRefusals, 0);
 
     // Stale epoch: refused, no position consumed.
-    const stale = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 })));
+    const stale = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }), grant));
     assert.equal(stale.classification, "stale_exchange");
     assert.equal(view(kernel, executionId).receipts.length, 2, "a refusal mints no receipt");
     assert.equal(view(kernel, executionId).refusals.length, baseRefusals + 1);
 
     // Malformed envelope: refused, no position consumed.
-    const malformed = refused(kernel.submitOutcome(author, { ...outcomeFor(executionId, dispatched), progress: undefined } as unknown as OutcomeEnvelope));
+    const malformed = refused(kernel.submitOutcome(author, { ...outcomeFor(executionId, dispatched), progress: undefined } as unknown as OutcomeEnvelope, grant));
     assert.equal(malformed.classification, "malformed_envelope");
     assert.match(malformed.reason, /progress missing_field/);
     assert.equal(view(kernel, executionId).receipts.length, 2);
     assert.equal(view(kernel, executionId).refusals.length, baseRefusals + 2);
 
     // The corrected proposal takes the very next position: no gap around the refusals.
-    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), grant));
     assert.equal(answer.receipt.position, 3);
     assert.deepEqual(
       view(kernel, executionId).receipts.map((receipt) => receipt.position),
@@ -105,18 +108,20 @@ describe("K12-R1-DOC-01 refusals consume no acceptance position", () => {
 
 describe("K12-R1-DOC-01 replay and redelivery consume no position", () => {
   test('Test B "replay and redelivery consume no position"', () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const executionId = created.executionId;
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+    const grant = submissionFor(driver, dispatched.activationId);
     const envelope = outcomeFor(executionId, dispatched);
-    const first = accepted(kernel.submitOutcome(author, envelope));
+    const first = accepted(kernel.submitOutcome(author, envelope, grant));
     assert.equal(first.replayed, false);
     assert.equal(first.receipt.position, 3);
     assert.equal(view(kernel, executionId).receipts.length, 3);
 
     // Exact replay returns the same receipt and mints nothing.
-    const replay = accepted(kernel.submitOutcome(author, envelope));
+    const replay = accepted(kernel.submitOutcome(author, envelope, grant));
     assert.equal(replay.replayed, true);
     assert.equal(replay.receipt, first.receipt, "the same retained receipt object, not a reconstruction");
     assert.equal(view(kernel, executionId).receipts.length, 3, "a replay mints no receipt");
@@ -143,10 +148,13 @@ describe("K12-R1-DOC-01 replay and redelivery consume no position", () => {
 
 describe("K12-R1-DOC-01 hostile pollution during observation cannot split the commit", () => {
   test('Test C "hostile pollution during observation cannot split the commit"', () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const executionId = created.executionId;
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+    // Hoisted before the hostile envelope exists: the grant lookup itself runs clean.
+    const grant = submissionFor(driver, dispatched.activationId);
 
     const progressValue = { phase: "hostile-commit" };
     const emissions = [{ emissionKey: "a", value: 1 }];
@@ -180,7 +188,7 @@ describe("K12-R1-DOC-01 hostile pollution during observation cannot split the co
     let descriptorHostile = false;
     let mapPolluted = false;
     try {
-      result = kernel.submitOutcome(author, envelope);
+      result = kernel.submitOutcome(author, envelope, grant);
       indexLive = inheritedIndexIsLive(0);
       descriptorHostile = descriptorConversionIsHostile();
       mapPolluted = Map.prototype.set !== savedMapSet;
@@ -218,7 +226,7 @@ describe("K12-R1-DOC-01 hostile pollution during observation cannot split the co
     assert.equal(after.refusals.length, 0, "no partial refusal alongside the acceptance");
 
     // The retained decision is really retained: an exact replay after restoring finds it.
-    const replay = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: progressValue, emissions })));
+    const replay = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: progressValue, emissions }), grant));
     assert.equal(replay.replayed, true);
     assert.equal(replay.receipt, answer.receipt);
     assert.equal(view(kernel, executionId).receipts.length, 3, "the replay minted nothing");
@@ -226,16 +234,19 @@ describe("K12-R1-DOC-01 hostile pollution during observation cannot split the co
 });
 
 describe("K12-R1-DOC-01 reentrant Outcome during observation ordered before outer checks", () => {
-  test('Test D "reentrant Outcome during observation ordered before outer checks"', () => {    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+  test('Test D "reentrant Outcome during observation ordered before outer checks"', () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const executionId = created.executionId;
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+    const grant = submissionFor(driver, dispatched.activationId);
 
     // The outer envelope's progress observation runs the inner submission first.
     const outer = withSideEffect(outcomeFor(executionId, dispatched, { progress: { phase: "outer" } }), "progress", () => {
-      accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { phase: "reentrant" } })));
+      accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { phase: "reentrant" } }), grant));
     });
-    const refusal = refused(kernel.submitOutcome(author, outer));
+    const refusal = refused(kernel.submitOutcome(author, outer, grant));
     assert.equal(refusal.classification, "duplicate_conflict", "the inner acceptance is already the decision for this Activation ID");
 
     // Exactly one commit: the reentrant content, at the next contiguous position.
@@ -256,10 +267,12 @@ describe("K12-R1-DOC-01 reentrant Outcome during observation ordered before oute
 
 describe("K12-R1-DOC-01 an Outcome ending one hold commits its history atomically", () => {
   test('Test E "Outcome ending one hold commits history in the same decision"', () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const executionId = created.executionId;
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+    const grant = submissionFor(driver, dispatched.activationId);
 
     const held = accepted(
       kernel.recoverExecution(author, executionId, {
@@ -271,7 +284,7 @@ describe("K12-R1-DOC-01 an Outcome ending one hold commits its history atomicall
     assert.equal(view(kernel, executionId).recoveryHistory.length, 1);
 
     // One decision: acknowledgment, progress, receipt, and the hold-ending history record together.
-    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { cursor: 1 } })));
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { cursor: 1 } }), grant));
     assert.equal(answer.receipt.position, 3);
     assert.deepEqual([...answer.acknowledged], [created.initialEventId]);
 
@@ -279,7 +292,9 @@ describe("K12-R1-DOC-01 an Outcome ending one hold commits its history atomicall
     assert.deepEqual(after.recoveryHolds, [], "the hold is gone");
     assert.equal(after.recoveryHistory.length, 2, "entered plus ended_by_outcome");
     assert.equal(after.recoveryHistory[0]?.transition, "entered");
+    assert.equal(after.recoveryHistory[0]?.authority, "control");
     assert.equal(after.recoveryHistory[1]?.transition, "ended_by_outcome");
+    assert.equal(after.recoveryHistory[1]?.authority, "attempt_submission", "the Runtime grant is not general control power");
     assert.equal(after.recoveryHistory[1]?.cause, "pinned_code_unavailable");
     assert.equal(after.recoveryHistory[1]?.writerEpoch, 1);
     assert.equal(after.recoveryHistory[1]?.actorNamespace, "app-a");
@@ -300,10 +315,12 @@ describe("K12-R1-DOC-01 an Outcome ending one hold commits its history atomicall
 
 describe("K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically", () => {
   test('Test F "Outcome ending both holds commits both history records"', () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const executionId = created.executionId;
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+    const grant = submissionFor(driver, dispatched.activationId);
 
     accepted(
       kernel.recoverExecution(author, executionId, {
@@ -320,7 +337,7 @@ describe("K12-R1-DOC-01 an Outcome ending both holds commits both history record
     );
     assert.equal(view(kernel, executionId).recoveryHistory.length, 2);
 
-    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { cursor: 9 } })));
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { cursor: 9 } }), grant));
     assert.equal(answer.receipt.position, 3);
 
     const after = view(kernel, executionId);
@@ -329,6 +346,10 @@ describe("K12-R1-DOC-01 an Outcome ending both holds commits both history record
     assert.deepEqual(
       after.recoveryHistory.map((record) => record.transition),
       ["entered", "entered", "ended_by_outcome", "ended_by_outcome"],
+    );
+    assert.deepEqual(
+      after.recoveryHistory.map((record) => record.authority),
+      ["control", "control", "attempt_submission", "attempt_submission"],
     );
     assert.deepEqual(
       after.recoveryHistory.slice(2).map((record) => record.cause),

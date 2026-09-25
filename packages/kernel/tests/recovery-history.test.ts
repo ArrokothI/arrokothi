@@ -15,7 +15,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, type CodeAvailability } from "../src/index.ts";
-import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused } from "./harness.ts";
+import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -31,7 +31,7 @@ function progressedAndOpen() {
   const kernel = new ExecutionCoordinator({ driver });
   const created = accepted(kernel.createExecution(author, createRequest()));
   const first = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } })));
+  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } }), submissionFor(driver, first.activationId)));
   const open = accepted(kernel.dispatch(author, created.executionId, { bound: 4 }));
   return { kernel, driver, executionId: created.executionId, open };
 }
@@ -121,7 +121,7 @@ describe("K12-R1-HISTORY-01 recovery history is retained Execution evidence", ()
   });
 
   test("c) ended_by_outcome: code hold ends with the exchange, history survives dispatch and completion", () => {
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
 
     accepted(
       kernel.recoverExecution(author, executionId, {
@@ -131,7 +131,7 @@ describe("K12-R1-HISTORY-01 recovery history is retained Execution evidence", ()
     );
     assert.equal(historyOf(kernel, executionId).length, 1);
 
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } })));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } }), submissionFor(driver, open.activationId)));
     let view = accepted(kernel.inspect(author, executionId));
     assert.deepEqual(view.recoveryHolds, []);
     assert.equal(view.recoveryHistory.length, 2);
@@ -149,7 +149,7 @@ describe("K12-R1-HISTORY-01 recovery history is retained Execution evidence", ()
 
     // And survives terminal completion (which adds no hold record of its own).
     accepted(
-      kernel.submitOutcome(author, outcomeFor(executionId, next, { next: { step: "complete", result: { report: "week 37" } } })),
+      kernel.submitOutcome(author, outcomeFor(executionId, next, { next: { step: "complete", result: { report: "week 37" } } }), submissionFor(driver, next.activationId)),
     );
     view = accepted(kernel.inspect(author, executionId));
     assert.equal(view.state, "COMPLETED");
@@ -158,7 +158,7 @@ describe("K12-R1-HISTORY-01 recovery history is retained Execution evidence", ()
   });
 
   test("d) both holds plus Outcome: 2 entered + 2 ended_by_outcome", () => {
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
 
     accepted(
       kernel.recoverExecution(author, executionId, {
@@ -169,7 +169,7 @@ describe("K12-R1-HISTORY-01 recovery history is retained Execution evidence", ()
     accepted(kernel.reportProtocolFailure(author, executionId, { activationId: open.activationId, writerEpoch: 1, diagnostic: "garbled" }));
     assert.equal(historyOf(kernel, executionId).length, 2);
 
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
     const view = accepted(kernel.inspect(author, executionId));
     assert.deepEqual(view.recoveryHolds, []);
     assert.equal(view.recoveryHistory.length, 4);
@@ -250,7 +250,8 @@ describe("K12-R1-HISTORY-01 recovery history is retained Execution evidence", ()
   });
 
   test("g) cross-scope: control activity on B leaves A's history unchanged and undisclosed", () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const authorB = caller("app-b", "tenant-b");
 
     const execA = accepted(kernel.createExecution(author, createRequest({ creationKey: "exec-a" })));
@@ -263,11 +264,11 @@ describe("K12-R1-HISTORY-01 recovery history is retained Execution evidence", ()
 
     // Progress both so each has a second exchange open.
     const firstA = accepted(kernel.dispatch(author, execA.executionId, { bound: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(execA.executionId, firstA, { progress: { cursor: 1 } })));
+    accepted(kernel.submitOutcome(author, outcomeFor(execA.executionId, firstA, { progress: { cursor: 1 } }), submissionFor(driver, firstA.activationId)));
     const openA = accepted(kernel.dispatch(author, execA.executionId, { bound: 1 }));
 
     const firstB = accepted(kernel.dispatch(authorB, execB.executionId, { bound: 1 }));
-    accepted(kernel.submitOutcome(authorB, outcomeFor(execB.executionId, firstB, { progress: { cursor: 2 } })));
+    accepted(kernel.submitOutcome(authorB, outcomeFor(execB.executionId, firstB, { progress: { cursor: 2 } }), submissionFor(driver, firstB.activationId)));
     const openB = accepted(kernel.dispatch(authorB, execB.executionId, { bound: 1 }));
 
     // Control activity only on B: a code hold and a protocol hold.

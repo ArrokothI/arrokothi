@@ -153,9 +153,25 @@ export interface RecoveryHistoryRecord {
   readonly transition: "entered" | "updated" | "cleared_by_declaration" | "cleared_by_takeover" | "ended_by_outcome";
   /** The hold reason at entry/update, or the clearing/ending explanation. */
   readonly reason: string;
-  /** The authenticated control actor: the caller's namespace as the host established it. */
+  /**
+   * Which authority made this decision valid (K1.2-DEC-18, K12-R3-HISTORY-02).
+   *
+   * `control` means the caller held control power over the Execution's scope (`controlScopes`,
+   * checked by the Kernel): recovery declarations, protocol-failure reports, and takeovers.
+   * `attempt_submission` means the accepted Outcome presented the current attempt's submission
+   * grant (K1.2-DEC-20): a valid Runtime proposal, which is not by itself general control power.
+   * The two are never conflated: a Runtime submitter without `controlScopes` is recorded as
+   * `attempt_submission`, never as a control actor.
+   */
+  readonly authority: "control" | "attempt_submission";
+  /** The authenticated actor: the caller's namespace as the host established it. */
   readonly actorNamespace: string;
-  /** The authority scope controlled: the Execution's scope, which the caller held control power over. */
+  /**
+   * The Execution's scope, recorded factually for causation and scoping.
+   *
+   * Control power over it was established only when `authority` is `control`; an
+   * `attempt_submission` record asserts no such power.
+   */
   readonly actorScope: string;
   /** For `cleared_by_takeover`, the new writer epoch the takeover advanced to. */
   readonly resultingEpoch?: number;

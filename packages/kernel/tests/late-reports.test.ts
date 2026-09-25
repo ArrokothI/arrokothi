@@ -17,7 +17,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, type DeliverySettlement, type ExecutionView } from "../src/index.ts";
-import { accepted, caller, createRequest, delayedDriver, outcomeFor, refused } from "./harness.ts";
+import { accepted, caller, createRequest, delayedDriver, outcomeFor, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -43,8 +43,8 @@ function withDelayedDelivery() {
 
 describe("K1.2-C11 a late delivery report settles only its own original attempt record", () => {
   test("after the exchange resolved: the resolved exchange's attempt settles, and nothing logical moves", () => {
-    const { kernel, executionId, dispatched, capability } = withDelayedDelivery();
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    const { kernel, driver, executionId, dispatched, capability } = withDelayedDelivery();
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     const before = view(kernel, executionId);
     assert.deepEqual(before.exchanges[0]?.deliveries, [{ attempt: 1, status: "pending", failure: null, activationId: dispatched.activationId, writerEpoch: 1 }]);
 
@@ -59,7 +59,7 @@ describe("K1.2-C11 a late delivery report settles only its own original attempt 
 
   test("after the next exchange started: the old report cannot touch the new exchange's attempts", () => {
     const { kernel, driver, executionId, dispatched, capability } = withDelayedDelivery();
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     const next = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const before = view(kernel, executionId);
     assert.equal(before.activation?.activationId, next.activationId);
@@ -95,8 +95,8 @@ describe("K1.2-C11 a late delivery report settles only its own original attempt 
   });
 
   test("after the Execution ended: the report still lands only on its record", () => {
-    const { kernel, executionId, dispatched, capability } = withDelayedDelivery();
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } })));
+    const { kernel, driver, executionId, dispatched, capability } = withDelayedDelivery();
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
     const before = view(kernel, executionId);
     capability.delivered();
     const after = view(kernel, executionId);
@@ -107,21 +107,21 @@ describe("K1.2-C11 a late delivery report settles only its own original attempt 
 
 describe("K1.2-C11 a late Outcome for a resolved Activation never commits into the new exchange", () => {
   test("exact: the original receipt; changed: refused; either way the open exchange is untouched", () => {
-    const { kernel, executionId, dispatched } = withDelayedDelivery();
+    const { kernel, driver, executionId, dispatched } = withDelayedDelivery();
     const envelope = outcomeFor(executionId, dispatched, { progress: { cursor: 1 } });
-    const original = accepted(kernel.submitOutcome(author, envelope));
+    const original = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     accepted(kernel.submitInput(author, { destination: executionId, requestKey: "c1", kind: "k", payload: 1 }));
     const next = accepted(kernel.dispatch(author, executionId, { bound: 4 }));
     const before = view(kernel, executionId);
 
-    const exact = accepted(kernel.submitOutcome(author, envelope));
+    const exact = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     assert.equal(exact.receipt, original.receipt);
     assert.equal(exact.replayed, true);
     assert.deepEqual(view(kernel, executionId), before);
 
     // Changed content naming the old exchange - even content that would be a valid answer to the new
     // one - is a conflict under the old identity. It can neither revive A nor land in B.
-    const changed = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, baseProgressRevision: 1 }, { progress: { cursor: 2 } })));
+    const changed = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, baseProgressRevision: 1 }, { progress: { cursor: 2 } }), submissionFor(driver, dispatched.activationId)));
     assert.equal(changed.classification, "duplicate_conflict");
     const after = view(kernel, executionId);
     assert.equal(after.activation?.activationId, next.activationId);

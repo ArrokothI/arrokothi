@@ -52,7 +52,7 @@ export type {
   TakeoverRequest,
 } from "./outcome.ts";
 
-export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver } from "./driver.ts";
+export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
 
 export { creationRequestIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
 export type { AuthenticatedCaller, CreationRequestId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";

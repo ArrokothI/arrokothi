@@ -17,16 +17,17 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { BOUNDARY_LIMITS, ExecutionCoordinator, canonicalize, type BoundaryValue, type OutcomeEnvelope } from "../src/index.ts";
-import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused } from "./harness.ts";
+import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
 /** A fresh dispatched Execution and a submit function for Outcomes answering its exchange. */
 function openExchange(): { submit: (overrides: Partial<Record<keyof OutcomeEnvelope, unknown>>) => ReturnType<ExecutionCoordinator["submitOutcome"]>; kernel: ExecutionCoordinator; executionId: string } {
-  const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+  const driver = recordingDriver();
+  const kernel = new ExecutionCoordinator({ driver });
   const { executionId } = accepted(kernel.createExecution(author, createRequest()));
   const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
-  return { kernel, executionId, submit: (overrides) => kernel.submitOutcome(author, outcomeFor(executionId, dispatched, overrides)) };
+  return { kernel, executionId, submit: (overrides) => kernel.submitOutcome(author, outcomeFor(executionId, dispatched, overrides), submissionFor(driver, dispatched.activationId)) };
 }
 
 /** `A1 = []`, `A(n+1) = [An]`: depth exactly `levels`. */

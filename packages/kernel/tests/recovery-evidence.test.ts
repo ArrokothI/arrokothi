@@ -27,7 +27,9 @@ import {
   outcomeFor,
   recordingDriver,
   refused,
+  submissionFor,
   unsafeDriver,
+  type RecordingDriver,
 } from "./harness.ts";
 
 const authorA = caller("app-a", "tenant-a");
@@ -77,16 +79,17 @@ interface EvidenceArm {
 }
 
 function runEvidenceArm(
-  hidden: (kernel: ExecutionCoordinator, hiddenIds: string[], round: number) => void,
+  hidden: (kernel: ExecutionCoordinator, hiddenIds: string[], round: number, driver: RecordingDriver) => void,
 ): EvidenceArm {
-  const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+  const driver = recordingDriver();
+  const kernel = new ExecutionCoordinator({ driver });
   const hiddenIds: string[] = [];
 
   const createdA = accepted(kernel.createExecution(authorA, createRequest({ creationKey: "a-evidence" })));
-  hidden(kernel, hiddenIds, 0);
+  hidden(kernel, hiddenIds, 0, driver);
 
   const dispatchedA = accepted(kernel.dispatch(authorA, createdA.executionId, { bound: 1 }));
-  hidden(kernel, hiddenIds, 1);
+  hidden(kernel, hiddenIds, 1, driver);
 
   const recoverA = accepted(
     kernel.recoverExecution(authorA, createdA.executionId, {
@@ -94,7 +97,7 @@ function runEvidenceArm(
       available: MISSING_AVAILABLE,
     }),
   );
-  hidden(kernel, hiddenIds, 2);
+  hidden(kernel, hiddenIds, 2, driver);
 
   const reportA = accepted(
     kernel.reportProtocolFailure(authorA, createdA.executionId, {
@@ -103,7 +106,7 @@ function runEvidenceArm(
       diagnostic: "a-native-garbled",
     }),
   );
-  hidden(kernel, hiddenIds, 3);
+  hidden(kernel, hiddenIds, 3, driver);
 
   const viewA = accepted(kernel.inspect(authorA, createdA.executionId));
   const visibleA = kernel.visibleExecutions(authorA);
@@ -131,7 +134,7 @@ function runEvidenceArm(
   return { serialized, viewJson: JSON.stringify(viewA), hiddenIds, kernel, executionId: createdA.executionId };
 }
 
-function hiddenEvidenceActivity(kernel: ExecutionCoordinator, hiddenIds: string[], round: number): void {
+function hiddenEvidenceActivity(kernel: ExecutionCoordinator, hiddenIds: string[], round: number, driver: RecordingDriver): void {
   const key = `b-evidence-${round}`;
   const createdB = accepted(kernel.createExecution(authorB, bCreate(key)));
   hiddenIds.push(createdB.executionId);
@@ -165,6 +168,7 @@ function hiddenEvidenceActivity(kernel: ExecutionCoordinator, hiddenIds: string[
     kernel.submitOutcome(
       authorB,
       outcomeFor(createdB.executionId, { ...dispatchedB, writerEpoch: 2 }, { progress: { hidden: round }, next: { step: "continue" } }),
+      submissionFor(driver, dispatchedB.activationId),
     ),
   );
   const secondB = accepted(kernel.dispatch(authorB, createdB.executionId, { bound: 1 }));
@@ -175,6 +179,7 @@ function hiddenEvidenceActivity(kernel: ExecutionCoordinator, hiddenIds: string[
         progress: { hidden: `done-${round}` },
         next: { step: "complete", result: { hidden: round } },
       }),
+      submissionFor(driver, secondB.activationId),
     ),
   );
 }
@@ -429,7 +434,8 @@ describe("K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable"
   });
 
   test("c) resolved exchange deliveries: edits leave next inspect and replay unchanged", () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(authorA, createRequest({ creationKey: "a-delivery-resolved" })));
     const dispatched = accepted(kernel.dispatch(authorA, created.executionId, { bound: 1 }));
     accepted(kernel.redeliver(authorA, created.executionId));
@@ -443,6 +449,7 @@ describe("K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable"
       kernel.submitOutcome(
         authorA,
         outcomeFor(created.executionId, { ...dispatched, writerEpoch: 2 }, { progress: { cursor: 1 } }),
+        submissionFor(driver, dispatched.activationId),
       ),
     );
     assert.equal(answer.progressRevision, 1);
@@ -485,6 +492,7 @@ describe("K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable"
       kernel.submitOutcome(
         authorA,
         outcomeFor(created.executionId, { ...dispatched, writerEpoch: 2 }, { progress: { cursor: 1 } }),
+        submissionFor(driver, dispatched.activationId),
       ),
     );
     assert.equal(replayed.replayed, true);
@@ -670,22 +678,23 @@ interface PositionsArm {
 }
 
 function runPositionsArm(
-  hidden: (kernel: ExecutionCoordinator, hiddenIds: string[], round: number) => void,
+  hidden: (kernel: ExecutionCoordinator, hiddenIds: string[], round: number, driver: RecordingDriver) => void,
 ): { arm: PositionsArm; kernel: ExecutionCoordinator; executionId: string; hiddenIds: string[] } {
-  const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+  const driver = recordingDriver();
+  const kernel = new ExecutionCoordinator({ driver });
   const hiddenIds: string[] = [];
 
   const created = accepted(kernel.createExecution(authorA, createRequest({ creationKey: "a-positions" })));
-  hidden(kernel, hiddenIds, 0);
+  hidden(kernel, hiddenIds, 0, driver);
   const dispatched = accepted(kernel.dispatch(authorA, created.executionId, { bound: 1 }));
-  hidden(kernel, hiddenIds, 1);
+  hidden(kernel, hiddenIds, 1, driver);
   accepted(
     kernel.recoverExecution(authorA, created.executionId, {
       activationId: dispatched.activationId,
       available: MISSING_AVAILABLE,
     }),
   );
-  hidden(kernel, hiddenIds, 2);
+  hidden(kernel, hiddenIds, 2, driver);
   accepted(
     kernel.reportProtocolFailure(authorA, created.executionId, {
       activationId: dispatched.activationId,
@@ -693,7 +702,7 @@ function runPositionsArm(
       diagnostic: "a-positions-garbled",
     }),
   );
-  hidden(kernel, hiddenIds, 3);
+  hidden(kernel, hiddenIds, 3, driver);
 
   // A's own control refusals (unauthorized, per-Execution).
   const r1 = refused(
@@ -702,14 +711,14 @@ function runPositionsArm(
       writerEpoch: 1,
     }),
   );
-  hidden(kernel, hiddenIds, 4);
+  hidden(kernel, hiddenIds, 4, driver);
   const r2 = refused(
     kernel.recoverExecution(observerA, created.executionId, {
       activationId: dispatched.activationId,
       available: FULL_AVAILABLE,
     }),
   );
-  hidden(kernel, hiddenIds, 5);
+  hidden(kernel, hiddenIds, 5, driver);
   void r1;
   void r2;
 
@@ -731,7 +740,7 @@ function runPositionsArm(
   return { arm, kernel, executionId: created.executionId, hiddenIds };
 }
 
-function hiddenPositionsActivity(kernel: ExecutionCoordinator, hiddenIds: string[], round: number): void {
+function hiddenPositionsActivity(kernel: ExecutionCoordinator, hiddenIds: string[], round: number, driver: RecordingDriver): void {
   const key = `b-pos-${round}`;
   const createdB = accepted(kernel.createExecution(authorB, bCreate(key)));
   hiddenIds.push(createdB.executionId);
@@ -796,6 +805,7 @@ function hiddenPositionsActivity(kernel: ExecutionCoordinator, hiddenIds: string
     kernel.submitOutcome(
       authorB,
       outcomeFor(createdB.executionId, { ...dispatchedB, writerEpoch: 2 }, { progress: { bpos: round }, next: { step: "fail", error: { bpos: round } } }),
+      submissionFor(driver, dispatchedB.activationId),
     ),
   );
 }

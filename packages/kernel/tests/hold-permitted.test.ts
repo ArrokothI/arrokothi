@@ -19,7 +19,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, type CodeAvailability } from "../src/index.ts";
-import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused } from "./harness.ts";
+import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -35,7 +35,7 @@ function progressedAndOpen() {
   const kernel = new ExecutionCoordinator({ driver });
   const created = accepted(kernel.createExecution(author, createRequest()));
   const first = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } })));
+  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } }), submissionFor(driver, first.activationId)));
   const open = accepted(kernel.dispatch(author, created.executionId, { bound: 4 }));
   return { kernel, driver, executionId: created.executionId, open };
 }
@@ -88,7 +88,7 @@ describe("K12-R1-HOLD-01 permitted actions predict the controls that work", () =
 
   test("a) code hold does not fence a valid Outcome: submitOutcome ends the hold with progressRevision+1", () => {
     // Fresh Execution: hold, then answer from the current epoch without clearing first.
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
     const before = accepted(kernel.inspect(author, executionId));
     assert.equal(before.progressRevision, 1);
 
@@ -102,7 +102,7 @@ describe("K12-R1-HOLD-01 permitted actions predict the controls that work", () =
     assert.deepEqual(held.recoveryHolds[0]?.permittedNextActions, ["declare_code_availability", "submit_outcome"]);
 
     // Inspected says submit_outcome IS permitted: the current attempt's valid Outcome is accepted.
-    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } })));
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } }), submissionFor(driver, open.activationId)));
     assert.equal(answer.progressRevision, 2, "one accepted Outcome installs one revision");
     const after = accepted(kernel.inspect(author, executionId));
     assert.deepEqual(after.recoveryHolds, [], "resolving the exchange ends the hold");
@@ -137,7 +137,7 @@ describe("K12-R1-HOLD-01 permitted actions predict the controls that work", () =
   });
 
   test("b) protocol hold ends by valid Outcome (fresh Execution)", () => {
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
     accepted(kernel.reportProtocolFailure(author, executionId, { activationId: open.activationId, writerEpoch: 1, diagnostic: "native garbled" }));
     assert.deepEqual(accepted(kernel.inspect(author, executionId)).recoveryHolds[0]?.permittedNextActions, [
       "request_takeover",
@@ -145,7 +145,7 @@ describe("K12-R1-HOLD-01 permitted actions predict the controls that work", () =
     ]);
 
     // Inspected says submit_outcome IS permitted: the current attempt's Outcome ends the hold.
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
     assert.deepEqual(accepted(kernel.inspect(author, executionId)).recoveryHolds, []);
   });
 
@@ -202,7 +202,7 @@ describe("K12-R1-HOLD-01 permitted actions predict the controls that work", () =
   });
 
   test("c) valid Outcome while both held ends both (fresh Execution)", () => {
-    const { kernel, executionId, open } = progressedAndOpen();
+    const { kernel, driver, executionId, open } = progressedAndOpen();
     accepted(
       kernel.recoverExecution(author, executionId, {
         activationId: open.activationId,
@@ -213,7 +213,7 @@ describe("K12-R1-HOLD-01 permitted actions predict the controls that work", () =
     assert.equal(accepted(kernel.inspect(author, executionId)).recoveryHolds.length, 2);
 
     // Both holds permit submit_outcome: one Outcome ends both by resolving the exchange.
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
     const after = accepted(kernel.inspect(author, executionId));
     assert.deepEqual(after.recoveryHolds, []);
     assert.equal(after.recoveryHistory.length, 4, "2 entered + 2 ended_by_outcome");

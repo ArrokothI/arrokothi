@@ -25,6 +25,7 @@ import {
   type DeliverySettlement,
   type ExecutionDriver,
   type ExecutionView,
+  type SubmissionGrant,
   type TakeoverAccepted,
 } from "../src/index.ts";
 import { accepted, caller, createRequest, outcomeFor, refused } from "./harness.ts";
@@ -116,17 +117,26 @@ describe("K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first", 
       next: { step: "continue" as const },
     });
     let innerOk = false;
+    // The grant arrives with the delivery; the array capture keeps the runtime read real.
+    const grants: SubmissionGrant[] = [];
     const kernel: ExecutionCoordinator = new ExecutionCoordinator({
       driver: {
         driverId: "reentrant-safety-outcome",
-        deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
+        deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+          grants.push(submission);
           settlement.delivered();
           return undefined;
         },
         isSafeToReplace(activation: Activation): boolean {
           if (!innerOk) {
             innerOk = true;
-            accepted(kernel.submitOutcome(author, envelope(activation.executionId, activation.activationId)));
+            accepted(
+              kernel.submitOutcome(
+                author,
+                envelope(activation.executionId, activation.activationId),
+                grants[grants.length - 1] as SubmissionGrant,
+              ),
+            );
           }
           return true;
         },
@@ -153,16 +163,20 @@ describe("K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first", 
     ]);
     assert.deepEqual(after.acceptedProgress, { phase: "from-safety" });
     // The resolving Outcome is replayable from its record; the refused takeover changed nothing else.
-    const replay = accepted(kernel.submitOutcome(author, envelope(executionId, open.activationId)));
+    const replay = accepted(
+      kernel.submitOutcome(author, envelope(executionId, open.activationId), grants[grants.length - 1] as SubmissionGrant),
+    );
     assert.equal(replay.replayed, true);
     assert.deepEqual(view(kernel, executionId).exchanges.length, 1);
   });
 
   test("a terminal complete inside the callback ends the Execution; the outer takeover is refused", () => {
+    const grants: SubmissionGrant[] = [];
     const kernel: ExecutionCoordinator = new ExecutionCoordinator({
       driver: {
         driverId: "reentrant-safety-terminal",
-        deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
+        deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+          grants.push(submission);
           settlement.delivered();
           return undefined;
         },
@@ -175,6 +189,7 @@ describe("K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first", 
                 writerEpoch: 1,
                 baseProgressRevision: 0,
               }, { next: { step: "complete", result: { report: "from-safety" } } }),
+              grants[grants.length - 1] as SubmissionGrant,
             ),
           );
           return true;

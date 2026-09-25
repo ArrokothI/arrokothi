@@ -11,7 +11,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator } from "../src/index.ts";
-import { accepted, caller, createRequest, outcomeFor, recordingDriver } from "./harness.ts";
+import { accepted, caller, createRequest, outcomeFor, recordingDriver, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -28,7 +28,7 @@ function acceptedOnce() {
     emissions: [{ emissionKey: "draft", value: emissionValue }],
     next: { step: "complete", result: { report: "week 37" } },
   });
-  const answer = accepted(kernel.submitOutcome(author, envelope));
+  const answer = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, dispatched.activationId)));
   return { kernel, driver, executionId: created.executionId, dispatched, envelope, answer, progress, emissionValue };
 }
 
@@ -36,7 +36,7 @@ const mutable = <T>(value: T): { -readonly [K in keyof T]: T[K] } => value as { 
 
 describe("K1.2-C12 retained Outcome evidence is immutable", () => {
   test("editing the returned answer changes neither the replay nor inspection", () => {
-    const { kernel, executionId, envelope, answer } = acceptedOnce();
+    const { kernel, driver, executionId, envelope, answer } = acceptedOnce();
     const snapshot = structuredClone(accepted(kernel.inspect(author, executionId)));
     const edited = mutable(answer);
     edited.nextState = "READY";
@@ -49,7 +49,7 @@ describe("K1.2-C12 retained Outcome evidence is immutable", () => {
       mutable(answer.receipt).token = "forged";
     }, TypeError);
 
-    const replay = accepted(kernel.submitOutcome(author, envelope));
+    const replay = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
     assert.equal(replay.nextState, "COMPLETED");
     assert.equal(replay.progressRevision, 1);
     assert.notEqual(replay.resultId, "forged");
@@ -92,7 +92,7 @@ describe("K1.2-C12 retained Outcome evidence is immutable", () => {
     const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest()));
     const first = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { nested: { cursor: 1 } } })));
+    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { nested: { cursor: 1 } } }), submissionFor(driver, first.activationId)));
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     const activation = driver.seen[1];
     assert.ok(activation);

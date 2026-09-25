@@ -66,7 +66,17 @@ export type RefusalClassification =
    * denied, or throwing means the takeover is refused rather than assumed. Kernel fencing of stale
    * writes does not itself stop superseded native work.
    */
-  | "unsafe_replacement";
+  | "unsafe_replacement"
+  /**
+   * K1.2-DEC-20: the Outcome proposal carries no submission authority for the current attempt.
+   *
+   * `evidence.md`: inspection privilege does not grant re-execution or settlement privilege, and
+   * an Activation observed through inspection does not authorize answering it. The proposal named
+   * the open exchange but did not present its attempt-bound grant, so it cannot win, clear holds,
+   * or end the Execution. Exact replays and conflicts are answered before this check (OA-2 order)
+   * because they return or refuse on retained evidence without accepting anything.
+   */
+  | "unauthorized_submission";
 
 /**
  * One refused request, retained and inspectable.

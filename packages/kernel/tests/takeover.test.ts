@@ -15,8 +15,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type ExecutionView } from "../src/index.ts";
-import { accepted, caller, createRequest, delayedDriver, outcomeFor, recordingDriver, refused } from "./harness.ts";
+import { ExecutionCoordinator, type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { accepted, caller, createRequest, delayedDriver, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -68,12 +68,12 @@ describe("K1.2-C8 an accepted takeover advances the epoch within the same exchan
   });
 
   test("the superseded epoch is fenced at once, and the new epoch commits (WS ID-9 case 3)", () => {
-    const { kernel, executionId, dispatched } = dispatchedExecution();
+    const { kernel, driver, executionId, dispatched } = dispatchedExecution();
     accepted(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 1 }));
     const before = view(kernel, executionId);
 
     // A perfectly good draft from the original host: refused in full because its epoch moved.
-    const stale = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: { draft: "good" } } })));
+    const stale = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: { draft: "good" } } }), submissionFor(driver, dispatched.activationId)));
     assert.equal(stale.classification, "stale_exchange");
     assert.match(stale.reason, /writer epoch 1 was superseded by epoch 2/);
     const afterStale = view(kernel, executionId);
@@ -82,7 +82,7 @@ describe("K1.2-C8 an accepted takeover advances the epoch within the same exchan
     const { refusals: _b, ...beforeRest } = before;
     assert.deepEqual(afterRest, beforeRest, "no acknowledgment, progress, Emission, result or state from the stale attempt");
 
-    const current = accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }, { progress: { from: "attempt 2" } })));
+    const current = accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }, { progress: { from: "attempt 2" } }), submissionFor(driver, dispatched.activationId)));
     assert.equal(current.progressRevision, 1);
     const after = view(kernel, executionId);
     assert.deepEqual(after.acceptedProgress, { from: "attempt 2" });
@@ -90,12 +90,12 @@ describe("K1.2-C8 an accepted takeover advances the epoch within the same exchan
   });
 
   test("after the new epoch's Outcome is accepted, the old attempt's late Outcome conflicts and changes nothing", () => {
-    const { kernel, executionId, dispatched } = dispatchedExecution();
+    const { kernel, driver, executionId, dispatched } = dispatchedExecution();
     accepted(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 })));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }), submissionFor(driver, dispatched.activationId)));
     const before = view(kernel, executionId);
     // Identical proposal, old epoch: different content under the accepted identity (OA-2 first).
-    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched))).classification, "duplicate_conflict");
+    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId))).classification, "duplicate_conflict");
     const after = view(kernel, executionId);
     assert.equal(after.progressRevision, before.progressRevision);
     assert.equal(after.state, before.state);
@@ -125,10 +125,10 @@ describe("K1.2-C8 an accepted takeover advances the epoch within the same exchan
   });
 
   test("with no exchange open there is nothing to take over; a malformed request is refused as such", () => {
-    const { kernel, executionId, dispatched } = dispatchedExecution();
+    const { kernel, driver, executionId, dispatched } = dispatchedExecution();
     assert.equal(refused(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 0 })).classification, "malformed_value");
     assert.equal(refused(kernel.requestTakeover(author, executionId, { activationId: 7, writerEpoch: 1 } as never)).classification, "malformed_value");
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     assert.equal(
       refused(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 1 })).classification,
       "no_unresolved_exchange",
@@ -145,7 +145,7 @@ describe("K1.2-C8 only a takeover advances the epoch (WS ID-9 case 1)", () => {
       assert.equal(redelivered.activationId, dispatched.activationId);
     }
     assert.deepEqual(driver.seen.map((activation) => activation.writerEpoch), [1, 1, 1, 1, 1]);
-    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     assert.equal(answer.nextState, "READY");
     assert.equal(view(kernel, executionId).exchanges[0]?.writerEpoch, 1);
   });
@@ -160,8 +160,8 @@ describe("K1.2-C8 only a takeover advances the epoch (WS ID-9 case 1)", () => {
 
 describe("K1.2-C8 the takeover is ordered against the Outcome it could race", () => {
   test("an Outcome accepted first resolves the exchange; a takeover arriving after it finds nothing to replace", () => {
-    const { kernel, executionId, dispatched } = dispatchedExecution();
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched)));
+    const { kernel, driver, executionId, dispatched } = dispatchedExecution();
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
     assert.equal(refused(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 1 })).classification, "no_unresolved_exchange");
   });
 
@@ -171,14 +171,16 @@ describe("K1.2-C8 the takeover is ordered against the Outcome it could race", ()
     // exchange; the dispatch still returns the attempt it recorded.
     const delayed = delayedDriver();
     let reentered: unknown = null;
+    const grants: SubmissionGrant[] = [];
     const kernel = new ExecutionCoordinator({
       driver: {
         driverId: "reentrant",
-        deliver(activation, settlement) {
+        deliver(activation, settlement, submission) {
+          grants.push(submission);
           if (activation.writerEpoch === 1 && reentered === null) {
             reentered = kernel.requestTakeover(author, activation.executionId, { activationId: activation.activationId, writerEpoch: 1 });
           }
-          return delayed.deliver(activation, settlement);
+          return delayed.deliver(activation, settlement, submission);
         },
         isSafeToReplace(): boolean {
           return true;
@@ -190,7 +192,7 @@ describe("K1.2-C8 the takeover is ordered against the Outcome it could race", ()
     assert.equal(dispatched.writerEpoch, 1, "the dispatch reports the attempt it recorded");
     assert.equal((reentered as { ok: boolean }).ok, true);
     assert.equal(view(kernel, created.executionId).activation?.writerEpoch, 2);
-    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched))).classification, "stale_exchange");
+    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched), submissionFor({ submissions: grants }, dispatched.activationId))).classification, "stale_exchange");
   });
 
   test("a redelivery answer describes the attempt it resent, even when the Driver takes over during it", () => {

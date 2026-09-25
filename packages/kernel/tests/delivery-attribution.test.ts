@@ -12,7 +12,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, type DeliverySettlement, type ExecutionView } from "../src/index.ts";
-import { accepted, caller, createRequest, delayedDriver, outcomeFor, recordingDriver } from "./harness.ts";
+import { accepted, caller, createRequest, delayedDriver, outcomeFor, recordingDriver, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
@@ -172,7 +172,7 @@ describe("K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact att
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     accepted(kernel.redeliver(author, executionId));
     accepted(kernel.requestTakeover(author, executionId, { activationId: dispatched.activationId, writerEpoch: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 })));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }), submissionFor(driver, dispatched.activationId)));
 
     const after = view(kernel, executionId);
     assert.equal(after.activation, null, "the exchange is resolved");
@@ -198,7 +198,7 @@ describe("K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact att
     const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     accepted(kernel.redeliver(author, executionId));
     accepted(kernel.requestTakeover(author, executionId, { activationId: first.activationId, writerEpoch: 1 }));
-    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...first, writerEpoch: 2 })));
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...first, writerEpoch: 2 }), submissionFor(driver, first.activationId)));
 
     const next = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     assert.notEqual(next.activationId, first.activationId, "a new exchange, not the old one resent");
