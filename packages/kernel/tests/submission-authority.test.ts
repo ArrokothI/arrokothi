@@ -423,7 +423,7 @@ describe("K12-R9 malformed coordinates crossed with authority failure and invali
     const badContent = {
       progress: deep,
       emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
-      next: { step: "fail", error: "" },
+      next: { step: "fail", error: "\ud800" },
     };
     const malformedClaims: [string, Record<string, unknown>][] = [
       ["missing epoch", (() => { const envelope: Record<string, unknown> = { writerEpoch: undefined }; return envelope; })()],
@@ -484,7 +484,7 @@ describe("K12-R9 entitled malformed and content-invalid attempts reach later val
       ...outcomeFor(executionId, open, {
         progress: deep,
         emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
-        next: { step: "fail", error: "" },
+        next: { step: "fail", error: "\ud800" },
       }),
       writerEpoch: undefined,
     } as unknown as Parameters<typeof kernel.submitOutcome>[1];
@@ -492,8 +492,12 @@ describe("K12-R9 entitled malformed and content-invalid attempts reach later val
     const before = view(kernel, executionId);
     const refusal = refused(kernel.submitOutcome(author, envelope, grant));
     assert.equal(refusal.classification, "malformed_envelope");
-    assert.match(refusal.reason, /writerEpoch/);
+    assert.match(refusal.reason, /writerEpoch not_a_count/, "malformed claim reported");
+    assert.match(refusal.reason, /too_deep/, "deep progress reported once entitled");
+    assert.match(refusal.reason, /duplicate_key/, "duplicate Emission reported once entitled");
+    assert.match(refusal.reason, /next\.error lone_surrogate/, "genuinely malformed fail error reported once entitled");
     assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "malformed_envelope");
+    assert.deepEqual(view(kernel, executionId).refusals.at(-1), refusal, "retained refusal carries the full diagnostics");
     // A corrected proposal from the same entitled attempt still commits.
     const answer = kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 1 } }), grant);
     assert.equal(answer.ok, true);

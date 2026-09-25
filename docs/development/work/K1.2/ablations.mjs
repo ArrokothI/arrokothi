@@ -210,6 +210,12 @@ const ablations = [
       replace: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    if (capture.outcome === null) {",
     },
   },
+  {
+    id: "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
+    file: "coordinator.ts",
+    find: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues)}`, record),",
+    replace: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues.filter((issue) => issue.path === \"writerEpoch\" || issue.path === \"baseProgressRevision\"))}`, record),",
+  },
 ];
 
 const applyOnce = (text, find, replace, label) => {
