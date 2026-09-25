@@ -1,0 +1,9 @@
+ok   control: stale epoch 1, base 0, retired grant    -> stale_exchange
+ok   stale epoch 1, base missing, retired grant       -> stale_exchange
+ok   stale epoch 1, base -1, retired grant            -> stale_exchange
+ok   stale epoch 1, base missing, no grant            -> stale_exchange
+ok   stale epoch 1, base missing, current grant       -> stale_exchange
+ok   future epoch 5, base missing, no grant           -> stale_exchange
+ok   epoch missing, stale base 7, current grant       -> stale_exchange
+ok   epoch missing, stale base 7, no grant            -> stale_exchange
+accepted state unchanged: RUNNING, progress revision 0, epoch 2

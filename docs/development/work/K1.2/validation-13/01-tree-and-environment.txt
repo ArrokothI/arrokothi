@@ -1,0 +1,18 @@
+=== status ===
+?? docs/development/work/K1.2/validation-13/
+=== HEAD ===
+ad219a5cf8940d0379bda9b16d693c901931a4b5
+=== branch ===
+claude/k1.2-outcome-acceptance-receipts
+=== base ===
+a20d278185eaffc7f8b7489345a3624231ff6e6d
+=== versions ===
+v25.2.1
+11.6.2
+Version 5.9.3
+=== date ===
+Fri Sep 25 23:53:21 UTC 2026
+=== payload range ===
+ad219a5 K1.2 C11: per-coordinate stale-before-authority with total classification and distinguishing matrix
+04df5ed review(K1.2): record review 11 of H12 — CHANGES REQUIRED
+9655d12 K1.2 H12: report C10 evidence correction with raw C10 validation and digests

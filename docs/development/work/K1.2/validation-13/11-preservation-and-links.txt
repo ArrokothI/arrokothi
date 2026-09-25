@@ -1,0 +1,14 @@
+=== correction delta 04df5ed..HEAD ===
+docs/development/002-implemented-kernel-baseline.md
+docs/development/work/K1.2/ablations.mjs
+docs/development/work/K1.2/contract.md
+mental-model/mechanisms/execution-cycle.md
+packages/kernel/src/coordinator.ts
+packages/kernel/src/outcome.ts
+packages/kernel/tests/outcome-partial-claim.test.ts
+=== Layer-3 diff ===
+mental-model/mechanisms/execution-cycle.md
+=== diff check ===
+clean
+=== sealed review-11 untouched ===
+(empty above = preserved)
