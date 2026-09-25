@@ -1408,34 +1408,35 @@ export class ExecutionCoordinator {
     // exchange currency, then submission authority, then content. `capture` above stays eager
     // before the replay lookup so one observation orders reentrant getters before these checks
     // (DEC-10) and so an exact duplicate is recognized by captured identity without authority;
-    // only its numbers (`claim`) and its identity-equality are used before authority. Content
-    // results (`issues`, `overCapacity`, `outcome === null`) are disclosed only after authority
-    // succeeds, including when the claim itself is malformed: a malformed writerEpoch or
-    // baseProgressRevision is a content-group refusal after authority, never an exchange-group
-    // bypass that leaks content validation to a non-entitled caller.
-    const claim = capture.claim;
+    // only its per-coordinate currency numbers and its identity-equality are used before
+    // authority. Content results (`issues`, `overCapacity`, `outcome === null`) are disclosed
+    // only after authority succeeds. Each well-formed coordinate is checked independently: a
+    // well-formed stale half refuses as `stale_exchange` whatever the other half or the grant
+    // presents (K12-R11-ORDER-01), while a malformed half alone is a content-group refusal after
+    // authority, never an exchange-group bypass that leaks content validation to a non-entitled
+    // caller (K12-R9-ORDER-01).
     const currentEpoch = intent.activation.writerEpoch;
-    if (claim !== null) {
-      if (claim.writerEpoch !== currentEpoch) {
-        return err(
-          this.#refusal(
-            "stale_exchange",
-            claim.writerEpoch < currentEpoch
-              ? `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
-              : `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} has not been issued; the current epoch is ${currentEpoch}`,
-            record,
-          ),
-        );
-      }
-      if (claim.baseProgressRevision !== intent.activation.baseProgressRevision) {
-        return err(
-          this.#refusal(
-            "stale_exchange",
-            `Outcome for Activation ${activationId}: base progress revision ${claim.baseProgressRevision} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
-            record,
-          ),
-        );
-      }
+    const epochForCurrency = capture.epochForCurrency;
+    if (epochForCurrency !== null && epochForCurrency !== currentEpoch) {
+      return err(
+        this.#refusal(
+          "stale_exchange",
+          epochForCurrency < currentEpoch
+            ? `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
+            : `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
+          record,
+        ),
+      );
+    }
+    const baseForCurrency = capture.baseForCurrency;
+    if (baseForCurrency !== null && baseForCurrency !== intent.activation.baseProgressRevision) {
+      return err(
+        this.#refusal(
+          "stale_exchange",
+          `Outcome for Activation ${activationId}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
+          record,
+        ),
+      );
     }
     // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing
     // keeps its stale/terminal vocabulary, and before content (including a malformed claim) so a

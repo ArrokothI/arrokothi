@@ -32,7 +32,7 @@ const ablations = [
   {
     id: "A3 no writer-epoch fence",
     file: "coordinator.ts",
-    find: "    if (claim.writerEpoch !== currentEpoch) {",
+    find: "    if (epochForCurrency !== null && epochForCurrency !== currentEpoch) {",
     replace: "    if (false) {",
   },
   {
@@ -215,6 +215,18 @@ const ablations = [
     file: "coordinator.ts",
     find: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues)}`, record),",
     replace: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues.filter((issue) => issue.path === \"writerEpoch\" || issue.path === \"baseProgressRevision\"))}`, record),",
+  },
+  {
+    id: "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
+    file: "outcome.ts",
+    find: "    return PrimordialObjectFreeze({ claim, epochForCurrency: writerEpoch, baseForCurrency: baseProgressRevision, issues, overCapacity: captured.overCapacity, outcome: null });",
+    replace: "    return PrimordialObjectFreeze({ claim, epochForCurrency: null, baseForCurrency: null, issues, overCapacity: captured.overCapacity, outcome: null });",
+  },
+  {
+    id: "B16 epoch-only partial fix, base-half currency dropped (K12-R11-ORDER-01 incomplete repair)",
+    file: "coordinator.ts",
+    find: "    if (baseForCurrency !== null && baseForCurrency !== intent.activation.baseProgressRevision) {",
+    replace: "    if (false) {",
   },
 ];
 

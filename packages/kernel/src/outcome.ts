@@ -155,9 +155,18 @@ export interface ExchangeClaim {
  * `outcome` is present exactly when `issues` is empty, `overCapacity` is `null` and `claim` is
  * present. The claim is reported separately so the coordinator can tell a stale attempt that it is
  * stale even when its content is also wrong (K1.2-DEC-2).
+ *
+ * `epochForCurrency` and `baseForCurrency` carry each number independently: the well-formed value
+ * when that coordinate passed its count check, otherwise `null`. The coordinator checks each
+ * non-null coordinate against the unresolved exchange before submission authority, so a well-formed
+ * stale half refuses as `stale_exchange` whatever the other half or the grant presents
+ * (K12-R11-ORDER-01). A `null` half is a content-group refusal after authority, never an
+ * exchange-group bypass that leaks content validation to a non-entitled caller.
  */
 export interface OutcomeCapture {
   readonly claim: ExchangeClaim | null;
+  readonly epochForCurrency: number | null;
+  readonly baseForCurrency: number | null;
   readonly issues: readonly LocatedIssue[];
   /** Set when the Emission count exceeded the declared limit; no Emission was then read. */
   readonly overCapacity: { readonly count: number; readonly limit: number } | null;
@@ -403,7 +412,7 @@ export function captureOutcome(envelope: object, emissionLimit: number): Outcome
   refuseUnknownFields(envelope, ENVELOPE_FIELDS, "", issues);
 
   if (claim === null || progress === null || next === null || captured.overCapacity !== null || issues.length > 0) {
-    return PrimordialObjectFreeze({ claim, issues, overCapacity: captured.overCapacity, outcome: null });
+    return PrimordialObjectFreeze({ claim, epochForCurrency: writerEpoch, baseForCurrency: baseProgressRevision, issues, overCapacity: captured.overCapacity, outcome: null });
   }
 
   const emissions = PrimordialObjectFreeze(captured.emissions);
@@ -432,7 +441,7 @@ export function captureOutcome(envelope: object, emissionLimit: number): Outcome
     next,
     identity,
   });
-  return PrimordialObjectFreeze({ claim, issues, overCapacity: null, outcome });
+  return PrimordialObjectFreeze({ claim, epochForCurrency: writerEpoch, baseForCurrency: baseProgressRevision, issues, overCapacity: null, outcome });
 }
 
 /** Renders Outcome issues with their messages, since several are not boundary-value codes. */

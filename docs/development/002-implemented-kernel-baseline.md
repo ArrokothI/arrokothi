@@ -80,7 +80,13 @@ epoch and base progress revision (`stale_exchange`), then the submission grant: 
 presenting the exchange's current grant — by reference identity, never by fields — is the current
 attempt answering, and anything else is refused as `unauthorized_submission` with no accepted-state
 mutation beyond the recorded refusal; then content (`malformed_envelope`, or
-`capacity_exhausted` above the declared Emission limit). Scope is still required alongside the grant;
+`capacity_exhausted` above the declared Emission limit). Exchange currency is per-coordinate: each
+well-formed writer epoch or base progress revision is compared against the unresolved exchange on its
+own, so a well-formed stale half refuses as `stale_exchange` whatever the other half or the grant
+presents and with no content diagnostic, while a missing or malformed half alone is a content-group
+refusal after authority (K12-R11-ORDER-01). The in-process representation carries both halves
+separately (`epochForCurrency`/`baseForCurrency`, each the well-formed value or `null`) alongside the
+atomic full claim used for the accepted-content identity. Scope is still required alongside the grant;
 replay and conflict precede authority because they answer from retained evidence without accepting
 anything. An accepted Outcome acknowledges the whole
 reserved batch, installs the progress under revision base + 1, records each Emission, records the
