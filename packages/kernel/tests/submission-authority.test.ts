@@ -298,3 +298,232 @@ describe("K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable"
     assert.equal((seen.activation as unknown as Record<string, unknown>).submission, undefined);
   });
 });
+
+/**
+ * K12-R9-ORDER-01 / K12-R9-EVID-01 — authority before content.
+ *
+ * Canonical order (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20): scope, then
+ * replay/conflict, then exchange currency (terminal, Activation, epoch, base revision), then
+ * the current attempt's submission grant, then content, then atomic acceptance. A later group
+ * must not be inspected, diagnosed, returned, retained, or otherwise made observably relevant
+ * until every preceding group has succeeded.
+ *
+ * Prior coverage missed this clause because every grant-less case sent valid content and every
+ * content-defect case presented the current grant, so no oracle crossed authority failure with
+ * invalid content, and no ablation inverted authority/content ordering.
+ *
+ * All malformed writerEpoch/baseProgressRevision variants below share one implementation path:
+ * `acceptCount` (outcome.ts) rejects missing, fractional, negative, and zero-epoch values, so
+ * `capture.claim` is null and the same content-group branch answers after authority. The sampled
+ * variants document that equivalence rather than exploding the product.
+ */
+function deepProgress(depth: number): unknown {
+  let root: Record<string, unknown> = {};
+  let current = root;
+  for (let index = 0; index < depth; index += 1) {
+    const child: Record<string, unknown> = {};
+    current["n"] = child;
+    current = child;
+  }
+  return root;
+}
+
+function assertRefusedOnlyAppendsRefusal(before: ExecutionView, after: ExecutionView, classification: string): void {
+  assert.equal(after.refusals.length, before.refusals.length + 1, "exactly one refusal was recorded");
+  assert.equal(after.refusals[after.refusals.length - 1]?.classification, classification);
+  const { refusals: _afterRefusals, ...afterRest } = after;
+  const { refusals: _beforeRefusals, ...beforeRest } = before;
+  assert.deepEqual(afterRest, beforeRest, "no acknowledgment, progress, Emission, result, disposition, state, epoch or receipt changed");
+}
+
+describe("K12-R9 authority before content on a well-formed current claim (Case A)", () => {
+  test("grant-less and forged current proposals with invalid content are unauthorized without content disclosure", () => {
+    const { kernel, executionId, open } = openExecution("r9-case-a");
+    const invalidContents: [string, Record<string, unknown>][] = [
+      ["duplicate Emission key", { emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }] }],
+      ["unsupported Effect", { effects: [1] }],
+    ];
+    for (const [label, content] of invalidContents) {
+      for (const [grantLabel, grant] of [
+        ["absent", undefined],
+        ["forged", forged(executionId, open.activationId, 1)],
+      ] as const) {
+        const before = view(kernel, executionId);
+        const envelope = outcomeFor(executionId, open, { progress: 1, ...content }) as Parameters<typeof kernel.submitOutcome>[1];
+        const refusal = refused(kernel.submitOutcome(dashboard, envelope, grant as unknown as SubmissionGrant));
+        assert.equal(refusal.classification, "unauthorized_submission", `${label} × ${grantLabel}`);
+        assert.match(refusal.reason, /presents no submission authority/, `${label} × ${grantLabel}: authority reason`);
+        assert.doesNotMatch(refusal.reason, /duplicate_key/, `${label} × ${grantLabel}: no emission content`);
+        assert.doesNotMatch(refusal.reason, /effects_unsupported/, `${label} × ${grantLabel}: no effect content`);
+        assert.doesNotMatch(refusal.reason, /too_deep|unknown_field|not_a_count|missing_field|lone_surrogate/, `${label} × ${grantLabel}: no other content`);
+        const after = view(kernel, executionId);
+        assertRefusedOnlyAppendsRefusal(before, after, "unauthorized_submission");
+        const retained = after.refusals[after.refusals.length - 1];
+        assert.deepEqual(retained, refusal, `${label} × ${grantLabel}: retained equals returned`);
+        assert.doesNotMatch(retained?.reason ?? "", /duplicate_key|effects_unsupported/, `${label} × ${grantLabel}: retained hides content`);
+        assert.ok(Object.isFrozen(retained), "retained refusal is frozen");
+      }
+    }
+  });
+
+  test("the same invalid content with the current grant reaches content validation", () => {
+    const { kernel, driver, executionId, open } = openExecution("r9-case-a-control");
+    const grant = submissionFor(driver, open.activationId);
+    const before = view(kernel, executionId);
+    const refusal = refused(
+      kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: 1, emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }] }), grant),
+    );
+    assert.equal(refusal.classification, "malformed_envelope");
+    assert.match(refusal.reason, /duplicate_key/);
+    assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "malformed_envelope");
+    const effectsRefusal = refused(
+      kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: 1, effects: [1] }), grant),
+    );
+    assert.equal(effectsRefusal.classification, "malformed_envelope");
+    assert.match(effectsRefusal.reason, /effects_unsupported/);
+  });
+
+  test("over-capacity proposals without authority are unauthorized, not capacity disclosures", () => {
+    // Capacity is content-group after authority (DEC-9 within step 3): an over-limit list from a
+    // non-entitled caller must not have its size diagnosed before authority succeeds.
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver, emissionsPerOutcome: 2 });
+    const created = accepted(kernel.createExecution(author, createRequest({ creationKey: "r9-case-a-capacity" })));
+    const executionId = created.executionId;
+    const open = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+    const three = [{ emissionKey: "e1", value: 1 }, { emissionKey: "e2", value: 2 }, { emissionKey: "e3", value: 3 }];
+    for (const [grantLabel, grant] of [
+      ["absent", undefined],
+      ["forged", forged(executionId, open.activationId, 1)],
+    ] as const) {
+      const before = view(kernel, executionId);
+      const refusal = refused(
+        kernel.submitOutcome(dashboard, outcomeFor(executionId, open, { progress: 1, emissions: three }), grant as unknown as SubmissionGrant),
+      );
+      assert.equal(refusal.classification, "unauthorized_submission", `over-capacity × ${grantLabel}`);
+      assert.match(refusal.reason, /presents no submission authority/, `over-capacity × ${grantLabel}`);
+      assert.doesNotMatch(refusal.reason, /carries 3 Emissions/, `over-capacity × ${grantLabel}: no capacity content`);
+      assert.doesNotMatch(refusal.reason, /capacity_exhausted|duplicate_key|effects_unsupported/, `over-capacity × ${grantLabel}: no content`);
+      const after = view(kernel, executionId);
+      assertRefusedOnlyAppendsRefusal(before, after, "unauthorized_submission");
+      assert.deepEqual(after.refusals[after.refusals.length - 1], refusal, `over-capacity × ${grantLabel}: retained equals returned`);
+    }
+    // The same over-limit list with the current grant reaches capacity validation.
+    const grant = submissionFor(driver, open.activationId);
+    const capacity = refused(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: 1, emissions: three }), grant));
+    assert.equal(capacity.classification, "capacity_exhausted");
+    assert.match(capacity.reason, /carries 3 Emissions/);
+  });
+});
+
+describe("K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)", () => {
+  test("missing, fractional, and negative epoch/base variants never leak content before authority", () => {
+    const { kernel, executionId, open } = openExecution("r9-case-b");
+    const deep = deepProgress(40);
+    const badContent = {
+      progress: deep,
+      emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
+      next: { step: "fail", error: "" },
+    };
+    const malformedClaims: [string, Record<string, unknown>][] = [
+      ["missing epoch", (() => { const envelope: Record<string, unknown> = { writerEpoch: undefined }; return envelope; })()],
+      ["fractional epoch", { writerEpoch: 1.5 }],
+      ["negative epoch", { writerEpoch: -1 }],
+      ["missing base revision", { baseProgressRevision: undefined }],
+      ["fractional base revision", { baseProgressRevision: 1.5 }],
+      ["negative base revision", { baseProgressRevision: -1 }],
+    ];
+    for (const [claimLabel, claim] of malformedClaims) {
+      for (const [grantLabel, grant] of [
+        ["absent", undefined],
+        ["forged", forged(executionId, open.activationId, 1)],
+      ] as const) {
+        const before = view(kernel, executionId);
+        const base = outcomeFor(executionId, open, badContent) as unknown as Record<string, unknown>;
+        if (claim["writerEpoch"] === undefined && claimLabel === "missing epoch") delete base["writerEpoch"];
+        else Object.assign(base, claim["writerEpoch"] !== undefined ? { writerEpoch: claim["writerEpoch"] } : {});
+        if (claimLabel === "missing base revision") delete base["baseProgressRevision"];
+        else if (claim["baseProgressRevision"] !== undefined) base["baseProgressRevision"] = claim["baseProgressRevision"];
+        // For the missing-epoch arm the envelope truly omits the field; for the others it carries the bad number.
+        const refusal = refused(kernel.submitOutcome(dashboard, base as unknown as Parameters<typeof kernel.submitOutcome>[1], grant as unknown as SubmissionGrant));
+        assert.equal(refusal.classification, "unauthorized_submission", `${claimLabel} × ${grantLabel}`);
+        assert.match(refusal.reason, /presents no submission authority/, `${claimLabel} × ${grantLabel}`);
+        assert.doesNotMatch(refusal.reason, /too_deep/, `${claimLabel} × ${grantLabel}: no progress content`);
+        assert.doesNotMatch(refusal.reason, /duplicate_key/, `${claimLabel} × ${grantLabel}: no emission content`);
+        assert.doesNotMatch(refusal.reason, /lone_surrogate|effects_unsupported|unknown_field/, `${claimLabel} × ${grantLabel}: no next/effect content`);
+        assert.doesNotMatch(refusal.reason, /not_a_count|missing_field/, `${claimLabel} × ${grantLabel}: claim itself is content-group after authority`);
+        const after = view(kernel, executionId);
+        assertRefusedOnlyAppendsRefusal(before, after, "unauthorized_submission");
+        assert.deepEqual(after.refusals[after.refusals.length - 1], refusal, `${claimLabel} × ${grantLabel}: retained equals returned`);
+      }
+    }
+  });
+
+  test("base -1 with effects and no grant is unauthorized, not an effect disclosure (P2c)", () => {
+    const { kernel, executionId, open } = openExecution("r9-case-b-p2c");
+    const before = view(kernel, executionId);
+    const refusal = refused(
+      kernel.submitOutcome(
+        dashboard,
+        outcomeFor(executionId, open, { progress: 1, effects: [1], baseProgressRevision: -1 }) as Parameters<typeof kernel.submitOutcome>[1],
+        undefined as unknown as SubmissionGrant,
+      ),
+    );
+    assert.equal(refusal.classification, "unauthorized_submission");
+    assert.doesNotMatch(refusal.reason, /effects_unsupported/);
+    assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "unauthorized_submission");
+  });
+});
+
+describe("K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)", () => {
+  test("valid grant with malformed claim and invalid content is malformed, not unauthorized", () => {
+    const { kernel, driver, executionId, open } = openExecution("r9-case-c");
+    const grant = submissionFor(driver, open.activationId);
+    const deep = deepProgress(40);
+    const envelope = {
+      ...outcomeFor(executionId, open, {
+        progress: deep,
+        emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
+        next: { step: "fail", error: "" },
+      }),
+      writerEpoch: undefined,
+    } as unknown as Parameters<typeof kernel.submitOutcome>[1];
+    delete (envelope as unknown as Record<string, unknown>)["writerEpoch"];
+    const before = view(kernel, executionId);
+    const refusal = refused(kernel.submitOutcome(author, envelope, grant));
+    assert.equal(refusal.classification, "malformed_envelope");
+    assert.match(refusal.reason, /writerEpoch/);
+    assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "malformed_envelope");
+    // A corrected proposal from the same entitled attempt still commits.
+    const answer = kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 1 } }), grant);
+    assert.equal(answer.ok, true);
+  });
+});
+
+describe("K12-R9 neighboring currency ordering: retired grant with stale exchange (Case D)", () => {
+  test("currency refusal still precedes authority, even with invalid content", () => {
+    const { kernel, driver, executionId, open } = openExecution("r9-case-d");
+    const grant1 = submissionFor(driver, open.activationId);
+    const taken = accepted(kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 }));
+    assert.equal(taken.writerEpoch, 2);
+    const grant2 = submissionFor(driver, open.activationId);
+    const staleBad = outcomeFor(executionId, open, {
+      progress: deepProgress(40),
+      emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
+    });
+    // Retired grant with its own stale coordinates: stale, not unauthorized, no content leak.
+    const before = view(kernel, executionId);
+    const staleRetired = refused(kernel.submitOutcome(author, staleBad, grant1));
+    assert.equal(staleRetired.classification, "stale_exchange");
+    assert.doesNotMatch(staleRetired.reason, /too_deep|duplicate_key/);
+    assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "stale_exchange");
+    // Current grant with stale coordinates: still stale — currency precedes authority.
+    const staleCurrent = refused(kernel.submitOutcome(author, staleBad, grant2));
+    assert.equal(staleCurrent.classification, "stale_exchange");
+    assert.doesNotMatch(staleCurrent.reason, /too_deep|duplicate_key/);
+    // Retired grant with current coordinates: unauthorized.
+    const current = { ...open, writerEpoch: 2 };
+    const unauthorized = refused(kernel.submitOutcome(author, outcomeFor(executionId, current, { progress: { cursor: 9 } }), grant1));
+    assert.equal(unauthorized.classification, "unauthorized_submission");
+  });
+});

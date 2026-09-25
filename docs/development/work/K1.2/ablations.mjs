@@ -190,6 +190,26 @@ const ablations = [
     find: "    const resent = intent.activation;",
     replace: "    if (intent.activation.writerEpoch > 1) intent.submission = mintSubmission(intent.activation.executionId, intent.activation.activationId, intent.activation.writerEpoch);\n    const resent = intent.activation;",
   },
+  {
+    id: "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
+    file: "coordinator.ts",
+    find: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
+    replace: "",
+    suffix: {
+      find: "    return ok(this.#accept(record, intent, capture.outcome, caller));",
+      replace: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    return ok(this.#accept(record, intent, capture.outcome, caller));",
+    },
+  },
+  {
+    id: "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
+    file: "coordinator.ts",
+    find: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
+    replace: "",
+    suffix: {
+      find: "    if (capture.outcome === null) {",
+      replace: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    if (capture.outcome === null) {",
+    },
+  },
 ];
 
 const applyOnce = (text, find, replace, label) => {
