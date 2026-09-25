@@ -1,0 +1,28 @@
+CONTROL        unablated copy: tests 450, pass 450, fail 0
+SURVIVED       R1 content validated before submission authority (grant check moved after content)
+               tests 450, pass 450, fail 0; failing: 
+REJECTED       R2 submission authority checked before exchange currency (stale attempt told unauthorized)
+               tests 450, pass 446, fail 4; failing: a takeover made from inside observation fences the Outcome being observed | K1.2-C13 a getter that reenters the Kernel is ordered before this decision | forged grant after takeover is unauthorized, retired grant is stale or silent | K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing
+REJECTED       R3 exact replay requires the current grant
+               tests 450, pass 433, fail 17; failing: exact replay after a hold-ending Outcome appends nothing | K12-R3-HISTORY-02 replay and refused submissions grow no History | exact: the original receipt; changed: refused; either way the open exchange is untouched | K1.2-C11 a late Outcome for a resolved Activation never commits into the new exchange
+REJECTED       R4 grant compared by fields, not reference
+               tests 450, pass 444, fail 6; failing: visibility-only caller submitting at a valid epoch is refused without the attempt grant | K12-R1-AUTH-01 observer Outcome without grant is refused (K12-R3-AUTH-02) | an unauthorized Outcome submission appends no History | K12-R3-HISTORY-02 replay and refused submissions grow no History
+REJECTED       R5 takeover keeps the superseded attempt's grant
+               tests 450, pass 447, fail 3; failing: forged grant after takeover is unauthorized, retired grant is stale or silent | K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing | after takeover the retired grant cannot commit while the new grant can | K12-R3-AUTH-02 old attempt authority dies with its epoch
+REJECTED       R6 base-revision currency not checked
+               tests 450, pass 449, fail 1; failing: a base progress revision the exchange was not pinned at is stale | K1.2-C3 a new proposal must answer the open exchange, or it is refused whole
+REJECTED       R7 accepted-Outcome identity ignores the writer epoch (changed-epoch resubmission replays)
+               tests 450, pass 448, fail 2; failing: changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch | K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts | after the new epoch's Outcome is accepted, the old attempt's late Outcome conflicts and changes nothing | K1.2-C8 an accepted takeover advances the epoch within the same exchange
+REJECTED       R8 a code hold fences Outcome acceptance
+               tests 450, pass 438, fail 12; failing: ended_by_outcome records attempt_submission, never a control claim | K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully | exact replay after a hold-ending Outcome appends nothing | K12-R3-HISTORY-02 replay and refused submissions grow no History
+REJECTED       R9 unauthorized_submission refusal not recorded on the Execution
+               tests 450, pass 448, fail 2; failing: correct-looking continue with a forged grant commits nothing | K12-R3-AUTH-02 visibility-only continuing Outcome is refused | takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced | K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts
+REJECTED       R10 B-5 terminal disposition also given at continue
+               tests 450, pass 445, fail 5; failing: acceptance acknowledges exactly the reserved batch and installs everything else together | acknowledgment never reads progress: what progress says it handled changes nothing (R5-j6-2) | K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step | Events that arrived meanwhile are selected by the next exchange, in acceptance order
+REJECTED       R11 protocol-failure report accepted for a superseded epoch
+               tests 450, pass 449, fail 1; failing: a repeated report changes nothing; a stale report cannot hold the exchange | K1.2-C10 an unclassifiable response holds the exchange; it is never retried silently
+REJECTED       R12 dispatch mints the grant only on first Execution dispatch (next exchange reuses previous grant object)
+               tests 450, pass 434, fail 16; failing: a) code hold does not fence a valid Outcome: submitOutcome ends the hold with progressRevision+1 | b) protocol hold ends by valid Outcome (fresh Execution) | c) valid Outcome while both held ends both (fresh Execution) | K12-R1-HOLD-01 permitted actions predict the controls that work
+
+11/12 ablations rejected by the kernel suite.
+exit 1
