@@ -1,0 +1,17 @@
+candidate C: 5797bde3df2f3b6f91f255a0b08a6b42ad2d134d
+base: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+command: npm run check:builder-docs
+environment: v25.2.1, npm 11.6.2, macOS 26.6.2 25G83 arm64
+config: default CoordinatorOptions (mailboxCapacity 1024, emissionsPerOutcome 256); no external fixtures
+output-sha256: 81d489777068851bc9cd85a5efa082538099866919e24c9b6c259f1d47c7b680
+--- output begins ---
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 72 Markdown files, 1765 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+
+--- output ends ---
+exit 0
+2026-09-25T00:05:48Z

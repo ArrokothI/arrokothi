@@ -1,0 +1,46 @@
+candidate C: 5797bde3df2f3b6f91f255a0b08a6b42ad2d134d
+base: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+command: npm run test:sdk
+environment: v25.2.1, npm 11.6.2, macOS 26.6.2 25G83 arm64
+config: default CoordinatorOptions (mailboxCapacity 1024, emissionsPerOutcome 256); no external fixtures
+output-sha256: e3bb4f74ebce28eb3954d85edd382449e46dda6ae9bf0431b4659ecbf524f7ad
+--- output begins ---
+
+> arrokothi-agent-kernel@0.8.1 test:sdk
+> node --test --experimental-strip-types packages/sdk/tests/*.test.ts
+
+✔ a pure Function Workflow needs no model or policy and preserves emission versus terminal result (10.295458ms)
+✔ registration is idempotent, rejects version changes, and start pins definitions (1.774625ms)
+✔ registration validates a whole batch before inserting conflicting versions (0.5205ms)
+✔ missing handlers/models fail before any Execution is queued and preflight does no inference (1.90075ms)
+✔ preflight finds a missing provider and incompatible static model features (2.047375ms)
+✔ custom model resolution, policy, and custom view resolvers are never probed by preflight (2.4ms)
+✔ catalog and exposure never grant dispatch permission (10.551041ms)
+✔ operation ceiling is independent from policy; default views use the supplied runtime store (1.384792ms)
+✔ approved exact payload dispatches once through the shared catalog, store, and authorizer (4.66775ms)
+✔ memory binding and write exposure do not authorize a WriteMemory Effect (3.177709ms)
+✔ a slow model yields; host timeout/abort preserve pending work and later resume exactly once (18.076708ms)
+✔ slow capabilities settle without an unbounded drain and cancellation remains explicit (18.506625ms)
+✔ conversation response yields input_required and cumulative budgets are unchanged (1.120709ms)
+✔ bounded loops report activation_limit, leaving the Execution runnable (0.922458ms)
+✔ SDK start serializes initial input ahead of concurrent scheduler driving (1.76325ms)
+✔ malformed initial data refuses before creation and a failed start does not poison the SDK lock (0.833625ms)
+✔ controller hooks receive actual services and diagnostics reflect the effective registries (0.452833ms)
+✔ child definitions are preflighted recursively; confirmation in a called child reaches the host (4.876542ms)
+✔ preflight checks child kind, absent spawn credits, child input waits, and memory bindings (0.33925ms)
+✔ recursive definition graphs remain legal and terminate preflight traversal (4.154625ms)
+✔ Function adapters and explicit fork/join execute inside one Workflow (2.552667ms)
+✔ distinct colon-bearing grants and Agent requests survive authority and view deduplication (25.375959ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 399.993584
+
+--- output ends ---
+exit 0
+2026-09-25T00:05:48Z
