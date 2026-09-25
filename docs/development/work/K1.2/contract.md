@@ -10,8 +10,8 @@ PLAN-01 amendment and the owner's 2026-09-24 B-5 scope amendment.
 `52b1600f3b42e3a360fdc3395178f1d147edf304` and integrated in `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`;
 K1.1-correction-02 accepted at H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e` and integrated in
 `954d31b00eb7f2412c22ccf7d4d079699f0c4032`. All are ancestors of the base.
-**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 6.**
-**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25; round-5 wording correction and round-6 evidence correction/architecture blocker by Codex (GPT-6), 2026-09-25.
+**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 7.**
+**Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25; round-5 wording correction and round-6 evidence correction/architecture blocker by Codex (GPT-6), 2026-09-25; round-7 canonical correction under the 2026-09-25 owner carrier decision by Muse Spark, 2026-09-25.
 
 ## Entry and owner release
 
@@ -201,8 +201,11 @@ assigned here receives its owner's written disposition.
 **K1.2-C15 — reference and baseline maintenance (006 §Maintaining the mental-model reference).** The
 implemented baseline states the K1.2 surface and records each `OPEN(implementation)` choice this
 packet settles; each such marker points at that record and stays in place; §4 of the rewrite index
-agrees. No Layer-3 page gains build or acceptance status, and no open choice is settled in
-specification prose.
+agrees. The canonical delivery, retry/takeover-lifetime, and Outcome-acceptance order live in
+[execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md) under owner decision
+[decision-01](decision-01.md) (2026-09-25), which supersedes only KC1-ARCH-1's two-argument carrier
+signature; no other Layer-3 page owns a competing rule. No Layer-3 page gains build or acceptance status, and no open choice is settled in
+specification prose. Acceptance criteria are unchanged by that provenance update.
 
 ## Obligation/interaction coverage map
 
@@ -256,7 +259,7 @@ specification prose.
 | C13 own-only, single observation | inherited envelope fields; throwing/revoked fields; getters counting reads; value root read once | missing, located refusal, one read per field | `outcome-hostile.test.ts` |
 | C13 ambient pollution during observation | a getter installing an inherited indexed accessor or descriptor-field pollution, or replacing a builtin, before commit | the accepted decision, acknowledgment list, Emission list and receipt are retained exactly | `outcome-hostile.test.ts` |
 | C14 zone rules | the import graph and inventory | no violation; document and policy agree | `tests/conformance/architecture/kernel-landing-zone.test.ts` |
-| C15 records | BASELINE, identity.md markers, rewrite-index §4 | choices recorded; markers kept; no status on Layer-3 pages | report checklist; link check |
+| C15 records | BASELINE, identity.md markers, rewrite-index §4, execution-cycle delivery/acceptance owner and K1.2 decision-01 | choices recorded; markers kept; no status on Layer-3 pages; no stale two-argument binding description where it purports to specify the current in-process call | report checklist; link check |
 | All: distinguishing power | 27 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped, B8 Outcome submission without attempt grant, B9 hold-ending History claims control power, B10 every redelivery rotates the submission grant, B11 only post-takeover redelivery rotates it) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
 
 ## Command plan
@@ -411,6 +414,11 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   proposal power. Grants are frozen at mint and never exposed through inspection. This is not K2
   policy: no token format, grant language, or remote backend — one unforgeable reference per
   attempt, which is all K1.2 needs to establish who may validly answer the current Activation.
+  The in-process carrier `deliver(activation, settlement, submission)` is authorized by owner
+  decision [decision-01](decision-01.md) (2026-09-25), which supersedes only KC1-ARCH-1's exact
+  two-argument signature; canonical lifetimes and the acceptance order live in
+  [execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md). Acceptance criteria
+  are unchanged by that provenance update.
 - **K1.2-DEC-19 — takeover commit revalidation after the safety callback (correction, K12-R2-TAKEOVER-01).**
   `isSafeToReplace` is trusted same-process Driver/host code that can synchronously reenter the
   coordinator, so state validated before the callback (unresolved exchange, current epoch, no code

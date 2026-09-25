@@ -4,7 +4,7 @@ The [Driver](../concepts/core.md#execution-driver) translates selected contracts
 
 **Status:** Per-Driver obligation, not Kernel semantics. Introduced by R1; supported versions frozen at S1. K1.4's legacy bridge uses only the reference-Runtime shape below and earns no support record here. This is target specification, not shipped behavior.
 
-In-process adapters obey the Kernel's [delivery reporting boundary](execution-cycle.md#delivery-reporting-boundary): translate native asynchronous success/failure into the supplied operational reporting capability and own all internal Promise handling. This K1 boundary is separate from the R1 native-fidelity support claims below.
+In-process adapters obey the Kernel's [delivery reporting boundary](execution-cycle.md#delivery-reporting-boundary): translate native asynchronous success/failure into the supplied per-delivery operational reporting capability, carry the supplied per-attempt submission authority back with the Outcome, and own all internal Promise handling. The boundary owns both lifetimes and the acceptance order; this page adds no second rule. This K1 boundary is separate from the R1 native-fidelity support claims below.
 
 A Driver is where an honest answer costs the most, because every dimension below has a comfortable wrong answer available. The page is built to make the honest one sayable: choose the shallowest integration that does the job, then record what that integration actually preserves — dimension by dimension, with **unsupported** as a legitimate entry — and only then claim support, on evidence rather than on inspection of upstream code. The failure this guards against is a Driver that looks complete because it compiles against every interface while quietly preserving none of them.
 

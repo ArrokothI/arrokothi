@@ -21,9 +21,9 @@ approved unmodified `canonicalize@3.0.0`. In-process capture keeps each root's c
 while it reads and stops once that count passes the 1 MiB limit, so a live object that repeats one
 shared member is refused without being expanded in full. Within one visit, a string or member name
 is read only until one scalar value past the length limit, and a container's own-names listing is
-classified only until it exceeds what an accepted container owns (K1.1-correction-02). `ExecutionDriver.deliver` returns only `undefined` and
-reports delivery through a Kernel-owned capability; the Kernel never observes a Driver-returned
-Promise.
+classified only until it exceeds what an accepted container owns (K1.1-correction-02). `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
+Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
 Out-of-band cancellation and its terminal disposition, waits and deadlines belong to K1.3; Effects to
 K2. Those unimplemented surfaces refuse by name, and an Outcome proposing an Effect or a wait is
