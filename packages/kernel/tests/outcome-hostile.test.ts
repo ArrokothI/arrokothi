@@ -130,6 +130,77 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
     assert.deepEqual(view(kernel, executionId).acceptedProgress, { phase: "first reading" });
   });
 
+  test("a missing, non-text or throwing activationId still reads every other field once (decision-02)", () => {
+    for (const variant of ["missing", "non-text", "throwing"] as const) {
+      const { kernel, driver, executionId, dispatched } = open();
+      const grant = submissionFor(driver, dispatched.activationId);
+      const reads: Record<string, number> = {};
+      const envelope: Record<string, unknown> = {};
+      const fields: Record<string, unknown> = {
+        executionId,
+        writerEpoch: 1,
+        baseProgressRevision: 0,
+        progress: { phase: "first reading" },
+        emissions: [{ emissionKey: "e", value: 1 }],
+        effects: [],
+        next: { step: "continue" },
+      };
+      for (const [key, value] of Object.entries(fields)) {
+        Object.defineProperty(envelope, key, {
+          get() {
+            reads[key] = (reads[key] ?? 0) + 1;
+            return value;
+          },
+          enumerable: true,
+        });
+      }
+      if (variant === "missing") {
+        // No own activationId: the identity observation still happens (descriptor check), then
+        // the full capture runs — whereas the old early return skipped it.
+      } else if (variant === "non-text") {
+        Object.defineProperty(envelope, "activationId", {
+          get() {
+            reads["activationId"] = (reads["activationId"] ?? 0) + 1;
+            return 7;
+          },
+          enumerable: true,
+        });
+      } else {
+        Object.defineProperty(envelope, "activationId", {
+          get(): unknown {
+            reads["activationId"] = (reads["activationId"] ?? 0) + 1;
+            throw new Error("boom-activation-identity");
+          },
+          enumerable: true,
+        });
+      }
+      let result: ReturnType<ExecutionCoordinator["submitOutcome"]> | undefined;
+      assert.doesNotThrow(() => {
+        result = kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope, grant);
+      }, `identity ${variant} does not escape`);
+      const refusal = refused(result as NonNullable<typeof result>);
+      assert.equal(refusal.classification, "malformed_envelope", `identity ${variant} with the current grant reaches content`);
+      assert.match(refusal.reason, /activationId/, `identity ${variant} issue listed`);
+      if (variant === "non-text") {
+        assert.doesNotMatch(refusal.reason, /Activation 7/, "malformed value is not rendered");
+      }
+      if (variant === "throwing") {
+        assert.doesNotMatch(refusal.reason, /boom-activation-identity/, "throwing value is not rendered");
+        assert.match(refusal.reason, /unstable_representation/);
+      }
+      // Every other envelope field was read exactly once, proving the full capture ran even
+      // though the identity was not usable (it used to be skipped by the early return).
+      assert.deepEqual(
+        reads,
+        variant === "missing"
+          ? { executionId: 1, writerEpoch: 1, baseProgressRevision: 1, progress: 1, emissions: 1, effects: 1, next: 1 }
+          : { executionId: 1, activationId: 1, writerEpoch: 1, baseProgressRevision: 1, progress: 1, emissions: 1, effects: 1, next: 1 },
+        `identity ${variant}: single observation`,
+      );
+      assert.equal(view(kernel, executionId).progressRevision, 0, `identity ${variant}: nothing accepted`);
+    }
+  });
+
   test("a field whose observation throws is a located refusal, not an escaping exception", () => {
     const { kernel, driver, executionId, dispatched } = open();
     const grant = submissionFor(driver, dispatched.activationId);

@@ -75,16 +75,20 @@ field the binding does not know is refused rather than ignored, as is any non-em
 The order is `execution-cycle.md`'s: the caller is scoped to the named Execution before anything else
 is read; an already accepted Outcome under the same Activation ID is looked up next, and an exact
 duplicate (equal captured content) returns the original receipt and decision while anything else is
-refused as `duplicate_conflict`; then terminal state, then the exchange's current Activation ID, writer
+refused as `duplicate_conflict` (only a well-formed Activation ID is looked up; a missing, malformed
+or unobservable one addresses no accepted Outcome); then terminal state, then the exchange's current Activation ID, writer
 epoch and base progress revision (`stale_exchange`), then the submission grant: only a proposal
 presenting the exchange's current grant — by reference identity, never by fields — is the current
 attempt answering, and anything else is refused as `unauthorized_submission` with no accepted-state
 mutation beyond the recorded refusal; then content (`malformed_envelope`, or
-`capacity_exhausted` above the declared Emission limit). Exchange currency is per-coordinate: each
-well-formed writer epoch or base progress revision is compared against the unresolved exchange on its
-own, so a well-formed stale half refuses as `stale_exchange` whatever the other half or the grant
-presents and with no content diagnostic, while a missing or malformed half alone is a content-group
-refusal after authority (K12-R11-ORDER-01). The in-process representation carries both halves
+`capacity_exhausted` above the declared Emission limit). Exchange currency is per-coordinate, and the
+Activation ID is one of the coordinates: no unresolved exchange, or a well-formed Activation ID,
+writer epoch or base progress revision that does not match the unresolved exchange, refuses as
+`stale_exchange` whatever the other coordinates or the grant present, while a missing, malformed or
+unobservable coordinate alone never establishes staleness and is a content-group refusal after
+authority, reported with the other content issues (K12-R11-ORDER-01, K1.2 decision-02). Capture is
+eager and may compute content diagnostics, but a refusal before authority neither is decided by them
+nor returns or retains them, and its reason does not render a malformed coordinate's value. The in-process representation carries both halves
 separately (`epochForCurrency`/`baseForCurrency`, each the well-formed value or `null`) alongside the
 atomic full claim used for the accepted-content identity. Scope is still required alongside the grant;
 replay and conflict precede authority because they answer from retained evidence without accepting

@@ -7,12 +7,14 @@
  * Contract: K1.2-DEC-2, DEC-20; C3/C8/C10. BASELINE `#outcome-acceptance-api`.
  *
  * The table is total over the envelope's claim crossed with grant and content state:
- * - Activation identity: current, wrong-open, resolved, missing/non-text (O6 pinned), no open exchange.
+ * - Activation identity: current, wrong-open, resolved, missing/malformed/unobservable
+ *   (decision-02: third exchange coordinate; never establishes staleness, never addresses replay,
+ *   content-group refusal after authority), no open exchange.
  * - writerEpoch: current, stale-low, future/not-yet-issued, missing/malformed.
  * - baseProgressRevision: current, stale, missing/malformed.
  * - Mixed partial claims: one coordinate well-formed and stale while the other is missing or
  *   malformed; the well-formed stale half refuses as `stale_exchange` whatever authority it
- *   presents, with no content diagnostics (R11 + R9 coexistence).
+ *   presents, with no content diagnostics (R11 + R9 coexistence, decision-02 for the identity).
  * - Submission authority: current, retired, forged, absent.
  * - Content: valid and representative invalid (deep/duplicate/lone-surrogate/unknown/effects/
  *   over-capacity/await).
@@ -304,7 +306,7 @@ describe("K12-R11 activation identity, replay/conflict, terminal and scope prece
     assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "stale_exchange");
   });
 
-  test("non-text Activation ID is malformed (O6 pinned behavior, pending owner decision)", () => {
+  test("non-text Activation ID with the current grant is content-group malformed (decision-02)", () => {
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });
     const created = accepted(kernel.createExecution(author, createRequest({ creationKey: "r11-a-nontext" })));
@@ -317,7 +319,13 @@ describe("K12-R11 activation identity, replay/conflict, terminal and scope prece
     const refusal = refused(kernel.submitOutcome(author, base as never, grant));
     assert.equal(refusal.classification, "malformed_envelope");
     assert.match(refusal.reason, /activationId/);
+    assert.match(refusal.reason, /unsupported_form/, "identity issue reported with content");
+    assert.doesNotMatch(refusal.reason, /Activation 7/, "malformed value is not rendered");
     assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "malformed_envelope");
+    assert.deepEqual(view(kernel, executionId).refusals.at(-1), refusal, "retained equals returned");
+    // The exchange stays answerable by a corrected current proposal.
+    const corrected = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 1 } }), grant));
+    assert.equal(corrected.receipt.boundary, "outcome_acceptance");
   });
 
   test("an uncapturable partial claim under an accepted Activation ID conflicts, not stale/malformed", () => {
@@ -400,4 +408,347 @@ describe("K12-R11 activation identity, replay/conflict, terminal and scope prece
     assert.deepEqual(view(kernel, executionId), before, "nothing recorded on the hidden Execution");
     void driver;
   });
+});
+
+describe("K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)", () => {
+  type IdentityVariant = "missing" | "number" | "object" | "throwing";
+  const identityVariants: IdentityVariant[] = ["missing", "number", "object", "throwing"];
+
+  const applyIdentity = (envelope: Record<string, unknown>, variant: IdentityVariant): string[] => {
+    if (variant === "missing") {
+      delete envelope["activationId"];
+      return [];
+    }
+    if (variant === "number") {
+      envelope["activationId"] = 7;
+      return ["Activation 7", "for Activation 7"];
+    }
+    if (variant === "object") {
+      envelope["activationId"] = { id: "evil" };
+      return ["[object Object]"];
+    }
+    Object.defineProperty(envelope, "activationId", {
+      get() {
+        throw new Error("boom-activation-identity");
+      },
+      enumerable: true,
+      configurable: true,
+    });
+    return ["boom-activation-identity"];
+  };
+
+  const invalidContent = {
+    progress: deepProgress(40),
+    emissions: [
+      { emissionKey: "x", value: 1 },
+      { emissionKey: "x", value: 2 },
+    ],
+    next: { step: "fail", error: "\ud800" },
+  };
+
+  const assertNoRawValue = (reason: string, forbidden: string[], label: string): void => {
+    for (const token of forbidden) {
+      assert.ok(!reason.includes(token), `${label}: malformed value not rendered (forbidden ${JSON.stringify(token)} in ${JSON.stringify(reason)})`);
+    }
+  };
+
+  const assertPreAuthorityRefusal = (
+    kernel: ExecutionCoordinator,
+    executionId: string,
+    before: ExecutionView,
+    refusal: { classification: string; reason: string },
+    forbidden: string[],
+    label: string,
+  ): void => {
+    assertNoContentLeak(refusal.reason, `${label} returned`);
+    assertNoRawValue(refusal.reason, forbidden, `${label} returned`);
+    const after = view(kernel, executionId);
+    assertRefusedOnlyAppendsRefusal(before, after, refusal.classification);
+    const retained = after.refusals[after.refusals.length - 1];
+    assert.deepEqual(retained, refusal, `${label}: retained equals returned`);
+    assert.ok(Object.isFrozen(retained), `${label}: retained refusal is frozen`);
+    assertNoContentLeak(retained?.reason ?? "", `${label} retained`);
+    assertNoRawValue(retained?.reason ?? "", forbidden, `${label} retained`);
+  };
+
+  for (const variant of identityVariants) {
+    for (const contentLabel of ["valid", "invalid"] as const) {
+      const content = contentLabel === "valid" ? { progress: 1 } : invalidContent;
+
+      test(`terminal + identity ${variant} + ${contentLabel} content -> terminal_destination`, () => {
+        const driver = recordingDriver();
+        const kernel = new ExecutionCoordinator({ driver });
+        const created = accepted(kernel.createExecution(author, createRequest({ creationKey: `d02-terminal-${variant}-${contentLabel}` })));
+        const executionId = created.executionId;
+        const open = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+        const grant = submissionFor(driver, open.activationId);
+        accepted(
+          kernel.submitOutcome(author, outcomeFor(executionId, open, { next: { step: "complete", result: { done: 1 } } }), grant),
+        );
+        assert.equal(view(kernel, executionId).state, "COMPLETED");
+        const envelope = outcomeFor(executionId, open, { ...content }) as unknown as Record<string, unknown>;
+        const forbidden = applyIdentity(envelope, variant);
+        const before = view(kernel, executionId);
+        const refusal = refused(kernel.submitOutcome(author, envelope as never, grant));
+        assert.equal(refusal.classification, "terminal_destination", "terminal fence dominates malformed identity");
+        assert.match(refusal.reason, /ended as COMPLETED/);
+        assertPreAuthorityRefusal(kernel, executionId, before, refusal, forbidden, `terminal/${variant}/${contentLabel}`);
+        assert.equal(view(kernel, executionId).state, "COMPLETED", "terminal state unchanged");
+      });
+
+      test(`no unresolved exchange + identity ${variant} + ${contentLabel} content -> stale_exchange`, () => {
+        const driver = recordingDriver();
+        const kernel = new ExecutionCoordinator({ driver });
+        const created = accepted(kernel.createExecution(author, createRequest({ creationKey: `d02-noexchange-${variant}-${contentLabel}` })));
+        const executionId = created.executionId;
+        const open = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+        const grant = submissionFor(driver, open.activationId);
+        accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 1 } }), grant));
+        assert.equal(view(kernel, executionId).state, "READY");
+        assert.equal(view(kernel, executionId).activation, null);
+        const envelope = outcomeFor(executionId, open, { ...content }) as unknown as Record<string, unknown>;
+        const forbidden = applyIdentity(envelope, variant);
+        const before = view(kernel, executionId);
+        const refusal = refused(kernel.submitOutcome(author, envelope as never, grant));
+        assert.equal(refusal.classification, "stale_exchange", "no unresolved exchange refuses stale whatever identity shape");
+        assert.match(refusal.reason, /not the unresolved exchange|no exchange is unresolved|not usable/);
+        assertPreAuthorityRefusal(kernel, executionId, before, refusal, forbidden, `no-exchange/${variant}/${contentLabel}`);
+        // A fresh dispatch still answers afterwards.
+        const next = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+        const nextGrant = submissionFor(driver, next.activationId);
+        const corrected = accepted(kernel.submitOutcome(author, outcomeFor(executionId, next, { progress: { cursor: 2 } }), nextGrant));
+        assert.equal(corrected.receipt.boundary, "outcome_acceptance");
+      });
+
+      for (const grantLabel of ["current", "retired", "forged", "absent"] as const) {
+        test(`stale epoch 1 + identity ${variant} + ${grantLabel} grant + ${contentLabel} content -> stale_exchange`, () => {
+          const { kernel, executionId, open, retired, current } = postTakeover(
+            `d02-sepoch-${variant}-${grantLabel}-${contentLabel}`.replace(/[^a-z0-9-]/gi, "-"),
+          );
+          const grant =
+            grantLabel === "current"
+              ? current
+              : grantLabel === "retired"
+                ? retired
+                : grantLabel === "forged"
+                  ? forged(executionId, open.activationId, 2)
+                  : (undefined as unknown as SubmissionGrant);
+          const who = grantLabel === "current" ? author : dashboard;
+          const envelope = outcomeFor(executionId, open, { ...content }) as unknown as Record<string, unknown>;
+          envelope["writerEpoch"] = 1;
+          envelope["baseProgressRevision"] = 0;
+          const forbidden = applyIdentity(envelope, variant);
+          const before = view(kernel, executionId);
+          const refusal = refused(kernel.submitOutcome(who, envelope as never, grant));
+          assert.equal(refusal.classification, "stale_exchange", "well-formed stale epoch dominates malformed identity");
+          assert.match(refusal.reason, /superseded by epoch 2/);
+          assert.match(refusal.reason, /was not usable/, "pre-content reason says not usable instead of rendering value");
+          assertPreAuthorityRefusal(kernel, executionId, before, refusal, forbidden, `stale-epoch/${variant}/${grantLabel}/${contentLabel}`);
+          const corrected = accepted(
+            kernel.submitOutcome(author, outcomeFor(executionId, { activationId: open.activationId, writerEpoch: 2, baseProgressRevision: 0 }, { progress: { cursor: 1 } }), current),
+          );
+          assert.equal(corrected.receipt.boundary, "outcome_acceptance");
+        });
+
+        test(`stale base 7 + identity ${variant} + ${grantLabel} grant + ${contentLabel} content -> stale_exchange`, () => {
+          const { kernel, executionId, open, retired, current } = postTakeover(
+            `d02-sbase-${variant}-${grantLabel}-${contentLabel}`.replace(/[^a-z0-9-]/gi, "-"),
+          );
+          const grant =
+            grantLabel === "current"
+              ? current
+              : grantLabel === "retired"
+                ? retired
+                : grantLabel === "forged"
+                  ? forged(executionId, open.activationId, 2)
+                  : (undefined as unknown as SubmissionGrant);
+          const who = grantLabel === "current" ? author : dashboard;
+          const envelope = outcomeFor(executionId, open, { ...content }) as unknown as Record<string, unknown>;
+          envelope["writerEpoch"] = 2;
+          envelope["baseProgressRevision"] = 7;
+          const forbidden = applyIdentity(envelope, variant);
+          const before = view(kernel, executionId);
+          const refusal = refused(kernel.submitOutcome(who, envelope as never, grant));
+          assert.equal(refusal.classification, "stale_exchange", "well-formed stale base dominates malformed identity");
+          assert.match(refusal.reason, /does not match the revision 0/);
+          assert.match(refusal.reason, /was not usable/);
+          assertPreAuthorityRefusal(kernel, executionId, before, refusal, forbidden, `stale-base/${variant}/${grantLabel}/${contentLabel}`);
+          const corrected = accepted(
+            kernel.submitOutcome(author, outcomeFor(executionId, { activationId: open.activationId, writerEpoch: 2, baseProgressRevision: 0 }, { progress: { cursor: 1 } }), current),
+          );
+          assert.equal(corrected.receipt.boundary, "outcome_acceptance");
+        });
+      }
+
+      for (const grantLabel of ["retired", "forged", "absent"] as const) {
+        test(`current coordinates + identity ${variant} + ${grantLabel} grant + ${contentLabel} content -> unauthorized_submission`, () => {
+          const { kernel, executionId, open, retired, current } = postTakeover(
+            `d02-unauth-${variant}-${grantLabel}-${contentLabel}`.replace(/[^a-z0-9-]/gi, "-"),
+          );
+          const grant =
+            grantLabel === "retired" ? retired : grantLabel === "forged" ? forged(executionId, open.activationId, 2) : (undefined as unknown as SubmissionGrant);
+          const envelope = outcomeFor(executionId, open, { ...content }) as unknown as Record<string, unknown>;
+          envelope["writerEpoch"] = 2;
+          envelope["baseProgressRevision"] = 0;
+          const forbidden = applyIdentity(envelope, variant);
+          const before = view(kernel, executionId);
+          const refusal = refused(kernel.submitOutcome(dashboard, envelope as never, grant));
+          assert.equal(refusal.classification, "unauthorized_submission", "current coordinates without the current grant refuse as unauthorized");
+          assert.match(refusal.reason, /presents no submission authority/);
+          assert.match(refusal.reason, /was not usable/);
+          assertPreAuthorityRefusal(kernel, executionId, before, refusal, forbidden, `unauth/${variant}/${grantLabel}/${contentLabel}`);
+          const corrected = accepted(
+            kernel.submitOutcome(author, outcomeFor(executionId, { activationId: open.activationId, writerEpoch: 2, baseProgressRevision: 0 }, { progress: { cursor: 1 } }), current),
+          );
+          assert.equal(corrected.receipt.boundary, "outcome_acceptance");
+        });
+      }
+
+      test(`current coordinates + identity ${variant} + current grant + ${contentLabel} content -> malformed_envelope`, () => {
+        const { kernel, driver, executionId, open } = postTakeover(`d02-malformed-${variant}-${contentLabel}`.replace(/[^a-z0-9-]/gi, "-"));
+        const current = submissionFor(driver, open.activationId);
+        const envelope = outcomeFor(executionId, open, { ...content }) as unknown as Record<string, unknown>;
+        envelope["writerEpoch"] = 2;
+        envelope["baseProgressRevision"] = 0;
+        const forbidden = applyIdentity(envelope, variant);
+        const before = view(kernel, executionId);
+        const refusal = refused(kernel.submitOutcome(author, envelope as never, current));
+        assert.equal(refusal.classification, "malformed_envelope", "entitled malformed identity reaches content");
+        assert.match(refusal.reason, /activationId/, "identity issue listed");
+        assertNoRawValue(refusal.reason, forbidden, `malformed/${variant}/${contentLabel}`);
+        if (contentLabel === "invalid") {
+          assert.match(refusal.reason, /too_deep/, "other content issues listed with the identity issue");
+          assert.match(refusal.reason, /duplicate_key/);
+        } else {
+          assert.doesNotMatch(refusal.reason, /too_deep/, "otherwise-valid content names only the identity issue");
+        }
+        const after = view(kernel, executionId);
+        assertRefusedOnlyAppendsRefusal(before, after, "malformed_envelope");
+        assert.deepEqual(after.refusals[after.refusals.length - 1], refusal, "retained equals returned");
+        const corrected = accepted(
+          kernel.submitOutcome(author, outcomeFor(executionId, { activationId: open.activationId, writerEpoch: 2, baseProgressRevision: 0 }, { progress: { cursor: 1 } }), current),
+        );
+        assert.equal(corrected.receipt.boundary, "outcome_acceptance");
+        void driver;
+      });
+    }
+  }
+});
+
+describe("K1.2 decision-02 unaddressable identity never replays or conflicts (C2)", () => {
+  type IdentityVariant = "missing" | "number" | "object" | "throwing";
+  const identityVariants: IdentityVariant[] = ["missing", "number", "object", "throwing"];
+
+  const applyIdentity = (envelope: Record<string, unknown>, variant: IdentityVariant): void => {
+    if (variant === "missing") {
+      delete envelope["activationId"];
+      return;
+    }
+    if (variant === "number") {
+      envelope["activationId"] = 7;
+      return;
+    }
+    if (variant === "object") {
+      envelope["activationId"] = { id: "evil" };
+      return;
+    }
+    Object.defineProperty(envelope, "activationId", {
+      get() {
+        throw new Error("boom-activation-identity");
+      },
+      enumerable: true,
+      configurable: true,
+    });
+  };
+
+  for (const variant of identityVariants) {
+    test(`later exchange + identity ${variant} identical resubmission is stale, not replay`, () => {
+      const driver = recordingDriver();
+      const kernel = new ExecutionCoordinator({ driver });
+      const created = accepted(kernel.createExecution(author, createRequest({ creationKey: `d02-replay-later-ident-${variant}` })));
+      const executionId = created.executionId;
+      const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+      const firstGrant = submissionFor(driver, first.activationId);
+      const acceptedDecision = accepted(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress: { cursor: 1 } }), firstGrant));
+      const second = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+      assert.notEqual(second.activationId, first.activationId);
+      assert.equal(second.baseProgressRevision, 1);
+      const envelope = outcomeFor(executionId, first, { progress: { cursor: 1 } }) as unknown as Record<string, unknown>;
+      applyIdentity(envelope, variant);
+      const before = view(kernel, executionId);
+      const refusal = refused(kernel.submitOutcome(author, envelope as never, submissionFor(driver, second.activationId)));
+      assert.notEqual(refusal.classification, "duplicate_conflict", "malformed identity never conflicts");
+      assert.equal(refusal.classification, "stale_exchange", "fresh order classifies by the well-formed stale base");
+      assert.match(refusal.reason, /does not match the revision 1/);
+      assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "stale_exchange");
+      // Well-formed identity keeps replay behavior.
+      const replayed = accepted(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress: { cursor: 1 } }), firstGrant));
+      assert.equal(replayed.replayed, true);
+      assert.equal(replayed.receipt.token, acceptedDecision.receipt.token);
+    });
+
+    test(`later exchange + identity ${variant} changed resubmission is stale, not conflict`, () => {
+      const driver = recordingDriver();
+      const kernel = new ExecutionCoordinator({ driver });
+      const created = accepted(kernel.createExecution(author, createRequest({ creationKey: `d02-conflict-later-${variant}` })));
+      const executionId = created.executionId;
+      const first = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+      const firstGrant = submissionFor(driver, first.activationId);
+      accepted(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress: { cursor: 1 } }), firstGrant));
+      const second = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+      const envelope = outcomeFor(executionId, first, { progress: { cursor: 2 } }) as unknown as Record<string, unknown>;
+      applyIdentity(envelope, variant);
+      const before = view(kernel, executionId);
+      const refusal = refused(kernel.submitOutcome(author, envelope as never, submissionFor(driver, second.activationId)));
+      assert.notEqual(refusal.classification, "duplicate_conflict");
+      assert.equal(refusal.classification, "stale_exchange");
+      assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "stale_exchange");
+      // Well-formed changed content under the accepted ID still conflicts.
+      const conflict = refused(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress: { cursor: 2 } }), firstGrant));
+      assert.equal(conflict.classification, "duplicate_conflict");
+    });
+
+    test(`terminal + identity ${variant} identical resubmission is terminal, not replay`, () => {
+      const driver = recordingDriver();
+      const kernel = new ExecutionCoordinator({ driver });
+      const created = accepted(kernel.createExecution(author, createRequest({ creationKey: `d02-replay-terminal-ident-${variant}` })));
+      const executionId = created.executionId;
+      const open = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+      const grant = submissionFor(driver, open.activationId);
+      const acceptedDecision = accepted(
+        kernel.submitOutcome(author, outcomeFor(executionId, open, { next: { step: "complete", result: { done: 1 } } }), grant),
+      );
+      const envelope = outcomeFor(executionId, open, { next: { step: "complete", result: { done: 1 } } }) as unknown as Record<string, unknown>;
+      applyIdentity(envelope, variant);
+      const before = view(kernel, executionId);
+      const refusal = refused(kernel.submitOutcome(author, envelope as never, grant));
+      assert.notEqual((refusal as { replayed?: boolean }).replayed, true);
+      assert.equal(refusal.classification, "terminal_destination", "terminal fence dominates unaddressable identity");
+      assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "terminal_destination");
+      // Well-formed identical still replays after terminal.
+      const replayed = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { next: { step: "complete", result: { done: 1 } } }), grant));
+      assert.equal(replayed.replayed, true);
+      assert.equal(replayed.receipt.token, acceptedDecision.receipt.token);
+    });
+
+    test(`terminal + identity ${variant} changed resubmission is terminal, not conflict`, () => {
+      const driver = recordingDriver();
+      const kernel = new ExecutionCoordinator({ driver });
+      const created = accepted(kernel.createExecution(author, createRequest({ creationKey: `d02-conflict-terminal-${variant}` })));
+      const executionId = created.executionId;
+      const open = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
+      const grant = submissionFor(driver, open.activationId);
+      accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { next: { step: "complete", result: { done: 1 } } }), grant));
+      const envelope = outcomeFor(executionId, open, { progress: { cursor: 9 } }) as unknown as Record<string, unknown>;
+      applyIdentity(envelope, variant);
+      const before = view(kernel, executionId);
+      const refusal = refused(kernel.submitOutcome(author, envelope as never, grant));
+      assert.equal(refusal.classification, "terminal_destination");
+      assert.notEqual(refusal.classification, "duplicate_conflict");
+      assertRefusedOnlyAppendsRefusal(before, view(kernel, executionId), "terminal_destination");
+      // Well-formed changed content under the accepted ID still conflicts after terminal.
+      const conflict = refused(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 9 } }), grant));
+      assert.equal(conflict.classification, "duplicate_conflict");
+    });
+  }
 });

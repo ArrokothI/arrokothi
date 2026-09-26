@@ -12,10 +12,15 @@
  *
  * K1.2 adds Outcome acceptance and what surrounds it:
  *
- * - `submitOutcome`: scope first, then the replay lookup, then whole-envelope validation, then one
- *   atomic commit that acknowledges the whole batch, installs progress, records Emissions, the
- *   terminal result and the next state, and gives every Event still unacknowledged at a `complete`
- *   or `fail` its terminal disposition (`B-5`);
+ * - `submitOutcome`: scope first, then the replay lookup (only a well-formed Activation identity
+ *   addresses an accepted Outcome; a missing, malformed or unobservable one matches none and the
+ *   proposal continues as fresh), then whole-envelope validation in canonical order — terminal
+ *   fence, per-coordinate exchange currency (Activation identity, writer epoch, base revision;
+ *   only Kernel state and well-formed coordinates decide an exchange refusal), submission
+ *   authority, then content (a malformed identity is a content issue reported with the others) —
+ *   then one atomic commit that acknowledges the whole batch, installs progress, records
+ *   Emissions, the terminal result and the next state, and gives every Event still unacknowledged
+ *   at a `complete` or `fail` its terminal disposition (`B-5`);
  * - `requestTakeover`: the authorized writer-epoch advance within one unresolved exchange;
  * - `recoverExecution`: the recovery hold for unavailable pinned code, and its clearing;
  * - `reportProtocolFailure`: the inspectable hold for a response that could not be classified
@@ -1361,28 +1366,38 @@ export class ExecutionCoordinator {
     const record = this.#visible(caller, executionSeen.observed as string);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
 
+    // Single Activation-identity observation, before capture and the replay lookup (DEC-10).
+    // Only its well-formedness is classified here; a missing, malformed or unobservable identity
+    // never addresses an accepted Outcome and never establishes staleness (decision-02).
     const idIssues: LocatedIssue[] = [];
     const activationField = observeField(envelope, "activationId", "activationId", idIssues);
-    if (!activationField.ok || !acceptIdentityText(activationField.observed, "activationId", idIssues)) {
-      return err(this.#refusal("malformed_envelope", `Outcome envelope refused whole: ${explainOutcomeIssues(idIssues)}`, record));
-    }
+    const identityUsable = activationField.ok && acceptIdentityText(activationField.observed, "activationId", idIssues);
     const activationId = activationField.observed as string;
     // Content is captured before the lookup: an exact duplicate is equal captured content, and
-    // nothing after this line reads the caller's envelope again.
+    // nothing after this line reads the caller's envelope again. Capture stays eager before
+    // authority (DEC-10); it may compute content diagnostics, but on a refusal reached before
+    // submission authority succeeds they neither decide the refusal nor are returned or retained
+    // (K12-R13-DOC-01).
     const capture = captureOutcome(envelope as object, this.#emissionsPerOutcome);
 
-    const already = mapGet(record.acceptedOutcomes, activationId);
-    if (already !== undefined) {
-      if (capture.outcome !== null && capture.outcome.identity === already.identity) {
-        return ok({ ...already.decision, replayed: true });
+    // Canonical step 2 (execution-cycle.md#outcome-acceptance, DEC-3, decision-02): only a
+    // well-formed Activation identity addresses an accepted Outcome. A missing, malformed or
+    // unobservable identity matches none, so the proposal proceeds as fresh — never a replay
+    // and never a `duplicate_conflict`. A well-formed identity keeps the existing behavior.
+    if (identityUsable) {
+      const already = mapGet(record.acceptedOutcomes, activationId);
+      if (already !== undefined) {
+        if (capture.outcome !== null && capture.outcome.identity === already.identity) {
+          return ok({ ...already.decision, replayed: true });
+        }
+        return err(
+          this.#refusal(
+            "duplicate_conflict",
+            `an Outcome for Activation ${activationId} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,
+            record,
+          ),
+        );
       }
-      return err(
-        this.#refusal(
-          "duplicate_conflict",
-          `an Outcome for Activation ${activationId} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,
-          record,
-        ),
-      );
     }
 
     if (isTerminal(record.state)) {
@@ -1395,7 +1410,27 @@ export class ExecutionCoordinator {
       );
     }
     const intent = record.activation;
-    if (intent === null || intent.activation.activationId !== activationId) {
+    if (intent === null) {
+      // No unresolved exchange: refused as `stale_exchange` whatever the identity's shape.
+      // A malformed value is never rendered before the content group (decision-02 disclosure).
+      if (identityUsable) {
+        return err(
+          this.#refusal(
+            "stale_exchange",
+            `Activation ${activationId} is not the unresolved exchange of Execution ${record.executionId}; an Outcome can answer only the exchange that is open`,
+            record,
+          ),
+        );
+      }
+      return err(
+        this.#refusal(
+          "stale_exchange",
+          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${record.executionId}; an Outcome can answer only the exchange that is open`,
+          record,
+        ),
+      );
+    }
+    if (identityUsable && intent.activation.activationId !== activationId) {
       return err(
         this.#refusal(
           "stale_exchange",
@@ -1404,67 +1439,122 @@ export class ExecutionCoordinator {
         ),
       );
     }
-    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20):
-    // exchange currency, then submission authority, then content. `capture` above stays eager
-    // before the replay lookup so one observation orders reentrant getters before these checks
-    // (DEC-10) and so an exact duplicate is recognized by captured identity without authority;
-    // only its per-coordinate currency numbers and its identity-equality are used before
-    // authority. Content results (`issues`, `overCapacity`, `outcome === null`) are disclosed
-    // only after authority succeeds. Each well-formed coordinate is checked independently: a
-    // well-formed stale half refuses as `stale_exchange` whatever the other half or the grant
-    // presents (K12-R11-ORDER-01), while a malformed half alone is a content-group refusal after
-    // authority, never an exchange-group bypass that leaks content validation to a non-entitled
-    // caller (K12-R9-ORDER-01).
+    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20, decision-02):
+    // exchange currency, then submission authority, then content. Only Kernel state and
+    // well-formed coordinates decide an exchange refusal. The Activation identity, writer epoch
+    // and base progress revision are each checked independently: when no exchange is unresolved,
+    // or a well-formed coordinate does not match the unresolved exchange, the whole proposal is
+    // refused as `stale_exchange`, even when another coordinate is missing or malformed and
+    // whatever submission authority or content the proposal carries. A missing, malformed or
+    // unobservable coordinate never establishes staleness and never prevents another well-formed
+    // coordinate from establishing it; it is a content-group refusal after submission authority
+    // succeeds (K12-R11-ORDER-01, K12-R9-ORDER-01). A malformed identity skips the replay lookup
+    // above and the wrong-Activation comparison here, but never skips the terminal fence, the
+    // per-coordinate epoch/base checks, or the grant check below.
     const currentEpoch = intent.activation.writerEpoch;
     const epochForCurrency = capture.epochForCurrency;
     if (epochForCurrency !== null && epochForCurrency !== currentEpoch) {
+      if (identityUsable) {
+        return err(
+          this.#refusal(
+            "stale_exchange",
+            epochForCurrency < currentEpoch
+              ? `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
+              : `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
+            record,
+          ),
+        );
+      }
       return err(
         this.#refusal(
           "stale_exchange",
           epochForCurrency < currentEpoch
-            ? `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
-            : `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
+            ? `The proposal's Activation identity was not usable; writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
+            : `The proposal's Activation identity was not usable; writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
           record,
         ),
       );
     }
     const baseForCurrency = capture.baseForCurrency;
     if (baseForCurrency !== null && baseForCurrency !== intent.activation.baseProgressRevision) {
+      if (identityUsable) {
+        return err(
+          this.#refusal(
+            "stale_exchange",
+            `Outcome for Activation ${activationId}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
+            record,
+          ),
+        );
+      }
       return err(
         this.#refusal(
           "stale_exchange",
-          `Outcome for Activation ${activationId}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
+          `The proposal's Activation identity was not usable; base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
           record,
         ),
       );
     }
     // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing
-    // keeps its stale/terminal vocabulary, and before content (including a malformed claim) so a
-    // proposal's content is examined only for the attempt entitled to make it. The grant is
+    // keeps its stale/terminal vocabulary, and before content (including a malformed identity) so
+    // a proposal's content is examined only for the attempt entitled to make it. The grant is
     // compared by reference identity against the exchange's current grant: a forged look-alike, a
     // grant retired by takeover, or no grant at all fails this check. Inspection visibility alone
     // therefore cannot speak as the attempt.
     if (submission !== intent.submission) {
+      if (identityUsable) {
+        return err(
+          this.#refusal(
+            "unauthorized_submission",
+            `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
+            record,
+          ),
+        );
+      }
       return err(
         this.#refusal(
           "unauthorized_submission",
-          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
+          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
           record,
         ),
       );
     }
     if (capture.overCapacity !== null) {
+      if (identityUsable) {
+        return err(
+          this.#refusal(
+            "capacity_exhausted",
+            `the Outcome for Activation ${activationId} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,
+            record,
+          ),
+        );
+      }
       return err(
         this.#refusal(
           "capacity_exhausted",
-          `the Outcome for Activation ${activationId} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,
+          `The proposal's Activation identity was not usable; the Outcome carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,
           record,
         ),
       );
     }
-    if (capture.outcome === null) {
+    // Canonical step 3 content group (decision-02): a missing, malformed or unobservable
+    // Activation identity is a content issue, reported together with every other content issue in
+    // one `malformed_envelope`. The content group's existing internal order (the Emission-capacity
+    // refusal above before `malformed_envelope`) is unchanged.
+    if (!identityUsable || capture.outcome === null) {
+      const combined: LocatedIssue[] = [];
+      appendAllOwn(combined, idIssues);
+      appendAllOwn(combined, capture.issues);
+      if (identityUsable) {
+        return err(
+          this.#refusal("malformed_envelope", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(combined)}`, record),
+        );
+      }
       return err(
-        this.#refusal("malformed_envelope", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues)}`, record),
+        this.#refusal(
+          "malformed_envelope",
+          `The proposal's Activation identity was not usable; the Outcome is refused whole: ${explainOutcomeIssues(combined)}`,
+          record,
+        ),
       );
     }
     // Completion accounting (`lifecycle.md#completion-is-an-accounting-check`, WS CX-3) is part of

@@ -26,8 +26,8 @@ const ablations = [
   {
     id: "A2 replay only while no exchange is open and the Execution is live (validation effectively first)",
     file: "coordinator.ts",
-    find: "    const already = mapGet(record.acceptedOutcomes, activationId);",
-    replace: "    const already = record.activation === null && !isTerminal(record.state) ? mapGet(record.acceptedOutcomes, activationId) : undefined;",
+    find: "      const already = mapGet(record.acceptedOutcomes, activationId);",
+    replace: "      const already = record.activation === null && !isTerminal(record.state) ? mapGet(record.acceptedOutcomes, activationId) : undefined;",
   },
   {
     id: "A3 no writer-epoch fence",
@@ -193,28 +193,32 @@ const ablations = [
   {
     id: "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
     file: "coordinator.ts",
-    find: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
+    find: "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
     replace: "",
     suffix: {
       find: "    return ok(this.#accept(record, intent, capture.outcome, caller));",
-      replace: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    return ok(this.#accept(record, intent, capture.outcome, caller));",
+      replace: "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    return ok(this.#accept(record, intent, capture.outcome, caller));",
     },
   },
   {
     id: "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
     file: "coordinator.ts",
-    find: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
+    find: "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
     replace: "",
     suffix: {
-      find: "    if (capture.outcome === null) {",
-      replace: "    if (submission !== intent.submission) {\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    if (capture.outcome === null) {",
+      find: "    if (!identityUsable || capture.outcome === null) {",
+      replace: "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    if (!identityUsable || capture.outcome === null) {",
     },
   },
   {
     id: "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
     file: "coordinator.ts",
-    find: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues)}`, record),",
-    replace: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues.filter((issue) => issue.path === \"writerEpoch\" || issue.path === \"baseProgressRevision\"))}`, record),",
+    find: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(combined)}`, record),",
+    replace: "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(combined.filter((issue) => issue.path === \"writerEpoch\" || issue.path === \"baseProgressRevision\"))}`, record),",
+    suffix: {
+      find: "          `The proposal's Activation identity was not usable; the Outcome is refused whole: ${explainOutcomeIssues(combined)}`,",
+      replace: "          `The proposal's Activation identity was not usable; the Outcome is refused whole: ${explainOutcomeIssues(combined.filter((issue) => issue.path === \"writerEpoch\" || issue.path === \"baseProgressRevision\"))}`,",
+    },
   },
   {
     id: "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
@@ -227,6 +231,30 @@ const ablations = [
     file: "coordinator.ts",
     find: "    if (baseForCurrency !== null && baseForCurrency !== intent.activation.baseProgressRevision) {",
     replace: "    if (false) {",
+  },
+  {
+    id: "B17 malformed Activation identity refused before replay and terminal (decision-02 early return)",
+    file: "coordinator.ts",
+    find: "    const activationId = activationField.observed as string;",
+    replace: "    const activationId = activationField.observed as string;\n    if (!identityUsable) return err(this.#refusal(\"malformed_envelope\", `Outcome envelope refused whole: ${explainOutcomeIssues(idIssues)}`, record));",
+  },
+  {
+    id: "B18 malformed Activation identity treated as naming another exchange (decision-02 stale instead of authority/content)",
+    file: "coordinator.ts",
+    find: "    if (identityUsable && intent.activation.activationId !== activationId) {",
+    replace: "    if (intent.activation.activationId !== activationId) {",
+  },
+  {
+    id: "B19 malformed-identity diagnostic returned or retained before submission authority (decision-02 identity check after currency)",
+    file: "coordinator.ts",
+    find: "    if (submission !== intent.submission) {",
+    replace: "    if (!identityUsable) return err(this.#refusal(\"malformed_envelope\", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(idIssues)}`, record));\n    if (submission !== intent.submission) {",
+  },
+  {
+    id: "B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)",
+    file: "coordinator.ts",
+    find: "          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,",
+    replace: "          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,",
   },
 ];
 

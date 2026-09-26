@@ -10,7 +10,7 @@ PLAN-01 amendment and the owner's 2026-09-24 B-5 scope amendment.
 `52b1600f3b42e3a360fdc3395178f1d147edf304` and integrated in `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`;
 K1.1-correction-02 accepted at H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e` and integrated in
 `954d31b00eb7f2412c22ccf7d4d079699f0c4032`. All are ancestors of the base.
-**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 7.**
+**Branch:** `claude/k1.2-outcome-acceptance-receipts`. **Contract revision 9.** Revision 8 is C11's per-coordinate currency change (K12-R11-ORDER-01, OPEN-5 recorded); revision 9 applies owner [decision-02](decision-02.md) (Activation identity as an exchange coordinate; K12-R13-ARCH-01, K12-R13-DOC-01, K12-R13-REC-01): C2 and C3 criterion text refined to that rule, DEC-2/DEC-3 aligned, coverage rows and distinguishing power 32 → 36 added, OPEN-5 closed.
 **Implementer:** Claude Code session (Claude Opus 5.5), 2026-09-24; round-3 correction by Muse Spark, 2026-09-24/25; round-4 correction by Muse Spark, 2026-09-25; round-5 wording correction and round-6 evidence correction/architecture blocker by Codex (GPT-6), 2026-09-25; round-7 canonical correction under the 2026-09-25 owner carrier decision by Muse Spark, 2026-09-25.
 
 ## Entry and owner release
@@ -98,11 +98,15 @@ receipt and the original decision without any mutation, receipt or refusal recor
 exchange resolved, after the next exchange started and after the Execution became terminal. Any other
 submission under an accepted Activation ID is refused as `duplicate_conflict` with no mutation,
 including one whose content would now fail validation or whose epoch differs. The lookup precedes the
-terminal and currency checks.
+terminal and currency checks. Only a well-formed Activation ID addresses an accepted Outcome: a
+submission whose `activationId` is missing, malformed or unobservable is neither a replay nor a
+conflict and continues as a fresh proposal (decision-02).
 
 **K1.2-C3 — whole-envelope validation, all or nothing (OA-3, OA-5; K0 R3-i2; E-6).** A new proposal is
 refused whole unless it names the current unresolved Activation, its current writer epoch and its
-pinned base progress revision (`stale_exchange` otherwise), the Execution is not terminal, and its
+pinned base progress revision (`stale_exchange` when no exchange is unresolved or a well-formed one of
+these does not match; a missing, malformed or unobservable one is a content issue), the Execution is
+not terminal, and its
 content is valid: explicit `executionId`, `activationId`, `writerEpoch`, `baseProgressRevision`,
 `progress` and `next`; each root (progress, each Emission value, result, error) a boundary value
 within the four limits measured separately — at the limit passes and one past is refused, and two
@@ -204,7 +208,8 @@ packet settles; each such marker points at that record and stays in place; §4 o
 agrees. The canonical delivery, retry/takeover-lifetime, and Outcome-acceptance order live in
 [execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md) under owner decision
 [decision-01](decision-01.md) (2026-09-25), which supersedes only KC1-ARCH-1's two-argument carrier
-signature; no other Layer-3 page owns a competing rule. No Layer-3 page gains build or acceptance status, and no open choice is settled in
+signature, and owner [decision-02](decision-02.md) (2026-09-26), which places a missing, malformed or
+unobservable Activation identity in that order; no other Layer-3 page owns a competing rule. No Layer-3 page gains build or acceptance status, and no open choice is settled in
 specification prose. Acceptance criteria are unchanged by that provenance update.
 
 ## Obligation/interaction coverage map
@@ -215,8 +220,10 @@ specification prose. Acceptance criteria are unchanged by that provenance update
 | C1 revoked scope | accepted Outcome, then the same caller without the scope replays it | refused as unknown, not replayed | `outcome-acceptance.test.ts` |
 | C2 exact replay (OA-2) | accept; resubmit identical after resolution, after the next dispatch, after `complete` | same receipt object and decision; no new receipt, refusal, revision, Emission or disposition | `outcome-acceptance.test.ts`, `terminal.test.ts` |
 | C2 conflict before validation | resubmit under an accepted Activation ID with changed progress, changed epoch, invalid value | `duplicate_conflict`, recorded; accepted state unchanged | `outcome-acceptance.test.ts` |
+| C2 unaddressable identity (decision-02) | after acceptance, resubmit the identical and a changed Outcome with `activationId` missing, non-text or behind a throwing getter, while the Execution is at a later exchange and while it is terminal | neither replay nor `duplicate_conflict`; classified by the fresh order (`stale_exchange` from a well-formed stale coordinate, `terminal_destination` when terminal) | `outcome-partial-claim.test.ts` |
 | C3 currency (OA-3) | wrong Activation ID, epoch below and above current, base revision stale, Outcome with no unresolved exchange; mixed partial claims with one well-formed stale half and the other missing/malformed, crossed with current/retired/forged/absent grants and valid/invalid content | `stale_exchange`, recorded; exchange still open and answerable; partial-stale refuses stale whatever authority with no content diagnostic | `outcome-acceptance.test.ts`, `outcome-partial-claim.test.ts` |
 | C3 explicit identity (PLAN-01) | envelope omitting `writerEpoch`, `baseProgressRevision` or `activationId` | refused; never defaulted to the current exchange | `outcome-acceptance.test.ts` |
+| C3 malformed Activation identity (decision-02) | `activationId` missing, non-text or behind a throwing getter, crossed with terminal Execution, no unresolved exchange, well-formed stale epoch or base, current/retired/forged/absent grants, and valid/invalid other content | terminal → `terminal_destination`; no exchange → `stale_exchange`; well-formed stale coordinate → `stale_exchange`; current coordinates without the current grant → `unauthorized_submission`; with the current grant → one `malformed_envelope` listing the identity issue with every other content issue. Before authority: no content diagnostic returned or retained, the malformed value not rendered in the reason, whole-refusal state equality, exchange still answerable; each envelope field read once | `outcome-partial-claim.test.ts`, `outcome-hostile.test.ts` |
 | C3 content | missing progress, bad next step, duplicate Emission keys, unknown field on envelope/next/Emission, non-array emissions | `malformed_envelope` naming each issue; whole refusal | `outcome-acceptance.test.ts` |
 | C3 E-6 matrix at the Outcome boundary | at-limit and one-past for string length, entries, depth, bytes in progress; bytes and depth in an Emission and a result; two ~700 KiB siblings | at-limit accepted, one-past refused whole with a located path; siblings pass; the envelope adds no level | `outcome-limits.test.ts` |
 | C3 Emission capacity | limit+1 Emissions; configuration below 1 | `capacity_exhausted` before commit; configuration error | `outcome-acceptance.test.ts` |
@@ -259,8 +266,8 @@ specification prose. Acceptance criteria are unchanged by that provenance update
 | C13 own-only, single observation | inherited envelope fields; throwing/revoked fields; getters counting reads; value root read once | missing, located refusal, one read per field | `outcome-hostile.test.ts` |
 | C13 ambient pollution during observation | a getter installing an inherited indexed accessor or descriptor-field pollution, or replacing a builtin, before commit | the accepted decision, acknowledgment list, Emission list and receipt are retained exactly | `outcome-hostile.test.ts` |
 | C14 zone rules | the import graph and inventory | no violation; document and policy agree | `tests/conformance/architecture/kernel-landing-zone.test.ts` |
-| C15 records | BASELINE, identity.md markers, rewrite-index §4, execution-cycle delivery/acceptance owner and K1.2 decision-01 | choices recorded; markers kept; no status on Layer-3 pages; no stale two-argument binding description where it purports to specify the current in-process call | report checklist; link check |
-| All: distinguishing power | 32 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped, B8 Outcome submission without attempt grant, B9 hold-ending History claims control power, B10 every redelivery rotates the submission grant, B11 only post-takeover redelivery rotates it, B12 content validated before submission authority, B13 capacity validated before submission authority, B14 malformed claim reports only claim defects after authority, B15 skip all currency when either numeric claim member is malformed, B16 epoch-only partial fix with base-half currency dropped) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
+| C15 records | BASELINE, identity.md markers, rewrite-index §4, execution-cycle delivery/acceptance owner and K1.2 decision-01/decision-02 | choices recorded; markers kept; no status on Layer-3 pages; no stale two-argument binding description where it purports to specify the current in-process call | report checklist; link check |
+| All: distinguishing power | 36 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped, B8 Outcome submission without attempt grant, B9 hold-ending History claims control power, B10 every redelivery rotates the submission grant, B11 only post-takeover redelivery rotates it, B12 content validated before submission authority, B13 capacity validated before submission authority, B14 malformed claim reports only claim defects after authority, B15 skip all currency when either numeric claim member is malformed, B16 epoch-only partial fix with base-half currency dropped, B17 malformed Activation identity refused before replay and terminal, B18 malformed Activation identity treated as naming another exchange, B19 malformed-identity diagnostic returned or retained before submission authority, B20 malformed Activation identity rendered in a pre-content refusal reason) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
 
 ## Command plan
 
@@ -301,17 +308,23 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
   state, then exchange currency (Activation, epoch, base revision), then the separate current-attempt
   submission grant (DEC-20), then content. Every group rejects the whole proposal; the classification names the first failing group, and content issues are
   reported together. A submission that no longer answers the current exchange is told so first,
-  because that is what its sender can act on. Currency is per-coordinate (K12-R11-ORDER-01):
-  each well-formed writer epoch or base progress revision is compared against the unresolved
-  exchange on its own, so a well-formed stale half is refused as `stale_exchange` whatever
-  submission authority or content the proposal presents and with no content diagnostic produced,
-  returned, or retained; a missing or malformed coordinate alone never establishes staleness and is
-  a content-group refusal after authority succeeds (K12-R9-ORDER-01 preserved). The canonical order
-  lives in [execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md#outcome-acceptance).
+  because that is what its sender can act on. Currency is per-coordinate (K12-R11-ORDER-01), and
+  the Activation ID is one of the coordinates (decision-02): only Kernel state and well-formed
+  coordinates decide an exchange refusal. No unresolved exchange, or a well-formed Activation ID,
+  writer epoch or base progress revision that does not match the unresolved exchange, is refused as
+  `stale_exchange` whatever submission authority or content the proposal presents. A missing,
+  malformed or unobservable coordinate, including the Activation ID, never establishes staleness,
+  addresses no accepted Outcome in the replay lookup, and is a content-group refusal after
+  authority succeeds (K12-R9-ORDER-01 preserved). Capture stays eager (DEC-10) and may compute
+  content diagnostics internally; on every refusal reached before authority succeeds they neither
+  decide the refusal nor are returned or retained, and the reason does not render a malformed
+  coordinate's value (K12-R13-DOC-01). The canonical order lives in
+  [execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md#outcome-acceptance).
 - **K1.2-DEC-3 — accepted-Outcome identity.** An accepted Outcome is found by (Execution, Activation
   ID); its content is epoch, base revision, progress, the ordered Emissions and the next step. Content
   that cannot be captured cannot equal accepted content, so under an accepted Activation ID it is a
-  conflict, as OA-2's order requires.
+  conflict, as OA-2's order requires. Only a well-formed Activation ID is looked up; a missing,
+  malformed or unobservable one addresses no accepted Outcome (decision-02).
 - **K1.2-DEC-4 — Emission and result identity.** An Emission's ID is derived from its Execution,
   Activation and Emission key; a terminal result's from its Execution and Activation. Both are pure
   functions of accepted identities, so a replay cannot mint another. Output positions, reads and
@@ -448,8 +461,9 @@ Routine implementation choices under 007, recorded so a reviewer can rule on the
 - **K1.2-OPEN-3 — unbounded logs.** The delivery-attempt log (K1.1-OPEN-7), the refusal list and the
   retained output grow without trimming in this profile. Retention windows are K4.4/K5.1's.
 - **K1.2-OPEN-4 — no durability, isolation or Driver fidelity.** The coordinator is in-memory.
-- **K1.2-OPEN-5 — malformed Activation identity versus terminal precedence (review-11 O6).**
-  A non-text `activationId` is refused as `malformed_envelope` before the replay lookup and the
+- **K1.2-OPEN-5 — malformed Activation identity versus terminal precedence (review-11 O6).
+  Closed by owner [decision-02](decision-02.md) (2026-09-26); the rule is DEC-2's. Record of the
+  pre-decision state follows.** A non-text `activationId` is refused as `malformed_envelope` before the replay lookup and the
   terminal check in this binding, so a terminal Execution probed with a malformed identity answers
   `malformed_envelope` rather than `terminal_destination`. DEC-2 does not place a malformed identity
   or claim part in the exchange versus content group, and the canonical step-3 text does not order
