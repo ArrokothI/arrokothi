@@ -72,6 +72,24 @@ current exchange. Every field is read once from the envelope's own data, and eac
 (progress, each Emission value, the result or error) is captured once and measured on its own. An own
 field the binding does not know is refused rather than ignored, as is any non-empty `effects`.
 
+The Activation field is an opaque primitive JavaScript string, compared unchanged by exact UTF-16
+code-unit equality. Empty text, lone surrogates and strings over 65,536 scalars are structurally
+well formed; a different string names a different exchange, not malformed content. No coercion,
+normalization, truncation, Unicode check or boundary-value size limit is applied to this ID.
+Missing, non-string (including boxed-string) and unobservable fields remain unusable. The same rule
+is used by Outcome replay/currency/content and `requestTakeover`, `recoverExecution`, and
+`reportProtocolFailure`. [Identity](../../mental-model/concepts/identity.md#runtime-attempt) owns the
+producer/consumer requirement. Creation and Execution-ID behavior are unchanged: the ID combines
+bounded caller scope/key with an unbounded trusted namespace, then dispatch adds its exchange
+suffix. There is consequently no finite semantic maximum for a minted Activation ID. Caller keys,
+Emission keys and the value roots keep their existing Unicode and size checks.
+
+Unknown-field diagnostic names on the Outcome, `next` and Emission envelopes retain at most 128
+printable ASCII code units per name; longer or other names are replaced by a fixed omission marker.
+The field is still refused whole and its value is never read. This bounds the diagnostic fragment,
+not the whole reason (which can include a long legitimate Execution/Activation ID); no proposed
+content is repaired or accepted by this diagnostic rendering.
+
 The order is `execution-cycle.md`'s: the caller is scoped to the named Execution before anything else
 is read; an already accepted Outcome under the same Activation ID is looked up next, and an exact
 duplicate (equal captured content) returns the original receipt and decision while anything else is

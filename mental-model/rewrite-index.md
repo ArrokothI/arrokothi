@@ -218,6 +218,7 @@ owner pages' own scope statements and correct whichever is wrong, in the same co
 | K1.1 in-process value capture (C3, `KC1-DEC-3`), and its distinction from request-envelope own-field observation (`KC1-DEC-6`) | `concepts/values.md#in-process-value-capture` | `work/K1.1/contract.md` C3; `K1.1-correction-01` review-08 C3; `K1.1-reference-01` REF-2, and its review-02 row "Envelope ≠ value capture" |
 | K1.1 delivery reporting (`KC1-ARCH-1`) | `mechanisms/execution-cycle.md#delivery-reporting-boundary` (+ link from `mechanisms/integration.md`) | `work/K1.1-correction-01/decision-01.md` incl. its superseding note; `review-08.md`; roadmap §K1.1-correction-01 |
 | K1.2 submission authority and the in-process carrier extension | `mechanisms/execution-cycle.md#submission-authority` (links from `#delivery-reporting-boundary`, `#retry-versus-takeover`, `#outcome-acceptance`, `concepts/identity.md#writer-epoch`, `concepts/core.md#execution-driver`, `mechanisms/integration.md`) | Owner decision 2026-09-25, `work/K1.2/decision-01.md`, resolving `work/K1.2/blocker-01.md`; historical KC1-ARCH-1 record sealed; in-process `SubmissionGrant` recorded in BASELINE `#outcome-acceptance-api` |
+| K1.2 Activation coordinate classification | `mechanisms/execution-cycle.md#outcome-acceptance` | Owner decision 2026-09-26, `work/K1.2/decision-02.md`; binding well-formedness in `concepts/identity.md#runtime-attempt`, BASELINE and `work/K1.2-correction-01/contract.md` |
 | Status ownership moved off specification pages | `MM/README.md#how-these-pages-are-organized`, `#target-not-shipped` | `K1.1-reference-01` REF-3, `review-02.md` `REF1-R1-CONV-01` |
 | Architecture-level decisions and their counterexamples | The Layer-3 owner of each rule, found through `MM/reference.md`; provenance in `MM/sources.md` | Retired `docs/development/004-architecture-review.md` (decisions table), refined by `005-detail-design-review.md` |
 | Packet status / accepted / integrated / released | LEDGER only | `006-development-process.md#status-transitions`; `014-owner-progress-summary.md` is the readable account |
@@ -268,6 +269,10 @@ naming an `OPEN(...)` marker claim that one exists.
   scope" object and fixes no wire representation. What the architecture fixes is only that the ID
   combines caller context with the creation key and covers the complete creation content. The
   implementation records its own answer in BASELINE `#request-identity-api`.
+- Activation-identity representation and well-formedness — `OPEN(implementation)` in
+  `concepts/identity.md#runtime-attempt`. Every minted ID must be usable by every consumer.
+  The in-process binding's choice is any primitive JavaScript string with exact UTF-16 code-unit
+  equality, no length or Unicode-content check; recorded in BASELINE `#outcome-acceptance-api`.
 - Writer-epoch representation, and **whether it resets across a later Activation** —
   `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. The
   in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`: an integer restarting at

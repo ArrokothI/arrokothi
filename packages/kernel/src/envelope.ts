@@ -115,6 +115,22 @@ export function acceptIdentityText(value: unknown, label: string, issues: Locate
 }
 
 /**
+ * Activation IDs are opaque Kernel-issued strings, not caller-selected boundary-value text.
+ *
+ * Creation packs the trusted namespace, scope and key into an Execution ID; dispatch extends it.
+ * Their composition can exceed a value string limit and the trusted namespace can contain any
+ * UTF-16 code units. Accept every primitive string unchanged so every producer result is usable
+ * for replay, currency and controls. Equality is exact; shape alone grants no authority and says
+ * nothing about whether an exchange exists. No coercion, normalization or value capture belongs
+ * here. See identity.md#runtime-attempt and BASELINE #outcome-acceptance-api.
+ */
+export function acceptActivationIdentity(value: unknown, label: string, issues: LocatedIssue[]): value is string {
+  if (typeof value === "string") return true;
+  appendIssue(issues, { path: label, code: "unsupported_form", message: "expected a primitive string naming an Activation" });
+  return false;
+}
+
+/**
  * One caller-owned envelope field, observed from the envelope's own data only.
  *
  * The envelope is caller-owned state: on a revoked Proxy, or under a throwing getter, the read

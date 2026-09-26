@@ -91,6 +91,13 @@ Outcome acceptance and receipts. Expected Layer-3 owners:
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k12--outcome-acceptance-and-receipts).
 
+## K1.2-correction-01
+
+Producer-compatible Activation identity. Expected owners: [identity](concepts/identity.md#runtime-attempt)
+for representation and producer/consumer closure, [execution-cycle](mechanisms/execution-cycle.md#outcome-acceptance)
+for the unchanged decision-02 order. Inspect creation, recovery, output and lifecycle dependencies.
+[Scope and release](../docs/development/007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable).
+
 ## K1.3
 
 Wait and cancellation races. Expected Layer-3 owners:

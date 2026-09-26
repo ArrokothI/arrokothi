@@ -36,6 +36,7 @@
  */
 
 import {
+  acceptActivationIdentity,
   acceptIdentityText,
   appendIssue,
   appendIssues,
@@ -219,6 +220,17 @@ function isListLike(observed: unknown): boolean {
   }
 }
 
+/** Unknown field names are diagnostics, not retained proposal data. Keep normal short ASCII
+ * names locatable; omit long or non-printable/non-ASCII names rather than retaining arbitrary
+ * caller text (review-14 O3). String indexing consults no ambient method or iterator. */
+function diagnosticFieldName(key: string): string {
+  if (key.length > 128) return "<unknown field name omitted>";
+  for (let index = 0; index < key.length; index += 1) {
+    if (key[index]! < " " || key[index]! > "~") return "<unknown field name omitted>";
+  }
+  return key;
+}
+
 const childPath = (label: string, key: string): string => (label === "" ? key : `${label}.${key}`);
 
 /**
@@ -249,7 +261,8 @@ function refuseUnknownFields(holder: object, allowed: readonly string[], label: 
       if (allowed[position] === key) known = true;
     }
     if (!known) {
-      appendIssue(issues, { path: childPath(label, key), code: "unknown_field", message: `${key} is not a field this binding accepts; it is refused rather than ignored` });
+      const name = diagnosticFieldName(key);
+      appendIssue(issues, { path: childPath(label, name), code: "unknown_field", message: `${name} is not a field this binding accepts; it is refused rather than ignored` });
       reported += 1;
     }
   }
@@ -505,7 +518,7 @@ export interface CapturedAttempt {
 export function captureAttempt(request: unknown, issues: LocatedIssue[]): CapturedAttempt | null {
   const activationField = observeField(request, "activationId", "activationId", issues);
   const epochField = observeField(request, "writerEpoch", "writerEpoch", issues);
-  const activationOk = activationField.ok && acceptIdentityText(activationField.observed, "activationId", issues);
+  const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, "activationId", issues);
   const writerEpoch = epochField.ok ? acceptCount(epochField.observed, "writerEpoch", 1, issues) : null;
   if (!activationOk || writerEpoch === null) return null;
   return PrimordialObjectFreeze({ activationId: activationField.observed as string, writerEpoch });
@@ -541,7 +554,7 @@ export interface CapturedRecovery {
 /** Reads a recovery request: the exchange it names and the three availability lists. */
 export function captureRecovery(request: unknown, issues: LocatedIssue[]): CapturedRecovery | null {
   const activationField = observeField(request, "activationId", "activationId", issues);
-  const activationOk = activationField.ok && acceptIdentityText(activationField.observed, "activationId", issues);
+  const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, "activationId", issues);
   const availableField = observeField(request, "available", "available", issues);
   if (!availableField.ok) return null;
   const available = availableField.observed;

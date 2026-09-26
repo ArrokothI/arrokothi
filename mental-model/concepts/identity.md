@@ -78,6 +78,22 @@ One identity used throughout this page is defined elsewhere. The Execution ID �
 
 An **Activation ID** names one immutable semantic exchange — the pinned progress revision, the fixed Event batch, and the input that [Activation](core.md#activation) defines — for as long as that exchange remains unresolved. It answers *what is being asked?* A new Activation ID is minted only when a genuinely new exchange begins, which is to say after the previous one resolves and the Kernel prepares a fresh dispatch. Resending bytes never mints one.
 
+A binding's Activation-identity representation must admit every ID its Kernel can mint, on
+both Outcome submission (including replay lookup) and controls on the exchange. Composing an
+ID from individually valid parts must not make that exchange unanswerable. This is separate
+from the limits on [boundary values](values.md#boundary-value-and-root).
+
+The representation and well-formedness rule belong to the binding. The in-process binding uses
+opaque primitive JavaScript strings with exact UTF-16 code-unit equality, including empty strings,
+lone surrogates and arbitrarily long strings. Structural validity neither proves that an exchange
+exists nor authorizes answering it. [The implemented baseline](../../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api)
+records that choice; it does not fix a wire format.
+<!-- OPEN(implementation): Activation-identity representation and well-formedness. Every minted ID
+must be usable by its consumers. The in-process binding chooses any primitive JavaScript string,
+compared unchanged by exact code-unit equality, without a value-string length or Unicode check;
+BASELINE #outcome-acceptance-api records it. Record each binding's choice here and in its baseline;
+leave this marker until an architectural decision fixes the representation. rewrite-index.md §4 -->
+
 A **Runtime attempt** is the currently authorized effort to perform one unresolved Activation exchange. It answers *whose work is this?*, and it is a separate identity from the Activation because one question can outlive more than one effort to answer it. Sending the same dispatch again, because the first send may not have arrived, continues the same attempt — nothing about who is working has been re-decided. Only an authorized takeover replaces the effort, and what it produces is a second attempt at the very same exchange.
 
 Keeping the two identities apart is what makes a late answer classifiable at all. Three situations look identical from outside — a Runtime is being asked to work on something again — and they differ only in which identity survived: ordinary redelivery keeps both, takeover keeps the exchange and replaces the effort, and a new exchange after resolution replaces both.

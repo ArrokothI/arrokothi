@@ -69,6 +69,7 @@
 
 import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
 import {
+  acceptActivationIdentity,
   acceptIdentityText,
   appendIssue,
   appendIssues,
@@ -1371,7 +1372,7 @@ export class ExecutionCoordinator {
     // never addresses an accepted Outcome and never establishes staleness (decision-02).
     const idIssues: LocatedIssue[] = [];
     const activationField = observeField(envelope, "activationId", "activationId", idIssues);
-    const identityUsable = activationField.ok && acceptIdentityText(activationField.observed, "activationId", idIssues);
+    const identityUsable = activationField.ok && acceptActivationIdentity(activationField.observed, "activationId", idIssues);
     const activationId = activationField.observed as string;
     // Content is captured before the lookup: an exact duplicate is equal captured content, and
     // nothing after this line reads the caller's envelope again. Capture stays eager before
@@ -1496,7 +1497,7 @@ export class ExecutionCoordinator {
     }
     // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing
     // keeps its stale/terminal vocabulary, and before content (including a malformed identity) so
-    // a proposal's content is examined only for the attempt entitled to make it. The grant is
+    // content diagnostics decide a refusal only for the attempt entitled to make it. The grant is
     // compared by reference identity against the exchange's current grant: a forged look-alike, a
     // grant retired by takeover, or no grant at all fails this check. Inspection visibility alone
     // therefore cannot speak as the attempt.
