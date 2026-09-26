@@ -1,0 +1,37 @@
+== abl-corr: node docs/development/work/K1.2-correction-01/ablations.mjs @ 6541115e2e5389a7e5cff86f87d857b4eb486d7d 2026-09-26T13:25:36Z
+CONTROL exit=0 tests=495 pass=495 fail=0 cancelled=0
+REJECTED I1 restore old value validator for every Activation consumer: exit=1 tests=495 pass=254 fail=241 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I2 inverse X24: refuse lone surrogates but permit long strings: exit=1 tests=495 pass=375 fail=120 cancelled=0
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+control takeover / text lone high surrogate / terminal / power=true
+control recover / text lone high surrogate / terminal / power=true
+REJECTED I3 Outcome-only old validator: exit=1 tests=495 pass=314 fail=181 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I4 takeover/protocol-only old validator: exit=1 tests=495 pass=402 fail=93 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I5 recovery-only old validator: exit=1 tests=495 pass=470 fail=25 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I6 boxed strings treated as usable identities: exit=1 tests=495 pass=493 fail=2 cancelled=0
+non-text boxed is unusable with no coercion on every consumer
+non-text revoked is unusable with no coercion on every consumer
+REJECTED I7 unbounded unknown-field diagnostics: exit=1 tests=495 pass=483 fail=12 cancelled=0
+O3 unknown envelope field long: bounded diagnostic, whole refusal
+O3 unknown envelope field surrogate: bounded diagnostic, whole refusal
+O3 unknown envelope field control: bounded diagnostic, whole refusal
+O3 unknown envelope field ASCII past limit: bounded diagnostic, whole refusal
+7/7 correction ablations rejected.
+exit: 0

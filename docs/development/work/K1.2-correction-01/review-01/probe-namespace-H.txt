@@ -1,0 +1,6 @@
+create: ok
+dispatch: ok
+activationId length 268436490
+Outcome complete (current attempt, valid): THREW RangeError: Invalid string length
+Outcome continue + one Emission (current attempt, valid): THREW RangeError: Invalid string length
+Outcome continue, no Emission: ok

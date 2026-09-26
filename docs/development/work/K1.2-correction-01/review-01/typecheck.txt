@@ -1,0 +1,6 @@
+== typecheck: npm run typecheck @ 6541115e2e5389a7e5cff86f87d857b4eb486d7d 2026-09-26T13:16:16Z
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+exit: 0

@@ -1,0 +1,102 @@
+== evals: npm run test:evals @ 6541115e2e5389a7e5cff86f87d857b4eb486d7d 2026-09-26T13:17:33Z
+
+> arrokothi-agent-kernel@0.8.1 test:evals
+> node --test --experimental-strip-types tests/evals/*/*.eval.test.ts
+
+TAP version 13
+# Subtest: an imported MCP operation is indistinguishable from a native one at the Agent layer
+    # Subtest: the same Agent configuration produces the same behaviour over either executor
+    ok 1 - the same Agent configuration produces the same behaviour over either executor
+      ---
+      duration_ms: 92.88341
+      type: 'test'
+      ...
+    1..1
+ok 1 - an imported MCP operation is indistinguishable from a native one at the Agent layer
+  ---
+  duration_ms: 93.716585
+  type: 'suite'
+  ...
+# Subtest: reference Agent behavioural baseline
+    # Subtest: 01 selects the operation the task needs
+    ok 1 - 01 selects the operation the task needs
+      ---
+      duration_ms: 33.382919
+      type: 'test'
+      ...
+    # Subtest: 02 passes semantically correct arguments
+    ok 2 - 02 passes semantically correct arguments
+      ---
+      duration_ms: 4.365517
+      type: 'test'
+      ...
+    # Subtest: 03 does not call an operation the task does not need
+    ok 3 - 03 does not call an operation the task does not need
+      ---
+      duration_ms: 2.671778
+      type: 'test'
+      ...
+    # Subtest: 04 a succeeding operation changes the world
+    ok 4 - 04 a succeeding operation changes the world
+      ---
+      duration_ms: 4.660573
+      type: 'test'
+      ...
+    # Subtest: 05 recovers and reports when the operation fails
+    ok 5 - 05 recovers and reports when the operation fails
+      ---
+      duration_ms: 6.732511
+      type: 'test'
+      ...
+    # Subtest: 06 recovers and reports when policy denies the operation
+    ok 6 - 06 recovers and reports when policy denies the operation
+      ---
+      duration_ms: 3.865999
+      type: 'test'
+      ...
+    # Subtest: 07 does not claim success after an unknown outcome
+    ok 7 - 07 does not claim success after an unknown outcome
+      ---
+      duration_ms: 3.719701
+      type: 'test'
+      ...
+    # Subtest: 08 an operation outside the exposed set is never selected
+    ok 8 - 08 an operation outside the exposed set is never selected
+      ---
+      duration_ms: 2.372422
+      type: 'test'
+      ...
+    # Subtest: 09 exhausting the model-call budget is a reported failure, not a loop
+    ok 9 - 09 exhausting the model-call budget is a reported failure, not a loop
+      ---
+      duration_ms: 6.920856
+      type: 'test'
+      ...
+    # Subtest: 10 a confident claim with an unchanged world is graded as a failure
+    ok 10 - 10 a confident claim with an unchanged world is graded as a failure
+      ---
+      duration_ms: 2.294844
+      type: 'test'
+      ...
+    # Subtest: the trial abstraction repeats, and a deterministic case repeats identically
+    ok 11 - the trial abstraction repeats, and a deterministic case repeats identically
+      ---
+      duration_ms: 10.244833
+      type: 'test'
+      ...
+    1..11
+ok 2 - reference Agent behavioural baseline
+  ---
+  duration_ms: 82.766592
+  type: 'suite'
+  ...
+1..2
+# tests 12
+# suites 2
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 586.091687
+exit: 0
