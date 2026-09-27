@@ -63,6 +63,8 @@
  *    inside a single visit (KC2-R1-01): a string or member name is read only until its answer is
  *    settled — at most one scalar value past the length limit — and a container's own-names listing
  *    is classified only until it holds more names than an accepted container can own.
+ *    Diagnostic storage also stays bounded: eight bounded details per root, then exact counts
+ *    per remaining code, with bounded path construction. Reading does not stop at eight issues.
  *
  * K1.0 assigned `packages/core/src/util/json.ts` to this packet as `DX-2` (migratable). It is not
  * extracted. The legacy `canonicalJson` in `packages/core/src/util/hash.ts` is an
@@ -263,6 +265,8 @@ export interface ValueIssue {
   readonly path: string;
   readonly code: ValueIssueCode;
   readonly message: string;
+  /** Counted suffix entry (no individual location); absent on the first eight details. */
+  readonly occurrences?: number;
 }
 
 /** A validated root together with its canonical form. Equality compares `canonical`. */
@@ -304,8 +308,23 @@ const describe = (value: unknown): string => {
   }
 };
 
-const child = (path: string, key: string): string => (path === "" ? key : `${path}.${key}`);
-const element = (path: string, index: number): string => `${path}[${index}]`;
+// A fixed over-limit sentinel keeps omission sticky without confusing a caller's literal
+// "<omitted>" member with the sentinel. No caller-sized path is ever concatenated.
+const OMITTED_PATH = ".................................................................................................................................";
+const child = (path: string, key: string): string =>
+  path.length + key.length + (path === "" ? 0 : 1) > 128 ? OMITTED_PATH : path === "" ? key : `${path}.${key}`;
+const element = (path: string, index: number): string => childElement(path, `[${index}]`);
+const childElement = (path: string, suffix: string): string =>
+  path.length + suffix.length > 128 ? OMITTED_PATH : `${path}${suffix}`;
+
+/** Bounded diagnostics only; never used for accepted content or identity. */
+const issueText = (text: string, limit: number, omitted: string): string => {
+  if (text.length > limit) return omitted;
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index]! < " " || text[index]! > "~") return omitted;
+  }
+  return text;
+};
 
 /**
  * What one bounded pass over a string found. `ok` carries the string's exact canonical bytes.
@@ -384,7 +403,26 @@ const scanBoundaryString = (input: string): StringScan => {
  * owns why the replacement is structural rather than another captured method.
  */
 const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
-  appendOwn(issues, issue);
+  // Keep every code occurrence, but never a per-position suffix object/path/message. This
+  // collector is shared by ALL refusal sites, including pre-member structural observations.
+  // Observation and the running byte budget are unchanged: later siblings still run.
+  if (issues.length < 8) {
+    appendOwn(issues, {
+      path: issueText(issue.path, 128, "<omitted>"),
+      code: issue.code,
+      message: issueText(issue.message, 1_024, "<message omitted>"),
+    });
+    return;
+  }
+  for (let index = 8; index < issues.length; index += 1) {
+    const entry = readAt(issues, index) as ValueIssue;
+    if (entry.code === issue.code) {
+      // Every suffix entry owns occurrences; no caller or inherited value is consulted.
+      (entry as { occurrences: number }).occurrences += 1;
+      return;
+    }
+  }
+  appendOwn(issues, { path: "", code: issue.code, message: "additional occurrences (locations omitted)", occurrences: 1 });
 };
 
 /**
@@ -580,8 +618,8 @@ function describedValue(
  * and `values.md`'s depth is the greatest level any path reaches. Descent stops one level past the
  * limit: a value nested ten thousand deep is reported as too deep rather than exhausting the stack.
  *
- * Refusals are collected rather than thrown: `values.md` expects every reason a value was refused,
- * located, so a caller can fix all of them at once. A refused position stops contributing to the
+ * Refusals are collected rather than thrown: eight bounded located details, followed by exact
+ * counts for every remaining code. A refused position stops contributing to the
  * snapshot but does not stop its siblings from being examined — with one exception. Once the running
  * canonical size passes the limit (`charge`), reading stops outright, because examining the rest is
  * exactly the unbounded work the limit exists to prevent. Reasons past that point are not collected.
@@ -1446,7 +1484,7 @@ function accept(value: unknown): { readonly ok: true; readonly value: CanonicalV
   return { ok: true, value: PrimordialObjectFreeze({ value: snapshot, canonical, canonicalBytes }) };
 }
 
-/** Every reason `value` is not an acceptable boundary value root. Empty means it is one. */
+/** Bounded details and exact suffix code counts for a refused root. Empty means valid. */
 export function boundaryValueIssues(value: unknown): ValueIssue[] {
   const result = accept(value);
   return result.ok ? [] : result.issues;
@@ -1456,8 +1494,8 @@ export function boundaryValueIssues(value: unknown): ValueIssue[] {
 export const isBoundaryValue = (value: unknown): value is BoundaryValue => boundaryValueIssues(value).length === 0;
 
 /**
- * Validates one root and returns the captured snapshot with its canonical form, or every reason it
- * was refused.
+ * Validates one root and returns its exact canonical snapshot, or bounded issue details and
+ * exact suffix code counts. Diagnostic compression never changes which positions are observed.
  *
  * The returned object is what identity decisions compare: two requests carry the same logical value
  * exactly when their `canonical` strings are equal. `value` is the structure those bytes were taken

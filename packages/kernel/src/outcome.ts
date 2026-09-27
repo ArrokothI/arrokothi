@@ -398,8 +398,8 @@ function captureNext(observed: unknown, issues: LocatedIssue[]): CapturedNext | 
 /**
  * Reads everything in an Outcome envelope except the two identities the coordinator reads first.
  *
- * Fields are observed in a fixed order, each once. Every issue is collected; DEC-5 renders a bounded
- * detail list and summarizes remaining issue codes and counts in one refusal.
+ * Fields are observed in a fixed order, each once. Value roots carry bounded details and exact
+ * suffix counts (DEC-7); DEC-5 composes them with envelope issues into one bounded refusal.
  */
 export function captureOutcome(envelope: object, emissionLimit: number): OutcomeCapture {
   const issues: LocatedIssue[] = [];

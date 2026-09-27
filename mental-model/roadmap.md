@@ -95,7 +95,9 @@ Outcome acceptance and receipts. Expected Layer-3 owners:
 
 Producer-compatible Activation identity. Expected owners: [identity](concepts/identity.md#runtime-attempt)
 for representation and producer/consumer closure, [execution-cycle](mechanisms/execution-cycle.md#outcome-acceptance)
-for the unchanged decision-02 order. Inspect creation, recovery, output and lifecycle dependencies.
+for the unchanged decision-02 order, and [values](concepts/values.md#fixed-semantic-limits)
+for bounded refusal cost under the owner amendment. Inspect creation, recovery, output, lifecycle
+and every eager value-root consumer; diagnostic compression must preserve exact issue counts.
 [Scope and release](../docs/development/007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable).
 
 ## K1.3

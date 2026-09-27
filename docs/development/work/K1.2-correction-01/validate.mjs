@@ -3,7 +3,7 @@ import { spawnSync, execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { platform, arch, release } from "node:os";
-const out = resolve(process.argv[2] ?? "/tmp/k12-correction-02-validation");
+const out = resolve(process.argv[2] ?? "/tmp/k12-correction-03-validation");
 const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
 if (git("status", "--porcelain") !== "") throw Error("payload tree is not clean");
 const payload = git("rev-parse", "HEAD");
@@ -31,6 +31,9 @@ const checks = [
   ["21-review-equality", "node", ["--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-02/probe-equality.ts"]],
   ...["accept", "refuse-undefined", "refuse-ctor"].map((mode, index) => [`${23 + index}-review-cost-${mode}`, "node", ["--max-old-space-size=4096", "--experimental-strip-types", "--expose-gc", "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"], { MODE: mode }]),
   ["26-review-aggregate-pre-authority", "node", ["--max-old-space-size=8192", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts", "130", "980"], { PRE: "1" }],
+  ["27-revision4-ablations", "node", ["docs/development/work/K1.2-correction-01/ablations-03.mjs"]],
+  ["28-review4-p4-p5", "node", ["docs/development/work/K1.2-correction-01/refusal-cost-probe-03.mjs"]],
+  ["29-round3-diff-check", "git", ["diff", "--check", "8a418d408f715e999a403a3e84b73a9db1b43712", "HEAD"]],
   ["22-correction-diff-check", "git", ["diff", "--check", "b18a729d989dea334a86ec08bdf8773ee77de4db", "HEAD"]],
   ["19-round2-diff-check", "git", ["diff", "--check", "449b243cd31d5596c457e091233dfc4d77a4eff4", "HEAD"]],
   ["12-diff-check", "git", ["diff", "--check", "a20d278185eaffc7f8b7489345a3624231ff6e6d", "HEAD"]],

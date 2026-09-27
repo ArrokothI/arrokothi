@@ -37,6 +37,8 @@ export interface LocatedIssue {
   readonly message: string;
   /** Outcome/control value-root label, kept separate until diagnostic rendering. */
   readonly root?: string;
+  /** Exact multiplicity of a compressed value-issue suffix. */
+  readonly occurrences?: number;
 }
 
 /** One refusal issue, appended as own data. */
@@ -82,11 +84,14 @@ export const diagnosticText = (text: string, omitted: string, limit: number): st
 /** Same rule for caller, matched Kernel and trusted-host-derived identity spellings. */
 export const diagnosticIdentity = (identity: string): string => diagnosticText(identity, "<identity omitted>", 128);
 
-/** Keep value issues unprojected until a content refusal is selected by the coordinator. */
+/** Preserve the root collector's bounded details and exact suffix weights. */
 export const appendRootIssues = (target: LocatedIssue[], issues: readonly ValueIssue[], root: string): void => {
   for (let index = 0; index < issues.length; index += 1) {
     const issue = readAt(issues, index) as ValueIssue;
-    appendOwn(target, { path: issue.path, code: issue.code, message: issue.message, root });
+    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, "occurrences")?.value as number | undefined;
+    appendOwn(target, occurrences === undefined
+      ? { path: issue.path, code: issue.code, message: issue.message, root }
+      : { path: issue.path, code: issue.code, message: issue.message, root, occurrences });
   }
 };
 
@@ -95,9 +100,12 @@ const ISSUE_DETAIL_LIMIT = 8;
 export const explainDiagnosticIssues = (issues: readonly LocatedIssue[], withMessages: boolean): string => {
   let out = "";
   const counts: { code: string; count: number }[] = [];
+  let additional = 0;
+  let details = 0;
   for (let index = 0; index < issues.length; index += 1) {
     const issue = readAt(issues, index) as LocatedIssue;
-    if (index < ISSUE_DETAIL_LIMIT) {
+    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, "occurrences")?.value as number | undefined;
+    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {
       const projected = {
         path: diagnosticText(issue.path, "<omitted>", 128),
         message: diagnosticText(issue.message, "<message omitted>", 1_024),
@@ -107,7 +115,8 @@ export const explainDiagnosticIssues = (issues: readonly LocatedIssue[], withMes
       const root = PrimordialGetOwnPropertyDescriptor(issue, "root")?.value as string | undefined;
       const path = root === undefined ? issue.path : projected.path === "" ? root
         : projected.path[0] === "[" ? `${root}${projected.path}` : `${root}.${projected.path}`;
-      if (index > 0) out += "; ";
+      if (details > 0) out += "; ";
+      details += 1;
       out += `${path === "" ? "envelope" : path} ${issue.code}`;
       if (withMessages) out += ` (${projected.message})`;
     } else {
@@ -117,12 +126,14 @@ export const explainDiagnosticIssues = (issues: readonly LocatedIssue[], withMes
         const candidate = readAt(counts, position) as { code: string; count: number };
         if (candidate.code === issue.code) entry = candidate;
       }
-      if (entry === undefined) appendOwn(counts, { code: issue.code, count: 1 });
-      else entry.count += 1;
+      const count = occurrences ?? 1;
+      additional += count;
+      if (entry === undefined) appendOwn(counts, { code: issue.code, count });
+      else entry.count += count;
     }
   }
-  if (issues.length > ISSUE_DETAIL_LIMIT) {
-    out += `; ${issues.length - ISSUE_DETAIL_LIMIT} additional issues: `;
+  if (additional > 0) {
+    out += `; ${additional} additional issues: `;
     for (let index = 0; index < counts.length; index += 1) {
       const entry = readAt(counts, index) as { code: string; count: number };
       if (index > 0) out += ", ";
@@ -138,7 +149,8 @@ export const explain = (issues: readonly LocatedIssue[]): string => {
   for (let index = 0; index < issues.length; index += 1) {
     const issue = readAt(issues, index) as LocatedIssue;
     if (index > 0) out += "; ";
-    out += `${issue.path} ${issue.code}`;
+    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, "occurrences")?.value as number | undefined;
+    out += occurrences === undefined ? `${issue.path} ${issue.code}` : `${issue.path} ${issue.code} (${occurrences} additional occurrences; locations omitted)`;
   }
   return out;
 };

@@ -1,6 +1,6 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 3. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 4. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, without weakening or removing a criterion. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
@@ -13,7 +13,11 @@ and qualifies engine-allocation limits (review-01 O1). No C1–C15 criterion or 
 weakened. Revision 3 answers [review-02](review-02.md)'s AGG-01 and EVID-01: aggregate
 rendering is bounded, equality and edge oracles are strengthened, and the K1.2 redelivery hold
 renderer joins DEC-4. [Coverage-03](coverage-03.md) and its subsystem reconstruction precede code
-changes; [coverage-02](coverage-02.md) remains the earlier plan.
+changes; [coverage-02](coverage-02.md) remains the earlier plan. Revision 4 applies the owner's
+[invalidation-02](../K1.2/invalidation-02.md): integrated value-capture refusal cost and its K1.2
+consumers join this packet. [Coverage-04](coverage-04.md) is the pre-code reconstruction and proof
+map for both review-04 findings. Accepted values, all four limits, single observation, ambient
+safety, K1.1-correction-02 read bounds, decision-02 and C1–C15 remain binding.
 
 ## Identity and authority
 
@@ -34,8 +38,12 @@ changes; [coverage-02](coverage-02.md) remains the earlier plan.
   `6541115e2e5389a7e5cff86f87d857b4eb486d7d`; [review-01](review-01.md), recorded at
   `449b243cd31d5596c457e091233dfc4d77a4eff4`, is CHANGES REQUIRED. This is the same released packet.
 - [Decision-01](../K1.2/decision-01.md) and [decision-02](../K1.2/decision-02.md) stand unchanged.
-  No integrated creation/Execution-ID behavior changes; no owner amendment is needed.
-- Scope: ID-01, EVID-01, DIAG-01, adjacent in-scope defects, and optional observations. No integration,
+  No integrated creation/Execution-ID acceptance behavior changes; the owner amendment above authorizes refusal-cost correction.
+- Round 3 starts from fetched `8a418d408f715e999a403a3e84b73a9db1b43712`, preserving
+  reviewed H `312f2584d14b0c168c2152c373a4f07d4a292d74` and immutable review-04 evidence.
+  The existing clean local checkout on this exact branch is fast-forwarded only; no other checkout
+  is switched. This continues the owner-authorized cumulative branch departure above.
+- Scope: ID-01, EVID-01, DIAG-01, review-04 VALUE-COST-01 and EVID-01, adjacent in-scope defects, and optional observations. No integration,
   self-acceptance, K1.3 or successor. Historical review-13 ACCEPT stays unchanged.
 
 ## Binding decisions supplementing revision 9
@@ -90,28 +98,48 @@ adding its root label; a message keeps at most 1,024 printable ASCII units or be
 `<message omitted>`. Remaining issues are summarized as `N additional issues: code=count, ...`,
 with every remaining code and its exact count, in order of first remaining occurrence. Thus every
 captured issue contributes either a detail or a count. Details after eight lose their path/message,
-not their code/count. Unknown-field and value-capture stopping rules remain unchanged.
+not their code/count. Unknown-field and value-capture stopping rules remain unchanged; DEC-7 bounds issue retention during that same capture.
 
 The complete Outcome/control content reason is at most 16,384 UTF-16 units, independent of issue
 count or configured Emission capacity. Eight details cost less than 10,240 units (each <1,280:
 root <64, relative path <=128, code <=32, message <=1,024, punctuation <32). The current 17 fixed
 codes cost less than 1,024 units in the summary (each code <=32, each array-bounded count <=10
 digits, separators); total and fixed wrapper cost less than 1,024 more. The declared bound leaves
-headroom. A code-inventory test pins that proof dependency. This bounds rendering/retention,
-not the integrated per-root capture or deployment whole-message budget.
+headroom. A code-inventory test pins that proof dependency. This bounds rendering/retention. DEC-7 also bounds per-root diagnostic storage; a deployment whole-message budget stays separate.
 
 The revision-2 premise that DEC-2 forbids a bounded rendered list was incorrect: the binding already
 stops unknown-field reports at eight per holder and value capture at the byte limit. DEC-2 requires
 one refusal for the content group; this summary preserves combined code evidence without expanding
-all prose. Projection runs when the selected refusal is rendered. Capture stays eager and exact
+all prose. Envelope projection runs when the selected refusal is rendered; value diagnostic storage is bounded during capture under DEC-7. Capture stays eager and exact
 identity comparisons, decision-02 order and accepted data use their existing semantic inputs.
-K1.1 creation/ingress diagnostics, identity.ts and values.ts are unchanged.
+K1.1 creation/ingress consume the same bounded value diagnostics under DEC-7. identity.ts is unchanged.
 
 **DEC-6 (explicit diagnostic payloads):** protocol reports and delivery failures retain their
 existing first-1,024-UTF-16-unit rule, including its treatment of non-ASCII text and split surrogate
 pairs. Their hold/history aliases add fixed explanatory text. They are distinct from identity
 fragments and are not silently sanitized by DEC-4/5. Inspection returns retained evidence; it does
 not render caller identity anew.
+
+**DEC-7 (value refusal cost, V-D1):** preserve the complete existing traversal, including its
+byte-limit stop, single observations and eager capture of sibling roots. During each root's capture,
+retain the first eight issue details, bounded with DEC-5's relative-path/message rules, and then
+one exact occurrence counter per remaining code, ordered by first remaining occurrence. No accepted
+value, scalar scan, container read bound or semantic limit changes. Diagnostic path construction
+must itself be bounded before concatenating caller-sized names; omission persists below an omitted
+ancestor. No raw unbounded diagnostic is retained for later rendering. Consumers preserve weights:
+all captured issues still contribute either a detail or their exact code/count; summary entries never
+consume a detail slot. The summarized suffix carries no invented location. Creation/ingress and direct
+value validation also report the bounded details and counted remainder. This is diagnostic storage,
+not a new root-validity limit, an early refusal, a skipped sibling or a whole-message cap.
+
+Review-04 closure requires deterministic allocation/cardinality evidence over every issue-producing
+family and roots consumed by creation, ingress, Outcomes and controls; a practical eight-root
+pre-authority schedule; P5 comparative cost runs; and a mutant restoring unbounded issue retention.
+DEC-4 requires direct exact-value oracles at all retained/returned sites, including Emission identity
+uniqueness across exchanges and receipt uniqueness across Executions with unrenderable minted IDs.
+X8–X23-style mutations must be rejected against a clean control. Existing ablations stay required;
+any changed test of raw diagnostic representation must be explicitly replaced by a stronger weighted
+code/count assertion, never by dropping its ordering/authority/forbidden-mutation checks.
 
 ## Proof methods and pre-implementation coverage
 
@@ -140,7 +168,7 @@ methods, with the revision-9 map below carried forward in full. Native fidelity 
 
 Unknown-field diagnostics (O3) may be bounded separately without modifying keys or accepted content;
 any such change needs a distinguishing test and ablation. Every existing test and all 36 original
-K1.2 ablations must still pass/reject respectively. No previous test is removed.
+K1.2 ablations must still pass/reject respectively. No semantic regression is removed; revision-3 raw diagnostic storage assertions are updated to DEC-7 and their replacements documented.
 
 ## Commands and handoff
 
@@ -155,7 +183,7 @@ as rejection. Both raw runs are retained. Correction I1–I7 and every new rende
 clean controls and actual test failures. The separate suites retain revision 9's requested evidence
 even though npm test is a superset.
 Run `npm run test:evals` as requested regression evidence; no Agent quality claim is made.
-Also run review-01/review-02 probes and the engine-max probe sequentially with explicit heap limits.
+Also run the revision-4 refusal-cost and exact-coordinate runners (including review-04 P4/P5), and review-01/review-02 probes and the engine-max probe sequentially with explicit heap limits.
 The sealed original runner currently exits 1 with B6/B12/B13/B14 NOT APPLICABLE; the adapter is
 substitute evidence. B..C diff-check exits 2 on sealed historical logs; disclose this rather than
 editing them. validate.mjs retains raw exit status and therefore exits nonzero for those results. Attach raw logs, exact commands,

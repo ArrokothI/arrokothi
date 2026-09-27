@@ -52,6 +52,8 @@ for (const [label, keys] of [["long", ["a".repeat(129), "b".repeat(129)]], ["non
 for (const length of [128, 129]) {
   test(`DEC-5 value-relative path ${length} before adding root label`, () => {
     const s = setup(), key = "p".repeat(length);
+    const direct = explainDiagnosticIssues([{ root: "progress", path: key, code: "undefined_member", message: "bad" }], true);
+    assert.ok(direct.includes(length === 128 ? `progress.${key} undefined_member` : "progress.<omitted> undefined_member"));
     const before = s.view();
     const r = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, { progress: { [key]: undefined } }), s.grant));
     assert.equal(r.classification, "malformed_envelope");
@@ -68,6 +70,8 @@ for (const length of [1_024, 1_025]) {
     const s = setup();
     const prefix = "expected a plain object, received ";
     const name = "N".repeat(length - prefix.length - " instance".length);
+    const direct = explainDiagnosticIssues([{ root: "progress", path: "", code: "unsupported_form", message: `${prefix}${name} instance` }], true);
+    assert.ok(direct.includes(length === 1_024 ? `(${prefix}${name} instance)` : "(<message omitted>)"));
     const before = s.view();
     const r = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, { progress: Object.create({ constructor: { name } }) }), s.grant));
     assert.ok(r.reason.includes(length === 1_024 ? `(${prefix}${name} instance)` : "(<message omitted>)"));
@@ -132,12 +136,14 @@ test("DEC-5 late codes and counts contribute to the same combined refusal in fir
   assertOnlyRefusal(before, s.view(), r);
   accepted(s.valid());
 });
-test("aggregate content stays behind currency and authority; capture retains raw issue text", () => {
+test("aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics", () => {
   const s = setup(), name = "N".repeat(2_000);
   const proposal = outcomeFor(s.executionId, s.open, { progress: Array(32).fill(Object.create({ constructor: { name } })) });
   const capture = captureOutcome(proposal, 2);
-  assert.equal(capture.issues.length, 32);
-  assert.ok(capture.issues[0]!.message.includes(name), "projection happens at render time");
+  assert.equal(capture.issues.length, 9);
+  assert.equal(capture.issues[0]!.message, "<message omitted>");
+  assert.equal(capture.issues[8]!.occurrences, 24);
+  assert.equal(capture.issues.reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0), 32);
   for (const [overrides, grant, classification] of [[{}, undefined, "unauthorized_submission"], [{ writerEpoch: 2 }, s.grant, "stale_exchange"]] as const) {
     const before = s.view();
     const r = refused(s.kernel.submitOutcome(observer("visible"), { ...proposal, ...overrides }, grant as SubmissionGrant));

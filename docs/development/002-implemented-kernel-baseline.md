@@ -21,7 +21,8 @@ approved unmodified `canonicalize@3.0.0`. In-process capture keeps each root's c
 while it reads and stops once that count passes the 1 MiB limit, so a live object that repeats one
 shared member is refused without being expanded in full. Within one visit, a string or member name
 is read only until one scalar value past the length limit, and a container's own-names listing is
-classified only until it exceeds what an accepted container owns (K1.1-correction-02). `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+classified only until it exceeds what an accepted container owns (K1.1-correction-02).
+[Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
 reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
@@ -29,6 +30,27 @@ Out-of-band cancellation and its terminal disposition, waits and deadlines belon
 K2. Those unimplemented surfaces refuse by name, and an Outcome proposing an Effect or a wait is
 refused whole. No supported SDK consumer is routed through the private target package yet; K1.4 owns
 that bridge.
+
+## Value refusal diagnostics
+
+`values.ts` preserves its exact accepted-value capture, canonical bytes, four limits, single
+observations and byte-budget stopping rules. For each refused root it retains at most eight details
+with relative paths of at most 128 printable ASCII units (otherwise `<omitted>`) and messages of at
+most 1,024 printable ASCII units (otherwise `<message omitted>`). Paths are bounded before member
+names are concatenated, including phantom properties and paths below long ancestors. The remaining
+issues contribute exact `occurrences` counts per code, ordered by first remaining occurrence, with
+no individual locations. Thus a root retains at most 19 diagnostic records (8 details + 11 codes),
+not one object per invalid position. Only diagnostics are compressed; all originally observable
+positions up to the byte stop are still observed, including sibling roots before Outcome authority.
+
+`canonicalize`, `boundaryValueIssues`, creation/ingress and Outcome/control consumers preserve these
+counts. Creation/ingress render suffix multiplicity explicitly; Outcome/control rendering composes
+the weighted roots into DEC-5's first eight details and exact remaining counts without expansion.
+No aggregate semantic size cap is introduced. This records the in-process choice at
+[values' diagnostic-storage marker](../../mental-model/concepts/values.md#fixed-semantic-limits).
+The engine's own-key enumeration and execution of caller traps remain outside Kernel-controlled
+work; this binding supplies no CPU preemption or physical containment. Review status and the held
+V-D1 claim remain in 007 until independent review.
 
 ## Request identity API
 
@@ -84,7 +106,8 @@ bounded caller scope/key with an unbounded trusted namespace, then dispatch adds
 suffix. The binding adds no semantic identity-length limit; JavaScript string-allocation limits
 still apply to both individual IDs and their compositions. At a trusted namespace above half the
 engine maximum, creation, dispatch and `continue` can succeed while Emission/result ID construction
-throws before acceptance mutates state. This binding does not claim producer/consumer closure
+throws before acceptance mutates state; input ingress can likewise exceed allocation limits while
+packing the same namespace twice, before mutation. This binding does not claim producer/consumer closure
 beyond those allocation limits. Caller keys,
 Emission keys and the value roots keep their existing Unicode and size checks.
 
@@ -98,14 +121,17 @@ Structured IDs and actor attribution stay exact; no proposed content is repaired
 
 Outcome/control content diagnostics follow [correction DEC-5](work/K1.2-correction-01/contract.md):
 the first eight captured issues retain ordered details; remaining issues contribute exact counts
-for every code, in first remaining occurrence order. Value paths are projected at rendering to
+for every code, in first remaining occurrence order. Value paths are bounded during capture and again at rendering to
 128 printable ASCII units or `<omitted>` before adding their root label; messages use 1,024 units
 or `<message omitted>`. The complete content reason is at most 16,384 UTF-16 units regardless of
 issue count or configured Emission capacity. Classification still uses the complete captured
-result. Capture remains eager; diagnostic projection occurs only at rendering. K1.1 capture and
-creation/ingress diagnostics are unchanged. The former per-issue formula did not bound aggregate
-rendering and its reading of combined diagnostics was incorrect; the binding already bounds
-unknown-field reports and value traversal. DEC-5 owns the bound and its derivation.
+result. Capture remains eager; value diagnostics are stored under [DEC-7](work/K1.2-correction-01/contract.md)
+and envelope diagnostics are projected at rendering. DEC-5 owns the whole-reason bound and its
+derivation; the value collector preserves its counts without a per-position retained list.
+
+A hold's permitted actions describe operations the hold itself does not refuse. Takeover still
+requires the Driver's safe-replacement declaration; an absent or denying callback can refuse it as
+`unsafe_replacement`. This list is not a promise that all other preconditions are met.
 
 The K1.2-added redelivery recovery-held refusal also bounds its Activation fragment under DEC-4.
 Explicit delivery/protocol diagnostic payloads keep their separate first-1,024-UTF-16-unit rule;
