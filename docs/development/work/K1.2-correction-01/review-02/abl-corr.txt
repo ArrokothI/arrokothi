@@ -1,0 +1,174 @@
+CONTROL exit=0 tests=537 pass=537 fail=0 cancelled=0
+REJECTED I1 restore old value validator for every Activation consumer: exit=1 tests=537 pass=274 fail=263 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I2 inverse X24: refuse lone surrogates but permit long strings: exit=1 tests=537 pass=396 fail=141 cancelled=0
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+control takeover / text lone high surrogate / terminal / power=true
+control recover / text lone high surrogate / terminal / power=true
+REJECTED I3 Outcome-only old validator: exit=1 tests=537 pass=334 fail=203 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I4 takeover/protocol-only old validator: exit=1 tests=537 pass=422 fail=115 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I5 recovery-only old validator: exit=1 tests=537 pass=501 fail=36 cancelled=0
+reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED I6 boxed strings treated as usable identities: exit=1 tests=537 pass=535 fail=2 cancelled=0
+non-text boxed is unusable with no coercion on every consumer
+non-text revoked is unusable with no coercion on every consumer
+REJECTED I7 unbounded unknown-field diagnostics: exit=1 tests=537 pass=525 fail=12 cancelled=0
+O3 unknown envelope field long: bounded diagnostic, whole refusal
+O3 unknown envelope field surrogate: bounded diagnostic, whole refusal
+O3 unknown envelope field control: bounded diagnostic, whole refusal
+O3 unknown envelope field ASCII past limit: bounded diagnostic, whole refusal
+REJECTED D1 unbounded identity at coordinator.ts:1398 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D2 unbounded identity at coordinator.ts:1409 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D3 unbounded identity at coordinator.ts:1422 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases
+DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases
+DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases
+REJECTED D4 unbounded identity at coordinator.ts:1422 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D5 unbounded identity at coordinator.ts:1430 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D6 unbounded identity at coordinator.ts:1439 (activationId): exit=1 tests=537 pass=530 fail=7 cancelled=0
+DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases
+DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases
+DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases
+identity diagnostic edge 129 printable units does not change lookup
+REJECTED D7 unbounded identity at coordinator.ts:1439 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D8 unbounded identity at coordinator.ts:1464 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D9 unbounded identity at coordinator.ts:1465 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D10 unbounded identity at coordinator.ts:1486 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D11 unbounded identity at coordinator.ts:1510 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D12 unbounded identity at coordinator.ts:1528 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D13 unbounded identity at coordinator.ts:1551 (activationId): exit=1 tests=537 pass=532 fail=5 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+root projection long member: every issue and root label survives without raw caller path
+REJECTED D14 unbounded identity at coordinator.ts:1619 (named.activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: control, hold and unsafe-replacement renderers
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+matched surrogate-low identity: control, hold and unsafe-replacement renderers
+REJECTED D15 unbounded identity at coordinator.ts:1628 (named.activationId): exit=1 tests=537 pass=530 fail=7 cancelled=0
+matched long identity: control, hold and unsafe-replacement renderers
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+matched surrogate-low identity: control, hold and unsafe-replacement renderers
+pinned names long: hold and history aliases bounded while structured identity remains exact
+REJECTED D16 unbounded identity at coordinator.ts:1643 (named.activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: control, hold and unsafe-replacement renderers
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+matched surrogate-low identity: control, hold and unsafe-replacement renderers
+REJECTED D17 unbounded identity at coordinator.ts:1658 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: takeover callback terminal revalidation
+matched surrogate-high identity: takeover callback terminal revalidation
+matched surrogate-low identity: takeover callback terminal revalidation
+REJECTED D18 unbounded identity at coordinator.ts:1668 (named.activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: takeover callback resolved revalidation
+matched surrogate-high identity: takeover callback resolved revalidation
+matched surrogate-low identity: takeover callback resolved revalidation
+REJECTED D19 unbounded identity at coordinator.ts:1676 (named.activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: takeover callback next-exchange revalidation
+matched surrogate-high identity: takeover callback next-exchange revalidation
+matched surrogate-low identity: takeover callback next-exchange revalidation
+REJECTED D20 unbounded identity at coordinator.ts:1676 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: takeover callback next-exchange revalidation
+matched surrogate-high identity: takeover callback next-exchange revalidation
+matched surrogate-low identity: takeover callback next-exchange revalidation
+REJECTED D21 unbounded identity at coordinator.ts:1685 (named.activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: takeover callback epoch revalidation
+matched surrogate-high identity: takeover callback epoch revalidation
+matched surrogate-low identity: takeover callback epoch revalidation
+REJECTED D22 unbounded identity at coordinator.ts:1699 (named.activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: takeover callback hold revalidation
+matched surrogate-high identity: takeover callback hold revalidation
+matched surrogate-low identity: takeover callback hold revalidation
+REJECTED D23 unbounded identity at coordinator.ts:1784 (value): exit=1 tests=537 pass=534 fail=3 cancelled=0
+pinned names long: hold and history aliases bounded while structured identity remains exact
+pinned names Unicode: hold and history aliases bounded while structured identity remains exact
+pinned names 129: hold and history aliases bounded while structured identity remains exact
+REJECTED D24 unbounded identity at coordinator.ts:1868 (named.activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: control, hold and unsafe-replacement renderers
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+matched surrogate-low identity: control, hold and unsafe-replacement renderers
+REJECTED D25 unbounded identity at coordinator.ts:1914 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: control, hold and unsafe-replacement renderers
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+matched surrogate-low identity: control, hold and unsafe-replacement renderers
+REJECTED D26 unbounded identity at coordinator.ts:1919 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: control, hold and unsafe-replacement renderers
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+matched surrogate-low identity: control, hold and unsafe-replacement renderers
+REJECTED D27 unbounded identity at coordinator.ts:1925 (activationId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases
+DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases
+DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases
+REJECTED D28 unbounded identity at coordinator.ts:1925 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED D29 unbounded identity at coordinator.ts:2159 (record.executionId): exit=1 tests=537 pass=534 fail=3 cancelled=0
+matched long identity: control, hold and unsafe-replacement renderers
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+matched surrogate-low identity: control, hold and unsafe-replacement renderers
+REJECTED D30 unbounded identity at outcome.ts:328 (emissionKey): exit=1 tests=537 pass=535 fail=2 cancelled=0
+duplicate Emission name 129: bounded reason retains duplicate diagnosis and exact key semantics
+duplicate Emission name Unicode: bounded reason retains duplicate diagnosis and exact key semantics
+REJECTED D31 raw captured member path before root prefix: exit=1 tests=537 pass=535 fail=2 cancelled=0
+root projection long member: every issue and root label survives without raw caller path
+root projection Unicode member: every issue and root label survives without raw caller path
+REJECTED D32 raw captured constructor message: exit=1 tests=537 pass=535 fail=2 cancelled=0
+constructor long: all root messages projected before composition, recovery roots included
+constructor Unicode: all root messages projected before composition, recovery roots included
+REJECTED D33 identity length limit removed: exit=1 tests=537 pass=523 fail=14 cancelled=0
+DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases
+matched long identity: every Outcome refusal renderer, exact replay and answerability
+matched long identity: control, hold and unsafe-replacement renderers
+matched long identity: takeover callback epoch revalidation
+REJECTED D34 diagnostic ASCII guard removed: exit=1 tests=537 pass=511 fail=26 cancelled=0
+DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases
+DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases
+matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+matched surrogate-high identity: control, hold and unsafe-replacement renderers
+41/41 correction ablations rejected.
+exit 0
