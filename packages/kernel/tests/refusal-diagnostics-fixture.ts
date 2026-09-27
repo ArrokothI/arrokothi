@@ -82,4 +82,3 @@ export function runBoundaryDiagnosticSchedule(identity: string, observed?: (case
   assert.equal(cases, 21);
   return cases;
 }
-
