@@ -43,6 +43,11 @@ safety, K1.1-correction-02 read bounds, decision-02 and C1–C15 remain binding.
   reviewed H `312f2584d14b0c168c2152c373a4f07d4a292d74` and immutable review-04 evidence.
   The existing clean local checkout on this exact branch is fast-forwarded only; no other checkout
   is switched. This continues the owner-authorized cumulative branch departure above.
+- Round 4 follows the owner's explicit instruction to continue from pushed
+  `3287640f045cf2e6adeefcd32f21d897480a6a7d` on the same branch, with no checkout switches or
+  history rewriting. [Coverage-05](coverage-05.md) and [exact coverage](exact-coverage-04.md)
+  reconstruct review-06's two findings. [Blocker-01](blocker-01.md) leaves the additional
+  engine descriptor-conversion obligation unresolved; no V-D1 exemption is selected.
 - Scope: ID-01, EVID-01, DIAG-01, review-04 VALUE-COST-01 and EVID-01, adjacent in-scope defects, and optional observations. No integration,
   self-acceptance, K1.3 or successor. Historical review-13 ACCEPT stays unchanged.
 
@@ -126,7 +131,8 @@ retain the first eight issue details, bounded with DEC-5's relative-path/message
 one exact occurrence counter per remaining code, ordered by first remaining occurrence. No accepted
 value, scalar scan, container read bound or semantic limit changes. Diagnostic path construction
 must itself be bounded before concatenating caller-sized names; omission persists below an omitted
-ancestor. No raw unbounded diagnostic is retained for later rendering. Consumers preserve weights:
+ancestor. Diagnostic type labels use only null/typeof classification and never inspect caller properties or
+array structure, including on thrown values. No raw unbounded diagnostic is retained for later rendering. Consumers preserve weights:
 all captured issues still contribute either a detail or their exact code/count; summary entries never
 consume a detail slot. The summarized suffix carries no invented location. Creation/ingress and direct
 value validation also report the bounded details and counted remainder. This is diagnostic storage,
@@ -137,7 +143,11 @@ family and roots consumed by creation, ingress, Outcomes and controls; a practic
 pre-authority schedule; P5 comparative cost runs; and a mutant restoring unbounded issue retention.
 DEC-4 requires direct exact-value oracles at all retained/returned sites, including Emission identity
 uniqueness across exchanges and receipt uniqueness across Executions with unrenderable minted IDs.
-X8–X23-style mutations must be rejected against a clean control. Existing ablations stay required;
+X8–X23-style mutations must be rejected against a clean control. Round 4 also requires exact
+creation/ingress/dispatch/takeover receipt tokens, redelivery answers, carried Event destinations and
+inspection coordinates, with Z1–Z16 and diagnostic-lookup mutations. The inherited V5 raw-message
+retention mutant becomes equivalent when the caller-message producer is eliminated; run and report
+it as such, and use the restored diagnostic-lookup producer mutant for the live obligation. Existing ablations stay required;
 any changed test of raw diagnostic representation must be explicitly replaced by a stronger weighted
 code/count assertion, never by dropping its ordering/authority/forbidden-mutation checks.
 

@@ -42,6 +42,9 @@ issues contribute exact `occurrences` counts per code, ordered by first remainin
 no individual locations. Thus a root retains at most 19 diagnostic records (8 details + 11 codes),
 not one object per invalid position. Only diagnostics are compressed; all originally observable
 positions up to the byte stop are still observed, including sibling roots before Outcome authority.
+Diagnostic type labels use only null/typeof classification. They do not inspect constructor, name,
+message, array shape or a thrown value's properties. This removes the diagnostic prototype-chain
+walk on every refused foreign object and structural-observation failure.
 
 `canonicalize`, `boundaryValueIssues`, creation/ingress and Outcome/control consumers preserve these
 counts. Creation/ingress render suffix multiplicity explicitly; Outcome/control rendering composes
@@ -49,8 +52,11 @@ the weighted roots into DEC-5's first eight details and exact remaining counts w
 No aggregate semantic size cap is introduced. This records the in-process choice at
 [values' diagnostic-storage marker](../../mental-model/concepts/values.md#fixed-semantic-limits).
 The engine's own-key enumeration and execution of caller traps remain outside Kernel-controlled
-work; this binding supplies no CPU preemption or physical containment. Review status and the held
-V-D1 claim remain in 007 until independent review.
+work; this binding supplies no CPU preemption or physical containment. Engine descriptor conversion
+can still walk a caller-built prototype chain before a captured descriptor reaches Kernel code;
+[blocker-01](work/K1.2-correction-01/blocker-01.md) records the counterexample and required owner
+decision. No exemption for that work has been adopted. Review status and the held V-D1 claim remain
+in 007; fixed diagnostic labels do not establish full refusal-cost closure.
 
 ## Request identity API
 

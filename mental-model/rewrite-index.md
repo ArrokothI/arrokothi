@@ -260,7 +260,8 @@ naming an `OPEN(...)` marker claim that one exists.
   `concepts/values.md#codec`, WS §1 "Left open" and §14.
 - Refusal diagnostic storage — `OPEN(implementation)` in `concepts/values.md#fixed-semantic-limits`.
   The in-process binding records eight bounded details per root plus exact suffix code counts in
-  BASELINE `#value-refusal-diagnostics`; it preserves eager single observation and byte-budget stops.
+  BASELINE `#value-refusal-diagnostics`; type labels use null/typeof without inspecting caller
+  properties. Eager single observation and byte-budget stops are preserved.
 - Receipt serialization / token representation; request-key hashing — `OPEN(implementation)` in
   `concepts/identity.md#acceptance-boundary-and-receipt`; WS §2. The in-process binding's choice,
   recorded in BASELINE `#request-identity-api`: a receipt is a structured record of its boundary,

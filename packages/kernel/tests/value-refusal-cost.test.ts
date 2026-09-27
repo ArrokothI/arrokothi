@@ -104,7 +104,7 @@ test("V-D1 bounded paths include phantom names, long ancestors, and literal omis
   assert.equal(issuesOf({ "<omitted>": { a: undefined } })[0]?.path, "<omitted>.a");
   assert.equal(issuesOf({ ["a".repeat(128)]: undefined })[0]?.path, "a".repeat(128));
   const hostile = Object.create({ constructor: { name: "N".repeat(1_000_000) } });
-  assert.equal(issuesOf(hostile)[0]?.message, "<message omitted>");
+  assert.equal(issuesOf(hostile)[0]?.message, "expected a plain object, received object");
 });
 
 test("V-D1 suffix counts preserve late codes and first occurrence order across root consumers", () => {

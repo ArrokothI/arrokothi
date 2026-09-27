@@ -66,7 +66,7 @@ for (const length of [128, 129]) {
   });
 }
 for (const length of [1_024, 1_025]) {
-  test(`DEC-5 constructor message ${length}`, () => {
+  test(`DEC-5 renderer message ${length}; capture uses fixed type labels`, () => {
     const s = setup();
     const prefix = "expected a plain object, received ";
     const name = "N".repeat(length - prefix.length - " instance".length);
@@ -74,8 +74,8 @@ for (const length of [1_024, 1_025]) {
     assert.ok(direct.includes(length === 1_024 ? `(${prefix}${name} instance)` : "(<message omitted>)"));
     const before = s.view();
     const r = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, { progress: Object.create({ constructor: { name } }) }), s.grant));
-    assert.ok(r.reason.includes(length === 1_024 ? `(${prefix}${name} instance)` : "(<message omitted>)"));
-    if (length === 1_025) assert.ok(!r.reason.includes(name));
+    assert.ok(r.reason.includes(`(${prefix}object)`));
+    assert.ok(!r.reason.includes(name));
     assertOnlyRefusal(before, s.view(), r);
     accepted(s.valid());
   });
@@ -141,7 +141,7 @@ test("aggregate content stays behind currency and authority; capture retains bou
   const proposal = outcomeFor(s.executionId, s.open, { progress: Array(32).fill(Object.create({ constructor: { name } })) });
   const capture = captureOutcome(proposal, 2);
   assert.equal(capture.issues.length, 9);
-  assert.equal(capture.issues[0]!.message, "<message omitted>");
+  assert.equal(capture.issues[0]!.message, "expected a plain object, received object");
   assert.equal(capture.issues[8]!.occurrences, 24);
   assert.equal(capture.issues.reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0), 32);
   for (const [overrides, grant, classification] of [[{}, undefined, "unauthorized_submission"], [{ writerEpoch: 2 }, s.grant, "stale_exchange"]] as const) {

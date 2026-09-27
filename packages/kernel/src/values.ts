@@ -261,7 +261,7 @@ export type ValueIssueCode =
 
 /** One reason a value is not an acceptable boundary value, located within that value. */
 export interface ValueIssue {
-  /** Dotted/bracketed path from the root; `""` is the root itself. */
+  /** Dotted/bracketed path; `""` is the root on details, or no location on a counted suffix. */
   readonly path: string;
   readonly code: ValueIssueCode;
   readonly message: string;
@@ -281,32 +281,14 @@ export interface CanonicalValue {
   readonly canonicalBytes: number;
 }
 
-const describe = (value: unknown): string => {
-  try {
-    if (value === null) return "null";
-    if (PrimordialArrayIsArray(value)) return "array";
-    if (typeof value === "object") {
-      // A hostile thrown value can throw again when its `constructor` (or `constructor.name`)
-      // is read. This formatter must never let that second error escape the Kernel boundary:
-      // it names refusals, never canonical bytes, so any inspection failure degrades to a
-      // generic label rather than a raw exception (K11-R2-VAL-02).
-      let constructorName: unknown;
-      try {
-        constructorName = (value as { constructor?: unknown }).constructor;
-        if (constructorName !== undefined && constructorName !== null) {
-          const name = (constructorName as { name?: unknown }).name;
-          if (typeof name === "string" && name !== "Object") return `${name} instance`;
-        }
-        return "object";
-      } catch {
-        return "uninspectable value";
-      }
-    }
-    return typeof value;
-  } catch {
-    return "uninspectable value";
-  }
-};
+/**
+ * A diagnostic label, never another observation of caller-owned state. Even an ordinary
+ * constructor/name read can walk an unbounded prototype chain, and a thrown value can be a
+ * Proxy or a revoked Proxy. Only language-level type classification is needed here. In
+ * particular, do not inspect constructor, name, message, toStringTag or array/proxy structure.
+ * The surrounding refusal identifies the failed form or observation; this label executes no caller code.
+ */
+const describe = (value: unknown): string => value === null ? "null" : typeof value;
 
 // A fixed over-limit sentinel keeps omission sticky without confusing a caller's literal
 // "<omitted>" member with the sentinel. No caller-sized path is ever concatenated.
