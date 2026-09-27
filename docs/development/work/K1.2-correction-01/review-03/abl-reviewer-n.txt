@@ -1,0 +1,19 @@
+CONTROL-OK CONTROL: tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED N1 summary only when two or more issues remain: tests=1213 pass=1212 fail=1 cancelled=0
+    DEC-5 detail count edge 9
+REJECTED N2 additional count reports distinct codes, not issues: tests=1213 pass=1209 fail=4 cancelled=0
+    AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable | AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable | AGG-01 all recovery roots and the two other malformed controls return and retain
+SURVIVED N3 recovery control renders messages (DEC-5 says Outcomes only): tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED N4 all remaining codes merged into the first: tests=1213 pass=1211 fail=2 cancelled=0
+    DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order | DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes
+SURVIVED N5 bracketed value path loses its root adjacency: tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED N6 Outcome renders without messages: tests=1213 pass=1204 fail=9 cancelled=0
+    DEC-5 constructor message 1024 | DEC-5 constructor message 1025 | an Effect-bearing Outcome is refused at envelope validation and leaves no action record
+REJECTED N7 capture keeps only eight issues per root: tests=1213 pass=1208 fail=5 cancelled=0
+    AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable | AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable | AGG-01 all recovery roots and the two other malformed controls return and retain
+REJECTED N8 detailed issues also counted in the summary: tests=1213 pass=1208 fail=5 cancelled=0
+    AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable | AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable | AGG-01 all recovery roots and the two other malformed controls return and retain
+REJECTED N9 redelivery hold reason renders raw minted ID: tests=1213 pass=1211 fail=2 cancelled=0
+    O-R2-2 redelivery code hold bounds minted Activation but preserves explicit payload | O-R2-2 redelivery protocol hold bounds minted Activation but preserves explicit payload
+SURVIVED N10 control malformed takeover renders raw issue paths via old explain: tests=1213 pass=1213 fail=0 cancelled=0
+exit 0
