@@ -8,14 +8,24 @@ const base = "a20d278185eaffc7f8b7489345a3624231ff6e6d";
 for (const sha of [base, "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa", "954d31b00eb7f2412c22ccf7d4d079699f0c4032", release]) git("merge-base", "--is-ancestor", sha, "HEAD");
 assert.equal(git("diff", release, "HEAD", "--", "docs/development/work/K1.2"), "", "historical K1.2 records and ablations preserved");
 const changedTests = git("diff", "--name-only", release, "HEAD", "--", "packages/kernel/tests").split("\n").filter(Boolean);
-assert.deepEqual(changedTests, ["packages/kernel/tests/activation-identity.test.ts"], "no original test removed or changed");
+assert.deepEqual(changedTests, ["packages/kernel/tests/activation-identity.test.ts", "packages/kernel/tests/refusal-diagnostics-fixture.ts", "packages/kernel/tests/refusal-diagnostics.test.ts"], "only declared correction tests added");
+const review = "449b243cd31d5596c457e091233dfc4d77a4eff4";
+for (const path of ["implementation-01.md", "validation-01", "review-01.md", "review-01"]) {
+  assert.equal(git("diff", review, "HEAD", "--", `docs/development/work/K1.2-correction-01/${path}`), "", `sealed ${path} preserved`);
+}
+for (const path of git("ls-tree", "-r", "--name-only", review, "packages/kernel/tests").split("\n")) {
+  assert.equal(git("diff", review, "HEAD", "--", path), "", `pre-round-2 test preserved: ${path}`);
+}
+for (const file of ["006-development-process.md", "008-implementation-report.md", "012-review-methods.md"]) {
+  assert.equal(git("diff", base, "HEAD", "--", `docs/development/${file}`), "", `governing process unchanged: ${file}`);
+}
 for (const file of ["packages/kernel/src/identity.ts", "packages/kernel/src/values.ts", "package-lock.json"]) assert.equal(git("diff", release, "HEAD", "--", file), "");
 const before = git("show", `${release}:packages/kernel/src/coordinator.ts`);
 const after = readFileSync("packages/kernel/src/coordinator.ts", "utf8");
 const creation = text => text.slice(text.indexOf("  createExecution("), text.indexOf("  submitOutcome("));
 assert.equal(creation(after), creation(before), "creation, ingress, dispatch, redelivery and inspection unchanged");
 console.log("Prerequisite ancestry, historical records/36 ablations, every original test, identity/value producer code and creation-through-dispatch preservation verified.");
-const files = ["docs/development/002-implemented-kernel-baseline.md", "docs/development/007-work-packets.md", "mental-model/concepts/identity.md", "mental-model/mechanisms/execution-cycle.md", "mental-model/sources.md", "mental-model/roadmap.md", "docs/development/work/K1.2-correction-01/contract.md", "docs/development/work/K1.2-correction-01/reconstruction.md"];
+const files = ["docs/development/002-implemented-kernel-baseline.md", "docs/development/007-work-packets.md", "mental-model/concepts/identity.md", "mental-model/mechanisms/execution-cycle.md", "mental-model/sources.md", "mental-model/roadmap.md", "mental-model/rewrite-index.md", "docs/development/work/K1.2-correction-01/contract.md", "docs/development/work/K1.2-correction-01/reconstruction.md", "docs/development/work/K1.2-correction-01/coverage-02.md"];
 const slug = heading => heading.toLowerCase().replace(/[^\p{L}\p{N}_ -]/gu, "").replace(/ /g, "-");
 let links = 0;
 for (const file of files) {

@@ -74,6 +74,7 @@ import {
   appendIssue,
   appendIssues,
   boundDiagnostic,
+  diagnosticIdentity,
   explain,
   located,
   observeField,
@@ -1394,7 +1395,7 @@ export class ExecutionCoordinator {
         return err(
           this.#refusal(
             "duplicate_conflict",
-            `an Outcome for Activation ${activationId} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,
+            `an Outcome for Activation ${diagnosticIdentity(activationId)} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,
             record,
           ),
         );
@@ -1405,7 +1406,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "terminal_destination",
-          `Execution ${record.executionId} ended as ${record.state}; no further Outcome can be accepted for it`,
+          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; no further Outcome can be accepted for it`,
           record,
         ),
       );
@@ -1418,7 +1419,7 @@ export class ExecutionCoordinator {
         return err(
           this.#refusal(
             "stale_exchange",
-            `Activation ${activationId} is not the unresolved exchange of Execution ${record.executionId}; an Outcome can answer only the exchange that is open`,
+            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,
             record,
           ),
         );
@@ -1426,7 +1427,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "stale_exchange",
-          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${record.executionId}; an Outcome can answer only the exchange that is open`,
+          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,
           record,
         ),
       );
@@ -1435,7 +1436,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "stale_exchange",
-          `Activation ${activationId} is not the unresolved exchange of Execution ${record.executionId}; an Outcome can answer only the exchange that is open`,
+          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,
           record,
         ),
       );
@@ -1460,8 +1461,8 @@ export class ExecutionCoordinator {
           this.#refusal(
             "stale_exchange",
             epochForCurrency < currentEpoch
-              ? `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
-              : `Outcome for Activation ${activationId}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
+              ? `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
+              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
             record,
           ),
         );
@@ -1482,7 +1483,7 @@ export class ExecutionCoordinator {
         return err(
           this.#refusal(
             "stale_exchange",
-            `Outcome for Activation ${activationId}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
+            `Outcome for Activation ${diagnosticIdentity(activationId)}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
             record,
           ),
         );
@@ -1506,7 +1507,7 @@ export class ExecutionCoordinator {
         return err(
           this.#refusal(
             "unauthorized_submission",
-            `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
+            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
             record,
           ),
         );
@@ -1524,7 +1525,7 @@ export class ExecutionCoordinator {
         return err(
           this.#refusal(
             "capacity_exhausted",
-            `the Outcome for Activation ${activationId} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,
+            `the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,
             record,
           ),
         );
@@ -1547,7 +1548,7 @@ export class ExecutionCoordinator {
       appendAllOwn(combined, capture.issues);
       if (identityUsable) {
         return err(
-          this.#refusal("malformed_envelope", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(combined)}`, record),
+          this.#refusal("malformed_envelope", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined)}`, record),
         );
       }
       return err(
@@ -1615,7 +1616,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "stale_exchange",
-          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${named.activationId}; a takeover names the attempt it supersedes and advances past it once`,
+          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,
           record,
         ),
       );
@@ -1624,7 +1625,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "recovery_held",
-          `Activation ${named.activationId} cannot be taken over while its pinned code is unavailable: ${exchange.codeHold.reason}`,
+          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${exchange.codeHold.reason}`,
           record,
         ),
       );
@@ -1639,7 +1640,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "unsafe_replacement",
-          `Activation ${named.activationId} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded native work`,
+          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded native work`,
           record,
         ),
       );
@@ -1654,7 +1655,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "terminal_destination",
-          `Execution ${record.executionId} ended as ${record.state}; there is no exchange to take over`,
+          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to take over`,
           record,
         ),
       );
@@ -1664,7 +1665,7 @@ export class ExecutionCoordinator {
         return err(
           this.#refusal(
             "no_unresolved_exchange",
-            `Activation ${named.activationId} resolved while establishing safe replacement; there is no unresolved exchange to take over`,
+            `Activation ${diagnosticIdentity(named.activationId)} resolved while establishing safe replacement; there is no unresolved exchange to take over`,
             record,
           ),
         );
@@ -1672,7 +1673,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "stale_exchange",
-          `Activation ${named.activationId} is not the unresolved exchange of Execution ${record.executionId}`,
+          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,
           record,
         ),
       );
@@ -1681,7 +1682,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "stale_exchange",
-          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${named.activationId}; a takeover names the attempt it supersedes and advances past it once`,
+          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,
           record,
         ),
       );
@@ -1695,7 +1696,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "recovery_held",
-          `Activation ${named.activationId} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,
+          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,
           record,
         ),
       );
@@ -1780,7 +1781,7 @@ export class ExecutionCoordinator {
 
     let missing = "";
     const note = (what: string, value: string): void => {
-      missing += `${missing === "" ? "" : "; "}pinned ${what} ${value} is unavailable`;
+      missing += `${missing === "" ? "" : "; "}pinned ${what} ${diagnosticIdentity(value)} is unavailable`;
     };
     if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note("Definition revision", pinned.definitionRevision);
     if (!listed(captured.available.runtimeContractRevisions, pinned.runtimeContractRevision)) note("Runtime contract revision", pinned.runtimeContractRevision);
@@ -1864,7 +1865,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "stale_exchange",
-          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${named.activationId}; a superseded attempt cannot hold the exchange`,
+          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a superseded attempt cannot hold the exchange`,
           record,
         ),
       );
@@ -1910,18 +1911,18 @@ export class ExecutionCoordinator {
   #openExchange(record: ExecutionRecord, activationId: string, verb: string): Result<ActivationRecord, RefusalRecord> {
     if (isTerminal(record.state)) {
       return err(
-        this.#refusal("terminal_destination", `Execution ${record.executionId} ended as ${record.state}; there is no exchange to ${verb}`, record),
+        this.#refusal("terminal_destination", `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to ${verb}`, record),
       );
     }
     const intent = record.activation;
     if (intent === null) {
-      return err(this.#refusal("no_unresolved_exchange", `Execution ${record.executionId} has no unresolved Activation to ${verb}`, record));
+      return err(this.#refusal("no_unresolved_exchange", `Execution ${diagnosticIdentity(record.executionId)} has no unresolved Activation to ${verb}`, record));
     }
     if (intent.activation.activationId !== activationId) {
       return err(
         this.#refusal(
           "stale_exchange",
-          `Activation ${activationId} is not the unresolved exchange of Execution ${record.executionId}`,
+          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,
           record,
         ),
       );
@@ -2155,7 +2156,7 @@ export class ExecutionCoordinator {
     if (mayControlScope(caller, record.scope)) return null;
     return this.#refusal(
       "unauthorized_control",
-      `caller may inspect Execution ${record.executionId} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,
+      `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,
       record,
     );
   }

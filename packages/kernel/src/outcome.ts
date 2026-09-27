@@ -37,6 +37,8 @@
 
 import {
   acceptActivationIdentity,
+  diagnosticIdentity,
+  diagnosticIssues,
   acceptIdentityText,
   appendIssue,
   appendIssues,
@@ -194,7 +196,7 @@ function acceptRoot(observed: unknown, label: string, issues: LocatedIssue[]): C
   }
   const captured = canonicalize(observed);
   if (!captured.ok) {
-    appendIssues(issues, located(captured.issues, label));
+    appendIssues(issues, located(diagnosticIssues(captured.issues), label));
     return null;
   }
   return captured.value;
@@ -323,7 +325,7 @@ function captureEmissions(
       if ((readAt(keys, position) as string) === emissionKey) duplicate = true;
     }
     if (duplicate) {
-      appendIssue(issues, { path: `${label}.emissionKey`, code: "duplicate_key", message: `Emission key "${emissionKey}" appears more than once in this Outcome` });
+      appendIssue(issues, { path: `${label}.emissionKey`, code: "duplicate_key", message: `Emission key "${diagnosticIdentity(emissionKey)}" appears more than once in this Outcome` });
       continue;
     }
     appendOwn(keys, emissionKey);

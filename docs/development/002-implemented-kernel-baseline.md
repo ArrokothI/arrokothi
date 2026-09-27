@@ -81,14 +81,30 @@ is used by Outcome replay/currency/content and `requestTakeover`, `recoverExecut
 `reportProtocolFailure`. [Identity](../../mental-model/concepts/identity.md#runtime-attempt) owns the
 producer/consumer requirement. Creation and Execution-ID behavior are unchanged: the ID combines
 bounded caller scope/key with an unbounded trusted namespace, then dispatch adds its exchange
-suffix. There is consequently no finite semantic maximum for a minted Activation ID. Caller keys,
+suffix. The binding adds no semantic identity-length limit; JavaScript string-allocation limits
+still apply to both individual IDs and their compositions. At a trusted namespace above half the
+engine maximum, creation, dispatch and `continue` can succeed while Emission/result ID construction
+throws before acceptance mutates state. This binding does not claim producer/consumer closure
+beyond those allocation limits. Caller keys,
 Emission keys and the value roots keep their existing Unicode and size checks.
 
 Unknown-field diagnostic names on the Outcome, `next` and Emission envelopes retain at most 128
 printable ASCII code units per name; longer or other names are replaced by a fixed omission marker.
-The field is still refused whole and its value is never read. This bounds the diagnostic fragment,
-not the whole reason (which can include a long legitimate Execution/Activation ID); no proposed
-content is repaired or accepted by this diagnostic rendering.
+The field is still refused whole and its value is never read. Outcome/control identity fragments,
+including matched Activation IDs, Execution IDs, duplicate Emission keys and missing-code pins,
+likewise retain at most 128 printable ASCII units or become `<identity omitted>` before
+concatenation. Identity-only refusals are at most 1,024 units and missing-code reasons at most 600.
+Structured IDs and actor attribution stay exact; no proposed content is repaired or accepted.
+
+Captured value issues used by Outcome/control diagnostics are projected before adding their outer
+root label: paths retain at most 128 printable ASCII units or become `<omitted>`; messages
+retain at most 1,024 printable ASCII units or become `<message omitted>`. Every captured issue,
+code and outer root label remains, in order. This bounds member-name and constructor-name aliases
+without changing value capture, identity comparison or K1.1 creation/ingress diagnostics. A rendered
+issue is less than 2,048 units with the fixed labels; a refusal containing N issues is bounded by
+1,024 + 2,050N units. The complete reason is not truncated to 1,024 units, because combined content
+diagnostics must retain every captured issue. Explicit delivery/protocol diagnostic payloads keep
+their separate first-1,024-UTF-16-unit rule unchanged; hold/history explanations add fixed text.
 
 The order is `execution-cycle.md`'s: the caller is scoped to the named Execution before anything else
 is read; an already accepted Outcome under the same Activation ID is looked up next, and an exact

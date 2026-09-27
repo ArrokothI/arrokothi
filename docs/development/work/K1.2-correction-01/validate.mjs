@@ -3,7 +3,7 @@ import { spawnSync, execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { platform, arch, release } from "node:os";
-const out = resolve(process.argv[2] ?? "/tmp/k12-correction-validation");
+const out = resolve(process.argv[2] ?? "/tmp/k12-correction-02-validation");
 const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
 if (git("status", "--porcelain") !== "") throw Error("payload tree is not clean");
 const payload = git("rev-parse", "HEAD");
@@ -22,15 +22,21 @@ const checks = [
   ["09-r11-probe", "node", ["--experimental-strip-types", "docs/development/work/K1.2/review-11/probe-partial-claim.ts"]],
   ["10-records-links", "node", ["docs/development/work/K1.2-correction-01/check-records.mjs"]],
   ["11-evals", "npm", ["run", "test:evals"]],
+  ["14-original-ablations-adapted", "node", ["docs/development/work/K1.2-correction-01/original-ablations-02.mjs"]],
+  ["15-review-identity", "node", ["--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-01/probe-identity.ts"]],
+  ["16-review-maxlen", "node", ["--max-old-space-size=4096", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"]],
+  ["17-review-namespace", "node", ["--max-old-space-size=8192", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"]],
+  ["18-diagnostics-maxlen", "node", ["--max-old-space-size=4096", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"]],
+  ["19-round2-diff-check", "git", ["diff", "--check", "449b243cd31d5596c457e091233dfc4d77a4eff4", "HEAD"]],
   ["12-diff-check", "git", ["diff", "--check", "a20d278185eaffc7f8b7489345a3624231ff6e6d", "HEAD"]],
 ];
 const results = [];
 for (const [name, executable, args] of checks) {
   console.log(`Running ${name} on ${payload}`);
   const start = new Date().toISOString();
-  const run = spawnSync(executable, args, { encoding: "utf8", timeout: 600_000, maxBuffer: 128 * 1024 * 1024 });
-  const result = { name, command: [executable, ...args], exit: run.status, signal: run.signal, error: run.error?.message ?? null, start, end: new Date().toISOString() };
-  writeFileSync(join(out, `${name}.txt`), `payload C: ${payload}\ncwd: ${process.cwd()}\ncommand: ${[executable, ...args].join(" ")}\nenvironment: 00-environment.json\nstarted: ${start}\n\n${run.stdout ?? ""}${run.stderr ?? ""}\nexit: ${run.status}; signal: ${run.signal}; error: ${run.error?.message ?? "none"}\n`);
+  const run = spawnSync(executable, args, { encoding: "utf8", timeout: 600_000, maxBuffer: 128 * 1024 * 1024, env: { ...process.env, TREE: process.cwd() } });
+  const result = { name, command: [executable, ...args], exit: run.status, signal: run.signal, error: run.error?.message ?? null, env: { TREE: process.cwd() }, start, end: new Date().toISOString() };
+  writeFileSync(join(out, `${name}.txt`), `payload C: ${payload}\ncwd: ${process.cwd()}\ncommand: ${[executable, ...args].join(" ")}\nenvironment: 00-environment.json; TREE=${process.cwd()}\nstarted: ${start}\n\n${run.stdout ?? ""}${run.stderr ?? ""}\nexit: ${run.status}; signal: ${run.signal}; error: ${run.error?.message ?? "none"}\n`);
   results.push(result); console.log(`${name}: exit=${run.status}, signal=${run.signal}`);
 }
 writeFileSync(join(out, "13-results.json"), JSON.stringify({ payload, results, statusAfter: git("status", "--porcelain") || "clean" }, null, 2) + "\n");

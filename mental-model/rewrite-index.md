@@ -270,7 +270,8 @@ naming an `OPEN(...)` marker claim that one exists.
   combines caller context with the creation key and covers the complete creation content. The
   implementation records its own answer in BASELINE `#request-identity-api`.
 - Activation-identity representation and well-formedness — `OPEN(implementation)` in
-  `concepts/identity.md#runtime-attempt`. Every minted ID must be usable by every consumer.
+  `concepts/identity.md#runtime-attempt`. That owner states producer/consumer closure and its
+  engine-allocation qualification.
   The in-process binding's choice is any primitive JavaScript string with exact UTF-16 code-unit
   equality, no length or Unicode-content check; recorded in BASELINE `#outcome-acceptance-api`.
 - Writer-epoch representation, and **whether it resets across a later Activation** —

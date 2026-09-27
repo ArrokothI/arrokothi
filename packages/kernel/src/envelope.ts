@@ -63,6 +63,41 @@ export const located = (issues: readonly ValueIssue[], label: string): ValueIssu
   return out;
 };
 
+/**
+ * Diagnostic text is not an identity. Check length before reading code units, and omit the whole
+ * fragment unless it is short printable ASCII. No slicing, coercion, live method, normalization
+ * or caller callback; even an engine-maximum identity costs a single length check here.
+ * This helper must run BEFORE interpolation, never on an already expanded reason (DIAG-01).
+ */
+export const diagnosticText = (text: string, omitted: string, limit: number): string => {
+  if (text.length > limit) return omitted;
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index]! < " " || text[index]! > "~") return omitted;
+  }
+  return text;
+};
+
+/** Same rule for caller, matched Kernel and trusted-host-derived identity spellings. */
+export const diagnosticIdentity = (identity: string): string => diagnosticText(identity, "<identity omitted>", 128);
+
+/**
+ * Outcome/control diagnostic projection of value-capture issues. Bound caller member paths BEFORE
+ * adding a root label, and caller-influenced messages before explainOutcomeIssues composes them.
+ * Keep every issue and its code; accepted data and the K1.1 value-capture path are unchanged.
+ */
+export const diagnosticIssues = (issues: readonly ValueIssue[]): ValueIssue[] => {
+  const out: ValueIssue[] = [];
+  for (let index = 0; index < issues.length; index += 1) {
+    const issue = readAt(issues, index) as ValueIssue;
+    appendOwn(out, {
+      ...issue,
+      path: diagnosticText(issue.path, "<omitted>", 128),
+      message: diagnosticText(issue.message, "<message omitted>", 1_024),
+    });
+  }
+  return out;
+};
+
 /** Renders issues into one reason a person can act on. */
 export const explain = (issues: readonly LocatedIssue[]): string => {
   let out = "";

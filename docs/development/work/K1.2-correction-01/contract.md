@@ -1,10 +1,16 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 1. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 2. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, without weakening or removing a criterion. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
 and [invalidation-01](../K1.2/invalidation-01.md). Historical records remain unchanged.
+
+Revision history: revision 1 selected the primitive-string Activation representation and its
+coverage. Revision 2 addresses [review-01](review-01.md)'s K12C1-R1-DIAG-01 by separating exact
+identity from bounded diagnostic rendering, records adjacent implementer-found diagnostic paths,
+and qualifies engine-allocation limits (review-01 O1). No C1–C15 criterion or prior decision is
+weakened. The [round-2 coverage map](coverage-02.md) was derived before implementation.
 
 ## Identity and authority
 
@@ -19,11 +25,14 @@ and [invalidation-01](../K1.2/invalidation-01.md). Historical records remain unc
   `codex/k1.2-correction-01-activation-identity`, in a separate worktree. This owner-authorized
   departure from starting at integrated main preserves the cumulative unintegrated K1.2 candidate.
   Neither existing checkout is switched; no push to claude/main.
-- Previous reviewed H `c36cbe04f7c97f198794bfede972d4861247cca0`, payload C12
+- Prior K1.2 H `c36cbe04f7c97f198794bfede972d4861247cca0`, payload C12
   `2f4e64b1f51c679e2b381f9fb9800f2e290ddd30`; [review-14](../K1.2/review-14.md).
+- Previous corrective payload C1 `360538522be8c1b17d23948f632fd4f568a76ed0`, reviewed H1
+  `6541115e2e5389a7e5cff86f87d857b4eb486d7d`; [review-01](review-01.md), recorded at
+  `449b243cd31d5596c457e091233dfc4d77a4eff4`, is CHANGES REQUIRED. This is the same released packet.
 - [Decision-01](../K1.2/decision-01.md) and [decision-02](../K1.2/decision-02.md) stand unchanged.
   No integrated creation/Execution-ID behavior changes; no owner amendment is needed.
-- Scope: ID-01, EVID-01, adjacent in-scope defects, and optional O1–O3. No integration,
+- Scope: ID-01, EVID-01, DIAG-01, adjacent in-scope defects, and optional observations. No integration,
   self-acceptance, K1.3 or successor. Historical review-13 ACCEPT stays unchanged.
 
 ## Binding decisions supplementing revision 9
@@ -41,18 +50,52 @@ and eager single observation. The three controls use the same identity rule but 
 existing scope → control power → capture → terminal/open/currency order; decision-02 governs
 fresh Outcomes, not a new ordering for controls.
 
-**DEC-3 (replay):** every minted Activation ID remains usable as a lookup key after takeover,
+**DEC-3 (replay):** within the engine-allocation qualification below, every minted Activation ID remains usable as a lookup key after takeover,
 resolution, later dispatch and terminalization. Exact replay returns its original receipt without
 requiring a grant or mutating state; different content under that ID conflicts.
 
 The trusted namespace is only type-checked by packing in integrated creation, and may contain a
 lone surrogate or exceed caller-text limits. Its inclusion in the minted ID is why merely removing
 the length cap while retaining Unicode validation would still fail the release's invariant.
-This is an additional implementer-found counterexample, not a reviewer claim. There is no finite
-longest minted ID in this binding: namespace length is not semantically bounded. Tests cover
+This is an additional implementer-found counterexample, not a reviewer claim. The binding imposes
+no semantic namespace or Activation-ID length limit, but JavaScript's string-allocation maximum
+still bounds representations and compositions. In particular, a trusted namespace just over half
+that maximum can permit creation, dispatch and `continue` while derived Emission/result identity
+construction throws before acceptance can mutate state. This correction does not change creation
+or derived identity composition; it does not claim closure beyond the engine's allocation limits.
+Tests cover
 maximal accepted caller scope/key plus a long namespace and surrogate namespace, not a fictitious
 maximum. The Layer-3 identity owner states the producer/consumer closure and records this binding
 choice without fixing a wire format.
+
+**DEC-4 (diagnostic identity):** the four Outcome/control boundaries render an identity fragment
+only when it has at most 128 UTF-16 code units, all printable ASCII; otherwise they use the fixed
+text `<identity omitted>`. Apply this before concatenation to wrong caller identities, identities
+proved equal by replay/current-exchange lookup, Execution IDs, duplicate Emission keys, and pinned
+Definition/Runtime/codec names. A matched Kernel ID is not exempt: its spelling includes trusted
+namespace and accepted caller scope/key. Identity-only refusal reasons are at most 1,024 units;
+the missing-code reason is at most 600. Refusal records still retain the exact structured
+`executionId`; accepted IDs, grants, lookup keys, receipts, output, dispositions, hold/history
+coordinates and trusted actor attribution remain exact. Diagnostic lossiness never affects
+classification, equality, authority, code-availability comparison or accepted content.
+
+**DEC-5 (combined content diagnostics):** before adding an Outcome/control root label, project
+each captured value issue's path and message for display. A path retains at most 128 printable
+ASCII units or becomes `<omitted>`; a message retains at most 1,024 printable ASCII units or
+becomes `<message omitted>`. Preserve every captured issue, its code, the outer root label and
+the existing order. The existing unknown-field rule retains its separate omission marker. This
+also bounds malformed member-name and constructor-name aliases without changing canonical value
+validation or K1.1 creation/ingress diagnostics. No aggregate truncation is used: DEC-2 requires
+content issues to be reported together. With the binding's fixed labels, a rendered issue is less
+than 2,048 units and an Outcome/control refusal with N issues is bounded by 1,024 + 2,050N units.
+This is an explicit per-fragment/per-issue policy, not a 1,024-unit cap on the complete reason;
+existing root traversal, unknown-field and configured Emission limits still govern capture.
+
+**DEC-6 (explicit diagnostic payloads):** protocol reports and delivery failures retain their
+existing first-1,024-UTF-16-unit rule, including its treatment of non-ASCII text and split surrogate
+pairs. Their hold/history aliases add fixed explanatory text. They are distinct from identity
+fragments and are not silently sanitized by DEC-4/5. Inspection returns retained evidence; it does
+not render caller identity anew.
 
 ## Proof methods and pre-implementation coverage
 
@@ -76,6 +119,8 @@ methods, with the revision-9 map below carried forward in full. Native fidelity 
 | C13 observation | getters, revoked proxies, ambient prototype pollution | single observation; no coercion or live methods during classification; reentrancy ordered before checks | hostile suites + text matrix |
 | C14 structure | cumulative inventory/import graph | existing private zone and 13-source-file inventory agree | architecture conformance guard |
 | C15 Layer 3 | identity → cycle → recovery + BASELINE/DEC-1/2/3 | one owner per rule, binding choice distinguished from architecture, decision-02 provenance and wording corrected | source/link audit |
+| DIAG-01 / C3,C8–C10 | visibility-only Outcome caller and authorized controls; wrong 50,000,000-unit, lone-surrogate and engine-maximum IDs; open/resolved/terminal states | refusal returned and recorded, bounded identity fragments, no exception or accepted-state change, later current answer accepted | round-2 diagnostic matrix and memory-heavy probes |
+| Diagnostic dependencies / C2,C3,C8–C13 | accepted conflict, matched coordinates, control revalidation, missing pins and history, malformed member/constructor names, duplicate Emission key | every renderer follows DEC-4/5; every captured content issue remains; exact structured identities and DEC-8 explicit diagnostic semantics unchanged | round-2 tests and renderer-specific ablations; reconstruction inventory |
 
 Unknown-field diagnostics (O3) may be bounded separately without modifying keys or accepted content;
 any such change needs a distinguishing test and ablation. Every existing test and all 36 original
@@ -86,9 +131,15 @@ K1.2 ablations must still pass/reject respectively. No previous test is removed.
 Iterate with targeted tests. Commit payload C, then run on clean C: `npm run typecheck`, `npm test`,
 `npm run test:kernel`, `npm run test:conformance`, `npm run test:sdk`, `npm run check:builder-docs`,
 `node docs/development/work/K1.2/ablations.mjs`, correction ablations and the retained review-11 probe.
-The separate suites retain revision 9's requested evidence even though npm test is a superset.
+The sealed original ablation command must still be run and its result disclosed. Where diagnostic
+literal changes invalidate its exact textual anchors, the payload `original-ablations-02.mjs`
+verifies the sealed runner's SHA-256 and adapts only B6/B12/B13/B14 literal spelling in a temporary
+script. Its 36 mutations and full-suite control/oracles are unchanged; no NOT APPLICABLE is counted
+as rejection. Both raw runs are retained. Correction I1–I7 and every new renderer mutation require
+clean controls and actual test failures. The separate suites retain revision 9's requested evidence
+even though npm test is a superset.
 No Agent behavior changed; evals optional regression coverage only. Attach raw logs, exact commands,
-versions, exits/counts and SHA-256 manifest in H with implementation-01 and only the correction's
+versions, exits/counts and SHA-256 manifest in H with the numbered implementation report and only the correction's
 007 status row. C/H follow 006/008. Verify configured remote and remote branch SHA; if push is
 unavailable, provide verified bundle/full source plus binary cumulative patch.
 

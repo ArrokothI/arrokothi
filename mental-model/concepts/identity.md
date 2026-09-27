@@ -80,16 +80,20 @@ An **Activation ID** names one immutable semantic exchange — the pinned progre
 
 A binding's Activation-identity representation must admit every ID its Kernel can mint, on
 both Outcome submission (including replay lookup) and controls on the exchange. Composing an
-ID from individually valid parts must not make that exchange unanswerable. This is separate
+ID from individually valid parts must not make that exchange unanswerable within the binding's
+engine allocation limits, including required derived-identity compositions. This is separate
 from the limits on [boundary values](values.md#boundary-value-and-root).
 
 The representation and well-formedness rule belong to the binding. The in-process binding uses
 opaque primitive JavaScript strings with exact UTF-16 code-unit equality, including empty strings,
-lone surrogates and arbitrarily long strings. Structural validity neither proves that an exchange
+lone surrogates and strings without an additional semantic length limit. JavaScript's string
+allocation limits still constrain individual representations and their composition; admitting an
+ID as a coordinate does not guarantee that every larger derived string fits in the engine.
+Structural validity neither proves that an exchange
 exists nor authorizes answering it. [The implemented baseline](../../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api)
 records that choice; it does not fix a wire format.
 <!-- OPEN(implementation): Activation-identity representation and well-formedness. Every minted ID
-must be usable by its consumers. The in-process binding chooses any primitive JavaScript string,
+must be usable by its consumers within the allocation qualification above. The in-process binding chooses any primitive JavaScript string,
 compared unchanged by exact code-unit equality, without a value-string length or Unicode check;
 BASELINE #outcome-acceptance-api records it. Record each binding's choice here and in its baseline;
 leave this marker until an architectural decision fixes the representation. rewrite-index.md §4 -->

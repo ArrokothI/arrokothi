@@ -14,6 +14,30 @@ const mutations = [
   ["I6 boxed strings treated as usable identities", "envelope.ts", '  if (typeof value === "string") return true;', '  if (typeof value === "string" || value instanceof String) return true;'],
   ["I7 unbounded unknown-field diagnostics", "outcome.ts", 'const name = diagnosticFieldName(key);', 'const name = key;'],
 ];
+// One mutation per identity interpolation, including both fragments of a single reason.
+// Pin the inventory so a new renderer cannot silently enter without its own distinguishing test.
+const rendererInventory = { "coordinator.ts": 29, "outcome.ts": 1 };
+let rendererNumber = 0;
+for (const [file, expected] of Object.entries(rendererInventory)) {
+  const source = readFileSync(join(root, "packages/kernel/src", file), "utf8");
+  const matches = [...source.matchAll(/\$\{diagnosticIdentity\(([^)]*)\)\}/g)];
+  if (matches.length !== expected) throw Error(`renderer inventory changed for ${file}: ${matches.length} != ${expected}`);
+  for (const match of matches) {
+    const start = match.index;
+    let left = Math.max(0, start - 200), right = Math.min(source.length, start + match[0].length + 200);
+    let find = source.slice(left, right);
+    while (source.split(find).length !== 2 && left > 0) { left = Math.max(0, left - 200); find = source.slice(left, right); }
+    const replacement = source.slice(left, start) + "$" + "{" + match[1] + "}" + source.slice(start + match[0].length, right);
+    const line = source.slice(0, start).split("\n").length;
+    mutations.push([`D${++rendererNumber} unbounded identity at ${file}:${line} (${match[1]})`, file, find, replacement]);
+  }
+}
+mutations.push(
+  ["D31 raw captured member path before root prefix", "envelope.ts", 'path: diagnosticText(issue.path, "<omitted>", 128),', 'path: issue.path,'],
+  ["D32 raw captured constructor message", "envelope.ts", 'message: diagnosticText(issue.message, "<message omitted>", 1_024),', 'message: issue.message,'],
+  ["D33 identity length limit removed", "envelope.ts", 'diagnosticText(identity, "<identity omitted>", 128)', 'diagnosticText(identity, "<identity omitted>", Infinity)'],
+  ["D34 diagnostic ASCII guard removed", "envelope.ts", '    if (text[index]! < " " || text[index]! > "~") return omitted;', '    if (false) return omitted;'],
+);
 let rejected = 0;
 for (const mutation of [null, ...mutations]) {
   const work = mkdtempSync(join(tmpdir(), "k12-correction-ablation-"));
@@ -27,13 +51,13 @@ for (const mutation of [null, ...mutations]) {
       if (source.split(find).length !== 2) throw Error(`NOT APPLICABLE: ${id}`);
       writeFileSync(path, source.replace(find, replacement));
     }
-    const result = spawnSync(process.execPath, ["--test", "--test-reporter=spec", "--experimental-strip-types", "packages/kernel/tests/activation-identity.test.ts"], { cwd: work, encoding: "utf8", timeout: 60_000, maxBuffer: 64 * 1024 * 1024 });
+    const result = spawnSync(process.execPath, ["--test", "--test-reporter=spec", "--experimental-strip-types", "packages/kernel/tests/activation-identity.test.ts", "packages/kernel/tests/refusal-diagnostics.test.ts"], { cwd: work, encoding: "utf8", timeout: 60_000, maxBuffer: 64 * 1024 * 1024 });
     const output = result.stdout + result.stderr;
     const count = label => Number(new RegExp(`ℹ ${label} (\\d+)`).exec(output)?.[1] ?? NaN);
     const tests = count("tests"), pass = count("pass"), fail = count("fail"), cancelled = count("cancelled");
     if (result.error || !Number.isFinite(tests) || cancelled !== 0 || tests !== pass + fail) throw Error(`NO RESULT: ${mutation?.[0] ?? "control"}: ${result.error ?? output.slice(-2000)}`);
     if (!mutation) {
-      if (result.status !== 0 || fail !== 0 || tests !== 495) throw Error("control did not pass all 495 distinguishing tests");
+      if (result.status !== 0 || fail !== 0 || tests !== 537) throw Error("control did not pass all 537 distinguishing tests");
       console.log(`CONTROL exit=${result.status} tests=${tests} pass=${pass} fail=${fail} cancelled=${cancelled}`);
     } else {
       const verdict = result.status !== 0 && fail > 0 && pass > 0 ? "REJECTED" : "SURVIVED";
