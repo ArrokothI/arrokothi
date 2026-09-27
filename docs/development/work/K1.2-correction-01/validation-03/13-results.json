@@ -1,0 +1,474 @@
+{
+  "payload": "652e5e73478684651cff697fef2a3ddbe34458e0",
+  "results": [
+    {
+      "name": "01-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:54:23.791Z",
+      "end": "2026-09-27T10:54:26.066Z"
+    },
+    {
+      "name": "02-full",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:54:26.066Z",
+      "end": "2026-09-27T10:54:32.843Z"
+    },
+    {
+      "name": "03-kernel",
+      "command": [
+        "npm",
+        "run",
+        "test:kernel"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:54:32.843Z",
+      "end": "2026-09-27T10:54:36.822Z"
+    },
+    {
+      "name": "04-conformance",
+      "command": [
+        "npm",
+        "run",
+        "test:conformance"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:54:36.822Z",
+      "end": "2026-09-27T10:54:41.228Z"
+    },
+    {
+      "name": "05-sdk",
+      "command": [
+        "npm",
+        "run",
+        "test:sdk"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:54:41.228Z",
+      "end": "2026-09-27T10:54:41.508Z"
+    },
+    {
+      "name": "06-builder-docs",
+      "command": [
+        "npm",
+        "run",
+        "check:builder-docs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:54:41.508Z",
+      "end": "2026-09-27T10:54:41.850Z"
+    },
+    {
+      "name": "07-original-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2/ablations.mjs"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:54:41.850Z",
+      "end": "2026-09-27T10:56:54.143Z"
+    },
+    {
+      "name": "08-correction-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:56:54.143Z",
+      "end": "2026-09-27T10:57:17.598Z"
+    },
+    {
+      "name": "09-r11-probe",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2/review-11/probe-partial-claim.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:57:17.599Z",
+      "end": "2026-09-27T10:57:17.677Z"
+    },
+    {
+      "name": "10-records-links",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/check-records.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:57:17.677Z",
+      "end": "2026-09-27T10:57:18.315Z"
+    },
+    {
+      "name": "11-evals",
+      "command": [
+        "npm",
+        "run",
+        "test:evals"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:57:18.315Z",
+      "end": "2026-09-27T10:57:18.618Z"
+    },
+    {
+      "name": "14-original-ablations-adapted",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/original-ablations-02.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:57:18.618Z",
+      "end": "2026-09-27T10:59:53.247Z"
+    },
+    {
+      "name": "15-review-identity",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-identity.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:59:53.247Z",
+      "end": "2026-09-27T10:59:53.350Z"
+    },
+    {
+      "name": "16-review-maxlen",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:59:53.351Z",
+      "end": "2026-09-27T10:59:53.541Z"
+    },
+    {
+      "name": "17-review-namespace",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:59:53.541Z",
+      "end": "2026-09-27T10:59:53.858Z"
+    },
+    {
+      "name": "18-diagnostics-maxlen",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:59:53.858Z",
+      "end": "2026-09-27T10:59:54.048Z"
+    },
+    {
+      "name": "20-review-aggregate",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts",
+        "130",
+        "980"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:59:54.049Z",
+      "end": "2026-09-27T10:59:55.859Z"
+    },
+    {
+      "name": "21-review-equality",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-equality.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:59:55.859Z",
+      "end": "2026-09-27T10:59:55.935Z"
+    },
+    {
+      "name": "23-review-cost-accept",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01",
+        "MODE": "accept"
+      },
+      "start": "2026-09-27T10:59:55.935Z",
+      "end": "2026-09-27T10:59:56.438Z"
+    },
+    {
+      "name": "24-review-cost-refuse-undefined",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01",
+        "MODE": "refuse-undefined"
+      },
+      "start": "2026-09-27T10:59:56.438Z",
+      "end": "2026-09-27T10:59:56.606Z"
+    },
+    {
+      "name": "25-review-cost-refuse-ctor",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01",
+        "MODE": "refuse-ctor"
+      },
+      "start": "2026-09-27T10:59:56.607Z",
+      "end": "2026-09-27T10:59:57.135Z"
+    },
+    {
+      "name": "26-review-aggregate-pre-authority",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts",
+        "130",
+        "980"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01",
+        "PRE": "1"
+      },
+      "start": "2026-09-27T10:59:57.135Z",
+      "end": "2026-09-27T10:59:58.087Z"
+    },
+    {
+      "name": "27-revision4-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations-03.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T10:59:58.087Z",
+      "end": "2026-09-27T11:00:06.017Z"
+    },
+    {
+      "name": "28-review4-p4-p5",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-03.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T11:00:06.017Z",
+      "end": "2026-09-27T11:00:11.253Z"
+    },
+    {
+      "name": "29-round3-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "8a418d408f715e999a403a3e84b73a9db1b43712",
+        "HEAD"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T11:00:11.253Z",
+      "end": "2026-09-27T11:00:11.278Z"
+    },
+    {
+      "name": "22-correction-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "b18a729d989dea334a86ec08bdf8773ee77de4db",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T11:00:11.278Z",
+      "end": "2026-09-27T11:00:11.298Z"
+    },
+    {
+      "name": "19-round2-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "449b243cd31d5596c457e091233dfc4d77a4eff4",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T11:00:11.298Z",
+      "end": "2026-09-27T11:00:11.323Z"
+    },
+    {
+      "name": "12-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"
+      },
+      "start": "2026-09-27T11:00:11.323Z",
+      "end": "2026-09-27T11:00:11.386Z"
+    }
+  ],
+  "statusAfter": "clean"
+}
