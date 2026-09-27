@@ -1,0 +1,5 @@
+command: node --expose-gc --experimental-strip-types probes/p-chain-ingress.ts <tree H> <D>
+{"surface":"ingress","D":0,"ok":false,"classification":"malformed_value","reasonLen":453,"ms":1424}
+{"surface":"creation","D":0,"ok":false,"classification":"malformed_value","reasonLen":586,"ms":1456}
+{"surface":"ingress","D":1000,"ok":false,"classification":"malformed_value","reasonLen":453,"ms":5283}
+{"surface":"creation","D":1000,"ok":false,"classification":"malformed_value","reasonLen":586,"ms":5193}
