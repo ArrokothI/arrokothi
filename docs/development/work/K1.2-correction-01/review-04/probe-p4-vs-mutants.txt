@@ -1,0 +1,23 @@
+ORACLE REJECTS X8 Emission ID derived from diagnostic Activation spelling
+    X8 Emission IDs distinct across exchanges with one key -> FAIL: Expected "actual" to be strictly unequal to:
+    X8 Emission ID derivation (K1.2-DEC-4) -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X9 result ID derived from diagnostic Activation spelling
+    X9 result ID derivation (K1.2-DEC-4) -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X10 acknowledged disposition names diagnostic Activation spelling
+    X10 acknowledgment names exact Activation -> FAIL: Expected values to be strictly deep-equal:
+ORACLE REJECTS X11 code hold stores diagnostic Activation spelling
+    X11 code hold coordinate exact (answer and view) -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X13 delivery row stores diagnostic Activation spelling
+    X13 delivery rows exact -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X15 Outcome receipt token uses diagnostic Execution spelling
+    X15 Outcome receipts of two Executions distinct -> FAIL: Expected "actual" to be strictly unequal to:
+ORACLE REJECTS X17 decision answer activationId rendered lossy
+    X17 decision.activationId exact -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X20 protocol answer activationId rendered lossy
+    X20 protocol answer exact -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X21 protocol hold stores diagnostic Activation spelling
+    X21 protocol hold coordinate exact -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X22 Emission record activationId rendered lossy
+    X22 Emission record activationId exact -> FAIL: Expected values to be strictly equal:
+ORACLE REJECTS X23 result record activationId rendered lossy
+    X23 result record activationId exact -> FAIL: Expected values to be strictly equal:

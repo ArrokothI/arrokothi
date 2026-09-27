@@ -1,0 +1,7 @@
+CONTROL exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+SURVIVED X20 protocol answer activationId rendered lossy: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+SURVIVED X21 protocol hold stores diagnostic Activation spelling: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+SURVIVED X22 Emission record activationId rendered lossy: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+SURVIVED X23 result record activationId rendered lossy: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+0/4 rejected; survived: X20 protocol answer activationId rendered lossy; X21 protocol hold stores diagnostic Activation spelling; X22 Emission record activationId rendered lossy; X23 result record activationId rendered lossy
+exit=0

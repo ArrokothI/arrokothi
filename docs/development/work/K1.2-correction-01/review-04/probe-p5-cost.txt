@@ -1,0 +1,6 @@
+{"mode":"accept","ok":true,"bytes":1040261,"issues":0,"ms":653,"heapDeltaMiB":23.1,"rssMiB":130}
+{"mode":"refuse","ok":false,"issues":532480,"ms":648,"heapDeltaMiB":84.2,"rssMiB":221}
+{"mode":"refuse","path":"submitOutcome (no grant)","roots":1,"classification":"unauthorized_submission","ms":1135,"heapDeltaMiB":153.3,"rssMiB":297}
+           312410112  maximum resident set size
+{"mode":"refuse","path":"submitOutcome (no grant)","roots":8,"classification":"unauthorized_submission","ms":12046,"heapDeltaMiB":541.8,"rssMiB":380}
+           914817024  maximum resident set size
