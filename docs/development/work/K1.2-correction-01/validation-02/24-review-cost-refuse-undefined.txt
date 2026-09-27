@@ -1,0 +1,9 @@
+payload C: 6d9fbb3db4955ee2216fedf0d0b69c8e104367bf
+cwd: /Users/rex-shih/.codex/worktrees/k12-correction/arrokothi
+command: node --max-old-space-size=4096 --experimental-strip-types --expose-gc docs/development/work/K1.2-correction-01/review-02/probe-cost.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi","MODE":"refuse-undefined"}
+started: 2026-09-27T04:12:09.619Z
+
+refuse-undefined: refused unauthorized_submission in 1258 ms; heapUsed +151 MiB, rss 307 MiB
+
+exit: 0; signal: null; error: none

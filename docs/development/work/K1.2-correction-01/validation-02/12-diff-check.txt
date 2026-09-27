@@ -1,0 +1,26 @@
+payload C: 6d9fbb3db4955ee2216fedf0d0b69c8e104367bf
+cwd: /Users/rex-shih/.codex/worktrees/k12-correction/arrokothi
+command: git diff --check a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"}
+started: 2026-09-27T04:12:16.682Z
+
+docs/development/work/K1.2-correction-01/validation-01/12-diff-check.txt:8: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-01/12-diff-check.txt:10: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-01/14-preserved-whitespace.txt:7: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-01/14-preserved-whitespace.txt:9: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-01/14-preserved-whitespace.txt:16: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-01/14-preserved-whitespace.txt:18: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/review-09/ablations-reviewer.txt:3: trailing whitespace.
++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-12/11-preservation-and-links.txt:201: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-13/02-typecheck.txt:4: new blank line at EOF.
+docs/development/work/K1.2/validation-14/02-typecheck.txt:4: new blank line at EOF.
+
+exit: 2; signal: null; error: none
