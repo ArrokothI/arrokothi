@@ -27,16 +27,21 @@ const checks = [
   ["16-review-maxlen", "node", ["--max-old-space-size=4096", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"]],
   ["17-review-namespace", "node", ["--max-old-space-size=8192", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"]],
   ["18-diagnostics-maxlen", "node", ["--max-old-space-size=4096", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"]],
+  ["20-review-aggregate", "node", ["--max-old-space-size=8192", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts", "130", "980"]],
+  ["21-review-equality", "node", ["--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-02/probe-equality.ts"]],
+  ...["accept", "refuse-undefined", "refuse-ctor"].map((mode, index) => [`${23 + index}-review-cost-${mode}`, "node", ["--max-old-space-size=4096", "--experimental-strip-types", "--expose-gc", "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"], { MODE: mode }]),
+  ["26-review-aggregate-pre-authority", "node", ["--max-old-space-size=8192", "--experimental-strip-types", "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts", "130", "980"], { PRE: "1" }],
+  ["22-correction-diff-check", "git", ["diff", "--check", "b18a729d989dea334a86ec08bdf8773ee77de4db", "HEAD"]],
   ["19-round2-diff-check", "git", ["diff", "--check", "449b243cd31d5596c457e091233dfc4d77a4eff4", "HEAD"]],
   ["12-diff-check", "git", ["diff", "--check", "a20d278185eaffc7f8b7489345a3624231ff6e6d", "HEAD"]],
 ];
 const results = [];
-for (const [name, executable, args] of checks) {
+for (const [name, executable, args, extraEnv = {}] of checks) {
   console.log(`Running ${name} on ${payload}`);
   const start = new Date().toISOString();
-  const run = spawnSync(executable, args, { encoding: "utf8", timeout: 600_000, maxBuffer: 128 * 1024 * 1024, env: { ...process.env, TREE: process.cwd() } });
-  const result = { name, command: [executable, ...args], exit: run.status, signal: run.signal, error: run.error?.message ?? null, env: { TREE: process.cwd() }, start, end: new Date().toISOString() };
-  writeFileSync(join(out, `${name}.txt`), `payload C: ${payload}\ncwd: ${process.cwd()}\ncommand: ${[executable, ...args].join(" ")}\nenvironment: 00-environment.json; TREE=${process.cwd()}\nstarted: ${start}\n\n${run.stdout ?? ""}${run.stderr ?? ""}\nexit: ${run.status}; signal: ${run.signal}; error: ${run.error?.message ?? "none"}\n`);
+  const run = spawnSync(executable, args, { encoding: "utf8", timeout: 600_000, maxBuffer: 128 * 1024 * 1024, env: { ...process.env, TREE: process.cwd(), ...extraEnv } });
+  const result = { name, command: [executable, ...args], exit: run.status, signal: run.signal, error: run.error?.message ?? null, env: { TREE: process.cwd(), ...extraEnv }, start, end: new Date().toISOString() };
+  writeFileSync(join(out, `${name}.txt`), `payload C: ${payload}\ncwd: ${process.cwd()}\ncommand: ${[executable, ...args].join(" ")}\nenvironment: 00-environment.json; ${JSON.stringify(result.env)}\nstarted: ${start}\n\n${run.stdout ?? ""}${run.stderr ?? ""}\nexit: ${run.status}; signal: ${run.signal}; error: ${run.error?.message ?? "none"}\n`);
   results.push(result); console.log(`${name}: exit=${run.status}, signal=${run.signal}`);
 }
 writeFileSync(join(out, "13-results.json"), JSON.stringify({ payload, results, statusAfter: git("status", "--porcelain") || "clean" }, null, 2) + "\n");

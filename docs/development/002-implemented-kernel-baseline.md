@@ -96,15 +96,20 @@ likewise retain at most 128 printable ASCII units or become `<identity omitted>`
 concatenation. Identity-only refusals are at most 1,024 units and missing-code reasons at most 600.
 Structured IDs and actor attribution stay exact; no proposed content is repaired or accepted.
 
-Captured value issues used by Outcome/control diagnostics are projected before adding their outer
-root label: paths retain at most 128 printable ASCII units or become `<omitted>`; messages
-retain at most 1,024 printable ASCII units or become `<message omitted>`. Every captured issue,
-code and outer root label remains, in order. This bounds member-name and constructor-name aliases
-without changing value capture, identity comparison or K1.1 creation/ingress diagnostics. A rendered
-issue is less than 2,048 units with the fixed labels; a refusal containing N issues is bounded by
-1,024 + 2,050N units. The complete reason is not truncated to 1,024 units, because combined content
-diagnostics must retain every captured issue. Explicit delivery/protocol diagnostic payloads keep
-their separate first-1,024-UTF-16-unit rule unchanged; hold/history explanations add fixed text.
+Outcome/control content diagnostics follow [correction DEC-5](work/K1.2-correction-01/contract.md):
+the first eight captured issues retain ordered details; remaining issues contribute exact counts
+for every code, in first remaining occurrence order. Value paths are projected at rendering to
+128 printable ASCII units or `<omitted>` before adding their root label; messages use 1,024 units
+or `<message omitted>`. The complete content reason is at most 16,384 UTF-16 units regardless of
+issue count or configured Emission capacity. Classification still uses the complete captured
+result. Capture remains eager; diagnostic projection occurs only at rendering. K1.1 capture and
+creation/ingress diagnostics are unchanged. The former per-issue formula did not bound aggregate
+rendering and its reading of combined diagnostics was incorrect; the binding already bounds
+unknown-field reports and value traversal. DEC-5 owns the bound and its derivation.
+
+The K1.2-added redelivery recovery-held refusal also bounds its Activation fragment under DEC-4.
+Explicit delivery/protocol diagnostic payloads keep their separate first-1,024-UTF-16-unit rule;
+hold/history and redelivery explanations add fixed text.
 
 The order is `execution-cycle.md`'s: the caller is scoped to the named Execution before anything else
 is read; an already accepted Outcome under the same Activation ID is looked up next, and an exact

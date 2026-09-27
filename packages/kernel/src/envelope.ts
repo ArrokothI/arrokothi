@@ -35,6 +35,8 @@ export interface LocatedIssue {
   readonly path: string;
   readonly code: string;
   readonly message: string;
+  /** Outcome/control value-root label, kept separate until diagnostic rendering. */
+  readonly root?: string;
 }
 
 /** One refusal issue, appended as own data. */
@@ -80,20 +82,52 @@ export const diagnosticText = (text: string, omitted: string, limit: number): st
 /** Same rule for caller, matched Kernel and trusted-host-derived identity spellings. */
 export const diagnosticIdentity = (identity: string): string => diagnosticText(identity, "<identity omitted>", 128);
 
-/**
- * Outcome/control diagnostic projection of value-capture issues. Bound caller member paths BEFORE
- * adding a root label, and caller-influenced messages before explainOutcomeIssues composes them.
- * Keep every issue and its code; accepted data and the K1.1 value-capture path are unchanged.
- */
-export const diagnosticIssues = (issues: readonly ValueIssue[]): ValueIssue[] => {
-  const out: ValueIssue[] = [];
+/** Keep value issues unprojected until a content refusal is selected by the coordinator. */
+export const appendRootIssues = (target: LocatedIssue[], issues: readonly ValueIssue[], root: string): void => {
   for (let index = 0; index < issues.length; index += 1) {
     const issue = readAt(issues, index) as ValueIssue;
-    appendOwn(out, {
-      ...issue,
-      path: diagnosticText(issue.path, "<omitted>", 128),
-      message: diagnosticText(issue.message, "<message omitted>", 1_024),
-    });
+    appendOwn(target, { path: issue.path, code: issue.code, message: issue.message, root });
+  }
+};
+
+/** Binding DEC-5: a fixed number of details, then exact counts of all remaining issue codes. */
+const ISSUE_DETAIL_LIMIT = 8;
+export const explainDiagnosticIssues = (issues: readonly LocatedIssue[], withMessages: boolean): string => {
+  let out = "";
+  const counts: { code: string; count: number }[] = [];
+  for (let index = 0; index < issues.length; index += 1) {
+    const issue = readAt(issues, index) as LocatedIssue;
+    if (index < ISSUE_DETAIL_LIMIT) {
+      const projected = {
+        path: diagnosticText(issue.path, "<omitted>", 128),
+        message: diagnosticText(issue.message, "<message omitted>", 1_024),
+      };
+      // Envelope issues already have bounded, Kernel-located paths. A value's raw path must be
+      // projected before its label is added. Own-only lookup resists ambient prototype pollution.
+      const root = PrimordialGetOwnPropertyDescriptor(issue, "root")?.value as string | undefined;
+      const path = root === undefined ? issue.path : projected.path === "" ? root
+        : projected.path[0] === "[" ? `${root}${projected.path}` : `${root}.${projected.path}`;
+      if (index > 0) out += "; ";
+      out += `${path === "" ? "envelope" : path} ${issue.code}`;
+      if (withMessages) out += ` (${projected.message})`;
+    } else {
+      // Codes are the fixed Kernel vocabulary, not caller text. No raw path/message is read here.
+      let entry: { code: string; count: number } | undefined;
+      for (let position = 0; position < counts.length; position += 1) {
+        const candidate = readAt(counts, position) as { code: string; count: number };
+        if (candidate.code === issue.code) entry = candidate;
+      }
+      if (entry === undefined) appendOwn(counts, { code: issue.code, count: 1 });
+      else entry.count += 1;
+    }
+  }
+  if (issues.length > ISSUE_DETAIL_LIMIT) {
+    out += `; ${issues.length - ISSUE_DETAIL_LIMIT} additional issues: `;
+    for (let index = 0; index < counts.length; index += 1) {
+      const entry = readAt(counts, index) as { code: string; count: number };
+      if (index > 0) out += ", ";
+      out += `${entry.code}=${entry.count}`;
+    }
   }
   return out;
 };

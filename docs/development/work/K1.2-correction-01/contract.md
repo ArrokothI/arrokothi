@@ -1,6 +1,6 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 2. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 3. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, without weakening or removing a criterion. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
@@ -10,7 +10,10 @@ Revision history: revision 1 selected the primitive-string Activation representa
 coverage. Revision 2 addresses [review-01](review-01.md)'s K12C1-R1-DIAG-01 by separating exact
 identity from bounded diagnostic rendering, records adjacent implementer-found diagnostic paths,
 and qualifies engine-allocation limits (review-01 O1). No C1–C15 criterion or prior decision is
-weakened. The [round-2 coverage map](coverage-02.md) was derived before implementation.
+weakened. Revision 3 answers [review-02](review-02.md)'s AGG-01 and EVID-01: aggregate
+rendering is bounded, equality and edge oracles are strengthened, and the K1.2 redelivery hold
+renderer joins DEC-4. [Coverage-03](coverage-03.md) and its subsystem reconstruction precede code
+changes; [coverage-02](coverage-02.md) remains the earlier plan.
 
 ## Identity and authority
 
@@ -68,7 +71,8 @@ maximal accepted caller scope/key plus a long namespace and surrogate namespace,
 maximum. The Layer-3 identity owner states the producer/consumer closure and records this binding
 choice without fixing a wire format.
 
-**DEC-4 (diagnostic identity):** the four Outcome/control boundaries render an identity fragment
+**DEC-4 (diagnostic identity):** the four Outcome/control boundaries and the K1.2-added
+redelivery recovery-held refusal render an identity fragment
 only when it has at most 128 UTF-16 code units, all printable ASCII; otherwise they use the fixed
 text `<identity omitted>`. Apply this before concatenation to wrong caller identities, identities
 proved equal by replay/current-exchange lookup, Execution IDs, duplicate Emission keys, and pinned
@@ -79,17 +83,29 @@ the missing-code reason is at most 600. Refusal records still retain the exact s
 coordinates and trusted actor attribution remain exact. Diagnostic lossiness never affects
 classification, equality, authority, code-availability comparison or accepted content.
 
-**DEC-5 (combined content diagnostics):** before adding an Outcome/control root label, project
-each captured value issue's path and message for display. A path retains at most 128 printable
-ASCII units or becomes `<omitted>`; a message retains at most 1,024 printable ASCII units or
-becomes `<message omitted>`. Preserve every captured issue, its code, the outer root label and
-the existing order. The existing unknown-field rule retains its separate omission marker. This
-also bounds malformed member-name and constructor-name aliases without changing canonical value
-validation or K1.1 creation/ingress diagnostics. No aggregate truncation is used: DEC-2 requires
-content issues to be reported together. With the binding's fixed labels, a rendered issue is less
-than 2,048 units and an Outcome/control refusal with N issues is bounded by 1,024 + 2,050N units.
-This is an explicit per-fragment/per-issue policy, not a 1,024-unit cap on the complete reason;
-existing root traversal, unknown-field and configured Emission limits still govern capture.
+**DEC-5 (combined content diagnostics):** one content refusal renders the first eight captured
+issues in their capture order, with root label and code (and message for Outcomes). At rendering,
+a value-relative path keeps at most 128 printable ASCII UTF-16 units or becomes `<omitted>`, before
+adding its root label; a message keeps at most 1,024 printable ASCII units or becomes
+`<message omitted>`. Remaining issues are summarized as `N additional issues: code=count, ...`,
+with every remaining code and its exact count, in order of first remaining occurrence. Thus every
+captured issue contributes either a detail or a count. Details after eight lose their path/message,
+not their code/count. Unknown-field and value-capture stopping rules remain unchanged.
+
+The complete Outcome/control content reason is at most 16,384 UTF-16 units, independent of issue
+count or configured Emission capacity. Eight details cost less than 10,240 units (each <1,280:
+root <64, relative path <=128, code <=32, message <=1,024, punctuation <32). The current 17 fixed
+codes cost less than 1,024 units in the summary (each code <=32, each array-bounded count <=10
+digits, separators); total and fixed wrapper cost less than 1,024 more. The declared bound leaves
+headroom. A code-inventory test pins that proof dependency. This bounds rendering/retention,
+not the integrated per-root capture or deployment whole-message budget.
+
+The revision-2 premise that DEC-2 forbids a bounded rendered list was incorrect: the binding already
+stops unknown-field reports at eight per holder and value capture at the byte limit. DEC-2 requires
+one refusal for the content group; this summary preserves combined code evidence without expanding
+all prose. Projection runs when the selected refusal is rendered. Capture stays eager and exact
+identity comparisons, decision-02 order and accepted data use their existing semantic inputs.
+K1.1 creation/ingress diagnostics, identity.ts and values.ts are unchanged.
 
 **DEC-6 (explicit diagnostic payloads):** protocol reports and delivery failures retain their
 existing first-1,024-UTF-16-unit rule, including its treatment of non-ASCII text and split surrogate
@@ -120,7 +136,7 @@ methods, with the revision-9 map below carried forward in full. Native fidelity 
 | C14 structure | cumulative inventory/import graph | existing private zone and 13-source-file inventory agree | architecture conformance guard |
 | C15 Layer 3 | identity → cycle → recovery + BASELINE/DEC-1/2/3 | one owner per rule, binding choice distinguished from architecture, decision-02 provenance and wording corrected | source/link audit |
 | DIAG-01 / C3,C8–C10 | visibility-only Outcome caller and authorized controls; wrong 50,000,000-unit, lone-surrogate and engine-maximum IDs; open/resolved/terminal states | refusal returned and recorded, bounded identity fragments, no exception or accepted-state change, later current answer accepted | round-2 diagnostic matrix and memory-heavy probes |
-| Diagnostic dependencies / C2,C3,C8–C13 | accepted conflict, matched coordinates, control revalidation, missing pins and history, malformed member/constructor names, duplicate Emission key | every renderer follows DEC-4/5; every captured content issue remains; exact structured identities and DEC-8 explicit diagnostic semantics unchanged | round-2 tests and renderer-specific ablations; reconstruction inventory |
+| Diagnostic dependencies / C2,C3,C8–C13 | accepted conflict, matched coordinates, control revalidation, missing pins and history, malformed member/constructor names, duplicate Emission key | every renderer follows DEC-4/5; every captured content issue contributes detail or code/count; exact structured identities and DEC-8 explicit diagnostic semantics unchanged | round-2 tests and renderer-specific ablations; reconstruction inventory |
 
 Unknown-field diagnostics (O3) may be bounded separately without modifying keys or accepted content;
 any such change needs a distinguishing test and ablation. Every existing test and all 36 original
@@ -138,7 +154,11 @@ script. Its 36 mutations and full-suite control/oracles are unchanged; no NOT AP
 as rejection. Both raw runs are retained. Correction I1–I7 and every new renderer mutation require
 clean controls and actual test failures. The separate suites retain revision 9's requested evidence
 even though npm test is a superset.
-No Agent behavior changed; evals optional regression coverage only. Attach raw logs, exact commands,
+Run `npm run test:evals` as requested regression evidence; no Agent quality claim is made.
+Also run review-01/review-02 probes and the engine-max probe sequentially with explicit heap limits.
+The sealed original runner currently exits 1 with B6/B12/B13/B14 NOT APPLICABLE; the adapter is
+substitute evidence. B..C diff-check exits 2 on sealed historical logs; disclose this rather than
+editing them. validate.mjs retains raw exit status and therefore exits nonzero for those results. Attach raw logs, exact commands,
 versions, exits/counts and SHA-256 manifest in H with the numbered implementation report and only the correction's
 007 status row. C/H follow 006/008. Verify configured remote and remote branch SHA; if push is
 unavailable, provide verified bundle/full source plus binary cumulative patch.

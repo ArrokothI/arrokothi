@@ -1,11 +1,11 @@
 # Activation identity, diagnostic retention and cumulative audit
 
-Implementer: Codex (GPT-6), 2026-09-26. Round 2 self-review, not independent acceptance.
+Implementer: Codex (GPT-6), 2026-09-27. Round 2 continued self-review, not independent acceptance.
 Governing B `a20d278185eaffc7f8b7489345a3624231ff6e6d`; reviewed H
 `6541115e2e5389a7e5cff86f87d857b4eb486d7d`; review record
 [review-01](review-01.md), recorded at `449b243cd31d5596c457e091233dfc4d77a4eff4`.
-The correction contract revision 2 carries forward K1.2 revision 9. The
-[coverage map](coverage-02.md) predates code changes. Final candidate identities, command results,
+The correction contract revision 3 carries forward K1.2 revision 9. The
+[coverage map](coverage-03.md) predates code changes. Final candidate identities, command results,
 probe observations and ablation results belong in implementation-02; this note does not certify
 checks that have not yet run. The previous report and review remain unchanged historical evidence.
 
@@ -28,12 +28,12 @@ creation, receipts or derived-ID composition.
 
 ## Renderer and retainer inventory
 
-Locations below identify the inspected pre-correction source at `449b243`; function names remain
+Locations below identify the inspected pre-correction source at `449b243` (per-fragment inventory), rechecked at `b18a729` (aggregate inventory); function names remain
 navigation points after edits. All coordinator locations are in `packages/kernel/src/coordinator.ts`.
 C = caller-supplied or caller-selected text; K = Kernel-minted or exact Kernel-retained identity;
 H = trusted host authentication context. K identities can contain both C and H text.
 
-| Producer, renderer or retainer | Source at inspected head | Provenance and dependency | Round-2 treatment |
+| Producer, renderer or retainer | Source at inspected head | Provenance and dependency | Current treatment |
 |---|---|---|---|
 | Creation → Execution → Activation | coordinator 903, 1184; identity.ts `packIdentity` | K composed from H namespace and bounded C scope/key; exchange suffix K | Semantic spelling unchanged; allocation qualification only. |
 | Scope and single identity capture | coordinator 1365–1383; envelope.ts `acceptActivationIdentity` | C destination first, then C primitive Activation text; capture may reenter before classification | No additional observation, normalization, validity rule or classification change. |
@@ -48,8 +48,8 @@ H = trusted host authentication context. K identities can contain both C and H t
 | Code-hold aliases | coordinator 1627, 1698, 1800, 1810, 1820, 2058; `holdsOf` | K retained reason built from rendered C pins | Reuse bounded reason in refusal, enter/update/clear/end history and inspection; no new raw identity interpolation. |
 | Explicit protocol diagnostic and its aliases | coordinator 1854–1855, 1875–1887, 1725, 2073 | C operational diagnostic, already bounded by DEC-8; K attempt fields separate | Keep the existing first-1,024-UTF-16-unit payload rule, including non-ASCII/surrogate behavior. History adds fixed text. |
 | Delivery failure and late report | coordinator 503, 2201–2217, 2256–2262 | Driver diagnostic under existing delivery rule; K delivery/Activation coordinates | Existing diagnostic rule unchanged; settlement closes over only its own attempt row. |
-| Value-issue path → located → explain | values.ts 307, 875, 914–929; envelope.ts 51–74; outcome.ts `acceptRoot`, `captureTextList`, `explainOutcomeIssues` | C member names can appear in paths before length/Unicode rejection; root/code labels K | Project each captured issue before adding Outcome/control root label; preserve every issue/code, omit overlong/non-printable path detail. Integrated values.ts and K1.1 creation/ingress rendering remain unchanged. |
-| Value diagnostic constructor-name alias | values.ts 285–302, 627, 659, 841; outcome.ts 461–469 | C constructor.name can enter a captured message | Bound projected message before Outcome rendering; no new caller observation or value repair. |
+| Value-issue path → located → explain | values.ts 307, 875, 914–929; envelope.ts 51–74; outcome.ts `acceptRoot`, `captureTextList`, `explainOutcomeIssues` | C member names can appear in paths before length/Unicode rejection; root/code labels K | Keep the raw path and root label separate during capture; render up to eight details, then count each remaining code under DEC-5. Integrated values.ts and K1.1 creation/ingress rendering remain unchanged. |
+| Value diagnostic constructor-name alias | values.ts 285–302, 627, 659, 841; outcome.ts 461–469 | C constructor.name can enter a captured message | Project only displayed messages during Outcome rendering; no new caller observation or value repair. |
 | Unknown envelope/next/Emission field | outcome.ts 223–267 | C field name; existing eight-reports-per-holder rule | Existing 128-printable-ASCII omission policy remains; unknown value unread. |
 | Duplicate Emission key | outcome.ts 326 | C key already passed value-text checks, so finite but potentially large | Bound displayed key, retain exact comparison/key and all issue codes. |
 | Refusal retention | coordinator 2170–2179; refusal.ts 139–144 | Frozen K record containing rendered reason plus exact K executionId | Same object returned and retained, one per-Execution refusal position; no late renderer or extra caller read. |
@@ -59,10 +59,12 @@ H = trusted host authentication context. K identities can contain both C and H t
 
 Related K1.1 creation/input/dispatch/redelivery prose was read as a dependency: creation conflict
 and input conflict render keys/IDs; dispatch and redelivery render retained IDs and hold reasons.
-Their integrated code, identity composition and general diagnostic policy are unchanged in this
-packet. The code-hold reason they may quote is produced by corrected recovery. A bounded claim in
+Creation, ingress and dispatch remain unchanged. Redelivery's recovery-held refusal was added by
+K1.2, contrary to the earlier inventory's integrated-code classification. Its Activation fragment
+now follows DEC-4; a code hold reuses its bounded reason, and a protocol hold preserves its explicit
+1,024-unit diagnostic. The redelivery reason is at most 2,048 units; it is not an identity-only reason. The code-hold reason they may quote is produced by corrected recovery. A bounded claim in
 this report is about the four Outcome/control boundaries and their retained diagnostic aliases,
-not a new global K1.1 refusal limit.
+including that K1.2 redelivery hold renderer, not a global K1.1 refusal limit.
 
 Names and conceptual aliases followed: identity, Activation, attempt, exchange, Execution,
 namespace, scope, key, pin, revision, claim, currency, replay/conflict, refusal, reason, issue,
@@ -97,8 +99,8 @@ coordinate tests. Diagnostic lossiness must not recreate that original defect.
 - **SELF-DIAG-01, implementer-found:** malformed value member names and constructor names bypassed
   the unknown-Outcome-field policy through captured issue paths/messages. Direct probes on the
   inspected head produced rendered reasons of 1,000,092 and 1,000,071 units respectively, and
-  an unpaired surrogate survived a control-root path. Project captured paths/messages before
-  root-prefix composition on Outcome/control capture. Keep every issue/code and the outer root.
+  an unpaired surrogate survived a control-root path. Project displayed paths/messages at rendering before
+  root-prefix composition. Additional issues contribute their exact code counts under DEC-5.
 - **SELF-DIAG-02, implementer-found dependency:** duplicate Emission keys and accepted pinned-code
   names were finite under value limits but still rendered large C identity fragments. Use the same
   diagnostic identity rule, while keeping exact duplicate/code-availability comparisons and all
@@ -107,13 +109,51 @@ coordinate tests. Diagnostic lossiness must not recreate that original defect.
   implying it was fixed or changing creation behavior. Original ID-01/EVID-01 closures remain
   subject to this explicit limit; they are not reaccepted by this implementer.
 
-Content diagnostics use a per-fragment/per-issue bound, explicitly instead of a 1,024-unit whole
-reason cap. Paths keep at most 128 printable ASCII units or `<omitted>`; messages at most
-1,024 or `<message omitted>`. The existing fixed root labels and codes make each rendered issue
-less than 2,048 units; a reason with N issues is bounded by 1,024 + 2,050N units. Preserve order
-and every captured issue: aggregate truncation would contradict DEC-2's combined diagnostics.
-The rule does not promise all arbitrary input defects are scanned: existing per-root work limits,
-unknown-field report limits and configured Emission capacity still govern capture.
+## Aggregate reconstruction and review-02 closure
+
+`values.ts` produces raw paths and messages, one issue per refused position. Shared references
+repeat those positions while spending roughly one canonical byte each. The 130×4,096 witness
+therefore creates 532,480 issues within one root. Up to the configured Emission capacity plus
+progress and result/error roots contribute to `captureOutcome`. The old chain projected all
+messages, copied every issue through `located`, then rendered everything after grant validation.
+Controls used the same capture but rendered paths/codes only. `#refusal` retained the complete
+string; inspection reused it. No retainer supplied a missing aggregate bound.
+
+The new `appendRootIssues` stores one raw issue with its separate Kernel root label. Capture and
+classification stay in place; `explainDiagnosticIssues` is called only for the selected content
+refusal. It renders eight details and counts the remaining fixed codes. `submitOutcome` combines
+identity issues first; controls share the renderer without messages. `explain` remains the
+integrated creation/ingress formatter. `#refusal` and inspection receive only the final bounded
+string, so raw paths/messages are temporary capture data, not retained evidence.
+
+Correction DEC-5 owns the 16,384-unit aggregate bound and its calculation. Each issue contributes
+one detail or one count; every remaining code appears in first occurrence order. The producer has
+17 fixed codes, checked in the test. Unknown fields retain their eight-per-holder stopping rule.
+Paths/messages within the displayed prefix use the existing limits; values and Emission capacity
+retain their original validators. The large reviewer probe and several-root tests exercise the
+aggregate independently of the per-fragment edges.
+
+Round 2 missed AGG-01 because the proof stopped at `1,024 + 2,050N` and never bounded N. Its
+three-issues-per-root tests did not expose that multiplication. DEC-2's combined refusal requirement
+was mistakenly interpreted as requiring every detailed spelling, although unknown fields and
+byte-limited capture already stop diagnostics. The code-count summary supplies combined evidence.
+Round 2 missed EVID-01 because the negative identity always rendered differently from the current
+one. Tests now give the wrong Outcome a valid grant and make both wrong/current IDs unrenderable;
+R4/R5/R7/R9 equivalents demonstrate that the new oracles distinguish the reviewer's mutants.
+
+O-R2-1: eager projection of every message is removed. Eager capture, including integrated
+values.ts's per-issue cost, remains. No claim is made that this repair establishes the broader
+values.md cost obligation for integrated K1.1. O-R2-2: corrected provenance and bounded redelivery
+hold identity. O-R2-3: sealed original runner and cumulative diff-check nonzero results must appear
+in implementation-02; the adapted 36-ablation result is substitute evidence.
+
+Inverse witnesses: I1–I7 preserve the original identity and unknown-field rules; D1–D35 restore
+individual unbounded renderers/guards. R4/R5/R7 replace exact comparisons with lossy text; R9 and
+G6–G8 shift path/message edges. G1–G5 remove aggregation/counts or shift its detail threshold;
+G9 restores eager projection; G10/G11 reverse detail/code order; G12/G13 lose or prematurely
+project the root label; G14 substitutes inherited root metadata. Original B12–B20 invert authority/content/currency ordering. Additional
+R1/R2/R6/R8/R10/R11/R12 preserve the reviewer's structured identity, code-availability, replay,
+identity-edge, message, hold-update and explicit-diagnostic inverse cases.
 
 Explicit protocol/delivery diagnostic payloads retain their established raw first-1,024-unit rule.
 They are not identity fragments, and their fixed hold/history prefixes can make a complete reason
@@ -130,8 +170,8 @@ claim that their final executions have already passed. Implementation-02 binds r
 |---|---|
 | C1 | `#visible` precedes other observation on all four surfaces; hidden/missing yield the same null refusal with position 0. Preserve scope/read-count and unauthorized-control unread-request cases. |
 | C2 | accepted Map lookup precedes terminal/currency/grant; captured identity decides replay/conflict. Bound conflict prose while retaining original receipt reference and zero replay mutation after takeover, later dispatch and terminalization. |
-| C3 | capture keeps independent epoch/base; terminal → Activation/epoch/base → grant → capacity → combined issues. Project diagnostic fragments only; preserve whole-refusal state and a later valid answer. Include huge/surrogate/engine-edge wrong IDs and every matched refusal group. |
-| C4 | `#accept` builds receipt, output, acknowledgment/disposition lists, resolved exchange, history and replay wrapper before mutation. Lossy diagnostic helpers never reach accepted keys/data; batch membership remains independent of opaque progress. O1 allocation failure remains pre-apply. |
+| C3 | capture keeps independent epoch/base; terminal → Activation/epoch/base → grant → capacity → combined issues. Render the bounded detail/summary only; preserve whole-refusal state and a later valid answer. Include huge/surrogate/engine-edge wrong IDs and every matched refusal group. |
+| C4 | `#accept` builds receipt, output, acknowledgment/disposition lists, resolved exchange, history and replay wrapper before mutation. Accepted keys/data use the exact captured inputs (R4/R5/R7 and identity tests); batch membership remains independent of opaque progress. O1 allocation failure remains pre-apply. |
 | C5 | accepted next alone sets lifecycle; next dispatch uses accepted progress/new exchange/epoch 1. Terminal fresh submissions and controls remain fenced; qualified engine constraint is separate from ordinary representable-ID answerability. |
 | C6 | batch acknowledgment precedes non-batch terminal disposition; terminal ingress replay/conflict precedes fresh-input refusal. Integrated input handling is unchanged; complete/fail and queued-outside-batch schedules remain required. |
 | C7 | Effects inspect only length, await does not read wait, unknown obligations refuse whole. No Effect ID or admission/settlement record is created; issue projection does not change the unsupported classification. |

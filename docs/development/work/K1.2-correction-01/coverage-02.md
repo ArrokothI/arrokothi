@@ -1,5 +1,8 @@
 # Round 2 coverage before implementation
 
+Historical planning premise: [coverage-03](coverage-03.md) supersedes this map's aggregate policy
+after review-02. The schedules below are retained; revision 3 of the contract owns the current rule.
+
 Derived 2026-09-26 by the implementer under B's 006/008/012, before code changes.
 Correction contract revision 2 carries forward C1–C15 and DEC-1–20. This is implementation
 planning and self-review, not independent acceptance. Final observations belong in implementation-02.

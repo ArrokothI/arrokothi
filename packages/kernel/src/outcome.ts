@@ -38,11 +38,10 @@
 import {
   acceptActivationIdentity,
   diagnosticIdentity,
-  diagnosticIssues,
+  appendRootIssues,
+  explainDiagnosticIssues,
   acceptIdentityText,
   appendIssue,
-  appendIssues,
-  located,
   observeField,
   observeOwn,
   type LocatedIssue,
@@ -196,7 +195,7 @@ function acceptRoot(observed: unknown, label: string, issues: LocatedIssue[]): C
   }
   const captured = canonicalize(observed);
   if (!captured.ok) {
-    appendIssues(issues, located(diagnosticIssues(captured.issues), label));
+    appendRootIssues(issues, captured.issues, label);
     return null;
   }
   return captured.value;
@@ -399,8 +398,8 @@ function captureNext(observed: unknown, issues: LocatedIssue[]): CapturedNext | 
 /**
  * Reads everything in an Outcome envelope except the two identities the coordinator reads first.
  *
- * Fields are observed in a fixed order, each once. Every issue is collected, so one refusal names
- * every reason the content was not acceptable.
+ * Fields are observed in a fixed order, each once. Every issue is collected; DEC-5 renders a bounded
+ * detail list and summarizes remaining issue codes and counts in one refusal.
  */
 export function captureOutcome(envelope: object, emissionLimit: number): OutcomeCapture {
   const issues: LocatedIssue[] = [];
@@ -460,15 +459,7 @@ export function captureOutcome(envelope: object, emissionLimit: number): Outcome
 }
 
 /** Renders Outcome issues with their messages, since several are not boundary-value codes. */
-export const explainOutcomeIssues = (issues: readonly LocatedIssue[]): string => {
-  let out = "";
-  for (let index = 0; index < issues.length; index += 1) {
-    const issue = readAt(issues, index) as LocatedIssue;
-    if (index > 0) out += "; ";
-    out += `${issue.path === "" ? "envelope" : issue.path} ${issue.code} (${issue.message})`;
-  }
-  return out;
-};
+export const explainOutcomeIssues = (issues: readonly LocatedIssue[]): string => explainDiagnosticIssues(issues, true);
 
 // -- Controls on the unresolved exchange -------------------------------------
 

@@ -75,6 +75,7 @@ import {
   appendIssues,
   boundDiagnostic,
   diagnosticIdentity,
+  explainDiagnosticIssues,
   explain,
   located,
   observeField,
@@ -1268,7 +1269,7 @@ export class ExecutionCoordinator {
       return err(
         this.#refusal(
           "recovery_held",
-          `Activation ${intent.activation.activationId} is recovery-held and is not redelivered: ${hold.reason}`,
+          `Activation ${diagnosticIdentity(intent.activation.activationId)} is recovery-held and is not redelivered: ${hold.reason}`,
           record,
         ),
       );
@@ -1606,7 +1607,7 @@ export class ExecutionCoordinator {
     const issues: LocatedIssue[] = [];
     const named = captureAttempt(request, issues);
     if (named === null) {
-      return err(this.#refusal("malformed_value", `takeover request is not acceptable: ${explain(issues)}`, record));
+      return err(this.#refusal("malformed_value", `takeover request is not acceptable: ${explainDiagnosticIssues(issues, false)}`, record));
     }
     const intent = this.#openExchange(record, named.activationId, "take over");
     if (!intent.ok) return intent;
@@ -1772,7 +1773,7 @@ export class ExecutionCoordinator {
     const issues: LocatedIssue[] = [];
     const captured = captureRecovery(request, issues);
     if (captured === null) {
-      return err(this.#refusal("malformed_value", `recovery request is not acceptable: ${explain(issues)}`, record));
+      return err(this.#refusal("malformed_value", `recovery request is not acceptable: ${explainDiagnosticIssues(issues, false)}`, record));
     }
     const intent = this.#openExchange(record, captured.activationId, "recover");
     if (!intent.ok) return intent;
@@ -1855,7 +1856,7 @@ export class ExecutionCoordinator {
     const diagnosticSeen = observeOwn(report, "diagnostic");
     const diagnostic = diagnosticSeen.threw ? PROTOCOL_FAILURE_FALLBACK : boundDiagnostic(diagnosticSeen.observed, PROTOCOL_FAILURE_FALLBACK);
     if (named === null) {
-      return err(this.#refusal("malformed_value", `protocol-failure report is not acceptable: ${explain(issues)}`, record));
+      return err(this.#refusal("malformed_value", `protocol-failure report is not acceptable: ${explainDiagnosticIssues(issues, false)}`, record));
     }
     const intent = this.#openExchange(record, named.activationId, "hold");
     if (!intent.ok) return intent;
