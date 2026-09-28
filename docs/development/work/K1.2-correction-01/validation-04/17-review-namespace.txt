@@ -1,0 +1,14 @@
+payload C: 2b8a50297ebe83cb0922bb239aa834a2ecebc1ac
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --max-old-space-size=8192 --experimental-strip-types docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T14:15:49.103Z
+
+create: ok
+dispatch: ok
+activationId length 268436490
+Outcome complete (current attempt, valid): THREW RangeError: Invalid string length
+Outcome continue + one Emission (current attempt, valid): THREW RangeError: Invalid string length
+Outcome continue, no Emission: ok
+
+exit: 0; signal: null; error: none

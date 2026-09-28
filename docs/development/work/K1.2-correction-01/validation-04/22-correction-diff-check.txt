@@ -1,0 +1,88 @@
+payload C: 2b8a50297ebe83cb0922bb239aa834a2ecebc1ac
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: git diff --check b18a729d989dea334a86ec08bdf8773ee77de4db HEAD
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T14:21:02.143Z
+
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:8: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:10: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:12: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:14: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:16: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:18: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:20: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-02/12-diff-check.txt:22: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:8: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:10: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:12: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:14: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:16: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:18: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:20: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:22: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:24: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:26: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:28: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:30: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:32: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:34: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:36: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/12-diff-check.txt:38: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:8: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:10: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:12: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:14: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:16: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:18: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:20: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/19-round2-diff-check.txt:22: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:8: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:10: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:12: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:14: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:16: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:18: trailing whitespace.
++++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:20: trailing whitespace.
++++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2-correction-01/validation-03/22-correction-diff-check.txt:22: trailing whitespace.
+++++               tests 450, pass 450, fail 0; failing: 
+
+exit: 2; signal: null; error: none
