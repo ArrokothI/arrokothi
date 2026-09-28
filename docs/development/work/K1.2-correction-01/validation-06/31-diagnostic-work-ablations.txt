@@ -1,0 +1,41 @@
+payload C: 602ea3b3955f1aea935849e993ebfb66b64ebd5b
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/diagnostic-ablations-04.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T20:29:50.727Z
+
+CONTROL diagnostic work: exit=0 tests=20 pass=20 fail=0
+REJECTED T1 restore all diagnostic constructor/name lookups: exit=1 tests=20 pass=9 fail=11
+  V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight
+  V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight
+  V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight
+  V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label
+  V-D1 own constructor, constructor.name, and thrown-value properties are never inspected
+  V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation
+  V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state
+  V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics
+  V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state
+  V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics
+  decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption
+REJECTED T2 reintroduce one diagnostic constructor read: exit=1 tests=20 pass=9 fail=11
+  V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight
+  V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight
+  V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight
+  V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label
+  V-D1 own constructor, constructor.name, and thrown-value properties are never inspected
+  V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation
+  V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state
+  V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics
+  V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state
+  V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics
+  decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption
+REJECTED T3 array inspection of thrown/revoked values: exit=1 tests=20 pass=18 fail=2
+  V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label
+  V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation
+REJECTED T4 remove the pre-read oversized-string guard: exit=1 tests=20 pass=17 fail=3
+  V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values
+  V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges
+  V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads
+4/4 diagnostic/string-work mutations rejected; whole-packet review remains separate
+
+exit: 0; signal: null; error: none

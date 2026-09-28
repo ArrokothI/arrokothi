@@ -1,0 +1,134 @@
+payload C: 602ea3b3955f1aea935849e993ebfb66b64ebd5b
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/ablations-06.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T20:32:07.537Z
+
+ENV node=v25.2.1 platform=darwin arch=arm64 files=39 mutants=22
+COMMAND ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--experimental-strip-types","--test","--test-reporter=spec","packages/kernel/tests/activation-identity.test.ts","packages/kernel/tests/aggregate-refusal.test.ts","packages/kernel/tests/ambient-reads.test.ts","packages/kernel/tests/boundary.test.ts","packages/kernel/tests/control-authority.test.ts","packages/kernel/tests/creation.test.ts","packages/kernel/tests/delivery-attribution.test.ts","packages/kernel/tests/dispatch.test.ts","packages/kernel/tests/evidence.test.ts","packages/kernel/tests/exact-coordinates.test.ts","packages/kernel/tests/history-attribution.test.ts","packages/kernel/tests/hold-permitted.test.ts","packages/kernel/tests/host-members.test.ts","packages/kernel/tests/ingress.test.ts","packages/kernel/tests/inspection.test.ts","packages/kernel/tests/late-reports.test.ts","packages/kernel/tests/nondisclosure.test.ts","packages/kernel/tests/outcome-acceptance.test.ts","packages/kernel/tests/outcome-evidence.test.ts","packages/kernel/tests/outcome-hostile.test.ts","packages/kernel/tests/outcome-limits.test.ts","packages/kernel/tests/outcome-partial-claim.test.ts","packages/kernel/tests/receipts.test.ts","packages/kernel/tests/recovery-ambient.test.ts","packages/kernel/tests/recovery-evidence.test.ts","packages/kernel/tests/recovery-history.test.ts","packages/kernel/tests/recovery.test.ts","packages/kernel/tests/refusal-diagnostics.test.ts","packages/kernel/tests/refusals.test.ts","packages/kernel/tests/submission-authority.test.ts","packages/kernel/tests/submission-lifetime.test.ts","packages/kernel/tests/takeover-reentrancy.test.ts","packages/kernel/tests/takeover.test.ts","packages/kernel/tests/terminal.test.ts","packages/kernel/tests/transaction.test.ts","packages/kernel/tests/unsupported.test.ts","packages/kernel/tests/value-diagnostic-work.test.ts","packages/kernel/tests/value-refusal-cost.test.ts","packages/kernel/tests/values.test.ts"]
+CONTROL full Kernel suite: exit=0 tests=1331 pass=1331 fail=0 cancelled=0 skipped=0 todo=0
+REJECTED H1 hold history built from an entry whose resultingEpoch is optional (review 09's read): exit=1 tests=1331 pass=1306 fail=25 cancelled=0 skipped=0 todo=0
+  every optional-member, dynamic-key and `in` access in the zone is inventoried
+  amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+  protocol-enter / data
+  protocol-enter / throw
+  protocol-enter / reenter
+  code-enter / data
+REJECTED H2 the apply step reads an optional member of the planned commit: exit=1 tests=1331 pass=1305 fail=26 cancelled=0 skipped=0 todo=0
+  every optional-member, dynamic-key and `in` access in the zone is inventoried
+  amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+  applyControlCommit appends the prebuilt record before any hold write and calls nothing else
+  amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction
+  protocol-enter / data
+  protocol-enter / throw
+REJECTED H3 apply step writes the holds before appending their history: exit=1 tests=1331 pass=1330 fail=1 cancelled=0 skipped=0 todo=0
+  applyControlCommit appends the prebuilt record before any hold write and calls nothing else
+  amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction
+REJECTED H4 protocol report mutates the hold, then builds its history and answer (review 09's order): exit=1 tests=1331 pass=1329 fail=2 cancelled=0 skipped=0 todo=0
+  reportProtocolFailure: after the first mutation, nothing is built, read from the caller or called but the apply steps
+  hold fields and recovery history are written only by the commit paths
+  amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction
+REJECTED H5 code hold mutated, then its history record built: exit=1 tests=1331 pass=1329 fail=2 cancelled=0 skipped=0 todo=0
+  recoverExecution: after the first mutation, nothing is built, read from the caller or called but the apply steps
+  hold fields and recovery history are written only by the commit paths
+  amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction
+REJECTED H6 takeover replaces the attempt, then builds its clearing record: exit=1 tests=1331 pass=1330 fail=1 cancelled=0 skipped=0 todo=0
+  requestTakeover: after the first mutation, nothing is built, read from the caller or called but the apply steps
+  amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction
+REJECTED H7 recovery answer projected after the decision is applied: exit=1 tests=1331 pass=1330 fail=1 cancelled=0 skipped=0 todo=0
+  recoverExecution: after the first mutation, nothing is built, read from the caller or called but the apply steps
+  amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction
+REJECTED H8 prebuilt recovery answer describes the holds before the decision: exit=1 tests=1331 pass=1294 fail=37 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  observer recover refused unauthorized_control; author recover creates hold
+REJECTED H9 takeover clearing record not retained: exit=1 tests=1331 pass=1314 fail=17 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  hold fields and recovery history are written only by the commit paths
+REJECTED H10 takeover record loses its resulting epoch: exit=1 tests=1331 pass=1322 fail=9 cancelled=0 skipped=0 todo=0
+  entered, protocol entered, and cleared_by_takeover are control-origin
+  K12-R3-HISTORY-02 explicit control transitions still record control authority
+  takeover-clear / control
+  takeover-clear / data
+  takeover-clear / throw
+  K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation
+REJECTED H11 declaration records claim attempt-submission authority: exit=1 tests=1331 pass=1298 fail=33 cancelled=0 skipped=0 todo=0
+  ended_by_outcome records attempt_submission, never a control claim
+  K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully
+  entered, protocol entered, and cleared_by_takeover are control-origin
+  K12-R3-HISTORY-02 explicit control transitions still record control authority
+  protocol-enter / control
+  protocol-enter / data
+REJECTED H12 takeover receipt token through the diagnostic spelling: exit=1 tests=1331 pass=1327 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED H13 takeover receipt not retained: exit=1 tests=1331 pass=1323 fail=8 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+  after takeover the retired grant cannot commit while the new grant can
+  K12-R3-AUTH-02 old attempt authority dies with its epoch
+REJECTED H14 takeover acceptance index not advanced: exit=1 tests=1331 pass=1320 fail=11 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  DEC-4 exact retained coordinates: "actor-é" complete
+REJECTED H15 ordinary optional controlScopes read restored: exit=1 tests=1331 pass=1327 fail=4 cancelled=0 skipped=0 todo=0
+  every optional-member, dynamic-key and `in` access in the zone is inventoried
+  amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+  residue Object.prototype.controlScopes gives a visibility-only caller no takeover
+  residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration
+  residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report
+  correction DEC-8 controlScopes comes from the caller, never from Object.prototype
+REJECTED H16 ordinary optional isSafeToReplace call restored: exit=1 tests=1331 pass=1326 fail=5 cancelled=0 skipped=0 todo=0
+  every optional-member, dynamic-key and `in` access in the zone is inventoried
+  amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+  a Driver without the method is refused even when the request's getter installs an inherited one
+  residue pollution left before the call establishes nothing either
+  a function-object Driver is not answered by Function.prototype
+  a class-based Driver without the method is not answered by Object.prototype
+REJECTED H17 ordinary optional mailboxCapacity read restored: exit=1 tests=1331 pass=1329 fail=2 cancelled=0 skipped=0 todo=0
+  every optional-member, dynamic-key and `in` access in the zone is inventoried
+  amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+  residue mailboxCapacity and emissionsPerOutcome at construction declare nothing
+  correction DEC-8 coordinator limits come from the options, never from Object.prototype
+REJECTED H18 ordinary optional emissionsPerOutcome read restored: exit=1 tests=1331 pass=1329 fail=2 cancelled=0 skipped=0 todo=0
+  every optional-member, dynamic-key and `in` access in the zone is inventoried
+  amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+  residue mailboxCapacity and emissionsPerOutcome at construction declare nothing
+  correction DEC-8 coordinator limits come from the options, never from Object.prototype
+REJECTED H19 hostMember answers from Object.prototype: exit=1 tests=1331 pass=1324 fail=7 cancelled=0 skipped=0 todo=0
+  a Driver without the method is refused even when the request's getter installs an inherited one
+  residue pollution left before the call establishes nothing either
+  a class-based Driver without the method is not answered by Object.prototype
+  correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype
+  residue Object.prototype.controlScopes gives a visibility-only caller no takeover
+  residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration
+REJECTED H20 hostMember answers from Function.prototype: exit=1 tests=1331 pass=1330 fail=1 cancelled=0 skipped=0 todo=0
+  a function-object Driver is not answered by Function.prototype
+  correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype
+REJECTED H21 hostMember ignores members the host's own prototype supplies: exit=1 tests=1331 pass=1327 fail=4 cancelled=0 skipped=0 todo=0
+  a class-based Driver's own prototype method is honored (trusted host structure)
+  a method inherited from the host's own prototype object is honored
+  correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype
+  controlScopes inherited from the host's own prototype object is still honored
+  correction DEC-8 controlScopes comes from the caller, never from Object.prototype
+  a limit the host supplies through its own options prototype is honored
+REJECTED H22 descriptor field read without its own-value check: exit=1 tests=1331 pass=1330 fail=1 cancelled=0 skipped=0 todo=0
+  every guarded descriptor read follows its own-value check in the same function
+  amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+22/22 round-6 mutants rejected by the full Kernel suite
+
+exit: 0; signal: null; error: none

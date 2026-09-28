@@ -1,0 +1,1110 @@
+payload C: 602ea3b3955f1aea935849e993ebfb66b64ebd5b
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command (manual addition, bash -c): D=$(mktemp -d); mkdir -p "$D/packages"; cp -R packages/kernel "$D/packages/kernel"; for f in $(git ls-tree --name-only 3b0848ce408ddef9165434f7d7c36e9580ac6341 packages/kernel/src/); do git show 3b0848ce408ddef9165434f7d7c36e9580ac6341:$f > "$D/$f"; done; ln -s "$PWD/node_modules" "$D/node_modules"; cp package.json "$D/"; (cd "$D" && node --test --test-reporter=spec --experimental-strip-types packages/kernel/tests/recovery-ambient.test.ts packages/kernel/tests/host-members.test.ts packages/kernel/tests/ambient-reads.test.ts); s=$?; rm -rf "$D"; exit $s
+environment: 00-environment.json; source under test: reviewed H 3b0848ce408ddef9165434f7d7c36e9580ac6341 packages/kernel/src (git show), tests from C
+started: 2026-09-28T20:36:35.000Z
+
+▶ amendment 02 rule 1–3: no Kernel access reaches a member its object may not own
+  ✖ every optional-member, dynamic-key and `in` access in the zone is inventoried (1.30075ms)
+  ✖ every guarded descriptor read follows its own-value check in the same function (0.166416ms)
+  ✔ the scan is not vacuous: it finds review 09's read and each other forbidden form (37.391041ms)
+✖ amendment 02 rule 1–3: no Kernel access reaches a member its object may not own (39.396958ms)
+▶ amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction
+  ✖ recoverExecution: after the first mutation, nothing is built, read from the caller or called but the apply steps (2.294542ms)
+  ✖ reportProtocolFailure: after the first mutation, nothing is built, read from the caller or called but the apply steps (0.921666ms)
+  ✖ requestTakeover: after the first mutation, nothing is built, read from the caller or called but the apply steps (1.284708ms)
+  ✖ applyControlCommit appends the prebuilt record before any hold write and calls nothing else (0.753208ms)
+  ✖ hold fields and recovery history are written only by the commit paths (0.830416ms)
+✖ amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction (6.2605ms)
+▶ correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype
+  ✖ a Driver without the method is refused even when the request's getter installs an inherited one (3.862125ms)
+  ✖ residue pollution left before the call establishes nothing either (2.070041ms)
+  ✖ a function-object Driver is not answered by Function.prototype (1.939666ms)
+  ✔ a class-based Driver's own prototype method is honored (trusted host structure) (0.805333ms)
+  ✔ a method inherited from the host's own prototype object is honored (0.910292ms)
+  ✖ a class-based Driver without the method is not answered by Object.prototype (0.588167ms)
+✖ correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype (11.133917ms)
+▶ correction DEC-8 controlScopes comes from the caller, never from Object.prototype
+  ✖ residue Object.prototype.controlScopes gives a visibility-only caller no takeover (0.669292ms)
+  ✖ residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration (1.3745ms)
+  ✖ residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report (0.636458ms)
+  ✔ controlScopes inherited from the host's own prototype object is still honored (0.56475ms)
+✖ correction DEC-8 controlScopes comes from the caller, never from Object.prototype (3.413042ms)
+▶ correction DEC-8 coordinator limits come from the options, never from Object.prototype
+  ✖ residue mailboxCapacity and emissionsPerOutcome at construction declare nothing (0.90375ms)
+  ✔ a limit the host supplies through its own options prototype is honored (0.627833ms)
+✖ correction DEC-8 coordinator limits come from the options, never from Object.prototype (1.598875ms)
+▶ K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation
+  ✔ protocol-enter / control (4.312042ms)
+  ✖ protocol-enter / data (2.399042ms)
+  ✖ protocol-enter / throw (1.102333ms)
+  ✖ protocol-enter / reenter (2.30825ms)
+  ✔ code-enter / control (1.154083ms)
+  ✖ code-enter / data (0.979625ms)
+  ✖ code-enter / throw (0.825875ms)
+  ✖ code-enter / reenter (1.048042ms)
+  ✔ code-update / control (1.585292ms)
+  ✖ code-update / data (1.173333ms)
+  ✖ code-update / throw (0.875875ms)
+  ✖ code-update / reenter (1.081875ms)
+  ✔ code-clear / control (0.742541ms)
+  ✖ code-clear / data (1.016292ms)
+  ✖ code-clear / throw (0.860125ms)
+  ✖ code-clear / reenter (1.024042ms)
+  ✔ takeover-clear / control (0.619167ms)
+  ✔ takeover-clear / data (0.573125ms)
+  ✔ takeover-clear / throw (0.480166ms)
+  ✔ outcome-end / control (0.582209ms)
+  ✔ outcome-end / data (0.692125ms)
+  ✔ outcome-end / throw (0.560417ms)
+  ✔ the matrix is review 09's 22 cases (0.043792ms)
+✖ K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation (27.049416ms)
+▶ K12C1-R9-HISTORY-01 retained evidence holds no caller object
+  ✖ protocol-enter: an inherited caller object never enters, and later mutation changes nothing (0.711125ms)
+  ✖ code-enter: an inherited caller object never enters, and later mutation changes nothing (0.612125ms)
+  ✖ code-update: an inherited caller object never enters, and later mutation changes nothing (0.87725ms)
+  ✖ code-clear: an inherited caller object never enters, and later mutation changes nothing (0.741917ms)
+  ✔ takeover-clear: an inherited caller object never enters, and later mutation changes nothing (1.228125ms)
+  ✔ outcome-end: an inherited caller object never enters, and later mutation changes nothing (0.711ms)
+✖ K12C1-R9-HISTORY-01 retained evidence holds no caller object (5.022541ms)
+▶ K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution
+  ✔ takeover clear owns resultingEpoch = the new epoch, not the inherited 777 (0.478ms)
+  ✔ Outcome end owns no resultingEpoch at all, even while one is inherited (0.7215ms)
+✔ K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution (1.260083ms)
+▶ K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype
+  ✖ protocol-enter: counting inherited accessors during observation (0.701ms)
+  ✖ protocol-enter: counting inherited accessors left behind as residue (0.550292ms)
+  ✖ code-enter: counting inherited accessors during observation (0.710791ms)
+  ✖ code-enter: counting inherited accessors left behind as residue (0.725834ms)
+  ✖ code-update: counting inherited accessors during observation (1.651083ms)
+  ✖ code-update: counting inherited accessors left behind as residue (0.843708ms)
+  ✖ code-clear: counting inherited accessors during observation (0.919625ms)
+  ✖ code-clear: counting inherited accessors left behind as residue (0.944291ms)
+  ✔ takeover-clear: counting inherited accessors during observation (1.4715ms)
+  ✔ takeover-clear: counting inherited accessors left behind as residue (0.56225ms)
+  ✔ outcome-end: counting inherited accessors during observation (0.648834ms)
+  ✔ outcome-end: counting inherited accessors left behind as residue (0.68125ms)
+✖ K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype (10.683416ms)
+ℹ tests 63
+ℹ suites 9
+ℹ pass 24
+ℹ fail 39
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 763.686583
+
+✖ failing tests:
+
+test at packages/kernel/tests/ambient-reads.test.ts:149:3
+✖ every optional-member, dynamic-key and `in` access in the zone is inventoried (1.30075ms)
+  AssertionError [ERR_ASSERTION]: an access that may consult a prototype, outside the inventory (classify it or remove it)
+  + actual - expected
+  
+  + [
+  +   'coordinator.ts:520 read caller.controlScopes',
+  +   'coordinator.ts:600 read entry.resultingEpoch',
+  +   'coordinator.ts:620 read entry.resultingEpoch',
+  +   'coordinator.ts:786 read options.mailboxCapacity',
+  +   'coordinator.ts:793 read options.emissionsPerOutcome',
+  +   'coordinator.ts:1636 read this.#driver.isSafeToReplace'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/ambient-reads.test.ts:159:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+      at Array.map (<anonymous>) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'coordinator.ts:520 read caller.controlScopes', 'coordinator.ts:600 read entry.resultingEpoch', 'coordinator.ts:620 read entry.resultingEpoch', 'coordinator.ts:786 read options.mailboxCapacity', 'coordinator.ts:793 read options.emissionsPerOutcome', 'coordinator.ts:1636 read this.#driver.isSafeToReplace' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/ambient-reads.test.ts:163:3
+✖ every guarded descriptor read follows its own-value check in the same function (0.166416ms)
+  AssertionError [ERR_ASSERTION]: own-array.ts:106 (fieldDescriptor as { readonly value?: unknown }).value is not preceded by hasOwnValue(fieldDescriptor)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/ambient-reads.test.ts:169:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1518:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/ambient-reads.test.ts:251:5
+✖ recoverExecution: after the first mutation, nothing is built, read from the caller or called but the apply steps (2.294542ms)
+  AssertionError [ERR_ASSERTION]: recoverExecution builds or runs code between its first and last mutation
+  + actual - expected
+  
+  + [
+  +   'calls appendRecoveryHistory',
+  +   'constructs {\n          activationId: pinned.activationId,\n          wri',
+  +   'constructs `compatible code declared available; cleared hold that had r',
+  +   'calls PrimordialObjectFreeze',
+  +   'constructs {\n        cause: "pinned_code_unavailable" as const,\n       ',
+  +   'calls appendRecoveryHistory',
+  +   'constructs {\n        activationId: pinned.activationId,\n        writerE',
+  +   'returns a value built after mutation: return ok({ activationId: pinned.activationId, writerEpoch: ',
+  +   'calls ok',
+  +   'constructs { activationId: pinned.activationId, writerEpoch: pinned.wri',
+  +   'calls holdsOf'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/ambient-reads.test.ts:266:14)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+      at Array.map (<anonymous>) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'calls appendRecoveryHistory', 'constructs {\n          activationId: pinned.activationId,\n          wri', 'constructs `compatible code declared available; cleared hold that had r', 'calls PrimordialObjectFreeze', 'constructs {\n        cause: "pinned_code_unavailable" as const,\n       ', 'calls appendRecoveryHistory', 'constructs {\n        activationId: pinned.activationId,\n        writerE', 'returns a value built after mutation: return ok({ activationId: pinned.activationId, writerEpoch: ', 'calls ok', 'constructs { activationId: pinned.activationId, writerEpoch: pinned.wri', 'calls holdsOf' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/ambient-reads.test.ts:251:5
+✖ reportProtocolFailure: after the first mutation, nothing is built, read from the caller or called but the apply steps (0.921666ms)
+  AssertionError [ERR_ASSERTION]: reportProtocolFailure builds or runs code between its first and last mutation
+  + actual - expected
+  
+  + [
+  +   'calls PrimordialObjectFreeze',
+  +   'constructs {\n      cause: "protocol_failure" as const,\n      reason,\n  ',
+  +   'calls appendRecoveryHistory',
+  +   'constructs {\n      activationId: named.activationId,\n      writerEpoch:',
+  +   'returns a value built after mutation: return ok({ activationId: named.activationId, writerEpoch: c',
+  +   'calls ok',
+  +   'constructs { activationId: named.activationId, writerEpoch: currentEpoc',
+  +   'calls holdsOf'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/ambient-reads.test.ts:266:14)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1518:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'calls PrimordialObjectFreeze', 'constructs {\n      cause: "protocol_failure" as const,\n      reason,\n  ', 'calls appendRecoveryHistory', 'constructs {\n      activationId: named.activationId,\n      writerEpoch:', 'returns a value built after mutation: return ok({ activationId: named.activationId, writerEpoch: c', 'calls ok', 'constructs { activationId: named.activationId, writerEpoch: currentEpoc', 'calls holdsOf' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/ambient-reads.test.ts:251:5
+✖ requestTakeover: after the first mutation, nothing is built, read from the caller or called but the apply steps (1.284708ms)
+  AssertionError [ERR_ASSERTION]: requestTakeover builds or runs code between its first and last mutation
+  + actual - expected
+  
+  + [
+  +   'calls mintSubmission',
+  +   'calls appendRecoveryHistory',
+  +   'constructs {\n        activationId: named.activationId,\n        writerEp',
+  +   'constructs `takeover to writer epoch ${writerEpoch} cleared the protoco',
+  +   'returns a value built after mutation: return ok({\n' +
+  +     '      activationId: named.activationId,\n' +
+  +     '      su',
+  +   'calls ok',
+  +   'constructs {\n      activationId: named.activationId,\n      supersededEp'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/ambient-reads.test.ts:266:14)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'calls mintSubmission', 'calls appendRecoveryHistory', 'constructs {\n        activationId: named.activationId,\n        writerEp', 'constructs `takeover to writer epoch ${writerEpoch} cleared the protoco', 'returns a value built after mutation: return ok({\n      activationId: named.activationId,\n      su', 'calls ok', 'constructs {\n      activationId: named.activationId,\n      supersededEp' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/ambient-reads.test.ts:270:3
+✖ applyControlCommit appends the prebuilt record before any hold write and calls nothing else (0.753208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/ambient-reads.test.ts:272:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/ambient-reads.test.ts:284:3
+✖ hold fields and recovery history are written only by the commit paths (0.830416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'recoverExecution',
+  +   'reportProtocolFailure',
+  -   'applyControlCommit',
+      'requestTakeover'
+    ]
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/ambient-reads.test.ts:297:12)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'recoverExecution', 'reportProtocolFailure', 'requestTakeover' ],
+    expected: [ 'applyControlCommit', 'requestTakeover' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/host-members.test.ts:76:3
+✖ a Driver without the method is refused even when the request's getter installs an inherited one (3.862125ms)
+  Error: expected a refusal, but the request was accepted
+      at refused (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:554:24)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:96:17)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+
+test at packages/kernel/tests/host-members.test.ts:109:3
+✖ residue pollution left before the call establishes nothing either (2.070041ms)
+  Error: expected a refusal, but the request was accepted
+      at refused (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:554:24)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:115:17)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1518:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+
+test at packages/kernel/tests/host-members.test.ts:122:3
+✖ a function-object Driver is not answered by Function.prototype (1.939666ms)
+  Error: expected a refusal, but the request was accepted
+      at refused (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:554:24)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:132:17)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at packages/kernel/tests/host-members.test.ts:166:3
+✖ a class-based Driver without the method is not answered by Object.prototype (0.588167ms)
+  Error: expected a refusal, but the request was accepted
+      at refused (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:554:24)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:178:17)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at packages/kernel/tests/host-members.test.ts:196:5
+✖ residue Object.prototype.controlScopes gives a visibility-only caller no takeover (0.669292ms)
+  Error: expected a refusal, but the request was accepted
+      at refused (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:554:24)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:210:19)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+
+test at packages/kernel/tests/host-members.test.ts:196:5
+✖ residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration (1.3745ms)
+  Error: expected a refusal, but the request was accepted
+      at refused (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:554:24)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:210:19)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1518:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at packages/kernel/tests/host-members.test.ts:196:5
+✖ residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report (0.636458ms)
+  Error: expected a refusal, but the request was accepted
+      at refused (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:554:24)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:210:19)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at packages/kernel/tests/host-members.test.ts:234:3
+✖ residue mailboxCapacity and emissionsPerOutcome at construction declare nothing (0.90375ms)
+  Error: expected acceptance, got capacity_exhausted: Execution execution-12:host-members8:tenant-a9:report-17 already holds 1 unacknowledged Events, at the declared capacity of 1
+      at accepted (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/harness.ts:548:25)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/host-members.test.ts:247:5)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ protocol-enter / data (2.399042ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1518:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ protocol-enter / throw (1.102333ms)
+  AssertionError [ERR_ASSERTION]: no exception escapes the boundary
+  + actual - expected
+  
+  + Error: ambient history callback
+  +     at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+  +     at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+  +     at ExecutionCoordinator.reportProtocolFailure (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1884:5)
+  +     at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:176:58)
+  +     at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+  +     at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+  +     at Test.runInAsyncScope (node:async_hooks:213:14)
+  +     at Test.run (node:internal/test_runner/test:1106:25)
+  +     at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+  +     at Test.postRun (node:internal/test_runner/test:1235:19)
+  - undefined
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:223:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: ambient history callback
+        at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+        at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+        at ExecutionCoordinator.reportProtocolFailure (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1884:5)
+        at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:176:58)
+        at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+        at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+        at Test.runInAsyncScope (node:async_hooks:213:14)
+        at Test.run (node:internal/test_runner/test:1106:25)
+        at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+        at Test.postRun (node:internal/test_runner/test:1235:19),
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ protocol-enter / reenter (2.30825ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached the inherited accessor
+  
+  1 !== 0
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:224:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-enter / data (0.979625ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-enter / throw (0.825875ms)
+  AssertionError [ERR_ASSERTION]: no exception escapes the boundary
+  + actual - expected
+  
+  + Error: ambient history callback
+  +     at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+  +     at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+  +     at ExecutionCoordinator.recoverExecution (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1817:7)
+  +     at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:181:28)
+  +     at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+  +     at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+  +     at Test.runInAsyncScope (node:async_hooks:213:14)
+  +     at Test.run (node:internal/test_runner/test:1106:25)
+  +     at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+  +     at Test.postRun (node:internal/test_runner/test:1235:19)
+  - undefined
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:223:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: ambient history callback
+        at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+        at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+        at ExecutionCoordinator.recoverExecution (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1817:7)
+        at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:181:28)
+        at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+        at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+        at Test.runInAsyncScope (node:async_hooks:213:14)
+        at Test.run (node:internal/test_runner/test:1106:25)
+        at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+        at Test.postRun (node:internal/test_runner/test:1235:19),
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-enter / reenter (1.048042ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached the inherited accessor
+  
+  1 !== 0
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:224:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-update / data (1.173333ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-update / throw (0.875875ms)
+  AssertionError [ERR_ASSERTION]: no exception escapes the boundary
+  + actual - expected
+  
+  + Error: ambient history callback
+  +     at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+  +     at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+  +     at ExecutionCoordinator.recoverExecution (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1817:7)
+  +     at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:181:28)
+  +     at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+  +     at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+  +     at Test.runInAsyncScope (node:async_hooks:213:14)
+  +     at Test.run (node:internal/test_runner/test:1106:25)
+  +     at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+  +     at Test.postRun (node:internal/test_runner/test:1235:19)
+  - undefined
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:223:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: ambient history callback
+        at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+        at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+        at ExecutionCoordinator.recoverExecution (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1817:7)
+        at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:181:28)
+        at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+        at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+        at Test.runInAsyncScope (node:async_hooks:213:14)
+        at Test.run (node:internal/test_runner/test:1106:25)
+        at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+        at Test.postRun (node:internal/test_runner/test:1235:19),
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-update / reenter (1.081875ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached the inherited accessor
+  
+  1 !== 0
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:224:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-clear / data (1.016292ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-clear / throw (0.860125ms)
+  AssertionError [ERR_ASSERTION]: no exception escapes the boundary
+  + actual - expected
+  
+  + Error: ambient history callback
+  +     at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+  +     at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+  +     at ExecutionCoordinator.recoverExecution (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1797:9)
+  +     at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:181:28)
+  +     at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+  +     at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+  +     at Test.runInAsyncScope (node:async_hooks:213:14)
+  +     at Test.run (node:internal/test_runner/test:1106:25)
+  +     at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+  +     at Test.postRun (node:internal/test_runner/test:1235:19)
+  - undefined
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:223:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: ambient history callback
+        at descriptor.get (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:207:39)
+        at appendRecoveryHistory (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:600:11)
+        at ExecutionCoordinator.recoverExecution (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/src/coordinator.ts:1797:9)
+        at drive (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:181:28)
+        at runCase (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:198:15)
+        at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:36)
+        at Test.runInAsyncScope (node:async_hooks:213:14)
+        at Test.run (node:internal/test_runner/test:1106:25)
+        at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+        at Test.postRun (node:internal/test_runner/test:1235:19),
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:259:7
+✖ code-clear / reenter (1.024042ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached the inherited accessor
+  
+  1 !== 0
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:224:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:260:9)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:271:5
+✖ protocol-enter: an inherited caller object never enters, and later mutation changes nothing (0.711125ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:274:7)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9 {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:271:5
+✖ code-enter: an inherited caller object never enters, and later mutation changes nothing (0.612125ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:274:7)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1518:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:271:5
+✖ code-update: an inherited caller object never enters, and later mutation changes nothing (0.87725ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:274:7)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:271:5
+✖ code-clear: an inherited caller object never enters, and later mutation changes nothing (0.741917ms)
+  AssertionError [ERR_ASSERTION]: the record owns exactly its declared fields
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'activationId',
+      'writerEpoch',
+      'cause',
+      'transition',
+  ...
+      'actorScope',
+  +   'resultingEpoch'
+    ]
+  
+      at assertIntended (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:231:10)
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:274:7)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope', 'resultingEpoch' ],
+    expected: [ 'activationId', 'writerEpoch', 'cause', 'transition', 'reason', 'authority', 'actorNamespace', 'actorScope' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ protocol-enter: counting inherited accessors during observation (0.701ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+      at Array.map (<anonymous>) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ protocol-enter: counting inherited accessors left behind as residue (0.550292ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1518:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ code-enter: counting inherited accessors during observation (0.710791ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ code-enter: counting inherited accessors left behind as residue (0.725834ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ code-update: counting inherited accessors during observation (1.651083ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ code-update: counting inherited accessors left behind as residue (0.843708ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ code-clear: counting inherited accessors during observation (0.919625ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at packages/kernel/tests/recovery-ambient.test.ts:327:7
+✖ code-clear: counting inherited accessors left behind as residue (0.944291ms)
+  AssertionError [ERR_ASSERTION]: no Kernel read reached any inherited record field
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tmp.2R6NKlhAX2/packages/kernel/tests/recovery-ambient.test.ts:361:16)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exit: 1; signal: null; error: none
