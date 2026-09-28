@@ -1,0 +1,159 @@
+payload C: 2613f2b8dee37c934743d9b730e925705086c4c9
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T16:36:46.989Z
+
+R-P1 control 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-zeros"]
+{"mode":"accept-zeros","D":0,"N":4096,"M":256,"ok":true,"bytes":1040639,"records":0,"total":0,"ms":714,"heapMiB":12.9,"rssMiB":124}
+
+R-P1 control 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-empty-objects"]
+{"mode":"accept-empty-objects","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1002,"heapMiB":109.7,"rssMiB":276}
+
+R-P1 control 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-empty-arrays"]
+{"mode":"accept-empty-arrays","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1230,"heapMiB":109.6,"rssMiB":257}
+
+depth32 exact-limit acceptance 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs","accept-deep"]
+{"mode":"accept-depth32-arrays","bytes":1048576,"ms":2582.833958,"heapMiB":182.20919799804688,"rssMiB":313.359375}
+
+R-P1 refusal 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","0"]
+{"mode":"refuse-chain","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1454,"heapMiB":9.8,"rssMiB":101}
+
+R-P4 thrown refusal 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","0"]
+{"D":0,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2026}
+
+R-P1 refusal 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","1000"]
+{"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1468,"heapMiB":5.7,"rssMiB":102}
+
+R-P4 thrown refusal 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","1000"]
+{"D":1000,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2077}
+
+R-P1 refusal 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","10000"]
+{"mode":"refuse-chain","D":10000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1372,"heapMiB":8.4,"rssMiB":101}
+
+R-P4 thrown refusal 1: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000"]
+{"D":10000,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2103}
+
+R-P1 control 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-zeros"]
+{"mode":"accept-zeros","D":0,"N":4096,"M":256,"ok":true,"bytes":1040639,"records":0,"total":0,"ms":683,"heapMiB":12.8,"rssMiB":124}
+
+R-P1 control 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-empty-objects"]
+{"mode":"accept-empty-objects","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":987,"heapMiB":114.5,"rssMiB":279}
+
+R-P1 control 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-empty-arrays"]
+{"mode":"accept-empty-arrays","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1221,"heapMiB":109.4,"rssMiB":280}
+
+depth32 exact-limit acceptance 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs","accept-deep"]
+{"mode":"accept-depth32-arrays","bytes":1048576,"ms":2505.161167,"heapMiB":182.1283721923828,"rssMiB":334.421875}
+
+R-P1 refusal 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","0"]
+{"mode":"refuse-chain","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1405,"heapMiB":9.8,"rssMiB":101}
+
+R-P4 thrown refusal 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","0"]
+{"D":0,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2077}
+
+R-P1 refusal 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","1000"]
+{"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1438,"heapMiB":5.7,"rssMiB":100}
+
+R-P4 thrown refusal 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","1000"]
+{"D":1000,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2004}
+
+R-P1 refusal 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","10000"]
+{"mode":"refuse-chain","D":10000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1430,"heapMiB":8.5,"rssMiB":104}
+
+R-P4 thrown refusal 2: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000"]
+{"D":10000,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2041}
+
+R-P1 control 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-zeros"]
+{"mode":"accept-zeros","D":0,"N":4096,"M":256,"ok":true,"bytes":1040639,"records":0,"total":0,"ms":682,"heapMiB":12.8,"rssMiB":124}
+
+R-P1 control 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-empty-objects"]
+{"mode":"accept-empty-objects","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":999,"heapMiB":109.2,"rssMiB":305}
+
+R-P1 control 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","accept-empty-arrays"]
+{"mode":"accept-empty-arrays","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1227,"heapMiB":113.8,"rssMiB":278}
+
+depth32 exact-limit acceptance 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs","accept-deep"]
+{"mode":"accept-depth32-arrays","bytes":1048576,"ms":2566.787625,"heapMiB":182.1227264404297,"rssMiB":334.15625}
+
+R-P1 refusal 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","0"]
+{"mode":"refuse-chain","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1420,"heapMiB":9.8,"rssMiB":101}
+
+R-P4 thrown refusal 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","0"]
+{"D":0,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2000}
+
+R-P1 refusal 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","1000"]
+{"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1394,"heapMiB":5.7,"rssMiB":100}
+
+R-P4 thrown refusal 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","1000"]
+{"D":1000,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2152}
+
+R-P1 refusal 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","refuse-chain","10000"]
+{"mode":"refuse-chain","D":10000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1481,"heapMiB":8.4,"rssMiB":106}
+
+R-P4 thrown refusal 3: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000"]
+{"D":10000,"ok":false,"trapCalls":1044480,"total":1044481,"firstCode":"unstable_representation","ms":2067}
+
+R-P2 eager pre-authority: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-outcome.ts","/Users/rex-shih/Documents/ArrokothI/arrokothi","0","1"]
+{"D":0,"roots":1,"ok":false,"classification":"unauthorized_submission","reasonLen":206,"ms":1381,"rssMiB":102,"sameExchange":true}
+
+R-P2 eager pre-authority: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-outcome.ts","/Users/rex-shih/Documents/ArrokothI/arrokothi","0","8"]
+{"D":0,"roots":8,"ok":false,"classification":"unauthorized_submission","reasonLen":206,"ms":10990,"rssMiB":123,"sameExchange":true}
+
+R-P5 creation/ingress: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-ingress.ts","/Users/rex-shih/Documents/ArrokothI/arrokothi","0"]
+{"surface":"ingress","D":0,"ok":false,"classification":"malformed_value","reasonLen":453,"ms":1412}
+{"surface":"creation","D":0,"ok":false,"classification":"malformed_value","reasonLen":586,"ms":1393}
+
+R-P2 eager pre-authority: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-outcome.ts","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000","1"]
+{"D":10000,"roots":1,"ok":false,"classification":"unauthorized_submission","reasonLen":206,"ms":1449,"rssMiB":107,"sameExchange":true}
+
+R-P2 eager pre-authority: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-outcome.ts","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000","8"]
+{"D":10000,"roots":8,"ok":false,"classification":"unauthorized_submission","reasonLen":206,"ms":11212,"rssMiB":118,"sameExchange":true}
+
+R-P5 creation/ingress: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-chain-ingress.ts","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000"]
+{"surface":"ingress","D":10000,"ok":false,"classification":"malformed_value","reasonLen":453,"ms":1374}
+{"surface":"creation","D":10000,"ok":false,"classification":"malformed_value","reasonLen":586,"ms":1367}
+
+R-P3 exact coordinates: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/review-06/p-receipts.ts","/Users/rex-shih/Documents/ArrokothI/arrokothi"]
+PASS k: view names the exact Execution
+PASS k: view queued lists exact Event IDs
+PASS k: mailbox view keeps the exact Input ID destination
+PASS k: redeliver answer names the exact Activation
+PASS k: delivered Event destination is the exact Execution
+PASS q: view names the exact Execution
+PASS q: view queued lists exact Event IDs
+PASS q: mailbox view keeps the exact Input ID destination
+PASS q: redeliver answer names the exact Activation
+PASS q: delivered Event destination is the exact Execution
+PASS creation: same position
+PASS creation: distinct tokens across Executions
+PASS input: same position
+PASS input: distinct tokens across Executions
+PASS dispatch: same position
+PASS dispatch: distinct tokens across Executions
+PASS takeover: same position
+PASS takeover: distinct tokens across Executions
+PASS outcome: same position
+PASS outcome: distinct tokens across Executions
+
+SELF-R4-DESCRIPTOR-01 decision-03 scope/count witness: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/probe-descriptor-chain-04.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","0","direct"]
+{"D":0,"surface":"direct","repeats":8,"ms":23.772582999999997,"descriptorCalls":32768,"readCalls":32776,"ok":false,"classification":"undefined_member","logicalAssertions":"passed; timing is an observation, not a passed cost gate"}
+
+SELF-R4-DESCRIPTOR-01 decision-03 scope/count witness: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/probe-descriptor-chain-04.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","1000","direct"]
+{"D":1000,"surface":"direct","repeats":8,"ms":486.17575,"descriptorCalls":32768,"readCalls":32776,"ok":false,"classification":"undefined_member","logicalAssertions":"passed; timing is an observation, not a passed cost gate"}
+
+SELF-R4-DESCRIPTOR-01 decision-03 scope/count witness: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/probe-descriptor-chain-04.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000","direct"]
+{"D":10000,"surface":"direct","repeats":8,"ms":5587.308709,"descriptorCalls":32768,"readCalls":32776,"ok":false,"classification":"undefined_member","logicalAssertions":"passed; timing is an observation, not a passed cost gate"}
+
+SELF-R4-DESCRIPTOR-01 decision-03 scope/count witness: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/probe-descriptor-chain-04.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","0","outcome"]
+{"D":0,"surface":"outcome","repeats":8,"ms":25.593958,"descriptorCalls":32768,"readCalls":32776,"ok":false,"classification":"unauthorized_submission","logicalAssertions":"passed; timing is an observation, not a passed cost gate"}
+
+SELF-R4-DESCRIPTOR-01 decision-03 scope/count witness: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/probe-descriptor-chain-04.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","1000","outcome"]
+{"D":1000,"surface":"outcome","repeats":8,"ms":588.606542,"descriptorCalls":32768,"readCalls":32776,"ok":false,"classification":"unauthorized_submission","logicalAssertions":"passed; timing is an observation, not a passed cost gate"}
+
+SELF-R4-DESCRIPTOR-01 decision-03 scope/count witness: ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--expose-gc","--max-old-space-size=4096","docs/development/work/K1.2-correction-01/probe-descriptor-chain-04.mjs","/Users/rex-shih/Documents/ArrokothI/arrokothi","10000","outcome"]
+{"D":10000,"surface":"outcome","repeats":8,"ms":5612.008167,"descriptorCalls":32768,"readCalls":32776,"ok":false,"classification":"unauthorized_submission","logicalAssertions":"passed; timing is an observation, not a passed cost gate"}
+
+All probes executed; Proxy engine timing is outside V-D1 under owner decisions 03/04; Kernel-selected observation/count assertions passed.
+
+exit: 0; signal: null; error: none

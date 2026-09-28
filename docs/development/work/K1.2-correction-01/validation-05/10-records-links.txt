@@ -1,0 +1,10 @@
+payload C: 2613f2b8dee37c934743d9b730e925705086c4c9
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/check-records.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T16:28:01.100Z
+
+Prerequisite ancestry, historical records/36 ablations, original tests (one declared diagnostic-label assertion updated), identity producer code (values.ts amended by owner for V-D1) and creation-through-dispatch preservation verified.
+Local reference check: 22 files, 682 links/anchors; remote links not fetched.
+
+exit: 0; signal: null; error: none
