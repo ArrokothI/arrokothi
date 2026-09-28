@@ -42,6 +42,11 @@ Apply 006's repository, evidence and acceptance obligations, selecting proof met
 responsibilities, provider internals in Kernel types, speculative future-plan extensions and
 unsupported durability/isolation claims. Scaffolding must explicitly refuse unsupported APIs.
 
+At release the planner writes `work/<id>/brief-01.md` (006 lifecycle; 008 template). Every
+criterion must be finishable: a deterministic check, a structural mechanism, or a declared bounded
+search. A criterion that cannot be stated this way goes back to the owner before any code is
+written. The coding agent then writes a design note and waits for the design check that 006
+requires. Accepted earlier packets are evidence, not constraints on finding a better design.
 At start create `work/<id>/contract.md` with stable criterion IDs, inherited requirement mapping,
 exact sources/touchpoints found in the current tree, selected proof methods, interacting boundaries,
 command plan, evidence owners and any limits. Map criteria to observable behavior and distinguishing

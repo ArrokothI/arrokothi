@@ -5,6 +5,75 @@ owns coverage methods. Use versioned records under `work/<packet-id>/`. Keep cur
 link raw evidence and historical findings, and say “none”, “not run” or “unknown” with a reason rather
 than silently omitting a field. Never fabricate a session/model, command result or external decision.
 
+## Packet brief
+
+The brief is the packet-specific prompt. The planner writes it for a new packet, and the reviewer
+writes it for a correction. It is read together with a short launcher from
+[009](009-universal-prompts.md). Keep it readable in five minutes, and link canonical owners instead
+of copying their rules.
+
+```markdown
+# Brief <n> — <packet>
+
+## Goal
+Two sentences: the problem this packet solves, and for whom.
+
+## Criteria (finishable)
+| ID | Criterion (link its governing source) | Closes by: check / mechanism / declared search | Evidence expected |
+
+## Known counterexamples
+Corpus files the build must keep passing, and new items to add, with provenance.
+
+## Suspect design
+Accepted designs this work relies on that the evidence questions. Give the evidence, and the
+question the design note must answer about each one.
+
+## Questions before code
+Design questions the coding agent must answer, or put to the owner, before implementing.
+
+## Bounds
+Non-goals, forbidden shortcuts, owner decisions in force, and branch instructions.
+
+## Stop conditions
+When the coding agent must stop and ask instead of continuing.
+```
+
+## Design note
+
+Written by the coding agent before code. It is checked by the owner or a delegated design reviewer.
+
+```markdown
+# Design <n> — <packet>
+
+## Mechanism
+What will change, in a few paragraphs, with the key data structures and boundaries.
+
+## Why each criterion closes
+Per criterion: the mechanism, and the argument that it covers every case (or the declared scope of
+the search). Tests confirm the argument; they do not replace it.
+
+## Accepted designs relied on
+For each: whether it is fit for this purpose, and if not, the proposed root fix and who must approve it.
+
+## Corpus
+Counterexamples to maintain, including every item from the brief and any attack record.
+
+## Questions
+Open questions for the owner. The design check answers them before code.
+```
+
+## Attack record
+
+Written by a separate adversary session, before or during design, for risky packets.
+
+```markdown
+# Attack <n> — <packet>
+
+| Item | Criterion | Input or schedule | Expected result (derived from governing sources) | Why it is hard | Probe file |
+
+Expected results that the sources do not decide are listed as questions for the owner.
+```
+
 ## Implementation report
 
 ```markdown
@@ -25,11 +94,14 @@ than silently omitting a field. Never fabricate a session/model, command result 
 - Tests added/ported/removed and reasons; compatibility/refusal; baseline/guides/skills impact:
 - Legacy code/docs/dependencies retired, or retained with consumer and retirement owner/trigger:
 - Semantic correction closure: changed invariant, dependent paths, counterexamples and evidence:
+- Design note and design-check outcome; corpus items added, with provenance:
+- Accepted design found unfit (if any): evidence, proposed root fix, owner question or decision:
 - Prior findings: open IDs → disposition/evidence; closed findings → prior disposition links:
 - Additional self-found defects (separate provenance); unresolved obligations and unblock conditions:
 
 ## Validation and interpretation
-- Exact commands/cwd, C, environment/config/tool versions, exit/counts/skips, raw paths and digests:
+- Verification command and its summary at clean C (tool versions, commands, exits, counts/skips);
+  raw paths and digests only for runs that cannot be reproduced cheaply (006):
 - External fixture prepared / gate executed / external decision, separately; pinned owners/revisions:
 - Checks not run and resulting claim limits:
 - Why evidence supports each criterion (implementer assessment, not acceptance):
@@ -65,6 +137,11 @@ baseline; source access and limits; independently inspected versus rerun checks.
 
 - Independent obligation/interaction coverage and strongest counterexamples examined, with evidence;
   reconcile missing or weaker implementation coverage and state any unexamined obligation.
+- Corpus, mutation registry and verification command results. Then the declared search: families,
+  shapes, depths and mutation sites tried beyond the corpus. Then new counterexamples, with probe
+  files that make them reproducible.
+- Root-cause note when 006's stop-and-redesign rule fires: the recurring mechanism, why earlier
+  passes missed it, and the options for the owner.
 - Per-criterion PASS/FAIL and rationale; only explicitly assigned out-of-packet work may be DEFERRED.
 - Findings: stable ID, severity, exact candidate path/line or section, governing criterion/source,
   concrete counterexample/impact and required outcome/validation. Separate reviewer findings from
@@ -72,19 +149,29 @@ baseline; source access and limits; independently inspected versus rerun checks.
 - Exact verdict/status text for transcription, acceptance rationale or correction/blocker handoff.
   End with the one outcome line required by 006/009. An ACCEPT names H, not its own recording commit.
 
-## Compact correction handoff
+## Correction brief
 
-The review's findings are authoritative. Supply this small standalone locator instead of duplicating
-all policy, old findings, raw logs and prior prompts. The referenced material must actually be
-available to a fresh session; when offline, include it in the source/evidence bundle.
+On CHANGES REQUIRED the reviewer writes the next brief, using the template above, as
+`brief-<n>.md` in its review evidence. It is the customized prompt for the next round.
+- **Goal:** state the problem behind the findings, not only the findings.
+- **Suspect design:** name the suspected common mechanism, including any root in accepted design.
+- **Questions before code:** list the design questions the correction must answer.
+- **Known counterexamples:** list every counterexample to add to the corpus.
+The owner may edit the brief before forwarding it. The review's findings remain authoritative.
+
+The brief starts with this standalone locator. Do not duplicate all policy, old findings, raw logs
+and prior prompts. The referenced material must actually be available to a fresh session; when
+offline, include it in the source/evidence bundle.
 
 ```text
 Correct the same released packet <id> on <branch>.
 Base <full SHA>; reviewed H <full SHA>; review record <pinned path/revision>.
 Open findings <IDs>; required outcomes and counterexamples are in that record.
 Owner supplemental decisions <pinned record/IDs or none>; unresolved authority <none or blocker>.
-Apply 006 and 012: close the affected semantic subsystem and its dependencies, then re-review the
-whole cumulative packet. Fix additional in-scope defects with separate provenance.
+Read the brief below first. Answer its design questions in design-<n>.md; get the design check when
+006 requires it. Apply 006 and 012: fix the mechanism, not only the listed counterexamples; add every
+counterexample to the corpus; then re-audit the whole cumulative packet. Fix additional in-scope
+defects with separate provenance. If the fix belongs in accepted earlier design, say so and ask.
 Use 008 for the next report and 006 for new C/H plus evidence/push handoff. No successor release.
 ```
 

@@ -22,6 +22,23 @@ create aliases to replaced architecture documents or route current work through 
 
 `docs/development/` describes current implementation and migration work. It does not override architecture. The current 0.8.x code still contains the previous `Harness`, synchronous `ExecutionController.activate(...)`, and `ControllerResumption` design; do not infer the target architecture from those implementation names.
 
+## Accepted work is evidence, not an invariant
+
+Every earlier packet, from K0.1 onward, was accepted by a review that checked what it searched.
+Accepted design may still be wrong.
+
+- **When a defect traces back to earlier design,** say so with evidence and propose fixing the
+  cause. Do not stack workarounds on top of it.
+- **Asking is expected.** Changing accepted behavior needs the owner. A short question is cheaper
+  than a wrong round.
+- **Before patching a finding,** find the mechanism that produced it and the other defects that
+  mechanism allows.
+- **Every acceptance criterion must be finishable.** It closes by a deterministic check, by a
+  structural mechanism, or by a declared bounded search.
+
+The working principles, the packet lifecycle (brief → design note → build → review) and the
+stop-and-redesign rule are in [006](docs/development/006-development-process.md).
+
 ## Boundary to protect
 
 The central rule is:
