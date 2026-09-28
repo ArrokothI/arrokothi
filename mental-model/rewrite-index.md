@@ -313,7 +313,9 @@ naming an `OPEN(...)` marker claim that one exists.
   dispositions, resolved exchange, Outcome decision, hold-ending history records, and the retained
   accepted-Outcome wrapper for replay) and only then mutates by inserting those prebuilt records —
   atomic within the process, not durable. The apply phase constructs no retained record; only the
-  returned answer projection is built after mutation, and it is not retained state.
+  returned answer projection is built after mutation, and it is not retained state. The three
+  recovery controls (hold declaration, protocol-failure report, takeover) use the same build-then-apply
+  discipline, their answers included, recorded in the same BASELINE section (K1.2-correction-01 DEC-9).
 - Checkpoint storage and pinning — WS §9 "Left open"; `concepts/state.md#checkpoint-and-locator`,
   `mechanisms/recovery.md#checkpoint-publication`. Upload tickets plus a grace period are one
   option, not a requirement, as `recovery.md` states.

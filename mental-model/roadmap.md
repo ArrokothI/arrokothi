@@ -95,11 +95,21 @@ Outcome acceptance and receipts. Expected Layer-3 owners:
 
 Producer-compatible Activation identity. Expected owners: [identity](concepts/identity.md#runtime-attempt)
 for representation and producer/consumer closure, [execution-cycle](mechanisms/execution-cycle.md#outcome-acceptance)
-for the unchanged decision-02 order, and [values](concepts/values.md#fixed-semantic-limits)
-for bounded refusal cost under the owner amendment. Inspect creation, recovery, output, lifecycle
-and every eager value-root consumer. This packet's [DEC-7 binding](../docs/development/work/K1.2-correction-01/contract.md) preserves exact issue counts;
-[values](concepts/values.md#fixed-semantic-limits) owns the general refusal-cost requirement.
+for the unchanged decision-02 order, and [values](concepts/values.md#in-process-value-capture) for
+the inherited-field rule that recovery-control evidence also relies on. Inspect creation, recovery,
+output, lifecycle and every eager value-root consumer. This packet's [DEC-7 binding](../docs/development/work/K1.2-correction-01/contract.md) preserves exact issue counts.
+Bounded refusal cost ([values](concepts/values.md#fixed-semantic-limits) V-D1) is no longer this
+packet's: owner [amendment 01](../docs/development/work/K1.2-correction-01/amendment-01.md) moved it
+to [K1.1-correction-03](#k11-correction-03).
 [Scope and release](../docs/development/007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable).
+
+## K1.1-correction-03
+
+Metered value refusal cost. Expected owner: [values](concepts/values.md#fixed-semantic-limits), whose
+V-D1 wording changes to the metered bound of [decision-05](../docs/development/work/K1.2/decision-05.md)
+only in this packet. Inspect every value-root consumer: creation, ingress, recovery lists and eager
+Outcome roots.
+[Scope and dependencies](../docs/development/007-work-packets.md#k11-correction-03--metered-value-refusal-cost).
 
 ## K1.3
 

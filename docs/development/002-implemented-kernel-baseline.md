@@ -220,7 +220,11 @@ and appends to `recoveryHistory` on entry. Redelivery is refused while
 any hold stands, takeover while a code hold stands; a takeover clears a protocol-failure hold (recorded
 as `cleared_by_takeover`), and an
 accepted Outcome of the current attempt resolves the exchange and ends its holds (recorded as
-`ended_by_outcome`). Idempotent duplicates (`changed:false`) append no history.
+`ended_by_outcome`). Idempotent duplicates (`changed:false`) append no history. Each history record
+owns exactly its fields; only a `cleared_by_takeover` record owns `resultingEpoch`, and no record
+holds a caller-owned object. Each of the three controls builds its whole decision (hold, history
+record, takeover receipt/Activation/grant, answer) from Kernel data before changing anything, then
+applies it ([correction DEC-9](work/K1.2-correction-01/contract.md)).
 
 These are this in-process binding's choices where the architecture leaves the representation open
 (`mental-model/rewrite-index.md` §4):
@@ -240,6 +244,21 @@ These are this in-process binding's choices where the architecture leaves the re
   projection, which is not retained state. A
   getter that reenters the Kernel is ordered before the decision's checks. Atomic within the process,
   not durable.
+- **Recovery-control transaction** (same owner; [correction DEC-9](work/K1.2-correction-01/contract.md)):
+  `recoverExecution`, `reportProtocolFailure` and `requestTakeover` observe the request, check
+  accepted state, then build every record and the answer from Kernel data. The apply phase appends
+  the prebuilt records first, then performs plain writes of Kernel-owned fields; nothing is built,
+  read from the caller or run between the first and last mutation. For hold entry, update and
+  declaration clear the only call in the apply phase is the history append, which comes first, so no
+  fault separates a hold change from its record. A takeover's receipt position is read while
+  building and committed with the rest; its two appends carry the Outcome transaction's narrower
+  claim (no caller code or read between them).
+- **Ambient reads** ([correction DEC-8](work/K1.2-correction-01/contract.md)): the zone reads no
+  member its object may not own. Kernel records own every declared field; caller envelopes are read
+  own-only; an optional member of a trusted host object (`controlScopes`, `mailboxCapacity`,
+  `emissionsPerOutcome`, `isSafeToReplace`) is resolved on the host object or its own prototype
+  chain and never answered by `Object.prototype` or `Function.prototype`. `ambient-reads.test.ts`
+  inventories every remaining optional-member, dynamic-key and `in` access.
 - **Per-entry disposition storage** (WS §3 "Left open"): each mailbox entry holds its own frozen
   disposition, `queued`, `acknowledged` (naming the acknowledging Activation) or `terminal` (with its
   reason).
@@ -255,16 +274,19 @@ These are this in-process binding's choices where the architecture leaves the re
   the Activation ID and, for an Emission, its key, so a replay cannot mint another and no identity
   reflects activity elsewhere. Output positions, reads and cursors are K4.4's.
 - **Declared limit**: `CoordinatorOptions.emissionsPerOutcome`, default 256, an operational bound
-  checked before any Emission is read, not a semantic value limit.
+  checked before any Emission is read, not a semantic value limit. An omitted limit takes its default
+  even when ambient state carries one (correction DEC-8).
 - **Control authority** (`evidence.md`, `authority.md`): `AuthenticatedCaller.controlScopes` is the
   separate control power; the three exchange controls require it (`unauthorized_control` otherwise).
   A fresh Outcome requires visibility plus the separate current-attempt grant; `controlScopes`
   is not required and cannot substitute for that grant. A visible grant holder without general
   control authority can submit an accepted Outcome that resolves the exchange and ends its holds.
-  Replay/conflict retain the ordering described above.
+  Replay/conflict retain the ordering described above. A `controlScopes` only a built-in prototype
+  would supply is absent (correction DEC-8).
 - **Driver safe replacement** (`identity.md#writer-epoch`, `recovery.md`, `driver.md`): takeover
   advances only on `isSafeToReplace() === true` (`unsafe_replacement` otherwise); Kernel fencing does
-  not stop native work.
+  not stop native work. The method comes from the Driver or its own prototype chain, never from a
+  built-in prototype, so ambient state cannot establish safety a Driver did not declare (correction DEC-8).
 - **Delivery attribution** (`identity.md#dispatch-and-delivery`): each delivery row names its
   `activationId`/`writerEpoch`.
 - **Permitted actions** (`evidence.md`): each hold exposes `permittedNextActions` from the same rules

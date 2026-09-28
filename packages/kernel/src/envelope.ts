@@ -10,9 +10,10 @@
  *
  * Everything here runs after caller-owned state may have been observed in the same tick, so it
  * follows the zone's rule (see `coordinator.ts`): load-time references and own-data lists only.
+ * `hostMember` applies the same rule to an optional member of a trusted host object (amendment 02).
  */
 
-import { appendAllOwn, appendOwn, readAt } from "./own-array.ts";
+import { appendAllOwn, appendOwn, descriptorGetter, descriptorValue, isDataDescriptor, readAt } from "./own-array.ts";
 import { canonicalize, type ValueIssue } from "./values.ts";
 
 const PrimordialArrayIsArray = Array.isArray;
@@ -254,6 +255,44 @@ export function observeField(holder: unknown, key: string, label: string, issues
     return { observed: undefined, ok: false };
   }
   return { observed: seen.observed, ok: true };
+}
+
+const PrimordialObjectPrototype = Object.prototype;
+const PrimordialFunctionPrototype = Function.prototype;
+const PrimordialGetPrototypeOf = Object.getPrototypeOf;
+
+/**
+ * One optional member of a trusted host object, never answered by an ambient built-in prototype.
+ *
+ * The authenticated caller, the coordinator options and the Driver are trusted host inputs, not
+ * caller observations: what the host put on them is the host's answer, including members a class
+ * supplies through its prototype. An *optional* member the host left out is a different matter. An
+ * ordinary read of an absent member walks on to `Object.prototype`, which every caller can write,
+ * so ambient state would answer for the host (amendment 02, correction DEC-8): residue
+ * `Object.prototype.controlScopes` granted control power, an inherited `isSafeToReplace` installed
+ * by the very takeover request being observed established a safety the Driver never declared, and
+ * inherited `mailboxCapacity`/`emissionsPerOutcome` declared limits nobody configured.
+ *
+ * So the lookup follows the holder's own prototype chain, one own descriptor at a time, and stops
+ * before `Object.prototype` and `Function.prototype`, the built-in roots every object literal,
+ * class instance and function inherits from. A data member answers its value; an accessor member
+ * runs with the holder as receiver, as an ordinary read would (trusted host code). A member found
+ * nowhere below those roots is absent. Descriptor fields are read through `own-array.ts`, never
+ * directly. Required host members (`namespace`, `scopes`, `driver`, `deliver`) are owned by
+ * contract and are read ordinarily: an ambient member cannot shadow one the host supplies.
+ */
+export function hostMember(holder: object, key: string): unknown {
+  let current: object | null = holder;
+  while (current !== null && current !== PrimordialObjectPrototype && current !== PrimordialFunctionPrototype) {
+    const descriptor = PrimordialGetOwnPropertyDescriptor(current, key);
+    if (descriptor !== undefined) {
+      if (isDataDescriptor(descriptor)) return descriptorValue(descriptor);
+      const getter = descriptorGetter(descriptor);
+      return typeof getter === "function" ? PrimordialReflectApply(getter, holder, []) : undefined;
+    }
+    current = PrimordialGetPrototypeOf(current) as object | null;
+  }
+  return undefined;
 }
 
 /**

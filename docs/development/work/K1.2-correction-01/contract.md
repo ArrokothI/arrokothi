@@ -1,6 +1,6 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 6. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 7. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, with V-D1 scoped only by the explicit owner decisions below. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
@@ -41,6 +41,22 @@ No other semantic change is authorized; coherent Proxy acceptance, four limits a
 - **Where to find the revision 4–5 cost text:** the DEC-7 and evidence paragraphs below are kept
   for their diagnostic rules, and their cost sentences are marked as transferred. Revision 5 at
   `2b8a50297ebe83cb0922bb239aa834a2ecebc1ac` preserves their exact earlier wording.
+
+**Revision 7** applies owner [amendment 02](amendment-02.md), adopted on 2026-09-28, after
+[review 09](review-09.md) (`K12C1-R9-HISTORY-01`, `K12C1-R9-CLAIM-01`).
+- **Production changes allowed** for those two findings and for other in-scope defects of the same
+  mechanism: a Kernel read of a member its object may not own, or any other point where
+  caller-influenced ambient state can inject a value or run code between observation, mutation and
+  retained evidence. Such defects are reported with separate provenance.
+- **Requirements unchanged:** every revision-6 criterion and scope, the V-D1 transfer and
+  decision-05, decisions 01–04, accepted values and single observation. No V-D1 claim is made.
+- **Reconstruction:** the recovery-control/history subsystem is reconstructed under 006 (it was
+  corrected before by `K12-R1-HISTORY-01` and `K12-R3-HISTORY-02`). [Coverage-06](coverage-06.md)
+  is the pre-code reconstruction; DEC-8 and DEC-9 below record the binding rules it settles.
+- **Evidence:** maintained oracles for review 09's 22-case matrix, the mutable foreign reference and
+  both safe clear paths; mutants restoring the inherited optional read and moving history after
+  mutation, rejected by the maintained suite.
+- **Production-code line of revision 6** ("unchanged by revision 6") describes revision 6 only.
 
 ## Identity and authority
 
@@ -86,6 +102,12 @@ No other semantic change is authorized; coherent Proxy acceptance, four limits a
   EVID-01, adjacent in-scope defects and optional observations. Review-04 VALUE-COST-01 and every
   V-D1 cost claim are transferred (amendment 01). No integration,
   self-acceptance, K1.3 or successor. Historical review-13 ACCEPT stays unchanged.
+- Round 6 (revision 7) continues on the same branch from the pushed owner record
+  `60eebc24113eb834e5d88015ca2a196c95c60493` (amendment 02), which follows review 09 of H
+  `3b0848ce408ddef9165434f7d7c36e9580ac6341`. Forward commits only; the existing clean checkout
+  already names the branch, and no other checkout or worktree is switched. The owner directed that a
+  new Claude Code (Opus 5.5) session implement this round and GPT-6 review it. Scope adds
+  `K12C1-R9-HISTORY-01`, `K12C1-R9-CLAIM-01` and same-mechanism defects (amendment 02).
 
 ## Binding decisions supplementing revision 9
 
@@ -186,6 +208,49 @@ consume a detail slot. The summarized suffix carries no invented location. Creat
 value validation also report the bounded details and counted remainder. This is diagnostic storage,
 not a new root-validity limit, an early refusal, a skipped sibling or a whole-message cap.
 
+**DEC-8 (no Kernel read of a member its object may not own; revision 7).** After the first caller
+observation, and on every commit, replay, redelivery and projection, the zone performs no ordinary
+access to a member its object may not own, read or write. This is C13's rule applied to reads:
+- **Kernel records** own every field they declare. Each is built by one object literal, and the zone
+  reads only declared required members. Recovery history records are built by positional builders,
+  so a record owns exactly its fields; only a takeover's `cleared_by_takeover` record owns
+  `resultingEpoch`. No retained record holds a caller-owned object.
+- **Caller envelopes** are read only through `observeOwn` (values.md's inherited-field rule).
+- **Trusted host objects** (the authenticated caller, the coordinator options, the Driver) keep
+  their ordinary reading for required members, which the host owns by contract. An *optional* member
+  (`controlScopes`, `mailboxCapacity`, `emissionsPerOutcome`, `isSafeToReplace`) is resolved by
+  `hostMember`: on the host object or its own prototype chain, stopping before `Object.prototype` and
+  `Function.prototype`. A member only a built-in prototype would supply is absent: no control power,
+  no declared limit, no safe-replacement guarantee. Members a class or a host prototype supplies are
+  still honored, so class-based Drivers keep working. This settles only the ambient case the current
+  C13 rule already forbids; the broader in-process threat model stays with DESIGN-AUDIT-01.
+- **Engine-built property descriptors** are the only objects whose optional members the zone
+  accesses. `enumerable` is owned by every descriptor, and `value` is read after `hasOwnValue` or on
+  the data descriptor of a Kernel-built record's own data field.
+- **Enforcement:** `ambient-reads.test.ts` lists, with the TypeScript checker, every access in the
+  zone to a member declared optional, every dynamic-key read and every `in` operator. Each must match
+  an inventoried, reasoned site; a new one fails until it is classified or removed.
+
+**DEC-9 (recovery-control commits are prebuilt; revision 7).** `recoverExecution`,
+`reportProtocolFailure` and `requestTakeover` observe their request, check accepted state, and then
+build everything the decision retains or returns — the new hold, its history record, for a takeover
+the receipt (position read, not yet advanced), Activation, grant and clearing record, and the answer —
+from Kernel data only, before anything changes. The apply phase appends the prebuilt records first
+and then performs plain writes of fields the Kernel's records own. It constructs nothing, reads no
+caller-influenced state and runs no caller code. The Driver is handed a takeover's new attempt only
+after the whole decision is recorded.
+- **Fault coherence.** For entry, update and declaration clear, the apply phase is one append (the
+  only call) followed by writes that call nothing, so no fault, including an engine exception, leaves
+  a hold changed without its history record or a record without its hold; the answer is prebuilt, so
+  nothing is built after commit. A takeover's apply phase has two appends (receipt, then clearing
+  record). Like Outcome acceptance (DEC-10), it claims only that no caller-reachable code or read lies
+  between the first and last mutation; engine resource exhaustion inside it is outside this in-memory
+  packet's claim.
+- **Enforcement:** `ambient-reads.test.ts` checks that nothing after the first mutation in the three
+  controls constructs, calls anything but the apply steps or returns a value built after mutation,
+  that `applyControlCommit` appends before its hold writes and calls nothing else, and that hold
+  fields and recovery history are written only by the commit paths.
+
 *Revision 6:* the cost-evidence requirements in this paragraph and in DEC-7 now belong to
 K1.1-correction-03. What stays here is the exact-coordinate requirement, the weight and order
 assertions, and the rule that the existing ablations still reject.
@@ -225,13 +290,24 @@ methods, with the revision-9 map below carried forward in full. Native fidelity 
 | C14 structure | cumulative inventory/import graph | existing private zone and 13-source-file inventory agree | architecture conformance guard |
 | C15 Layer 3 | identity → cycle → recovery + BASELINE/DEC-1/2/3 | one owner per rule, binding choice distinguished from architecture, decision-02 provenance and wording corrected | source/link audit |
 | DIAG-01 / C3,C8–C10 | visibility-only Outcome caller and authorized controls; wrong 50,000,000-unit, lone-surrogate and engine-maximum IDs; open/resolved/terminal states | refusal returned and recorded, bounded identity fragments, no exception or accepted-state change, later current answer accepted | round-2 diagnostic matrix and memory-heavy probes |
-| Diagnostic dependencies / C2,C3,C8–C13 | accepted conflict, matched coordinates, control revalidation, missing pins and history, malformed member/constructor names, duplicate Emission key | every renderer follows DEC-4/5; every captured content issue contributes detail or code/count; exact structured identities and DEC-8 explicit diagnostic semantics unchanged | round-2 tests and renderer-specific ablations; reconstruction inventory |
+| R9-HISTORY-01 / C9,C10,C12,C13, DEC-8/9 | review 09's 22 cases (6 transitions × none/data 777/throwing/reentrant inherited `resultingEpoch`), mutable foreign object, both safe clears; counting accessors on every record field name during observation and as residue | no inherited read, exception or nested callback; one record per decision owning exactly its fields; takeover alone owns `resultingEpoch`; causal order; answer equals committed holds | `recovery-ambient.test.ts`; review-09 matrix `--expect-correct`; round-6 mutants H1–H14 |
+| Same-mechanism host members / C8,C10,C13, DEC-8 | Driver without `isSafeToReplace` plus inherited one (during observation, residue, function-object Driver); residue `controlScopes` on all three controls; residue limits at construction; class and host-prototype members | `unsafe_replacement`, `unauthorized_control`, defaults 1,024/256, with no control-state change; class/host-prototype members honored | `host-members.test.ts`; `probe-host-members-06.ts`; mutants H15–H21 |
+| Structural rules / DEC-8/9 | TS-checker inventory; control-commit ordering scan; synthetic probe of each forbidden form | a new optional/dynamic/`in` access, construction after first mutation or hold write outside the commit paths fails | `ambient-reads.test.ts`; mutants H3–H7, H22 |
+| R9-CLAIM-01 / C15, amendment 01 items 3–4 | alias search over live source, BASELINE, 007, Layer 3, guides | no live V-D1 implementation claim; values.md normative text and sealed records unchanged; roadmap points at the split | search log; `values.ts` comments; roadmap |
+| Diagnostic dependencies / C2,C3,C8–C13 | accepted conflict, matched coordinates, control revalidation, missing pins and history, malformed member/constructor names, duplicate Emission key | every renderer follows DEC-4/5; every captured content issue contributes detail or code/count; exact structured identities and K1.2-DEC-8 explicit diagnostic semantics unchanged | round-2 tests and renderer-specific ablations; reconstruction inventory |
 
 Unknown-field diagnostics (O3) may be bounded separately without modifying keys or accepted content;
 any such change needs a distinguishing test and ablation. Every existing test and all 36 original
 K1.2 ablations must still pass/reject respectively. No semantic regression is removed; revision-3 raw diagnostic storage assertions are updated to DEC-7 and their replacements documented.
 
 ## Commands and handoff
+
+*Revision 7 validation* adds, on clean C: the round-6 mutants (`ablations-06.mjs`), the review-09
+probes (the two reproducers now exit 1 because the defect no longer reproduces; the matrix runs
+plain and with `--expect-correct`), `probe-host-members-06.ts`, and `ablations-03-rebound-06.mjs`.
+The reconstruction removed the spans review-04's X12, X18, X19 and X20 anchor on; the round-3 runner
+is still run and disclosed, and the adapter rebinds only those four anchors to the spans that now
+carry the same coordinates, with the same wrong semantics.
 
 *Revision 6 validation* runs on clean C, and it covers everything listed below. Cost probes and
 timing runs are observations only: they no longer decide acceptance for this packet.

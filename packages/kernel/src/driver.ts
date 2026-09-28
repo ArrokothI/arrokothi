@@ -134,6 +134,8 @@ export interface ExecutionDriver {
    * itself stop or exclude superseded native work. This is the in-process binding's owner for that
    * prerequisite (K1.2-DEC-15): the Kernel calls this synchronously during `requestTakeover` with the
    * current attempt's Activation, and advances the writer epoch only when it returns exactly `true`.
+   * The method is resolved on the Driver itself or its own prototype chain, never on a built-in
+   * prototype such as `Object.prototype` (amendment 02): a member only ambient state supplies is absent.
    * Absent, non-`true`, or throwing means no guarantee was established, and the takeover is refused
    * as `unsafe_replacement` rather than assumed. A `false` from a fake Driver in tests is the
    * distinguishing case for that refusal. Because this callback can synchronously reenter the
