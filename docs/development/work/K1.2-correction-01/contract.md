@@ -1,6 +1,6 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 5. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 6. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, with V-D1 scoped only by the explicit owner decisions below. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
@@ -26,6 +26,21 @@ item 1 of decision-03 and resolves [blocker-02](blocker-02.md); decision-03 reso
 is claimed for values containing live Proxies; plain data and Kernel-selected work stay bound.
 Observation counts cover Kernel-selected operations, not callbacks the engine induces inside them.
 No other semantic change is authorized; coherent Proxy acceptance, four limits and DEC-7 weights remain binding.
+
+**Revision 6** applies owner [amendment 01](amendment-01.md) under
+[decision-05](../K1.2/decision-05.md), both adopted on 2026-09-28.
+- **Moves to K1.1-correction-03:** the value refusal-cost scope that revision 4 added. That covers
+  V-D1, DEC-7's cost claim, SELF-R4-STRING-01's cost claim, and the V-D1 claim scope of decisions
+  03 and 04. It also covers review 08's `K12C1-R8-VALUE-DEPTH-01` and `K12C1-R8-EVID-01`, and the
+  time dimension of `K12C1-R4-VALUE-COST-01`.
+- **Stays in this packet, as current behavior that must not regress:** DEC-7's diagnostic
+  semantics, meaning bounded details, exact weights, order, type-only labels and bounded paths. The
+  code at review 08's H also keeps the string preflight.
+- **Claims:** this packet no longer makes any V-D1 claim. BASELINE records that claim as held.
+- **Production code:** unchanged by revision 6.
+- **Where to find the revision 4–5 cost text:** the DEC-7 and evidence paragraphs below are kept
+  for their diagnostic rules, and their cost sentences are marked as transferred. Revision 5 at
+  `2b8a50297ebe83cb0922bb239aa834a2ecebc1ac` preserves their exact earlier wording.
 
 ## Identity and authority
 
@@ -63,7 +78,13 @@ No other semantic change is authorized; coherent Proxy acceptance, four limits a
   `7249a64ce98ccebb9bd082909cdbbcced14fdb5c` predates decision-04. The final payload includes
   both verbatim owner records, canonical/baseline updates and deterministic descriptor/handler
   counts, then receives fresh clean-C validation. Independent review still decides acceptance.
-- Scope: ID-01, EVID-01, DIAG-01, review-04 VALUE-COST-01 and EVID-01, adjacent in-scope defects, and optional observations. No integration,
+- Round 5 (revision 6) continues on the same branch from owner record `13a73ad`, which follows the
+  pushed review record `d7ac122f015b0272db7af1f89413b538192c072a`. It uses forward commits only.
+  The owner directed that the review-08 session prepare this candidate, so that session cannot
+  review it.
+- Scope under revision 6: ID-01, EVID-01, DIAG-01, AGG-01/EVID-01, review-04 EVID-01 and review-06
+  EVID-01, adjacent in-scope defects and optional observations. Review-04 VALUE-COST-01 and every
+  V-D1 cost claim are transferred (amendment 01). No integration,
   self-acceptance, K1.3 or successor. Historical review-13 ACCEPT stays unchanged.
 
 ## Binding decisions supplementing revision 9
@@ -140,7 +161,7 @@ pairs. Their hold/history aliases add fixed explanatory text. They are distinct 
 fragments and are not silently sanitized by DEC-4/5. Inspection returns retained evidence; it does
 not render caller identity anew.
 
-**DEC-7 (value refusal cost, V-D1):** preserve the complete existing traversal, including its
+**DEC-7 (diagnostic storage; its V-D1 cost claim transferred by revision 6):** preserve the complete existing traversal, including its
 byte-limit stop, single observations and eager capture of sibling roots. The cost claim follows
 [values](../../../../mental-model/concepts/values.md#fixed-semantic-limits) with
 [decision-03](../K1.2/decision-03.md) and [decision-04](../K1.2/decision-04.md)'s owner-authorized
@@ -165,6 +186,9 @@ consume a detail slot. The summarized suffix carries no invented location. Creat
 value validation also report the bounded details and counted remainder. This is diagnostic storage,
 not a new root-validity limit, an early refusal, a skipped sibling or a whole-message cap.
 
+*Revision 6:* the cost-evidence requirements in this paragraph and in DEC-7 now belong to
+K1.1-correction-03. What stays here is the exact-coordinate requirement, the weight and order
+assertions, and the rule that the existing ablations still reject.
 Review-04 closure requires deterministic allocation/cardinality evidence over every issue-producing
 family and roots consumed by creation, ingress, Outcomes and controls; a practical eight-root
 pre-authority schedule; P5 comparative cost runs; and a mutant restoring unbounded issue retention.
@@ -209,6 +233,8 @@ K1.2 ablations must still pass/reject respectively. No semantic regression is re
 
 ## Commands and handoff
 
+*Revision 6 validation* runs on clean C, and it covers everything listed below. Cost probes and
+timing runs are observations only: they no longer decide acceptance for this packet.
 Iterate with targeted tests. Commit payload C, then run on clean C: `npm run typecheck`, `npm test`,
 `npm run test:kernel`, `npm run test:conformance`, `npm run test:sdk`, `npm run check:builder-docs`,
 `node docs/development/work/K1.2/ablations.mjs`, correction ablations and the retained review-11 probe.

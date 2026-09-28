@@ -55,8 +55,11 @@ The cost claim excludes engine own-key enumeration, execution of caller traps, a
 work attributable to a live Proxy reached while observing a value. No time bound is claimed for
 values containing live Proxies. [Owner decision-04](work/K1.2/decision-04.md) supersedes item 1 of
 [decision-03](work/K1.2/decision-03.md); the boundary is stated once in
-[values](../../mental-model/concepts/values.md#fixed-semantic-limits). KC2-1/V-D1 remains claimed for
-plain data and every Kernel-selected lookup. Counts cover Kernel-selected observations and
+[values](../../mental-model/concepts/values.md#fixed-semantic-limits). The KC2-1/V-D1 claim for
+plain data and Kernel-selected lookups is **held**. Review 08 of K1.2-correction-01
+(`K12C1-R8-VALUE-DEPTH-01`) found that refusing foreign-prototype containers at nesting depth costs
+about 1.5× the costliest at-limit acceptance. Owner [decision-05](work/K1.2/decision-05.md) redefines
+V-D1 for this binding as a metered-work bound, which K1.1-correction-03 implements. Counts cover Kernel-selected observations and
 invocations, including each position and fixed structural observations; engine-induced callbacks
 inside those operations are not counted or promised. The byte stop, all four limits, exact values,
 coherent-Proxy acceptance, ambient safety and DEC-7 weights remain unchanged. Descriptor- and
