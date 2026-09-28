@@ -165,3 +165,46 @@ Validation after these additions:
 These results extend the diagnostic and observation evidence. The packet's cumulative validation,
 new C/H identities and independent-review handoff remain owned by the implementation report;
 this note does not independently accept the packet or release a successor.
+
+## Handler-chain resolution and selected-observation evidence — 2026-09-28
+
+[Decision 04](../K1.2/decision-04.md), transcribed verbatim from the owner's explicit message,
+resolves SELF-R4-HANDLER-01 and supersedes decision-03 item 1. The preceding sections remain the
+historical record of the earlier narrower decision. Decision-03 items 2–5 continue to apply.
+
+The owner now excludes engine-internal work attributable to a live Proxy reached while observing
+a value, including handler-chain trap discovery. No time bound is claimed for values containing
+live Proxies. V-D1 still applies in full to values with no Proxy and to each lookup Kernel code
+chooses to perform. The count obligation concerns operations selected by Kernel code; it does not
+promise a count for callbacks the engine induces inside those operations. The canonical wording
+and claim scope belong to the candidate's `values.md`, BASELINE and contract revision 5, which
+cite decision-04. This appendix records evidence under that authority rather than redefining it.
+
+Three additional tests in `value-diagnostic-work.test.ts` reproduce the
+[`probe-handler-chain-04.mjs`](probe-handler-chain-04.mjs) shape. The target is an ordinary array,
+the handler's four traps are reached through ordinary prototype chains of depth 0 or 32, and the
+descriptor trap returns a normal engine-created descriptor. Thus these fixture callbacks count
+the Kernel-selected descriptor/read/structural operations directly; they do not measure general
+nested-Proxy behavior or engine-induced callback amplification.
+
+| Schedule | Deterministic assertion |
+|---|---|
+| Eight occurrences of the 4,096-element handler Proxy at depths 0 and 32, with undefined content | 32,768 indexed descriptor observations and 32,768 indexed reads; each position observed eight times; eight prototype observations, eight length descriptors, eight length reads and sixteen own-key operations. DEC-7 retains eight details and an exact 32,760-occurrence suffix |
+| The same coherent Proxy shape with zero content | Exact accepted canonical text and 65,553-byte size; frozen detached snapshot; the same selected-operation counts with no caller reread during serialization |
+| Byte-stop shape at handler depths 0 and 32 | The independently derived budget from the descriptor test still permits fifteen complete rows, observes the sixteenth structure before stopping and never observes the seventeenth; 61,440 indexed observation/read pairs and exactly one byte-stop issue |
+| One and eight eager Outcome roots with handler depth 32, without and with the current grant | Counts equal root count multiplied by the per-root expectation. Unauthorized submission discloses no root diagnostics; the current grant reaches the malformed-content refusal. The full accepted view stays unchanged except for one retained refusal, no delivery occurs, and a subsequent valid Outcome accepts |
+
+These tests would reject extra Kernel-selected descriptor/read operations, omission or reuse of
+an observation, premature stopping, traversal past the byte stop, altered accepted Proxy content,
+and partial Outcome mutation on refusal. They deliberately make no timing assertion. The existing
+ordinary-object and thrown-ordinary-object zero-lookup tests remain in the suite: the revised
+Proxy boundary provides no exemption for choosing to read `constructor` in a diagnostic.
+
+Validation after the handler-chain additions:
+
+- `node --test --experimental-strip-types packages/kernel/tests/value-diagnostic-work.test.ts`:
+  **17 passed, 0 failed, 0 skipped**.
+- `npm run typecheck`: **passed**.
+
+This is scoped implementation evidence. Independent acceptance, integration, C/H identities and
+release remain subject to 006/008 and the implementation report; no successor is released here.

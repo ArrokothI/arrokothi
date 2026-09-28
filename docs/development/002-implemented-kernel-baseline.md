@@ -51,18 +51,28 @@ counts. Creation/ingress render suffix multiplicity explicitly; Outcome/control 
 the weighted roots into DEC-5's first eight details and exact remaining counts without expansion.
 No aggregate semantic size cap is introduced. This records the in-process choice at
 [values' diagnostic-storage marker](../../mental-model/concepts/values.md#fixed-semantic-limits).
-The cost claim excludes engine own-key enumeration, execution of caller traps, and engine-internal
-processing of values returned by required caller code, including conversion of Proxy-returned
-descriptors. [Owner decision-03](work/K1.2/decision-03.md) records the precise boundary now stated
-once in [values](../../mental-model/concepts/values.md#fixed-semantic-limits). It leaves Kernel-chosen
-lookups and ordinary non-Proxy data inside V-D1. KC2-1's claim is scoped by that decision: observation
-and trap-invocation counts, the byte stop, exact accepted values and diagnostic weights are unchanged.
-Coherent Proxies remain accepted. The descriptor-chain probe pins counts; its timing is an
-observation of excluded work, not a cost gate. [Blocker-01](work/K1.2-correction-01/blocker-01.md)
-records the original counterexample and owner resolution. Review status and the held V-D1 claim
-remain in 007 until independent review; this binding supplies no CPU preemption or physical containment.
-The adjacent engine-entry question in [blocker-02](work/K1.2-correction-01/blocker-02.md)
-remains unresolved; decision-03 has not been extended to trap discovery or Proxy-target traversal.
+The cost claim excludes engine own-key enumeration, execution of caller traps, and all engine-internal
+work attributable to a live Proxy reached while observing a value. No time bound is claimed for
+values containing live Proxies. [Owner decision-04](work/K1.2/decision-04.md) supersedes item 1 of
+[decision-03](work/K1.2/decision-03.md); the boundary is stated once in
+[values](../../mental-model/concepts/values.md#fixed-semantic-limits). KC2-1/V-D1 remains claimed for
+plain data and every Kernel-selected lookup. Counts cover Kernel-selected observations and
+invocations, including each position and fixed structural observations; engine-induced callbacks
+inside those operations are not counted or promised. The byte stop, all four limits, exact values,
+coherent-Proxy acceptance, ambient safety and DEC-7 weights remain unchanged. Descriptor- and
+handler-chain tests pin those counts; their timing probes are observations only. Protection against
+hostile in-process code requires isolation or transport containment, not V-D1. This binding provides
+neither CPU preemption nor physical containment. [Blocker-01](work/K1.2-correction-01/blocker-01.md)
+and [blocker-02](work/K1.2-correction-01/blocker-02.md) retain the counterexamples and owner resolutions.
+Review status and the V-D1 claim hold remain in 007 until independent review.
+
+Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit
+cannot fit even if every scalar uses a surrogate pair; refusing there avoids an engine flattening
+the entire oversized string on its first character access. Such inputs report `string_too_long`,
+including those that are also malformed Unicode. Shorter strings keep the existing bounded scalar
+scan. Exact accepted values, scalar limits, read-count upper bounds and full refusal byte charges
+are unchanged. [String closure](work/K1.2-correction-01/string-closure-04.md) records this additional
+implementer-found dependency and its distinguishing evidence.
 
 ## Request identity API
 

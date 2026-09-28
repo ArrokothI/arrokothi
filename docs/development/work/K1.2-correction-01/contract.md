@@ -2,7 +2,7 @@
 
 Revision 5. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
-coverage rows and exclusions, without weakening or removing a criterion. The additions below
+coverage rows and exclusions, with V-D1 scoped only by the explicit owner decisions below. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
 and [invalidation-01](../K1.2/invalidation-01.md). Historical records remain unchanged.
 
@@ -18,10 +18,14 @@ changes; [coverage-02](coverage-02.md) remains the earlier plan. Revision 4 appl
 consumers join this packet. [Coverage-04](coverage-04.md) is the pre-code reconstruction and proof
 map for both review-04 findings. Accepted values, all four limits, single observation, ambient
 safety, K1.1-correction-02 read bounds, decision-02 and C1–C15 remain binding. Revision 5 transcribes
-[owner decision-03](../K1.2/decision-03.md), supplied explicitly in this session on 2026-09-27.
-It resolves [blocker-01](blocker-01.md) and scopes the KC2-1/V-D1 cost claim at its
-[canonical owner](../../../../mental-model/concepts/values.md#fixed-semantic-limits). It authorizes
-no other semantic change; coherent Proxy acceptance, all observation bounds and DEC-7 weights remain binding.
+[owner decision-03](../K1.2/decision-03.md), supplied explicitly in this session on 2026-09-27,
+and [decision-04](../K1.2/decision-04.md), supplied on 2026-09-28. Decision-04 supersedes only
+item 1 of decision-03 and resolves [blocker-02](blocker-02.md); decision-03 resolves
+[blocker-01](blocker-01.md). The KC2-1/V-D1 claim follows their scope at its
+[canonical owner](../../../../mental-model/concepts/values.md#fixed-semantic-limits): no time bound
+is claimed for values containing live Proxies; plain data and Kernel-selected work stay bound.
+Observation counts cover Kernel-selected operations, not callbacks the engine induces inside them.
+No other semantic change is authorized; coherent Proxy acceptance, four limits and DEC-7 weights remain binding.
 
 ## Identity and authority
 
@@ -54,10 +58,11 @@ no other semantic change; coherent Proxy acceptance, all observation bounds and 
   is resolved by the explicit owner decision-03, not by an implementer interpretation. The
   intermediate payload `a09223b0c27cd9831b2a85c948a57c8b347c3547` predates that decision;
   revision 5 requires a new payload C and clean validation.
-- The subsequent [blocker-02](blocker-02.md), SELF-R4-HANDLER-01, requests owner clarification
-  for required engine entry/dispatch work before a caller result exists. Decision-03 is not
-  broadened to cover it. C3 and the dependent cost-scope assessments remain unresolved while
-  this question is pending; passing unaffected tests does not establish review readiness.
+- The subsequent [blocker-02](blocker-02.md), SELF-R4-HANDLER-01, is resolved by owner
+  decision-04's single live-Proxy boundary. The intermediate payload
+  `7249a64ce98ccebb9bd082909cdbbcced14fdb5c` predates decision-04. The final payload includes
+  both verbatim owner records, canonical/baseline updates and deterministic descriptor/handler
+  counts, then receives fresh clean-C validation. Independent review still decides acceptance.
 - Scope: ID-01, EVID-01, DIAG-01, review-04 VALUE-COST-01 and EVID-01, adjacent in-scope defects, and optional observations. No integration,
   self-acceptance, K1.3 or successor. Historical review-13 ACCEPT stays unchanged.
 
@@ -138,13 +143,20 @@ not render caller identity anew.
 **DEC-7 (value refusal cost, V-D1):** preserve the complete existing traversal, including its
 byte-limit stop, single observations and eager capture of sibling roots. The cost claim follows
 [values](../../../../mental-model/concepts/values.md#fixed-semantic-limits) with
-[decision-03](../K1.2/decision-03.md)'s owner-authorized scope; Kernel-chosen lookups and plain data
-remain covered. Deterministic descriptor-probe evidence must pin bounded observation/trap counts,
-byte-stop behavior and unchanged coherent-Proxy acceptance. Timing of excluded engine descriptor
-conversion is an observation only. During each root's capture,
+[decision-03](../K1.2/decision-03.md) and [decision-04](../K1.2/decision-04.md)'s owner-authorized
+scope; Kernel-chosen lookups and plain data remain covered. Deterministic descriptor- and
+handler-probe evidence must pin Kernel-selected observation/invocation counts, byte-stop behavior
+and unchanged coherent-Proxy acceptance. No time bound is claimed for values containing live
+Proxies; their timing is an observation only. Engine-induced callbacks are not counted or promised. During each root's capture,
 retain the first eight issue details, bounded with DEC-5's relative-path/message rules, and then
 one exact occurrence counter per remaining code, ordered by first remaining occurrence. No accepted
-value, scalar scan, container read bound or semantic limit changes. Diagnostic path construction
+value, scalar-read upper bound, container read bound or semantic limit changes. The adjacent
+SELF-R4-STRING-01 correction preflights UTF-16 length: above twice the scalar limit, no valid
+string can fit, so it refuses before a character access can flatten the entire oversized string.
+This also applies to member names. It reports `string_too_long` without scanning such a string,
+even if it also contains a lone surrogate; no rejected content is accepted or repaired. The bounded
+scalar scan remains for lengths at or below that preflight threshold. Full-length refusal charging
+and byte stopping remain unchanged. See [string closure](string-closure-04.md). Diagnostic path construction
 must itself be bounded before concatenating caller-sized names; omission persists below an omitted
 ancestor. Diagnostic type labels use only null/typeof classification and never inspect caller properties or
 array structure, including on thrown values. No raw unbounded diagnostic is retained for later rendering. Consumers preserve weights:

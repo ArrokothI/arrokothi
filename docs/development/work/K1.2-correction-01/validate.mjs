@@ -40,6 +40,7 @@ const checks = [
   ...["direct", "outcome"].flatMap(surface => [0, 1000, 10000].map(depth => [
     `34-handler-${surface}-${depth}`, "node", ["--expose-gc", "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs", ".", String(depth), surface],
   ])),
+  ["35-string-work", "node", ["--expose-gc", "docs/development/work/K1.2-correction-01/probe-string-work-04.mjs"]],
   ["29-round3-diff-check", "git", ["diff", "--check", "8a418d408f715e999a403a3e84b73a9db1b43712", "HEAD"]],
   ["22-correction-diff-check", "git", ["diff", "--check", "b18a729d989dea334a86ec08bdf8773ee77de4db", "HEAD"]],
   ["19-round2-diff-check", "git", ["diff", "--check", "449b243cd31d5596c457e091233dfc4d77a4eff4", "HEAD"]],

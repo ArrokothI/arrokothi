@@ -92,3 +92,15 @@ unaffected diagnostics and exact-coordinate work can proceed under 006. No succe
 The ECMAScript specification was consulted as primary explanatory reference. No specification
 text, implementation source, dependency or service was copied or incorporated. The probe was
 written independently for this packet.
+
+## Owner resolution — 2026-09-28
+
+[Decision-04](../K1.2/decision-04.md) is the owner's explicit response in this session, transcribed
+verbatim. It resolves this blocker and supersedes decision-03 item 1 only. The owner chose one
+boundary for all engine-internal work attributable to live Proxies, with no time bound claimed
+for values containing them. Kernel-selected work and plain data remain bound. Counts cover
+Kernel-selected observations and invocations; callbacks induced inside those operations are not
+counted or promised. The handler and descriptor shapes retain deterministic count tests.
+The canonical values owner, BASELINE and revision-5 contract apply that decision as payload.
+No Proxy detection/refusal, observation reuse or out-of-process capture is introduced. Both
+invalidation holds remain, and the decision does not independently accept this candidate.

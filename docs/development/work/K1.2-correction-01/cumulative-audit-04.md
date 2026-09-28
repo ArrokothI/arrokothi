@@ -153,3 +153,36 @@ C13/C15 cost-scope dependencies remain unresolved for the new engine-entry case 
 decides it. The source and oracle assessments of the other rows stand; final clean-C validation
 and independent review are still required. No additional production-code defect was established
 by this follow-up audit.
+
+## Final source disposition under decision-04 — 2026-09-28
+
+[Owner decision-04](../K1.2/decision-04.md) resolves SELF-R4-HANDLER-01 with one live-Proxy
+boundary. This supersedes the unresolved disposition immediately above. It does not exempt
+Kernel-chosen lookups or values containing no Proxy. The final contract remains revision 5;
+values.md owns the boundary once, and BASELINE scopes the KC2-1/V-D1 claim explicitly. No
+time bound is claimed for values containing live Proxies, and engine-induced callbacks inside a
+selected observation are not counted or promised. The descriptor/handler regression shapes pin
+Kernel-selected counts, coherent acceptance, byte stopping and eager Outcome roots.
+
+The further plain-data audit found **SELF-R4-STRING-01**: an apparently bounded first character
+read could flatten an oversized rope string in full. This is implementer provenance, not an owner
+exemption or review-06 finding. [String closure](string-closure-04.md) records the counterexample,
+source obligations and repair. A UTF-16 extent above twice the scalar limit cannot be accepted;
+the reader now refuses it before character access. The same helper covers member names and all
+root consumers. Full-length charging and the existing scalar-read upper bounds stay binding.
+Malformed text above that preflight threshold now receives the length diagnostic; accepted
+content and the four semantic limits do not change.
+
+The source assessment for C3/C13 is now complete within the owner-defined scope: diagnostic
+construction uses no extra value observation; string processing first bounds any materialized
+extent; descriptor/read pairing, per-container bounds and the running byte stop remain. C15's
+authority question is resolved by the two verbatim decisions and the canonical/baseline payload.
+The exact-coordinate assessment for C12 continues to require all final Z and retained X evidence.
+All other C1–C15 rows were rechecked against their governing owners and the cumulative sources;
+their expected facts, forbidden mutations and distinguishing schedules above remain applicable.
+No further mandatory in-scope defect or authority gap was established.
+
+This is a final **source** assessment, not a claim that pending commands passed. The implementation
+report supplies the fresh clean-C executions, their actual nonzero exceptions and the complete C/H
+handoff. The superseded clean run at 7249a64 was stopped after decision-04 arrived and is not used
+as final evidence. Independent review, both invalidation holds and successor release remain separate.

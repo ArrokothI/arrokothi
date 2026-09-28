@@ -1,5 +1,5 @@
 // Comparative observations for R6; deterministic zero-lookup tests own diagnostic discrimination.
-// Decision-03 scopes descriptor conversion outside V-D1; its invocation counts remain binding.
+// Decisions 03/04 scope Proxy engine time outside V-D1; Kernel-selected counts remain binding.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 const tree = process.cwd(), dir = 'docs/development/work/K1.2-correction-01';
@@ -42,5 +42,5 @@ if (process.argv[2] === 'accept-deep') {
     console.log(result.stdout + result.stderr);
     assert.ok(!result.error && result.status === 0 && result.signal === null, JSON.stringify({ exit: result.status, error: result.error?.message, signal: result.signal }));
   }
-  console.log('All probes executed; descriptor conversion timing is outside V-D1 under owner decision-03; bounded observation/count assertions passed.');
+  console.log('All probes executed; Proxy engine timing is outside V-D1 under owner decisions 03/04; Kernel-selected observation/count assertions passed.');
 }

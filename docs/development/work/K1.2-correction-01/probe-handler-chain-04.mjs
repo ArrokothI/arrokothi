@@ -1,6 +1,6 @@
 // SELF-R4-HANDLER-01: required Proxy observations discover traps through a handler chain.
 // Run: node --expose-gc probe-handler-chain-04.mjs <tree> <depth> [direct|outcome]
-// Decision-03's returned-value processing exemption is not assumed to cover trap discovery.
+// Owner decision-04 exempts Proxy engine time; selected observation counts remain binding.
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';

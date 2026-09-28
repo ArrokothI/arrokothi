@@ -1,6 +1,7 @@
 /** Review 06: constructing a refusal never inspects caller properties for a type label. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { canonicalize, type ValueIssue, type ValueIssueCode } from "../src/values.ts";
 import { ExecutionCoordinator } from "../src/index.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor, revokedProxy } from "./harness.ts";
@@ -359,4 +360,259 @@ test("decision-03 ordinary objects and arrays retain zero diagnostic lookups wit
     }
     assert.equal(counts.structural, 17);
   }
+});
+
+/**
+ * Decision 04's handler-chain probe: trap discovery walks ordinary handler prototypes, while
+ * the descriptor returned by the trap is an ordinary engine-created descriptor. These traps
+ * correspond one-to-one to Kernel-selected operations because the target itself is an ordinary
+ * array; this fixture does not claim a general bound on engine-induced nested Proxy callbacks.
+ */
+function handlerFixture(depth: number, value: undefined | 0) {
+  const counts = { prototypes: 0, ownKeys: 0, lengthDescriptors: 0, lengthReads: 0, descriptors: 0, reads: 0 };
+  const positionDescriptors = new Uint32Array(4_096), positionReads = new Uint32Array(4_096);
+  const target = Array(4_096).fill(value) as (undefined | 0)[];
+  const traps: ProxyHandler<(undefined | 0)[]> = {
+    getPrototypeOf(holder) { counts.prototypes++; return Reflect.getPrototypeOf(holder); },
+    ownKeys(holder) { counts.ownKeys++; return Reflect.ownKeys(holder); },
+    getOwnPropertyDescriptor(holder, key) {
+      if (key === "length") counts.lengthDescriptors++;
+      else {
+        const index = Number(key);
+        assert.ok(Number.isInteger(index) && index >= 0 && index < 4_096, "only owned index descriptors are requested");
+        counts.descriptors++;
+        positionDescriptors[index]!++;
+      }
+      return Reflect.getOwnPropertyDescriptor(holder, key);
+    },
+    get(holder, key, receiver) {
+      if (key === "length") counts.lengthReads++;
+      else {
+        const index = Number(key);
+        assert.ok(Number.isInteger(index) && index >= 0 && index < 4_096, "only owned indices are read");
+        counts.reads++;
+        positionReads[index]!++;
+      }
+      return Reflect.get(holder, key, receiver);
+    },
+  };
+  Object.setPrototypeOf(traps, null);
+  let handler = traps;
+  for (let index = 0; index < depth; index++) handler = Object.create(handler) as typeof handler;
+  const inner = new Proxy(target, handler);
+  return { inner, target, counts, positionDescriptors, positionReads, root: Array(8).fill(inner) };
+}
+
+test("decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth", () => {
+  for (const depth of [0, 32]) {
+    const invalid = handlerFixture(depth, undefined);
+    const issues = issuesOf(invalid.root);
+    assertDescriptorCounts(invalid, 8);
+    assert.deepEqual(issues.slice(0, 8), Array.from({ length: 8 }, (_, index) => ({
+      path: `[0][${index}]`, code: "undefined_member", message: "array element is undefined; an array has no absent positions",
+    })));
+    assert.deepEqual(issues.slice(8), [{
+      path: "", code: "undefined_member", message: "additional occurrences (locations omitted)", occurrences: 32_760,
+    }]);
+
+    const coherent = handlerFixture(depth, 0);
+    const result = canonicalize(coherent.root);
+    assert.equal(result.ok, true, "handler inheritance must not cause coherent Proxies to be rejected");
+    if (!result.ok) throw Error("expected exact accepted value");
+    const expected = Array.from({ length: 8 }, () => Array(4_096).fill(0));
+    assert.equal(result.value.canonicalBytes, 65_553, "8 * 8,193 inner bytes + 9 outer punctuation bytes");
+    assert.equal(result.value.canonical, JSON.stringify(expected));
+    assert.deepEqual(result.value.value, expected);
+    assert.ok(Object.isFrozen(result.value.value));
+    assert.ok((result.value.value as unknown[]).every(Object.isFrozen));
+    coherent.target[0] = undefined;
+    assert.deepEqual(result.value.value, expected, "retained content does not follow caller mutation");
+    assertDescriptorCounts(coherent, 8);
+  }
+});
+
+test("decision-04 handler probe: the byte stop bounds Kernel-selected observations", () => {
+  for (const depth of [0, 32]) {
+    const f = handlerFixture(depth, undefined);
+    // This uses the independently derived budget in the descriptor-stop test: 983,103
+    // bytes before the rows, then 4,097 bytes per row. Fifteen rows fit, the sixteenth
+    // charges past the limit before any index read, and the seventeenth stays unobserved.
+    const issues = issuesOf([...Array(15).fill("x".repeat(65_536)), ...Array(17).fill(f.inner)]);
+    assertDescriptorCounts(f, 15, 16);
+    assert.equal(issues.length, 10);
+    assert.deepEqual(issues.slice(0, 8).map(issue => issue.path), Array.from({ length: 8 }, (_, index) => `[15][${index}]`));
+    assert.deepEqual(issues.slice(8), [
+      { path: "", code: "undefined_member", message: "additional occurrences (locations omitted)", occurrences: 61_432 },
+      { path: "", code: "too_many_bytes", message: "additional occurrences (locations omitted)", occurrences: 1 },
+    ]);
+    assert.equal(issues.reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0), 61_441);
+  }
+});
+
+test("decision-04 handler probe: eager roots preserve selected counts and whole state before authority", () => {
+  const s = setup();
+  for (const roots of [1, 8]) {
+    for (const grant of [undefined, s.grant]) {
+      const f = handlerFixture(32, undefined);
+      const proposal = outcomeFor(s.executionId, s.open, roots === 1 ? { progress: f.root } : {
+        progress: f.root,
+        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: `handler-${index}`, value: f.root })),
+        next: { step: "complete", result: f.root },
+      });
+      const before = s.view(), deliveries = s.driver.seen.length;
+      const result = refused(s.kernel.submitOutcome(observer("handler-observer"), proposal, grant!));
+      assert.equal(result.classification, grant ? "malformed_envelope" : "unauthorized_submission");
+      assertDescriptorCounts(f, roots * 8);
+      if (grant) {
+        const suffix = roots * 32_768 - 8;
+        assert.match(result.reason, new RegExp(`${suffix} additional issues: undefined_member=${suffix}$`));
+      } else assert.doesNotMatch(result.reason, /undefined_member|additional issues/);
+      assertOnlyRefusal(before, s.view(), result);
+      assert.equal(s.driver.seen.length, deliveries);
+    }
+  }
+  accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
+});
+
+/** Count the Kernel's captured character primitive, independently of string storage or timing. */
+function stringWorkChild(body: string): void {
+  const prelude = `
+    import assert from "node:assert/strict";
+    const original = String.prototype.charCodeAt;
+    let characterReads = 0, oversizedReads = 0;
+    String.prototype.charCodeAt = function(index) {
+      characterReads++;
+      if (this.length > 131072) oversizedReads++;
+      return Reflect.apply(original, this, [index]);
+    };
+    const { canonicalize } = await import(${JSON.stringify(new URL("../src/values.ts", import.meta.url).href)});
+    const { ExecutionCoordinator } = await import(${JSON.stringify(new URL("../src/index.ts", import.meta.url).href)});
+    const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
+    const { assertOnlyRefusal } = await import(${JSON.stringify(new URL("./refusal-diagnostics-fixture.ts", import.meta.url).href)});
+    String.prototype.charCodeAt = original;
+    const measure = value => {
+      characterReads = oversizedReads = 0;
+      const result = canonicalize(value);
+      return { result, reads: characterReads, oversized: oversizedReads };
+    };
+    const codes = result => result.ok ? [] : result.issues.map(issue => issue.code);
+  `;
+  const run = spawnSync(process.execPath, ["--experimental-strip-types", "--input-type=module", "--eval", `${prelude}\n${body}`], {
+    encoding: "utf8", timeout: 30_000, maxBuffer: 2 * 1024 * 1024,
+  });
+  assert.equal(run.error, undefined, String(run.error));
+  assert.equal(run.signal, null, run.stderr);
+  assert.equal(run.status, 0, run.stdout + run.stderr);
+}
+
+test("V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values", () => {
+  stringWorkChild(`
+    for (const [text, expectedReads] of [["x".repeat(65536), 65536], ["😀".repeat(65536), 131072]]) {
+      const observed = measure(text);
+      assert.equal(observed.result.ok, true);
+      assert.equal(observed.result.value.value, text);
+      assert.equal(observed.result.value.canonical, JSON.stringify(text));
+      assert.equal(observed.reads, expectedReads, "the captured primitive is live on accepted strings");
+    }
+    const bmpOver = measure("x".repeat(65537));
+    assert.deepEqual(codes(bmpOver.result), ["string_too_long"]);
+    assert.equal(bmpOver.reads, 65536, "the bounded scalar scan still decides within the possible extent");
+    const possibleExtent = measure("x".repeat(131072));
+    assert.deepEqual(codes(possibleExtent.result), ["string_too_long"]);
+    assert.equal(possibleExtent.reads, 65536);
+    for (const text of ["😀".repeat(65536) + "x", "😀".repeat(65537)]) {
+      const observed = measure(text);
+      assert.deepEqual(codes(observed.result), ["string_too_long"]);
+      assert.equal(observed.result.issues[0].message, "string cannot fit within the limit of 65536 Unicode scalar values");
+      assert.equal(observed.reads, 0, "provably excessive extent is refused before the first character read");
+    }
+    const malformedEdge = measure("\\ud800" + "x".repeat(131071));
+    assert.deepEqual(codes(malformedEdge.result), ["lone_surrogate"]);
+    assert.equal(malformedEdge.reads, 2, "Unicode validation still applies at the possible extent");
+    for (const text of ["\\ud800" + "x".repeat(131072), "\\udc00" + "x".repeat(16777216)]) {
+      const observed = measure(text);
+      assert.equal(codes(observed.result)[0], "string_too_long", "excessive extent takes precedence without reading malformed contents");
+      assert.equal(observed.result.issues[0].message, "string cannot fit within the limit of 65536 Unicode scalar values");
+      assert.equal(observed.reads, 0);
+    }
+  `);
+});
+
+test("V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges", () => {
+  stringWorkChild(`
+    const huge = "x".repeat(16777216);
+    for (const value of [huge, { [huge]: null }]) {
+      const observed = measure(value);
+      assert.deepEqual(codes(observed.result), ["string_too_long", "too_many_bytes"]);
+      assert.equal(observed.reads, 0);
+    }
+    const stopped = measure([huge, undefined]);
+    assert.deepEqual(codes(stopped.result), ["string_too_long", "too_many_bytes"]);
+    assert.match(stopped.result.issues[1].message, /reaches at least 16777219 bytes/);
+    assert.equal(stopped.oversized, 0);
+    assert.equal(stopped.reads, 2, "only the two structural array-index spellings are read");
+    const repeated = measure([...Array(6).fill("x".repeat(200000)), undefined]);
+    assert.deepEqual(codes(repeated.result), [...Array(6).fill("string_too_long"), "too_many_bytes"]);
+    assert.deepEqual(repeated.result.issues.slice(0, 6).map(issue => issue.path), ["[0]", "[1]", "[2]", "[3]", "[4]", "[5]"]);
+    assert.match(repeated.result.issues[6].message, /reaches at least 1200008 bytes/);
+    assert.equal(repeated.oversized, 0, "preflight preserves per-occurrence full-length charging");
+    assert.equal(repeated.reads, 7, "only the seven structural array-index spellings are read");
+    for (const key of ["x".repeat(65536), "😀".repeat(65536)]) {
+      const observed = measure({ [key]: null });
+      assert.equal(observed.result.ok, true);
+      assert.deepEqual(observed.result.value.value, { [key]: null });
+      assert.equal(observed.result.value.canonical, JSON.stringify({ [key]: null }));
+    }
+    const nameOver = measure({ ["😀".repeat(65536) + "x"]: null });
+    assert.deepEqual(codes(nameOver.result), ["string_too_long"]);
+    assert.equal(nameOver.result.issues[0].message, "member name cannot fit within the limit of 65536 Unicode scalar values");
+    assert.equal(nameOver.reads, 0);
+  `);
+});
+
+test("V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads", () => {
+  stringWorkChild(`
+    const who = h.caller("string-preflight"), driver = h.recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const { executionId } = h.accepted(kernel.createExecution(who, h.createRequest()));
+    const open = h.accepted(kernel.dispatch(who, executionId, { bound: 1 }));
+    const grant = h.submissionFor(driver, open.activationId);
+    const view = () => h.accepted(kernel.inspect(who, executionId));
+    const huge = "x".repeat(16777216), deliveries = driver.seen.length;
+    const beforeCreate = view();
+    oversizedReads = 0;
+    const creation = h.refused(kernel.createExecution(who, h.createRequest({
+      creationKey: "preflight-retry", authorityContext: huge,
+      initialInput: { kind: "application.message", payload: huge },
+    })));
+    assert.equal(creation.classification, "malformed_value");
+    assert.equal(creation.executionId, null);
+    assert.equal(oversizedReads, 0);
+    assert.deepEqual(view(), beforeCreate);
+    assert.equal(h.accepted(kernel.createExecution(who, h.createRequest({ creationKey: "preflight-retry" }))).receipt.position, 1);
+    const beforeInput = view();
+    oversizedReads = 0;
+    const input = h.refused(kernel.submitInput(who, { destination: executionId, requestKey: "preflight-input", kind: "application.message", payload: huge }));
+    assert.equal(input.classification, "malformed_value");
+    assert.equal(oversizedReads, 0);
+    assertOnlyRefusal(beforeInput, view(), input);
+    h.accepted(kernel.submitInput(who, { destination: executionId, requestKey: "preflight-input", kind: "application.message", payload: null }));
+    for (const authorization of [undefined, grant]) {
+      const proposal = h.outcomeFor(executionId, open, {
+        progress: huge,
+        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: "s" + index, value: huge })),
+        next: { step: "complete", result: huge },
+      });
+      const before = view();
+      oversizedReads = 0;
+      const refusal = h.refused(kernel.submitOutcome(h.observer("visible"), proposal, authorization));
+      assert.equal(refusal.classification, authorization ? "malformed_envelope" : "unauthorized_submission");
+      assert.equal(oversizedReads, 0, "every eager root uses the same bounded string observation");
+      if (authorization) assert.match(refusal.reason, /8 additional issues: string_too_long=4, too_many_bytes=4$/);
+      else assert.doesNotMatch(refusal.reason, /string_too_long|too_many_bytes/);
+      assertOnlyRefusal(before, view(), refusal);
+      assert.equal(driver.seen.length, deliveries);
+    }
+    h.accepted(kernel.submitOutcome(who, h.outcomeFor(executionId, open), grant));
+  `);
 });

@@ -48,7 +48,11 @@ On 2026-09-27 [K1.2 decision 03](../docs/development/work/K1.2/decision-03.md) s
 refusal-cost claim's caller-trap boundary to include engine processing of values returned by required
 caller code, including Proxy descriptor conversion. [Values](concepts/values.md#fixed-semantic-limits)
 owns that boundary and the unchanged observation limits; the decision leaves Kernel-chosen lookups
-and ordinary non-Proxy data covered. It introduces no Proxy rejection or out-of-process capture.
+and ordinary non-Proxy data covered. On 2026-09-28 [decision 04](../docs/development/work/K1.2/decision-04.md)
+superseded decision-03 item 1 with a single boundary for all engine-internal work attributable to
+live Proxies. It clarified Kernel-selected observation counts and the absence of a time bound for
+values containing live Proxies. Neither decision authorizes Proxy rejection, observation reuse or
+out-of-process capture.
 
 ## Misunderstandings that shaped these pages
 

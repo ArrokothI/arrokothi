@@ -345,6 +345,11 @@ const TOO_LONG: StringScan = PrimordialObjectFreeze({ kind: "too_long" } as cons
  */
 const scanBoundaryString = (input: string): StringScan => {
   const units = input.length;
+  // Any valid scalar uses at most two UTF-16 units. A larger extent cannot fit the scalar
+  // limit, regardless of its contents. Refuse before a character read can make the engine
+  // flatten a caller-sized rope string. Remaining string extents and scalar reads are bounded.
+  // This preflight also wins for malformed oversized text.
+  if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;
   let scalars = 0;
   let bytes = 2;
   for (let index = 0; index < units; index += 1) {
@@ -634,7 +639,7 @@ function capture(value: unknown, path: string, level: number, state: CaptureStat
       pushIssue(state.issues, {
         path,
         code: "string_too_long",
-        message: `string has more than ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values, the limit`,
+        message: `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
       });
       // Charged at its full length, which is free to read and never less than the reading the scan
       // did, so repeated occurrences of one refused string exhaust the budget quickly.
@@ -943,7 +948,7 @@ function captureObject(container: object, path: string, entered: number, state: 
       pushIssue(state.issues, {
         path: where,
         code: "string_too_long",
-        message: `member name has more than ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values, the limit`,
+        message: `member name cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
       });
       refused = true;
       if (!charge(state, key.length)) return REFUSED;
