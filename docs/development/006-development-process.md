@@ -165,6 +165,13 @@ unresolved semantic case cannot be left for the reviewer while claiming WAITING_
 choices within the authorized contract; ask the owner, or use the blocker paths for genuine missing
 authority.
 
+Do not mandate a second reviewer for every packet. The owner may request one when there is a
+concrete coverage, expertise, access or correlated-assumption concern. Its remit should identify that
+concern; acceptance still requires one accountable full cumulative review, not a majority vote or
+several partial reviews silently combined. Prefer a different search remit, a different model family
+from the implementer's, or both. Two reviews with the same remit by the same model mostly repeat
+each other or disagree about where they happened to look.
+
 ## Stop and redesign
 
 Stop patching when any of these happens within one packet:
@@ -186,13 +193,6 @@ The owner chooses one of:
 
 No further patch round starts before that decision. This rule does not weaken any gate: it changes
 how a packet reaches the gate.
-
-Do not mandate a second reviewer for every packet. The owner may request one when there is a
-concrete coverage, expertise, access or correlated-assumption concern. Its remit should identify that
-concern; acceptance still requires one accountable full cumulative review, not a majority vote or
-several partial reviews silently combined. Prefer a different search remit, a different model family
-from the implementer's, or both. Two reviews with the same remit by the same model mostly repeat
-each other or disagree about where they happened to look.
 
 ## Review rules and failure handling
 
