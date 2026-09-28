@@ -131,3 +131,25 @@ review readiness because unaffected tests pass.
 No third-party source, asset, dependency or service was incorporated by this audit. Existing
 `canonicalize@3.0.0` reuse is unchanged. No self-acceptance, integration or successor release follows
 from this note.
+
+## Owner resolution and adjacent engine entry case — 2026-09-28
+
+The preceding audit records the pre-decision state. [Owner decision-03](../K1.2/decision-03.md)
+resolves SELF-R4-DESCRIPTOR-01 and is applied by contract revision 5 and the canonical values
+owner. Four additional diagnostic tests retain the required count, byte-stop, coherent-Proxy,
+ordinary-data and Outcome-before-authority evidence; see the dated addition to
+[diagnostic closure](diagnostic-closure-04.md#owner-resolution-and-additional-evidence--2026-09-28).
+
+The same dependency trace found **SELF-R4-HANDLER-01**, separately attributed to this implementer
+audit. [Blocker-02](blocker-02.md) reconstructs required engine work before a caller result exists:
+trap-method discovery, absent-trap forwarding, Proxy-target classification and induced target or
+handler operations. [The maintained probe](probe-handler-chain-04.mjs) confirms method-discovery
+cost on both direct capture and a visible unauthorized Outcome, with identical observations and
+only the permitted refusal mutation. Decision-03 is not interpreted as authorizing this additional
+exclusion. The root implementer requested the owner's boundary clarification under 006.
+
+This supersedes the earlier descriptor-specific reason for leaving C3 unresolved. C3 and its
+C13/C15 cost-scope dependencies remain unresolved for the new engine-entry case until the owner
+decides it. The source and oracle assessments of the other rows stand; final clean-C validation
+and independent review are still required. No additional production-code defect was established
+by this follow-up audit.

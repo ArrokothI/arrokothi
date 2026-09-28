@@ -209,3 +209,154 @@ for (const kind of ["foreign object", "thrown object"] as const) {
     accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
   });
 }
+
+/**
+ * Decision 03 condition 3: the descriptor is ordinary prebuilt data with a deep ordinary
+ * prototype, exactly the shape in probe-descriptor-chain-04. The engine checks its absent
+ * get/set fields internally. Those checks do not permit additional Kernel observations.
+ */
+function descriptorFixture(depth: number, value: undefined | 0) {
+  let prototype: object | null = null;
+  for (let index = 0; index < depth; index++) prototype = Object.create(prototype);
+  const descriptors: PropertyDescriptor[] = Array.from({ length: 4_096 }, () => Object.assign(Object.create(prototype), {
+    value, writable: true, enumerable: true, configurable: true,
+  }));
+  const counts = { prototypes: 0, ownKeys: 0, lengthDescriptors: 0, lengthReads: 0, descriptors: 0, reads: 0 };
+  const positionDescriptors = new Uint32Array(4_096), positionReads = new Uint32Array(4_096);
+  const target = Array(4_096).fill(value) as (undefined | 0)[];
+  const inner = new Proxy(target, {
+    getPrototypeOf(holder) { counts.prototypes++; return Reflect.getPrototypeOf(holder); },
+    ownKeys(holder) { counts.ownKeys++; return Reflect.ownKeys(holder); },
+    getOwnPropertyDescriptor(holder, key) {
+      if (key === "length") {
+        counts.lengthDescriptors++;
+        return Reflect.getOwnPropertyDescriptor(holder, key);
+      }
+      const index = Number(key);
+      assert.ok(Number.isInteger(index) && index >= 0 && index < 4_096, "only owned index descriptors are requested");
+      counts.descriptors++;
+      positionDescriptors[index]!++;
+      return descriptors[index];
+    },
+    get(holder, key, receiver) {
+      if (key === "length") counts.lengthReads++;
+      else {
+        const index = Number(key);
+        assert.ok(Number.isInteger(index) && index >= 0 && index < 4_096, "only owned indices are read");
+        counts.reads++;
+        positionReads[index]!++;
+      }
+      return Reflect.get(holder, key, receiver);
+    },
+  });
+  return { inner, target, counts, positionDescriptors, positionReads, root: Array(8).fill(inner) };
+}
+
+function assertDescriptorCounts(f: ReturnType<typeof descriptorFixture>, fullRows: number, structuralRows = fullRows): void {
+  assert.deepEqual(f.counts, {
+    prototypes: structuralRows,
+    ownKeys: 2 * structuralRows,
+    lengthDescriptors: structuralRows,
+    lengthReads: structuralRows,
+    descriptors: 4_096 * fullRows,
+    reads: 4_096 * fullRows,
+  });
+  assert.ok(f.positionDescriptors.every(count => count === fullRows), "one descriptor observation at every visited position");
+  assert.ok(f.positionReads.every(count => count === fullRows), "one ordinary read at every visited position");
+}
+
+test("decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance", () => {
+  for (const depth of [0, 32]) {
+    const invalid = descriptorFixture(depth, undefined);
+    const issues = issuesOf(invalid.root);
+    assertDescriptorCounts(invalid, 8);
+    assert.deepEqual(issues.slice(0, 8), Array.from({ length: 8 }, (_, index) => ({
+      path: `[0][${index}]`, code: "undefined_member", message: "array element is undefined; an array has no absent positions",
+    })));
+    assert.deepEqual(issues.slice(8), [{
+      path: "", code: "undefined_member", message: "additional occurrences (locations omitted)", occurrences: 32_760,
+    }]);
+
+    const coherent = descriptorFixture(depth, 0);
+    const result = canonicalize(coherent.root);
+    assert.equal(result.ok, true, "the exemption does not reject coherent Proxies");
+    if (!result.ok) throw Error("expected exact accepted value");
+    const expected = Array.from({ length: 8 }, () => Array(4_096).fill(0));
+    // Every inner canonical array has 4,096 zeroes and 4,097 punctuation bytes. The outer
+    // array adds nine punctuation bytes: 8 * 8,193 + 9 = 65,553, independently of the binding.
+    assert.equal(result.value.canonicalBytes, 65_553);
+    assert.equal(result.value.canonical, JSON.stringify(expected));
+    assert.deepEqual(result.value.value, expected);
+    assert.ok(Object.isFrozen(result.value.value));
+    assert.ok((result.value.value as unknown[]).every(Object.isFrozen));
+    coherent.target[0] = undefined;
+    assert.deepEqual(result.value.value, expected, "accepted values stay detached from the caller");
+    assertDescriptorCounts(coherent, 8, 8);
+  }
+});
+
+test("decision-03 descriptor probe: the byte stop bounds trap calls before later rows", () => {
+  const f = descriptorFixture(32, undefined);
+  // Fifteen valid strings use 15 * (65,536 + 2) canonical bytes. The 32-member outer
+  // array adds 33 punctuation bytes. Each refused inner array charges 4,097 punctuation
+  // bytes and no scalar bytes. Thus exactly floor((1,048,576 - 983,103) / 4,097) = 15
+  // complete inner rows fit; row16 stops after its structure, and row17 is never observed.
+  const prefix = Array(15).fill("x".repeat(65_536));
+  const issues = issuesOf([...prefix, ...Array(17).fill(f.inner)]);
+  assertDescriptorCounts(f, 15, 16);
+  assert.equal(issues.length, 10);
+  assert.deepEqual(issues.slice(0, 8).map(issue => issue.path), Array.from({ length: 8 }, (_, index) => `[15][${index}]`));
+  assert.deepEqual(issues.slice(8), [
+    { path: "", code: "undefined_member", message: "additional occurrences (locations omitted)", occurrences: 61_432 },
+    { path: "", code: "too_many_bytes", message: "additional occurrences (locations omitted)", occurrences: 1 },
+  ]);
+  assert.equal(issues.reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0), 61_441);
+});
+
+test("decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority", () => {
+  const s = setup();
+  for (const roots of [1, 8]) {
+    for (const grant of [undefined, s.grant]) {
+      const f = descriptorFixture(32, undefined);
+      const proposal = outcomeFor(s.executionId, s.open, roots === 1 ? { progress: f.root } : {
+        progress: f.root,
+        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: `descriptor-${index}`, value: f.root })),
+        next: { step: "complete", result: f.root },
+      });
+      const before = s.view(), deliveries = s.driver.seen.length;
+      const result = refused(s.kernel.submitOutcome(observer("descriptor-observer"), proposal, grant!));
+      assert.equal(result.classification, grant ? "malformed_envelope" : "unauthorized_submission");
+      assertDescriptorCounts(f, roots * 8);
+      if (grant) {
+        const suffix = roots * 32_768 - 8;
+        assert.match(result.reason, new RegExp(`${suffix} additional issues: undefined_member=${suffix}$`));
+      } else assert.doesNotMatch(result.reason, /undefined_member|additional issues/);
+      assertOnlyRefusal(before, s.view(), result);
+      assert.equal(s.driver.seen.length, deliveries);
+    }
+  }
+  accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
+});
+
+test("decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption", () => {
+  for (const depth of [0, 10_000]) {
+    const counts = { structural: 0, diagnostic: 0 };
+    const prototype = chain(counts, depth);
+    assert.equal(Reflect.get(prototype, "constructor").name, "CallerType");
+    counts.diagnostic = 0;
+    // These two values and the thrown value are ordinary non-Proxy objects. Only the carrier
+    // of the throw is a Proxy: its required trap throws the prebuilt ordinary value at once.
+    const ordinaryObject = Object.create(prototype);
+    const ordinaryArray = Object.setPrototypeOf([], prototype);
+    const throwsOrdinaryObject = new Proxy({}, { ownKeys() { counts.structural++; throw ordinaryObject; } });
+    for (const [value, code, message] of [
+      [ordinaryObject, "unsupported_form", "expected a plain object, received object"],
+      [ordinaryArray, "unsupported_form", "expected a plain array, received object"],
+      [throwsOrdinaryObject, "unstable_representation", "observing this value's structure threw (object), so it presents no readable content"],
+    ] as const) {
+      assertWeighted(issuesOf(Array(17).fill(value)), 17, code, message);
+      assert.equal(counts.diagnostic, 0, "Kernel-chosen diagnostic reads remain forbidden on ordinary objects");
+    }
+    assert.equal(counts.structural, 17);
+  }
+});

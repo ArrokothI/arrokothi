@@ -1,5 +1,6 @@
 // SELF-R4-DESCRIPTOR-01: engine descriptor normalization walks a caller-built chain.
 // Run: node --expose-gc probe-descriptor-chain-04.mjs <tree> <depth> [direct|outcome]
+// Under owner decision-03, engine conversion time is excluded; these exact call counts remain binding.
 // The only trap work is a counter, key conversion and returning a prebuilt descriptor.
 import assert from 'node:assert/strict';
 const [,, tree = process.cwd(), depthText = '0', surface = 'direct'] = process.argv;

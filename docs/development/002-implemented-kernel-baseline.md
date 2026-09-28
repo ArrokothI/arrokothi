@@ -51,12 +51,18 @@ counts. Creation/ingress render suffix multiplicity explicitly; Outcome/control 
 the weighted roots into DEC-5's first eight details and exact remaining counts without expansion.
 No aggregate semantic size cap is introduced. This records the in-process choice at
 [values' diagnostic-storage marker](../../mental-model/concepts/values.md#fixed-semantic-limits).
-The engine's own-key enumeration and execution of caller traps remain outside Kernel-controlled
-work; this binding supplies no CPU preemption or physical containment. Engine descriptor conversion
-can still walk a caller-built prototype chain before a captured descriptor reaches Kernel code;
-[blocker-01](work/K1.2-correction-01/blocker-01.md) records the counterexample and required owner
-decision. No exemption for that work has been adopted. Review status and the held V-D1 claim remain
-in 007; fixed diagnostic labels do not establish full refusal-cost closure.
+The cost claim excludes engine own-key enumeration, execution of caller traps, and engine-internal
+processing of values returned by required caller code, including conversion of Proxy-returned
+descriptors. [Owner decision-03](work/K1.2/decision-03.md) records the precise boundary now stated
+once in [values](../../mental-model/concepts/values.md#fixed-semantic-limits). It leaves Kernel-chosen
+lookups and ordinary non-Proxy data inside V-D1. KC2-1's claim is scoped by that decision: observation
+and trap-invocation counts, the byte stop, exact accepted values and diagnostic weights are unchanged.
+Coherent Proxies remain accepted. The descriptor-chain probe pins counts; its timing is an
+observation of excluded work, not a cost gate. [Blocker-01](work/K1.2-correction-01/blocker-01.md)
+records the original counterexample and owner resolution. Review status and the held V-D1 claim
+remain in 007 until independent review; this binding supplies no CPU preemption or physical containment.
+The adjacent engine-entry question in [blocker-02](work/K1.2-correction-01/blocker-02.md)
+remains unresolved; decision-03 has not been extended to trap discovery or Proxy-target traversal.
 
 ## Request identity API
 

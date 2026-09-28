@@ -66,3 +66,14 @@ Both require owner authority. Neither is selected here. The dependent V-D1 closu
 unresolved under 006's architecture blocker path. Unaffected diagnostic and exact-coordinate
 corrections can be validated and handed off, but the packet cannot be WAITING_FOR_REVIEW or
 accepted while this obligation is open. The invalidation holds remain.
+
+
+## Owner resolution — 2026-09-27
+
+Resolved by the explicit owner message transcribed verbatim in
+[decision-03](../K1.2/decision-03.md). The owner selected option 2 with the narrow boundary in that
+record and required contract revision 5, canonical/baseline maintenance and deterministic count
+coverage. The original counterexample and question above remain historical evidence. No broader
+exclusion, Proxy rejection, out-of-process capture or successor is authorized. Validation of the
+implementation under that decision belongs to the new C/H and implementation-04; this resolution
+is not independent acceptance and lifts neither invalidation hold.

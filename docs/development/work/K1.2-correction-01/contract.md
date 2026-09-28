@@ -1,6 +1,6 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 4. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 5. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, without weakening or removing a criterion. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
@@ -17,7 +17,11 @@ changes; [coverage-02](coverage-02.md) remains the earlier plan. Revision 4 appl
 [invalidation-02](../K1.2/invalidation-02.md): integrated value-capture refusal cost and its K1.2
 consumers join this packet. [Coverage-04](coverage-04.md) is the pre-code reconstruction and proof
 map for both review-04 findings. Accepted values, all four limits, single observation, ambient
-safety, K1.1-correction-02 read bounds, decision-02 and C1–C15 remain binding.
+safety, K1.1-correction-02 read bounds, decision-02 and C1–C15 remain binding. Revision 5 transcribes
+[owner decision-03](../K1.2/decision-03.md), supplied explicitly in this session on 2026-09-27.
+It resolves [blocker-01](blocker-01.md) and scopes the KC2-1/V-D1 cost claim at its
+[canonical owner](../../../../mental-model/concepts/values.md#fixed-semantic-limits). It authorizes
+no other semantic change; coherent Proxy acceptance, all observation bounds and DEC-7 weights remain binding.
 
 ## Identity and authority
 
@@ -46,8 +50,14 @@ safety, K1.1-correction-02 read bounds, decision-02 and C1–C15 remain binding.
 - Round 4 follows the owner's explicit instruction to continue from pushed
   `3287640f045cf2e6adeefcd32f21d897480a6a7d` on the same branch, with no checkout switches or
   history rewriting. [Coverage-05](coverage-05.md) and [exact coverage](exact-coverage-04.md)
-  reconstruct review-06's two findings. [Blocker-01](blocker-01.md) leaves the additional
-  engine descriptor-conversion obligation unresolved; no V-D1 exemption is selected.
+  reconstruct review-06's two findings. The subsequently discovered [blocker-01](blocker-01.md)
+  is resolved by the explicit owner decision-03, not by an implementer interpretation. The
+  intermediate payload `a09223b0c27cd9831b2a85c948a57c8b347c3547` predates that decision;
+  revision 5 requires a new payload C and clean validation.
+- The subsequent [blocker-02](blocker-02.md), SELF-R4-HANDLER-01, requests owner clarification
+  for required engine entry/dispatch work before a caller result exists. Decision-03 is not
+  broadened to cover it. C3 and the dependent cost-scope assessments remain unresolved while
+  this question is pending; passing unaffected tests does not establish review readiness.
 - Scope: ID-01, EVID-01, DIAG-01, review-04 VALUE-COST-01 and EVID-01, adjacent in-scope defects, and optional observations. No integration,
   self-acceptance, K1.3 or successor. Historical review-13 ACCEPT stays unchanged.
 
@@ -126,7 +136,12 @@ fragments and are not silently sanitized by DEC-4/5. Inspection returns retained
 not render caller identity anew.
 
 **DEC-7 (value refusal cost, V-D1):** preserve the complete existing traversal, including its
-byte-limit stop, single observations and eager capture of sibling roots. During each root's capture,
+byte-limit stop, single observations and eager capture of sibling roots. The cost claim follows
+[values](../../../../mental-model/concepts/values.md#fixed-semantic-limits) with
+[decision-03](../K1.2/decision-03.md)'s owner-authorized scope; Kernel-chosen lookups and plain data
+remain covered. Deterministic descriptor-probe evidence must pin bounded observation/trap counts,
+byte-stop behavior and unchanged coherent-Proxy acceptance. Timing of excluded engine descriptor
+conversion is an observation only. During each root's capture,
 retain the first eight issue details, bounded with DEC-5's relative-path/message rules, and then
 one exact occurrence counter per remaining code, ordered by first remaining occurrence. No accepted
 value, scalar scan, container read bound or semantic limit changes. Diagnostic path construction

@@ -120,3 +120,48 @@ diagnostic-construction result; it does not prove a bound on every structural en
 discharge the adjacent blocker, or substitute for the packet's required validation and independent
 review. Source and tests are independently written for this packet; no dependency or third-party
 source is added.
+
+## Owner resolution and additional evidence — 2026-09-28
+
+The preceding sections preserve the audit's state before the owner resolved the blocker.
+[Decision 03](../K1.2/decision-03.md), dated 2026-09-27 and transcribed verbatim from the owner's
+message, resolves SELF-R4-DESCRIPTOR-01. It excludes the engine's processing of values returned by
+caller code that the Kernel must invoke to observe a position, including conversion of a
+Proxy-trap-returned descriptor. It expressly keeps Kernel-chosen lookups and all ordinary
+non-Proxy object/array work within V-D1. The decision does not authorize rejecting coherent
+Proxies, moving capture out of process, changing limits or weakening observations and byte stops.
+The canonical boundary belongs in `values.md`; this paragraph records the decision and how this
+evidence applies it, rather than introducing another rule.
+
+Four additional maintained tests pin decision-03 condition 3 and the unexempted diagnostic path:
+
+| Schedule | Independently expected result |
+|---|---|
+| Descriptor-probe shape, 8 occurrences of a 4,096-element array; prebuilt ordinary data descriptors above chains of depth 0 and 32 | Exactly 32,768 indexed descriptor traps and 32,768 indexed reads; each index observed eight times; eight prototype observations, eight length descriptors, eight length reads and sixteen own-key traps |
+| The same shape with own descriptor value `undefined` | Eight original details, then 32,760 `undefined_member` occurrences; no acceptance |
+| The same coherent Proxy shape with descriptor and actual value `0` | Accepted exact detached snapshot and canonical text, 65,553 bytes; the same observation counts, with no caller reread during serialization |
+| Byte stop after fifteen maximum-length strings, followed by seventeen shared descriptor rows | Fifteen rows' indices read exactly once per occurrence; the sixteenth row's structure is observed before the byte stop; the seventeenth is never observed. There are 61,440 indexed descriptor/read pairs, 61,440 undefined issues and one `too_many_bytes` issue |
+| One and eight eager Outcome roots of the descriptor-probe shape, without and with the current grant | Total observations equal root count multiplied by the independently expected per-root counts; `unauthorized_submission` precedes content diagnostics, while the grant reaches `malformed_envelope`; only the single refusal changes the view, no delivery occurs, and a valid follow-up accepts |
+| Ordinary non-Proxy foreign objects and arrays, and a thrown ordinary object, at prototype depths 0 and 10,000 | Zero diagnostic constructor lookups, including first-eight details and counted suffixes. The throw carrier's required trap runs seventeen times; describing its thrown ordinary object adds no lookup |
+
+The byte-stop expectation follows the input's punctuation and strings independently of the
+implementation: the fifteen strings use `15 × 65,538 = 983,070` bytes and the 32-member outer
+array adds 33. Each inner row charges 4,097 punctuation bytes. Exactly
+`floor((1,048,576 - 983,103) / 4,097) = 15` complete rows fit. This pins the stop and its
+observations without measuring elapsed time or changing accepted canonical-size accounting.
+
+The descriptor-count tests use modest prototype depths so they remain ordinary regression tests.
+The earlier depth-10,000 timing probe remains an observation of the now owner-exempted engine
+conversion cost, not a performance gate. The explicit ordinary-object diagnostic tests remain
+fully within V-D1 and would reject reinstating `describe`'s constructor lookup; the new exemption
+does not excuse that lookup.
+
+Validation after these additions:
+
+- `node --test --experimental-strip-types packages/kernel/tests/value-diagnostic-work.test.ts`:
+  **14 passed, 0 failed, 0 skipped**.
+- `npm run typecheck`: **passed**.
+
+These results extend the diagnostic and observation evidence. The packet's cumulative validation,
+new C/H identities and independent-review handoff remain owned by the implementation report;
+this note does not independently accept the packet or release a successor.

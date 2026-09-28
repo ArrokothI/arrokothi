@@ -44,6 +44,12 @@ On 2026-09-24 the owner adopted the accepted [K1.1 contract](https://github.com/
 
 The owner's 2026-09-23 rewrite of [values](concepts/values.md) stated three obligations that no worksheet decision or K1.1 record states in those words: refusing a value must cost no more than accepting one at the limits; a digest that alone decides duplicate-versus-conflict after deletion must resist deliberate collisions and cover the full canonical bytes; and each request-envelope field is read once, with that one answer used for everything the call does. [K1.1-correction-02 decision 01](../docs/development/work/K1.1-correction-02/decision-01.md) records them as owner decisions, with their relation to accepted K1.1 behavior and the implementation change the first one required.
 
+On 2026-09-27 [K1.2 decision 03](../docs/development/work/K1.2/decision-03.md) scoped the in-process
+refusal-cost claim's caller-trap boundary to include engine processing of values returned by required
+caller code, including Proxy descriptor conversion. [Values](concepts/values.md#fixed-semantic-limits)
+owns that boundary and the unchanged observation limits; the decision leaves Kernel-chosen lookups
+and ordinary non-Proxy data covered. It introduces no Proxy rejection or out-of-process capture.
+
 ## Misunderstandings that shaped these pages
 
 | Evidence | Comprehension problem | Structural correction |

@@ -194,6 +194,15 @@ A value over a limit is refused in the same way as any other malformed value. It
 
 Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
 
+In the in-process binding, engine own-key enumeration and execution of caller traps are outside
+the cost claim. The same caller-trap boundary covers engine-internal work that processes values
+returned by caller-supplied code the Kernel must invoke to observe a position, including conversion
+of a Proxy trap's returned descriptor. It does not exclude any lookup the Kernel itself chooses to
+perform or relax the refusal-cost requirement for ordinary (non-Proxy) objects and arrays. Every
+position is still observed once; the number of Kernel observations and trap invocations per root
+must remain bounded by the limits. These exclusions change neither the byte stop nor the four
+limits, exact accepted values, ambient safety or diagnostic occurrence counts.
+
 The cost includes diagnostic construction and retention, not just accepted-value traversal. Bounding
 a message after an unbounded property lookup or concatenation does not bound its construction. A
 refused position must not leave a separate unbounded path or message in memory for every occurrence
