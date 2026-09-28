@@ -1,0 +1,33 @@
+[
+  {
+    "id": "CONTROL",
+    "exit": 0,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1268,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7224,
+    "failed": [],
+    "verdict": "CONTROL OK"
+  },
+  {
+    "id": "N16 object half charges only enumerable names",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1267,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 16282,
+    "failed": [
+      "an oversized own-names listing is classified after at most one descriptor past the entry limit",
+      "refusing a value costs no more than the size limit allows"
+    ],
+    "verdict": "REJECTED"
+  }
+]

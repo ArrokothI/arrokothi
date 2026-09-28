@@ -1,0 +1,12 @@
+import { canonicalize } from "./packages/kernel/src/values.ts";
+const show = (label: string, v: unknown) => { const r = canonicalize(v); console.log(label, r.ok ? `ACCEPT ${r.value.canonical}` : `REFUSE ${r.issues.map(i => i.code).join(",")}`); };
+show("Map(null proto, 1 entry)", Object.setPrototypeOf(new Map([["k", 1]]), null));
+show("Date(null proto)", Object.setPrototypeOf(new Date(0), null));
+show("Set(Object.prototype)", Object.setPrototypeOf(new Set([1, 2]), Object.prototype));
+show("Uint8Array(3, null proto)", Object.setPrototypeOf(new Uint8Array([7, 8, 9]), null));
+show("ArrayBuffer(null proto)", Object.setPrototypeOf(new ArrayBuffer(8), null));
+show("RegExp(null proto)", Object.setPrototypeOf(/abc/g, null));
+show("Error(null proto)", Object.setPrototypeOf(new Error("m"), null));
+show("String wrapper(null proto)", Object.setPrototypeOf(new String("ab"), null));
+show("Boolean wrapper(null proto)", Object.setPrototypeOf(new Boolean(true), null));
+show("WeakMap(null proto)", Object.setPrototypeOf(new WeakMap(), null));

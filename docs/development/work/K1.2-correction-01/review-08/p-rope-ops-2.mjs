@@ -1,0 +1,12 @@
+const mk = (n) => { let s = "ab"; while (s.length < n) s = s + s; return s + "x"; };
+const op = process.argv[2]; const s = mk(2 ** 27);
+global.gc(); const h0 = process.memoryUsage().heapUsed; const t0 = performance.now();
+let r;
+if (op === "index") r = s[0];
+if (op === "at") r = s.at(0);
+if (op === "lt") r = s < "b";
+if (op === "codePointAt") r = s.codePointAt(0);
+if (op === "concat") r = (s + "y").length;
+if (op === "template") r = `${s}y`.length;
+if (op === "repeat") r = "x".repeat(2 ** 27)[0];
+console.log(op, (performance.now() - t0).toFixed(1) + " ms", "heap +" + ((process.memoryUsage().heapUsed - h0) / 2 ** 20).toFixed(1) + " MiB", r);

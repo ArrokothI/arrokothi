@@ -1,0 +1,21 @@
+Map(null proto, 1 entry) ACCEPT {}
+Date(null proto) ACCEPT {}
+Set(Object.prototype) ACCEPT {}
+Uint8Array(3, null proto) ACCEPT {"0":7,"1":8,"2":9}
+ArrayBuffer(null proto) ACCEPT {}
+RegExp(null proto) REFUSE unrepresentable_member
+Error(null proto) REFUSE unrepresentable_member
+String wrapper(null proto) REFUSE unrepresentable_member
+Boolean wrapper(null proto) ACCEPT {}
+WeakMap(null proto) ACCEPT {}
+--- at B
+Map(null proto, 1 entry) ACCEPT {}
+Date(null proto) ACCEPT {}
+Set(Object.prototype) ACCEPT {}
+Uint8Array(3, null proto) ACCEPT {"0":7,"1":8,"2":9}
+ArrayBuffer(null proto) ACCEPT {}
+RegExp(null proto) REFUSE unrepresentable_member
+Error(null proto) REFUSE unrepresentable_member
+String wrapper(null proto) REFUSE unrepresentable_member
+Boolean wrapper(null proto) ACCEPT {}
+WeakMap(null proto) ACCEPT {}
