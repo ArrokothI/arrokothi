@@ -196,6 +196,63 @@ text-malformed identity class is pinned; every K1.2 criterion C1–C15 still pas
 candidate; after the 2026-09-27 amendment, both review-04 findings are closed with distinguishing
 evidence and K1.1-correction-02's guarantees hold on the corrected tree; no successor is released.
 
+**Owner amendment 2026-09-28 ([amendment 01](work/K1.2-correction-01/amendment-01.md), under
+[decision-05](work/K1.2/decision-05.md)):** the value refusal-cost scope added on 2026-09-27 moves to
+K1.1-correction-03. Contract revision 6 keeps the identity, diagnostic and exact-coordinate scope,
+with no production-code change. It also corrects BASELINE's V-D1 claim to "held". Under revision 6,
+acceptance means:
+- `K12C1-R4-EVID-01` closed and `K12C1-R4-VALUE-COST-01` transferred;
+- the K1.1-correction-02 read bounds and accepted values unchanged, and the V-D1 claim held;
+- every other criterion above.
+
+### K1.1-correction-03 — Metered value refusal cost
+
+**Dependencies:**
+- [Decision-05](work/K1.2/decision-05.md);
+- DESIGN-AUDIT-01's in-process threat-model outcome;
+- K1.2-correction-01 revision 6 accepted (so the unchanged production source is the base).
+
+**Scope:**
+- Implement decision-05's per-root work meter, the budget `B` derived from the four limits, and
+  structural enforcement, across `values.ts` and every root consumer: creation, ingress, recovery
+  lists and eager Outcome roots.
+- Close `K12C1-R8-VALUE-DEPTH-01`, `K12C1-R8-EVID-01` and the transferred time dimension of
+  `K12C1-R4-VALUE-COST-01`.
+- Convert every recorded refusal-cost counterexample into a maintained corpus test: reviews 04, 06
+  and 08, and blockers 01 and 02.
+- Start with a design note. It re-examines the capture architecture rather than assuming the
+  accepted K1.1 design.
+- Preserve accepted values, single observation, coherent-Proxy acceptance, limits and DEC-7 weights,
+  unless the owner changes them.
+
+**Acceptance:**
+- The metered bound is argued structurally and asserted on the corpus.
+- `values.md`, BASELINE and the `OPEN(implementation)` marker record the binding's unit table and
+  budget.
+- Invalidation-02's V-D1 claim hold is released.
+
+**Out of scope:** O-R8-4 (re-prototyped built-ins accepted as plain objects), which awaits owner
+triage.
+
+### DESIGN-AUDIT-01 — Root-cause audit of accepted design
+
+**Owner direction:** 2026-09-28. The owner chose to settle the in-process capture threat model
+through this audit before K1.1-correction-03 writes code. Explicit owner release starts it.
+
+**Scope:** a read-and-probe audit, with no production change, of the designs accepted in K0.1–K1.2.
+Accepted status is evidence of what was checked, not proof that a design is sound. It identifies
+design choices that keep producing defect families or complexity. Findings are backed by evidence
+from the review record and from probes. Starting points:
+- the in-process capture threat model: hostile same-process JavaScript, versus a cooperative caller,
+  versus a bytes intake;
+- the own-array and serializer-sandbox discipline;
+- value classification of exotic objects (O-R8-4);
+- the size and structure of `coordinator.ts`.
+For each item it gives options, costs, affected accepted claims, and a recommended owner decision.
+
+**Acceptance:** a design-debt register and draft owner decisions that the owner can adopt or reject.
+The audit changes no code and no claim itself.
+
 ### K1.3 — Wait and cancellation races
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k13); also inspect affected dependencies.
@@ -478,10 +535,12 @@ there is no second editable “done” checkbox in 001.
 | K1.1 | ACCEPTED | H `52b1600f3b42e3a360fdc3395178f1d147edf304`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/review-08.md). Integrated `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/integration-01.md). Includes accepted reference H9 below; cleanup complete, owner-closed. No E1/K1 closure. |
 | K1.1-correction-01 | ACCEPTED | H `52b1600f3b42e3a360fdc3395178f1d147edf304`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/review-08.md). Integrated `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/integration-01.md). All packet findings closed; reference cleanup closed KC1-CLEANUP-REF-01. Historical Node 22 test-cancellation limitation retained. |
 | K1.1-reference-01 | ACCEPTED | H `644dfffc7904176ee3a4f9943310cf926408a113`; [independent review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-reference-01/review-08.md). Integrated `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`; [receipt](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-reference-01/integration-01.md). Cleanup complete; five non-blocking P3 observations and authentication limit remain in the review. |
-| K1.1-correction-02 | ACCEPTED | H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e`; [independent review 03](work/K1.1-correction-02/review-03.md) (Codex, GPT-6, 2026-09-23), over C `1d5a3e11f3629a8fdc5070088255db8b0936f5ac`; KC2-R1-01 and KC2-R2-PROC-01 closed. Verified cumulative code base `227cd053244e0be52aca58ac26aac9519a8dd374` supersedes the erroneous full base string in earlier records. [Contract](work/K1.1-correction-02/contract.md), [round 3](work/K1.1-correction-02/implementation-03.md), [decision 01](work/K1.1-correction-02/decision-01.md); earlier reviews remain historical. Initial payload `66e9e84` integrated through PR #35 before review (disclosed departure); integration of accepted H remains pending owner merge. [Cleanup complete](work/K1.1-correction-02/cleanup-01.md); integration pending owner manual merge; `next_release: none`. Integrated `954d31b00eb7` (PR #36); [receipt](work/K1.1-correction-02/integration-01.md). Owner-closed. **Hold notice 2026-09-27:** the V-D1 claim is held for uncharged per-issue allocation ([K1.2 invalidation-02](work/K1.2/invalidation-02.md)); historical ACCEPT and integration unchanged; correction proceeds in K1.2-correction-01 revision 4. |
+| K1.1-correction-02 | ACCEPTED | H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e`; [independent review 03](work/K1.1-correction-02/review-03.md) (Codex, GPT-6, 2026-09-23), over C `1d5a3e11f3629a8fdc5070088255db8b0936f5ac`; KC2-R1-01 and KC2-R2-PROC-01 closed. Verified cumulative code base `227cd053244e0be52aca58ac26aac9519a8dd374` supersedes the erroneous full base string in earlier records. [Contract](work/K1.1-correction-02/contract.md), [round 3](work/K1.1-correction-02/implementation-03.md), [decision 01](work/K1.1-correction-02/decision-01.md); earlier reviews remain historical. Initial payload `66e9e84` integrated through PR #35 before review (disclosed departure); integration of accepted H remains pending owner merge. [Cleanup complete](work/K1.1-correction-02/cleanup-01.md); integration pending owner manual merge; `next_release: none`. Integrated `954d31b00eb7` (PR #36); [receipt](work/K1.1-correction-02/integration-01.md). Owner-closed. **Hold notice 2026-09-27:** the V-D1 claim is held for uncharged per-issue allocation ([K1.2 invalidation-02](work/K1.2/invalidation-02.md)); historical ACCEPT and integration unchanged; correction proceeds in K1.2-correction-01 revision 4. **2026-09-28:** that correction moves to K1.1-correction-03 under [decision-05](work/K1.2/decision-05.md); the hold stays. |
 | PLAN-01 | ACCEPTED | H `eedd8aa50ab4ae71c9461136db543aa64f3e7916`; [independent review 02](work/PLAN-01/review-02.md) (Codex, GPT-6, 2026-09-23), covering the cumulative payload `7719424` plus `fabc641` and excluding the intervening K1.1-correction-02 commits; PLAN-R1-01 closed. Earlier [review 01](work/PLAN-01/review-01.md). [Contract](work/PLAN-01/contract.md), [round 1](work/PLAN-01/implementation-01.md), [round 2](work/PLAN-01/implementation-02.md). Integration pending owner merge. [Cleanup complete](work/PLAN-01/cleanup-01.md); integration pending owner manual merge; `next_release: none`. Integrated `954d31b00eb7` (PR #36); [receipt](work/PLAN-01/integration-01.md). Owner-closed. |
 | K1.2 | ACCEPTED | H14 `c36cbe04f7c97f198794bfede972d4861247cca0` over C12 `2f4e64b1f51c679e2b381f9fb9800f2e290ddd30` / base `a20d278185eaffc7f8b7489345a3624231ff6e6d`; [independent review 13](work/K1.2/review-13.md) (ChatGPT, GPT-5.6 Sol, 2026-09-26) ACCEPT. Owner [decision-02](work/K1.2/decision-02.md) closes `K12-R13-ARCH-01`; `K12-R13-DOC-01` and `K12-R13-REC-01` closed; `K12-R11-ORDER-01` remains closed with the unchanged probe 8/8. Two P3 editorial observations remain for integration cleanup. Acceptance is exact-H14 only; integration pending; no K1.3 release. **Invalidation notice 2026-09-26:** owner-requested [independent review 14](work/K1.2/review-14.md) (Claude Code, `claude-opus-5-5`) of the same H14 is CHANGES REQUIRED (`K12-R14-ID-01`, `K12-R14-EVID-01`; C3/C8/C9/C10 FAIL). Review-13's ACCEPT is retained as historical; integration of H14 is **on hold** ([invalidation-01](work/K1.2/invalidation-01.md)); correction proceeds as K1.2-correction-01. |
-| K1.2-correction-01 | CHANGES_REQUESTED | [Independent review 08](work/K1.2-correction-01/review-08.md) (Claude Code `claude-opus-5-5`, 2026-09-28) of H `9248e56705b962bfbce4699536c200fe007be942` over C `2b8a50297ebe83cb0922bb239aa834a2ecebc1ac` / base `a20d278185eaffc7f8b7489345a3624231ff6e6d`, contract revision 5 ([implementation 04](work/K1.2-correction-01/implementation-04.md)): CHANGES REQUIRED. [Review 06](work/K1.2-correction-01/review-06.md)'s `K12C1-R6-VALUE-TIME-01` and `K12C1-R6-EVID-01` are closed. Open `K12C1-R8-VALUE-DEPTH-01` (P1; C3 FAIL; `values.md` V-D1 refusal time for plain data: uncharged foreign-prototype containers at nesting depth pay depth-proportional open-stack bookkeeping, about 1.5× the costliest at-limit acceptance, reachable before submission authority) and `K12C1-R8-EVID-01` (P2; the array surplus-name charge bounding repeated listings is unpinned). [Decision-03](work/K1.2/decision-03.md) and [decision-04](work/K1.2/decision-04.md) stand. Observation O-R8-4 (pre-existing K1.1 acceptance of re-prototyped built-ins as plain objects) awaits owner triage outside this packet. Review 07 is not recorded; earlier reviews remain historical. Both [invalidation-01](work/K1.2/invalidation-01.md) integration hold and [invalidation-02](work/K1.2/invalidation-02.md) claim hold remain. No merge or K1.3 release. |
+| K1.2-correction-01 | CHANGES_REQUESTED | [Independent review 08](work/K1.2-correction-01/review-08.md) (Claude Code `claude-opus-5-5`, 2026-09-28) of H `9248e56705b962bfbce4699536c200fe007be942` over C `2b8a50297ebe83cb0922bb239aa834a2ecebc1ac` / base `a20d278185eaffc7f8b7489345a3624231ff6e6d`, contract revision 5 ([implementation 04](work/K1.2-correction-01/implementation-04.md)): CHANGES REQUIRED. [Review 06](work/K1.2-correction-01/review-06.md)'s `K12C1-R6-VALUE-TIME-01` and `K12C1-R6-EVID-01` are closed. Open `K12C1-R8-VALUE-DEPTH-01` (P1; C3 FAIL; `values.md` V-D1 refusal time for plain data: uncharged foreign-prototype containers at nesting depth pay depth-proportional open-stack bookkeeping, about 1.5× the costliest at-limit acceptance, reachable before submission authority) and `K12C1-R8-EVID-01` (P2; the array surplus-name charge bounding repeated listings is unpinned). [Decision-03](work/K1.2/decision-03.md) and [decision-04](work/K1.2/decision-04.md) stand. Observation O-R8-4 (pre-existing K1.1 acceptance of re-prototyped built-ins as plain objects) awaits owner triage outside this packet. Review 07 is not recorded; earlier reviews remain historical. Both [invalidation-01](work/K1.2/invalidation-01.md) integration hold and [invalidation-02](work/K1.2/invalidation-02.md) claim hold remain. **Owner amendment 2026-09-28** ([amendment 01](work/K1.2-correction-01/amendment-01.md), [decision-05](work/K1.2/decision-05.md)): value refusal cost, `K12C1-R8-VALUE-DEPTH-01`, `K12C1-R8-EVID-01` and the time dimension of `K12C1-R4-VALUE-COST-01` transfer to K1.1-correction-03; this packet continues under contract revision 6 without a production-code change. No merge or K1.3 release. |
+| K1.1-correction-03 | PLANNED | Seeded by [amendment 01](work/K1.2-correction-01/amendment-01.md) under [decision-05](work/K1.2/decision-05.md); depends on DESIGN-AUDIT-01's threat-model outcome and K1.2-correction-01 revision 6 acceptance. Carries the [invalidation-02](work/K1.2/invalidation-02.md) V-D1 claim hold. Not released. |
+| DESIGN-AUDIT-01 | PLANNED | Owner-directed 2026-09-28 ([decision-05](work/K1.2/decision-05.md) adoption record); awaits explicit owner release. |
 | K1.3 | PLANNED | — |
 | K1.4 | PLANNED | — |
 | K2.1 | PLANNED | — |
