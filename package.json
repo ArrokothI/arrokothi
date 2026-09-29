@@ -28,6 +28,7 @@
     "canary:mcp:gemini": "node --env-file-if-exists=.env --experimental-strip-types scripts/mcp-gemini-canary.ts",
     "test:core": "node --test --experimental-strip-types packages/core/tests/*.test.ts",
     "test:kernel": "node --test --experimental-strip-types packages/kernel/tests/*.test.ts",
+    "test:kernel-sweeps": "node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/fault-child.ts --summary && node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/run-poison-sweep.ts",
     "test:retrieval-local": "node --test --experimental-strip-types packages/retrieval/local/tests/*.test.ts",
     "test:strands": "node --test --experimental-strip-types packages/agents/strands/tests/*.test.ts",
     "test:mcp": "node --test --experimental-strip-types packages/interoperability/mcp/tests/*.test.ts tests/conformance/mcp/*.test.ts",

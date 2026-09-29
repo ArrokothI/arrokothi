@@ -1,24 +1,28 @@
 /**
- * Static analysis of the Kernel landing zone for correction DEC-8 and DEC-9 (contract revision 8).
+ * Static regression guard for correction DEC-8 and DEC-9 (contract revision 9, amendment 03).
  *
- * Round 6 enforced both rules with denylists. Its read scanner listed the access shapes its author had
- * in mind, and its commit rule found "the first mutation" by four callee names. Review 10
- * (K12C1-R10-READ-01, K12C1-R10-COMMIT-01) showed that both fail open for any shape they do not list:
- * quoted, computed and assignment destructuring were never reads, and `this.#mint(...)` and `++` were
- * never mutations. This module replaces both with closed-world rules, so a new shape is reported
- * because it is not permitted, not missed because it is not known:
+ * The acceptance evidence for both rules is at run time: the poisoned-prototype sweep
+ * (`sweep/run-poison-sweep.ts`, `poison-catalog.test.ts`) and the fault-injection sweep
+ * (`sweep/fault-child.ts`, `fault-sweep.test.ts`). This module is kept as a cheap guard that flags
+ * plausible accidental forms in a reviewed change before any test runs:
  *
- * - **Syntax.** Every executable node kind, operator and assignment target is in an allowlist. The
- *   zone does not use destructuring, the iteration protocol, `in`, `instanceof`, coercing equality,
- *   `++`/`--`, `await`/`yield`, labels or `super.x`, so each of those is a report by absence.
- * - **Accesses.** Every node that can read, write or delete a member is classified by the checker
- *   against what its object is guaranteed to own (DEC-8).
- * - **Effects.** Every call resolves to zone code or a classified primordial, and a fixpoint says which
- *   pre-existing objects each function's own code may mutate (DEC-9).
+ * - **Syntax.** Executable node kinds, operators and assignment targets outside an allowlist taken
+ *   from the zone's own syntax: destructuring, the iteration protocol, `in`, `instanceof`, coercing
+ *   equality, `++`/`--`, `await`/`yield`, labels, `super.x`, `arguments`.
+ * - **Accesses.** Nodes that read, write or delete a member, classified by the checker (declared
+ *   optional, undeclared, a `lib` member after load, computed, spread, coerced, a caller envelope),
+ *   each matched against the reasoned inventory in `zone-inventory.ts` (DEC-8).
+ * - **Effects.** Every call resolved to zone code or a classified primordial, and a fixpoint saying
+ *   which pre-existing objects each function's own code may mutate, so a recovery control can be
+ *   checked for mutation before its apply suffix (DEC-9).
  *
- * The checker's types are trusted except where the source makes an unchecked claim. Type assertions,
- * type predicates and caller-envelope parameters are those claims, and they are classified too. The
- * analysis does not model hostile same-process code beyond ambient built-in state (DESIGN-AUDIT-01).
+ * It trusts declared types except where the source makes an unchecked claim it recognises, and it
+ * does not prove either rule for all code. Known gaps, stated in the contract: an assertion or
+ * predicate that introduces a member absent from a partially declared type, or strengthens one inside
+ * a nested type (review 11's `Pick` cast); a parameter default that supplies a Kernel object when no
+ * argument is passed, and an identifier spelled `undefined` bound to a Kernel object (review 11's two
+ * mutation forms); casts of `unknown`/`any` to primitives or lists; frozenness of what foreign code is
+ * handed. Deliberately evasive programs are outside its acceptance (amendment 03 item 3).
  */
 
 import { existsSync, readdirSync, realpathSync } from "node:fs";

@@ -1,13 +1,15 @@
 /**
- * Correction DEC-9, enforced over the source: recovery-control commits are prebuilt and then applied
- * without construction (contract revision 8; K12C1-R9-HISTORY-01, K12C1-R10-COMMIT-01).
+ * Correction DEC-9, guarded over the source: recovery-control commits are prebuilt and then applied
+ * without construction (contract revision 9; K12C1-R9-HISTORY-01, K12C1-R10-COMMIT-01).
  *
- * Round 6 located "the first mutation" by four callee names and property assignment, so review 10's
- * `this.#mint(...)` and `record.nextAcceptancePosition++` were not mutations to it and both passed
- * every Kernel test. The rule now rests on an effect analysis of the whole zone
- * (`zone-analysis.ts`): every call resolves to zone code, a classified primordial or an inventoried
- * foreign call, and a fixpoint says which pre-existing objects each function's own code may change,
- * through any write operator, `delete`, a mutating primordial or any helper that mutates an argument.
+ * This is a static regression guard, not the rule's evidence: the fault-injection sweep checks the
+ * rule at run time (`sweep/fault-child.ts`, `fault-sweep.test.ts`). Round 6 located "the first
+ * mutation" by four callee names and property assignment, so review 10's `this.#mint(...)` and
+ * `record.nextAcceptancePosition++` were not mutations to it. The guard rests on an effect analysis of
+ * the zone (`zone-analysis.ts`): calls resolve to zone code, a classified primordial or an inventoried
+ * foreign call, and a fixpoint says which pre-existing objects each function's own code may change.
+ * Review 11 found forms it misses (a parameter default that supplies the record, a local named
+ * `undefined`); the fault sweep rejects both.
  *
  * For `recoverExecution`, `reportProtocolFailure` and `requestTakeover`:
  * - the body ends in an **apply suffix**: appends of prebuilt locals (or `applyControlCommit`), then

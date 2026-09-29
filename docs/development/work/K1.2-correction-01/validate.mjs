@@ -1,6 +1,6 @@
 // Raw-output collector, not a substitute for the semantic audit. Run on a clean payload C.
 import { spawnSync, execFileSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { platform, arch, release } from "node:os";
 const out = resolve(process.argv[2] ?? "/tmp/k12-correction-04-validation");
@@ -10,6 +10,7 @@ const payload = git("rev-parse", "HEAD");
 mkdirSync(out, { recursive: true });
 const context = { payload, cwd: process.cwd(), date: new Date().toISOString(), node: process.version, npm: execFileSync("npm", ["--version"], { encoding: "utf8" }).trim(), typescript: execFileSync("node_modules/.bin/tsc", ["--version"], { encoding: "utf8" }).trim(), os: `${platform()} ${arch()} ${release()}`, branch: git("branch", "--show-current"), remote: git("remote", "-v"), statusBefore: "clean" };
 writeFileSync(join(out, "00-environment.json"), JSON.stringify(context, null, 2) + "\n");
+const kernelTests = readdirSync("packages/kernel/tests").filter((name) => name.endsWith(".test.ts")).sort().map((name) => `packages/kernel/tests/${name}`);
 const checks = [
   ["01-typecheck", "npm", ["run", "typecheck"]],
   ["02-full", "npm", ["test"]],
@@ -60,16 +61,31 @@ const checks = [
   ["49-new-oracles-and-name-probe-on-reviewed-H", "node", ["docs/development/work/K1.2-correction-01/probe-reviewed-h-07.mjs"]],
   ["50-review10-probes-rerun", "node", ["docs/development/work/K1.2-correction-01/probe-review10-rerun-07.mjs"]],
   ["51-round7-diff-check", "git", ["diff", "--check", "0efe0ba2ebb3fdde71ac8ab5b7a3ae048f5f5ac1", "HEAD"]],
+  // Revision 9 (amendment 03): the two runtime sweeps, the zone's line coverage by the maintained
+  // suite with and without the catalog, the sweeps' negative controls, the sweeps and new probes
+  // against review 11's H, and the round-8 diff check. The sweeps run longer than the default limit.
+  ["52-fault-sweep", "node", ["--experimental-strip-types", "--no-warnings", "packages/kernel/tests/sweep/fault-child.ts"], {}, 1_800_000],
+  ["53-poison-sweep", "node", ["--experimental-strip-types", "--no-warnings", "packages/kernel/tests/sweep/run-poison-sweep.ts"], {}, 3_600_000],
+  ["54-zone-coverage-suite", "node", ["--test", "--experimental-strip-types", "--experimental-test-coverage", "--test-coverage-include=packages/kernel/src/**", ...kernelTests.filter((file) => !/(poison-catalog|fault-sweep)\.test\.ts$/.test(file))], {}, 1_800_000],
+  ["55-zone-coverage-suite-and-catalog", "node", ["--test", "--experimental-strip-types", "--experimental-test-coverage", "--test-coverage-include=packages/kernel/src/**", ...kernelTests.filter((file) => !/fault-sweep\.test\.ts$/.test(file))], {}, 1_800_000],
+  ["56-sweep-negative-controls", "node", ["docs/development/work/K1.2-correction-01/sweeps-08.mjs"], {}, 3_600_000],
+  ["57-sweeps-on-reviewed-H", "node", ["docs/development/work/K1.2-correction-01/probe-reviewed-h-08.mjs"], {}, 3_600_000],
+  ["58-round8-diff-check", "git", ["diff", "--check", "b93ed1df6b70569ada060481523e5b37c206e324", "HEAD"]],
+  // The guard's live descriptions make no comprehensive or closed-world claim: git grep exits 1 when
+  // nothing matches.
+  ["59-guard-claim-search", "git", ["grep", "-n", "-i", "-E", "closed-world|closed world|comprehensive", "--", "docs/development/002-implemented-kernel-baseline.md", "docs/development/work/K1.2-correction-01/contract.md", "packages/kernel/src", "packages/kernel/tests"]],
   ["29-round3-diff-check", "git", ["diff", "--check", "8a418d408f715e999a403a3e84b73a9db1b43712", "HEAD"]],
   ["22-correction-diff-check", "git", ["diff", "--check", "b18a729d989dea334a86ec08bdf8773ee77de4db", "HEAD"]],
   ["19-round2-diff-check", "git", ["diff", "--check", "449b243cd31d5596c457e091233dfc4d77a4eff4", "HEAD"]],
   ["12-diff-check", "git", ["diff", "--check", "a20d278185eaffc7f8b7489345a3624231ff6e6d", "HEAD"]],
 ];
 const results = [];
-for (const [name, executable, args, extraEnv = {}] of checks) {
+// Revision 9's new Kernel test files lengthen every full-suite run the ablation runners make, and the
+// round-7 run of entry 14 already took 580 of the former 600 seconds; each check now gets 30 minutes.
+for (const [name, executable, args, extraEnv = {}, timeout = 1_800_000] of checks) {
   console.log(`Running ${name} on ${payload}`);
   const start = new Date().toISOString();
-  const run = spawnSync(executable, args, { encoding: "utf8", timeout: 600_000, maxBuffer: 128 * 1024 * 1024, env: { ...process.env, TREE: process.cwd(), ...extraEnv } });
+  const run = spawnSync(executable, args, { encoding: "utf8", timeout, maxBuffer: 256 * 1024 * 1024, env: { ...process.env, TREE: process.cwd(), ...extraEnv } });
   const result = { name, command: [executable, ...args], exit: run.status, signal: run.signal, error: run.error?.message ?? null, env: { TREE: process.cwd(), ...extraEnv }, start, end: new Date().toISOString() };
   writeFileSync(join(out, `${name}.txt`), `payload C: ${payload}\ncwd: ${process.cwd()}\ncommand: ${[executable, ...args].join(" ")}\nenvironment: 00-environment.json; ${JSON.stringify(result.env)}\nstarted: ${start}\n\n${run.stdout ?? ""}${run.stderr ?? ""}\nexit: ${run.status}; signal: ${run.signal}; error: ${run.error?.message ?? "none"}\n`);
   results.push(result); console.log(`${name}: exit=${run.status}, signal=${run.signal}`);

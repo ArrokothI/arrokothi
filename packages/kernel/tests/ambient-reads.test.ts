@@ -1,16 +1,17 @@
 /**
- * Correction DEC-8, enforced over the source: the zone makes no ordinary access to a member its
- * object may not own (contract revision 8; K12C1-R9-HISTORY-01, K12C1-R10-READ-01).
+ * Correction DEC-8, guarded over the source: the zone makes no ordinary access to a member its
+ * object may not own (contract revision 9; K12C1-R9-HISTORY-01, K12C1-R10-READ-01).
  *
- * Round 6's scanner listed the access shapes it knew — dot and string-element access, a
- * `BindingElement` read through its spelling, `in` — so review 10 found three equivalent reads it
- * never saw: a quoted binding name, a computed binding name and assignment destructuring. The rules
- * are now closed-world (`zone-analysis.ts`):
+ * This is a static regression guard, not the rule's evidence: the poisoned-prototype sweep checks
+ * the rule at run time (`sweep/run-poison-sweep.ts`, `poison-catalog.test.ts`). Round 6's scanner
+ * listed the access shapes it knew, and review 10 found three equivalent reads it never saw. The guard
+ * (`zone-analysis.ts`) therefore rejects forms by absence from an allowlist and classifies accesses
+ * with the checker; review 11 found forms it still misses (see `zone-analysis.ts` and the contract):
  *
  * 1. **Permitted syntax.** Every executable node kind, operator and assignment target is in an
  *    allowlist; destructuring of any form, iteration, `in`, `instanceof`, coercing equality, `++`/`--`,
  *    `await`/`yield`, `super.x` and the rest are reported by absence.
- * 2. **Every member access is classified** by the checker: declared optional, declared by no type
+ * 2. **Member accesses it recognises are classified** by the checker: declared optional, declared by no type
  *    (index signature, `any`), declared by TypeScript's `lib` and reached after load (a built-in
  *    prototype supplies it), computed on a non-list, an index into a list, an object spread, a type
  *    assertion or predicate that introduces members or makes an optional one required, an implicit
@@ -20,8 +21,8 @@
  *    reads keep their `hasOwnValue` precondition, bounded index reads their loop bound, and every
  *    `hostMember` key names an optional member of its holder.
  *
- * The negative controls below give each equivalent form its own synthetic source; each must be
- * reported, and a probe of permitted forms must report nothing.
+ * The negative controls below give each form the guard recognises its own synthetic source; each
+ * must be reported, and a probe of permitted forms must report nothing.
  */
 
 import { describe, test } from "node:test";
