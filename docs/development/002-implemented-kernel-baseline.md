@@ -252,13 +252,18 @@ These are this in-process binding's choices where the architecture leaves the re
   declaration clear the only call in the apply phase is the history append, which comes first, so no
   fault separates a hold change from its record. A takeover's receipt position is read while
   building and committed with the rest; its two appends carry the Outcome transaction's narrower
-  claim (no caller code or read between them).
+  claim (no caller code or read between them). `control-commits.test.ts` enforces the order with an
+  effect analysis of the whole zone: every call resolves to zone code, a classified primordial or an
+  inventoried foreign call, and nothing before a control's apply suffix may mutate accepted state
+  except a refusal exit.
 - **Ambient reads** ([correction DEC-8](work/K1.2-correction-01/contract.md)): the zone reads no
   member its object may not own. Kernel records own every declared field; caller envelopes are read
   own-only; an optional member of a trusted host object (`controlScopes`, `mailboxCapacity`,
   `emissionsPerOutcome`, `isSafeToReplace`) is resolved on the host object or its own prototype
   chain and never answered by `Object.prototype` or `Function.prototype`. `ambient-reads.test.ts`
-  inventories every remaining optional-member, dynamic-key and `in` access.
+  permits only an allowlisted syntax (no destructuring, iteration protocol, `in`, `instanceof`,
+  coercing equality, `++`/`--` or `await`) and requires every access that could reach a member its
+  object does not own to match a reasoned entry in `zone-inventory.ts` (contract revision 8).
 - **Per-entry disposition storage** (WS §3 "Left open"): each mailbox entry holds its own frozen
   disposition, `queued`, `acknowledged` (naming the acknowledging Activation) or `terminal` (with its
   reason).

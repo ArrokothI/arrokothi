@@ -188,8 +188,10 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue 
  * caller envelopes are read through `observeOwn`; an optional member of a trusted host object (the
  * caller's `controlScopes`, the options' limits, the Driver's `isSafeToReplace`) through `hostMember`,
  * which never answers from a built-in prototype. `ambient-reads.test.ts` enforces this over the
- * zone with the TypeScript checker: every access to a member declared optional is inventoried, and
- * the only ones left are engine-built descriptor fields that are owned by construction.
+ * zone with the TypeScript checker (contract revision 8): the zone may use only an allowlisted
+ * syntax, and every access that could reach a member its object does not own — optional, undeclared,
+ * built-in, computed, spread, asserted, coerced or on a caller envelope — must match a reasoned entry
+ * in `zone-inventory.ts`. `control-commits.test.ts` enforces the recovery-control commit order below.
  */
 const PrimordialNumberIsInteger = Number.isInteger;
 const PrimordialObjectFreeze = Object.freeze;

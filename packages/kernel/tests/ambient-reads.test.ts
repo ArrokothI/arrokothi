@@ -1,141 +1,39 @@
 /**
- * The zone's read rule and its control-commit rule, enforced over the source (amendment 02).
+ * Correction DEC-8, enforced over the source: the zone makes no ordinary access to a member its
+ * object may not own (contract revision 8; K12C1-R9-HISTORY-01, K12C1-R10-READ-01).
  *
- * K1.2-C13 says that after the first caller observation no live prototype is consulted.
- * `boundary.test.ts` enforces that for *writes* and built-in *methods*. K12C1-R9-HISTORY-01 was a
- * *read*: the Kernel read a member its own object might not own, so the read walked on to
- * `Object.prototype`, which caller code can write. Review found it by probing one field; the rules
- * below make the whole class a property of the source, so a new such read fails here.
+ * Round 6's scanner listed the access shapes it knew — dot and string-element access, a
+ * `BindingElement` read through its spelling, `in` — so review 10 found three equivalent reads it
+ * never saw: a quoted binding name, a computed binding name and assignment destructuring. The rules
+ * are now closed-world (`zone-analysis.ts`):
  *
- * 1. **No ordinary access to an optional member.** A member a type declares optional is one its
- *    object may not own. Using the TypeScript checker, every property access in the zone whose member
- *    is declared optional is listed, reads and writes alike (a write to an unowned member is `[[Set]]`,
- *    which an inherited setter swallows). The only such accesses are fields of engine-built property
- *    descriptors that are owned by construction, each inventoried below with its reason. Kernel
- *    records own every field they declare because the zone builds each with a literal. Caller
- *    envelopes are read through `observeOwn`, and trusted host objects' optional members through
- *    `hostMember`; both take a key string, so neither appears here.
- * 2. **Dynamic-key reads** are inventoried the same way; each follows an own-descriptor check.
- * 3. **No `in` operator** in the zone: it consults the prototype chain.
- * 4. **Recovery-control commits are prebuilt.** In `recoverExecution`, `reportProtocolFailure` and
- *    `requestTakeover`, nothing after the first mutation constructs anything or calls anything but
- *    the prebuilt appends, the commit helper and the post-commit Driver delivery, and the answer
- *    returned is a prebuilt value. `applyControlCommit` appends its history record before any hold
- *    write and calls nothing else. Hold fields and recovery history are written nowhere else.
+ * 1. **Permitted syntax.** Every executable node kind, operator and assignment target is in an
+ *    allowlist; destructuring of any form, iteration, `in`, `instanceof`, coercing equality, `++`/`--`,
+ *    `await`/`yield`, `super.x` and the rest are reported by absence.
+ * 2. **Every member access is classified** by the checker: declared optional, declared by no type
+ *    (index signature, `any`), declared by TypeScript's `lib` and reached after load (a built-in
+ *    prototype supplies it), computed on a non-list, an index into a list, an object spread, a type
+ *    assertion or predicate that introduces members or makes an optional one required, an implicit
+ *    conversion of a possible object, a lib global read after load, or a caller envelope used other
+ *    than through observation.
+ * 3. **Every reported site matches `zone-inventory.ts`** with its reason and count; guarded descriptor
+ *    reads keep their `hasOwnValue` precondition, bounded index reads their loop bound, and every
+ *    `hostMember` key names an optional member of its holder.
+ *
+ * The negative controls below give each equivalent form its own synthetic source; each must be
+ * reported, and a probe of permitted forms must report nothing.
  */
 
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { basename, dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 import ts from "typescript";
+import { analyseAccesses, analyseEffects, buildZone, mutatedArguments, ownerName, SOURCE_ROOT, strip, typeErrors, zoneFiles, type Site } from "./zone-analysis.ts";
+import { ACCESS_INVENTORY, EFFECT_OVERRIDES, EXTRA_ENVELOPE_PARAMETERS, FOREIGN_CALLS, getterReads } from "./zone-inventory.ts";
 
-const SOURCE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../src");
-
-const OPTIONS: ts.CompilerOptions = {
-  target: ts.ScriptTarget.ES2023,
-  lib: ["lib.es2023.d.ts"],
-  module: ts.ModuleKind.NodeNext,
-  moduleResolution: ts.ModuleResolutionKind.NodeNext,
-  allowImportingTsExtensions: true,
-  noEmit: true,
-  strict: true,
-  types: [],
-};
-
-interface Access {
-  readonly file: string;
-  readonly kind: "read" | "write" | "dynamic" | "in";
-  readonly text: string;
-  readonly line: number;
-  readonly node: ts.Node;
-}
-
-const ASSIGNMENTS = new Set([
-  ts.SyntaxKind.EqualsToken,
-  ts.SyntaxKind.PlusEqualsToken,
-  ts.SyntaxKind.MinusEqualsToken,
-  ts.SyntaxKind.QuestionQuestionEqualsToken,
-  ts.SyntaxKind.BarBarEqualsToken,
-  ts.SyntaxKind.AmpersandAmpersandEqualsToken,
-]);
-
-const isWrite = (node: ts.Node): boolean => {
-  const parent = node.parent;
-  if (ts.isBinaryExpression(parent) && parent.left === node && ASSIGNMENTS.has(parent.operatorToken.kind)) return true;
-  if ((ts.isPrefixUnaryExpression(parent) || ts.isPostfixUnaryExpression(parent)) && (parent.operator === ts.SyntaxKind.PlusPlusToken || parent.operator === ts.SyntaxKind.MinusMinusToken)) return true;
-  return ts.isDeleteExpression(parent);
-};
-
-/** Every access the rule is about, in the given source files. */
-function scan(files: readonly string[]): { readonly accesses: Access[]; readonly program: ts.Program } {
-  const program = ts.createProgram(files, OPTIONS);
-  const checker = program.getTypeChecker();
-  const accesses: Access[] = [];
-  for (const source of program.getSourceFiles()) {
-    if (!files.includes(source.fileName)) continue;
-    const record = (kind: Access["kind"], node: ts.Node): void => {
-      const line = source.getLineAndCharacterOfPosition(node.getStart()).line + 1;
-      accesses.push({ file: basename(source.fileName), kind, text: node.getText().replace(/\s+/g, " "), line, node });
-    };
-    const optional = (symbol: ts.Symbol | undefined): boolean => symbol !== undefined && (symbol.flags & ts.SymbolFlags.Optional) !== 0;
-    const visit = (node: ts.Node): void => {
-      if (ts.isPropertyAccessExpression(node) && optional(checker.getSymbolAtLocation(node.name))) {
-        record(isWrite(node) ? "write" : "read", node);
-      } else if (ts.isElementAccessExpression(node)) {
-        const key = node.argumentExpression;
-        if (ts.isStringLiteralLike(key) || ts.isNumericLiteral(key)) {
-          if (optional(checker.getSymbolAtLocation(key))) record(isWrite(node) ? "write" : "read", node);
-        } else if (!isWrite(node)) {
-          // A computed key on something that is not a list: which member is read depends on data.
-          const receiver = checker.getTypeAtLocation(node.expression);
-          if (!checker.isArrayLikeType(receiver) && !(receiver.flags & ts.TypeFlags.StringLike)) record("dynamic", node);
-        }
-      } else if (ts.isBindingElement(node) && ts.isObjectBindingPattern(node.parent)) {
-        const name = (node.propertyName ?? node.name).getText();
-        if (optional(checker.getTypeAtLocation(node.parent).getProperty(name))) record("read", node);
-      } else if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.InKeyword) {
-        record("in", node);
-      }
-      ts.forEachChild(node, visit);
-    };
-    visit(source);
-  }
-  return { accesses, program };
-}
-
-const zoneFiles = (): string[] =>
-  readdirSync(SOURCE_ROOT)
-    .filter((name) => name.endsWith(".ts"))
-    .sort()
-    .map((name) => resolve(SOURCE_ROOT, name));
-
-/**
- * The complete inventory: file, kind, spelling and count, with the reason each is own by construction.
- * `guard` names a receiver whose `hasOwnValue(...)` check must precede the read in its function.
- */
-const INVENTORY: readonly { file: string; kind: Access["kind"]; text: string; count: number; guard?: string; reason: string }[] = [
-  { file: "envelope.ts", kind: "read", text: 'PrimordialGetOwnPropertyDescriptor(issue, "occurrences")?.value', count: 3, reason: "descriptor of a Kernel-built issue's own data field (or none): a data descriptor owns `value`" },
-  { file: "envelope.ts", kind: "read", text: 'PrimordialGetOwnPropertyDescriptor(issue, "root")?.value', count: 1, reason: "same: Kernel-built issue, data field" },
-  { file: "envelope.ts", kind: "dynamic", text: "(holder as Record<string, unknown>)[key]", count: 1, reason: "observeOwn: reached only after the holder's own descriptor exists" },
-  { file: "identity.ts", kind: "dynamic", text: "BOUNDARY_PREFIX[boundary]", count: 1, reason: "module-private literal owning every ReceiptBoundary key; `boundary` is always a Kernel literal" },
-  { file: "own-array.ts", kind: "read", text: "(fieldDescriptor as { readonly value?: unknown }).value", count: 1, guard: "fieldDescriptor", reason: "own `value` proven by hasOwnValue" },
-  { file: "own-array.ts", kind: "read", text: "descriptor.value", count: 1, guard: "descriptor", reason: "readAt: own `value` proven by hasOwnValue" },
-  { file: "own-array.ts", kind: "write", text: "safe.value", count: 1, reason: "null-prototype descriptor under construction: no chain to consult" },
-  { file: "own-array.ts", kind: "write", text: "safe.writable", count: 1, reason: "same" },
-  { file: "own-array.ts", kind: "write", text: "safe.enumerable", count: 1, reason: "same" },
-  { file: "own-array.ts", kind: "write", text: "safe.configurable", count: 1, reason: "same" },
-  { file: "own-array.ts", kind: "write", text: "safe.get", count: 1, reason: "same" },
-  { file: "own-array.ts", kind: "write", text: "safe.set", count: 1, reason: "same" },
-  { file: "values.ts", kind: "read", text: "descriptor.value", count: 4, guard: "descriptor", reason: "engine-built descriptor, own `value` proven by hasOwnValue" },
-  { file: "values.ts", kind: "read", text: "lengthDescriptor.value", count: 3, guard: "lengthDescriptor", reason: "same" },
-  { file: "values.ts", kind: "read", text: "lengthDescriptorInner.value", count: 2, guard: "lengthDescriptorInner", reason: "same" },
-  { file: "values.ts", kind: "read", text: "innerDescriptor.value", count: 1, guard: "innerDescriptor", reason: "same" },
-  { file: "values.ts", kind: "read", text: "descriptor.enumerable", count: 1, reason: "every engine-built descriptor owns `enumerable`" },
-  { file: "values.ts", kind: "dynamic", text: "(container as Record<string, unknown>)[key]", count: 1, reason: "describedValue: the one ordinary read, after the own data descriptor was taken and compared" },
-];
+const zone = buildZone();
+const sites = analyseAccesses(zone, { extraEnvelopeParameters: EXTRA_ENVELOPE_PARAMETERS });
+const key = (site: { file: string; kind: string; mode: string; text: string }): string => `${site.file} ${site.kind}/${site.mode} ${site.text}`;
 
 const enclosingFunction = (node: ts.Node): ts.Node => {
   let current: ts.Node = node;
@@ -143,159 +41,286 @@ const enclosingFunction = (node: ts.Node): ts.Node => {
   return current;
 };
 
-describe("amendment 02 rule 1–3: no Kernel access reaches a member its object may not own", () => {
-  const { accesses } = scan(zoneFiles());
+describe("correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned", () => {
+  test("the zone typechecks under the repository configuration the analysis uses", () => {
+    assert.deepEqual(typeErrors(zone), []);
+  });
 
-  test("every optional-member, dynamic-key and `in` access in the zone is inventoried", () => {
+  test("the zone uses only permitted syntax", () => {
+    assert.deepEqual(
+      sites.filter((site) => site.kind === "syntax").map((site) => `${site.file}:${site.line} ${site.text}`),
+      [],
+    );
+  });
+
+  test("every reported site is inventoried, at its exact count, with a reason", () => {
     const found = new Map<string, number>();
-    for (const access of accesses) {
-      const key = `${access.file} ${access.kind} ${access.text}`;
-      found.set(key, (found.get(key) ?? 0) + 1);
-    }
-    const expected = new Map(INVENTORY.map((entry) => [`${entry.file} ${entry.kind} ${entry.text}`, entry.count]));
-    const unexpected = accesses
-      .filter((access) => !expected.has(`${access.file} ${access.kind} ${access.text}`))
-      .map((access) => `${access.file}:${access.line} ${access.kind} ${access.text}`);
-    assert.deepEqual(unexpected, [], "an access that may consult a prototype, outside the inventory (classify it or remove it)");
-    assert.deepEqual(Object.fromEntries(found), Object.fromEntries(expected), "inventoried counts changed");
+    for (const site of sites) found.set(key(site), (found.get(key(site)) ?? 0) + 1);
+    const expected = new Map(ACCESS_INVENTORY.map((entry) => [key(entry), entry.count]));
+    const unexpected = sites.filter((site) => !expected.has(key(site))).map((site) => `${site.file}:${site.line} ${site.kind}/${site.mode} ${site.text}`);
+    assert.deepEqual(unexpected, [], "a site that may reach an unowned member, outside the inventory (classify it or remove it)");
+    assert.deepEqual(Object.fromEntries([...found].sort()), Object.fromEntries([...expected].sort()), "inventoried counts changed");
+    for (const entry of ACCESS_INVENTORY) assert.ok(entry.reason.length >= 16, `${key(entry)} carries a reason`);
   });
 
   test("every guarded descriptor read follows its own-value check in the same function", () => {
-    for (const entry of INVENTORY.filter((item) => item.guard !== undefined)) {
-      const sites = accesses.filter((access) => access.file === entry.file && access.text === entry.text);
-      for (const site of sites) {
+    for (const entry of ACCESS_INVENTORY.filter((item) => item.guard !== undefined)) {
+      const matching = sites.filter((site) => key(site) === key(entry));
+      assert.equal(matching.length, entry.count);
+      for (const site of matching) {
         const fn = enclosingFunction(site.node);
         const before = site.node.getSourceFile().text.slice(fn.getStart(), site.node.getStart());
-        assert.ok(before.includes(`hasOwnValue(${entry.guard})`), `${entry.file}:${site.line} ${entry.text} is not preceded by hasOwnValue(${entry.guard})`);
+        assert.ok(before.includes(`hasOwnValue(${entry.guard})`), `${site.file}:${site.line} ${entry.text} is not preceded by hasOwnValue(${entry.guard})`);
       }
     }
   });
 
-  test("the scan is not vacuous: it finds review 09's read and each other forbidden form", () => {
-    const directory = mkdtempSync(join(tmpdir(), "k12c1-ambient-reads-"));
-    try {
-      const probe = join(directory, "probe.ts");
-      writeFileSync(
-        probe,
-        [
-          "interface Entry { readonly writerEpoch: number; readonly resultingEpoch?: number }",
-          "interface Caller { readonly controlScopes?: readonly string[] }",
-          "export const read = (entry: Entry): boolean => entry.resultingEpoch === undefined;",
-          "export const optional = (caller: Caller | null): unknown => caller?.controlScopes;",
-          "export const destructured = ({ resultingEpoch }: Entry): unknown => resultingEpoch;",
-          "export const inherited = (entry: object): boolean => \"resultingEpoch\" in entry;",
-          "export const dynamic = (entry: Record<string, unknown>, key: string): unknown => entry[key];",
-          "export const required = (entry: Entry): number => entry.writerEpoch;",
-          "",
-        ].join("\n"),
-      );
-      const found = scan([probe]).accesses.map((access) => `${access.kind} ${access.text}`);
-      assert.deepEqual(found, [
-        "read entry.resultingEpoch",
-        "read caller?.controlScopes",
-        "read resultingEpoch",
-        "in \"resultingEpoch\" in entry",
-        "dynamic entry[key]",
-      ]);
-    } finally {
-      rmSync(directory, { recursive: true, force: true });
+  test("every bounded index read sits in a loop that keeps its index below the list's own length", () => {
+    const analysis = analyseEffects(zone, { foreignCalls: new Set(FOREIGN_CALLS.keys()), overrides: EFFECT_OVERRIDES, getterReads: getterReads() });
+    for (const entry of ACCESS_INVENTORY.filter((item) => item.bounded === true)) {
+      for (const site of sites.filter((candidate) => key(candidate) === key(entry))) {
+        const access = site.node as ts.ElementAccessExpression;
+        const index = strip(access.argumentExpression);
+        const list = access.expression.getText();
+        assert.ok(ts.isIdentifier(index), `${site.file}:${site.line}: the index is a loop variable`);
+        let loop: ts.Node | undefined = access.parent;
+        while (loop !== undefined && !ts.isForStatement(loop)) loop = loop.parent;
+        assert.ok(loop !== undefined && ts.isForStatement(loop), `${site.file}:${site.line}: inside a for loop`);
+        const [declaration] = loop.initializer !== undefined && ts.isVariableDeclarationList(loop.initializer) ? loop.initializer.declarations : [];
+        assert.ok(declaration !== undefined && declaration.name.getText() === index.text && declaration.initializer !== undefined && ts.isNumericLiteral(declaration.initializer), `${site.file}:${site.line}: ${index.text} starts at a non-negative literal`);
+        // Some conjunct of the condition is `i < X.length`, or `i < B` for `const B = X.length > N ? N : X.length`.
+        const conjuncts: ts.Expression[] = [];
+        const split = (expression: ts.Expression): void => {
+          if (ts.isBinaryExpression(expression) && expression.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
+            split(expression.left);
+            split(expression.right);
+          } else conjuncts.push(expression);
+        };
+        if (loop.condition !== undefined) split(loop.condition);
+        const length = `${list}.length`;
+        const isBound = (bound: ts.Expression): boolean => {
+          if (bound.getText() === length) return true;
+          if (!ts.isIdentifier(bound)) return false;
+          const declaration = zone.checker.getSymbolAtLocation(bound)?.valueDeclaration;
+          if (declaration === undefined || !ts.isVariableDeclaration(declaration) || (declaration.parent.flags & ts.NodeFlags.Const) === 0) return false;
+          const minimum = declaration.initializer;
+          return (
+            minimum !== undefined && ts.isConditionalExpression(minimum) && ts.isBinaryExpression(minimum.condition) &&
+            minimum.condition.operatorToken.kind === ts.SyntaxKind.GreaterThanToken && minimum.condition.left.getText() === length &&
+            // `X.length > N ? N : X.length` is at most X.length; so is `… ? N + 1 : …` for integer lengths.
+            [minimum.condition.right.getText(), `${minimum.condition.right.getText()} + 1`].includes(minimum.whenTrue.getText()) && minimum.whenFalse.getText() === length
+          );
+        };
+        assert.ok(
+          conjuncts.some((conjunct) => ts.isBinaryExpression(conjunct) && conjunct.operatorToken.kind === ts.SyntaxKind.LessThanToken && conjunct.left.getText() === index.text && isBound(conjunct.right)),
+          `${site.file}:${site.line}: the loop is bounded by ${index.text} < ${length}`,
+        );
+        assert.equal(loop.incrementor?.getText(), `${index.text} += 1`, `${site.file}:${site.line}: the loop steps by one`);
+        const listRoot = list.split(".")[0]!;
+        const changes: string[] = [];
+        const visit = (node: ts.Node): void => {
+          if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+            const target = node.left.getText();
+            if (target === index.text || target === list || target === listRoot || target === `${list}.length`) changes.push(node.getText());
+          }
+          if (ts.isCallExpression(node)) {
+            for (const argument of mutatedArguments(analysis, node)) if (argument.getText() === list) changes.push(node.getText());
+          }
+          ts.forEachChild(node, visit);
+        };
+        visit(loop.statement);
+        assert.deepEqual(changes, [], `${site.file}:${site.line}: the loop body leaves ${index.text} and ${list} unchanged`);
+      }
     }
+  });
+
+  test("every hostMember call names an optional member of its holder's declared type", () => {
+    const { checker } = zone;
+    const calls: string[] = [];
+    for (const source of zone.program.getSourceFiles()) {
+      if (!zone.files.includes(source.fileName)) continue;
+      const visit = (node: ts.Node): void => {
+        if (ts.isCallExpression(node) && node.expression.getText() === "hostMember" && node.arguments.length === 2) {
+          const [holder, name] = node.arguments as unknown as [ts.Expression, ts.Expression];
+          assert.ok(ts.isStringLiteral(name), `${ownerName(node)}: hostMember takes a literal key`);
+          const member = checker.getPropertyOfType(checker.getNonNullableType(checker.getTypeAtLocation(holder)), name.text);
+          assert.ok(member !== undefined && (member.flags & ts.SymbolFlags.Optional) !== 0, `${ownerName(node)}: ${name.text} is an optional member of ${holder.getText()}`);
+          calls.push(`${ownerName(node)} ${name.text}`);
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(source);
+    }
+    assert.deepEqual(calls.sort(), ["constructor emissionsPerOutcome", "constructor mailboxCapacity", "mayControlScope controlScopes", "requestTakeover isSafeToReplace"]);
   });
 });
 
-describe("amendment 02 rule 4: recovery-control commits are prebuilt and applied without construction", () => {
-  const { program } = scan(zoneFiles());
-  const source = program.getSourceFile(resolve(SOURCE_ROOT, "coordinator.ts"));
-  assert.ok(source !== undefined);
-
-  const find = (predicate: (node: ts.Node) => boolean): ts.Node[] => {
-    const out: ts.Node[] = [];
-    const visit = (node: ts.Node): void => {
-      if (predicate(node)) out.push(node);
-      ts.forEachChild(node, visit);
-    };
-    visit(source);
-    return out;
-  };
-  const method = (name: string): ts.MethodDeclaration => {
-    const found = find((node) => ts.isMethodDeclaration(node) && node.name.getText() === name);
-    assert.equal(found.length, 1, `one ${name}`);
-    return found[0] as ts.MethodDeclaration;
-  };
-  const calleeText = (call: ts.CallExpression): string => call.expression.getText();
-  const MUTATING_CALLS = new Set(["appendOwn", "appendAllOwn", "applyControlCommit", "mapSet"]);
-  const isMutation = (node: ts.Node): boolean =>
-    (ts.isCallExpression(node) && MUTATING_CALLS.has(calleeText(node))) ||
-    (ts.isBinaryExpression(node) && ASSIGNMENTS.has(node.operatorToken.kind) && ts.isPropertyAccessExpression(node.left));
-  const descendants = (root: ts.Node): ts.Node[] => {
-    const out: ts.Node[] = [];
-    const visit = (node: ts.Node): void => {
-      out.push(node);
-      ts.forEachChild(node, visit);
-    };
-    ts.forEachChild(root, visit);
-    return out;
-  };
-  const ALLOWED_AFTER = new Set(["appendOwn", "applyControlCommit", "this.#deliver"]);
-  const CONSTRUCTION = new Set([
-    ts.SyntaxKind.ObjectLiteralExpression,
-    ts.SyntaxKind.ArrayLiteralExpression,
-    ts.SyntaxKind.TemplateExpression,
-    ts.SyntaxKind.NoSubstitutionTemplateLiteral,
-    ts.SyntaxKind.NewExpression,
-    ts.SyntaxKind.ArrowFunction,
-    ts.SyntaxKind.FunctionExpression,
-  ]);
-
-  for (const name of ["recoverExecution", "reportProtocolFailure", "requestTakeover"]) {
-    test(`${name}: after the first mutation, nothing is built, read from the caller or called but the apply steps`, () => {
-      const body = method(name).body;
-      assert.ok(body !== undefined);
-      const nodes = descendants(body);
-      const first = nodes.find(isMutation);
-      assert.ok(first !== undefined, `${name} mutates somewhere`);
-      const violations: string[] = [];
-      for (const node of nodes) {
-        if (node.getStart() < first.getStart()) continue;
-        if (CONSTRUCTION.has(node.kind)) violations.push(`constructs ${node.getText().slice(0, 60)}`);
-        if (ts.isCallExpression(node) && !ALLOWED_AFTER.has(calleeText(node))) violations.push(`calls ${calleeText(node)}`);
-        if (ts.isReturnStatement(node) && (node.expression === undefined || !ts.isIdentifier(node.expression))) {
-          violations.push(`returns a value built after mutation: ${node.getText().slice(0, 60)}`);
-        }
-      }
-      assert.deepEqual(violations, [], `${name} builds or runs code between its first and last mutation`);
+describe("correction DEC-8 at runtime: the unsupported-surface error owns its name (SELF-R7-UNSUPPORTED-01)", () => {
+  test("an accessor installed on Error.prototype.name receives nothing, and the error still names itself", async () => {
+    const { ExecutionCoordinator, UnsupportedKernelSurfaceError } = await import("../src/index.ts");
+    const original = Object.getOwnPropertyDescriptor(Error.prototype, "name");
+    assert.ok(original !== undefined);
+    const received: unknown[] = [];
+    Object.defineProperty(Error.prototype, "name", {
+      configurable: true,
+      get: () => "Error",
+      set: (value: unknown) => void received.push(value),
     });
-  }
+    let thrown: unknown;
+    try {
+      const coordinator = new ExecutionCoordinator({ driver: { driverId: "probe", deliver: () => undefined } });
+      assert.throws(() => coordinator.cancelExecution(), (error: unknown) => {
+        thrown = error;
+        return true;
+      });
+    } finally {
+      Object.defineProperty(Error.prototype, "name", original);
+    }
+    assert.deepEqual(received, [], "the Kernel's write reached no ambient accessor");
+    assert.ok(thrown instanceof UnsupportedKernelSurfaceError);
+    assert.deepEqual(Object.getOwnPropertyDescriptor(thrown, "name")?.value, "UnsupportedKernelSurfaceError");
+  });
+});
 
-  test("applyControlCommit appends the prebuilt record before any hold write and calls nothing else", () => {
-    const found = find((node) => ts.isVariableDeclaration(node) && node.name.getText() === "applyControlCommit");
-    assert.equal(found.length, 1);
-    const initializer = (found[0] as ts.VariableDeclaration).initializer;
-    assert.ok(initializer !== undefined && ts.isArrowFunction(initializer));
-    const nodes = descendants(initializer.body);
-    const calls = nodes.filter(ts.isCallExpression);
-    assert.deepEqual(calls.map(calleeText), ["appendOwn"], "one call: the history append");
-    const writes = nodes.filter((node) => ts.isBinaryExpression(node) && ASSIGNMENTS.has(node.operatorToken.kind));
-    assert.ok(writes.length >= 2, "both hold writes are there");
-    for (const write of writes) assert.ok(write.getStart() > (calls[0] as ts.Node).getStart(), `${write.getText()} precedes the append`);
-    assert.equal(nodes.filter((node) => CONSTRUCTION.has(node.kind)).length, 0, "the apply step constructs nothing");
+// -- Negative controls ----------------------------------------------------------------
+
+/**
+ * Each probe is a small source analysed as if it were in the zone. `expect` lists the kinds (and a
+ * spelling fragment) the rules must report; a probe passes only if every expected report is found.
+ */
+const PROBE_PRELUDE = [
+  "interface E { readonly writerEpoch: number; resultingEpoch?: number; method?(): number }",
+  "interface R { resultingEpoch: number }",
+  "interface Outer { readonly inner: E }",
+  "interface Host { readonly namespace: string }",
+  "interface Request { readonly activationId: string; readonly nested: { readonly key: string } }",
+  "const list: readonly E[] = [];",
+  "",
+].join("\n");
+
+const PROBES: readonly { readonly name: string; readonly source: string; readonly expect: readonly [Site["kind"], string][] }[] = [
+  {
+    // Review 10's reproducer, verbatim: all six reads of an optional member.
+    name: "review 10: dot, string element, bare, quoted, computed and assignment destructuring",
+    source: [
+      "interface E6 { resultingEpoch?: number }",
+      "export function f(e:E6){",
+      "const plain=e.resultingEpoch;",
+      'const bracket=e["resultingEpoch"];',
+      "const { resultingEpoch: binding }=e;",
+      'const { "resultingEpoch": quoted }=e;',
+      'const { ["resultingEpoch"]: computed }=e;',
+      "let assigned: number | undefined;",
+      "({resultingEpoch: assigned}=e);",
+      "return [plain,bracket,binding,quoted,computed,assigned];",
+      "}",
+    ].join("\n"),
+    expect: [
+      ["optional", "e.resultingEpoch"],
+      ["optional", 'e["resultingEpoch"]'],
+      ["syntax", "resultingEpoch: binding"],
+      ["syntax", '"resultingEpoch": quoted'],
+      ["syntax", '["resultingEpoch"]: computed'],
+      ["syntax", "{resultingEpoch: assigned}=e"],
+    ],
+  },
+  { name: "nested destructuring", source: "export const f = (o: Outer): unknown => { const { inner: { resultingEpoch } } = o; return resultingEpoch; };", expect: [["syntax", "ObjectBindingPattern"]] },
+  { name: "rest destructuring", source: "export const f = (e: E): unknown => { const { ...rest } = e; return rest; };", expect: [["syntax", "ObjectBindingPattern"]] },
+  { name: "destructuring with a default", source: "export const f = (e: E): unknown => { const { resultingEpoch = 0 } = e; return resultingEpoch; };", expect: [["syntax", "ObjectBindingPattern"]] },
+  { name: "parameter destructuring", source: "export const f = ({ resultingEpoch }: E): unknown => resultingEpoch;", expect: [["syntax", "ObjectBindingPattern"]] },
+  { name: "catch-clause destructuring", source: "export function f(): unknown { try { return 1; } catch ({ message }: any) { return message; } }", expect: [["syntax", "ObjectBindingPattern"]] },
+  { name: "array destructuring", source: "export const f = (): unknown => { const [first] = list; return first; };", expect: [["syntax", "ArrayBindingPattern"]] },
+  { name: "array assignment pattern", source: "export const f = (): unknown => { let first: E | undefined; [first] = list; return first; };", expect: [["syntax", "assignment target ArrayLiteralExpression"]] },
+  { name: "for…of (iteration protocol)", source: "export const f = (): number => { let n = 0; for (const e of list) n += e.writerEpoch; return n; };", expect: [["syntax", "ForOfStatement"]] },
+  { name: "for…of with destructuring", source: "export const f = (): number => { let n = 0; for (const { writerEpoch } of list) n += writerEpoch; return n; };", expect: [["syntax", "ForOfStatement"], ["syntax", "ObjectBindingPattern"]] },
+  { name: "for…in (inherited enumerable keys)", source: "export const f = (e: E): number => { let n = 0; for (const k in e) n += k.length; return n; };", expect: [["syntax", "ForInStatement"]] },
+  { name: "array spread", source: "export const f = (): unknown => [...list];", expect: [["syntax", "SpreadElement"]] },
+  { name: "call spread", source: "const g = (...items: E[]): number => items.length; export const f = (): number => g(...list);", expect: [["syntax", "SpreadElement"]] },
+  { name: "the in operator", source: 'export const f = (e: E): boolean => "resultingEpoch" in e;', expect: [["syntax", "operator InKeyword"]] },
+  { name: "instanceof", source: "class A {} export const f = (e: unknown): boolean => e instanceof A;", expect: [["syntax", "operator InstanceOfKeyword"]] },
+  { name: "coercing equality", source: "export const f = (e: E | null): boolean => e == null;", expect: [["syntax", "operator EqualsEqualsToken"]] },
+  { name: "increment of a member", source: "export const f = (e: E): void => { e.resultingEpoch!++; };", expect: [["syntax", "PostfixUnaryExpression"], ["optional", "e.resultingEpoch"]] },
+  { name: "logical assignment to a member", source: "export const f = (e: E): void => { e.resultingEpoch ??= 1; };", expect: [["syntax", "operator QuestionQuestionEqualsToken"], ["optional", "e.resultingEpoch"]] },
+  { name: "await (then assimilation)", source: "export async function f(p: Promise<number>): Promise<number> { return await p; }", expect: [["syntax", "AsyncKeyword"], ["syntax", "AwaitExpression"]] },
+  { name: "generator", source: "export function* f(): Generator<number> { yield 1; }", expect: [["syntax", "generator"], ["syntax", "YieldExpression"]] },
+  { name: "super member access", source: "class A { m(): number { return 1; } } export class B extends A { override m(): number { return super.m(); } }", expect: [["syntax", "super member access"]] },
+  { name: "the arguments object", source: "export function f(): number { return arguments.length; }", expect: [["syntax", "arguments object"]] },
+  { name: "switch, labels and other unlisted statements", source: "export function f(n: number): number { outer: while (true) { switch (n) { case 1: break outer; default: return n; } } return 0; }", expect: [["syntax", "SwitchStatement"], ["syntax", "LabeledStatement"]] },
+  { name: "optional member write and delete", source: "export const f = (e: E): void => { e.resultingEpoch = 1; delete e.resultingEpoch; };", expect: [["optional", "e.resultingEpoch"]] },
+  { name: "optional method call", source: "export const f = (e: E): unknown => e.method?.();", expect: [["optional", "e.method"]] },
+  { name: "optional member of a union", source: "interface A2 { readonly m: number } interface B2 { readonly m?: number } export const f = (x: A2 | B2): unknown => x.m;", expect: [["optional", "x.m"]] },
+  { name: "cast that makes an optional member required", source: "export const f = (e: E): number => (e as R).resultingEpoch + (e as Required<E>).resultingEpoch;", expect: [["assertion", "e as R"], ["assertion", "e as Required<E>"]] },
+  { name: "cast that introduces members from unknown", source: "export const f = (u: unknown): number => (u as R).resultingEpoch;", expect: [["assertion", "u as R"]] },
+  { name: "type predicate that introduces members", source: "export function isR(value: unknown): value is R { return typeof value === \"object\" && value !== null; }", expect: [["predicate", "value is R"]] },
+  { name: "index signature and any", source: "export const f = (e: E): unknown => [(e as unknown as Record<string, number>).resultingEpoch, (e as any).resultingEpoch];", expect: [["unresolved", ".resultingEpoch"]] },
+  { name: "computed key on an object, read and write", source: "export const f = (r: Record<string, number>, k: string): void => { r[k] = r[k]! + 1; };", expect: [["dynamic", "r[k]"]] },
+  { name: "built-in prototype members after load", source: "export const f = (s: string, xs: readonly number[], g: () => void): unknown => [s.toUpperCase(), xs.at(0), g.call(null)];", expect: [["builtin", "s.toUpperCase"], ["builtin", "xs.at"], ["builtin", "g.call"]] },
+  { name: "lib globals read after load", source: "export const f = (x: unknown): unknown => [String(x), JSON.stringify(x), Object.keys({})];", expect: [["global", "String"], ["global", "JSON"], ["global", "Object"]] },
+  { name: "implicit conversion of an object", source: "export const f = (e: E): string => `${e}` + (e as unknown as string);", expect: [["coercion", "e"]] },
+  { name: "object spread", source: "export const f = (e: E): unknown => ({ ...e });", expect: [["spread", "...e"]] },
+  {
+    name: "caller envelopes: a member read, an alias, a spread, a return and a hand-off to code that reads it",
+    source: [
+      "const readsIt = (value: { readonly activationId: string }): string => value.activationId;",
+      "export class ProbeCoordinator {",
+      "  read(caller: Host, request: Request): unknown { return request.activationId; }",
+      "  alias(caller: Host, request: Request): unknown { const r = request; return r; }",
+      "  spread(caller: Host, request: Request): unknown { return { ...request }; }",
+      "  handOff(caller: Host, request: Request): unknown { return readsIt(request); }",
+      "  primitive(caller: Host, id: string): string { return `${id}`; }",
+      "}",
+    ].join("\n"),
+    expect: [["envelope", "request.activationId"], ["envelope", "r = request"], ["envelope", "...request"], ["envelope", "value.activationId"], ["envelope", "id}"]],
+  },
+];
+
+const CLEAN_PROBE = [
+  "interface Clean { readonly a: number; readonly items: readonly number[] }",
+  "export const f = (c: Clean, s: string): number => {",
+  "  let total = 0;",
+  "  for (let index = 0; index < c.items.length; index += 1) total += c.a;",
+  "  const text = `${s}:${total}`;",
+  "  return text.length > 0 && c.a === 1 ? total : -total;",
+  "};",
+  "export class ProbeCoordinator {",
+  "  handOff(caller: Host, request: Request): boolean { return request === null || typeof request !== \"object\"; }",
+  "}",
+].join("\n");
+
+describe("correction DEC-8 negative controls: every equivalent form is reported", () => {
+  const files = new Map<string, string>();
+  PROBES.forEach((probe, index) => files.set(resolve(SOURCE_ROOT, `__probe_${index}.ts`), `${PROBE_PRELUDE}${probe.source}\n`));
+  const clean = resolve(SOURCE_ROOT, "__probe_clean.ts");
+  files.set(clean, `${PROBE_PRELUDE}${CLEAN_PROBE}\n`);
+  const probeZone = buildZone([...files.keys()], files, zone);
+
+  test("the probes are valid TypeScript under the same configuration", () => {
+    const errors = typeErrors(probeZone).filter((error) => !/generator|Generator/.test(error));
+    assert.deepEqual(errors, []);
   });
 
-  test("hold fields and recovery history are written only by the commit paths", () => {
-    const owner = (node: ts.Node): string => {
-      let current: ts.Node = node;
-      while (!ts.isSourceFile(current)) {
-        if (ts.isMethodDeclaration(current)) return current.name.getText();
-        if (ts.isVariableDeclaration(current) && current.initializer !== undefined && ts.isArrowFunction(current.initializer)) return current.name.getText();
-        current = current.parent;
+  PROBES.forEach((probe, index) => {
+    test(probe.name, () => {
+      const path = resolve(SOURCE_ROOT, `__probe_${index}.ts`);
+      const found = analyseAccesses({ ...probeZone, files: [path] }, { publicClass: "ProbeCoordinator", hostCallerType: "Host" });
+      for (const [kind, fragment] of probe.expect) {
+        assert.ok(
+          found.some((site) => site.kind === kind && site.text.includes(fragment)),
+          `expected ${kind} "${fragment}"; reported: ${found.map((site) => `${site.kind}/${site.mode} ${site.text}`).join(" | ")}`,
+        );
       }
-      return "<module>";
-    };
-    const holdWrites = find(
-      (node) => ts.isBinaryExpression(node) && ASSIGNMENTS.has(node.operatorToken.kind) && ts.isPropertyAccessExpression(node.left) && ["codeHold", "protocolFailureHold"].includes(node.left.name.getText()),
-    ).map(owner);
-    assert.deepEqual([...new Set(holdWrites)].sort(), ["applyControlCommit", "requestTakeover"]);
-    const historyAppends = find((node) => ts.isCallExpression(node) && MUTATING_CALLS.has(calleeText(node)) && (node.arguments[0]?.getText() ?? "") === "record.recoveryHistory").map(owner);
-    assert.deepEqual([...new Set(historyAppends)].sort(), ["#accept", "applyControlCommit", "requestTakeover"]);
+    });
+  });
+
+  test("review 10's six reads are each reported on their own line", () => {
+    const found = analyseAccesses({ ...probeZone, files: [resolve(SOURCE_ROOT, "__probe_0.ts")] });
+    const prelude = PROBE_PRELUDE.split("\n").length - 1;
+    const lines = new Set(found.map((site) => site.line - prelude));
+    for (const line of [3, 4, 5, 6, 7, 9]) assert.ok(lines.has(line), `line ${line} of review 10's reproducer is reported`);
+  });
+
+  test("the clean control of permitted forms reports nothing", () => {
+    const found = analyseAccesses({ ...probeZone, files: [clean] }, { publicClass: "ProbeCoordinator", hostCallerType: "Host" });
+    assert.deepEqual(found.map((site) => `${site.line} ${site.kind}/${site.mode} ${site.text}`), []);
   });
 });

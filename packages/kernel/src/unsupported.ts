@@ -10,6 +10,12 @@
 
 /** Thrown when a target Kernel surface exists as a plan rather than as an implementation. */
 export class UnsupportedKernelSurfaceError extends Error {
+  /**
+   * Defined as this error's own field, not assigned. `this.name = …` was `[[Set]]` on a member only
+   * `Error.prototype` supplies, so an accessor that caller code installed there would have received
+   * the write and left the error without its own name (correction DEC-8, SELF-R7-UNSUPPORTED-01).
+   */
+  override readonly name = "UnsupportedKernelSurfaceError";
   /** The surface that was asked for, e.g. `createExecution`. */
   readonly surface: string;
   /** The development packet that owns implementing it, e.g. `K1.1`. */
@@ -22,7 +28,6 @@ export class UnsupportedKernelSurfaceError extends Error {
         `recovery holds only; ${owner} owns this surface. ` +
         `The current 0.8.x behaviour remains available from @arrokothi/core, which is explicitly legacy.`,
     );
-    this.name = "UnsupportedKernelSurfaceError";
     this.surface = surface;
     this.owner = owner;
   }

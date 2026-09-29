@@ -52,6 +52,14 @@ const checks = [
   ["43-host-members-probe", "node", ["--experimental-strip-types", "docs/development/work/K1.2-correction-01/probe-host-members-06.ts"]],
   ["44-claim-alias-search", "git", ["grep", "-n", "-i", "-E", "costs? no more|refusing costs|refusal[- ]cost|cheap|bounded by the limits|no more than accepting|no more time or memory|V-D1|KC2-1", "--", "packages/kernel/src", "packages/kernel/package.json", "docs/development/002-implemented-kernel-baseline.md", "docs/development/007-work-packets.md", "docs/development/001-current-status-and-roadmap.md", "docs/development/003-evidence-and-findings.md", "docs/development/014-owner-progress-summary.md", "docs/development/kernel-ownership.md", "docs/guides", "mental-model", ".agents"]],
   ["45-round6-diff-check", "git", ["diff", "--check", "60eebc24113eb834e5d88015ca2a196c95c60493", "HEAD"]],
+  // Revision 8 (review 10): round-7 mutants, the rebound review-10 enforcement probe, the new oracles
+  // and the unsupported-name probe against review 10's H, review 10's behavioural probes rerun in a
+  // disposable copy, and the round-7 diff check.
+  ["47-round7-ablations", "node", ["docs/development/work/K1.2-correction-01/ablations-07.mjs"]],
+  ["48-review10-enforcement-rebound", "node", ["docs/development/work/K1.2-correction-01/probe-enforcement-rebound-07.mjs"]],
+  ["49-new-oracles-and-name-probe-on-reviewed-H", "node", ["docs/development/work/K1.2-correction-01/probe-reviewed-h-07.mjs"]],
+  ["50-review10-probes-rerun", "node", ["docs/development/work/K1.2-correction-01/probe-review10-rerun-07.mjs"]],
+  ["51-round7-diff-check", "git", ["diff", "--check", "0efe0ba2ebb3fdde71ac8ab5b7a3ae048f5f5ac1", "HEAD"]],
   ["29-round3-diff-check", "git", ["diff", "--check", "8a418d408f715e999a403a3e84b73a9db1b43712", "HEAD"]],
   ["22-correction-diff-check", "git", ["diff", "--check", "b18a729d989dea334a86ec08bdf8773ee77de4db", "HEAD"]],
   ["19-round2-diff-check", "git", ["diff", "--check", "449b243cd31d5596c457e091233dfc4d77a4eff4", "HEAD"]],

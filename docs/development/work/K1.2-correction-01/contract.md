@@ -1,6 +1,6 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 7. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 8. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, with V-D1 scoped only by the explicit owner decisions below. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
@@ -58,6 +58,19 @@ No other semantic change is authorized; coherent Proxy acceptance, four limits a
   mutation, rejected by the maintained suite.
 - **Production-code line of revision 6** ("unchanged by revision 6") describes revision 6 only.
 
+**Revision 8** answers [review 10](review-10.md) (`K12C1-R10-READ-01`, `K12C1-R10-COMMIT-01`), both
+against the enforcement of DEC-8 and DEC-9 rather than their runtime behaviour. No requirement
+changes; amendment 02's production permission covers the one same-mechanism fix.
+- **Enforcement is closed-world.** Round 6's rules were denylists over the shapes they knew; the
+  DEC-8 and DEC-9 enforcement bullets below now describe permitted syntax, a checker classification of
+  every access, and an effect analysis of every call. [Coverage-07](coverage-07.md) is the pre-code
+  reconstruction and says why round 6 missed both findings.
+- **Self-found, same mechanism:** `SELF-R7-UNSUPPORTED-01`. `UnsupportedKernelSurfaceError` assigned
+  `this.name` through `[[Set]]`, which an accessor installed on `Error.prototype.name` received; `name`
+  is now defined as the error's own field.
+- **Evidence:** review 10's six reads and two regressions verbatim, every other equivalent form as a
+  maintained negative control, and full-suite mutants that the enforcement files themselves reject.
+
 ## Identity and authority
 
 - Governing integrated base and process baseline: `a20d278185eaffc7f8b7489345a3624231ff6e6d`.
@@ -108,6 +121,10 @@ No other semantic change is authorized; coherent Proxy acceptance, four limits a
   already names the branch, and no other checkout or worktree is switched. The owner directed that a
   new Claude Code (Opus 5.5) session implement this round and GPT-6 review it. Scope adds
   `K12C1-R9-HISTORY-01`, `K12C1-R9-CLAIM-01` and same-mechanism defects (amendment 02).
+- Round 7 (revision 8) continues on the same branch from the local review record
+  `0efe0ba2ebb3fdde71ac8ab5b7a3ae048f5f5ac1` (review 10 of H `35c6ba0277542236f21f95d695154fa0164feb96`).
+  Forward commits only; the existing clean checkout already names this branch. Scope: review 10's
+  `K12C1-R10-READ-01` and `K12C1-R10-COMMIT-01`, and same-mechanism defects under amendment 02.
 
 ## Binding decisions supplementing revision 9
 
@@ -227,9 +244,28 @@ access to a member its object may not own, read or write. This is C13's rule app
 - **Engine-built property descriptors** are the only objects whose optional members the zone
   accesses. `enumerable` is owned by every descriptor, and `value` is read after `hasOwnValue` or on
   the data descriptor of a Kernel-built record's own data field.
-- **Enforcement:** `ambient-reads.test.ts` lists, with the TypeScript checker, every access in the
-  zone to a member declared optional, every dynamic-key read and every `in` operator. Each must match
-  an inventoried, reasoned site; a new one fails until it is classified or removed.
+- **Enforcement (revision 8):** `ambient-reads.test.ts`, using `zone-analysis.ts` with the repository
+  `tsconfig.json`, over all 13 zone sources.
+  - *Permitted syntax.* Every executable node kind, operator and assignment target is in an allowlist.
+    Destructuring of any kind, the iteration protocol, `in`, `instanceof`, `==`/`!=`, `++`/`--`,
+    `await`/`yield`, labels, `super.x` and assignment patterns are reported by absence.
+  - *Classified accesses.* A named access is listed when its member is declared optional, resolves to
+    no declaration (index signature or `any`), or is declared by TypeScript's `lib` and reached after
+    module load (a built-in prototype supplies it; `length` of a list or string is own). Also listed:
+    computed keys (dynamic on non-lists, index on lists), object spread, type assertions and
+    predicates that introduce members or make an optional member required, implicit conversion of a
+    possible object, `lib` globals read after load, and caller envelopes. A non-`caller` parameter of a
+    public coordinator method may only be compared, tested or handed to a call, and a call into zone
+    code carries the rule into the callee.
+  - *Inventory.* Every listed site must match `zone-inventory.ts` (file, kind, mode, spelling, count,
+    reason). Guarded descriptor reads keep their `hasOwnValue` precondition, bounded index reads their
+    loop bound, and every `hostMember` key names an optional member of its holder.
+  - *Trust boundary.* Declared types are trusted except where the source makes an unchecked claim
+    (the assertions and predicates above). Casts of `unknown`/`any` to primitives or lists are runtime
+    type claims backed by the capture discipline's `typeof`/`Array.isArray` checks; they introduce no
+    member declarations and are outside this static rule.
+  - *Negative controls.* Each equivalent form is a maintained probe that must be reported, including
+    review 10's six reads verbatim; a clean probe must report nothing.
 
 **DEC-9 (recovery-control commits are prebuilt; revision 7).** `recoverExecution`,
 `reportProtocolFailure` and `requestTakeover` observe their request, check accepted state, and then
@@ -246,10 +282,24 @@ after the whole decision is recorded.
   record). Like Outcome acceptance (DEC-10), it claims only that no caller-reachable code or read lies
   between the first and last mutation; engine resource exhaustion inside it is outside this in-memory
   packet's claim.
-- **Enforcement:** `ambient-reads.test.ts` checks that nothing after the first mutation in the three
-  controls constructs, calls anything but the apply steps or returns a value built after mutation,
-  that `applyControlCommit` appends before its hold writes and calls nothing else, and that hold
-  fields and recovery history are written only by the commit paths.
+- **Enforcement (revision 8):** `control-commits.test.ts`, using the effect analysis in
+  `zone-analysis.ts`.
+  - *Effects.* Every call resolves to zone code, a classified primordial, or an inventoried foreign
+    call (the Driver's delivery and safety callback, a host accessor, the serializer dependency), and
+    a fixpoint over the zone records which pre-existing objects each function's own code may mutate,
+    through any assignment operator, `delete`, a mutating primordial or a helper that mutates an
+    argument. Provenance follows values, not static types, through aliases, containers, closures and
+    callbacks. The serializer environment's install-and-restore is the one declared override.
+  - *Controls.* Each control ends in an apply suffix: appends of prebuilt locals (or
+    `applyControlCommit`), then plain writes of prebuilt locals, then the post-commit delivery, then
+    `return` of a prebuilt local. Before it, nothing that can reach accepted state is mutated except a
+    refusal exit, and every foreign call precedes the first value the suffix commits or returns.
+  - *Helpers and writers.* `applyControlCommit` is bindings of commit fields, then appends, then plain
+    writes, and nothing else. Hold fields, recovery history, receipts and the acceptance index have
+    fixed writers, found by field name after alias resolution and by list element type.
+  - *Negative controls.* Review 10's two regressions verbatim and every other write, helper, alias,
+    container, closure, callback, laundering and ordering form are in-memory mutants of
+    `coordinator.ts` that must be reported; the unmodified source must not be.
 
 *Revision 6:* the cost-evidence requirements in this paragraph and in DEC-7 now belong to
 K1.1-correction-03. What stays here is the exact-coordinate requirement, the weight and order
@@ -292,7 +342,10 @@ methods, with the revision-9 map below carried forward in full. Native fidelity 
 | DIAG-01 / C3,C8–C10 | visibility-only Outcome caller and authorized controls; wrong 50,000,000-unit, lone-surrogate and engine-maximum IDs; open/resolved/terminal states | refusal returned and recorded, bounded identity fragments, no exception or accepted-state change, later current answer accepted | round-2 diagnostic matrix and memory-heavy probes |
 | R9-HISTORY-01 / C9,C10,C12,C13, DEC-8/9 | review 09's 22 cases (6 transitions × none/data 777/throwing/reentrant inherited `resultingEpoch`), mutable foreign object, both safe clears; counting accessors on every record field name during observation and as residue | no inherited read, exception or nested callback; one record per decision owning exactly its fields; takeover alone owns `resultingEpoch`; causal order; answer equals committed holds | `recovery-ambient.test.ts`; review-09 matrix `--expect-correct`; round-6 mutants H1–H14 |
 | Same-mechanism host members / C8,C10,C13, DEC-8 | Driver without `isSafeToReplace` plus inherited one (during observation, residue, function-object Driver); residue `controlScopes` on all three controls; residue limits at construction; class and host-prototype members | `unsafe_replacement`, `unauthorized_control`, defaults 1,024/256, with no control-state change; class/host-prototype members honored | `host-members.test.ts`; `probe-host-members-06.ts`; mutants H15–H21 |
-| Structural rules / DEC-8/9 | TS-checker inventory; control-commit ordering scan; synthetic probe of each forbidden form | a new optional/dynamic/`in` access, construction after first mutation or hold write outside the commit paths fails | `ambient-reads.test.ts`; mutants H3–H7, H22 |
+| Structural rules / DEC-8/9 (revision 7) | TS-checker inventory; control-commit ordering scan; synthetic probe of each forbidden form | a new optional/dynamic/`in` access, construction after first mutation or hold write outside the commit paths fails | superseded by the two rows below; mutants H3–H7, H22 still rejected |
+| R10-READ-01 / DEC-8, C13 | review 10's six reads; nested, rest, default, parameter, catch and loop destructuring; iteration; `in`; `instanceof`; `==`; `++`; `await`; generators; `super.x`; `arguments`; casts that hide optionality or introduce members; index signatures and `any`; built-in members and globals after load; object coercion; envelope reads, aliases, spreads and hand-offs | every form reported; the zone's sites all inventoried with reasons; clean probe reports nothing | `ambient-reads.test.ts`; `ablations-07.mjs` R1–R12; rebound review-10 probe |
+| R10-COMMIT-01 / DEC-9, C8–C10, C12 | review 10's early `#mint` and `++`; compound, element, logical and `delete` writes; const/let aliases; bindings set by logical assignment; fresh containers and constructed objects holding a Kernel list; closures; callbacks; `mapSet`; `freeze`; module-state builders; refusals outside exits; untested helpers; laundering through `unknown`; Kernel objects handed to foreign code; construction, foreign code and delivery in the wrong order | each mutant reported by the rule it violates; unmodified source clean; summaries independent of analysis order | `control-commits.test.ts`; `ablations-07.mjs` C1–C16 |
+| SELF-R7-UNSUPPORTED-01 / DEC-8, C13 | accessor on `Error.prototype.name` while an unsupported surface throws | the accessor receives nothing; the error owns its name | runtime case in `ambient-reads.test.ts`; probe at H and C; mutant R10 |
 | R9-CLAIM-01 / C15, amendment 01 items 3–4 | alias search over live source, BASELINE, 007, Layer 3, guides | no live V-D1 implementation claim; values.md normative text and sealed records unchanged; roadmap points at the split | search log; `values.ts` comments; roadmap |
 | Diagnostic dependencies / C2,C3,C8–C13 | accepted conflict, matched coordinates, control revalidation, missing pins and history, malformed member/constructor names, duplicate Emission key | every renderer follows DEC-4/5; every captured content issue contributes detail or code/count; exact structured identities and K1.2-DEC-8 explicit diagnostic semantics unchanged | round-2 tests and renderer-specific ablations; reconstruction inventory |
 
@@ -301,6 +354,13 @@ any such change needs a distinguishing test and ablation. Every existing test an
 K1.2 ablations must still pass/reject respectively. No semantic regression is removed; revision-3 raw diagnostic storage assertions are updated to DEC-7 and their replacements documented.
 
 ## Commands and handoff
+
+*Revision 8 validation* adds, on clean C: `ablations-07.mjs` (each mutant must also be rejected by
+an enforcement file), the review-10 enforcement probe through a digest-checked adapter that runs its
+six reads against the new analysis and its two regressions against the full suite, the new enforcement
+files against the reviewed H's source (they must fail there), the `unsupported.ts` probe at H and C,
+review 10's whole-view probe in a disposable copy (it writes into its sealed directory), and a
+diff check of this round's payload.
 
 *Revision 7 validation* adds, on clean C: the round-6 mutants (`ablations-06.mjs`), the review-09
 probes (the two reproducers now exit 1 because the defect no longer reproduces; the matrix runs
