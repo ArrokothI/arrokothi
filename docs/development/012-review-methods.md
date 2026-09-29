@@ -35,12 +35,21 @@ names one of three ways it closes.
 - **Structural mechanism.** A mechanism makes the property hold for every input, and an argument
   shows that nothing bypasses the mechanism. Examples: every capture operation passes through one
   metered helper; every submission path checks one grant; every stored identity comes from one
-  producer. Enforce the "nothing bypasses" part mechanically where possible, for instance with a
-  static check, a narrow export, or a type that only the mechanism can construct. Tests confirm the
-  mechanism. A reviewer's job is then to check that the mechanism is complete and enforced, not to
-  search for a missed input.
+  producer. Prefer mechanisms that hold at runtime by construction: a null-prototype record cannot
+  answer an inherited read; state that only one commit function can write cannot be mutated early; a
+  type only the mechanism can construct cannot be forged. Tests confirm the mechanism. A reviewer's
+  job is then to check that the mechanism is complete and enforced, not to search for a missed input.
 - **Declared bounded search.** When neither of the others fits, state the families, sizes, depths
   and schedules searched. The claim is then made only for that scope, and the corpus keeps it.
+
+**Rules about future code are different from rules about inputs.** "No Kernel code reads an unowned
+member" constrains what maintainers write, not what callers send. Prove it at runtime: sweep the
+maintained scenarios with poisoned prototypes, inject faults at each step, and assert whole results
+plus the next receipt. A lint or static analysis is a regression guard for plausible accidental
+mistakes, and its known gaps are stated. Do not require a static analysis to be sound against
+deliberately evasive code unless an existing sound tool is used. Do not build a custom analyzer inside
+a feature packet: it is a product of its own, with its own soundness problem (see 016, rounds 6–7).
+Mutants used as evidence must be plausible mistakes a maintainer could make.
 
 Prefer operation or allocation counts to wall-clock time. Timing depends on the engine and the
 machine, so use it as an observation that points at a mechanism, not as a gate.

@@ -46,6 +46,15 @@ Reports are about 27 KB and reviews 21–35 KB each. The K1.2 and correction fol
 8.4 MB. The correction round 4 attached 42 raw logs. The packet used six separate ablation runners,
 each written for one round.
 
+**The same pattern, one level up (added 2026-09-29).** K1.2-correction-01 was narrowed to fix
+review 09's inherited-read defect. The runtime fix was correct, but its contract then required
+*mechanical enforcement* of the rule. Two Opus 5.5 rounds built a syntactic scan, and then a
+1,634-line TypeScript analyzer. GPT-6 reviews 10 and 11 each produced new evasive mutants that pass
+all 1,411 Kernel tests: a member introduced through a cast, a default parameter, a local named
+`undefined`. The runtime passed every check. The claim was a sound static analysis of future code,
+which no round can finish. The prompt that asked for mechanical enforcement came from the drafter of
+this page. Amendment 03 moves the proof to runtime sweeps.
+
 ## Root causes
 
 1. **Claims that cannot be finished.** V-D1 compares refusal time with the costliest acceptance of
@@ -70,7 +79,10 @@ each written for one round.
 6. **Records generated their own defects.** Long contracts with dense revision prose, many
    attachments and exact allowlists produced about a third of all findings, and consumed agent
    effort that the design needed.
-7. **Generic prompts, specific packets.** The launchers carried policy, while the packet-specific
+7. **Enforcement demanded where proof was needed.** Requiring a static tool to be sound against any
+   future code turns a correct fix into an open-ended research task. Rules about future code are
+   proved at runtime or by construction; linters are guards.
+8. **Generic prompts, specific packets.** The launchers carried policy, while the packet-specific
    knowledge (where the traps are, which design looks suspect, which questions to answer first) was
    left for each agent to rediscover.
 
@@ -84,7 +96,8 @@ each written for one round.
 | 4 | DESIGN-AUDIT-01 brings evidence-backed options to the owner | 007 seed; [brief](work/DESIGN-AUDIT-01/brief-01.md) |
 | 5 | Maintained counterexample corpus and one mutation registry; reviews start by running them | 006; 012 |
 | 6 | Short contracts; one verification command; raw logs only when not cheaply reproducible | 006; 008 |
-| 7 | Packet briefs written by the planner or the reviewer; short universal launchers | 008 templates; 009 Prompts D and E |
+| 7 | Runtime or by-construction proof for rules about future code; analyzers are guards | 012 finishable criteria |
+| 8 | Packet briefs written by the planner or the reviewer; short universal launchers | 008 templates; 009 Prompts D and E |
 
 Independence, exact C/H identity, owner release, no self-acceptance, Layer-3 ownership rules and
 the E-gate rules are unchanged.
