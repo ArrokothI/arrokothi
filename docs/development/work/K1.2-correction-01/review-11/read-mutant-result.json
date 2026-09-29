@@ -1,0 +1,29 @@
+{
+  "copy": "/tmp/arrokothi-r11-read-ZqzJsQ",
+  "anchor": "    return ok(viewOf(record));",
+  "insert": "    const summary: Pick<ExecutionRecord, \"executionId\"> = record;\n    (summary as { executionId: string; resultingEpoch: number }).resultingEpoch;\n",
+  "exit": 0,
+  "signal": null,
+  "summary": [
+    "  ✔ an unresettable chain degrades to a refusal, never to wrong bytes (94.810292ms)",
+    "✔ K11-R16-VAL-01 (R2) canonical bytes do not depend on prototype-chain shape (95.700875ms)",
+    "▶ K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never to wrong bytes",
+    "  ✔ the refusal is located, the bytes are never wrong, and the borrowed slots are handed back (98.834291ms)",
+    "✔ K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never to wrong bytes (98.900542ms)",
+    "▶ K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution",
+    "  ✔ every hostile data-field combination still yields the exact clean bytes (2.10025ms)",
+    "  ✔ an inherited descriptor getter never runs inside capture, cloning or the serializer window (0.273625ms)",
+    "  ✔ an own __proto__ member still installs while conversion is hostile (0.162458ms)",
+    "  ✔ restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host (0.17875ms)",
+    "✔ K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution (2.827417ms)",
+    "ℹ tests 1411",
+    "ℹ suites 138",
+    "ℹ pass 1411",
+    "ℹ fail 0",
+    "ℹ cancelled 0",
+    "ℹ skipped 0",
+    "ℹ todo 0",
+    "ℹ duration_ms 14026.00975",
+    ""
+  ]
+}
