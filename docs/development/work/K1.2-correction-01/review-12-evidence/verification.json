@@ -1,0 +1,28 @@
+{
+  "reviewed_H": "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+  "review_clone_head": "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+  "review_clone_status": "",
+  "owner_checkout_head": "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+  "owner_checkout_status": "",
+  "source_archive_files": 1340,
+  "source_archive_blob_errors": [],
+  "contract_sha256": {
+    "docs/development/work/K1.2/contract.md": "28f5103c2158bda671a1b80155c8ccea7fb9a741887dfb49955f7d887fb1c9f4",
+    "docs/development/work/K1.2-correction-01/contract.md": "c619a629602c17bebcfe603768aca73e432c452eccba950f508321949a041894"
+  },
+  "patches": {
+    "base-to-H.patch": {
+      "bytes": 34266392,
+      "lines": 455775,
+      "sha256": "a78704e2f0ea554e483fe3091cccd0774d21ff187f502507dc6012322a8b2e65"
+    },
+    "correction-delta.patch": {
+      "bytes": 4169721,
+      "lines": 59049,
+      "sha256": "3112b96ed9064750280362f44e5cf4e1f01d4d4ee92688f8525b12be2e8fd7e7"
+    }
+  },
+  "report_sha256": "8c8dbfc71e6b1424a4f3f1a4d7914838ac1857623101285ebf21709779810165",
+  "report_local_missing_links_excluding_handoff": [],
+  "report_final_line": "CHANGES REQUIRED"
+}

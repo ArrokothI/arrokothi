@@ -1,0 +1,22 @@
+[
+  {
+    "commit": "52b1600f3b42e3a360fdc3395178f1d147edf304",
+    "ancestor_of_B": true
+  },
+  {
+    "commit": "644dfffc7904176ee3a4f9943310cf926408a113",
+    "ancestor_of_B": true
+  },
+  {
+    "commit": "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+    "ancestor_of_B": true
+  },
+  {
+    "commit": "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+    "ancestor_of_B": true
+  },
+  {
+    "commit": "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+    "ancestor_of_B": true
+  }
+]
