@@ -1,0 +1,11 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --experimental-strip-types docs/development/work/K1.2-correction-01/probe-host-members-06.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T11:43:31.070Z
+
+{"tree":"start 60eebc24113eb834e5d88015ca2a196c95c60493","A_inheritedSafety":"accepted at writer epoch 2","B_residueControl":"accepted, changed=true","C_residueCapacity":"capacity_exhausted"}
+{"tree":"current tree","A_inheritedSafety":"unsafe_replacement","B_residueControl":"unauthorized_control","C_residueCapacity":"second input queued (default capacity)"}
+Start source reproduces A/B/C; current source refuses all three.
+
+exit: 0; signal: null; error: none

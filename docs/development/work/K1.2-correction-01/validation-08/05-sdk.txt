@@ -1,0 +1,42 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: npm run test:sdk
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T11:06:44.731Z
+
+
+> arrokothi-agent-kernel@0.8.1 test:sdk
+> node --test --experimental-strip-types packages/sdk/tests/*.test.ts
+
+✔ a pure Function Workflow needs no model or policy and preserves emission versus terminal result (9.79175ms)
+✔ registration is idempotent, rejects version changes, and start pins definitions (2.512625ms)
+✔ registration validates a whole batch before inserting conflicting versions (0.398792ms)
+✔ missing handlers/models fail before any Execution is queued and preflight does no inference (2.844416ms)
+✔ preflight finds a missing provider and incompatible static model features (0.584416ms)
+✔ custom model resolution, policy, and custom view resolvers are never probed by preflight (0.22375ms)
+✔ catalog and exposure never grant dispatch permission (5.583167ms)
+✔ operation ceiling is independent from policy; default views use the supplied runtime store (1.064042ms)
+✔ approved exact payload dispatches once through the shared catalog, store, and authorizer (4.095ms)
+✔ memory binding and write exposure do not authorize a WriteMemory Effect (3.087042ms)
+✔ a slow model yields; host timeout/abort preserve pending work and later resume exactly once (18.725542ms)
+✔ slow capabilities settle without an unbounded drain and cancellation remains explicit (18.741917ms)
+✔ conversation response yields input_required and cumulative budgets are unchanged (1.341208ms)
+✔ bounded loops report activation_limit, leaving the Execution runnable (1.042417ms)
+✔ SDK start serializes initial input ahead of concurrent scheduler driving (1.879875ms)
+✔ malformed initial data refuses before creation and a failed start does not poison the SDK lock (0.736666ms)
+✔ controller hooks receive actual services and diagnostics reflect the effective registries (0.449083ms)
+✔ child definitions are preflighted recursively; confirmation in a called child reaches the host (4.962542ms)
+✔ preflight checks child kind, absent spawn credits, child input waits, and memory bindings (0.343209ms)
+✔ recursive definition graphs remain legal and terminate preflight traversal (4.018917ms)
+✔ Function adapters and explicit fork/join execute inside one Workflow (2.503458ms)
+✔ distinct colon-bearing grants and Agent requests survive authority and view deduplication (20.751792ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 269.894125
+
+exit: 0; signal: null; error: none

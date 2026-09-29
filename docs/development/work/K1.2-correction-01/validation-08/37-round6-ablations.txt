@@ -1,0 +1,158 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/ablations-06.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T11:36:20.925Z
+
+ENV node=v25.2.1 platform=darwin arch=arm64 files=44 mutants=22
+COMMAND ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--experimental-strip-types","--test","--test-reporter=spec","packages/kernel/tests/activation-identity.test.ts","packages/kernel/tests/aggregate-refusal.test.ts","packages/kernel/tests/ambient-reads.test.ts","packages/kernel/tests/boundary.test.ts","packages/kernel/tests/control-authority.test.ts","packages/kernel/tests/control-commits.test.ts","packages/kernel/tests/creation.test.ts","packages/kernel/tests/delivery-attribution.test.ts","packages/kernel/tests/dispatch.test.ts","packages/kernel/tests/evidence.test.ts","packages/kernel/tests/exact-coordinates.test.ts","packages/kernel/tests/fault-sweep.test.ts","packages/kernel/tests/history-attribution.test.ts","packages/kernel/tests/hold-permitted.test.ts","packages/kernel/tests/host-members.test.ts","packages/kernel/tests/ingress.test.ts","packages/kernel/tests/inspection.test.ts","packages/kernel/tests/late-reports.test.ts","packages/kernel/tests/nondisclosure.test.ts","packages/kernel/tests/outcome-acceptance.test.ts","packages/kernel/tests/outcome-evidence.test.ts","packages/kernel/tests/outcome-hostile.test.ts","packages/kernel/tests/outcome-limits.test.ts","packages/kernel/tests/outcome-partial-claim.test.ts","packages/kernel/tests/poison-catalog.test.ts","packages/kernel/tests/receipts.test.ts","packages/kernel/tests/recovery-ambient.test.ts","packages/kernel/tests/recovery-evidence.test.ts","packages/kernel/tests/recovery-history.test.ts","packages/kernel/tests/recovery.test.ts","packages/kernel/tests/refusal-diagnostics.test.ts","packages/kernel/tests/refusals.test.ts","packages/kernel/tests/review-11-probes.test.ts","packages/kernel/tests/submission-authority.test.ts","packages/kernel/tests/submission-lifetime.test.ts","packages/kernel/tests/takeover-reentrancy.test.ts","packages/kernel/tests/takeover.test.ts","packages/kernel/tests/terminal.test.ts","packages/kernel/tests/transaction.test.ts","packages/kernel/tests/unsupported.test.ts","packages/kernel/tests/value-diagnostic-work.test.ts","packages/kernel/tests/value-refusal-cost.test.ts","packages/kernel/tests/values.test.ts","packages/kernel/tests/whole-view-ambient.test.ts"]
+CONTROL full Kernel suite: exit=0 tests=1453 pass=1453 fail=0 cancelled=0 skipped=0 todo=0
+REJECTED H1 hold history built from an entry whose resultingEpoch is optional (review 09's read): exit=1 tests=1453 pass=1405 fail=48 cancelled=0 skipped=0 todo=0
+  every reported site is inventoried, at its exact count, with a reason
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  count: no zone frame reaches a poisoned member; every window was live
+  throw: no zone frame reaches a poisoned member; every window was live
+  reenter: no zone frame reaches a poisoned member; every window was live
+  every poisoned run returned exactly what the unpoisoned run returned
+REJECTED H2 the apply step reads an optional member of the planned commit: exit=1 tests=1453 pass=1402 fail=51 cancelled=0 skipped=0 todo=0
+  every reported site is inventoried, at its exact count, with a reason
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  applyControlCommit appends its prebuilt record before its hold writes and does nothing else
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+  round 6 H3: holds written before their history append
+REJECTED H3 apply step writes the holds before appending their history: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+  applyControlCommit appends its prebuilt record before its hold writes and does nothing else
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+  round 6 H3: holds written before their history append
+  correction DEC-9 negative controls: every forbidden shape is reported
+  fault injection at every intercepted operation leaves only states a complete decision explains
+REJECTED H4 protocol report mutates the hold, then builds its history and answer (review 09's order): exit=1 tests=1453 pass=1448 fail=5 cancelled=0 skipped=0 todo=0
+  reportProtocolFailure: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it
+  the recognised apply suffixes are the ones the contract describes
+  hold fields, recovery history, receipts and the acceptance index have fixed writers
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+  correction DEC-9 negative controls: every forbidden shape is reported
+REJECTED H5 code hold mutated, then its history record built: exit=1 tests=1453 pass=1447 fail=6 cancelled=0 skipped=0 todo=0
+  every reported site is inventoried, at its exact count, with a reason
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  recoverExecution: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it
+  the recognised apply suffixes are the ones the contract describes
+  hold fields, recovery history, receipts and the acceptance index have fixed writers
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+REJECTED H6 takeover replaces the attempt, then builds its clearing record: exit=1 tests=1453 pass=1443 fail=10 cancelled=0 skipped=0 todo=0
+  requestTakeover: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it
+  the recognised apply suffixes are the ones the contract describes
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+  an early append through a const alias
+  an early append through a fresh container holding a Kernel list
+REJECTED H7 recovery answer projected after the decision is applied: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+  recoverExecution: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it
+  the recognised apply suffixes are the ones the contract describes
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+  round 6 H7: recovery answer projected after the commit
+  correction DEC-9 negative controls: every forbidden shape is reported
+REJECTED H8 prebuilt recovery answer describes the holds before the decision: exit=1 tests=1453 pass=1415 fail=38 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  observer recover refused unauthorized_control; author recover creates hold
+REJECTED H9 takeover clearing record not retained: exit=1 tests=1453 pass=1422 fail=31 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  the recognised apply suffixes are the ones the contract describes
+REJECTED H10 takeover record loses its resulting epoch: exit=1 tests=1453 pass=1444 fail=9 cancelled=0 skipped=0 todo=0
+  entered, protocol entered, and cleared_by_takeover are control-origin
+  K12-R3-HISTORY-02 explicit control transitions still record control authority
+  takeover-clear / control
+  takeover-clear / data
+  takeover-clear / throw
+  K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation
+REJECTED H11 declaration records claim attempt-submission authority: exit=1 tests=1453 pass=1420 fail=33 cancelled=0 skipped=0 todo=0
+  ended_by_outcome records attempt_submission, never a control claim
+  K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully
+  entered, protocol entered, and cleared_by_takeover are control-origin
+  K12-R3-HISTORY-02 explicit control transitions still record control authority
+  protocol-enter / control
+  protocol-enter / data
+REJECTED H12 takeover receipt token through the diagnostic spelling: exit=1 tests=1453 pass=1433 fail=20 cancelled=0 skipped=0 todo=0
+  review 10: takeover receipt minted through this.#mint
+  review 10: takeover index advanced by a postfix increment
+  compound assignment in an initializer
+  plain write moved before the builds
+  element write with a literal key
+  logical assignment
+REJECTED H13 takeover receipt not retained: exit=1 tests=1453 pass=1430 fail=23 cancelled=0 skipped=0 todo=0
+  the recognised apply suffixes are the ones the contract describes
+  hold fields, recovery history, receipts and the acceptance index have fixed writers
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+  an early append through a const alias
+  an early append through a fresh container holding a Kernel list
+REJECTED H14 takeover acceptance index not advanced: exit=1 tests=1453 pass=1439 fail=14 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  the recognised apply suffixes are the ones the contract describes
+REJECTED H15 ordinary optional controlScopes read restored: exit=1 tests=1453 pass=1444 fail=9 cancelled=0 skipped=0 todo=0
+  every reported site is inventoried, at its exact count, with a reason
+  every hostMember call names an optional member of its holder's declared type
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  residue Object.prototype.controlScopes gives a visibility-only caller no takeover
+  residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration
+  residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report
+REJECTED H16 ordinary optional isSafeToReplace call restored: exit=1 tests=1453 pass=1443 fail=10 cancelled=0 skipped=0 todo=0
+  every reported site is inventoried, at its exact count, with a reason
+  every hostMember call names an optional member of its holder's declared type
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  every call resolves to zone code, a classified primordial or an inventoried foreign call
+  requestTakeover: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+REJECTED H17 ordinary optional mailboxCapacity read restored: exit=1 tests=1453 pass=1446 fail=7 cancelled=0 skipped=0 todo=0
+  every reported site is inventoried, at its exact count, with a reason
+  every hostMember call names an optional member of its holder's declared type
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  residue mailboxCapacity and emissionsPerOutcome at construction declare nothing
+  correction DEC-8 coordinator limits come from the options, never from Object.prototype
+  count: no zone frame reaches a poisoned member; every window was live
+REJECTED H18 ordinary optional emissionsPerOutcome read restored: exit=1 tests=1453 pass=1446 fail=7 cancelled=0 skipped=0 todo=0
+  every reported site is inventoried, at its exact count, with a reason
+  every hostMember call names an optional member of its holder's declared type
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  residue mailboxCapacity and emissionsPerOutcome at construction declare nothing
+  correction DEC-8 coordinator limits come from the options, never from Object.prototype
+  count: no zone frame reaches a poisoned member; every window was live
+REJECTED H19 hostMember answers from Object.prototype: exit=1 tests=1453 pass=1442 fail=11 cancelled=0 skipped=0 todo=0
+  a Driver without the method is refused even when the request's getter installs an inherited one
+  residue pollution left before the call establishes nothing either
+  a class-based Driver without the method is not answered by Object.prototype
+  correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype
+  residue Object.prototype.controlScopes gives a visibility-only caller no takeover
+  residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration
+REJECTED H20 hostMember answers from Function.prototype: exit=1 tests=1453 pass=1452 fail=1 cancelled=0 skipped=0 todo=0
+  a function-object Driver is not answered by Function.prototype
+  correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype
+REJECTED H21 hostMember ignores members the host's own prototype supplies: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+  a class-based Driver's own prototype method is honored (trusted host structure)
+  a method inherited from the host's own prototype object is honored
+  correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype
+  controlScopes inherited from the host's own prototype object is still honored
+  correction DEC-8 controlScopes comes from the caller, never from Object.prototype
+  a limit the host supplies through its own options prototype is honored
+REJECTED H22 descriptor field read without its own-value check: exit=1 tests=1453 pass=1452 fail=1 cancelled=0 skipped=0 todo=0
+  every guarded descriptor read follows its own-value check in the same function
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+22/22 round-6 mutants rejected by the full Kernel suite
+
+exit: 0; signal: null; error: none
