@@ -74,6 +74,17 @@ const checks = [
   // The guard's live descriptions make no comprehensive or closed-world claim: git grep exits 1 when
   // nothing matches.
   ["59-guard-claim-search", "git", ["grep", "-n", "-i", "-E", "closed-world|closed world|comprehensive", "--", "docs/development/002-implemented-kernel-baseline.md", "docs/development/work/K1.2-correction-01/contract.md", "packages/kernel/src", "packages/kernel/tests"]],
+  // Revision 10 (review 12): the fault sweep's reader summary (entry 52 is its JSON, now with the exit
+  // inventory), the oracle's negative controls, the mutants of its comparisons, the round-9 production
+  // mutants against this sweep and reviewed H's, review 12's two probes, the round-9 diff check, and a
+  // search for the DEC-9 scope wording review 12 found unsupported (git grep exits 1 on no match).
+  ["60-fault-sweep-summary", "node", ["--experimental-strip-types", "--no-warnings", "packages/kernel/tests/sweep/fault-child.ts", "--summary"], {}, 1_800_000],
+  ["61-oracle-negative-controls", "node", ["--test", "--experimental-strip-types", "--test-reporter=spec", "packages/kernel/tests/fault-oracle.test.ts"], {}, 1_800_000],
+  ["62-oracle-comparison-mutants", "node", ["docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs"], {}, 3_600_000],
+  ["63-round9-production-controls", "node", ["docs/development/work/K1.2-correction-01/sweeps-09.mjs"], {}, 3_600_000],
+  ["64-review12-probes", "node", ["docs/development/work/K1.2-correction-01/probe-review12-09.mjs"], {}, 1_800_000],
+  ["65-round9-diff-check", "git", ["diff", "--check", "354caa7225446e219387afba1f67737766b38bd5", "HEAD"]],
+  ["66-dec9-scope-claim-search", "git", ["grep", "-n", "-i", "-E", "every exit|every boundary exit", "--", "docs/development/002-implemented-kernel-baseline.md", "docs/development/work/K1.2-correction-01/contract.md", "packages/kernel/tests/sweep", "packages/kernel/tests/fault-sweep.test.ts", "packages/kernel/tests/fault-oracle.test.ts"]],
   ["29-round3-diff-check", "git", ["diff", "--check", "8a418d408f715e999a403a3e84b73a9db1b43712", "HEAD"]],
   ["22-correction-diff-check", "git", ["diff", "--check", "b18a729d989dea334a86ec08bdf8773ee77de4db", "HEAD"]],
   ["19-round2-diff-check", "git", ["diff", "--check", "449b243cd31d5596c457e091233dfc4d77a4eff4", "HEAD"]],

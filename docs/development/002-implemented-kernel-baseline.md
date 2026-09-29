@@ -253,12 +253,21 @@ These are this in-process binding's choices where the architecture leaves the re
   fault separates a hold change from its record. A takeover's receipt position is read while
   building and committed with the rest; its two appends carry the Outcome transaction's narrower
   claim (no caller code or read between them). Every refusal record is built and appended before its
-  Execution's refusal index advances. Evidence (contract revision 9): a fault-injection sweep throws at
-  each call of a built-in method the zone captured at load, one call per run, in 37 scenarios
-  covering every exit of the three controls and Outcome acceptance, and requires each fault to leave a state a complete decision
-  explains, checked on the whole view, the next refusal and acceptance positions and the setup
-  attempt's grant. Its scope is those scenarios and the operations it intercepts; an engine fault in
-  allocation or property access stays outside the claim. `control-commits.test.ts` is a static
+  Execution's refusal index advances. Evidence (contract revision 10): a fault-injection sweep throws
+  at each call of a built-in method the zone captured at load, one call per run, in the 66 scenarios
+  the contract lists (14 of `recoverExecution`, 12 of `reportProtocolFailure`, 17 of `requestTakeover`,
+  five of them after a Driver safety callback that decides first, and 23 of Outcome acceptance). Each
+  run must equal one permitted complete decision: its returned value, whole view, next refusal and
+  acceptance positions, and what the setup attempt's grant can still do. The delivery and apply-window
+  exceptions are admitted only for a fault its own stack locates at the declared statements. The
+  uninjected decision is itself checked: a refusal, an idempotent answer or an exact replay against the
+  no-call state (after a safety callback, the state its decision leaves), and an accepted answer
+  against the state it leaves. Each of the 57 exits the sweep finds in the
+  source (every `return` of the four methods, and every refusal `return` of the helpers they call) is
+  taken by a scenario. The scope is those scenarios and the operations the sweep intercepts; faults
+  inside a safety callback and engine faults in allocation or property access stay outside the claim.
+  `fault-oracle.test.ts` holds the sweep checker's negative controls, and a mutant of each of its
+  comparisons shows that comparison is needed. `control-commits.test.ts` is a static
   regression guard for accidental reordering, with known gaps (a default parameter that supplies a
   Kernel object, a local named `undefined`); it is not a proof.
 - **Ambient reads** ([correction DEC-8](work/K1.2-correction-01/contract.md)): the zone reads no
@@ -268,7 +277,8 @@ These are this in-process binding's choices where the architecture leaves the re
   chain and never answered by `Object.prototype` or `Function.prototype`. Evidence (contract revision
   9): a poisoned-prototype sweep installs every member name the zone uses as an accessor on
   `Object.prototype`, `Function.prototype`, `Array.prototype` and `String.prototype` during every
-  boundary call of the maintained Kernel suite and of a catalog of every boundary exit, and requires
+  boundary call of the maintained Kernel suite and of a catalog that calls every public boundary with
+  accepted, idempotent and refused exits, and requires
   that no zone frame reaches one and that every result equals an unpoisoned run. Its scope is the
   paths those scenarios reach (every zone line but two defensive ones) and reads that run an
   accessor; `in` and other built-in prototypes are outside it. `ambient-reads.test.ts` is a static

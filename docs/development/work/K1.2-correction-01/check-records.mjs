@@ -17,7 +17,8 @@ const changedTests = git("diff", "--name-only", release, "HEAD", "--", "packages
 // Revision 8 (review 10): the DEC-9 enforcement file and the shared analysis and inventory modules.
 // Revision 9 (amendment 03): the two sweeps (their modules under sweep/, the catalog and the fault
 // subset) and the maintained review-10 and review-11 probes.
-assert.deepEqual(changedTests, ["packages/kernel/tests/activation-identity.test.ts", "packages/kernel/tests/aggregate-refusal.test.ts", "packages/kernel/tests/ambient-reads.test.ts", "packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/exact-coordinates.test.ts", "packages/kernel/tests/fault-sweep.test.ts", "packages/kernel/tests/host-members.test.ts", "packages/kernel/tests/poison-catalog.test.ts", "packages/kernel/tests/recovery-ambient.test.ts", "packages/kernel/tests/refusal-diagnostics-fixture.ts", "packages/kernel/tests/refusal-diagnostics.test.ts", "packages/kernel/tests/review-11-probes.test.ts", "packages/kernel/tests/sweep/fault-child.ts", "packages/kernel/tests/sweep/poison.ts", "packages/kernel/tests/sweep/preload.ts", "packages/kernel/tests/sweep/run-poison-sweep.ts", "packages/kernel/tests/sweep/zone-names.ts", "packages/kernel/tests/value-diagnostic-work.test.ts", "packages/kernel/tests/value-refusal-cost.test.ts", "packages/kernel/tests/values.test.ts", "packages/kernel/tests/whole-view-ambient.test.ts", "packages/kernel/tests/zone-analysis.ts", "packages/kernel/tests/zone-inventory.ts"], "only declared correction tests added");
+// Revision 10 (review 12): the fault sweep's oracle and scenario modules and the oracle's negative controls.
+assert.deepEqual(changedTests, ["packages/kernel/tests/activation-identity.test.ts", "packages/kernel/tests/aggregate-refusal.test.ts", "packages/kernel/tests/ambient-reads.test.ts", "packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/exact-coordinates.test.ts", "packages/kernel/tests/fault-oracle.test.ts", "packages/kernel/tests/fault-sweep.test.ts", "packages/kernel/tests/host-members.test.ts", "packages/kernel/tests/poison-catalog.test.ts", "packages/kernel/tests/recovery-ambient.test.ts", "packages/kernel/tests/refusal-diagnostics-fixture.ts", "packages/kernel/tests/refusal-diagnostics.test.ts", "packages/kernel/tests/review-11-probes.test.ts", "packages/kernel/tests/sweep/fault-child.ts", "packages/kernel/tests/sweep/fault-oracle.ts", "packages/kernel/tests/sweep/fault-scenarios.ts", "packages/kernel/tests/sweep/poison.ts", "packages/kernel/tests/sweep/preload.ts", "packages/kernel/tests/sweep/run-poison-sweep.ts", "packages/kernel/tests/sweep/zone-names.ts", "packages/kernel/tests/value-diagnostic-work.test.ts", "packages/kernel/tests/value-refusal-cost.test.ts", "packages/kernel/tests/values.test.ts", "packages/kernel/tests/whole-view-ambient.test.ts", "packages/kernel/tests/zone-analysis.ts", "packages/kernel/tests/zone-inventory.ts"], "only declared correction tests added");
 // Revision 8: the round-6 report and evidence (H 35c6ba0), review 09 (recorded at 87ce849) and
 // review 10 with its owner note (recorded at 0efe0ba) are sealed.
 for (const [commit, paths] of [
@@ -29,6 +30,10 @@ for (const [commit, paths] of [
   ["dcac779bdf7e887bcf42c8a6407c1b24c2083a55", ["implementation-07.md", "validation-07"]],
   ["d005dc6281a17f75bbad0b32c59aec169cdcc1ae", ["review-11.md", "review-11", "owner-note-11.md"]],
   ["b93ed1df6b70569ada060481523e5b37c206e324", ["amendment-03.md"]],
+  // Revision 10: the round-8 report and evidence (H 4a917f8), and review 12 with its evidence, owner
+  // note, handoff and outer manifest (recorded at 354caa7).
+  ["4a917f8caac04e7d9861e0ec3638662d52f9d3ae", ["implementation-08.md", "validation-08"]],
+  ["354caa7225446e219387afba1f67737766b38bd5", ["review-12.md", "review-12-evidence", "owner-note-12.md", "handoff-12.md", "REVIEW-12.sha256"]],
 ]) {
   for (const path of paths) assert.equal(git("diff", commit, "HEAD", "--", `docs/development/work/K1.2-correction-01/${path}`), "", `sealed ${path} preserved`);
 }

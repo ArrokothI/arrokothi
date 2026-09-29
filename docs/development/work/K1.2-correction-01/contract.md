@@ -1,6 +1,6 @@
 # K1.2-correction-01 contract — Activation identity
 
-Revision 9. Parent K1.2 / milestone K1. This contract carries forward the complete
+Revision 10. Parent K1.2 / milestone K1. This contract carries forward the complete
 [K1.2 revision 9 requirement map](../K1.2/contract.md), including C1–C15, DEC-1–20,
 coverage rows and exclusions, with V-D1 scoped only by the explicit owner decisions below. The additions below
 resolve the binding choice released by [007](../../007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable)
@@ -87,6 +87,22 @@ correct in every reviewed case and the static enforcement unsound.
   now built and appended first.
 - **Unchanged:** every other criterion and decision, amendments 01–02, decision-05, the V-D1 transfer
   and both invalidation holds. Enforcement by construction waits for DESIGN-AUDIT-01.
+
+**Revision 10** answers [review 12](review-12.md) (`K12C1-R12-ORACLE-01`, `K12C1-R12-SCOPE-01`). The
+review found DEC-8 passing and the runtime correct in every case it examined. It also found that the
+DEC-9 fault sweep's checker established less than this contract said.
+- **Oracle.** Each permitted fault outcome is now one fully specified expected decision: the returned
+  value, the whole view, both next positions and the setup grant. The delivery exception and the two
+  apply-window exceptions need a fault the checker locates, by its own stack, at the declared
+  statements. The uninjected decision is checked as well. Review 12's three altered observations are
+  maintained negative controls, and a mutant of every comparison is killed by the controls (DEC-9
+  evidence bullet).
+- **Scope.** The DEC-9 evidence scope is the explicit list of 66 scenarios in that bullet. Review 12's
+  16 exits are among them, and nothing the review lists is excluded. An exit inventory drawn from the
+  source checks that every `return` of the four swept methods is taken.
+- **Production code:** unchanged. No repaired check exposed a runtime defect.
+- **Unchanged:** every other criterion and decision, amendments 01–03, decision-05, the V-D1 transfer
+  and both invalidation holds.
 
 ## Identity and authority
 
@@ -336,36 +352,142 @@ after the whole decision is recorded.
   between the first and last mutation; engine resource exhaustion inside it is outside this in-memory
   packet's claim. A refusal exit is a decision too: every refusal record is built and appended before
   its Execution's refusal index advances (revision 9, `SELF-R8-REFUSAL-01`).
-- **Evidence (revision 9, amendment 03): the fault-injection sweep** (`sweep/fault-child.ts`; the
-  scenarios with few operations run in `npm test` through `fault-sweep.test.ts`, the complete sweep
-  in `npm run test:kernel-sweeps`).
-  - *Mechanism:* in its own process, before the Kernel is imported, every built-in method the zone
-    captures at load is replaced by a counting wrapper, so the zone's load-time references are the
-    wrappers; the serializer window reinstalls the same references for `canonicalize`. The list is
+- **Evidence (revision 10; revision 9 under amendment 03): the fault-injection sweep.**
+  `sweep/fault-child.ts` runs it, `sweep/fault-scenarios.ts` lists its scenarios and `sweep/fault-oracle.ts`
+  judges each run. The 37 scenarios with few operations run in `npm test` through `fault-sweep.test.ts`;
+  all 66 run in `npm run test:kernel-sweeps`.
+  - *Mechanism:* the sweep runs in its own process. Before the Kernel is imported, every built-in method
+    the zone captures at load is replaced by a counting wrapper, so the zone's load-time references are
+    the wrappers; the serializer window reinstalls the same references for `canonicalize`. The list is
     derived from the zone's top-level captures (member chains rooted at a global), plus the Array
-    iterator's `next`. For each scenario the target call runs once to count its N operations, then
-    once for each k = 1..N on a fresh coordinator with an exception thrown at operation k, then once
-    with k = N + 1.
-  - *Observation:* after each run, the whole inspection view; the positions the next refusal and the
-    next accepted input receive; and what the grant the Driver received at setup can still do. Neither
-    index nor the current grant is in the view.
-  - *Oracle:* every run leaves a state some complete decision explains. A thrown fault leaves the
-    no-call state exactly. A contained fault that returns a refusal leaves the no-call state plus
-    exactly that refusal, or nothing for a refusal naming no Execution. A contained fault that returns
-    acceptance leaves the uninjected decision, or for a protocol-failure report whose diagnostic could
-    not be read, the fallback-diagnostic decision. A takeover whose delivery fails after its commit
-    leaves the decision with its own delivery row absent, pending or failed. The two apply windows the
-    fault-coherence bullet declares are reported, and accepted only at an apply-kind operation (a
-    define, own-descriptor read, own check, `Reflect.apply` or `Map.set`), for a takeover only as
-    exactly its receipt appended. Review 11's seed, a fault immediately before the takeover's new
-    Activation is built, is asserted by name: the view is unchanged and the next input receives
-    position 3.
-  - *Scope:* 37 scenarios, covering every exit of `recoverExecution` (12), `reportProtocolFailure` (7)
-    and `requestTakeover` (8), and the accepted and refused exits of Outcome acceptance (10). Only
-    intercepted operations are fault points. Property access, allocation, constructors and string
-    building cannot be interrupted, and an engine fault there stays outside this packet's claim. A
-    change invisible at the boundary (module state, a write of the value already held) is outside
-    what it can observe.
+    iterator's `next`. For each scenario the target call runs once with no fault to count its N
+    operations (the uninjected, or reference, run). It then runs once for each k = 1..N on a fresh
+    coordinator, with an exception thrown at operation k, and finally once with k = N + 1. A thrown
+    fault records the zone stack frames above it.
+  - *Observation:* after each run the sweep records four things. Neither index and no grant is in the view.
+    1. the value the call returned: its answer, its refusal, or the fault it threw;
+    2. the whole inspection view;
+    3. the positions the next refusal and the next accepted input receive;
+    4. what the grant the Driver received at setup can still do.
+  - *Oracle:* each permitted outcome is one fully specified expected observation, and a run passes only
+    when all four parts equal it (`CHECKS.returned`, `view`, `nextRefusal`, `nextAcceptance`,
+    `setupGrant`). The fault must have fired at the operation the reference run made at the same
+    position (`fired`, `sameOperation`). The permitted outcomes:
+    - *A fault that escapes:* that fault; the no-call state.
+    - *A contained fault answered as a refusal naming the Execution:* that refusal, at the no-call
+      state's next refusal position and naming this Execution (`refusalPosition`, `refusalExecution`).
+      The state is the no-call state plus exactly that record, with the refusal index one further and
+      the acceptance index and grant unchanged.
+    - *A refusal naming no Execution:* the unknown-destination refusal; the no-call state.
+    - *A contained fault answered as acceptance:* the uninjected answer and state. For a protocol-failure
+      report whose diagnostic could not be read, the declared alternate is also permitted: the answer
+      and state of the same report with a diagnostic that is not a string, for which the Kernel records
+      the same fallback.
+    - *No fault* (k = N + 1): the uninjected answer or refusal, and the uninjected state (`quietRepeat`).
+
+    In the five safety-callback scenarios, a fault after the callback is judged against a different
+    baseline: the state the callback's own decision leaves with no outer call. The callback must have
+    run in exactly the runs whose fault lies past the operation at which the reference run reached it
+    (`callbackRan`). Review 11's seed, a fault immediately before the takeover's new Activation is
+    built, is also asserted by name: the view is unchanged and the next input receives position 3.
+  - *Located exceptions:* three exceptions are admitted, only in the scenarios whose uninjected call
+    accepts (`acceptingExit`). Each also requires one of the fault's own stack frames to be at the
+    statement named. The parser finds that statement in `coordinator.ts`, and the intercepted method's
+    name plays no part.
+    - *Takeover delivery* (`deliveredAt`), in `#deliver` after the commit. The expected state is the
+      uninjected state with the new delivery row in the form the fault's location gives:
+      - at the row's append: the row is absent, and the fault is thrown;
+      - at the capability's freeze: the row is pending, and the fault is thrown;
+      - inside the Driver: the row is failed with the Kernel's fallback reason, and the uninjected answer
+        is returned.
+    - *Takeover apply window* (`takeoverWindowAt`): a fault at the clearing record's append is thrown and
+      leaves the no-call state plus exactly the receipt.
+    - *Outcome apply window* (`outcomeStepAt`, `outcomePrefix`): a fault at one of `#accept`'s apply
+      statements is thrown and leaves a prefix of the declared apply sequence that ends inside that
+      statement. The
+      sequence is: the index; the dispositions, in mailbox order; progress; revision; Emissions; result;
+      the resolved exchange; the accepted-Outcome record; the receipt; the hold-ending history; the
+      exchange's resolution; and the state. It must match the source statement for statement
+      (`applySequence`). Applied whole, it must reproduce the uninjected state (`applyModel`).
+  - *The uninjected decision* (`checkContext`):
+    - It takes its declared kind of exit, with its declared refusal classification (`referenceKind`).
+    - A refusal leaves the no-call baseline plus exactly that refusal (`referenceRefusal`).
+    - A refusal naming no Execution, and an idempotent answer, leave the no-call state
+      (`referenceUnnamed`, `referenceUnchanged`).
+    - An exact replay leaves the no-call state and returns the accepted decision (`referenceReplay`).
+    - An accepted or idempotent answer agrees with the state it leaves; for the declared alternate this
+      is checked too.
+      - A recovery answer (`recoveryAnswer`): its holds and attempt.
+      - A takeover answer (`takeoverAnswer`): the attempt, epochs, batch, receipt and positions, and a
+        fenced setup grant.
+      - An Outcome answer (`outcomeAnswer`): the receipt, next state, revision, acknowledged and ended
+        Events, Emissions, result, positions and grant.
+  - *Scope:* the 66 scenarios of `sweep/fault-scenarios.ts`, each naming the exit it takes.
+    - `recoverExecution` (14):
+      - enter, update and clear a code hold;
+      - nothing to change;
+      - the same hold again;
+      - enter and clear a code hold beside a protocol hold;
+      - refused: an unknown Execution, an Execution hidden from the caller, no control power, a
+        malformed request, a stale Activation, no unresolved exchange, an ended Execution.
+    - `reportProtocolFailure` (12):
+      - enter a protocol hold: plainly, without a diagnostic, and beside a code hold;
+      - the same hold again;
+      - refused: an unknown Execution, a hidden Execution, no control power, a malformed report, a
+        stale Activation, no unresolved exchange, an ended Execution, a stale writer epoch.
+    - `requestTakeover` (17):
+      - accepted, as review 11's seed and while clearing a protocol hold;
+      - refused: an unknown Execution, a hidden Execution, no control power, a malformed request, a
+        stale Activation, no unresolved exchange, an ended Execution, a stale writer epoch, a standing
+        code hold, a Driver that cannot replace safely;
+      - refused after the Driver's safety callback, which in turn: ended the Execution, resolved the
+        exchange, dispatched a different exchange, took the exchange over itself, held its code.
+    - `submitOutcome` (23):
+      - continue; complete with an Emission and a queued outside-batch input; fail; continue while
+        ending a code and a protocol hold;
+      - exact replay;
+      - refused: a conflicting replay, an unreadable destination, an unknown Execution, a hidden
+        Execution, an ended Execution, a stale Activation;
+      - refused, once with a usable and once with an unusable Activation identity: no unresolved
+        exchange, a stale writer epoch, a stale base revision, no grant for the attempt, over the Emission
+        capacity, malformed content.
+  - *Exit inventory* (`exitInventory`, when the sweep runs every scenario):
+    - It finds 57 exits in `coordinator.ts`: every `return` of the four methods, and every refusal
+      `return` of `#openExchange` and `#requireControl`, counted for each control that calls the
+      helper.
+    - V8 block coverage of each uninjected call, with the safety callback's own calls excluded, shows
+      which exits the call executed.
+    - Every scenario must take its declared exit (`declaredExit`), and each of the 57 exits must be
+      taken by a scenario of its own control (`attributed`, `exitReached`).
+    - Review 12's 16 exits are among the scenarios above: the unknown and hidden Execution of all three
+      controls; the stale Activation, no unresolved exchange and ended Execution of
+      `reportProtocolFailure`; the stale Activation and ended Execution of `requestTakeover`; and the
+      five safety-callback exits. No exit it lists is excluded.
+  - *Not fault points:*
+    - Operations inside the Driver's safety callback in the five callback scenarios. The callback is
+      trusted Driver code, and the sweep suspends injection while it runs, so the swept operations are
+      the takeover's own. The nested decisions are covered as follows:
+      - the continue Outcome is swept as `outcome: continue`, from the same pre-state;
+      - the code hold is swept as `recover: enter a code hold`, from the same pre-state;
+      - the nested takeover is swept as `takeover: accepted (review 11's seed)`, whose pre-state lacks
+        only the outside-batch input;
+      - the completion is swept as `outcome: complete with an Emission and a queued outside-batch
+        input`, which differs by its Emission and result value;
+      - the nested dispatch is K1.1's, outside amendment 03's sweep.
+    - Engine operations (allocation, property access, constructors, string building), which cannot be
+      interrupted; an engine fault there stays outside this packet's claim.
+    - Changes invisible at the boundary (module state, a write of the value already held).
+  - *Negative controls:*
+    - `fault-oracle.test.ts` (in `npm test`) starts from real observations of every decision class the
+      examples reach. It alters one part at a time, moves each located exception's fault to another
+      statement, and alters each input of the uninjected-decision checks and of the inventory. Every
+      alteration must be reported, and review 12's three observations are among them.
+    - `oracle-mutants-09.mjs` disables each `CHECKS` comparison in turn; the controls kill every one.
+    - `sweeps-09.mjs` gives five production mutants to three checkers:
+      - this sweep, which rejects them;
+      - reviewed H's sweep, which accepts them;
+      - for three of them, this sweep without the one comparison that catches them, which accepts them.
+    - `sweeps-08.mjs`'s mutants stay rejected.
 - **Guard: revision 8's effect analysis** (`control-commits.test.ts` with `zone-analysis.ts`). A
   regression guard; it proves nothing about all possible code.
   - *Detects:* a call that resolves to neither zone code, a classified primordial nor an inventoried
@@ -426,9 +548,11 @@ methods, with the revision-9 map below carried forward in full. Native fidelity 
 | Structural rules / DEC-8/9 (revision 7) | TS-checker inventory; control-commit ordering scan; synthetic probe of each forbidden form | a new optional/dynamic/`in` access, construction after first mutation or hold write outside the commit paths fails | superseded by the two rows below; mutants H3–H7, H22 still rejected |
 | R10-READ-01 / DEC-8, C13 (guard since revision 9) | review 10's six reads; nested, rest, default, parameter, catch and loop destructuring; iteration; `in`; `instanceof`; `==`; `++`; `await`; generators; `super.x`; `arguments`; casts that hide optionality or introduce members; index signatures and `any`; built-in members and globals after load; object coercion; envelope reads, aliases, spreads and hand-offs | every form reported; the zone's sites all inventoried with reasons; clean probe reports nothing | `ambient-reads.test.ts`; `ablations-07.mjs` R1–R12; rebound review-10 probe |
 | R10-COMMIT-01 / DEC-9, C8–C10, C12 (guard since revision 9) | review 10's early `#mint` and `++`; compound, element, logical and `delete` writes; const/let aliases; bindings set by logical assignment; fresh containers and constructed objects holding a Kernel list; closures; callbacks; `mapSet`; `freeze`; module-state builders; refusals outside exits; untested helpers; laundering through `unknown`; Kernel objects handed to foreign code; construction, foreign code and delivery in the wrong order | each mutant reported by the rule it violates; unmodified source clean; summaries independent of analysis order | `control-commits.test.ts`; `ablations-07.mjs` C1–C16 |
-| R11-READ-01 / DEC-8, C12, C13 (revision 9) | every maintained Kernel test file with every zone member name poisoned on four built-in prototypes (count, throw, reenter) during every boundary call; a catalog of every boundary exit and the paths the suite misses, with the descriptor fields poisoned too; review 11's Pick-cast read and 15 other read mutants | no accessor reached from a zone frame; every call's result equal to the unpoisoned run; liveness in every window; the in-scope mutants rejected, `in`, an own read respelled and `Error.prototype` reported as outside | `sweep/run-poison-sweep.ts`; `poison-catalog.test.ts`; `sweeps-08.mjs` |
-| R11-COMMIT-01 / DEC-9, C8–C10, C12 (revision 9) | an exception at every intercepted operation of 37 scenarios (every exit of the three controls; Outcome acceptance); review 11's seed; review 11's two and review 10's two mutants plus C3–C16 | every fault leaves a state a complete decision explains, checked on the whole view, both next positions and the setup grant; seed: view unchanged, next input at 3; the in-scope mutants rejected, C8/C10/C12 reported as invisible at the boundary | `sweep/fault-child.ts`; `fault-sweep.test.ts`; `sweeps-08.mjs` |
-| SELF-R8-REFUSAL-01 / DEC-9, C12 (revision 9) | a fault while a refusal record is built or appended, on every control's refusal exits | no refusal position consumed without its record | the fault sweep: at reviewed H, 57 violations in the 19 refusal-exit scenarios, every one while a refusal record is built or appended; none after the fix (`probe-reviewed-h-08.mjs`) |
+| R11-READ-01 / DEC-8, C12, C13 (revision 9) | every maintained Kernel test file with every zone member name poisoned on four built-in prototypes (count, throw, reenter) during every boundary call; a catalog calling every public boundary with accepted, idempotent and refused exits, and the paths the suite misses, with the descriptor fields poisoned too; review 11's Pick-cast read and 15 other read mutants | no accessor reached from a zone frame; every call's result equal to the unpoisoned run; liveness in every window; the in-scope mutants rejected, `in`, an own read respelled and `Error.prototype` reported as outside | `sweep/run-poison-sweep.ts`; `poison-catalog.test.ts`; `sweeps-08.mjs` |
+| R11-COMMIT-01 / DEC-9, C8–C10, C12 (revision 9; oracle and scope revision 10) | an exception at every intercepted operation of the 66 scenarios of `sweep/fault-scenarios.ts`; review 11's seed; review 11's two and review 10's two mutants plus C3–C16 | every run equals a permitted complete decision (returned value, whole view, both next positions, setup grant); seed: view unchanged, next input at 3; the in-scope mutants rejected, C8/C10/C12 reported as invisible at the boundary | `sweep/fault-child.ts`; `fault-sweep.test.ts`; `sweeps-08.mjs` |
+| R12-ORACLE-01 / DEC-9, C8–C10, C12 (revision 10) | review 12's three altered observations; every part of a real observation of every decision class, altered in turn; each located exception's fault moved; each uninjected-decision check and the inventory fed an altered input; each `CHECKS` comparison disabled; five production mutants | every alteration a violation, and the clean sweep at zero; every comparison's mutant killed; M1–M5 rejected here and accepted by reviewed H's sweep, M1, M2 and M5 accepted without their one catching comparison | `fault-oracle.test.ts`; `oracle-mutants-09.mjs`; `sweeps-09.mjs`; review 12's oracle probe at reviewed H (`probe-review12-09.mjs`) |
+| R12-SCOPE-01 / DEC-9, C8–C10, C15 (revision 10) | review 12's 16 exits, each a scenario; the source-drawn inventory of the four methods' exits | every scenario takes its declared exit; all 57 exits taken; review 12's scope probe reproduces its recorded rows | the sweep's inventory; `fault-oracle.test.ts`; `probe-review12-09.mjs` |
+| SELF-R8-REFUSAL-01 / DEC-9, C12 (revision 9) | a fault while a refusal record is built or appended, in each refusal-exit scenario | no refusal position consumed without its record | the fault sweep at review 11's H (`probe-reviewed-h-08.mjs`): revision 9's sweep, 57 violations in its 19 refusal-exit scenarios; revision 10's, 117 in its 39; every one while a refusal record is built or appended; none after the fix |
 | Maintained probes (revision 9) | review 10's 30 whole-view comparisons; review 11's inherited-read probe in three arms | review 10's assertions; review 11's clean results | `whole-view-ambient.test.ts`; `review-11-probes.test.ts`; review 09's matrix stays in `recovery-ambient.test.ts` |
 | SELF-R7-UNSUPPORTED-01 / DEC-8, C13 | accessor on `Error.prototype.name` while an unsupported surface throws | the accessor receives nothing; the error owns its name | runtime case in `ambient-reads.test.ts`; probe at H and C; mutant R10 |
 | R9-CLAIM-01 / C15, amendment 01 items 3–4 | alias search over live source, BASELINE, 007, Layer 3, guides | no live V-D1 implementation claim; values.md normative text and sealed records unchanged; roadmap points at the split | search log; `values.ts` comments; roadmap |
@@ -439,6 +563,14 @@ any such change needs a distinguishing test and ablation. Every existing test an
 K1.2 ablations must still pass/reject respectively. No semantic regression is removed; revision-3 raw diagnostic storage assertions are updated to DEC-7 and their replacements documented.
 
 ## Commands and handoff
+
+*Revision 10 validation* adds, on clean C: the complete fault sweep with its exit inventory
+(`fault-child.ts`, its JSON report and summary); the oracle's negative controls
+(`fault-oracle.test.ts`); the oracle's comparison mutants (`oracle-mutants-09.mjs`); the production
+mutants against this sweep and reviewed H's (`sweeps-09.mjs`); review 12's oracle probe against a
+disposable worktree of reviewed H, where it must reproduce the review's recorded acceptances, and its
+scope probe against C (`probe-review12-09.mjs`); and a diff check of this round's payload. The poison
+sweep and every earlier runner are rerun and must still pass or reject.
 
 *Revision 9 validation* adds, on clean C: the complete fault sweep (`fault-child.ts`, its JSON
 report); the whole-suite poison sweep in four modes (`run-poison-sweep.ts`); zone line coverage of the
