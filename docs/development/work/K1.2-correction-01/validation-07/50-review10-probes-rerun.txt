@@ -1,0 +1,33 @@
+payload C: 58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/probe-review10-rerun-07.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T06:05:29.356Z
+
+worktree /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12c1-r7-review10-ubFZXI/c at 58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f
+
+== probe-whole-view.mjs: exit=0 signal=null
+30/30 whole-view comparisons passed; no inherited reads/reentry, no foreign-reference mutation, and receipt/progress/mailbox/output expectations passed.
+wrote whole-view-results.json (in the disposable worktree only): sha256 bb2763cc04d25705fc2166862fdff9fab2e986f23fc45ae87b6fedecea66da5d {"entries":30,"transitions":["protocol-enter","code-enter","code-update","code-clear","takeover-clear","outcome-end"],"modes":["control","data","mutable","throw","reenter"],"inheritedReads":0,"nested":0}
+
+== probe-read-effects.mjs: exit=0 signal=null
+{
+  "H": "35c6ba0277542236f21f95d695154fa0164feb96",
+  "source": "export function read(e: { resultingEpoch?: number }) {\n  const a = e.resultingEpoch;\n  const b = e[\"resultingEpoch\"];\n  const { resultingEpoch: c } = e;\n  const { \"resultingEpoch\": d } = e;\n  const { [\"resultingEpoch\"]: f } = e;\n  let g: number | undefined;\n  ({ resultingEpoch: g } = e);\n  return [a,b,c,d,f,g];\n}",
+  "inheritedGetterReads": 6,
+  "actual": [
+    777,
+    777,
+    777,
+    777,
+    777,
+    777
+  ]
+}
+{"files":13,"syntacticSites":1067}
+wrote source-access-inventory.json (in the disposable worktree only): sha256 675b980de0da09555ebf33493fb2c9dc42e4e4d3b138a8203129af7def60b820 {"files":13,"sites":1067}
+
+repository tree unchanged: yes
+Preparing worktree (detached HEAD 58d9c5c)
+
+exit: 0; signal: null; error: none

@@ -1,0 +1,30 @@
+payload C: 58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/probe-enforcement-rebound-07.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T06:04:52.278Z
+
+sealed probe docs/development/work/K1.2-correction-01/review-10/probe-enforcement.mjs sha256 5695f73c581e01241af82b8a658c4d70c82a8aa6b70a13846b0d4fa641d6273b
+SITES [{"kind":"optional","mode":"read","text":"e.resultingEpoch","line":3},{"kind":"optional","mode":"read","text":"e[\"resultingEpoch\"]","line":4},{"kind":"syntax","mode":"form","text":"ObjectBindingPattern: { resultingEpoch: binding }","line":5},{"kind":"syntax","mode":"form","text":"BindingElement: resultingEpoch: binding","line":5},{"kind":"syntax","mode":"form","text":"ObjectBindingPattern: { \"resultingEpoch\": quoted }","line":6},{"kind":"syntax","mode":"form","text":"BindingElement: \"resultingEpoch\": quoted","line":6},{"kind":"syntax","mode":"form","text":"ObjectBindingPattern: { [\"resultingEpoch\"]: computed }","line":7},{"kind":"syntax","mode":"form","text":"BindingElement: [\"resultingEpoch\"]: computed","line":7},{"kind":"syntax","mode":"form","text":"ComputedPropertyName: [\"resultingEpoch\"]","line":7},{"kind":"syntax","mode":"form","text":"assignment target ObjectLiteralExpression: {resultingEpoch: assigned}=e","line":9}]
+six forms: all six reported (sealed result at H: 3 of 6)
+REJECTED early-mint: exit=1 tests=1411 pass=1393 fail=18 cancelled=0 skipped=0 todo=0
+  failing files: control-commits.test.ts
+  takeover rule test failed: true
+  requestTakeover: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+  review 10: takeover receipt minted through this.#mint
+  review 10: takeover index advanced by a postfix increment
+  compound assignment in an initializer
+REJECTED early-increment: exit=1 tests=1411 pass=1392 fail=19 cancelled=0 skipped=0 todo=0
+  failing files: ambient-reads.test.ts, control-commits.test.ts
+  takeover rule test failed: true
+  the zone uses only permitted syntax
+  every reported site is inventoried, at its exact count, with a reason
+  correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned
+  requestTakeover: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it
+  correction DEC-9: recovery-control commits are prebuilt and applied without construction
+  the unmodified source is the clean control
+2/2 review-10 regressions rejected (sealed result at H: both passed 1,331/1,331)
+
+exit: 0; signal: null; error: none
