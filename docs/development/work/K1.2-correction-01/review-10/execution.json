@@ -1,0 +1,55 @@
+{
+  "H": "35c6ba0277542236f21f95d695154fa0164feb96",
+  "cwd": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "results": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 4.287,
+      "log": "docs/development/work/K1.2-correction-01/review-10/typecheck.txt"
+    },
+    {
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 16.254,
+      "log": "docs/development/work/K1.2-correction-01/review-10/npm-test.txt"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "check:builder-docs"
+      ],
+      "exit": 0,
+      "seconds": 0.57,
+      "log": "docs/development/work/K1.2-correction-01/review-10/builder-docs.txt"
+    },
+    {
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/check-records.mjs"
+      ],
+      "exit": 0,
+      "seconds": 1.109,
+      "log": "docs/development/work/K1.2-correction-01/review-10/check-records.txt"
+    },
+    {
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs",
+        "--expect-correct"
+      ],
+      "exit": 0,
+      "seconds": 0.108,
+      "log": "docs/development/work/K1.2-correction-01/review-10/recovery-matrix.txt"
+    }
+  ]
+}
