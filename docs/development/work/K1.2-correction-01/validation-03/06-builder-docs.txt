@@ -1,0 +1,13 @@
+payload C: 652e5e73478684651cff697fef2a3ddbe34458e0
+cwd: /Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01
+command: npm run check:builder-docs
+environment: 00-environment.json; {"TREE":"/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"}
+started: 2026-09-27T10:54:41.508Z
+
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 72 Markdown files, 1812 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+
+exit: 0; signal: null; error: none

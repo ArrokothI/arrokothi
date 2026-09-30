@@ -1,0 +1,42 @@
+[
+  {
+    "name": "default-parameter",
+    "copy": "/tmp/arrokothi-r11-default-parameter-C16bA2",
+    "anchor": "const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+    "insert": "\n    const reserve = (target: ExecutionRecord = record): Receipt => this.#mint(\"dispatch_intent\", target);\n    reserve();",
+    "exit": 0,
+    "signal": null,
+    "summary": [
+      "✔ K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution (1.883417ms)",
+      "ℹ tests 1411",
+      "ℹ suites 138",
+      "ℹ pass 1411",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 16180.333834",
+      ""
+    ]
+  },
+  {
+    "name": "shadowed-undefined",
+    "copy": "/tmp/arrokothi-r11-shadowed-undefined-kY6fDT",
+    "anchor": "const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+    "insert": "\n    const undefined = record;\n    undefined.nextAcceptancePosition = position + 1;",
+    "exit": 0,
+    "signal": null,
+    "summary": [
+      "✔ K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution (2.2145ms)",
+      "ℹ tests 1411",
+      "ℹ suites 138",
+      "ℹ pass 1411",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 16376.214875",
+      ""
+    ]
+  }
+]

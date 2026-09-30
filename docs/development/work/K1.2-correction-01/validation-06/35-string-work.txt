@@ -1,0 +1,19 @@
+payload C: 602ea3b3955f1aea935849e993ebfb66b64ebd5b
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --expose-gc docs/development/work/K1.2-correction-01/probe-string-work-04.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T20:32:01.787Z
+
+{"node":"v25.2.1","surface":"direct","units":1048576,"representation":"rope","ms":0.47912499999998204,"heapMiB":0.11919403076171875,"rssMiB":0.25,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"direct","units":16777216,"representation":"rope","ms":0.6737919999999917,"heapMiB":0.12004852294921875,"rssMiB":0.234375,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"direct","units":268435456,"representation":"rope","ms":2.876082999999994,"heapMiB":0.12103271484375,"rssMiB":0.21875,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"direct","units":268435456,"representation":"flat","ms":0.31766700000000014,"heapMiB":0.12103271484375,"rssMiB":-7.546875,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"creation","units":16777216,"representation":"rope","ms":0.6511670000000009,"heapMiB":0.5919113159179688,"rssMiB":0.265625,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"ingress","units":16777216,"representation":"rope","ms":0.47641699999999787,"heapMiB":0.2817230224609375,"rssMiB":0.625,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"outcome-one","units":16777216,"representation":"rope","ms":0.556625000000011,"heapMiB":0.15093994140625,"rssMiB":0.25,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"outcome-eight","units":16777216,"representation":"rope","ms":1.6658749999999998,"heapMiB":0.6340179443359375,"rssMiB":0.34375,"oversizedReads":0,"ok":false,"canonicalBytes":null,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"accepted-zeros","units":0,"representation":"plain","ms":689.988833,"heapMiB":22.916786193847656,"rssMiB":43.734375,"oversizedReads":0,"ok":true,"canonicalBytes":1040639,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"accepted-arrays","units":0,"representation":"plain","ms":2068.753833,"heapMiB":114.88804626464844,"rssMiB":143.0625,"oversizedReads":0,"ok":true,"canonicalBytes":1044651,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+{"node":"v25.2.1","surface":"accepted-objects","units":0,"representation":"plain","ms":1134.203708,"heapMiB":129.60944366455078,"rssMiB":187.15625,"oversizedReads":0,"ok":true,"canonicalBytes":1044651,"logicalAssertions":"passed; timing and heap are observations, not thresholds"}
+
+exit: 0; signal: null; error: none

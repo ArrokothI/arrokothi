@@ -1,0 +1,222 @@
+candidate C: b1c2e3bdad1ab9352e8a95307593cce654bc3e3c
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /tmp/k12-c10-valid
+command: node docs/development/work/K1.2/checks-07.mjs
+command: git diff --check a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD
+command: git diff --name-only a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD -- mental-model | sort
+command: git diff --name-only a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD -- packages/core/src packages/sdk/src packages/agents packages/models packages/retrieval packages/interoperability
+command: git diff --name-only 35e8c9eac24338064c48963189e0d07998004bee HEAD
+command: git diff --name-only ca0dc2b15b9b276175fe6f48893bc6231ee528a3 HEAD -- docs/development/work/K1.2/review-09 docs/development/work/K1.2/review-08-merged.md
+environment: {"node": "v25.2.1", "npm": "11.6.2", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "3f50d87fbb21e9a131121080763e1ae761d6bc5a3412fecfb3776a99da0ad9b8", "docs/development/work/K1.2/checks-07.mjs": "dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88", "docs/development/work/K1.2/contract.md": "3cefba9853e41e457a6e92064d8e17ea823d461cecd39c7b239277426310b69f", "docs/development/work/K1.2/decision-01.md": "0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9", "mental-model/mechanisms/execution-cycle.md": "e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "packages/kernel/tests/submission-authority.test.ts": "9e0614a2ef467a46b51e35115538526df78aa661bf6d7b4c3d07c6ba6c9fd02f", "packages/kernel/tests/submission-lifetime.test.ts": "f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "<unset>", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T22:28:51.125Z
+finished-utc: 2026-09-25T22:28:51.648Z
+output-bytes: 11945
+output-sha256: b047be72785ba3f4f703b26e10965cb8c87ee662e74fa11033da073ecb2f16f9
+--- output begins ---
+$ node docs/development/work/K1.2/checks-07.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'diff --git a/packages/kernel/src/coordinator.ts b/packages/kernel/src/coordinator.ts\n' +
++   'index d548211..691d840 100644\n' +
++   '--- a/packages/kernel/src/coordinator.ts\n' +
++   '+++ b/packages/kernel/src/coordinator.ts\n' +
++   '@@ -1404,37 +1404,45 @@ export class ExecutionCoordinator {\n' +
++   '         ),\n' +
++   '       );\n' +
++   '     }\n' +
++   '+    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20):\n' +
++   '+    // exchange currency, then submission authority, then content. `capture` above stays eager\n' +
++   '+    // before the replay lookup so one observation orders reentrant getters before these checks\n' +
++   '+    // (DEC-10) and so an exact duplicate is recognized by captured identity without authority;\n' +
++   '+    // only its numbers (`claim`) and its identity-equality are used before authority. Content\n' +
++   '+    // results (`issues`, `overCapacity`, `outcome === null`) are disclosed only after authority\n' +
++   '+    // succeeds, including when the claim itself is malformed: a malformed writerEpoch or\n' +
++   '+    // baseProgressRevision is a content-group refusal after authority, never an exchange-group\n' +
++   '+    // bypass that leaks content validation to a non-entitled caller.\n' +
++   '     const claim = capture.claim;\n' +
++   '-    if (claim === null) {\n' +
++   '-      return err(\n' +
++   '-        this.#refusal("malformed_envelope", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues)}`, record),\n' +
++   '-      );\n' +
++   '-    }\n' +
++   '     const currentEpoch = intent.activation.writerEpoch;\n' +
++   '-    if (claim.writerEpoch !== currentEpoch) {\n' +
++   '-      return err(\n' +
++   '-        this.#refusal(\n' +
++   '-          "stale_exchange",\n' +
++   '-          claim.writerEpoch < currentEpoch\n' +
++   '-            ? `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n' +
++   '-            : `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} has not been issued; the current epoch is ${currentEpoch}`,\n' +
++   '-          record,\n' +
++   '-        ),\n' +
++   '-      );\n' +
++   '-    }\n' +
++   '-    if (claim.baseProgressRevision !== intent.activation.baseProgressRevision) {\n' +
++   '-      return err(\n' +
++   '-        this.#refusal(\n' +
++   '-          "stale_exchange",\n' +
++   '-          `Outcome for Activation ${activationId}: base progress revision ${claim.baseProgressRevision} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n' +
++   '-          record,\n' +
++   '-        ),\n' +
++   '-      );\n' +
++   '+    if (claim !== null) {\n' +
++   '+      if (claim.writerEpoch !== currentEpoch) {\n' +
++   '+        return err(\n' +
++   '+          this.#refusal(\n' +
++   '+            "stale_exchange",\n' +
++   '+            claim.writerEpoch < currentEpoch\n' +
++   '+              ? `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n' +
++   '+              : `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} has not been issued; the current epoch is ${currentEpoch}`,\n' +
++   '+            record,\n' +
++   '+          ),\n' +
++   '+        );\n' +
++   '+      }\n' +
++   '+      if (claim.baseProgressRevision !== intent.activation.baseProgressRevision) {\n' +
++   '+        return err(\n' +
++   '+          this.#refusal(\n' +
++   '+            "stale_exchange",\n' +
++   '+            `Outcome for Activation ${activationId}: base progress revision ${claim.baseProgressRevision} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n' +
++   '+            record,\n' +
++   '+          ),\n' +
++   '+        );\n' +
++   '+      }\n' +
++   '     }\n' +
++   '     // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing\n' +
++   '-    // keeps its stale/terminal vocabulary. The grant is compared by reference identity against the\n' +
++   "-    // exchange's current grant: a forged look-alike, a grant retired by takeover, or no grant at\n" +
++   '-    // all fails this check. Inspection visibility alone therefore cannot speak as the attempt.\n' +
++   '+    // keeps its stale/terminal vocabulary, and before content (including a malformed claim) so a\n' +
++   "+    // proposal's content is examined only for the attempt entitled to make it. The grant is\n" +
++   "+    // compared by reference identity against the exchange's current grant: a forged look-alike, a\n" +
++   '+    // grant retired by takeover, or no grant at all fails this check. Inspection visibility alone\n' +
++   '+    // therefore cannot speak as the attempt.\n' +
++   '     if (submission !== intent.submission) {\n' +
++   '       return err(\n' +
++   '         this.#refusal('
+- ''
+
+    at file:///private/tmp/k12-c10-valid/docs/development/work/K1.2/checks-07.mjs:11:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'diff --git a/packages/kernel/src/coordinator.ts b/packages/kernel/src/coordinator.ts\n' +
+    'index d548211..691d840 100644\n' +
+    '--- a/packages/kernel/src/coordinator.ts\n' +
+    '+++ b/packages/kernel/src/coordinator.ts\n' +
+    '@@ -1404,37 +1404,45 @@ export class ExecutionCoordinator {\n' +
+    '         ),\n' +
+    '       );\n' +
+    '     }\n' +
+    '+    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20):\n' +
+    '+    // exchange currency, then submission authority, then content. `capture` above stays eager\n' +
+    '+    // before the replay lookup so one observation orders reentrant getters before these checks\n' +
+    '+    // (DEC-10) and so an exact duplicate is recognized by captured identity without authority;\n' +
+    '+    // only its numbers (`claim`) and its identity-equality are used before authority. Content\n' +
+    '+    // results (`issues`, `overCapacity`, `outcome === null`) are disclosed only after authority\n' +
+    '+    // succeeds, including when the claim itself is malformed: a malformed writerEpoch or\n' +
+    '+    // baseProgressRevision is a content-group refusal after authority, never an exchange-group\n' +
+    '+    // bypass that leaks content validation to a non-entitled caller.\n' +
+    '     const claim = capture.claim;\n' +
+    '-    if (claim === null) {\n' +
+    '-      return err(\n' +
+    '-        this.#refusal("malformed_envelope", `Outcome for Activation ${activationId} refused whole: ${explainOutcomeIssues(capture.issues)}`, record),\n' +
+    '-      );\n' +
+    '-    }\n' +
+    '     const currentEpoch = intent.activation.writerEpoch;\n' +
+    '-    if (claim.writerEpoch !== currentEpoch) {\n' +
+    '-      return err(\n' +
+    '-        this.#refusal(\n' +
+    '-          "stale_exchange",\n' +
+    '-          claim.writerEpoch < currentEpoch\n' +
+    '-            ? `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n' +
+    '-            : `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} has not been issued; the current epoch is ${currentEpoch}`,\n' +
+    '-          record,\n' +
+    '-        ),\n' +
+    '-      );\n' +
+    '-    }\n' +
+    '-    if (claim.baseProgressRevision !== intent.activation.baseProgressRevision) {\n' +
+    '-      return err(\n' +
+    '-        this.#refusal(\n' +
+    '-          "stale_exchange",\n' +
+    '-          `Outcome for Activation ${activationId}: base progress revision ${claim.baseProgressRevision} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n' +
+    '-          record,\n' +
+    '-        ),\n' +
+    '-      );\n' +
+    '+    if (claim !== null) {\n' +
+    '+      if (claim.writerEpoch !== currentEpoch) {\n' +
+    '+        return err(\n' +
+    '+          this.#refusal(\n' +
+    '+            "stale_exchange",\n' +
+    '+            claim.writerEpoch < currentEpoch\n' +
+    '+              ? `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n' +
+    '+              : `Outcome for Activation ${activationId}: writer epoch ${claim.writerEpoch} has not been issued; the current epoch is ${currentEpoch}`,\n' +
+    '+            record,\n' +
+    '+          ),\n' +
+    '+        );\n' +
+    '+      }\n' +
+    '+      if (claim.baseProgressRevision !== intent.activation.baseProgressRevision) {\n' +
+    '+        return err(\n' +
+    '+          this.#refusal(\n' +
+    '+            "stale_exchange",\n' +
+    '+            `Outcome for Activation ${activationId}: base progress revision ${claim.baseProgressRevision} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n' +
+    '+            record,\n' +
+    '+          ),\n' +
+    '+        );\n' +
+    '+      }\n' +
+    '     }\n' +
+    '     // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing\n' +
+    '-    // keeps its stale/terminal vocabulary. The grant is compared by reference identity against the\n' +
+    "-    // exchange's current grant: a forged look-alike, a grant retired by takeover, or no grant at\n" +
+    '-    // all fails this check. Inspection visibility alone therefore cannot speak as the attempt.\n' +
+    '+    // keeps its stale/terminal vocabulary, and before content (including a malformed claim) so a\n' +
+    "+    // proposal's content is examined only for the attempt entitled to make it. The grant is\n" +
+    "+    // compared by reference identity against the exchange's current grant: a forged look-alike, a\n" +
+    '+    // grant retired by takeover, or no grant at all fails this check. Inspection visibility alone\n' +
+    '+    // therefore cannot speak as the attempt.\n' +
+    '     if (submission !== intent.submission) {\n' +
+    '       return err(\n' +
+    '         this.#refusal(',
+  expected: '',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+[command exit 1]
+$ git diff --check a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD
+docs/development/work/K1.2/review-09/ablations-reviewer.txt:3: trailing whitespace.
++               tests 450, pass 450, fail 0; failing: 
+[command exit 2]
+$ git diff --name-only a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD -- mental-model | sort
+mental-model/concepts/core.md
+mental-model/concepts/identity.md
+mental-model/mechanisms/execution-cycle.md
+mental-model/mechanisms/integration.md
+mental-model/reference.md
+mental-model/rewrite-index.md
+mental-model/sources.md
+[command exit 0]
+$ git diff --name-only a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD -- packages/core/src packages/sdk/src packages/agents packages/models packages/retrieval packages/interoperability
+[command exit 0]
+$ git diff --name-only 35e8c9eac24338064c48963189e0d07998004bee HEAD
+docs/development/work/K1.2/ablations.mjs
+docs/development/work/K1.2/contract.md
+packages/kernel/tests/submission-authority.test.ts
+[command exit 0]
+$ git diff --name-only ca0dc2b15b9b276175fe6f48893bc6231ee528a3 HEAD -- docs/development/work/K1.2/review-09 docs/development/work/K1.2/review-08-merged.md
+[command exit 0]
+--- output ends ---
+exit 0

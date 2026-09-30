@@ -1,0 +1,10 @@
+index 11.6 ms heap +128.1 MiB a
+at 11.6 ms heap +128.1 MiB a
+codePointAt 11.5 ms heap +128.1 MiB 97
+lt 0.0 ms heap +0.1 MiB true
+concat 0.0 ms heap +0.1 MiB 134217730
+len 268435457 0.00 ms heap +0.1 MiB rss +0.5 MiB 268435457
+eq 268435457 0.00 ms heap +0.1 MiB rss +0.5 MiB false
+map 268435457 0.00 ms heap +0.1 MiB rss +0.5 MiB undefined
+char 268435457 23.40 ms heap +256.1 MiB rss +256.5 MiB 97
+slice 268435457 23.00 ms heap +256.1 MiB rss +256.5 MiB 1024

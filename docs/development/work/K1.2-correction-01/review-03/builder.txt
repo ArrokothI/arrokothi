@@ -1,0 +1,9 @@
+command: npm run check:builder-docs
+tree: 312f2584d14b0c168c2152c373a4f07d4a292d74
+Sun Sep 27 09:27:05 UTC 2026
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 72 Markdown files, 1806 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+exit 0

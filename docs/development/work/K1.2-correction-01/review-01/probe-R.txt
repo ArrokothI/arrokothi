@@ -1,0 +1,14 @@
+P1 exch10 id length 65537
+P1 recover(missing) malformed_value
+P1 recover(all) malformed_value
+P1 protocol malformed_value
+P1 takeover malformed_value epoch=-
+file:///tmp/claude-0/-home-user-arrokothi/dab7e569-be6e-5fb5-9396-229853b5a07b/scratchpad/wt-R/packages/kernel/tests/harness.ts:578
+    activationId: exchange.activationId,
+                           ^
+
+TypeError: Cannot read properties of undefined (reading 'activationId')
+    at outcomeFor (file:///tmp/claude-0/-home-user-arrokothi/dab7e569-be6e-5fb5-9396-229853b5a07b/scratchpad/wt-R/packages/kernel/tests/harness.ts:578:28)
+    at file:///tmp/claude-0/-home-user-arrokothi/dab7e569-be6e-5fb5-9396-229853b5a07b/scratchpad/probe-identity.ts:41:39
+
+Node.js v22.22.2

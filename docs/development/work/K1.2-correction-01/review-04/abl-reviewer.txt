@@ -1,0 +1,26 @@
+CONTROL exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED X1 Activation identity capped at 2^20 code units: exit=1 tests=1213 pass=1212 fail=1 cancelled=0
+   first failures: DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases
+REJECTED X2 empty Activation identity treated as malformed: exit=1 tests=1213 pass=1166 fail=47 cancelled=0
+   first failures: control takeover / text empty / terminal / power=true | control recover / text empty / terminal / power=true | control protocol / text empty / terminal / power=true
+REJECTED X3 replay lookup skipped above the old 65,536 limit: exit=1 tests=1213 pass=1210 fail=3 cancelled=0
+   first failures: reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+SURVIVED X8 Emission ID derived from diagnostic Activation spelling: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+SURVIVED X9 result ID derived from diagnostic Activation spelling: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+SURVIVED X10 acknowledged disposition names diagnostic Activation spelling: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+SURVIVED X11 code hold stores diagnostic Activation spelling: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED X12 recovery history stores diagnostic Activation spelling: exit=1 tests=1213 pass=1208 fail=5 cancelled=0
+   first failures: pinned names long: hold and history aliases bounded while structured identity remains exact | pinned names Unicode: hold and history aliases bounded while structured identity remains exact | pinned names 128: hold and history aliases bounded while structured identity remains exact
+SURVIVED X13 delivery row stores diagnostic Activation spelling: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED X14 resolved exchange stores diagnostic Activation spelling: exit=1 tests=1213 pass=1205 fail=8 cancelled=0
+   first failures: reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+SURVIVED X15 Outcome receipt token uses diagnostic Execution spelling: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED X16 history actor namespace rendered lossy: exit=1 tests=1213 pass=1209 fail=4 cancelled=0
+   first failures: pinned names long: hold and history aliases bounded while structured identity remains exact | pinned names Unicode: hold and history aliases bounded while structured identity remains exact | pinned names 128: hold and history aliases bounded while structured identity remains exact
+SURVIVED X17 decision answer activationId rendered lossy: exit=0 tests=1213 pass=1213 fail=0 cancelled=0
+REJECTED X18 takeover answer activationId rendered lossy: exit=1 tests=1213 pass=1158 fail=55 cancelled=0
+   first failures: reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+REJECTED X19 recovery answer activationId rendered lossy: exit=1 tests=1213 pass=1208 fail=5 cancelled=0
+   first failures: reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+8/15 rejected; survived: X8 Emission ID derived from diagnostic Activation spelling; X9 result ID derived from diagnostic Activation spelling; X10 acknowledged disposition names diagnostic Activation spelling; X11 code hold stores diagnostic Activation spelling; X13 delivery row stores diagnostic Activation spelling; X15 Outcome receipt token uses diagnostic Execution spelling; X17 decision answer activationId rendered lossy
+exit=0

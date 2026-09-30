@@ -1,0 +1,162 @@
+candidate C: b1c2e3bdad1ab9352e8a95307593cce654bc3e3c
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /tmp/k12-c10-valid
+command: git show 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1-correction-01/decision-01.md | head -n 12
+command: git show --format=fuller --stat b89a703472397c264743014a5ed2a83c30846f2e | head -n 30
+command: git diff --name-status b89a703472397c264743014a5ed2a83c30846f2e HEAD -- docs/development/work/K1.2 | head -n 40
+command: git diff --stat a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD | tail -n 8
+command: git grep -n -E 'deliver\(activation|SubmissionGrant|submission authority|unauthorized_submission' -- mental-model/mechanisms/execution-cycle.md packages/kernel/src/coordinator.ts packages/kernel/src/driver.ts docs/development/002-implemented-kernel-baseline.md docs/development/work/K1.2/contract.md docs/development/work/K1.2/decision-01.md | head -n 60
+environment: {"node": "v25.2.1", "npm": "11.6.2", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "3f50d87fbb21e9a131121080763e1ae761d6bc5a3412fecfb3776a99da0ad9b8", "docs/development/work/K1.2/checks-07.mjs": "dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88", "docs/development/work/K1.2/contract.md": "3cefba9853e41e457a6e92064d8e17ea823d461cecd39c7b239277426310b69f", "docs/development/work/K1.2/decision-01.md": "0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9", "mental-model/mechanisms/execution-cycle.md": "e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "packages/kernel/tests/submission-authority.test.ts": "9e0614a2ef467a46b51e35115538526df78aa661bf6d7b4c3d07c6ba6c9fd02f", "packages/kernel/tests/submission-lifetime.test.ts": "f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "<unset>", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T22:28:51.724Z
+finished-utc: 2026-09-25T22:28:51.884Z
+output-bytes: 18372
+output-sha256: da34981b8ac00c273f9912c7f609034a5180d56ab42e0967cedadd5fa99dfa89
+--- output begins ---
+$ git show 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1-correction-01/decision-01.md | head -n 12
+# KC1-ARCH-1 — Kernel-owned delivery reporting
+
+**Date:** 2026-09-15. **Role:** owner-delegated architecture decision, not independent acceptance.
+**Authority:** the owner explicitly authorized this session to decide and unblock K1.1,
+with implementation to be performed by another coding agent.
+**Inspected head:** `d43f2a97daca2f911e92e975222e66b58c31c142`.
+**Original review base B:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b` (unchanged).
+**Decision:** adopted target; correction contract revision 2; implementation outstanding.
+
+## Decision and ownership
+
+Adopt the callback/capability boundary recommended in [review-02](review-02.md) §6:
+[command exit 0]
+$ git show --format=fuller --stat b89a703472397c264743014a5ed2a83c30846f2e | head -n 30
+commit b89a703472397c264743014a5ed2a83c30846f2e
+Author:     chrizeroxtwo <realo@hotmail.com.tw>
+AuthorDate: Fri Sep 25 19:49:32 2026 +0800
+Commit:     chrizeroxtwo <realo@hotmail.com.tw>
+CommitDate: Fri Sep 25 19:49:32 2026 +0800
+
+    K1.2 H6: record blocked candidate and clean payload evidence
+
+ docs/development/007-work-packets.md               |    2 +-
+ docs/development/work/K1.2/implementation-06.md    |   86 +
+ .../K1.2/validation-06/01-tree-and-environment.txt |   28 +
+ .../work/K1.2/validation-06/02-typecheck.txt       |   23 +
+ .../work/K1.2/validation-06/03-test-full.txt       | 3370 ++++++++++++++++++++
+ .../work/K1.2/validation-06/04-test-kernel.txt     |  713 +++++
+ .../K1.2/validation-06/05-test-conformance.txt     | 2541 +++++++++++++++
+ .../work/K1.2/validation-06/06-test-sdk.txt        |   53 +
+ .../K1.2/validation-06/07-check-builder-docs.txt   |   24 +
+ .../work/K1.2/validation-06/08-ablations.txt       |   76 +
+ .../validation-06/09-preservation-and-links.txt    |   38 +
+ .../10-authority-and-candidate-context.txt         |  576 ++++
+ 12 files changed, 7529 insertions(+), 1 deletion(-)
+[command exit 0]
+$ git diff --name-status b89a703472397c264743014a5ed2a83c30846f2e HEAD -- docs/development/work/K1.2 | head -n 40
+M	docs/development/work/K1.2/ablations.mjs
+A	docs/development/work/K1.2/checks-07.mjs
+M	docs/development/work/K1.2/contract.md
+A	docs/development/work/K1.2/decision-01.md
+A	docs/development/work/K1.2/implementation-07.md
+A	docs/development/work/K1.2/implementation-08.md
+A	docs/development/work/K1.2/implementation-09.md
+A	docs/development/work/K1.2/implementation-10.md
+A	docs/development/work/K1.2/implementation-11.md
+A	docs/development/work/K1.2/review-07-merged.md
+A	docs/development/work/K1.2/review-08-merged.md
+A	docs/development/work/K1.2/review-09.md
+A	docs/development/work/K1.2/review-09/ablations-reviewer.mjs
+A	docs/development/work/K1.2/review-09/ablations-reviewer.txt
+A	docs/development/work/K1.2/review-09/probe-order.ts
+A	docs/development/work/K1.2/review-09/probe-race.ts
+A	docs/development/work/K1.2/review-10.md
+A	docs/development/work/K1.2/validation-07/01-tree-and-environment.txt
+A	docs/development/work/K1.2/validation-07/02-typecheck.txt
+A	docs/development/work/K1.2/validation-07/03-test-full.txt
+A	docs/development/work/K1.2/validation-07/04-test-kernel.txt
+A	docs/development/work/K1.2/validation-07/05-test-conformance.txt
+A	docs/development/work/K1.2/validation-07/06-test-sdk.txt
+A	docs/development/work/K1.2/validation-07/07-check-builder-docs.txt
+A	docs/development/work/K1.2/validation-07/08-ablations.txt
+A	docs/development/work/K1.2/validation-07/09-preservation-and-links.txt
+A	docs/development/work/K1.2/validation-07/10-authority-and-candidate-context.txt
+A	docs/development/work/K1.2/validation-08/01-tree-and-environment.txt
+A	docs/development/work/K1.2/validation-08/02-typecheck.txt
+A	docs/development/work/K1.2/validation-08/03-test-full.txt
+A	docs/development/work/K1.2/validation-08/04-test-kernel.txt
+A	docs/development/work/K1.2/validation-08/05-test-conformance.txt
+A	docs/development/work/K1.2/validation-08/06-test-sdk.txt
+A	docs/development/work/K1.2/validation-08/07-check-builder-docs.txt
+A	docs/development/work/K1.2/validation-08/08-ablations.txt
+A	docs/development/work/K1.2/validation-08/09-preservation-and-links.txt
+A	docs/development/work/K1.2/validation-08/10-authority-and-candidate-context.txt
+A	docs/development/work/K1.2/validation-09/01-tree-and-environment.txt
+A	docs/development/work/K1.2/validation-09/02-typecheck.txt
+A	docs/development/work/K1.2/validation-09/03-test-full.txt
+[command exit 0]
+$ git diff --stat a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD | tail -n 8
+ packages/kernel/tests/submission-lifetime.test.ts  |  155 +
+ packages/kernel/tests/takeover-reentrancy.test.ts  |  273 ++
+ packages/kernel/tests/takeover.test.ts             |  226 ++
+ packages/kernel/tests/terminal.test.ts             |  211 ++
+ packages/kernel/tests/transaction.test.ts          |  365 +++
+ packages/kernel/tests/unsupported.test.ts          |   28 +-
+ .../architecture/kernel-landing-zone.test.ts       |   63 +-
+ 162 files changed, 78260 insertions(+), 418 deletions(-)
+[command exit 0]
+$ git grep -n -E 'deliver\(activation|SubmissionGrant|submission authority|unauthorized_submission' -- mental-model/mechanisms/execution-cycle.md packages/kernel/src/coordinator.ts packages/kernel/src/driver.ts docs/development/002-implemented-kernel-baseline.md docs/development/work/K1.2/contract.md docs/development/work/K1.2/decision-01.md | head -n 60
+docs/development/002-implemented-kernel-baseline.md:24:classified only until it exceeds what an accepted container owns (K1.1-correction-02). `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+docs/development/002-implemented-kernel-baseline.md:25:reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
+docs/development/002-implemented-kernel-baseline.md:69:K1.3), plus the attempt-bound `SubmissionGrant` the Kernel handed to the Driver with the current
+docs/development/002-implemented-kernel-baseline.md:81:attempt answering, and anything else is refused as `unauthorized_submission` with no accepted-state
+docs/development/002-implemented-kernel-baseline.md:150:  `SubmissionGrant` per writer-epoch attempt, handed to the Driver with the Activation and required
+docs/development/002-implemented-kernel-baseline.md:151:  back by reference identity on `submitOutcome` (`unauthorized_submission` otherwise); never
+docs/development/work/K1.2/contract.md:251:| C10 submission authority (DEC-20) | visible caller without a current attempt grant submits `continue`, terminal `complete`/`fail`, and hold-ending Outcomes with forged/absent grants; same Outcomes with the attempt grant; old grant after takeover; hidden/missing callers | grant-less refused `unauthorized_submission` with zero accepted-state mutation (lifecycle, holds, history, receipts, B-5 unchanged; attempt still answerable); grant-holding proposal accepted; retired grant cannot commit (`stale_exchange` fencing preserved); hidden≡missing `unknown_destination`; views expose no grant | `submission-authority.test.ts` |
+docs/development/work/K1.2/contract.md:263:| All: distinguishing power | 30 plausible broken implementations applied to a copy of the package (A1–A16 as before, plus B1 authority falls back to visibility, B2 history dropped, B3 permitted desynchronized, B4 delivery pinned to epoch 1, B5 acceptance-index gaps, B6 post-callback revalidation removed, B7 Outcome hold-ending history dropped, B8 Outcome submission without attempt grant, B9 hold-ending History claims control power, B10 every redelivery rotates the submission grant, B11 only post-takeover redelivery rotates it, B12 content validated before submission authority, B13 capacity validated before submission authority, B14 malformed claim reports only claim defects after authority) | each rejected by at least one test, with a clean unablated control | `ablations.mjs` (payload) and its output in the report |
+docs/development/work/K1.2/contract.md:366:  but insufficient: DEC-20 requires the separate current-attempt `SubmissionGrant`, without requiring
+docs/development/work/K1.2/contract.md:402:- **K1.2-DEC-20 — attempt-bound Outcome-submission authority (correction, K12-R3-AUTH-02).**
+docs/development/work/K1.2/contract.md:403:  `submitOutcome(caller, envelope, submission)` requires the `SubmissionGrant` the Kernel minted for
+docs/development/work/K1.2/contract.md:411:  only a current-yet-grant-less proposal is refused as `unauthorized_submission` with no
+docs/development/work/K1.2/contract.md:417:  The in-process carrier `deliver(activation, settlement, submission)` is authorized by owner
+docs/development/work/K1.2/decision-01.md:13:`deliver(activation, settlement): undefined`, with Kernel-owned delivery reporting, no
+docs/development/work/K1.2/decision-01.md:17:K1.2 implements DEC-20 attempt-bound Outcome-submission authority: the Kernel mints one
+docs/development/work/K1.2/decision-01.md:22:`deliver(activation, settlement, submission): undefined`. Review-06 finding
+docs/development/work/K1.2/decision-01.md:37:delivery boundary from `deliver(activation, settlement): undefined` to the equivalent
+docs/development/work/K1.2/decision-01.md:38:binding that also supplies the current Runtime attempt's Outcome-submission authority,
+docs/development/work/K1.2/decision-01.md:39:currently represented as `deliver(activation, settlement, submission): undefined`.
+docs/development/work/K1.2/decision-01.md:47:  Outcome-submission authority, while receiving a fresh per-delivery
+docs/development/work/K1.2/decision-01.md:50:  the Outcome-submission authority.
+docs/development/work/K1.2/decision-01.md:51:- A fresh Outcome must possess the current attempt's submission authority in addition to
+docs/development/work/K1.2/decision-01.md:55:- Visibility, explicit control authority, and Runtime-attempt submission authority remain
+docs/development/work/K1.2/decision-01.md:60:- `SubmissionGrant` is the current in-process representation of this authority. This
+mental-model/mechanisms/execution-cycle.md:13:As one decision, the Kernel atomically reserves the exact Event [batch](../concepts/core.md#batch-reservation-and-acknowledgment) and records: [dispatch intent](../concepts/identity.md#dispatch-and-delivery), the current [writer epoch](../concepts/identity.md#writer-epoch), accepted [progress](../concepts/state.md#progress) and base revision, the progress [codec](../concepts/values.md#codec), pinned Runtime/[Definition](../concepts/core.md#definition) revisions, and the supplied authorized [execution view](../concepts/roles.md#view-and-disclosure). It also fixes the current [Runtime attempt](../concepts/identity.md#runtime-attempt), with its [submission authority](#submission-authority). This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost. Recording all of this before sending is what makes a crash between "decided to dispatch" and "the Runtime heard about it" recoverable: on restart the Kernel finds a pinned exchange it can redeliver unchanged, rather than having to guess which Events it had meant to hand over.
+mental-model/mechanisms/execution-cycle.md:26:presented:  the attempt's submission authority, beside the Outcome, not inside it
+mental-model/mechanisms/execution-cycle.md:35:It lives exactly as long as its attempt. Ordinary delivery retry keeps the attempt, so it keeps the same authority. Authorized takeover replaces the attempt, so it replaces the authority, and the superseded attempt's authority stops working when the epoch advances. The next exchange begins with a new attempt and a new authority. The [delivery reporting capability](#delivery-reporting-boundary) is a different thing with a shorter life, one physical delivery. Neither stands in for the other: a delivery report cannot propose anything, and submission authority reports nothing about delivery.
+mental-model/mechanisms/execution-cycle.md:39:What the authority physically is belongs to each binding: the in-process binding's representation is recorded in [the implemented baseline](../../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api), and it fixes no token, wire format, remote credential or policy language. How a persistent deployment keeps one attempt's authority valid across a Kernel restart, as ordinary redelivery requires, is not decided yet. <!-- OPEN(K3.2): how submission authority survives a Kernel restart in a persistent profile, so that redelivery after recovery keeps the same attempt's authority while a superseded attempt's stays dead. The in-process binding has no restart. When K3.2 settles it: state the rule here and delete this marker. rewrite-index.md §4 -->
+mental-model/mechanisms/execution-cycle.md:47:The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability, carries the attempt's [submission authority](#submission-authority) beside it, and returns only `undefined`:
+mental-model/mechanisms/execution-cycle.md:54:// SubmissionGrant: this binding's representation of submission authority (see BASELINE).
+mental-model/mechanisms/execution-cycle.md:56:deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined;
+mental-model/mechanisms/execution-cycle.md:63:Ordinary redelivery supplies a fresh reporting capability for the new physical delivery while preserving the exact Activation and the Runtime attempt, with its writer epoch and submission authority. A late report can settle only its original retained pending attempt, even after a newer delivery attempt reports; it cannot overwrite that newer attempt. After exchange resolution, cancellation or takeover, a report may only update that original retained operational record, never the current exchange or logical state. If its record has been retired, the capability is inert and cannot recreate it. These latter lifecycle interactions belong to K1.2/K1.3 and retention to K5; this rule does not bring those implementations into K1.1.
+mental-model/mechanisms/execution-cycle.md:65:Reporting or throwing changes no dispatch receipt, accepted progress/revision, writer epoch, submission authority, reservation, acknowledgment, mailbox disposition or Execution lifecycle. `delivered` reports the Driver's delivery acknowledgment, not native completion or Outcome acceptance. `failed` does not prove that native work never started and does not authorize repeating it. Outcome acceptance and safe native retry retain their separate owners.
+mental-model/mechanisms/execution-cycle.md:87:The Outcome is a proposal until this procedure accepts it. The order matters: authentication comes before anything is read so an unauthenticated caller learns nothing; the duplicate lookup comes before fresh validation so a retried Outcome gets the same answer it got the first time even if policy has since changed; exchange currency is checked before submission authority so a superseded attempt is refused as stale, which is what it is, rather than as unauthorized; submission authority is checked before content so a proposal's content is examined only for the attempt entitled to make it; and the commit is a single atomic step so no observer can ever see acknowledged Events without the progress that accounted for them, or progress without the intents it proposed.
+mental-model/mechanisms/execution-cycle.md:92:2. Look for an already accepted matching Outcome. An exact duplicate returns its original [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) without repeating any mutation or publication, and without requiring submission authority. Different content under the accepted identity conflicts. This lookup precedes all fresh validation, including later policy changes or cancellation.
+mental-model/mechanisms/execution-cycle.md:93:3. For a new proposal, validate the whole envelope in this order. First the exchange: cancellation fence or terminal state, current Activation, writer epoch and base progress revision. Then the current attempt's [submission authority](#submission-authority). Then the content: bounded values, unique proposal/emission keys, supported next step, wait references and completion obligations. A proposal that no longer answers the current exchange is refused as stale whatever authority it presents; only a current proposal without the current authority is refused as unauthorized. Bind any same-Outcome [Effect](../concepts/actions.md#effect) reference by its local proposal key.
+packages/kernel/src/coordinator.ts:65:import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
+packages/kernel/src/coordinator.ts:377:  submission: SubmissionGrant;
+packages/kernel/src/coordinator.ts:566:const mintSubmission = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>
+packages/kernel/src/coordinator.ts:1340:   *    grant-less is refused as `unauthorized_submission`.
+packages/kernel/src/coordinator.ts:1357:    submission: SubmissionGrant,
+packages/kernel/src/coordinator.ts:1408:    // exchange currency, then submission authority, then content. `capture` above stays eager
+packages/kernel/src/coordinator.ts:1440:    // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing
+packages/kernel/src/coordinator.ts:1449:          "unauthorized_submission",
+packages/kernel/src/coordinator.ts:1450:          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
+packages/kernel/src/coordinator.ts:2059:   * submission: visibility plus the separate current-attempt `SubmissionGrant` can authorize a
+packages/kernel/src/driver.ts:96: * Unforgeable attempt-bound Outcome-submission authority (K1.2-DEC-20).
+packages/kernel/src/driver.ts:107:export interface SubmissionGrant {
+packages/kernel/src/driver.ts:120:  deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined;
+[command exit 0]
+--- output ends ---
+exit 0

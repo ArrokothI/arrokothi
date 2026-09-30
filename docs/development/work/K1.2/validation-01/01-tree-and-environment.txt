@@ -1,0 +1,11 @@
+candidate C: 4babb6ee9550479c09e75d80cb8c17e8fc042b18
+base: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+status --porcelain (empty = clean):
+node v25.2.1
+npm 11.6.2
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+arm64
+2026-09-24T12:50:23Z

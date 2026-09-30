@@ -1,0 +1,101 @@
+{
+  "purpose": "Reachability and clean behavior of exits absent from fault-child SCENARIOS; no injected faults or production mutations.",
+  "rows": [
+    {
+      "method": "recoverExecution",
+      "path": "unknown",
+      "classification": "unknown_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "recoverExecution",
+      "path": "hidden",
+      "classification": "unknown_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "reportProtocolFailure",
+      "path": "unknown",
+      "classification": "unknown_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "reportProtocolFailure",
+      "path": "hidden",
+      "classification": "unknown_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "reportProtocolFailure",
+      "path": "wrongActivation",
+      "classification": "stale_exchange",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "reportProtocolFailure",
+      "path": "noOpen",
+      "classification": "no_unresolved_exchange",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "reportProtocolFailure",
+      "path": "terminal",
+      "classification": "terminal_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "unknown",
+      "classification": "unknown_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "hidden",
+      "classification": "unknown_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "wrongActivation",
+      "classification": "stale_exchange",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "terminal",
+      "classification": "terminal_destination",
+      "wholeView": "only expected refusal, or no hidden mutation"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "safety callback: terminal",
+      "classification": "terminal_destination",
+      "wholeView": "callback decision plus only outer refusal"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "safety callback: resolved",
+      "classification": "no_unresolved_exchange",
+      "wholeView": "callback decision plus only outer refusal"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "safety callback: newExchange",
+      "classification": "stale_exchange",
+      "wholeView": "callback decision plus only outer refusal"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "safety callback: nestedTakeover",
+      "classification": "stale_exchange",
+      "wholeView": "callback decision plus only outer refusal"
+    },
+    {
+      "method": "requestTakeover",
+      "path": "safety callback: codeHold",
+      "classification": "recovery_held",
+      "wholeView": "callback decision plus only outer refusal"
+    }
+  ]
+}

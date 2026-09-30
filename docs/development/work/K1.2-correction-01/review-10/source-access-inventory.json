@@ -1,0 +1,5403 @@
+[
+  {
+    "file": "packages/kernel/src/coordinator.ts",
+    "sites": [
+      {
+        "line": 194,
+        "kind": "PropertyAccessExpression",
+        "text": "Number.isInteger"
+      },
+      {
+        "line": 195,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.freeze"
+      },
+      {
+        "line": 196,
+        "kind": "PropertyAccessExpression",
+        "text": "Reflect.apply"
+      },
+      {
+        "line": 198,
+        "kind": "PropertyAccessExpression",
+        "text": "Map.prototype.get"
+      },
+      {
+        "line": 198,
+        "kind": "PropertyAccessExpression",
+        "text": "Map.prototype"
+      },
+      {
+        "line": 199,
+        "kind": "PropertyAccessExpression",
+        "text": "Map.prototype.set"
+      },
+      {
+        "line": 199,
+        "kind": "PropertyAccessExpression",
+        "text": "Map.prototype"
+      },
+      {
+        "line": 200,
+        "kind": "PropertyAccessExpression",
+        "text": "Map.prototype.forEach"
+      },
+      {
+        "line": 200,
+        "kind": "PropertyAccessExpression",
+        "text": "Map.prototype"
+      },
+      {
+        "line": 551,
+        "kind": "PropertyAccessExpression",
+        "text": "controls.length"
+      },
+      {
+        "line": 552,
+        "kind": "ElementAccessExpression",
+        "text": "controls[index]"
+      },
+      {
+        "line": 591,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 677,
+        "kind": "PropertyAccessExpression",
+        "text": "commit.history"
+      },
+      {
+        "line": 678,
+        "kind": "PropertyAccessExpression",
+        "text": "record.recoveryHistory"
+      },
+      {
+        "line": 679,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 679,
+        "kind": "PropertyAccessExpression",
+        "text": "commit.codeHold"
+      },
+      {
+        "line": 680,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.protocolFailureHold"
+      },
+      {
+        "line": 680,
+        "kind": "PropertyAccessExpression",
+        "text": "commit.protocolFailureHold"
+      },
+      {
+        "line": 714,
+        "kind": "PropertyAccessExpression",
+        "text": "kindField.ok"
+      },
+      {
+        "line": 714,
+        "kind": "PropertyAccessExpression",
+        "text": "payloadField.ok"
+      },
+      {
+        "line": 714,
+        "kind": "PropertyAccessExpression",
+        "text": "subscriptionField.ok"
+      },
+      {
+        "line": 715,
+        "kind": "PropertyAccessExpression",
+        "text": "kindField.observed"
+      },
+      {
+        "line": 716,
+        "kind": "PropertyAccessExpression",
+        "text": "payloadField.observed"
+      },
+      {
+        "line": 717,
+        "kind": "PropertyAccessExpression",
+        "text": "subscriptionField.observed"
+      },
+      {
+        "line": 723,
+        "kind": "PropertyAccessExpression",
+        "text": "payload.ok"
+      },
+      {
+        "line": 723,
+        "kind": "PropertyAccessExpression",
+        "text": "payload.issues"
+      },
+      {
+        "line": 732,
+        "kind": "PropertyAccessExpression",
+        "text": "payload.ok"
+      },
+      {
+        "line": 732,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 736,
+        "kind": "PropertyAccessExpression",
+        "text": "payload.value"
+      },
+      {
+        "line": 740,
+        "kind": "PropertyAccessExpression",
+        "text": "payload.value.canonical"
+      },
+      {
+        "line": 740,
+        "kind": "PropertyAccessExpression",
+        "text": "payload.value"
+      },
+      {
+        "line": 769,
+        "kind": "PropertyAccessExpression",
+        "text": "definitionField.ok"
+      },
+      {
+        "line": 769,
+        "kind": "PropertyAccessExpression",
+        "text": "runtimeField.ok"
+      },
+      {
+        "line": 769,
+        "kind": "PropertyAccessExpression",
+        "text": "codecField.ok"
+      },
+      {
+        "line": 770,
+        "kind": "PropertyAccessExpression",
+        "text": "definitionField.observed"
+      },
+      {
+        "line": 771,
+        "kind": "PropertyAccessExpression",
+        "text": "runtimeField.observed"
+      },
+      {
+        "line": 772,
+        "kind": "PropertyAccessExpression",
+        "text": "codecField.observed"
+      },
+      {
+        "line": 780,
+        "kind": "PropertyAccessExpression",
+        "text": "scalars.length"
+      },
+      {
+        "line": 783,
+        "kind": "ElementAccessExpression",
+        "text": "scalars[scalarIndex]"
+      },
+      {
+        "line": 784,
+        "kind": "ElementAccessExpression",
+        "text": "scalar[1]"
+      },
+      {
+        "line": 784,
+        "kind": "ElementAccessExpression",
+        "text": "scalar[0]"
+      },
+      {
+        "line": 788,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityField.ok"
+      },
+      {
+        "line": 788,
+        "kind": "PropertyAccessExpression",
+        "text": "initialField.ok"
+      },
+      {
+        "line": 789,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityField.observed"
+      },
+      {
+        "line": 790,
+        "kind": "PropertyAccessExpression",
+        "text": "initialField.observed"
+      },
+      {
+        "line": 792,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityContext.ok"
+      },
+      {
+        "line": 792,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityContext.issues"
+      },
+      {
+        "line": 800,
+        "kind": "PropertyAccessExpression",
+        "text": "initialInput.ok"
+      },
+      {
+        "line": 800,
+        "kind": "PropertyAccessExpression",
+        "text": "initialInput.error"
+      },
+      {
+        "line": 802,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityContext.ok"
+      },
+      {
+        "line": 802,
+        "kind": "PropertyAccessExpression",
+        "text": "initialInput.ok"
+      },
+      {
+        "line": 802,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 811,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityContext.value"
+      },
+      {
+        "line": 812,
+        "kind": "PropertyAccessExpression",
+        "text": "initialInput.value"
+      },
+      {
+        "line": 818,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityContext.value.canonical"
+      },
+      {
+        "line": 818,
+        "kind": "PropertyAccessExpression",
+        "text": "authorityContext.value"
+      },
+      {
+        "line": 819,
+        "kind": "PropertyAccessExpression",
+        "text": "initialInput.value.identity"
+      },
+      {
+        "line": 819,
+        "kind": "PropertyAccessExpression",
+        "text": "initialInput.value"
+      },
+      {
+        "line": 861,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#driver"
+      },
+      {
+        "line": 861,
+        "kind": "PropertyAccessExpression",
+        "text": "options.driver"
+      },
+      {
+        "line": 862,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#mailboxCapacity"
+      },
+      {
+        "line": 863,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#emissionsPerOutcome"
+      },
+      {
+        "line": 893,
+        "kind": "PropertyAccessExpression",
+        "text": "scopeField.ok"
+      },
+      {
+        "line": 894,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 896,
+        "kind": "PropertyAccessExpression",
+        "text": "scopeField.observed"
+      },
+      {
+        "line": 898,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 902,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 911,
+        "kind": "PropertyAccessExpression",
+        "text": "creationKeyField.ok"
+      },
+      {
+        "line": 911,
+        "kind": "PropertyAccessExpression",
+        "text": "creationKeyField.observed"
+      },
+      {
+        "line": 913,
+        "kind": "PropertyAccessExpression",
+        "text": "content.ok"
+      },
+      {
+        "line": 918,
+        "kind": "PropertyAccessExpression",
+        "text": "content.ok"
+      },
+      {
+        "line": 918,
+        "kind": "PropertyAccessExpression",
+        "text": "content.error"
+      },
+      {
+        "line": 919,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 921,
+        "kind": "PropertyAccessExpression",
+        "text": "creationKeyField.observed"
+      },
+      {
+        "line": 924,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 928,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#byCreationRequestId"
+      },
+      {
+        "line": 930,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.creationIdentity"
+      },
+      {
+        "line": 930,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.identity"
+      },
+      {
+        "line": 930,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 932,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.executionId"
+      },
+      {
+        "line": 933,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.creationReceipt"
+      },
+      {
+        "line": 935,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.initialEventId"
+      },
+      {
+        "line": 939,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 941,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.executionId"
+      },
+      {
+        "line": 969,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 978,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.initialInput"
+      },
+      {
+        "line": 978,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 983,
+        "kind": "PropertyAccessExpression",
+        "text": "initial.identity"
+      },
+      {
+        "line": 984,
+        "kind": "PropertyAccessExpression",
+        "text": "initial.kind"
+      },
+      {
+        "line": 985,
+        "kind": "PropertyAccessExpression",
+        "text": "initial.payload.value"
+      },
+      {
+        "line": 985,
+        "kind": "PropertyAccessExpression",
+        "text": "initial.payload"
+      },
+      {
+        "line": 986,
+        "kind": "PropertyAccessExpression",
+        "text": "initial.subscriptionClass"
+      },
+      {
+        "line": 1004,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.scope"
+      },
+      {
+        "line": 1004,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1006,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.definitionRevision"
+      },
+      {
+        "line": 1006,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1007,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.runtimeContractRevision"
+      },
+      {
+        "line": 1007,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1008,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.progressCodec"
+      },
+      {
+        "line": 1008,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1009,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.authorityContext.value"
+      },
+      {
+        "line": 1009,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.authorityContext"
+      },
+      {
+        "line": 1009,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1010,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.identity"
+      },
+      {
+        "line": 1010,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1032,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#executions"
+      },
+      {
+        "line": 1033,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#byCreationRequestId"
+      },
+      {
+        "line": 1059,
+        "kind": "PropertyAccessExpression",
+        "text": "destinationSeen.threw"
+      },
+      {
+        "line": 1059,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1060,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1060,
+        "kind": "PropertyAccessExpression",
+        "text": "destinationSeen.observed"
+      },
+      {
+        "line": 1061,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1070,
+        "kind": "PropertyAccessExpression",
+        "text": "requestKeyField.ok"
+      },
+      {
+        "line": 1070,
+        "kind": "PropertyAccessExpression",
+        "text": "requestKeyField.observed"
+      },
+      {
+        "line": 1072,
+        "kind": "PropertyAccessExpression",
+        "text": "content.ok"
+      },
+      {
+        "line": 1075,
+        "kind": "PropertyAccessExpression",
+        "text": "content.ok"
+      },
+      {
+        "line": 1075,
+        "kind": "PropertyAccessExpression",
+        "text": "content.error"
+      },
+      {
+        "line": 1076,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1078,
+        "kind": "PropertyAccessExpression",
+        "text": "requestKeyField.observed"
+      },
+      {
+        "line": 1081,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 1082,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1085,
+        "kind": "PropertyAccessExpression",
+        "text": "record.byInputId"
+      },
+      {
+        "line": 1087,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.contentIdentity"
+      },
+      {
+        "line": 1087,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.identity"
+      },
+      {
+        "line": 1087,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1089,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.eventId"
+      },
+      {
+        "line": 1090,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.receipt"
+      },
+      {
+        "line": 1092,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.acceptancePosition"
+      },
+      {
+        "line": 1093,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.disposition"
+      },
+      {
+        "line": 1097,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1099,
+        "kind": "PropertyAccessExpression",
+        "text": "existing.eventId"
+      },
+      {
+        "line": 1105,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1107,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1109,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1109,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1118,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox.length"
+      },
+      {
+        "line": 1118,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 1119,
+        "kind": "PropertyAccessExpression",
+        "text": "(readAt(record.mailbox, index) as MailboxEntry).disposition.kind"
+      },
+      {
+        "line": 1119,
+        "kind": "PropertyAccessExpression",
+        "text": "(readAt(record.mailbox, index) as MailboxEntry).disposition"
+      },
+      {
+        "line": 1119,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 1121,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#mailboxCapacity"
+      },
+      {
+        "line": 1123,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1125,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1125,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#mailboxCapacity"
+      },
+      {
+        "line": 1132,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#mint"
+      },
+      {
+        "line": 1136,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.identity"
+      },
+      {
+        "line": 1136,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1137,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.kind"
+      },
+      {
+        "line": 1137,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1138,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.payload.value"
+      },
+      {
+        "line": 1138,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.payload"
+      },
+      {
+        "line": 1138,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1139,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value.subscriptionClass"
+      },
+      {
+        "line": 1139,
+        "kind": "PropertyAccessExpression",
+        "text": "content.value"
+      },
+      {
+        "line": 1143,
+        "kind": "PropertyAccessExpression",
+        "text": "receipt.position"
+      },
+      {
+        "line": 1153,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 1154,
+        "kind": "PropertyAccessExpression",
+        "text": "record.byInputId"
+      },
+      {
+        "line": 1155,
+        "kind": "PropertyAccessExpression",
+        "text": "record.receipts"
+      },
+      {
+        "line": 1161,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.acceptancePosition"
+      },
+      {
+        "line": 1162,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition"
+      },
+      {
+        "line": 1180,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1181,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1198,
+        "kind": "PropertyAccessExpression",
+        "text": "seen.threw"
+      },
+      {
+        "line": 1199,
+        "kind": "PropertyAccessExpression",
+        "text": "seen.observed"
+      },
+      {
+        "line": 1206,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1214,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1215,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1215,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1215,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1217,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1219,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1221,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation.activation.activationId"
+      },
+      {
+        "line": 1221,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation.activation"
+      },
+      {
+        "line": 1221,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1242,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox.length"
+      },
+      {
+        "line": 1242,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 1242,
+        "kind": "PropertyAccessExpression",
+        "text": "selected.length"
+      },
+      {
+        "line": 1243,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 1244,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition.kind"
+      },
+      {
+        "line": 1244,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition"
+      },
+      {
+        "line": 1246,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activationsMinted"
+      },
+      {
+        "line": 1247,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1247,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activationsMinted"
+      },
+      {
+        "line": 1248,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#mint"
+      },
+      {
+        "line": 1255,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 1257,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1264,
+        "kind": "PropertyAccessExpression",
+        "text": "record.progressRevision"
+      },
+      {
+        "line": 1265,
+        "kind": "PropertyAccessExpression",
+        "text": "record.runtimeContractRevision"
+      },
+      {
+        "line": 1266,
+        "kind": "PropertyAccessExpression",
+        "text": "record.definitionRevision"
+      },
+      {
+        "line": 1267,
+        "kind": "PropertyAccessExpression",
+        "text": "record.progressCodec"
+      },
+      {
+        "line": 1268,
+        "kind": "PropertyAccessExpression",
+        "text": "record.acceptedProgress"
+      },
+      {
+        "line": 1270,
+        "kind": "PropertyAccessExpression",
+        "text": "record.authorityContext"
+      },
+      {
+        "line": 1279,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1285,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1286,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1287,
+        "kind": "PropertyAccessExpression",
+        "text": "record.receipts"
+      },
+      {
+        "line": 1289,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#deliver"
+      },
+      {
+        "line": 1293,
+        "kind": "PropertyAccessExpression",
+        "text": "activation.writerEpoch"
+      },
+      {
+        "line": 1294,
+        "kind": "PropertyAccessExpression",
+        "text": "activation.baseProgressRevision"
+      },
+      {
+        "line": 1295,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.batch"
+      },
+      {
+        "line": 1312,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1313,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1315,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1318,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1320,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1328,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.codeHold"
+      },
+      {
+        "line": 1328,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.protocolFailureHold"
+      },
+      {
+        "line": 1331,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1333,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.activationId"
+      },
+      {
+        "line": 1333,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 1333,
+        "kind": "PropertyAccessExpression",
+        "text": "hold.reason"
+      },
+      {
+        "line": 1342,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 1343,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.receipt"
+      },
+      {
+        "line": 1344,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#deliver"
+      },
+      {
+        "line": 1346,
+        "kind": "PropertyAccessExpression",
+        "text": "resent.activationId"
+      },
+      {
+        "line": 1347,
+        "kind": "PropertyAccessExpression",
+        "text": "resent.writerEpoch"
+      },
+      {
+        "line": 1348,
+        "kind": "PropertyAccessExpression",
+        "text": "resent.baseProgressRevision"
+      },
+      {
+        "line": 1349,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.batch"
+      },
+      {
+        "line": 1357,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1358,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1380,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#executions"
+      },
+      {
+        "line": 1382,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 1382,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1429,
+        "kind": "PropertyAccessExpression",
+        "text": "executionSeen.threw"
+      },
+      {
+        "line": 1429,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1430,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1430,
+        "kind": "PropertyAccessExpression",
+        "text": "executionSeen.observed"
+      },
+      {
+        "line": 1431,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1438,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.ok"
+      },
+      {
+        "line": 1438,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.observed"
+      },
+      {
+        "line": 1439,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.observed"
+      },
+      {
+        "line": 1445,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#emissionsPerOutcome"
+      },
+      {
+        "line": 1452,
+        "kind": "PropertyAccessExpression",
+        "text": "record.acceptedOutcomes"
+      },
+      {
+        "line": 1454,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.outcome"
+      },
+      {
+        "line": 1454,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.outcome.identity"
+      },
+      {
+        "line": 1454,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.outcome"
+      },
+      {
+        "line": 1454,
+        "kind": "PropertyAccessExpression",
+        "text": "already.identity"
+      },
+      {
+        "line": 1455,
+        "kind": "PropertyAccessExpression",
+        "text": "already.decision"
+      },
+      {
+        "line": 1458,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1467,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1469,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1471,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1471,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1476,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1482,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1484,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1490,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1492,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1497,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.activationId"
+      },
+      {
+        "line": 1497,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 1499,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1501,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1518,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 1518,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 1519,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.epochForCurrency"
+      },
+      {
+        "line": 1523,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1533,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1542,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.baseForCurrency"
+      },
+      {
+        "line": 1543,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.baseProgressRevision"
+      },
+      {
+        "line": 1543,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 1546,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1548,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.baseProgressRevision"
+      },
+      {
+        "line": 1548,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 1554,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1556,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.baseProgressRevision"
+      },
+      {
+        "line": 1556,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 1567,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.submission"
+      },
+      {
+        "line": 1570,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1578,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1585,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity"
+      },
+      {
+        "line": 1588,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1590,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity.count"
+      },
+      {
+        "line": 1590,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity"
+      },
+      {
+        "line": 1590,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity.limit"
+      },
+      {
+        "line": 1590,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity"
+      },
+      {
+        "line": 1596,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1598,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity.count"
+      },
+      {
+        "line": 1598,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity"
+      },
+      {
+        "line": 1598,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity.limit"
+      },
+      {
+        "line": 1598,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.overCapacity"
+      },
+      {
+        "line": 1607,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.outcome"
+      },
+      {
+        "line": 1610,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.issues"
+      },
+      {
+        "line": 1613,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1617,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1629,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#accept"
+      },
+      {
+        "line": 1629,
+        "kind": "PropertyAccessExpression",
+        "text": "capture.outcome"
+      },
+      {
+        "line": 1663,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1664,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1665,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#requireControl"
+      },
+      {
+        "line": 1671,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1673,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#openExchange"
+      },
+      {
+        "line": 1673,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1674,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.ok"
+      },
+      {
+        "line": 1675,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.value"
+      },
+      {
+        "line": 1676,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation.writerEpoch"
+      },
+      {
+        "line": 1676,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1677,
+        "kind": "PropertyAccessExpression",
+        "text": "named.writerEpoch"
+      },
+      {
+        "line": 1679,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1681,
+        "kind": "PropertyAccessExpression",
+        "text": "named.writerEpoch"
+      },
+      {
+        "line": 1681,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1686,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1688,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1690,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1690,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold.reason"
+      },
+      {
+        "line": 1690,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1701,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#driver"
+      },
+      {
+        "line": 1702,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#driver"
+      },
+      {
+        "line": 1702,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1708,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1710,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1721,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1723,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1725,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1725,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1730,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1731,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1733,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1735,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1741,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1743,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1743,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1748,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation.writerEpoch"
+      },
+      {
+        "line": 1748,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1750,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1752,
+        "kind": "PropertyAccessExpression",
+        "text": "named.writerEpoch"
+      },
+      {
+        "line": 1752,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation.writerEpoch"
+      },
+      {
+        "line": 1752,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1752,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1764,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1766,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1766,
+        "kind": "PropertyAccessExpression",
+        "text": "postCallbackHold.reason"
+      },
+      {
+        "line": 1776,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextAcceptancePosition"
+      },
+      {
+        "line": 1777,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1780,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1783,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1783,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1786,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.protocolFailureHold"
+      },
+      {
+        "line": 1791,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1793,
+        "kind": "PropertyAccessExpression",
+        "text": "clearedHold.reason"
+      },
+      {
+        "line": 1794,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 1795,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 1799,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1802,
+        "kind": "PropertyAccessExpression",
+        "text": "activation.baseProgressRevision"
+      },
+      {
+        "line": 1803,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.batch"
+      },
+      {
+        "line": 1810,
+        "kind": "PropertyAccessExpression",
+        "text": "record.receipts"
+      },
+      {
+        "line": 1811,
+        "kind": "PropertyAccessExpression",
+        "text": "record.recoveryHistory"
+      },
+      {
+        "line": 1812,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextAcceptancePosition"
+      },
+      {
+        "line": 1813,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.submission"
+      },
+      {
+        "line": 1814,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1815,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.receipt"
+      },
+      {
+        "line": 1816,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.protocolFailureHold"
+      },
+      {
+        "line": 1818,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#deliver"
+      },
+      {
+        "line": 1845,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1846,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1847,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#requireControl"
+      },
+      {
+        "line": 1853,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1855,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#openExchange"
+      },
+      {
+        "line": 1855,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.activationId"
+      },
+      {
+        "line": 1856,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.ok"
+      },
+      {
+        "line": 1857,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.value"
+      },
+      {
+        "line": 1858,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1864,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.available.definitionRevisions"
+      },
+      {
+        "line": 1864,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.available"
+      },
+      {
+        "line": 1864,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.definitionRevision"
+      },
+      {
+        "line": 1864,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.definitionRevision"
+      },
+      {
+        "line": 1865,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.available.runtimeContractRevisions"
+      },
+      {
+        "line": 1865,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.available"
+      },
+      {
+        "line": 1865,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.runtimeContractRevision"
+      },
+      {
+        "line": 1865,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.runtimeContractRevision"
+      },
+      {
+        "line": 1866,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.available.progressCodecs"
+      },
+      {
+        "line": 1866,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.available"
+      },
+      {
+        "line": 1866,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.progressCodec"
+      },
+      {
+        "line": 1866,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.progressCodec"
+      },
+      {
+        "line": 1873,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1874,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1877,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.protocolFailureHold"
+      },
+      {
+        "line": 1879,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.activationId"
+      },
+      {
+        "line": 1880,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.writerEpoch"
+      },
+      {
+        "line": 1883,
+        "kind": "PropertyAccessExpression",
+        "text": "cleared.reason"
+      },
+      {
+        "line": 1884,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 1885,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 1889,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1889,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold.reason"
+      },
+      {
+        "line": 1889,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1890,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1894,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.activationId"
+      },
+      {
+        "line": 1895,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.writerEpoch"
+      },
+      {
+        "line": 1899,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.protocolFailureHold"
+      },
+      {
+        "line": 1900,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.activationId"
+      },
+      {
+        "line": 1900,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.writerEpoch"
+      },
+      {
+        "line": 1900,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 1900,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 1904,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.activationId"
+      },
+      {
+        "line": 1904,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.writerEpoch"
+      },
+      {
+        "line": 1906,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.activationId"
+      },
+      {
+        "line": 1906,
+        "kind": "PropertyAccessExpression",
+        "text": "pinned.writerEpoch"
+      },
+      {
+        "line": 1930,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#visible"
+      },
+      {
+        "line": 1931,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1932,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#requireControl"
+      },
+      {
+        "line": 1938,
+        "kind": "PropertyAccessExpression",
+        "text": "diagnosticSeen.threw"
+      },
+      {
+        "line": 1938,
+        "kind": "PropertyAccessExpression",
+        "text": "diagnosticSeen.observed"
+      },
+      {
+        "line": 1940,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1942,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#openExchange"
+      },
+      {
+        "line": 1942,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1943,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.ok"
+      },
+      {
+        "line": 1944,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.value"
+      },
+      {
+        "line": 1945,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation.writerEpoch"
+      },
+      {
+        "line": 1945,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activation"
+      },
+      {
+        "line": 1946,
+        "kind": "PropertyAccessExpression",
+        "text": "named.writerEpoch"
+      },
+      {
+        "line": 1948,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1950,
+        "kind": "PropertyAccessExpression",
+        "text": "named.writerEpoch"
+      },
+      {
+        "line": 1950,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1955,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.protocolFailureHold"
+      },
+      {
+        "line": 1956,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1963,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1967,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.codeHold"
+      },
+      {
+        "line": 1969,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1969,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 1969,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 1971,
+        "kind": "PropertyAccessExpression",
+        "text": "named.activationId"
+      },
+      {
+        "line": 1992,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1994,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1994,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 1994,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 1997,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 1999,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 1999,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2001,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.activationId"
+      },
+      {
+        "line": 2001,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2003,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 2005,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2044,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.activationId"
+      },
+      {
+        "line": 2044,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2045,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextAcceptancePosition"
+      },
+      {
+        "line": 2046,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2047,
+        "kind": "PropertyAccessExpression",
+        "text": "record.progressRevision"
+      },
+      {
+        "line": 2048,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.step"
+      },
+      {
+        "line": 2048,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next"
+      },
+      {
+        "line": 2053,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.emissions.length"
+      },
+      {
+        "line": 2053,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.emissions"
+      },
+      {
+        "line": 2054,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.emissions"
+      },
+      {
+        "line": 2056,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2056,
+        "kind": "PropertyAccessExpression",
+        "text": "emission.emissionKey"
+      },
+      {
+        "line": 2060,
+        "kind": "PropertyAccessExpression",
+        "text": "emission.emissionKey"
+      },
+      {
+        "line": 2060,
+        "kind": "PropertyAccessExpression",
+        "text": "emission.value.value"
+      },
+      {
+        "line": 2060,
+        "kind": "PropertyAccessExpression",
+        "text": "emission.value"
+      },
+      {
+        "line": 2065,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.step"
+      },
+      {
+        "line": 2065,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next"
+      },
+      {
+        "line": 2065,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.step"
+      },
+      {
+        "line": 2065,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next"
+      },
+      {
+        "line": 2067,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2068,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.step"
+      },
+      {
+        "line": 2068,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.step"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.result.value"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.result"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.error.value"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next.error"
+      },
+      {
+        "line": 2069,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.next"
+      },
+      {
+        "line": 2079,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.batch.length"
+      },
+      {
+        "line": 2079,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.batch"
+      },
+      {
+        "line": 2080,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.batch"
+      },
+      {
+        "line": 2088,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox.length"
+      },
+      {
+        "line": 2088,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 2089,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 2090,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition.kind"
+      },
+      {
+        "line": 2090,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition"
+      },
+      {
+        "line": 2091,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2093,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2096,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2107,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 2107,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2108,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.baseProgressRevision"
+      },
+      {
+        "line": 2108,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2109,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.batch"
+      },
+      {
+        "line": 2110,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.receipt"
+      },
+      {
+        "line": 2113,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.deliveries"
+      },
+      {
+        "line": 2122,
+        "kind": "PropertyAccessExpression",
+        "text": "result.resultId"
+      },
+      {
+        "line": 2130,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.codeHold"
+      },
+      {
+        "line": 2135,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 2135,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2139,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 2139,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2139,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.codeHold.reason"
+      },
+      {
+        "line": 2139,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.codeHold"
+      },
+      {
+        "line": 2140,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 2141,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 2145,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.protocolFailureHold"
+      },
+      {
+        "line": 2150,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 2150,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2154,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 2154,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2154,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.protocolFailureHold.reason"
+      },
+      {
+        "line": 2154,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.protocolFailureHold"
+      },
+      {
+        "line": 2155,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.namespace"
+      },
+      {
+        "line": 2156,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 2164,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.identity"
+      },
+      {
+        "line": 2169,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextAcceptancePosition"
+      },
+      {
+        "line": 2170,
+        "kind": "PropertyAccessExpression",
+        "text": "toAcknowledge.length"
+      },
+      {
+        "line": 2170,
+        "kind": "PropertyAccessExpression",
+        "text": "(readAt(toAcknowledge, index) as MailboxEntry).disposition"
+      },
+      {
+        "line": 2171,
+        "kind": "PropertyAccessExpression",
+        "text": "toEnd.length"
+      },
+      {
+        "line": 2171,
+        "kind": "PropertyAccessExpression",
+        "text": "(readAt(toEnd, index) as MailboxEntry).disposition"
+      },
+      {
+        "line": 2172,
+        "kind": "PropertyAccessExpression",
+        "text": "record.acceptedProgress"
+      },
+      {
+        "line": 2172,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.progress.value"
+      },
+      {
+        "line": 2172,
+        "kind": "PropertyAccessExpression",
+        "text": "outcome.progress"
+      },
+      {
+        "line": 2173,
+        "kind": "PropertyAccessExpression",
+        "text": "record.progressRevision"
+      },
+      {
+        "line": 2174,
+        "kind": "PropertyAccessExpression",
+        "text": "record.emissions"
+      },
+      {
+        "line": 2175,
+        "kind": "PropertyAccessExpression",
+        "text": "record.result"
+      },
+      {
+        "line": 2176,
+        "kind": "PropertyAccessExpression",
+        "text": "record.exchanges"
+      },
+      {
+        "line": 2177,
+        "kind": "PropertyAccessExpression",
+        "text": "record.acceptedOutcomes"
+      },
+      {
+        "line": 2178,
+        "kind": "PropertyAccessExpression",
+        "text": "record.receipts"
+      },
+      {
+        "line": 2179,
+        "kind": "PropertyAccessExpression",
+        "text": "record.recoveryHistory"
+      },
+      {
+        "line": 2180,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 2181,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 2194,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextAcceptancePosition"
+      },
+      {
+        "line": 2195,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextAcceptancePosition"
+      },
+      {
+        "line": 2196,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2218,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#executions"
+      },
+      {
+        "line": 2219,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 2236,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 2237,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#refusal"
+      },
+      {
+        "line": 2239,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2256,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextRefusalPosition"
+      },
+      {
+        "line": 2257,
+        "kind": "PropertyAccessExpression",
+        "text": "record.nextRefusalPosition"
+      },
+      {
+        "line": 2258,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2259,
+        "kind": "PropertyAccessExpression",
+        "text": "record.refusals"
+      },
+      {
+        "line": 2279,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.deliveries.length"
+      },
+      {
+        "line": 2279,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.deliveries"
+      },
+      {
+        "line": 2282,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.activationId"
+      },
+      {
+        "line": 2282,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2283,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 2283,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2285,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.deliveries"
+      },
+      {
+        "line": 2292,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.status"
+      },
+      {
+        "line": 2293,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.status"
+      },
+      {
+        "line": 2296,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.status"
+      },
+      {
+        "line": 2297,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.status"
+      },
+      {
+        "line": 2298,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.failure"
+      },
+      {
+        "line": 2306,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#driver.deliver"
+      },
+      {
+        "line": 2306,
+        "kind": "PropertyAccessExpression",
+        "text": "this.#driver"
+      },
+      {
+        "line": 2306,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2306,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.submission"
+      },
+      {
+        "line": 2308,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.status"
+      },
+      {
+        "line": 2309,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.status"
+      },
+      {
+        "line": 2310,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.failure"
+      },
+      {
+        "line": 2327,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2328,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.inputId.destination"
+      },
+      {
+        "line": 2328,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.inputId"
+      },
+      {
+        "line": 2329,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.kind"
+      },
+      {
+        "line": 2330,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.payload"
+      },
+      {
+        "line": 2332,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.acceptancePosition"
+      },
+      {
+        "line": 2334,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.subscriptionClass"
+      },
+      {
+        "line": 2334,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.subscriptionClass"
+      },
+      {
+        "line": 2338,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.attempt"
+      },
+      {
+        "line": 2339,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.status"
+      },
+      {
+        "line": 2340,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.failure"
+      },
+      {
+        "line": 2341,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.activationId"
+      },
+      {
+        "line": 2342,
+        "kind": "PropertyAccessExpression",
+        "text": "attempt.writerEpoch"
+      },
+      {
+        "line": 2353,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.codeHold"
+      },
+      {
+        "line": 2354,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.codeHold"
+      },
+      {
+        "line": 2355,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.codeHold"
+      },
+      {
+        "line": 2359,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.cause"
+      },
+      {
+        "line": 2360,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.reason"
+      },
+      {
+        "line": 2361,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.activationId"
+      },
+      {
+        "line": 2362,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.writerEpoch"
+      },
+      {
+        "line": 2363,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.cause"
+      },
+      {
+        "line": 2367,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.protocolFailureHold"
+      },
+      {
+        "line": 2368,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.protocolFailureHold"
+      },
+      {
+        "line": 2372,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.cause"
+      },
+      {
+        "line": 2373,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.reason"
+      },
+      {
+        "line": 2374,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.activationId"
+      },
+      {
+        "line": 2375,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.writerEpoch"
+      },
+      {
+        "line": 2376,
+        "kind": "PropertyAccessExpression",
+        "text": "stored.cause"
+      },
+      {
+        "line": 2384,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.activationId"
+      },
+      {
+        "line": 2385,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.writerEpoch"
+      },
+      {
+        "line": 2386,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.baseProgressRevision"
+      },
+      {
+        "line": 2387,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.batch"
+      },
+      {
+        "line": 2388,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.dispatchReceipt"
+      },
+      {
+        "line": 2389,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.outcomeReceipt"
+      },
+      {
+        "line": 2390,
+        "kind": "PropertyAccessExpression",
+        "text": "exchange.deliveries"
+      },
+      {
+        "line": 2394,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.activationId"
+      },
+      {
+        "line": 2394,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2395,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.writerEpoch"
+      },
+      {
+        "line": 2395,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2396,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation.baseProgressRevision"
+      },
+      {
+        "line": 2396,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.activation"
+      },
+      {
+        "line": 2397,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.batch"
+      },
+      {
+        "line": 2398,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.receipt"
+      },
+      {
+        "line": 2399,
+        "kind": "PropertyAccessExpression",
+        "text": "intent.deliveries"
+      },
+      {
+        "line": 2403,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2404,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.inputId"
+      },
+      {
+        "line": 2405,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.kind"
+      },
+      {
+        "line": 2406,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.payload"
+      },
+      {
+        "line": 2407,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.subscriptionClass"
+      },
+      {
+        "line": 2409,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.acceptancePosition"
+      },
+      {
+        "line": 2410,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition"
+      },
+      {
+        "line": 2411,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2412,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.receipt"
+      },
+      {
+        "line": 2419,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 2419,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation.batch"
+      },
+      {
+        "line": 2419,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 2422,
+        "kind": "PropertyAccessExpression",
+        "text": "batch.length"
+      },
+      {
+        "line": 2434,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox.length"
+      },
+      {
+        "line": 2434,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 2435,
+        "kind": "PropertyAccessExpression",
+        "text": "record.mailbox"
+      },
+      {
+        "line": 2437,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition.kind"
+      },
+      {
+        "line": 2437,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition"
+      },
+      {
+        "line": 2437,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2438,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition.kind"
+      },
+      {
+        "line": 2438,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition"
+      },
+      {
+        "line": 2438,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2439,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition.kind"
+      },
+      {
+        "line": 2439,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.disposition"
+      },
+      {
+        "line": 2439,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.eventId"
+      },
+      {
+        "line": 2442,
+        "kind": "PropertyAccessExpression",
+        "text": "record.executionId"
+      },
+      {
+        "line": 2443,
+        "kind": "PropertyAccessExpression",
+        "text": "record.state"
+      },
+      {
+        "line": 2444,
+        "kind": "PropertyAccessExpression",
+        "text": "record.scope"
+      },
+      {
+        "line": 2445,
+        "kind": "PropertyAccessExpression",
+        "text": "record.creationRequestId.requestKey"
+      },
+      {
+        "line": 2445,
+        "kind": "PropertyAccessExpression",
+        "text": "record.creationRequestId"
+      },
+      {
+        "line": 2446,
+        "kind": "PropertyAccessExpression",
+        "text": "record.definitionRevision"
+      },
+      {
+        "line": 2447,
+        "kind": "PropertyAccessExpression",
+        "text": "record.runtimeContractRevision"
+      },
+      {
+        "line": 2448,
+        "kind": "PropertyAccessExpression",
+        "text": "record.progressCodec"
+      },
+      {
+        "line": 2449,
+        "kind": "PropertyAccessExpression",
+        "text": "record.acceptedProgress"
+      },
+      {
+        "line": 2450,
+        "kind": "PropertyAccessExpression",
+        "text": "record.progressRevision"
+      },
+      {
+        "line": 2451,
+        "kind": "PropertyAccessExpression",
+        "text": "record.authorityContext"
+      },
+      {
+        "line": 2452,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 2452,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 2453,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 2453,
+        "kind": "PropertyAccessExpression",
+        "text": "record.activation"
+      },
+      {
+        "line": 2454,
+        "kind": "PropertyAccessExpression",
+        "text": "record.recoveryHistory"
+      },
+      {
+        "line": 2455,
+        "kind": "PropertyAccessExpression",
+        "text": "record.exchanges"
+      },
+      {
+        "line": 2457,
+        "kind": "PropertyAccessExpression",
+        "text": "record.emissions"
+      },
+      {
+        "line": 2458,
+        "kind": "PropertyAccessExpression",
+        "text": "record.result"
+      },
+      {
+        "line": 2463,
+        "kind": "PropertyAccessExpression",
+        "text": "record.refusals"
+      },
+      {
+        "line": 2464,
+        "kind": "PropertyAccessExpression",
+        "text": "record.receipts"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/driver.ts",
+    "sites": []
+  },
+  {
+    "file": "packages/kernel/src/envelope.ts",
+    "sites": [
+      {
+        "line": 19,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.isArray"
+      },
+      {
+        "line": 27,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.getOwnPropertyDescriptor"
+      },
+      {
+        "line": 58,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 64,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path.length"
+      },
+      {
+        "line": 64,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 64,
+        "kind": "ElementAccessExpression",
+        "text": "issue.path[0]"
+      },
+      {
+        "line": 64,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 65,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 65,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 65,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 78,
+        "kind": "PropertyAccessExpression",
+        "text": "text.length"
+      },
+      {
+        "line": 79,
+        "kind": "PropertyAccessExpression",
+        "text": "text.length"
+      },
+      {
+        "line": 80,
+        "kind": "ElementAccessExpression",
+        "text": "text[index]"
+      },
+      {
+        "line": 80,
+        "kind": "ElementAccessExpression",
+        "text": "text[index]"
+      },
+      {
+        "line": 90,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 92,
+        "kind": "PropertyAccessExpression",
+        "text": "PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value"
+      },
+      {
+        "line": 94,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 94,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 94,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.message"
+      },
+      {
+        "line": 95,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 95,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 95,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.message"
+      },
+      {
+        "line": 106,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 108,
+        "kind": "PropertyAccessExpression",
+        "text": "PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value"
+      },
+      {
+        "line": 111,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 112,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.message"
+      },
+      {
+        "line": 116,
+        "kind": "PropertyAccessExpression",
+        "text": "PrimordialGetOwnPropertyDescriptor(issue, \"root\")?.value"
+      },
+      {
+        "line": 117,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 117,
+        "kind": "PropertyAccessExpression",
+        "text": "projected.path"
+      },
+      {
+        "line": 118,
+        "kind": "ElementAccessExpression",
+        "text": "projected.path[0]"
+      },
+      {
+        "line": 118,
+        "kind": "PropertyAccessExpression",
+        "text": "projected.path"
+      },
+      {
+        "line": 118,
+        "kind": "PropertyAccessExpression",
+        "text": "projected.path"
+      },
+      {
+        "line": 118,
+        "kind": "PropertyAccessExpression",
+        "text": "projected.path"
+      },
+      {
+        "line": 121,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 122,
+        "kind": "PropertyAccessExpression",
+        "text": "projected.message"
+      },
+      {
+        "line": 126,
+        "kind": "PropertyAccessExpression",
+        "text": "counts.length"
+      },
+      {
+        "line": 128,
+        "kind": "PropertyAccessExpression",
+        "text": "candidate.code"
+      },
+      {
+        "line": 128,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 132,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 133,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.count"
+      },
+      {
+        "line": 138,
+        "kind": "PropertyAccessExpression",
+        "text": "counts.length"
+      },
+      {
+        "line": 141,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.code"
+      },
+      {
+        "line": 141,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.count"
+      },
+      {
+        "line": 150,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 153,
+        "kind": "PropertyAccessExpression",
+        "text": "PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value"
+      },
+      {
+        "line": 154,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 154,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 154,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 154,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 192,
+        "kind": "PropertyAccessExpression",
+        "text": "checked.ok"
+      },
+      {
+        "line": 193,
+        "kind": "PropertyAccessExpression",
+        "text": "checked.issues"
+      },
+      {
+        "line": 245,
+        "kind": "ElementAccessExpression",
+        "text": "(holder as Record<string, unknown>)[key]"
+      },
+      {
+        "line": 253,
+        "kind": "PropertyAccessExpression",
+        "text": "seen.threw"
+      },
+      {
+        "line": 257,
+        "kind": "PropertyAccessExpression",
+        "text": "seen.observed"
+      },
+      {
+        "line": 260,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.prototype"
+      },
+      {
+        "line": 261,
+        "kind": "PropertyAccessExpression",
+        "text": "Function.prototype"
+      },
+      {
+        "line": 262,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.getPrototypeOf"
+      },
+      {
+        "line": 302,
+        "kind": "PropertyAccessExpression",
+        "text": "String.prototype.slice"
+      },
+      {
+        "line": 302,
+        "kind": "PropertyAccessExpression",
+        "text": "String.prototype"
+      },
+      {
+        "line": 303,
+        "kind": "PropertyAccessExpression",
+        "text": "Reflect.apply"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/identity.ts",
+    "sites": [
+      {
+        "line": 67,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.freeze"
+      },
+      {
+        "line": 95,
+        "kind": "PropertyAccessExpression",
+        "text": "parts.length"
+      },
+      {
+        "line": 96,
+        "kind": "ElementAccessExpression",
+        "text": "parts[index]"
+      },
+      {
+        "line": 107,
+        "kind": "PropertyAccessExpression",
+        "text": "part.length"
+      },
+      {
+        "line": 112,
+        "kind": "PropertyAccessExpression",
+        "text": "id.producerNamespace"
+      },
+      {
+        "line": 112,
+        "kind": "PropertyAccessExpression",
+        "text": "id.destination"
+      },
+      {
+        "line": 112,
+        "kind": "PropertyAccessExpression",
+        "text": "id.requestKey"
+      },
+      {
+        "line": 113,
+        "kind": "PropertyAccessExpression",
+        "text": "id.producerNamespace"
+      },
+      {
+        "line": 113,
+        "kind": "PropertyAccessExpression",
+        "text": "id.scope"
+      },
+      {
+        "line": 113,
+        "kind": "PropertyAccessExpression",
+        "text": "id.requestKey"
+      },
+      {
+        "line": 188,
+        "kind": "ElementAccessExpression",
+        "text": "BOUNDARY_PREFIX[boundary]"
+      },
+      {
+        "line": 206,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.scopes.length"
+      },
+      {
+        "line": 206,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.scopes"
+      },
+      {
+        "line": 207,
+        "kind": "ElementAccessExpression",
+        "text": "caller.scopes[index]"
+      },
+      {
+        "line": 207,
+        "kind": "PropertyAccessExpression",
+        "text": "caller.scopes"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/index.ts",
+    "sites": []
+  },
+  {
+    "file": "packages/kernel/src/inspection.ts",
+    "sites": []
+  },
+  {
+    "file": "packages/kernel/src/lifecycle.ts",
+    "sites": [
+      {
+        "line": 20,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.freeze"
+      },
+      {
+        "line": 49,
+        "kind": "PropertyAccessExpression",
+        "text": "TERMINAL_STATES.length"
+      },
+      {
+        "line": 50,
+        "kind": "ElementAccessExpression",
+        "text": "TERMINAL_STATES[index]"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/outcome.ts",
+    "sites": [
+      {
+        "line": 53,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.isArray"
+      },
+      {
+        "line": 54,
+        "kind": "PropertyAccessExpression",
+        "text": "Number.isSafeInteger"
+      },
+      {
+        "line": 55,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.freeze"
+      },
+      {
+        "line": 61,
+        "kind": "PropertyAccessExpression",
+        "text": "Reflect.ownKeys"
+      },
+      {
+        "line": 197,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.ok"
+      },
+      {
+        "line": 198,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.issues"
+      },
+      {
+        "line": 201,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.value"
+      },
+      {
+        "line": 228,
+        "kind": "PropertyAccessExpression",
+        "text": "key.length"
+      },
+      {
+        "line": 229,
+        "kind": "PropertyAccessExpression",
+        "text": "key.length"
+      },
+      {
+        "line": 230,
+        "kind": "ElementAccessExpression",
+        "text": "key[index]"
+      },
+      {
+        "line": 230,
+        "kind": "ElementAccessExpression",
+        "text": "key[index]"
+      },
+      {
+        "line": 252,
+        "kind": "PropertyAccessExpression",
+        "text": "keys.length"
+      },
+      {
+        "line": 254,
+        "kind": "ElementAccessExpression",
+        "text": "keys[index]"
+      },
+      {
+        "line": 261,
+        "kind": "PropertyAccessExpression",
+        "text": "allowed.length"
+      },
+      {
+        "line": 262,
+        "kind": "ElementAccessExpression",
+        "text": "allowed[position]"
+      },
+      {
+        "line": 275,
+        "kind": "PropertyAccessExpression",
+        "text": "seen.threw"
+      },
+      {
+        "line": 279,
+        "kind": "PropertyAccessExpression",
+        "text": "seen.observed"
+      },
+      {
+        "line": 305,
+        "kind": "PropertyAccessExpression",
+        "text": "elementSeen.threw"
+      },
+      {
+        "line": 309,
+        "kind": "PropertyAccessExpression",
+        "text": "elementSeen.observed"
+      },
+      {
+        "line": 317,
+        "kind": "PropertyAccessExpression",
+        "text": "keyField.ok"
+      },
+      {
+        "line": 317,
+        "kind": "PropertyAccessExpression",
+        "text": "valueField.ok"
+      },
+      {
+        "line": 318,
+        "kind": "PropertyAccessExpression",
+        "text": "keyField.observed"
+      },
+      {
+        "line": 319,
+        "kind": "PropertyAccessExpression",
+        "text": "valueField.observed"
+      },
+      {
+        "line": 321,
+        "kind": "PropertyAccessExpression",
+        "text": "keyField.observed"
+      },
+      {
+        "line": 323,
+        "kind": "PropertyAccessExpression",
+        "text": "keys.length"
+      },
+      {
+        "line": 364,
+        "kind": "PropertyAccessExpression",
+        "text": "stepField.ok"
+      },
+      {
+        "line": 365,
+        "kind": "PropertyAccessExpression",
+        "text": "stepField.observed"
+      },
+      {
+        "line": 373,
+        "kind": "PropertyAccessExpression",
+        "text": "resultField.ok"
+      },
+      {
+        "line": 374,
+        "kind": "PropertyAccessExpression",
+        "text": "resultField.observed"
+      },
+      {
+        "line": 380,
+        "kind": "PropertyAccessExpression",
+        "text": "errorField.ok"
+      },
+      {
+        "line": 381,
+        "kind": "PropertyAccessExpression",
+        "text": "errorField.observed"
+      },
+      {
+        "line": 409,
+        "kind": "PropertyAccessExpression",
+        "text": "epochField.ok"
+      },
+      {
+        "line": 409,
+        "kind": "PropertyAccessExpression",
+        "text": "epochField.observed"
+      },
+      {
+        "line": 410,
+        "kind": "PropertyAccessExpression",
+        "text": "baseField.ok"
+      },
+      {
+        "line": 410,
+        "kind": "PropertyAccessExpression",
+        "text": "baseField.observed"
+      },
+      {
+        "line": 415,
+        "kind": "PropertyAccessExpression",
+        "text": "progressField.ok"
+      },
+      {
+        "line": 415,
+        "kind": "PropertyAccessExpression",
+        "text": "progressField.observed"
+      },
+      {
+        "line": 418,
+        "kind": "PropertyAccessExpression",
+        "text": "emissionsField.ok"
+      },
+      {
+        "line": 418,
+        "kind": "PropertyAccessExpression",
+        "text": "emissionsField.observed"
+      },
+      {
+        "line": 421,
+        "kind": "PropertyAccessExpression",
+        "text": "effectsField.ok"
+      },
+      {
+        "line": 421,
+        "kind": "PropertyAccessExpression",
+        "text": "effectsField.observed"
+      },
+      {
+        "line": 424,
+        "kind": "PropertyAccessExpression",
+        "text": "nextField.ok"
+      },
+      {
+        "line": 424,
+        "kind": "PropertyAccessExpression",
+        "text": "nextField.observed"
+      },
+      {
+        "line": 428,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.overCapacity"
+      },
+      {
+        "line": 428,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 429,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.overCapacity"
+      },
+      {
+        "line": 432,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.emissions"
+      },
+      {
+        "line": 434,
+        "kind": "PropertyAccessExpression",
+        "text": "emissions.length"
+      },
+      {
+        "line": 436,
+        "kind": "PropertyAccessExpression",
+        "text": "emission.emissionKey"
+      },
+      {
+        "line": 437,
+        "kind": "PropertyAccessExpression",
+        "text": "emission.value.canonical"
+      },
+      {
+        "line": 437,
+        "kind": "PropertyAccessExpression",
+        "text": "emission.value"
+      },
+      {
+        "line": 439,
+        "kind": "PropertyAccessExpression",
+        "text": "next.step"
+      },
+      {
+        "line": 439,
+        "kind": "PropertyAccessExpression",
+        "text": "next.result.canonical"
+      },
+      {
+        "line": 439,
+        "kind": "PropertyAccessExpression",
+        "text": "next.result"
+      },
+      {
+        "line": 439,
+        "kind": "PropertyAccessExpression",
+        "text": "next.step"
+      },
+      {
+        "line": 439,
+        "kind": "PropertyAccessExpression",
+        "text": "next.error.canonical"
+      },
+      {
+        "line": 439,
+        "kind": "PropertyAccessExpression",
+        "text": "next.error"
+      },
+      {
+        "line": 442,
+        "kind": "PropertyAccessExpression",
+        "text": "claim.writerEpoch"
+      },
+      {
+        "line": 443,
+        "kind": "PropertyAccessExpression",
+        "text": "claim.baseProgressRevision"
+      },
+      {
+        "line": 444,
+        "kind": "PropertyAccessExpression",
+        "text": "progress.canonical"
+      },
+      {
+        "line": 445,
+        "kind": "PropertyAccessExpression",
+        "text": "emissions.length"
+      },
+      {
+        "line": 447,
+        "kind": "PropertyAccessExpression",
+        "text": "next.step"
+      },
+      {
+        "line": 451,
+        "kind": "PropertyAccessExpression",
+        "text": "claim.writerEpoch"
+      },
+      {
+        "line": 452,
+        "kind": "PropertyAccessExpression",
+        "text": "claim.baseProgressRevision"
+      },
+      {
+        "line": 514,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.ok"
+      },
+      {
+        "line": 514,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.observed"
+      },
+      {
+        "line": 515,
+        "kind": "PropertyAccessExpression",
+        "text": "epochField.ok"
+      },
+      {
+        "line": 515,
+        "kind": "PropertyAccessExpression",
+        "text": "epochField.observed"
+      },
+      {
+        "line": 517,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.observed"
+      },
+      {
+        "line": 523,
+        "kind": "PropertyAccessExpression",
+        "text": "field.ok"
+      },
+      {
+        "line": 524,
+        "kind": "PropertyAccessExpression",
+        "text": "field.observed"
+      },
+      {
+        "line": 526,
+        "kind": "PropertyAccessExpression",
+        "text": "root.value"
+      },
+      {
+        "line": 533,
+        "kind": "PropertyAccessExpression",
+        "text": "list.length"
+      },
+      {
+        "line": 550,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.ok"
+      },
+      {
+        "line": 550,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.observed"
+      },
+      {
+        "line": 552,
+        "kind": "PropertyAccessExpression",
+        "text": "availableField.ok"
+      },
+      {
+        "line": 553,
+        "kind": "PropertyAccessExpression",
+        "text": "availableField.observed"
+      },
+      {
+        "line": 563,
+        "kind": "PropertyAccessExpression",
+        "text": "activationField.observed"
+      },
+      {
+        "line": 571,
+        "kind": "PropertyAccessExpression",
+        "text": "list.length"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/own-array.ts",
+    "sites": [
+      {
+        "line": 72,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.defineProperty"
+      },
+      {
+        "line": 73,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.getOwnPropertyDescriptor"
+      },
+      {
+        "line": 74,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.create"
+      },
+      {
+        "line": 75,
+        "kind": "PropertyAccessExpression",
+        "text": "Reflect.apply"
+      },
+      {
+        "line": 76,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.prototype.hasOwnProperty"
+      },
+      {
+        "line": 76,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.prototype"
+      },
+      {
+        "line": 109,
+        "kind": "PropertyAccessExpression",
+        "text": "(fieldDescriptor as { readonly value?: unknown }).value"
+      },
+      {
+        "line": 151,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.value"
+      },
+      {
+        "line": 152,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.writable"
+      },
+      {
+        "line": 153,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.enumerable"
+      },
+      {
+        "line": 154,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.configurable"
+      },
+      {
+        "line": 175,
+        "kind": "ElementAccessExpression",
+        "text": "(holder as Record<string | symbol, unknown>)[key]"
+      },
+      {
+        "line": 186,
+        "kind": "PropertyAccessExpression",
+        "text": "safe.value"
+      },
+      {
+        "line": 187,
+        "kind": "PropertyAccessExpression",
+        "text": "safe.writable"
+      },
+      {
+        "line": 188,
+        "kind": "PropertyAccessExpression",
+        "text": "safe.enumerable"
+      },
+      {
+        "line": 189,
+        "kind": "PropertyAccessExpression",
+        "text": "safe.configurable"
+      },
+      {
+        "line": 190,
+        "kind": "PropertyAccessExpression",
+        "text": "safe.get"
+      },
+      {
+        "line": 191,
+        "kind": "PropertyAccessExpression",
+        "text": "safe.set"
+      },
+      {
+        "line": 231,
+        "kind": "PropertyAccessExpression",
+        "text": "list.length"
+      },
+      {
+        "line": 244,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.value"
+      },
+      {
+        "line": 249,
+        "kind": "PropertyAccessExpression",
+        "text": "extra.length"
+      },
+      {
+        "line": 262,
+        "kind": "PropertyAccessExpression",
+        "text": "list.length"
+      },
+      {
+        "line": 268,
+        "kind": "PropertyAccessExpression",
+        "text": "source.length"
+      },
+      {
+        "line": 280,
+        "kind": "PropertyAccessExpression",
+        "text": "source.length"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/refusal.ts",
+    "sites": [
+      {
+        "line": 137,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.freeze"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/result.ts",
+    "sites": []
+  },
+  {
+    "file": "packages/kernel/src/unsupported.ts",
+    "sites": [
+      {
+        "line": 25,
+        "kind": "PropertyAccessExpression",
+        "text": "this.name"
+      },
+      {
+        "line": 26,
+        "kind": "PropertyAccessExpression",
+        "text": "this.surface"
+      },
+      {
+        "line": 27,
+        "kind": "PropertyAccessExpression",
+        "text": "this.owner"
+      }
+    ]
+  },
+  {
+    "file": "packages/kernel/src/values.ts",
+    "sites": [
+      {
+        "line": 117,
+        "kind": "PropertyAccessExpression",
+        "text": "Reflect.apply"
+      },
+      {
+        "line": 120,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.keys"
+      },
+      {
+        "line": 121,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.getOwnPropertyNames"
+      },
+      {
+        "line": 122,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.getOwnPropertyDescriptor"
+      },
+      {
+        "line": 123,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.getPrototypeOf"
+      },
+      {
+        "line": 134,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.setPrototypeOf"
+      },
+      {
+        "line": 135,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.create"
+      },
+      {
+        "line": 136,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.freeze"
+      },
+      {
+        "line": 137,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.is"
+      },
+      {
+        "line": 148,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.prototype"
+      },
+      {
+        "line": 149,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.getOwnPropertySymbols"
+      },
+      {
+        "line": 150,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.isArray"
+      },
+      {
+        "line": 151,
+        "kind": "PropertyAccessExpression",
+        "text": "JSON.stringify"
+      },
+      {
+        "line": 152,
+        "kind": "PropertyAccessExpression",
+        "text": "Number.isFinite"
+      },
+      {
+        "line": 153,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype"
+      },
+      {
+        "line": 154,
+        "kind": "PropertyAccessExpression",
+        "text": "Set.prototype"
+      },
+      {
+        "line": 155,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype.map"
+      },
+      {
+        "line": 155,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype"
+      },
+      {
+        "line": 156,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype.join"
+      },
+      {
+        "line": 156,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype"
+      },
+      {
+        "line": 157,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype.sort"
+      },
+      {
+        "line": 157,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype"
+      },
+      {
+        "line": 158,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype.push"
+      },
+      {
+        "line": 158,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype"
+      },
+      {
+        "line": 159,
+        "kind": "ElementAccessExpression",
+        "text": "Array.prototype[Symbol.iterator]"
+      },
+      {
+        "line": 159,
+        "kind": "PropertyAccessExpression",
+        "text": "Array.prototype"
+      },
+      {
+        "line": 159,
+        "kind": "PropertyAccessExpression",
+        "text": "Symbol.iterator"
+      },
+      {
+        "line": 160,
+        "kind": "PropertyAccessExpression",
+        "text": "Set.prototype.has"
+      },
+      {
+        "line": 160,
+        "kind": "PropertyAccessExpression",
+        "text": "Set.prototype"
+      },
+      {
+        "line": 161,
+        "kind": "PropertyAccessExpression",
+        "text": "Set.prototype.add"
+      },
+      {
+        "line": 161,
+        "kind": "PropertyAccessExpression",
+        "text": "Set.prototype"
+      },
+      {
+        "line": 162,
+        "kind": "PropertyAccessExpression",
+        "text": "Set.prototype.delete"
+      },
+      {
+        "line": 162,
+        "kind": "PropertyAccessExpression",
+        "text": "Set.prototype"
+      },
+      {
+        "line": 179,
+        "kind": "PropertyAccessExpression",
+        "text": "(PrimordialArrayIteratorPrototype as { readonly next: unknown }).next"
+      },
+      {
+        "line": 203,
+        "kind": "PropertyAccessExpression",
+        "text": "String.prototype.charCodeAt"
+      },
+      {
+        "line": 203,
+        "kind": "PropertyAccessExpression",
+        "text": "String.prototype"
+      },
+      {
+        "line": 213,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.prototype.hasOwnProperty"
+      },
+      {
+        "line": 213,
+        "kind": "PropertyAccessExpression",
+        "text": "Object.prototype"
+      },
+      {
+        "line": 216,
+        "kind": "PropertyAccessExpression",
+        "text": "Buffer.byteLength"
+      },
+      {
+        "line": 304,
+        "kind": "PropertyAccessExpression",
+        "text": "path.length"
+      },
+      {
+        "line": 304,
+        "kind": "PropertyAccessExpression",
+        "text": "key.length"
+      },
+      {
+        "line": 307,
+        "kind": "PropertyAccessExpression",
+        "text": "path.length"
+      },
+      {
+        "line": 307,
+        "kind": "PropertyAccessExpression",
+        "text": "suffix.length"
+      },
+      {
+        "line": 311,
+        "kind": "PropertyAccessExpression",
+        "text": "text.length"
+      },
+      {
+        "line": 312,
+        "kind": "PropertyAccessExpression",
+        "text": "text.length"
+      },
+      {
+        "line": 313,
+        "kind": "ElementAccessExpression",
+        "text": "text[index]"
+      },
+      {
+        "line": 313,
+        "kind": "ElementAccessExpression",
+        "text": "text[index]"
+      },
+      {
+        "line": 354,
+        "kind": "PropertyAccessExpression",
+        "text": "input.length"
+      },
+      {
+        "line": 359,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.stringScalarValues"
+      },
+      {
+        "line": 364,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.stringScalarValues"
+      },
+      {
+        "line": 403,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 405,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.path"
+      },
+      {
+        "line": 406,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 407,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.message"
+      },
+      {
+        "line": 411,
+        "kind": "PropertyAccessExpression",
+        "text": "issues.length"
+      },
+      {
+        "line": 413,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.code"
+      },
+      {
+        "line": 413,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 415,
+        "kind": "PropertyAccessExpression",
+        "text": "(entry as { occurrences: number }).occurrences"
+      },
+      {
+        "line": 419,
+        "kind": "PropertyAccessExpression",
+        "text": "issue.code"
+      },
+      {
+        "line": 471,
+        "kind": "PropertyAccessExpression",
+        "text": "state.stopped"
+      },
+      {
+        "line": 472,
+        "kind": "PropertyAccessExpression",
+        "text": "state.bytes"
+      },
+      {
+        "line": 473,
+        "kind": "PropertyAccessExpression",
+        "text": "state.bytes"
+      },
+      {
+        "line": 473,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.canonicalBytes"
+      },
+      {
+        "line": 474,
+        "kind": "PropertyAccessExpression",
+        "text": "state.stopped"
+      },
+      {
+        "line": 475,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 478,
+        "kind": "PropertyAccessExpression",
+        "text": "state.bytes"
+      },
+      {
+        "line": 478,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.canonicalBytes"
+      },
+      {
+        "line": 493,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open.length"
+      },
+      {
+        "line": 493,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 494,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 500,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 508,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open.length"
+      },
+      {
+        "line": 508,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 509,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 510,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 510,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 510,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open.length"
+      },
+      {
+        "line": 510,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 511,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 511,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open.length"
+      },
+      {
+        "line": 511,
+        "kind": "PropertyAccessExpression",
+        "text": "state.open"
+      },
+      {
+        "line": 536,
+        "kind": "PropertyAccessExpression",
+        "text": "name.length"
+      },
+      {
+        "line": 536,
+        "kind": "PropertyAccessExpression",
+        "text": "name.length"
+      },
+      {
+        "line": 537,
+        "kind": "PropertyAccessExpression",
+        "text": "name.length"
+      },
+      {
+        "line": 538,
+        "kind": "ElementAccessExpression",
+        "text": "name[index]"
+      },
+      {
+        "line": 541,
+        "kind": "PropertyAccessExpression",
+        "text": "name.length"
+      },
+      {
+        "line": 541,
+        "kind": "ElementAccessExpression",
+        "text": "name[0]"
+      },
+      {
+        "line": 542,
+        "kind": "PropertyAccessExpression",
+        "text": "name.length"
+      },
+      {
+        "line": 554,
+        "kind": "PropertyAccessExpression",
+        "text": "name.length"
+      },
+      {
+        "line": 586,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 594,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 597,
+        "kind": "ElementAccessExpression",
+        "text": "(container as Record<string, unknown>)[key]"
+      },
+      {
+        "line": 598,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.value"
+      },
+      {
+        "line": 599,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 606,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.value"
+      },
+      {
+        "line": 624,
+        "kind": "PropertyAccessExpression",
+        "text": "state.stopped"
+      },
+      {
+        "line": 631,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 637,
+        "kind": "PropertyAccessExpression",
+        "text": "`${value as number}`.length"
+      },
+      {
+        "line": 642,
+        "kind": "PropertyAccessExpression",
+        "text": "scan.kind"
+      },
+      {
+        "line": 643,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 644,
+        "kind": "PropertyAccessExpression",
+        "text": "text.length"
+      },
+      {
+        "line": 647,
+        "kind": "PropertyAccessExpression",
+        "text": "scan.kind"
+      },
+      {
+        "line": 648,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 651,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.stringScalarValues"
+      },
+      {
+        "line": 655,
+        "kind": "PropertyAccessExpression",
+        "text": "text.length"
+      },
+      {
+        "line": 658,
+        "kind": "PropertyAccessExpression",
+        "text": "scan.bytes"
+      },
+      {
+        "line": 661,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 667,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 672,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerDepth"
+      },
+      {
+        "line": 673,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 676,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerDepth"
+      },
+      {
+        "line": 690,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 709,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 716,
+        "kind": "PropertyAccessExpression",
+        "text": "(container as { length: unknown }).length"
+      },
+      {
+        "line": 720,
+        "kind": "PropertyAccessExpression",
+        "text": "lengthDescriptor.value"
+      },
+      {
+        "line": 723,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 737,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 738,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 741,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 763,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 763,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 765,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 766,
+        "kind": "ElementAccessExpression",
+        "text": "names[nameIndex]"
+      },
+      {
+        "line": 772,
+        "kind": "PropertyAccessExpression",
+        "text": "PrimordialGetOwnPropertySymbols(container).length"
+      },
+      {
+        "line": 774,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 777,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 777,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 781,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 792,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 793,
+        "kind": "ElementAccessExpression",
+        "text": "names[nameIndex]"
+      },
+      {
+        "line": 799,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 805,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 819,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 838,
+        "kind": "PropertyAccessExpression",
+        "text": "state.stopped"
+      },
+      {
+        "line": 842,
+        "kind": "PropertyAccessExpression",
+        "text": "member.ok"
+      },
+      {
+        "line": 846,
+        "kind": "PropertyAccessExpression",
+        "text": "member.value"
+      },
+      {
+        "line": 847,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 851,
+        "kind": "PropertyAccessExpression",
+        "text": "member.value"
+      },
+      {
+        "line": 875,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 880,
+        "kind": "PropertyAccessExpression",
+        "text": "PrimordialGetOwnPropertySymbols(container).length"
+      },
+      {
+        "line": 882,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 900,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 900,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 900,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 900,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 904,
+        "kind": "ElementAccessExpression",
+        "text": "names[nameIndex]"
+      },
+      {
+        "line": 908,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 916,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.enumerable"
+      },
+      {
+        "line": 920,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 923,
+        "kind": "PropertyAccessExpression",
+        "text": "enumerable.length"
+      },
+      {
+        "line": 923,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 924,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 928,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 929,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 929,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 930,
+        "kind": "PropertyAccessExpression",
+        "text": "enumerable.length"
+      },
+      {
+        "line": 930,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.containerEntries"
+      },
+      {
+        "line": 938,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 941,
+        "kind": "PropertyAccessExpression",
+        "text": "enumerable.length"
+      },
+      {
+        "line": 942,
+        "kind": "PropertyAccessExpression",
+        "text": "state.stopped"
+      },
+      {
+        "line": 946,
+        "kind": "ElementAccessExpression",
+        "text": "pair[0]"
+      },
+      {
+        "line": 947,
+        "kind": "ElementAccessExpression",
+        "text": "pair[1]"
+      },
+      {
+        "line": 950,
+        "kind": "PropertyAccessExpression",
+        "text": "keyScan.kind"
+      },
+      {
+        "line": 951,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 953,
+        "kind": "PropertyAccessExpression",
+        "text": "key.length"
+      },
+      {
+        "line": 956,
+        "kind": "PropertyAccessExpression",
+        "text": "keyScan.kind"
+      },
+      {
+        "line": 957,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 960,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.stringScalarValues"
+      },
+      {
+        "line": 963,
+        "kind": "PropertyAccessExpression",
+        "text": "key.length"
+      },
+      {
+        "line": 967,
+        "kind": "PropertyAccessExpression",
+        "text": "keyScan.bytes"
+      },
+      {
+        "line": 969,
+        "kind": "PropertyAccessExpression",
+        "text": "member.ok"
+      },
+      {
+        "line": 973,
+        "kind": "PropertyAccessExpression",
+        "text": "member.value"
+      },
+      {
+        "line": 974,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 982,
+        "kind": "PropertyAccessExpression",
+        "text": "member.value"
+      },
+      {
+        "line": 1001,
+        "kind": "PropertyAccessExpression",
+        "text": "captured.length"
+      },
+      {
+        "line": 1003,
+        "kind": "ElementAccessExpression",
+        "text": "pair[0]"
+      },
+      {
+        "line": 1003,
+        "kind": "ElementAccessExpression",
+        "text": "pair[1]"
+      },
+      {
+        "line": 1071,
+        "kind": "PropertyAccessExpression",
+        "text": "lengthDescriptor.value"
+      },
+      {
+        "line": 1072,
+        "kind": "PropertyAccessExpression",
+        "text": "lengthDescriptor.value"
+      },
+      {
+        "line": 1073,
+        "kind": "PropertyAccessExpression",
+        "text": "(value as unknown[]).length"
+      },
+      {
+        "line": 1080,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.value"
+      },
+      {
+        "line": 1091,
+        "kind": "PropertyAccessExpression",
+        "text": "lengthDescriptorInner.value"
+      },
+      {
+        "line": 1092,
+        "kind": "PropertyAccessExpression",
+        "text": "lengthDescriptorInner.value"
+      },
+      {
+        "line": 1093,
+        "kind": "PropertyAccessExpression",
+        "text": "self.length"
+      },
+      {
+        "line": 1102,
+        "kind": "PropertyAccessExpression",
+        "text": "innerDescriptor.value"
+      },
+      {
+        "line": 1113,
+        "kind": "PropertyAccessExpression",
+        "text": "keys.length"
+      },
+      {
+        "line": 1114,
+        "kind": "ElementAccessExpression",
+        "text": "keys[keyIndex]"
+      },
+      {
+        "line": 1117,
+        "kind": "PropertyAccessExpression",
+        "text": "descriptor.value"
+      },
+      {
+        "line": 1185,
+        "kind": "PropertyAccessExpression",
+        "text": "PrimordialSymbol.iterator"
+      },
+      {
+        "line": 1266,
+        "kind": "PropertyAccessExpression",
+        "text": "holders.length"
+      },
+      {
+        "line": 1267,
+        "kind": "ElementAccessExpression",
+        "text": "holders[holderIndex]"
+      },
+      {
+        "line": 1269,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 1270,
+        "kind": "ElementAccessExpression",
+        "text": "names[nameIndex]"
+      },
+      {
+        "line": 1295,
+        "kind": "PropertyAccessExpression",
+        "text": "holders.length"
+      },
+      {
+        "line": 1296,
+        "kind": "ElementAccessExpression",
+        "text": "holders[holderIndex]"
+      },
+      {
+        "line": 1297,
+        "kind": "PropertyAccessExpression",
+        "text": "names.length"
+      },
+      {
+        "line": 1298,
+        "kind": "ElementAccessExpression",
+        "text": "names[nameIndex]"
+      },
+      {
+        "line": 1338,
+        "kind": "PropertyAccessExpression",
+        "text": "named.length"
+      },
+      {
+        "line": 1348,
+        "kind": "PropertyAccessExpression",
+        "text": "slots.length"
+      },
+      {
+        "line": 1351,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1352,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.key"
+      },
+      {
+        "line": 1353,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1353,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.key"
+      },
+      {
+        "line": 1361,
+        "kind": "PropertyAccessExpression",
+        "text": "slots.length"
+      },
+      {
+        "line": 1367,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1367,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.key"
+      },
+      {
+        "line": 1367,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.primordial"
+      },
+      {
+        "line": 1375,
+        "kind": "PropertyAccessExpression",
+        "text": "shadows.length"
+      },
+      {
+        "line": 1377,
+        "kind": "ElementAccessExpression",
+        "text": "(entry.holder as Record<string | symbol, unknown>)[entry.key]"
+      },
+      {
+        "line": 1377,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1377,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.key"
+      },
+      {
+        "line": 1379,
+        "kind": "PropertyAccessExpression",
+        "text": "chains.length"
+      },
+      {
+        "line": 1381,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.proto"
+      },
+      {
+        "line": 1381,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.primordial"
+      },
+      {
+        "line": 1381,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1381,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.primordial"
+      },
+      {
+        "line": 1386,
+        "kind": "PropertyAccessExpression",
+        "text": "chains.length"
+      },
+      {
+        "line": 1388,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1388,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.proto"
+      },
+      {
+        "line": 1388,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1388,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.proto"
+      },
+      {
+        "line": 1390,
+        "kind": "PropertyAccessExpression",
+        "text": "shadows.length"
+      },
+      {
+        "line": 1396,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.descriptor"
+      },
+      {
+        "line": 1396,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1396,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.key"
+      },
+      {
+        "line": 1396,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.descriptor"
+      },
+      {
+        "line": 1398,
+        "kind": "PropertyAccessExpression",
+        "text": "saved.length"
+      },
+      {
+        "line": 1400,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.descriptor"
+      },
+      {
+        "line": 1403,
+        "kind": "ElementAccessExpression",
+        "text": "(entry.holder as Record<string | symbol, unknown>)[entry.key]"
+      },
+      {
+        "line": 1403,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1403,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.key"
+      },
+      {
+        "line": 1405,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.holder"
+      },
+      {
+        "line": 1405,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.key"
+      },
+      {
+        "line": 1405,
+        "kind": "PropertyAccessExpression",
+        "text": "entry.descriptor"
+      },
+      {
+        "line": 1432,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues.length"
+      },
+      {
+        "line": 1432,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 1436,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues.length"
+      },
+      {
+        "line": 1436,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 1437,
+        "kind": "PropertyAccessExpression",
+        "text": "state.issues"
+      },
+      {
+        "line": 1468,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.canonicalBytes"
+      },
+      {
+        "line": 1475,
+        "kind": "PropertyAccessExpression",
+        "text": "BOUNDARY_LIMITS.canonicalBytes"
+      },
+      {
+        "line": 1486,
+        "kind": "PropertyAccessExpression",
+        "text": "result.ok"
+      },
+      {
+        "line": 1486,
+        "kind": "PropertyAccessExpression",
+        "text": "result.issues"
+      },
+      {
+        "line": 1490,
+        "kind": "PropertyAccessExpression",
+        "text": "boundaryValueIssues(value).length"
+      },
+      {
+        "line": 1516,
+        "kind": "PropertyAccessExpression",
+        "text": "left.canonical"
+      },
+      {
+        "line": 1516,
+        "kind": "PropertyAccessExpression",
+        "text": "right.canonical"
+      }
+    ]
+  }
+]

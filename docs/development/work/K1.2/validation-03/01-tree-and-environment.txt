@@ -1,0 +1,24 @@
+candidate C: 5797bde3df2f3b6f91f255a0b08a6b42ad2d134d
+base: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+command: git status --porcelain; git rev-parse HEAD; git log --oneline -3; node --version; npm --version; sw_vers; uname -m; date -u
+environment: v25.2.1, npm 11.6.2, macOS 26.6.2 25G83 arm64
+config: default CoordinatorOptions (mailboxCapacity 1024, emissionsPerOutcome 256); no external fixtures
+output-sha256: 095fc34df152d0ccba02e064fa0157c4c10c2aa6ab22b023db50e3e7d167d3d8
+--- output begins ---
+?? docs/development/work/K1.2/validation-03/
+5797bde3df2f3b6f91f255a0b08a6b42ad2d134d
+5797bde correct(K1.2): close R2 takeover reentrancy, DOC history-build, REC attachment identity
+19d7700 review(K1.2): record round-2 changes required
+da371b6 report(K1.2): round-2 report and WAITING_FOR_REVIEW
+v25.2.1
+11.6.2
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+arm64
+Fri Sep 25 00:04:55 UTC 2026
+
+--- output ends ---
+exit 0
+2026-09-25T00:04:55Z

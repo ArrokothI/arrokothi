@@ -1,0 +1,38 @@
+candidate C: 149f7f186c8a2370da8a3afc37cd75076d8c1e64
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /private/tmp/k12-r6-xeh4fl3h/checkout
+command: node docs/development/work/K1.2/checks-06.mjs
+environment: {"node": "v26.8.1", "npm": "11.19.0", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t15.6.1\nBuildVersion:\t\t24G90", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "90996ac232a3d661d190e101836d9536032bdfc319d97de606b63a6aae473ba5", "docs/development/work/K1.2/checks-06.mjs": "ee5e2cd5c5cc354f6857ba1494d9574d842d1659158b69246eb98b1ef9a6563d", "docs/development/work/K1.2/contract.md": "6e40d894dd4e51ae80abd7df0058740afc1fb15902c5ed96a20aed1b6256be95", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "packages/kernel/tests/submission-lifetime.test.ts": "f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T11:46:22.061974+00:00
+finished-utc: 2026-09-25T11:46:23.687600+00:00
+output-bytes: 1228
+output-sha256: ba15ed0ff05d7732f6930329228d4ecdddd6d34ddc8ef24823790b32c06d41f0
+--- output begins ---
+PASS: all runtime source bytes unchanged from H5.
+PASS: all 29 pre-existing kernel test/helper files retain their printed syntax, including assertions.
+PASS: all 25 prior ablations and runner unchanged; only B10/B11 appended.
+PASS: 54 sealed historical files unchanged from inspected starting head.
+PASS: removed rewrite drafts remain absent; Layer-3/index bytes unchanged from H5 pending owner decision.
+PASS: cumulative candidate changes no legacy/SDK/integration source.
+PASS: 28 local links/anchors in changed contract, blocker and reconstruction record.
+Correction delta:
+docs/development/007-work-packets.md              |   2 +-
+ docs/development/work/K1.2/ablations.mjs          |  12 ++
+ docs/development/work/K1.2/blocker-01.md          |  49 +++++++
+ docs/development/work/K1.2/checks-06.mjs          |  53 ++++++++
+ docs/development/work/K1.2/contract.md            |   7 +-
+ docs/development/work/K1.2/submission-audit-06.md |  82 ++++++++++++
+ packages/kernel/tests/harness.ts                  |  11 +-
+ packages/kernel/tests/submission-lifetime.test.ts | 155 ++++++++++++++++++++++
+ 8 files changed, 362 insertions(+), 9 deletions(-)
+Cumulative candidate:
+100 files changed, 45693 insertions(+), 396 deletions(-)
+
+--- output ends ---
+exit 0

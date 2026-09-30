@@ -1,0 +1,22 @@
+CONTROL-OK CONTROL: tests=1179 pass=1179 fail=0 cancelled=0
+REJECTED R1 structured refusal executionId rendered lossy: tests=1179 pass=1171 fail=8 cancelled=0
+    matched long identity: every Outcome refusal renderer, exact replay and answerability | matched long identity: control, hold and unsafe-replacement renderers | matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability
+REJECTED R2 code availability compared through the diagnostic spelling: tests=1179 pass=1176 fail=3 cancelled=0
+    pinned names long: hold and history aliases bounded while structured identity remains exact | pinned names Unicode: hold and history aliases bounded while structured identity remains exact | pinned names 129: hold and history aliases bounded while structured identity remains exact
+REJECTED R3 projection after the root label (inverse of DEC-5 order): tests=1179 pass=1173 fail=6 cancelled=0
+    progress: member name length at the limit is accepted and retained exactly; one past refuses the whole Outcome | an Emission value: member name length at the limit is accepted and retained exactly; one past refuses the whole Outcome | a completion result: member name length at the limit is accepted and retained exactly; one past refuses the whole Outcome
+SURVIVED R4 wrong-Activation comparison through the diagnostic spelling: tests=1179 pass=1179 fail=0 cancelled=0
+SURVIVED R5 control exchange lookup through the diagnostic spelling: tests=1179 pass=1179 fail=0 cancelled=0
+REJECTED R6 replay lookup keyed by diagnostic spelling: tests=1179 pass=1171 fail=8 cancelled=0
+    reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable | maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+SURVIVED R7 duplicate Emission comparison through diagnostic spelling: tests=1179 pass=1179 fail=0 cancelled=0
+REJECTED R8 identity limit 127 (one-under edge): tests=1179 pass=1176 fail=3 cancelled=0
+    identity diagnostic edge 128 printable units does not change lookup | duplicate Emission name 128: bounded reason retains duplicate diagnosis and exact key semantics | pinned names 128: hold and history aliases bounded while structured identity remains exact
+SURVIVED R9 path limit 129 (one-over edge): tests=1179 pass=1179 fail=0 cancelled=0
+REJECTED R10 message limit removed: tests=1179 pass=1178 fail=1 cancelled=0
+    constructor long: all root messages projected before composition, recovery roots included
+REJECTED R11 code-hold 'updated' detection compares rendered reasons of equal kind only: tests=1179 pass=1174 fail=5 cancelled=0
+    a) code hold lifecycle: entered, updated on reason change, cleared_by_declaration; all retained | K12-R1-HISTORY-01 recovery history is retained Execution evidence | pinned names long: hold and history aliases bounded while structured identity remains exact
+REJECTED R12 protocol diagnostic sanitized like an identity (DEC-6 inverse): tests=1179 pass=1177 fail=2 cancelled=0
+    a report for the current attempt holds with a bounded diagnostic and changes nothing else | K1.2-C10 an unclassifiable response holds the exchange; it is never retried silently | explicit protocol diagnostics retain their existing 1,024-unit payload rule through both clear paths
+exit 0

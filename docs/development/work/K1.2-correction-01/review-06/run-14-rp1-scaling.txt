@@ -1,0 +1,7 @@
+# R-P1 D=10000 at H; D=1000 at base a20d278 and previous H 312f258; no-describe attribution mutant
+command: node --expose-gc --experimental-strip-types probes/p-chain.mjs <tree> refuse-chain <D> 4096 256
+H {"mode":"refuse-chain","D":10000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":37164,"heapMiB":21.9,"rssMiB":75}
+base {"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":1044481,"total":1044481,"ms":8374,"heapMiB":180.5,"rssMiB":388}
+prevh {"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":1044481,"total":1044481,"ms":8625,"heapMiB":194.9,"rssMiB":373}
+NODESCRIBE {"mode":"refuse-chain","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1452,"heapMiB":3.9,"rssMiB":101}
+NODESCRIBE {"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1426,"heapMiB":3.6,"rssMiB":101}

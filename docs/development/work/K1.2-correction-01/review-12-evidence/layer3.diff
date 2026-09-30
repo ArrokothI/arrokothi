@@ -1,0 +1,374 @@
+diff --git a/mental-model/concepts/core.md b/mental-model/concepts/core.md
+index 3b5e521..d90ae7e 100644
+--- a/mental-model/concepts/core.md
++++ b/mental-model/concepts/core.md
+@@ -83,7 +83,7 @@ The Driver translates in both directions, but the two directions are not mirror
+ 
+ Outbound is the simple one. The Kernel hands the Driver an Activation; the Driver forwards its exact input to the Runtime by whatever route reaches that Runtime, calling a local function or submitting a remote job, and the call ends. Whatever that call returns, the Kernel does not read it, inspect it or wait on it. Nothing here is the Driver deciding anything, either: the Activation it was handed already fixes which program this is and what state the work resumes from, and the Runtime is what then does the work.
+ 
+-Inbound comes later, by its own route. When the native side eventually produces a result, the Driver turns that result into an Outcome — a separate act, at a time nobody fixed in advance — and what it produces is still only a proposal until [Outcome acceptance](../mechanisms/execution-cycle.md#outcome-acceptance) rules on it. No part of the outbound call is held open waiting for it.
++Inbound comes later, by its own route. When the native side eventually produces a result, the Driver turns that result into an Outcome — a separate act, at a time nobody fixed in advance. It submits the Outcome with the [submission authority](../mechanisms/execution-cycle.md#submission-authority) it was handed with the Activation, which shows the answer comes from the attempt allowed to give it. What it produces is still only a proposal until [Outcome acceptance](../mechanisms/execution-cycle.md#outcome-acceptance) rules on it. No part of the outbound call is held open waiting for it.
+ 
+ Between those two moments the Kernel is missing exactly one fact: did the hand-off reach the Runtime? The Driver answers that explicitly, through a reporting capability the Kernel supplies alongside the Activation, rather than by returning an answer the Kernel would then have to watch — which would blur "I delivered it" into "the work finished."
+ 
+diff --git a/mental-model/concepts/identity.md b/mental-model/concepts/identity.md
+index 85ce331..810d423 100644
+--- a/mental-model/concepts/identity.md
++++ b/mental-model/concepts/identity.md
+@@ -78,6 +78,26 @@ One identity used throughout this page is defined elsewhere. The Execution ID 
+ 
+ An **Activation ID** names one immutable semantic exchange — the pinned progress revision, the fixed Event batch, and the input that [Activation](core.md#activation) defines — for as long as that exchange remains unresolved. It answers *what is being asked?* A new Activation ID is minted only when a genuinely new exchange begins, which is to say after the previous one resolves and the Kernel prepares a fresh dispatch. Resending bytes never mints one.
+ 
++A binding's Activation-identity representation must admit every ID its Kernel can mint, on
++both Outcome submission (including replay lookup) and controls on the exchange. Composing an
++ID from individually valid parts must not make that exchange unanswerable within the binding's
++engine allocation limits, including required derived-identity compositions. This is separate
++from the limits on [boundary values](values.md#boundary-value-and-root).
++
++The representation and well-formedness rule belong to the binding. The in-process binding uses
++opaque primitive JavaScript strings with exact UTF-16 code-unit equality, including empty strings,
++lone surrogates and strings without an additional semantic length limit. JavaScript's string
++allocation limits still constrain individual representations and their composition; admitting an
++ID as a coordinate does not guarantee that every larger derived string fits in the engine.
++Structural validity neither proves that an exchange
++exists nor authorizes answering it. [The implemented baseline](../../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api)
++records that choice; it does not fix a wire format.
++<!-- OPEN(implementation): Activation-identity representation and well-formedness. Every minted ID
++must be usable by its consumers within the allocation qualification above. The in-process binding chooses any primitive JavaScript string,
++compared unchanged by exact code-unit equality, without a value-string length or Unicode check;
++BASELINE #outcome-acceptance-api records it. Record each binding's choice here and in its baseline;
++leave this marker until an architectural decision fixes the representation. rewrite-index.md §4 -->
++
+ A **Runtime attempt** is the currently authorized effort to perform one unresolved Activation exchange. It answers *whose work is this?*, and it is a separate identity from the Activation because one question can outlive more than one effort to answer it. Sending the same dispatch again, because the first send may not have arrived, continues the same attempt — nothing about who is working has been re-decided. Only an authorized takeover replaces the effort, and what it produces is a second attempt at the very same exchange.
+ 
+ Keeping the two identities apart is what makes a late answer classifiable at all. Three situations look identical from outside — a Runtime is being asked to work on something again — and they differ only in which identity survived: ordinary redelivery keeps both, takeover keeps the exchange and replaces the effort, and a new exchange after resolution replaces both.
+@@ -104,7 +124,9 @@ And it is **not a lock on anything physical** — not on a native session, not o
+ 
+ That last limit has a consequence the Kernel cannot discharge by itself. Because a superseded attempt may still hold live native work, authorizing a takeover needs a separate guarantee from the [Driver](core.md#execution-driver) that native continuation is exclusive or otherwise safe to replace. Where no such guarantee can be established, takeover is refused or held rather than assumed. [Deciding permission before replacing work](../mechanisms/recovery.md#decide-permission-before-replacing-work) owns that decision.
+ 
+-Two representation questions stay deliberately open. How an epoch is spelled — an integer, a fencing token, something else — is an implementation choice. So is whether the sequence restarts or continues when a genuinely new Activation begins: a deployment may number each exchange from 1 or carry one order across exchanges, and both preserve the only property the architecture requires, which is that a stale epoch for the *current* exchange is rejected. <!-- OPEN(implementation): writer-epoch representation, and whether the sequence restarts or continues across a later Activation. The architecture requires only that a stale epoch for the current exchange is rejected; both questions are settled by each implementation for itself. The epoch numbers used in this section are illustrative and fix no representation, no starting value, and no relationship between one exchange's epochs and the next's — a conformance fixture comparing epoch values across different Activation IDs over-constrains conforming implementations (K0.2 round 13, K02-R13-01), and K1.1-DEC-2 numbers each exchange from 1 as an implementation choice, not architecture. An implementation that settles either question: record its answer here as that implementation's choice, with a pointer to where it is written down, and leave this marker in place. Only a later decision to fix a representation architecturally deletes it. rewrite-index.md §4; WS ID-4 -->
++Knowing the current epoch is not the right to use it. Anyone who may inspect the Execution can read the epoch, so an Outcome that merely quotes it proves nothing about who produced it. The Kernel therefore gives each attempt a [submission authority](../mechanisms/execution-cycle.md#submission-authority) that only that attempt holds: the epoch says which attempt may commit, and the authority shows that a submission comes from it.
++
++Two representation questions stay deliberately open. How an epoch is spelled — an integer, a fencing token, something else — is an implementation choice. So is whether the sequence restarts or continues when a genuinely new Activation begins: a deployment may number each exchange from 1 or carry one order across exchanges, and both preserve the only property the architecture requires, which is that a stale epoch for the *current* exchange is rejected. <!-- OPEN(implementation): writer-epoch representation, and whether the sequence restarts or continues across a later Activation. The architecture requires only that a stale epoch for the current exchange is rejected; both questions are settled by each implementation for itself. The epoch numbers used in this section are illustrative and fix no representation, no starting value, and no relationship between one exchange's epochs and the next's — a conformance fixture comparing epoch values across different Activation IDs over-constrains conforming implementations (K0.2 round 13, K02-R13-01). The in-process binding's choice, recorded in BASELINE #outcome-acceptance-api: an integer that restarts at 1 for each new exchange and advances by exactly 1 per accepted takeover; that is the binding's choice, not architecture. An implementation that settles either question: record its answer here as that implementation's choice, with a pointer to where it is written down, and leave this marker in place. Only a later decision to fix a representation architecturally deletes it. rewrite-index.md §4; WS ID-4 -->
+ 
+ An **attempt envelope** is the transport or protocol wrapper that carries attempt metadata around the immutable exchange. It is a container: not a second epoch, not an identity of its own, and not a recovery mechanism. A takeover replaces what the envelope carries without touching the exchange's semantic input, which is precisely the property that keeps the Activation ID meaningful across it.
+ 
+diff --git a/mental-model/concepts/values.md b/mental-model/concepts/values.md
+index f3fb644..6204909 100644
+--- a/mental-model/concepts/values.md
++++ b/mental-model/concepts/values.md
+@@ -194,6 +194,42 @@ A value over a limit is refused in the same way as any other malformed value. It
+ 
+ Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
+ 
++In the in-process binding, engine own-key enumeration and execution of caller traps are outside
++the cost claim. The caller-code boundary also excludes all engine-internal work attributable to a
++live Proxy (an object whose internal methods are caller-defined) reached while observing a value.
++This includes trap discovery, absent-trap forwarding, nested targets and array classification,
++invariant checks and their induced target/handler operations, and conversion of trap results.
++No time bound is claimed for values containing live Proxies. Protection against hostile
++in-process code requires isolation or transport containment; these semantic limits do not provide it.
++
++Every lookup the Kernel itself chooses to perform remains bound, on any value. The refusal-cost
++requirement remains unchanged for values containing no Proxy, including ordinary objects and
++arrays with any prototype chain. Counts bound the observations and invocations selected by Kernel
++code: at most one observation per position, the fixed per-container structural observations, and
++the byte stop and four limits. Callbacks induced by the engine inside one selected operation are
++not counted or promised. This boundary changes neither exact accepted values, coherent-Proxy
++acceptance, ambient safety nor diagnostic occurrence counts, and permits no reuse of observations.
++
++The cost also includes materializing a string during a character read. A bounded number of reads
++does not suffice if the first read materializes an oversized representation in full.
++
++The cost includes diagnostic construction and retention, not just accepted-value traversal. Bounding
++a message after an unbounded property lookup or concatenation does not bound its construction. A
++refused position must not leave a separate unbounded path or message in memory for every occurrence
++in a shared graph. Diagnostic compression may retain bounded details plus exact counts of the
++remaining reasons; it does not make an invalid value valid, change any accepted bytes, or waive
++single observation. A summary describes the positions actually examined, never positions beyond a
++traversal stop. The same cost obligation applies when several roots are captured eagerly before a
++request's authority is decided; their semantic budgets remain separate.
++<!-- OPEN(implementation): diagnostic storage for bounded refusal cost. The in-process binding
++retains the first eight bounded details per root followed by exact occurrence counts per remaining
++code, ordered by first remaining occurrence; paths are bounded before construction and messages
++before retention. Type labels use only null/typeof classification, without another structural or
++property observation of the caller value. Traversal and byte-budget stopping are unchanged. The choice is recorded in
++BASELINE #value-refusal-diagnostics. Other bindings may choose a different representation meeting
++V-D1; record a binding choice here and in its baseline without changing semantic limits. Leave this
++marker while representation remains an implementation choice. rewrite-index.md §4 -->
++
+ These are *semantic* limits: they decide which values are valid. They make no promise about messages or bytes on the wire. No semantic limit applies to the sum of a message's roots, and no transport's byte size is guaranteed. A deployment may impose tighter limits on its transport, such as a smaller maximum request body. It may not silently redefine these four. If a transport limit could change which values the protocol considers valid, two deployments of the same protocol could disagree about validity. These numbers change only through an explicit, versioned amendment to the protocol.
+ 
+ It follows that these limits do not protect anything from an oversized message. One Outcome can carry many roots, each just under 1 MiB. A deployment that accepts messages from a party it does not fully trust, such as a Runtime in an [Isolated Execution](operations.md#isolated-execution), has to bound whole messages in its transport. A message refused there was never delivered. Its values were not judged invalid.
+diff --git a/mental-model/mechanisms/execution-cycle.md b/mental-model/mechanisms/execution-cycle.md
+index 1c92aeb..36b1c0f 100644
+--- a/mental-model/mechanisms/execution-cycle.md
++++ b/mental-model/mechanisms/execution-cycle.md
+@@ -10,7 +10,7 @@ Before the protocol details: the application creates Execution E for a weekly re
+ 
+ ## Before sending
+ 
+-As one decision, the Kernel atomically reserves the exact Event [batch](../concepts/core.md#batch-reservation-and-acknowledgment) and records: [dispatch intent](../concepts/identity.md#dispatch-and-delivery), the current [writer epoch](../concepts/identity.md#writer-epoch), accepted [progress](../concepts/state.md#progress) and base revision, the progress [codec](../concepts/values.md#codec), pinned Runtime/[Definition](../concepts/core.md#definition) revisions, and the supplied authorized [execution view](../concepts/roles.md#view-and-disclosure). This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost. Recording all of this before sending is what makes a crash between "decided to dispatch" and "the Runtime heard about it" recoverable: on restart the Kernel finds a pinned exchange it can redeliver unchanged, rather than having to guess which Events it had meant to hand over.
++As one decision, the Kernel atomically reserves the exact Event [batch](../concepts/core.md#batch-reservation-and-acknowledgment) and records: [dispatch intent](../concepts/identity.md#dispatch-and-delivery), the current [writer epoch](../concepts/identity.md#writer-epoch), accepted [progress](../concepts/state.md#progress) and base revision, the progress [codec](../concepts/values.md#codec), pinned Runtime/[Definition](../concepts/core.md#definition) revisions, and the supplied authorized [execution view](../concepts/roles.md#view-and-disclosure). It also fixes the current [Runtime attempt](../concepts/identity.md#runtime-attempt), with its [submission authority](#submission-authority). This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost. Recording all of this before sending is what makes a crash between "decided to dispatch" and "the Runtime heard about it" recoverable: on restart the Kernel finds a pinned exchange it can redeliver unchanged, rather than having to guess which Events it had meant to hand over.
+ 
+ Sending proceeds through the [Driver](../concepts/core.md#execution-driver) without synchronously waiting for native work in the coordinator loop. The Driver may call a local function or submit a remote job. Dispatch acknowledgment, heartbeat, cancellation signals and diagnostic streaming are operational traffic, not extra progress-writing Outcomes.
+ 
+@@ -23,32 +23,46 @@ Activation: execution_id, activation_id, writer_epoch, base_progress_revision,
+ Outcome:    execution_id, activation_id, writer_epoch, base_progress_revision,
+             progress, emissions[], effects[], next
+ next:       continue | await(wait) | complete(result) | fail(error)
++presented:  the attempt's submission authority, beside the Outcome, not inside it
+ ```
+ 
++## Submission authority
++
++The [writer epoch](../concepts/identity.md#writer-epoch) says which attempt may commit. It cannot show that a submitter *is* that attempt. Anyone who may inspect the Execution can read the current Activation ID and epoch, and a caller who copied them into an envelope would pass the fence without being the attempt the fence protects. The current attempt needs something to present that nobody else can produce.
++
++**Submission authority** is the Kernel-issued proof that a submitter is the current Runtime attempt of an unresolved exchange. The Kernel issues it with the attempt, hands it to the Driver together with the Activation, and the Driver presents it back with the attempt's Outcome. Nothing that inspection, the Activation or an envelope reveals can reproduce it, and inspection never exposes it.
++
++It lives exactly as long as its attempt. Ordinary delivery retry keeps the attempt, so it keeps the same authority. Authorized takeover replaces the attempt, so it replaces the authority, and the superseded attempt's authority stops working when the epoch advances. The next exchange begins with a new attempt and a new authority. The [delivery reporting capability](#delivery-reporting-boundary) is a different thing with a shorter life, one physical delivery. Neither stands in for the other: a delivery report cannot propose anything, and submission authority reports nothing about delivery.
++
++Submission authority adds a power; it replaces none. A fresh Outcome still needs an authenticated caller who may see the Execution. Seeing the Execution without the authority is not enough, and neither is the separate power that control commands such as takeover require ([separate powers](authority.md#establish-identity-at-trusted-ingress); [inspection is not control](evidence.md#inspection-grows-with-the-supported-mechanism)). An exact replay of an accepted Outcome needs no authority, because it accepts nothing. [Outcome acceptance](#outcome-acceptance) fixes where the check sits.
++
++What the authority physically is belongs to each binding: the in-process binding's representation is recorded in [the implemented baseline](../../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api), and it fixes no token, wire format, remote credential or policy language. How a persistent deployment keeps one attempt's authority valid across a Kernel restart, as ordinary redelivery requires, is not decided yet. <!-- OPEN(K3.2): how submission authority survives a Kernel restart in a persistent profile, so that redelivery after recovery keeps the same attempt's authority while a superseded attempt's stays dead. The in-process binding has no restart. When K3.2 settles it: state the rule here and delete this marker. rewrite-index.md §4 -->
++
+ ## Delivery reporting boundary
+ 
+ Between "the Kernel handed an Activation to the Driver" and "the Runtime answered with an Outcome" there is one small fact the Kernel still needs: did the hand-off itself succeed? This section defines how the Driver reports that one fact and nothing else. The design question it settles is whether the Driver should report by returning a Promise the Kernel then observes; the answer is no, because a returned Promise blurs "I delivered it" with "the work finished", and lets a Driver's unhandled rejection become the Kernel's problem. The rules below are exact because the in-process binding cannot rely on a network boundary to keep the two sides apart.
+ 
+-**Introduced by:** K1.1-correction-01. Implementation status belongs to the [status ledger](../../docs/development/007-work-packets.md); this page states the contract. Nothing here establishes Outcome acceptance, persistence, native fidelity or isolation.
++**Introduced by:** K1.1-correction-01; the in-process call's third argument by K1.2. Implementation status belongs to the [status ledger](../../docs/development/007-work-packets.md); this page states the contract. Nothing here establishes persistence, native fidelity or isolation.
+ 
+-The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability and returns only `undefined`:
++The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability, carries the attempt's [submission authority](#submission-authority) beside it, and returns only `undefined`:
+ 
+ ```ts
+ interface DeliverySettlement {
+   delivered(): void;
+   failed(reason: unknown): void;
+ }
++// SubmissionGrant: this binding's representation of submission authority (see BASELINE).
+ // No Outcome or Promise is returned through this call.
+-deliver(activation: Activation, settlement: DeliverySettlement): undefined;
++deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined;
+ ```
+ 
+ `undefined` is intentional: TypeScript's `void` return assignability alone does not exclude an async implementation. A conforming Driver returns promptly and explicitly reports delivery, either during the call or later. Returning normally is not a delivery acknowledgment. No report leaves that delivery attempt `pending`; it neither blocks another Execution nor creates a Kernel-visible wait. CPU preemption remains a deployment concern. Remote Drivers translate authenticated operational reports to this local capability; it is not a serialized callback or a new wire protocol.
+ 
+-The Kernel records the attempt before invoking the Driver and supplies a fresh, immutable capability bound to that exact attempt. Its methods work without a receiver and expose no mutable Kernel record. Each method returns normally with no Promise. The first report wins: `pending` becomes `delivered` or `failed` once. A synchronous invocation throw is an implicit failure report through the same first-report rule. Thus a report followed by a throw retains the report; a throw followed by a late report retains the failure. Repeated or contradictory calls are inert, including calls reentering during diagnostics. Claim the attempt before inspecting a reason. Diagnostic handling must be total and must not execute caller-owned getters, coercions or thenables; retain at most the first 1,024 UTF-16 code units of a primitive string reason, or the fixed text `Driver delivery failed` for any other value. Use captured string operations, and retain no caller-owned error object. This is an operational diagnostic limit, independent of canonical boundary-value limits.
++The Kernel records the delivery attempt before invoking the Driver and supplies a fresh, immutable reporting capability bound to that exact physical delivery. The reporting capability's methods work without a receiver and expose no mutable Kernel record. Each method returns normally with no Promise. The first report wins: `pending` becomes `delivered` or `failed` once. A synchronous invocation throw is an implicit failure report through the same first-report rule. Thus a report followed by a throw retains the report; a throw followed by a late report retains the failure. Repeated or contradictory calls are inert, including calls reentering during diagnostics. Claim the attempt before inspecting a reason. Diagnostic handling must be total and must not execute caller-owned getters, coercions or thenables; retain at most the first 1,024 UTF-16 code units of a primitive string reason, or the fixed text `Driver delivery failed` for any other value. Use captured string operations, and retain no caller-owned error object. This is an operational diagnostic limit, independent of canonical boundary-value limits.
+ 
+-Ordinary redelivery supplies a new capability for a new delivery attempt while preserving the exact Activation. A late report can settle only its original retained pending attempt, even after a newer delivery attempt reports; it cannot overwrite that newer attempt. After exchange resolution, cancellation or takeover, a report may only update that original retained operational record, never the current exchange or logical state. If its record has been retired, the capability is inert and cannot recreate it. These latter lifecycle interactions belong to K1.2/K1.3 and retention to K5; this rule does not bring those implementations into K1.1.
++Ordinary redelivery supplies a fresh reporting capability for the new physical delivery while preserving the exact Activation and the Runtime attempt, with its writer epoch and submission authority. A late report can settle only its original retained pending attempt, even after a newer delivery attempt reports; it cannot overwrite that newer attempt. After exchange resolution, cancellation or takeover, a report may only update that original retained operational record, never the current exchange or logical state. If its record has been retired, the capability is inert and cannot recreate it. These latter lifecycle interactions belong to K1.2/K1.3 and retention to K5; this rule does not bring those implementations into K1.1.
+ 
+-Reporting or throwing changes no dispatch receipt, accepted progress/revision, writer epoch, reservation, acknowledgment, mailbox disposition or Execution lifecycle. `delivered` reports the Driver's delivery acknowledgment, not native completion or Outcome acceptance. `failed` does not prove that native work never started and does not authorize repeating it. Outcome acceptance and safe native retry retain their separate owners.
++Reporting or throwing changes no dispatch receipt, accepted progress/revision, writer epoch, submission authority, reservation, acknowledgment, mailbox disposition or Execution lifecycle. `delivered` reports the Driver's delivery acknowledgment, not native completion or Outcome acceptance. `failed` does not prove that native work never started and does not authorize repeating it. Outcome acceptance and safe native retry retain their separate owners.
+ 
+ The Kernel does not read, classify, assimilate or subscribe to the return value of `deliver`, even if a nonconforming Driver returns an object. It creates no Promise for reporting and does not sanitize Promise constructor/species state to invoke the Driver. There is no Promise-return compatibility path. Drivers must handle rejections of every Promise they create or use, including asynchronous reporting work. Returning an already unhandled Promise violates this authoring contract; ignoring its return does not make that Promise handled. The Kernel guarantees no unhandled rejection from its delivery reporting mechanism for conforming Drivers, not process survival against arbitrary same-process Driver code. Physical containment remains a deployment guarantee.
+ 
+@@ -58,23 +72,25 @@ Three operations look the same from outside — the Runtime is asked to work on
+ 
+ Conflating the first two removes the fence that stops a disconnected attempt from overwriting the work of the attempt that replaced it. Conflating either with the third lets fresh input be slipped into an exchange whose answer was already computed from different input, so an accepted Outcome would no longer correspond to any fixed question.
+ 
+-| Operation | Activation ID | Writer epoch | Pinned semantic input |
+-|---|---|---|---|
+-| Ordinary delivery retry | Same | Same | Same |
+-| Authorized takeover | Same | Advances | Same |
+-| Next exchange after resolution | New | Implementation chooses starting epoch | Newly selected |
++| Operation | Activation ID | Writer epoch | [Submission authority](#submission-authority) | Pinned semantic input |
++|---|---|---|---|---|
++| Ordinary delivery retry | Same | Same | Same | Same |
++| Authorized takeover | Same | Advances | Replaced | Same |
++| Next exchange after resolution | New | Implementation chooses starting epoch | New | Newly selected |
++
++Every physical delivery, in all three rows, gets a fresh [reporting capability](#delivery-reporting-boundary).
+ 
+ Retrying delivery is not permission to repeat native work. [Recovery](recovery.md) establishes phase-specific permission before takeover/replay. New mailbox arrivals cannot replace the batch under an existing Activation ID. If fresh policy forbids redisclosing the pinned view, hold/refuse or explicitly abandon the exchange; do not silently sanitize it and call it identical replay.
+ 
+ ## Outcome acceptance
+ 
+-The Outcome is a proposal until this procedure accepts it. The order matters: authentication comes before anything is read so an unauthenticated caller learns nothing; the duplicate lookup comes before validation so a retried Outcome gets the same answer it got the first time even if policy has since changed; and the commit is a single atomic step so no observer can ever see acknowledged Events without the progress that accounted for them, or progress without the intents it proposed.
++The Outcome is a proposal until this procedure accepts it. The order matters: authentication comes before anything is read so an unauthenticated caller learns nothing; the duplicate lookup comes before fresh validation so a retried Outcome gets the same answer it got the first time even if policy has since changed; exchange currency is checked before submission authority so a superseded attempt is refused as stale, which is what it is, rather than as unauthorized; submission authority is checked before content validation decides a refusal or discloses its diagnostics; and the commit is a single atomic step so no observer can ever see acknowledged Events without the progress that accounted for them, or progress without the intents it proposed.
+ 
+ Perform these steps in order:
+ 
+-1. Authenticate and scope access to the Execution before inspecting or disclosing content.
+-2. Look for an already accepted matching Outcome. An exact duplicate returns its original [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) without repeating any mutation or publication. Different content under the accepted identity conflicts. This lookup precedes fresh validation, including after later policy changes or cancellation.
+-3. For a new proposal, validate the whole envelope: current Activation, writer epoch, base progress revision, cancellation fence/terminal state, bounded values, unique proposal/emission keys, supported next step, wait references and completion obligations. Bind any same-Outcome [Effect](../concepts/actions.md#effect) reference by its local proposal key.
++1. Authenticate and scope access to the Execution before inspecting or disclosing content. Every submission needs this; for a fresh proposal it is not enough (step 3).
++2. Look for an already accepted matching Outcome. An exact duplicate returns its original [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) without repeating any mutation or publication, and without requiring submission authority. Different content under the accepted identity conflicts. Only a well-formed [Activation identity](../concepts/identity.md#runtime-attempt), under the binding's producer-compatible rule, addresses an accepted Outcome; a missing, malformed or unobservable one matches none, and the proposal continues as fresh. This lookup precedes all fresh validation, including after later policy changes or cancellation.
++3. For a new proposal, validate the whole envelope in this order. First the exchange: cancellation fence or terminal state, current Activation, writer epoch and base progress revision. Then the current attempt's [submission authority](#submission-authority). Then the content: bounded values, unique proposal/emission keys, supported next step, wait references and completion obligations. A proposal that no longer answers the current exchange is refused as stale whatever authority it presents; only a current proposal without the current authority is refused as unauthorized. Only Kernel state and well-formed coordinates decide an exchange refusal. The Activation identity, writer epoch and base progress revision are each checked independently: when no exchange is unresolved, or a well-formed coordinate does not match the unresolved exchange, the whole proposal is refused as stale, even when another coordinate is missing or malformed and whatever submission authority or content the proposal carries. A missing, malformed or unobservable coordinate never establishes staleness; it is a content-group refusal after submission authority succeeds. Capturing the envelope may compute content diagnostics, but on a refusal reached before submission authority succeeds they neither decide the refusal nor are returned or retained. Bind any same-Outcome [Effect](../concepts/actions.md#effect) reference by its local proposal key.
+ 4. Atomically: acknowledge the entire batch; install progress and its accepted revision; record [emissions and output obligations](../concepts/actions.md#emission-result-and-output-obligation), all Effect intents, next state, and any wait/deadline/[readiness](../concepts/core.md#readiness). The validation and commit are ordered against cancellation; a pre-cancel check cannot authorize a post-cancel commit. For `await`, follow the exact internal order in [wait registration](waits.md#registering-a-wait).
+ 5. Return the accepted receipt. Dispatchers and output readers act on accepted records.
+ 
+diff --git a/mental-model/mechanisms/integration.md b/mental-model/mechanisms/integration.md
+index bd9d4ad..709231c 100644
+--- a/mental-model/mechanisms/integration.md
++++ b/mental-model/mechanisms/integration.md
+@@ -4,7 +4,7 @@ The [Driver](../concepts/core.md#execution-driver) translates selected contracts
+ 
+ **Status:** Per-Driver obligation, not Kernel semantics. Introduced by R1; supported versions frozen at S1. K1.4's legacy bridge uses only the reference-Runtime shape below and earns no support record here. This is target specification, not shipped behavior.
+ 
+-In-process adapters obey the Kernel's [delivery reporting boundary](execution-cycle.md#delivery-reporting-boundary): translate native asynchronous success/failure into the supplied operational reporting capability and own all internal Promise handling. This K1 boundary is separate from the R1 native-fidelity support claims below.
++In-process adapters obey the Kernel's [delivery reporting boundary](execution-cycle.md#delivery-reporting-boundary): translate native asynchronous success/failure into the supplied operational reporting capability, present the attempt's [submission authority](execution-cycle.md#submission-authority) with each Outcome, and own all internal Promise handling. This K1 boundary is separate from the R1 native-fidelity support claims below.
+ 
+ A Driver is where an honest answer costs the most, because every dimension below has a comfortable wrong answer available. The page is built to make the honest one sayable: choose the shallowest integration that does the job, then record what that integration actually preserves — dimension by dimension, with **unsupported** as a legitimate entry — and only then claim support, on evidence rather than on inspection of upstream code. The failure this guards against is a Driver that looks complete because it compiles against every interface while quietly preserving none of them.
+ 
+diff --git a/mental-model/reference.md b/mental-model/reference.md
+index f17ba44..692891f 100644
+--- a/mental-model/reference.md
++++ b/mental-model/reference.md
+@@ -165,6 +165,8 @@ current owner, never the retired page, for what a rule is today.
+ |---|---|
+ | attempt envelope, exchange | [Activation/attempt/epoch](concepts/identity.md#writer-epoch) |
+ | delivery, Execution dispatch | [Qualified dispatch and delivery](concepts/identity.md#dispatch-and-delivery) |
++| submission authority, SubmissionGrant | [Submission authority](mechanisms/execution-cycle.md#submission-authority); `SubmissionGrant` is the in-process representation, recorded in the [implemented baseline](../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api) |
++| delivery report, reporting capability, DeliverySettlement | [Delivery reporting boundary](mechanisms/execution-cycle.md#delivery-reporting-boundary) |
+ | canonical, canonicalization, codec, equality | [Values](concepts/values.md) |
+ | output obligation, output subscription | [Output obligation](concepts/actions.md#emission-result-and-output-obligation), [replay](mechanisms/output.md) |
+ | boundary, receipt, acceptance position | [Acceptance and receipt](concepts/identity.md#acceptance-boundary-and-receipt) |
+diff --git a/mental-model/rewrite-index.md b/mental-model/rewrite-index.md
+index 0b813e5..075ba08 100644
+--- a/mental-model/rewrite-index.md
++++ b/mental-model/rewrite-index.md
+@@ -217,6 +217,8 @@ owner pages' own scope statements and correct whichever is wrong, in the same co
+ | K1.1 creation/ingress domain separation (`KC1-DEC-1`) | `concepts/identity.md#request-key-and-input-id`, `mechanisms/creation.md#later-input-has-a-destination` | `work/K1.1/review-15.md` `K11-R15-ID-01`; `K1.1-correction-01/contract.md`; `K1.1-reference-01` REF-1 |
+ | K1.1 in-process value capture (C3, `KC1-DEC-3`), and its distinction from request-envelope own-field observation (`KC1-DEC-6`) | `concepts/values.md#in-process-value-capture` | `work/K1.1/contract.md` C3; `K1.1-correction-01` review-08 C3; `K1.1-reference-01` REF-2, and its review-02 row "Envelope ≠ value capture" |
+ | K1.1 delivery reporting (`KC1-ARCH-1`) | `mechanisms/execution-cycle.md#delivery-reporting-boundary` (+ link from `mechanisms/integration.md`) | `work/K1.1-correction-01/decision-01.md` incl. its superseding note; `review-08.md`; roadmap §K1.1-correction-01 |
++| K1.2 submission authority and the in-process carrier extension | `mechanisms/execution-cycle.md#submission-authority` (links from `#delivery-reporting-boundary`, `#retry-versus-takeover`, `#outcome-acceptance`, `concepts/identity.md#writer-epoch`, `concepts/core.md#execution-driver`, `mechanisms/integration.md`) | Owner decision 2026-09-25, `work/K1.2/decision-01.md`, resolving `work/K1.2/blocker-01.md`; historical KC1-ARCH-1 record sealed; in-process `SubmissionGrant` recorded in BASELINE `#outcome-acceptance-api` |
++| K1.2 Activation coordinate classification | `mechanisms/execution-cycle.md#outcome-acceptance` | Owner decision 2026-09-26, `work/K1.2/decision-02.md`; binding well-formedness in `concepts/identity.md#runtime-attempt`, BASELINE and `work/K1.2-correction-01/contract.md` |
+ | Status ownership moved off specification pages | `MM/README.md#how-these-pages-are-organized`, `#target-not-shipped` | `K1.1-reference-01` REF-3, `review-02.md` `REF1-R1-CONV-01` |
+ | Architecture-level decisions and their counterexamples | The Layer-3 owner of each rule, found through `MM/reference.md`; provenance in `MM/sources.md` | Retired `docs/development/004-architecture-review.md` (decisions table), refined by `005-detail-design-review.md` |
+ | Packet status / accepted / integrated / released | LEDGER only | `006-development-process.md#status-transitions`; `014-owner-progress-summary.md` is the readable account |
+@@ -256,6 +258,10 @@ naming an `OPEN(...)` marker claim that one exists.
+ 
+ - Transport wire codec, framing, compression, and the storage layout/engine —
+   `concepts/values.md#codec`, WS §1 "Left open" and §14.
++- Refusal diagnostic storage — `OPEN(implementation)` in `concepts/values.md#fixed-semantic-limits`.
++  The in-process binding records eight bounded details per root plus exact suffix code counts in
++  BASELINE `#value-refusal-diagnostics`; type labels use null/typeof without inspecting caller
++  properties. Eager single observation and byte-budget stops are preserved.
+ - Receipt serialization / token representation; request-key hashing — `OPEN(implementation)` in
+   `concepts/identity.md#acceptance-boundary-and-receipt`; WS §2. The in-process binding's choice,
+   recorded in BASELINE `#request-identity-api`: a receipt is a structured record of its boundary,
+@@ -267,21 +273,49 @@ naming an `OPEN(...)` marker claim that one exists.
+   scope" object and fixes no wire representation. What the architecture fixes is only that the ID
+   combines caller context with the creation key and covers the complete creation content. The
+   implementation records its own answer in BASELINE `#request-identity-api`.
++- Activation-identity representation and well-formedness — `OPEN(implementation)` in
++  `concepts/identity.md#runtime-attempt`. That owner states producer/consumer closure and its
++  engine-allocation qualification.
++  The in-process binding's choice is any primitive JavaScript string with exact UTF-16 code-unit
++  equality, no length or Unicode-content check; recorded in BASELINE `#outcome-acceptance-api`.
+ - Writer-epoch representation, and **whether it resets across a later Activation** —
+-  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. (K1.1-DEC-2 chose one epoch per
+-  exchange starting at 1 — an *implementation* choice, not architecture.)
++  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. The
++  in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`: an integer restarting at
++  1 for each new exchange, advanced by exactly 1 per accepted takeover — an *implementation* choice,
++  not architecture.
++- How submission authority is represented — no `OPEN(...)` marker; the architecture fixes its
++  per-attempt lifetime and its place in the acceptance order in
++  `mechanisms/execution-cycle.md#submission-authority`, while the representation is each binding's
++  choice. The in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`:
++  one frozen `SubmissionGrant` per writer-epoch attempt, supplied as the third `deliver`
++  argument and required back by reference identity. That choice fixes no universal token,
++  wire format, remote credential, or K2 policy language.
++- **How submission authority survives a Kernel restart** in a persistent profile, so that
++  redelivery after recovery keeps the same attempt's authority while a superseded attempt's stays
++  dead — `OPEN(K3.2)` in `mechanisms/execution-cycle.md#submission-authority`. The in-process binding
++  has no restart.
+ - Wait generation representation; declared-input-subscription spelling — `mechanisms/waits.md#declare-what-can-wake-the-execution`,
+   WS W-9/§5. WS assigns the subscription spelling to K1.3.
+ - Timeout Event wire kind token, discriminant, encoded schema, storage layout and timer
+   mechanism — WS W-9 "Left open", which says K1.3 chooses them.
+ - Per-entry batch disposition storage, and how a wait-ended readiness is stored — WS §3 "Left
+-  open" (after B-8); `mechanisms/waits.md`.
++  open" (after B-8); `mechanisms/waits.md`. The in-process binding's choice for disposition storage,
++  recorded in BASELINE `#outcome-acceptance-api`: each mailbox entry holds its own frozen disposition.
++  Wait-ended readiness storage stays K1.3's.
+ - Cancellation-request storage, rejection encoding and physical interruption mechanics — WS §6
+   "Left open"; `mechanisms/lifecycle.md#cancellation-order`. A pending/applied marker may not
+   change the acceptance order.
+ - The Outcome-acceptance transaction mechanism (a DB transaction, an append-only log, an
+   in-memory compare-and-swap) — WS §7 "Left open", which accepts any of them only if the atomicity
+-  is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`.
++  is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`. The in-process
++  binding's choice, recorded in BASELINE `#outcome-acceptance-api`: one synchronous call that observes
++  all caller-owned fields, builds every retained decision record (receipt, Emissions, result,
++  dispositions, resolved exchange, Outcome decision, hold-ending history records, and the retained
++  accepted-Outcome wrapper for replay) and only then mutates by inserting those prebuilt records —
++  atomic within the process, not durable. The apply phase constructs no retained record; only the
++  returned answer projection is built after mutation, and it is not retained state. The three
++  recovery controls (hold declaration, protocol-failure report, takeover) use the same build-then-apply
++  discipline, their answers included, recorded in the same BASELINE section (K1.2-correction-01 DEC-9).
+ - Checkpoint storage and pinning — WS §9 "Left open"; `concepts/state.md#checkpoint-and-locator`,
+   `mechanisms/recovery.md#checkpoint-publication`. Upload tickets plus a grace period are one
+   option, not a requirement, as `recovery.md` states.
+diff --git a/mental-model/roadmap.md b/mental-model/roadmap.md
+index b4698ac..54bbf61 100644
+--- a/mental-model/roadmap.md
++++ b/mental-model/roadmap.md
+@@ -91,6 +91,26 @@ Outcome acceptance and receipts. Expected Layer-3 owners:
+ 
+ [Packet scope and dependencies](../docs/development/007-work-packets.md#k12--outcome-acceptance-and-receipts).
+ 
++## K1.2-correction-01
++
++Producer-compatible Activation identity. Expected owners: [identity](concepts/identity.md#runtime-attempt)
++for representation and producer/consumer closure, [execution-cycle](mechanisms/execution-cycle.md#outcome-acceptance)
++for the unchanged decision-02 order, and [values](concepts/values.md#in-process-value-capture) for
++the inherited-field rule that recovery-control evidence also relies on. Inspect creation, recovery,
++output, lifecycle and every eager value-root consumer. This packet's [DEC-7 binding](../docs/development/work/K1.2-correction-01/contract.md) preserves exact issue counts.
++Bounded refusal cost ([values](concepts/values.md#fixed-semantic-limits) V-D1) is no longer this
++packet's: owner [amendment 01](../docs/development/work/K1.2-correction-01/amendment-01.md) moved it
++to [K1.1-correction-03](#k11-correction-03).
++[Scope and release](../docs/development/007-work-packets.md#k12-correction-01--kernel-minted-activation-identity-is-answerable).
++
++## K1.1-correction-03
++
++Metered value refusal cost. Expected owner: [values](concepts/values.md#fixed-semantic-limits), whose
++V-D1 wording changes to the metered bound of [decision-05](../docs/development/work/K1.2/decision-05.md)
++only in this packet. Inspect every value-root consumer: creation, ingress, recovery lists and eager
++Outcome roots.
++[Scope and dependencies](../docs/development/007-work-packets.md#k11-correction-03--metered-value-refusal-cost).
++
+ ## K1.3
+ 
+ Wait and cancellation races. Expected Layer-3 owners:
+diff --git a/mental-model/sources.md b/mental-model/sources.md
+index 8c1e53b..05d9957 100644
+--- a/mental-model/sources.md
++++ b/mental-model/sources.md
+@@ -29,12 +29,31 @@ K0.2's [accepted review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc
+ 
+ The owner delegated the K1.1-correction-01 architecture decision on 2026-09-15. [Decision 01](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/decision-01.md) replaces arbitrary Driver-returned Promise observation with the [delivery reporting boundary](mechanisms/execution-cycle.md#delivery-reporting-boundary). This authorized target change is implemented in exact H5 `52b1600f3b42e3a360fdc3395178f1d147edf304`, independently accepted by [review-08](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/review-08.md); integration remains a separate ledger decision. It does not reinterpret historical K1.1 reviews.
+ 
++On 2026-09-25 the owner authorized K1.2 to extend that in-process delivery call from `deliver(activation, settlement)` to `deliver(activation, settlement, submission)`, so that it also carries the current Runtime attempt's [submission authority](mechanisms/execution-cycle.md#submission-authority) ([K1.2 decision 01](../docs/development/work/K1.2/decision-01.md), resolving [blocker-01](../docs/development/work/K1.2/blocker-01.md)). The decision supersedes only the two-argument signature; every other KC1-ARCH-1 guarantee stands, and the historical KC1-ARCH-1 record stays sealed.
++
++On 2026-09-26 [K1.2 decision 02](../docs/development/work/K1.2/decision-02.md) fixed the
++Activation identity's place in the Outcome acceptance order: only a well-formed identity can
++address replay or establish staleness; an unusable identity is a content issue after authority.
++The canonical order lives in [execution-cycle](mechanisms/execution-cycle.md#outcome-acceptance).
++[K1.2-correction-01](../docs/development/work/K1.2-correction-01/contract.md) records the binding's
++producer-compatible identity representation under [identity](concepts/identity.md#runtime-attempt).
++
+ The [reference supplement](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-reference-01/contract.md) brings two accepted implementation decisions into their canonical owners: KC1-DEC-1's creation/ingress domain separation in [identity](concepts/identity.md#request-key-and-input-id), and K1.1 C3 plus KC1-DEC-3/6's coherent in-process capture and representation limits in [values](concepts/values.md#in-process-value-capture). Their sources are the accepted [correction contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/contract.md), original [K1.1 contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/contract.md) and H5 source/tests. The supplemental prose requires its own independent review; the original implementation ACCEPT is preserved.
+ 
+ On 2026-09-24 the owner adopted the accepted [K1.1 contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/contract.md)'s binding of the progress codec at creation (C1, with C4 forbidding dispatch to infer it) as the sixth fact of [one atomic creation](mechanisms/creation.md#one-atomic-creation). Worksheet PC-4 and [progress](concepts/state.md#progress) already required progress to be pinned to its codec version, but no page said where the first pin comes from, before any progress exists.
+ 
+ The owner's 2026-09-23 rewrite of [values](concepts/values.md) stated three obligations that no worksheet decision or K1.1 record states in those words: refusing a value must cost no more than accepting one at the limits; a digest that alone decides duplicate-versus-conflict after deletion must resist deliberate collisions and cover the full canonical bytes; and each request-envelope field is read once, with that one answer used for everything the call does. [K1.1-correction-02 decision 01](../docs/development/work/K1.1-correction-02/decision-01.md) records them as owner decisions, with their relation to accepted K1.1 behavior and the implementation change the first one required.
+ 
++On 2026-09-27 [K1.2 decision 03](../docs/development/work/K1.2/decision-03.md) scoped the in-process
++refusal-cost claim's caller-trap boundary to include engine processing of values returned by required
++caller code, including Proxy descriptor conversion. [Values](concepts/values.md#fixed-semantic-limits)
++owns that boundary and the unchanged observation limits; the decision leaves Kernel-chosen lookups
++and ordinary non-Proxy data covered. On 2026-09-28 [decision 04](../docs/development/work/K1.2/decision-04.md)
++superseded decision-03 item 1 with a single boundary for all engine-internal work attributable to
++live Proxies. It clarified Kernel-selected observation counts and the absence of a time bound for
++values containing live Proxies. Neither decision authorizes Proxy rejection, observation reuse or
++out-of-process capture.
++
+ ## Misunderstandings that shaped these pages
+ 
+ | Evidence | Comprehension problem | Structural correction |

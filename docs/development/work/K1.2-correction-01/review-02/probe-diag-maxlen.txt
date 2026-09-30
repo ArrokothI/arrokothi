@@ -1,0 +1,24 @@
+Explicit high-memory probe: 536870872 UTF-16 units, MAX_STRING_LENGTH=536870888; approximately 0.5 GiB plus overhead.
+PASS open/outcome
+PASS open/takeover
+PASS open/recovery
+PASS open/protocol
+PASS open/denied-takeover
+PASS open/denied-recovery
+PASS open/denied-protocol
+PASS resolved/outcome
+PASS resolved/takeover
+PASS resolved/recovery
+PASS resolved/protocol
+PASS resolved/denied-takeover
+PASS resolved/denied-recovery
+PASS resolved/denied-protocol
+PASS terminal/outcome
+PASS terminal/takeover
+PASS terminal/recovery
+PASS terminal/protocol
+PASS terminal/denied-takeover
+PASS terminal/denied-recovery
+PASS terminal/denied-protocol
+PASS 21/21 asserted cases; bounded frozen refusals, whole-state equality, single capture and later valid answers/replay.
+exit 0

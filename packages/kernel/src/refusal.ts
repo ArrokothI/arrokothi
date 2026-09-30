@@ -5,9 +5,10 @@
  * silently drop or endlessly retry it" - so it has a classification a caller can branch on, a reason
  * a person can read, and a retained position on the Execution it concerns.
  *
- * The classifications an Outcome can be refused under live with Outcome acceptance in K1.2.
  * `duplicate_conflict` is shared: `identity.md` gives it one meaning - the same submitted identity
- * with different content - at every boundary that has an identity.
+ * with different content - at every boundary that has an identity, the Outcome boundary included.
+ * The Outcome-specific classifications (`malformed_envelope`, `stale_exchange`) use the K0.2 public
+ * fixture's vocabulary, so the K1.4 port is wiring rather than translation.
  */
 
 export type RefusalClassification =
@@ -33,8 +34,55 @@ export type RefusalClassification =
   | "invalid_batch_bound"
   /** An Activation for this Execution is still unresolved, and there may be only one. */
   | "exchange_unresolved"
-  /** There is no unresolved Activation to redeliver. */
-  | "no_unresolved_exchange";
+  /** There is no unresolved Activation for this request to act on. */
+  | "no_unresolved_exchange"
+  /**
+   * OA-3 whole-envelope validation refused an Outcome's content: a malformed value, a missing or
+   * unknown field, a duplicate Emission key, an unsupported next step, or a proposed Effect before
+   * K2 (EF-2). Nothing of the proposal was accepted.
+   */
+  | "malformed_envelope"
+  /**
+   * OA-3: the proposal or control names an Activation that is not the unresolved exchange, a writer
+   * epoch that is not the current one, or a base progress revision the exchange was not pinned at.
+   */
+  | "stale_exchange"
+  /**
+   * The unresolved exchange is recovery-held: redelivery is refused while any hold stands, and
+   * takeover while a code hold stands. A valid current-attempt Outcome may still resolve the
+   * exchange and end its holds, with visibility and the separate submission grant (K1.2-DEC-20).
+   */
+  | "recovery_held"
+  /**
+   * K1.2-DEC-14: the caller can see the Execution but holds no control power over its scope.
+   *
+   * `evidence.md`: inspection privilege does not grant re-execution or settlement privilege. The
+   * three exchange controls (takeover, recovery declaration, protocol-failure report) require the
+   * Execution's scope in the caller's `controlScopes`; a visible principal lacking it is refused
+   * by these commands, with the Execution named and no control-state mutation. This says nothing
+   * about the separate attempt-submission authority: visibility plus the current `SubmissionGrant`
+   * may authorize an Outcome that resolves the exchange and ends its holds (K1.2-DEC-20).
+   */
+  | "unauthorized_control"
+  /**
+   * K1.2-DEC-15: the Driver did not establish safe replacement for a takeover.
+   *
+   * `identity.md#writer-epoch` and `recovery.md` require a separate Driver guarantee that native
+   * continuation is exclusive or otherwise safe to replace before the writer fence advances. Absent,
+   * denied, or throwing means the takeover is refused rather than assumed. Kernel fencing of stale
+   * writes does not itself stop superseded native work.
+   */
+  | "unsafe_replacement"
+  /**
+   * K1.2-DEC-20: the Outcome proposal carries no submission authority for the current attempt.
+   *
+   * `evidence.md`: inspection privilege does not grant re-execution or settlement privilege, and
+   * an Activation observed through inspection does not authorize answering it. The proposal named
+   * the open exchange but did not present its attempt-bound grant, so it cannot win, clear holds,
+   * or end the Execution. Exact replays and conflicts are answered before this check (OA-2 order)
+   * because they return or refuse on retained evidence without accepting anything.
+   */
+  | "unauthorized_submission";
 
 /**
  * One refused request, retained and inspectable.

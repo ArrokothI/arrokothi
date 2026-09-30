@@ -1,0 +1,33 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --experimental-strip-types docs/development/work/K1.2-correction-01/review-09/probe-history-mutable.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T04:45:32.081Z
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- {
+-   value: 888
+- }
+
+    at file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.2-correction-01/review-09/probe-history-mutable.mjs:12:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: { value: 888 },
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+
+exit: 1; signal: null; error: none

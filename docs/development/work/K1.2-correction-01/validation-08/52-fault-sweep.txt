@@ -1,0 +1,1151 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/fault-child.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T11:53:42.572Z
+
+{
+ "intercepted": [
+  "Number.isInteger",
+  "Object.freeze",
+  "Reflect.apply",
+  "Map.prototype.get",
+  "Map.prototype.set",
+  "Map.prototype.forEach",
+  "Array.isArray",
+  "Object.getOwnPropertyDescriptor",
+  "Object.getPrototypeOf",
+  "String.prototype.slice",
+  "Number.isSafeInteger",
+  "Reflect.ownKeys",
+  "Object.defineProperty",
+  "Object.create",
+  "Object.prototype.hasOwnProperty",
+  "isNaN",
+  "isFinite",
+  "Object.keys",
+  "Object.getOwnPropertyNames",
+  "Object.setPrototypeOf",
+  "Object.is",
+  "Object.getOwnPropertySymbols",
+  "JSON.stringify",
+  "Number.isFinite",
+  "Array.prototype.map",
+  "Array.prototype.join",
+  "Array.prototype.sort",
+  "Array.prototype.push",
+  "Array.prototype[Symbol.iterator]",
+  "Set.prototype.has",
+  "Set.prototype.add",
+  "Set.prototype.delete",
+  "String.prototype.charCodeAt",
+  "Buffer.byteLength",
+  "ArrayIteratorPrototype.next"
+ ],
+ "notIntercepted": [
+  "Map",
+  "RangeError",
+  "Object.prototype",
+  "Function.prototype",
+  "TypeError",
+  "Array",
+  "Object",
+  "Array",
+  "JSON",
+  "Set",
+  "Error",
+  "Symbol",
+  "Object.prototype",
+  "Array.prototype",
+  "Set.prototype",
+  "globalThis"
+ ],
+ "scenarios": 37,
+ "runs": 43446,
+ "violations": 0,
+ "results": [
+  {
+   "name": "recover: enter a code hold",
+   "control": "recoverExecution",
+   "operations": 2946,
+   "classes": {
+    "threw: no-call state": 68,
+    "refused: exactly one refusal recorded": 2878,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 872,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 560,
+    "Object.prototype.hasOwnProperty": 838,
+    "Array.isArray": 13,
+    "Object.create": 275,
+    "Object.defineProperty": 275,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 5,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "Object.freeze": 12,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3,
+    "String.prototype.charCodeAt": 33,
+    "JSON.stringify": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: update a code hold",
+   "control": "recoverExecution",
+   "operations": 2950,
+   "classes": {
+    "threw: no-call state": 68,
+    "refused: exactly one refusal recorded": 2882,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 874,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 560,
+    "Object.prototype.hasOwnProperty": 838,
+    "Array.isArray": 13,
+    "Object.create": 275,
+    "Object.defineProperty": 275,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 5,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "String.prototype.charCodeAt": 35,
+    "Object.freeze": 12,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "JSON.stringify": 2,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: clear a code hold",
+   "control": "recoverExecution",
+   "operations": 2996,
+   "classes": {
+    "threw: no-call state": 69,
+    "refused: exactly one refusal recorded": 2927,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 893,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 565,
+    "Object.prototype.hasOwnProperty": 843,
+    "Array.isArray": 13,
+    "Object.create": 277,
+    "Object.defineProperty": 277,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 6,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "String.prototype.charCodeAt": 49,
+    "Object.freeze": 9,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "JSON.stringify": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: nothing to change",
+   "control": "recoverExecution",
+   "operations": 2993,
+   "classes": {
+    "threw: no-call state": 66,
+    "refused: exactly one refusal recorded": 2927,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 893,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 565,
+    "Object.prototype.hasOwnProperty": 843,
+    "Array.isArray": 13,
+    "Object.create": 276,
+    "Object.defineProperty": 276,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 6,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "String.prototype.charCodeAt": 49,
+    "Object.freeze": 8,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "JSON.stringify": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: the same hold again (idempotent)",
+   "control": "recoverExecution",
+   "operations": 2942,
+   "classes": {
+    "threw: no-call state": 64,
+    "refused: exactly one refusal recorded": 2878,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 872,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 560,
+    "Object.prototype.hasOwnProperty": 838,
+    "Array.isArray": 13,
+    "Object.create": 274,
+    "Object.defineProperty": 274,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 5,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "Object.freeze": 10,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3,
+    "String.prototype.charCodeAt": 33,
+    "JSON.stringify": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: enter a code hold beside a protocol hold",
+   "control": "recoverExecution",
+   "operations": 2950,
+   "classes": {
+    "threw: no-call state": 72,
+    "refused: exactly one refusal recorded": 2878,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 872,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 560,
+    "Object.prototype.hasOwnProperty": 838,
+    "Array.isArray": 13,
+    "Object.create": 276,
+    "Object.defineProperty": 276,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 5,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "Object.freeze": 14,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3,
+    "String.prototype.charCodeAt": 33,
+    "JSON.stringify": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: clear a code hold beside a protocol hold",
+   "control": "recoverExecution",
+   "operations": 3000,
+   "classes": {
+    "threw: no-call state": 73,
+    "refused: exactly one refusal recorded": 2927,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 893,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 565,
+    "Object.prototype.hasOwnProperty": 843,
+    "Array.isArray": 13,
+    "Object.create": 278,
+    "Object.defineProperty": 278,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 6,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "String.prototype.charCodeAt": 49,
+    "Object.freeze": 11,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "JSON.stringify": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: refused without control power",
+   "control": "recoverExecution",
+   "operations": 7,
+   "classes": {
+    "threw: no-call state": 7,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 1,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 1,
+    "Object.getPrototypeOf": 1,
+    "Object.freeze": 1,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: refused malformed request",
+   "control": "recoverExecution",
+   "operations": 22,
+   "classes": {
+    "threw: no-call state": 20,
+    "refused: exactly one refusal recorded": 2,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 5,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 7,
+    "Object.prototype.hasOwnProperty": 4,
+    "Object.create": 2,
+    "Object.defineProperty": 2,
+    "Object.freeze": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: refused stale Activation",
+   "control": "recoverExecution",
+   "operations": 2935,
+   "classes": {
+    "threw: no-call state": 57,
+    "refused: exactly one refusal recorded": 2878,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 870,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 558,
+    "Object.prototype.hasOwnProperty": 836,
+    "Array.isArray": 13,
+    "Object.create": 274,
+    "Object.defineProperty": 274,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 5,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "Object.freeze": 9,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3,
+    "String.prototype.charCodeAt": 33,
+    "JSON.stringify": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: refused with no unresolved exchange",
+   "control": "recoverExecution",
+   "operations": 2935,
+   "classes": {
+    "threw: no-call state": 57,
+    "refused: exactly one refusal recorded": 2878,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 870,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 558,
+    "Object.prototype.hasOwnProperty": 836,
+    "Array.isArray": 13,
+    "Object.create": 274,
+    "Object.defineProperty": 274,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 5,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "Object.freeze": 9,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3,
+    "String.prototype.charCodeAt": 33,
+    "JSON.stringify": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "recover: refused after the Execution ended",
+   "control": "recoverExecution",
+   "operations": 2935,
+   "classes": {
+    "threw: no-call state": 57,
+    "refused: exactly one refusal recorded": 2878,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 870,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 558,
+    "Object.prototype.hasOwnProperty": 836,
+    "Array.isArray": 13,
+    "Object.create": 274,
+    "Object.defineProperty": 274,
+    "Object.getPrototypeOf": 33,
+    "Object.is": 5,
+    "Object.getOwnPropertyNames": 9,
+    "Object.getOwnPropertySymbols": 3,
+    "Object.freeze": 9,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 3,
+    "String.prototype.charCodeAt": 33,
+    "JSON.stringify": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "report: enter a protocol hold",
+   "control": "reportProtocolFailure",
+   "operations": 25,
+   "classes": {
+    "threw: no-call state": 20,
+    "refused: exactly one refusal recorded": 2,
+    "accepted after a contained fault: the declared alternate": 3,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 5,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 5,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 5,
+    "String.prototype.slice": 1,
+    "Object.create": 2,
+    "Object.defineProperty": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "report: enter a protocol hold without a diagnostic",
+   "control": "reportProtocolFailure",
+   "operations": 23,
+   "classes": {
+    "threw: no-call state": 20,
+    "refused: exactly one refusal recorded": 2,
+    "accepted after a contained fault: the uninjected decision": 1,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 4,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 5,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 5,
+    "Object.create": 2,
+    "Object.defineProperty": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "report: enter a protocol hold beside a code hold",
+   "control": "reportProtocolFailure",
+   "operations": 29,
+   "classes": {
+    "threw: no-call state": 24,
+    "refused: exactly one refusal recorded": 2,
+    "accepted after a contained fault: the declared alternate": 3,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 5,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 5,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 7,
+    "String.prototype.slice": 1,
+    "Object.create": 3,
+    "Object.defineProperty": 3
+   },
+   "violations": []
+  },
+  {
+   "name": "report: the same hold again (idempotent)",
+   "control": "reportProtocolFailure",
+   "operations": 21,
+   "classes": {
+    "threw: no-call state": 16,
+    "refused: exactly one refusal recorded": 2,
+    "accepted after a contained fault: the uninjected decision": 3,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 5,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 5,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 3,
+    "String.prototype.slice": 1,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "report: refused stale writer epoch",
+   "control": "reportProtocolFailure",
+   "operations": 20,
+   "classes": {
+    "threw: no-call state": 15,
+    "refused: exactly one refusal recorded": 5,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 5,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 5,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 2,
+    "String.prototype.slice": 1,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "report: refused without control power",
+   "control": "reportProtocolFailure",
+   "operations": 7,
+   "classes": {
+    "threw: no-call state": 7,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 1,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 1,
+    "Object.getPrototypeOf": 1,
+    "Object.freeze": 1,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "report: refused malformed report",
+   "control": "reportProtocolFailure",
+   "operations": 23,
+   "classes": {
+    "threw: no-call state": 20,
+    "refused: exactly one refusal recorded": 3,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 5,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 8,
+    "Object.prototype.hasOwnProperty": 4,
+    "Object.create": 2,
+    "Object.defineProperty": 2,
+    "Object.freeze": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "takeover: accepted (review 11's seed)",
+   "control": "requestTakeover",
+   "operations": 35,
+   "classes": {
+    "threw: no-call state": 17,
+    "refused: exactly one refusal recorded": 11,
+    "threw after the commit: decision recorded, delivery incomplete": 3,
+    "accepted; the Driver's delivery failed after the commit": 4,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 8,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 6,
+    "Object.prototype.hasOwnProperty": 6,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 5,
+    "Object.create": 4,
+    "Object.defineProperty": 4
+   },
+   "violations": [],
+   "seed": {
+    "operation": 25,
+    "threw": true,
+    "viewUnchanged": true,
+    "nextAcceptance": 3,
+    "noCallNextAcceptance": 3
+   }
+  },
+  {
+   "name": "takeover: accepted, clearing a protocol hold",
+   "control": "requestTakeover",
+   "operations": 38,
+   "classes": {
+    "threw: no-call state": 18,
+    "refused: exactly one refusal recorded": 11,
+    "threw inside the declared takeover apply window: receipt appended, clearing record not": 2,
+    "threw after the commit: decision recorded, delivery incomplete": 3,
+    "accepted; the Driver's delivery failed after the commit": 4,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 8,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 6,
+    "Object.prototype.hasOwnProperty": 6,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 6,
+    "Object.create": 5,
+    "Object.defineProperty": 5
+   },
+   "violations": []
+  },
+  {
+   "name": "takeover: refused stale writer epoch",
+   "control": "requestTakeover",
+   "operations": 17,
+   "classes": {
+    "threw: no-call state": 15,
+    "refused: exactly one refusal recorded": 2,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 4,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 4,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 2,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "takeover: refused while a code hold stands",
+   "control": "requestTakeover",
+   "operations": 17,
+   "classes": {
+    "threw: no-call state": 15,
+    "refused: exactly one refusal recorded": 2,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 4,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 4,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 2,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "takeover: refused by a Driver that cannot replace safely",
+   "control": "requestTakeover",
+   "operations": 26,
+   "classes": {
+    "threw: no-call state": 15,
+    "refused: exactly one refusal recorded": 11,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 8,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 6,
+    "Object.prototype.hasOwnProperty": 6,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 2,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "takeover: refused without control power",
+   "control": "requestTakeover",
+   "operations": 7,
+   "classes": {
+    "threw: no-call state": 7,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 1,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 1,
+    "Object.getPrototypeOf": 1,
+    "Object.freeze": 1,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "takeover: refused malformed request",
+   "control": "requestTakeover",
+   "operations": 22,
+   "classes": {
+    "threw: no-call state": 20,
+    "refused: exactly one refusal recorded": 2,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 5,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 7,
+    "Object.prototype.hasOwnProperty": 4,
+    "Object.create": 2,
+    "Object.defineProperty": 2,
+    "Object.freeze": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "takeover: refused with no unresolved exchange",
+   "control": "requestTakeover",
+   "operations": 17,
+   "classes": {
+    "threw: no-call state": 15,
+    "refused: exactly one refusal recorded": 2,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Reflect.apply": 4,
+    "Map.prototype.get": 1,
+    "Object.getOwnPropertyDescriptor": 4,
+    "Object.prototype.hasOwnProperty": 3,
+    "Number.isSafeInteger": 1,
+    "Object.freeze": 2,
+    "Object.create": 1,
+    "Object.defineProperty": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: continue",
+   "control": "submitOutcome",
+   "operations": 1086,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 48,
+    "refused: exactly one refusal recorded": 1028,
+    "threw inside the declared Outcome apply window": 9,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 200,
+    "Reflect.apply": 314,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 16,
+    "Object.create": 101,
+    "Object.defineProperty": 99,
+    "Array.isArray": 4,
+    "Object.getPrototypeOf": 11,
+    "Object.getOwnPropertySymbols": 1,
+    "Object.getOwnPropertyNames": 3,
+    "Object.prototype.hasOwnProperty": 285,
+    "String.prototype.charCodeAt": 25,
+    "Object.is": 2,
+    "Object.keys": 2,
+    "Set.prototype.has": 1,
+    "Set.prototype.add": 1,
+    "Array.prototype.sort": 1,
+    "Array.prototype[Symbol.iterator]": 1,
+    "ArrayIteratorPrototype.next": 3,
+    "JSON.stringify": 4,
+    "Array.prototype.push": 2,
+    "Array.prototype.join": 1,
+    "Set.prototype.delete": 1,
+    "Buffer.byteLength": 1,
+    "Reflect.ownKeys": 2,
+    "Map.prototype.set": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: complete with an Emission and a queued outside-batch input",
+   "control": "submitOutcome",
+   "operations": 3959,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 102,
+    "refused: exactly one refusal recorded": 3839,
+    "threw inside the declared Outcome apply window": 17,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 749,
+    "Reflect.apply": 1153,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 3,
+    "Object.freeze": 24,
+    "Object.create": 381,
+    "Object.defineProperty": 375,
+    "Array.isArray": 12,
+    "Object.getPrototypeOf": 43,
+    "Object.getOwnPropertySymbols": 3,
+    "Object.getOwnPropertyNames": 11,
+    "Object.prototype.hasOwnProperty": 1111,
+    "String.prototype.charCodeAt": 36,
+    "Object.is": 4,
+    "Object.keys": 6,
+    "Set.prototype.has": 3,
+    "Set.prototype.add": 3,
+    "Array.prototype.sort": 3,
+    "Array.prototype[Symbol.iterator]": 3,
+    "ArrayIteratorPrototype.next": 7,
+    "JSON.stringify": 9,
+    "Array.prototype.push": 4,
+    "Array.prototype.join": 3,
+    "Set.prototype.delete": 3,
+    "Buffer.byteLength": 4,
+    "Reflect.ownKeys": 3,
+    "Map.prototype.set": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: fail",
+   "control": "submitOutcome",
+   "operations": 2063,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 65,
+    "refused: exactly one refusal recorded": 1985,
+    "threw inside the declared Outcome apply window": 12,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 384,
+    "Reflect.apply": 599,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 19,
+    "Object.create": 196,
+    "Object.defineProperty": 192,
+    "Array.isArray": 7,
+    "Object.getPrototypeOf": 22,
+    "Object.getOwnPropertySymbols": 2,
+    "Object.getOwnPropertyNames": 6,
+    "Object.prototype.hasOwnProperty": 562,
+    "String.prototype.charCodeAt": 32,
+    "Object.is": 3,
+    "Object.keys": 4,
+    "Set.prototype.has": 2,
+    "Set.prototype.add": 2,
+    "Array.prototype.sort": 2,
+    "Array.prototype[Symbol.iterator]": 2,
+    "ArrayIteratorPrototype.next": 5,
+    "JSON.stringify": 6,
+    "Array.prototype.push": 3,
+    "Array.prototype.join": 2,
+    "Set.prototype.delete": 2,
+    "Buffer.byteLength": 2,
+    "Reflect.ownKeys": 2,
+    "Map.prototype.set": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: continue, ending a code and a protocol hold",
+   "control": "submitOutcome",
+   "operations": 1102,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 54,
+    "refused: exactly one refusal recorded": 1028,
+    "threw inside the declared Outcome apply window": 19,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 202,
+    "Reflect.apply": 316,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 18,
+    "Object.create": 105,
+    "Object.defineProperty": 103,
+    "Array.isArray": 4,
+    "Object.getPrototypeOf": 11,
+    "Object.getOwnPropertySymbols": 1,
+    "Object.getOwnPropertyNames": 3,
+    "Object.prototype.hasOwnProperty": 287,
+    "String.prototype.charCodeAt": 25,
+    "Object.is": 2,
+    "Object.keys": 2,
+    "Set.prototype.has": 1,
+    "Set.prototype.add": 1,
+    "Array.prototype.sort": 1,
+    "Array.prototype[Symbol.iterator]": 1,
+    "ArrayIteratorPrototype.next": 3,
+    "JSON.stringify": 4,
+    "Array.prototype.push": 2,
+    "Array.prototype.join": 1,
+    "Set.prototype.delete": 1,
+    "Buffer.byteLength": 1,
+    "Reflect.ownKeys": 2,
+    "Map.prototype.set": 1
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: exact replay",
+   "control": "submitOutcome",
+   "operations": 1052,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 23,
+    "refused: exactly one refusal recorded": 1028,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 195,
+    "Reflect.apply": 308,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 7,
+    "Object.create": 97,
+    "Object.defineProperty": 95,
+    "Array.isArray": 4,
+    "Object.getPrototypeOf": 11,
+    "Object.getOwnPropertySymbols": 1,
+    "Object.getOwnPropertyNames": 3,
+    "Object.prototype.hasOwnProperty": 280,
+    "String.prototype.charCodeAt": 25,
+    "Object.is": 2,
+    "Object.keys": 2,
+    "Set.prototype.has": 1,
+    "Set.prototype.add": 1,
+    "Array.prototype.sort": 1,
+    "Array.prototype[Symbol.iterator]": 1,
+    "ArrayIteratorPrototype.next": 3,
+    "JSON.stringify": 4,
+    "Array.prototype.push": 2,
+    "Array.prototype.join": 1,
+    "Set.prototype.delete": 1,
+    "Buffer.byteLength": 1,
+    "Reflect.ownKeys": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: refused conflicting replay",
+   "control": "submitOutcome",
+   "operations": 1000,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 26,
+    "refused: exactly one refusal recorded": 973,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 191,
+    "Reflect.apply": 289,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 8,
+    "Object.create": 94,
+    "Object.defineProperty": 92,
+    "Array.isArray": 4,
+    "Object.getPrototypeOf": 11,
+    "Object.getOwnPropertySymbols": 1,
+    "Object.getOwnPropertyNames": 3,
+    "Object.prototype.hasOwnProperty": 276,
+    "String.prototype.charCodeAt": 10,
+    "Object.is": 1,
+    "Object.keys": 2,
+    "Set.prototype.has": 1,
+    "Set.prototype.add": 1,
+    "Array.prototype.sort": 1,
+    "Array.prototype[Symbol.iterator]": 1,
+    "ArrayIteratorPrototype.next": 2,
+    "JSON.stringify": 2,
+    "Array.prototype.push": 1,
+    "Array.prototype.join": 1,
+    "Set.prototype.delete": 1,
+    "Buffer.byteLength": 1,
+    "Reflect.ownKeys": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: refused stale writer epoch",
+   "control": "submitOutcome",
+   "operations": 1055,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 26,
+    "refused: exactly one refusal recorded": 1028,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 195,
+    "Reflect.apply": 308,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 8,
+    "Object.create": 98,
+    "Object.defineProperty": 96,
+    "Array.isArray": 4,
+    "Object.getPrototypeOf": 11,
+    "Object.getOwnPropertySymbols": 1,
+    "Object.getOwnPropertyNames": 3,
+    "Object.prototype.hasOwnProperty": 280,
+    "String.prototype.charCodeAt": 25,
+    "Object.is": 2,
+    "Object.keys": 2,
+    "Set.prototype.has": 1,
+    "Set.prototype.add": 1,
+    "Array.prototype.sort": 1,
+    "Array.prototype[Symbol.iterator]": 1,
+    "ArrayIteratorPrototype.next": 3,
+    "JSON.stringify": 4,
+    "Array.prototype.push": 2,
+    "Array.prototype.join": 1,
+    "Set.prototype.delete": 1,
+    "Buffer.byteLength": 1,
+    "Reflect.ownKeys": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: refused without the attempt's grant",
+   "control": "submitOutcome",
+   "operations": 1055,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 26,
+    "refused: exactly one refusal recorded": 1028,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 195,
+    "Reflect.apply": 308,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 8,
+    "Object.create": 98,
+    "Object.defineProperty": 96,
+    "Array.isArray": 4,
+    "Object.getPrototypeOf": 11,
+    "Object.getOwnPropertySymbols": 1,
+    "Object.getOwnPropertyNames": 3,
+    "Object.prototype.hasOwnProperty": 280,
+    "String.prototype.charCodeAt": 25,
+    "Object.is": 2,
+    "Object.keys": 2,
+    "Set.prototype.has": 1,
+    "Set.prototype.add": 1,
+    "Array.prototype.sort": 1,
+    "Array.prototype[Symbol.iterator]": 1,
+    "ArrayIteratorPrototype.next": 3,
+    "JSON.stringify": 4,
+    "Array.prototype.push": 2,
+    "Array.prototype.join": 1,
+    "Set.prototype.delete": 1,
+    "Buffer.byteLength": 1,
+    "Reflect.ownKeys": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: refused malformed content",
+   "control": "submitOutcome",
+   "operations": 43,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 31,
+    "refused: exactly one refusal recorded": 11,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 15,
+    "Reflect.apply": 5,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 2,
+    "Object.freeze": 4,
+    "Number.isFinite": 1,
+    "Object.create": 4,
+    "Object.defineProperty": 4,
+    "Object.prototype.hasOwnProperty": 3,
+    "Array.isArray": 1,
+    "Reflect.ownKeys": 2
+   },
+   "violations": []
+  },
+  {
+   "name": "outcome: refused over the Emission capacity",
+   "control": "submitOutcome",
+   "operations": 1056,
+   "classes": {
+    "refused without naming the Execution: nothing recorded": 1,
+    "threw: no-call state": 25,
+    "refused: exactly one refusal recorded": 1030,
+    "completed": 1
+   },
+   "operationKinds": {
+    "Object.getOwnPropertyDescriptor": 196,
+    "Reflect.apply": 308,
+    "Map.prototype.get": 2,
+    "Number.isSafeInteger": 3,
+    "Object.freeze": 6,
+    "Object.create": 98,
+    "Object.defineProperty": 96,
+    "Array.isArray": 5,
+    "Object.getPrototypeOf": 11,
+    "Object.getOwnPropertySymbols": 1,
+    "Object.getOwnPropertyNames": 3,
+    "Object.prototype.hasOwnProperty": 280,
+    "String.prototype.charCodeAt": 25,
+    "Object.is": 2,
+    "Object.keys": 2,
+    "Set.prototype.has": 1,
+    "Set.prototype.add": 1,
+    "Array.prototype.sort": 1,
+    "Array.prototype[Symbol.iterator]": 1,
+    "ArrayIteratorPrototype.next": 3,
+    "JSON.stringify": 4,
+    "Array.prototype.push": 2,
+    "Array.prototype.join": 1,
+    "Set.prototype.delete": 1,
+    "Buffer.byteLength": 1,
+    "Reflect.ownKeys": 2
+   },
+   "violations": []
+  }
+ ]
+}
+
+exit: 0; signal: null; error: none

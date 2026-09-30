@@ -1,0 +1,5 @@
+# R-P2 submitOutcome, visible caller, no grant (tree: H d5ffd35)
+command: node --expose-gc --experimental-strip-types probes/p-chain-outcome.ts h 1000 1
+{"D":1000,"roots":1,"ok":false,"classification":"unauthorized_submission","reasonLen":206,"ms":5212,"rssMiB":108,"sameExchange":true}
+command: node --expose-gc --experimental-strip-types probes/p-chain-outcome.ts h 1000 8
+{"D":1000,"roots":8,"ok":false,"classification":"unauthorized_submission","reasonLen":206,"ms":40586,"rssMiB":113,"sameExchange":true}

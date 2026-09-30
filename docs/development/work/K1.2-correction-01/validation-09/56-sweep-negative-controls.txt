@@ -1,0 +1,73 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/sweeps-08.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:29:45.396Z
+
+ENV node=v25.2.1 platform=darwin arch=arm64 fault-mutants=18 read-mutants=16
+CONTROL fault sweep "takeover: accepted": exit=0 runs=75 violations=0
+CONTROL fault sweep "recover: enter a code hold": exit=0 runs=5898 violations=0
+CONTROL fault sweep "report: enter a protocol hold without": exit=0 runs=24 violations=0
+CONTROL catalog poison sweep: exit=0 failed=0
+CONTROL whole-suite poison sweep (count) over inspection.test.ts: exit=0
+CONTROL whole-suite poison sweep (count) over control-authority.test.ts: exit=0
+REJECTED fault: review 11 default parameter: a helper whose default argument is the record mints early: sweep "takeover: accepted" exit=1 violations=14
+  first violation: takeover: accepted (review 11's seed): operation 25/36 (Object.freeze at identity.ts:186 mintReceipt): threw and left a state no complete decision explains
+REJECTED fault: review 11 shadowed undefined: a local named undefined advances the acceptance index: sweep "takeover: accepted" exit=1 violations=12
+  first violation: takeover: accepted (review 11's seed): operation 25/35 (Object.freeze at coordinator.ts:1784 requestTakeover): threw and left a state no complete decision explains
+REJECTED fault: C1 review 10: takeover receipt minted through this.#mint: sweep "takeover: accepted" exit=1 violations=14
+  first violation: takeover: accepted (review 11's seed): operation 24/35 (Object.freeze at identity.ts:186 mintReceipt): threw and left a state no complete decision explains
+REJECTED fault: C2 review 10: takeover index advanced by a postfix increment: sweep "takeover: accepted" exit=1 violations=14
+  first violation: takeover: accepted (review 11's seed): operation 24/35 (Object.freeze at identity.ts:186 mintReceipt): threw and left a state no complete decision explains
+REJECTED fault: C3 compound assignment in an initializer: sweep "takeover: accepted" exit=1 violations=14
+  first violation: takeover: accepted (review 11's seed): operation 24/35 (Object.freeze at identity.ts:186 mintReceipt): threw and left a state no complete decision explains
+REJECTED fault: C4 early append through a const alias: sweep "takeover: accepted" exit=1 violations=8
+  first violation: takeover: accepted (review 11's seed): reference: the declared apply sequences do not match coordinator.ts: requestTakeover: the declared sequence's first statement "appendOwn(record.receipts, receipt);" is missing
+REJECTED fault: C5 early append through a fresh container holding a Kernel list: sweep "takeover: accepted" exit=1 violations=8
+  first violation: takeover: accepted (review 11's seed): reference: the declared apply sequences do not match coordinator.ts: requestTakeover: the declared sequence's first statement "appendOwn(record.receipts, receipt);" is missing
+REJECTED fault: C6 early write inside a local closure: sweep "takeover: accepted" exit=1 violations=7
+  first violation: takeover: accepted (review 11's seed): operation 27/35 (Object.create at own-array.ts:145 defineData): threw and left a state no complete decision explains
+REJECTED fault: C7 a Kernel list widened, disguised as a string and appended to through a helper: sweep "takeover: accepted" exit=1 violations=8
+  first violation: takeover: accepted (review 11's seed): reference: the declared apply sequences do not match coordinator.ts: requestTakeover: the declared sequence's first statement "appendOwn(record.receipts, receipt);" is missing
+REJECTED fault: C9 a refusal recorded without exiting: sweep "takeover: accepted" exit=1 violations=16
+  first violation: takeover: accepted (review 11's seed): reference: the uninjected takeover answer disagrees with the state it left
+REJECTED fault: C11 the Driver handed the attempt before it is recorded: sweep "takeover: accepted" exit=1 violations=10
+  first violation: takeover: accepted (review 11's seed): reference: the declared apply sequences do not match coordinator.ts: requestTakeover: statement 8 of the declared sequence is "return answer;", not "this.#deliver(exchange);"
+REJECTED fault: C13 the recovery answer projected after the commit (round 6 H7): sweep "recover: enter a code hold" exit=1 violations=12
+  first violation: recover: enter a code hold: operation 2943/2946 (Object.freeze at coordinator.ts:576 permittedForHold): threw and left a state no complete decision explains
+REJECTED fault: C14 holds written before their history append (round 6 H3): sweep "report: enter a protocol hold without" exit=1 violations=2
+  first violation: report: enter a protocol hold without a diagnostic: operation 22/23 (Object.create at own-array.ts:145 defineData): threw and left a state no complete decision explains
+REJECTED fault: C15 an early write through a binding set by logical assignment: sweep "takeover: accepted" exit=1 violations=7
+  first violation: takeover: accepted (review 11's seed): operation 27/35 (Object.create at own-array.ts:145 defineData): threw and left a state no complete decision explains
+REJECTED fault: C16 an early truncation through an object whose constructor keeps a Kernel list: sweep "takeover: accepted" exit=1 violations=12
+  first violation: takeover: accepted (review 11's seed): reference: the uninjected takeover answer disagrees with the state it left
+OUTSIDE (expected) fault: C8 foreign code after the decision is being built: sweep "takeover: accepted" exit=0 violations=0
+  why a runtime sweep cannot see it: a host read with no state change: nothing a fault can reveal (static guard)
+OUTSIDE (expected) fault: C10 a builder that also changes module state: sweep "takeover: accepted" exit=0 violations=0
+  why a runtime sweep cannot see it: module state outside every Execution: invisible at the boundary (static guard)
+OUTSIDE (expected) fault: C12 a protocol hold written before its record is built: sweep "report: enter a protocol hold without" exit=0 violations=0
+  why a runtime sweep cannot see it: the write stores the null the exchange already holds on that path: runtime-equivalent (static guard)
+REJECTED read: review 11 READ-01: inspection reads a member introduced through a Pick cast: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+  REJECTED by the whole-suite poison sweep over inspection.test.ts: first firing Object.prototype.resultingEpoch (get) at file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12c1-r8-mutant-fNku4l/packages/kernel/src/coordinator.ts:1362:66 in ExecutionCoordinator.inspect
+REJECTED read: R1 quoted binding name reads the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+  REJECTED by the whole-suite poison sweep over control-authority.test.ts: first firing Object.prototype.controlScopes (get) at file:///private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12c1-r8-mutant-SnZrD0/packages/kernel/src/coordinator.ts:550:28 in ExecutionCoordinator.requestTakeover
+REJECTED read: R2 computed binding name reads the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R3 assignment destructuring reads the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R4 bare binding reads the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R5 a cast makes the optional controlScopes required: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R6 a rest copy then an optional read: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R8 a String.prototype method replaces an index read: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R11 a lib global read after load: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R12 a caller envelope read directly: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: K1 hostMember walks on to the built-in prototypes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: K2 an ordinary descriptor literal in defineData: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: K3 an ordinary read of the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+OUTSIDE (expected) read: R7 an in-operator guard consults the prototype chain: catalog sweep exit=0; failing: none
+  why a runtime sweep cannot see it: `in` asks [[HasProperty]], which no accessor observes, and the guarded read is hostMember's: runtime-equivalent (static guard)
+OUTSIDE (expected) read: R9 the occurrences suffix access respelled as an ordinary optional access: catalog sweep exit=0; failing: none
+  why a runtime sweep cannot see it: every suffix entry owns `occurrences`, so the respelled read is an own read: runtime-equivalent (static guard)
+OUTSIDE (expected) read: R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]: catalog sweep exit=0; failing: none
+  why a runtime sweep cannot see it: the write stops at Error.prototype, which the sweep does not poison (ambient-reads.test.ts's runtime case rejects it)
+ALL SWEEP NEGATIVE CONTROLS REJECTED; CLEAN CONTROLS PASSED
+
+exit: 0; signal: null; error: none

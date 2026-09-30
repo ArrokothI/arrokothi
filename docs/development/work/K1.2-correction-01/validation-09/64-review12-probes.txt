@@ -1,0 +1,33 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/probe-review12-09.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:50:14.942Z
+
+worktree /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12c1-r9-review12-miowWy/h at 4a917f8caac04e7d9861e0ec3638662d52f9d3ae
+ORACLE PROBE AT REVIEWED H:
+  refusal revokes the setup grant: classes {"refused: exactly one refusal recorded":1}; violations 0
+  accepted report returns the opposite hold answer: classes {"accepted after a contained fault: the uninjected decision":1}; violations 0
+  arbitrary progress corruption is labeled an Outcome apply prefix solely by method name: classes {"threw inside the declared Outcome apply window":1}; violations 0
+  identical to review 12's oracle-probe.json: true
+ORACLE PROBE BUILDER AGAINST THIS TREE: exit=1 (expected nonzero: the rewritten sweep has none of its slice anchors)
+  ValueError: substring not found
+SCOPE PROBE AGAINST THIS TREE: exit=0 rows=16; identical to review 12's scope-probe.json: true
+  recoverExecution unknown: unknown_destination
+  recoverExecution hidden: unknown_destination
+  reportProtocolFailure unknown: unknown_destination
+  reportProtocolFailure hidden: unknown_destination
+  reportProtocolFailure wrongActivation: stale_exchange
+  reportProtocolFailure noOpen: no_unresolved_exchange
+  reportProtocolFailure terminal: terminal_destination
+  requestTakeover unknown: unknown_destination
+  requestTakeover hidden: unknown_destination
+  requestTakeover wrongActivation: stale_exchange
+  requestTakeover terminal: terminal_destination
+  requestTakeover safety callback: terminal: terminal_destination
+  requestTakeover safety callback: resolved: no_unresolved_exchange
+  requestTakeover safety callback: newExchange: stale_exchange
+  requestTakeover safety callback: nestedTakeover: stale_exchange
+  requestTakeover safety callback: codeHold: recovery_held
+
+exit: 0; signal: null; error: none

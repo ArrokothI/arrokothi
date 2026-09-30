@@ -1,0 +1,183 @@
+{
+  "date": "2026-09-28T16:57:45.885546+00:00",
+  "cwd": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+  "candidate": "3b0848ce408ddef9165434f7d7c36e9580ac6341",
+  "environment": [
+    {
+      "command": [
+        "node",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "v25.2.1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "npm",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "11.6.2\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "npx",
+        "--no-install",
+        "tsc",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "Version 5.9.3\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uname",
+        "-a"
+      ],
+      "exit": 0,
+      "stdout": "Darwin shiyufeideMacBook-Air.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:17:12 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8103 arm64\n",
+      "stderr": ""
+    }
+  ],
+  "prerequisiteAncestry": [
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "52b1600f3b42e3a360fdc3395178f1d147edf304",
+        "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+        "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+        "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+        "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "trackedDiff": {
+    "command": [
+      "git",
+      "diff",
+      "--stat"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "sourceScope": {
+    "command": [
+      "git",
+      "diff",
+      "--name-only",
+      "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+      "3b0848ce408ddef9165434f7d7c36e9580ac6341",
+      "--",
+      "packages",
+      ":!packages/kernel"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "remoteObservation": {
+    "command": [
+      "git",
+      "ls-remote",
+      "origin",
+      "refs/heads/codex/k1.2-correction-01-activation-identity"
+    ],
+    "exit": 128,
+    "stderr": "fatal: unable to access 'https://github.com/ArrokothI/arrokothi.git/': Could not resolve host: github.com"
+  },
+  "reruns": [
+    {
+      "command": "npm test",
+      "exit": 0,
+      "log": "npm-test.txt",
+      "tests": 3322,
+      "pass": 3322,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    {
+      "command": "npm run typecheck",
+      "exit": 0,
+      "log": "typecheck.txt"
+    },
+    {
+      "command": "npm run check:builder-docs",
+      "exit": 0,
+      "log": "builder-docs.txt"
+    },
+    {
+      "command": "node docs/development/work/K1.2-correction-01/check-records.mjs",
+      "exit": 0,
+      "log": "check-records.txt"
+    },
+    {
+      "command": "node --experimental-strip-types docs/development/work/K1.2-correction-01/review-09/probe-history.mjs",
+      "exit": 0,
+      "log": "probe-history.txt"
+    },
+    {
+      "command": "node --experimental-strip-types docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs",
+      "exit": 0,
+      "log": "probe-recovery-matrix.txt"
+    },
+    {
+      "command": "node --experimental-strip-types docs/development/work/K1.2-correction-01/review-09/probe-history-mutable.mjs",
+      "exit": 0,
+      "log": "probe-history-mutable.txt"
+    },
+    {
+      "command": "node --experimental-strip-types docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs --expect-correct",
+      "exit": 1,
+      "log": "recovery-oracle.txt"
+    }
+  ],
+  "contractBlobs": {
+    "docs/development/work/K1.2/contract.md": "edea43ed1c7583c28cca9c4a7612bf4163a75d2d",
+    "docs/development/work/K1.2-correction-01/contract.md": "4a035be01100fca0f807ba1cc6840a2f17925460",
+    "docs/development/work/K1.2-correction-01/amendment-01.md": "aef012040618dd35ee76b79bf326cbb2a2be0ec8",
+    "docs/development/work/K1.2/decision-05.md": "443b08d52ba065e7146b95906d22300f109c1625"
+  }
+}

@@ -1,0 +1,666 @@
+candidate C: 61059a3e43d7057de9be29f101a65ebed9416ae2
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12-r8-valid/checkout
+command: git show 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1-correction-01/decision-01.md
+command: git show --format=fuller --stat b89a703472397c264743014a5ed2a83c30846f2e
+command: git diff --name-status b89a703472397c264743014a5ed2a83c30846f2e HEAD
+command: git diff --stat a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD
+command: git grep -n -E 'deliver\(activation|SubmissionGrant|submissionFor|attempt.submission|submission authority' -- mental-model packages/kernel/src packages/kernel/tests docs/development/002-implemented-kernel-baseline.md docs/development/work/K1.2/contract.md docs/development/work/K1.2/decision-01.md
+environment: {"node":"v25.2.1","npm":"11.6.2","typescript":"5.9.3","OS":"ProductName:\t\tmacOS\\nProductVersion:\t\t26.6.2\\nBuildVersion:\t\t25G83","arch":"arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs":"90996ac232a3d661d190e101836d9536032bdfc319d97de606b63a6aae473ba5","docs/development/work/K1.2/checks-07.mjs":"dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88","docs/development/work/K1.2/contract.md":"62a637b4d3eddb308de78cc23f3985b43e168a1cdebb0b729503dc78a0e52741","docs/development/work/K1.2/decision-01.md":"0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9","mental-model/mechanisms/execution-cycle.md":"e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091","package-lock.json":"a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d","package.json":"081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1","packages/kernel/package.json":"47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5","packages/kernel/tests/submission-lifetime.test.ts":"f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401","tsconfig.json":"596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI":"<unset>","LANG":"C.UTF-8","LC_ALL":"<unset>","NODE_ENV":"<unset>","NODE_OPTIONS":"<unset>","TZ":"<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T20:21:27.303Z
+finished-utc: 2026-09-25T20:21:27.463Z
+output-bytes: 74777
+output-sha256: 9eb978b72269507855f22256165630aa47cf424a4b67b0db38f90fc425fa7fd6
+--- output begins ---
+# KC1-ARCH-1 — Kernel-owned delivery reporting
+
+**Date:** 2026-09-15. **Role:** owner-delegated architecture decision, not independent acceptance.
+**Authority:** the owner explicitly authorized this session to decide and unblock K1.1,
+with implementation to be performed by another coding agent.
+**Inspected head:** `d43f2a97daca2f911e92e975222e66b58c31c142`.
+**Original review base B:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b` (unchanged).
+**Decision:** adopted target; correction contract revision 2; implementation outstanding.
+
+## Decision and ownership
+
+Adopt the callback/capability boundary recommended in [review-02](review-02.md) §6:
+Kernel-owned delivery reporting, with no Driver-returned Promise observation. The exact
+normative rule is owned by
+[execution-cycle: delivery reporting boundary](../../../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary).
+For TypeScript, the selected method is
+`deliver(activation: Activation, settlement: DeliverySettlement): undefined`.
+The stronger `undefined` return annotation prevents the ordinary `void` assignability
+loophole that would otherwise admit an async method. Runtime correctness does not depend
+on trusting that annotation: Kernel code never observes the returned value.
+
+This belongs to the Kernel/Driver operational boundary. The Kernel owns attempt identity,
+report authority and retained delivery evidence; the Driver owns asynchronous computation
+and internal Promise rejection handling. This introduces no Runtime algorithm, Outcome
+variant, portable provider type, scheduler, persistence layer or isolation claim.
+
+## Why this resolves the block
+
+[Blocker-01](blocker-01.md) and [review-02](review-02.md) identify a contradictory requirement:
+an unrestricted Promise-return API plus a guarantee to observe every rejection safely after
+return. The existing source and dispatch tests confirm that this is the governing H1 API,
+and that H1 permits an unhandled escape in its supposedly passing oracle.
+
+An exact-native-Promise restriction or observability precondition would still make safe
+subscription to a mutable Driver-owned object part of Kernel correctness. Selecting a
+Kernel-created reporting capability removes that dependency while retaining delivery
+failure evidence. Void-only delivery without reporting loses that evidence. A counted
+unhandled exception accepts the defect as success; it is rejected.
+
+This decision changes the boundary and guarantee explicitly. It does not prove H1 correct,
+make an already-unhandled Promise safe, or promise that arbitrary trusted same-process code
+cannot crash its host. A conforming Driver reports failures and handles its own promises.
+The Kernel does not manufacture or observe promises on the reporting path. There is no
+Promise-return compatibility shim and no process-level unhandled-rejection suppression.
+
+The configurable-subclass fix from blocker-01 is no longer a required Kernel implementation
+strategy because the Promise-return API is removed. Preserve it as historical diagnosis.
+Replace its active regression with boundary-removal and Driver-ownership coverage, rather
+than leaving a green assertion that an unhandled rejection is expected.
+
+## Acceptance mapping
+
+K1.1's original revision-5 contract and all historical review verdicts remain unchanged.
+Revision 2 explicitly replaces correction item 4 and KC1-DEC-5. C4/C5 keep their intent,
+reservation, asynchronous dispatch and exact redelivery invariants; the following cases
+are mandatory evidence for their revised delivery binding:
+
+| Case | Required distinguishing observation | Owner |
+|---|---|---|
+| Report during invocation | Intent and pending attempt already exist; delivered/failed report changes only that attempt | K1.1-correction-01, C4 |
+| Delayed or absent report | Attempt stays pending after normal return; another Execution dispatches; later report settles the original attempt | K1.1-correction-01, C4 |
+| Synchronous throw | Pending becomes failed with total bounded diagnostic; no accepted-state/receipt change | K1.1-correction-01, C4/C5 |
+| Duplicate/conflicting reports | delivered→failed, failed→delivered and duplicates are inert after the first report; report→throw and throw→late-report obey the same rule | K1.1-correction-01, C4/C5 |
+| Capability integrity | Frozen capability, detached methods and cross-Execution tests cannot redirect writes or expose mutable records | K1.1-correction-01, C4/C9 |
+| Hostile failure reason | Accessors, coercions, revoked Proxies and thenables are never invoked; fallback is stable, bounded and nonthrowing; later mutation cannot alter inspection | K1.1-correction-01, C4/C9 |
+| Redelivery overlap | New report capability, identical Activation; out-of-order reports settle only their respective attempts, including old failure after newer delivery success | K1.1-correction-01, C5 |
+| Promise independence | Initial dispatch and redelivery with hostile ambient constructor/species slots still report correctly; descriptors are unchanged by Kernel reporting; no return-object property is read | K1.1-correction-01, C4/C5 |
+| Return misuse | A cast fake returning an inert hostile thenable/object triggers no getter/subscription or implicit success; an absent explicit report remains pending | K1.1-correction-01, C4/C5 |
+| Driver-internal asynchronous failure | A conforming fake handles its own ordinary internal rejection and calls failed; strict child process exits 0, zero unhandled events, on dispatch and redelivery | K1.1-correction-01, C4/C5 |
+| Type boundary | Async/Promise-returning Driver fails a type assertion; a synchronous undefined-returning Driver compiles | K1.1-correction-01, C4/C10 |
+| Later lifecycle/retention | Late report cannot revive resolved/cancelled/fenced work; retired record cannot be recreated | K1.2/K1.3 and K5, at their existing gates |
+
+Do not generate a known-unhandled Promise in the return-misuse test and call its crash a
+passing Kernel safety result. An inert hostile object proves no observation without adding
+an unrelated unhandled promise. The Driver-internal rejection test separately proves correct
+conforming failure handling. Keep process fixtures deterministic and independent of models.
+
+C1/C2/C3/C6–C10 and the seven previously closed findings retain cumulative review coverage.
+No Outcome, cancellation, takeover, wait, persistence or retirement implementation is
+required here. Those remain explicitly refused/deferred under existing packet ownership.
+
+Replace obsolete Promise-sanitation ablations with mutations that (1) interpret normal
+return as delivered, (2) permit a second report to overwrite the first, (3) target the latest
+attempt instead of the capability's bound attempt, and (4) observe a returned thenable.
+Each must be rejected by its mapped oracle. Preserve unrelated identity/value/diagnostic
+ablations and their evidence obligations. Reconcile the full case inventory after migration.
+
+## Authorized payload and migration handoff
+
+Only these four mental-model paths are authorized to differ from B for this decision:
+
+- `mental-model/mechanisms/execution-cycle.md`: canonical delivery rule.
+- `mental-model/mechanisms/integration.md`: link the Driver authoring obligation.
+- `mental-model/roadmap.md`: assign correction and later lifecycle acceptance cases.
+- `mental-model/sources.md`: record decision provenance.
+
+All other mental-model paths must be byte-identical to B in C2. The decision-session
+cumulative check found one pre-existing exception: `mental-model/deployment.md`, introduced
+by `66be0ca` (`doc-up`) and present at inspected head `d43f2a9`. It is outside this
+correction's authorized maintenance. Restore that page to B in the next payload, preserving
+its commit/history; do not extend the allowlist or claim the current tree already passes
+the C2 scope guard. This is an authorized concrete cleanup, not another architecture blocker.
+This session leaves that pre-existing page untouched for the implementation handoff.
+Enumerate and inspect the exact
+hunks in these four paths; a path allowance is not permission to revive unrelated historical
+drift. The B-anchored scope guard must enforce this explicit allowlist and retain the
+restoration check for the remaining tree. This replaces revision 1's zero-reference-payload
+assertion prospectively; H1's scope/evidence is not rewritten.
+
+The next implementer updates `packages/kernel/src/driver.ts`, coordinator delivery and all
+fake Drivers/tests/consumer declarations, exported-type and structural inventories as needed.
+Remove observation/sanitation helpers made dead by this change; preserve shared helpers
+needed by value acceptance and total diagnostics. Update live source comments, baseline,
+case inventory and any delivery examples. Do not retain a hidden Promise-return fallback.
+Any structural guard changes must preserve relational inventory checks and be declared.
+
+Current source still declares `void | Promise<void>`, uses Promise sanitation/observation,
+and marks normal return as delivered. No executable behavior was changed in this decision
+session. The new contract is therefore a target with a known implementation gap.
+
+Use a fresh C2 containing this decision's documentation and the implementation, then fresh
+validation-02 and H2/report under 006/008/012/015. Run the contract's full command plan,
+strict rejection probes, type assertions, link/anchor and revised scope checks, and
+sensitive ablations. Bind review to original B → H2 and contract revision 2; historical
+validation-01 is not evidence for the new boundary. No third-party material or dependency
+is introduced by this decision; keep the approved exact canonicalize dependency unchanged.
+
+## Status and dependency revalidation
+
+The same correction branch and original B remain the review anchors. K1.0 prerequisites,
+including corrections 01–02, retain the integrated disposition recorded in 007 and the
+existing correction contract; this API decision creates no new prerequisite. K1.2 remains
+held and `next_release: none`.
+
+The architecture blocker is resolved and the correction returns to **CHANGES_REQUESTED**,
+as required by 006 for an unblocked corrective packet. `K11-R16-DISP-01` remains open pending
+implementation and independent review against revision 2. C4/C5 are not marked PASS.
+The seven findings closed in review-01 remain historical closure evidence, subject to
+cumulative revalidation. The contradictory current-status claim identified as
+`KC1-R2-PROC-01` is repaired in 007; the next reviewer verifies that repair.
+
+Preserve blocker-01, review-01/review-02, H1 and all prior K1.1 records byte-for-byte. This
+ruling supplies the missing architecture authority; it grants no acceptance, integration,
+release or permission to begin a successor packet.
+
+## Decision-session verification
+
+- `npm run check:builder-docs`: PASS, 57 Markdown files, 795 local links/anchors,
+  38 public package imports.
+- Additional changed-document link/anchor check: PASS (514 links before this final
+  record-only verification section).
+- `git diff --check`: PASS.
+- Session delta: documentation only; no package, test or script edits; historical
+  blocker/reviews/implementation/evidence unchanged.
+- Cumulative B-based scope check: identified the pre-existing deployment-page deviation
+  above; C2 must restore it. The four newly changed mental-model paths match the decision
+  allowlist exactly. No claim of a passing C2 scope gate is made.
+- No runtime/typecheck/conformance suite rerun: no implementation was performed. Their
+  fresh execution remains mandatory on C2 under the acceptance mapping and command plan.
+
+## Superseding note — documentation payload allowlist withdrawn (2026-09-15, round 5)
+
+**Everything above is the record as decided, and is not edited.** This note is appended under
+006's rule that corrections to a sealed decision are new, explicitly superseding records rather
+than rewrites. It changes exactly one provision.
+
+**Superseded:** the "Authorized payload and migration handoff" section's four-path mental-model
+allowlist, its requirement that "All other mental-model paths must be byte-identical to B in C2",
+and its instruction to restore `mental-model/deployment.md` to B in the next payload.
+
+**Replaced by:** [contract](contract.md) revision 3, `KC1-DEC-7`. After H3 the owner completed and
+froze a Layer-1/2 documentation rewrite at `0ee13f8138af52107d86967043bcc460faba8893` and
+instructed that the resulting tree is authoritative. That commit is the documentation anchor **D**.
+The scope guard is re-anchored from B to D and tightened from a four-path allowlist to whole-tree
+byte identity: `git diff --name-only D HEAD -- mental-model/` must be empty. `deployment.md` is not
+restored to B; it is held byte-identical to D like every other page.
+
+**Unchanged by this note:** `KC1-ARCH-1` itself — the delivery reporting boundary, the
+`deliver(activation, settlement): undefined` signature, every acceptance-mapping row, the rejected
+alternatives, the mutation requirements and the ownership analysis all stand exactly as decided.
+The canonical rule remains owned by
+[execution-cycle](../../../../mental-model/mechanisms/execution-cycle.md#delivery-reporting-boundary).
+This note authorizes no architecture change, no acceptance, no integration and no successor
+release, and it does not revise any historical review verdict.
+
+**Why the earlier provision was right when written and wrong to keep.** It was written against
+*unreviewed historical drift* that had leaked onto the branch and made a validated tree stop
+matching its candidate. Reverting that was correct. The tree at D is a different thing: deliberate,
+completed owner work whose Layer-3 pages are word-for-word identical to B outside the four paths
+this decision already authorized. Holding it to an anchor written for the other situation is what
+produced the contradiction [review-05](review-05.md) records as `KC1-R4-PROC-01`.
+commit b89a703472397c264743014a5ed2a83c30846f2e
+Author:     chrizeroxtwo <realo@hotmail.com.tw>
+AuthorDate: Fri Sep 25 19:49:32 2026 +0800
+Commit:     chrizeroxtwo <realo@hotmail.com.tw>
+CommitDate: Fri Sep 25 19:49:32 2026 +0800
+
+    K1.2 H6: record blocked candidate and clean payload evidence
+
+ docs/development/007-work-packets.md               |    2 +-
+ docs/development/work/K1.2/implementation-06.md    |   86 +
+ .../K1.2/validation-06/01-tree-and-environment.txt |   28 +
+ .../work/K1.2/validation-06/02-typecheck.txt       |   23 +
+ .../work/K1.2/validation-06/03-test-full.txt       | 3370 ++++++++++++++++++++
+ .../work/K1.2/validation-06/04-test-kernel.txt     |  713 +++++
+ .../K1.2/validation-06/05-test-conformance.txt     | 2541 +++++++++++++++
+ .../work/K1.2/validation-06/06-test-sdk.txt        |   53 +
+ .../K1.2/validation-06/07-check-builder-docs.txt   |   24 +
+ .../work/K1.2/validation-06/08-ablations.txt       |   76 +
+ .../validation-06/09-preservation-and-links.txt    |   38 +
+ .../10-authority-and-candidate-context.txt         |  576 ++++
+ 12 files changed, 7529 insertions(+), 1 deletion(-)
+M	docs/development/002-implemented-kernel-baseline.md
+M	docs/development/007-work-packets.md
+M	docs/development/README.md
+A	docs/development/work/K1.2/checks-07.mjs
+M	docs/development/work/K1.2/contract.md
+A	docs/development/work/K1.2/decision-01.md
+A	docs/development/work/K1.2/implementation-07.md
+A	docs/development/work/K1.2/review-07-merged.md
+A	docs/development/work/K1.2/validation-07/01-tree-and-environment.txt
+A	docs/development/work/K1.2/validation-07/02-typecheck.txt
+A	docs/development/work/K1.2/validation-07/03-test-full.txt
+A	docs/development/work/K1.2/validation-07/04-test-kernel.txt
+A	docs/development/work/K1.2/validation-07/05-test-conformance.txt
+A	docs/development/work/K1.2/validation-07/06-test-sdk.txt
+A	docs/development/work/K1.2/validation-07/07-check-builder-docs.txt
+A	docs/development/work/K1.2/validation-07/08-ablations.txt
+A	docs/development/work/K1.2/validation-07/09-preservation-and-links.txt
+A	docs/development/work/K1.2/validation-07/10-authority-and-candidate-context.txt
+M	mental-model/concepts/core.md
+M	mental-model/concepts/identity.md
+M	mental-model/mechanisms/execution-cycle.md
+M	mental-model/mechanisms/integration.md
+M	mental-model/reference.md
+M	mental-model/rewrite-index.md
+M	mental-model/sources.md
+ .../development/002-implemented-kernel-baseline.md |  142 +-
+ docs/development/007-work-packets.md               |    6 +-
+ docs/development/README.md                         |    3 +-
+ docs/development/kernel-ownership.md               |   31 +-
+ docs/development/work/K1.2/ablations.mjs           |  278 ++
+ docs/development/work/K1.2/blocker-01.md           |   49 +
+ docs/development/work/K1.2/checks-06.mjs           |   53 +
+ docs/development/work/K1.2/checks-07.mjs           |   63 +
+ docs/development/work/K1.2/contract.md             |  453 +++
+ docs/development/work/K1.2/decision-01.md          |   88 +
+ docs/development/work/K1.2/implementation-01.md    |  185 ++
+ docs/development/work/K1.2/implementation-02.md    |  114 +
+ docs/development/work/K1.2/implementation-03.md    |  107 +
+ docs/development/work/K1.2/implementation-04.md    |  130 +
+ docs/development/work/K1.2/implementation-05.md    |  100 +
+ docs/development/work/K1.2/implementation-06.md    |   86 +
+ docs/development/work/K1.2/implementation-07.md    |   99 +
+ docs/development/work/K1.2/review-01.md            |  453 +++
+ docs/development/work/K1.2/review-02.md            |  325 ++
+ docs/development/work/K1.2/review-03-merged.md     |  292 ++
+ docs/development/work/K1.2/review-03.md            |  191 ++
+ docs/development/work/K1.2/review-04.md            |  262 ++
+ docs/development/work/K1.2/review-05-merged.md     |  125 +
+ docs/development/work/K1.2/review-06.md            |  307 ++
+ docs/development/work/K1.2/review-07-merged.md     |  215 ++
+ docs/development/work/K1.2/submission-audit-06.md  |   82 +
+ .../K1.2/validation-01/01-tree-and-environment.txt |   11 +
+ .../work/K1.2/validation-01/02-typecheck.txt       |    5 +
+ .../work/K1.2/validation-01/03-test-full.txt       | 3214 +++++++++++++++++++
+ .../work/K1.2/validation-01/04-test-kernel.txt     |  557 ++++
+ .../K1.2/validation-01/05-test-conformance.txt     | 2523 +++++++++++++++
+ .../work/K1.2/validation-01/06-test-sdk.txt        |   35 +
+ .../K1.2/validation-01/07-check-builder-docs.txt   |    6 +
+ .../work/K1.2/validation-01/08-ablations.txt       |   36 +
+ .../K1.2/validation-02/01-tree-and-environment.txt |    9 +
+ .../work/K1.2/validation-02/02-typecheck.txt       |   16 +
+ .../work/K1.2/validation-02/03-test-full.txt       | 3308 +++++++++++++++++++
+ .../work/K1.2/validation-02/04-test-kernel.txt     |  651 ++++
+ .../K1.2/validation-02/05-test-conformance.txt     | 2534 +++++++++++++++
+ .../work/K1.2/validation-02/06-test-sdk.txt        |   46 +
+ .../K1.2/validation-02/07-check-builder-docs.txt   |   17 +
+ .../work/K1.2/validation-02/08-ablations.txt       |   57 +
+ .../K1.2/validation-03/01-tree-and-environment.txt |   24 +
+ .../work/K1.2/validation-03/02-typecheck.txt       |   16 +
+ .../work/K1.2/validation-03/03-test-full.txt       | 3324 +++++++++++++++++++
+ .../work/K1.2/validation-03/04-test-kernel.txt     |  667 ++++
+ .../K1.2/validation-03/05-test-conformance.txt     | 2534 +++++++++++++++
+ .../work/K1.2/validation-03/06-test-sdk.txt        |   46 +
+ .../K1.2/validation-03/07-check-builder-docs.txt   |   17 +
+ .../work/K1.2/validation-03/08-ablations.txt       |   61 +
+ .../K1.2/validation-04/01-tree-and-environment.txt |   23 +
+ .../work/K1.2/validation-04/02-typecheck.txt       |   16 +
+ .../work/K1.2/validation-04/03-test-full.txt       | 3359 +++++++++++++++++++
+ .../work/K1.2/validation-04/04-test-kernel.txt     |  702 ++++
+ .../K1.2/validation-04/05-test-conformance.txt     | 2534 +++++++++++++++
+ .../work/K1.2/validation-04/06-test-sdk.txt        |   46 +
+ .../K1.2/validation-04/07-check-builder-docs.txt   |   17 +
+ .../work/K1.2/validation-04/08-ablations.txt       |   65 +
+ .../K1.2/validation-05/01-tree-and-environment.txt |   29 +
+ .../work/K1.2/validation-05/02-typecheck.txt       |   23 +
+ .../work/K1.2/validation-05/03-test-full.txt       | 3366 +++++++++++++++++++
+ .../work/K1.2/validation-05/04-test-kernel.txt     |  709 ++++
+ .../K1.2/validation-05/05-test-conformance.txt     | 2541 +++++++++++++++
+ .../work/K1.2/validation-05/06-test-sdk.txt        |   53 +
+ .../K1.2/validation-05/07-check-builder-docs.txt   |   24 +
+ .../work/K1.2/validation-05/08-ablations.txt       |   72 +
+ .../validation-05/09-preservation-and-links.txt    |   74 +
+ .../validation-05/10-live-authority-search.txt     |  600 ++++
+ .../K1.2/validation-06/01-tree-and-environment.txt |   28 +
+ .../work/K1.2/validation-06/02-typecheck.txt       |   23 +
+ .../work/K1.2/validation-06/03-test-full.txt       | 3370 ++++++++++++++++++++
+ .../work/K1.2/validation-06/04-test-kernel.txt     |  713 +++++
+ .../K1.2/validation-06/05-test-conformance.txt     | 2541 +++++++++++++++
+ .../work/K1.2/validation-06/06-test-sdk.txt        |   53 +
+ .../K1.2/validation-06/07-check-builder-docs.txt   |   24 +
+ .../work/K1.2/validation-06/08-ablations.txt       |   76 +
+ .../validation-06/09-preservation-and-links.txt    |   38 +
+ .../10-authority-and-candidate-context.txt         |  576 ++++
+ .../K1.2/validation-07/01-tree-and-environment.txt |   28 +
+ .../work/K1.2/validation-07/02-typecheck.txt       |   22 +
+ .../work/K1.2/validation-07/03-test-full.txt       | 3370 ++++++++++++++++++++
+ .../work/K1.2/validation-07/04-test-kernel.txt     |  713 +++++
+ .../K1.2/validation-07/05-test-conformance.txt     | 2541 +++++++++++++++
+ .../work/K1.2/validation-07/06-test-sdk.txt        |   53 +
+ .../K1.2/validation-07/07-check-builder-docs.txt   |   24 +
+ .../work/K1.2/validation-07/08-ablations.txt       |   76 +
+ .../validation-07/09-preservation-and-links.txt    |   42 +
+ .../10-authority-and-candidate-context.txt         |  645 ++++
+ mental-model/concepts/core.md                      |    2 +-
+ mental-model/concepts/identity.md                  |    4 +-
+ mental-model/mechanisms/execution-cycle.md         |   48 +-
+ mental-model/mechanisms/integration.md             |    2 +-
+ mental-model/reference.md                          |    2 +
+ mental-model/rewrite-index.md                      |   30 +-
+ mental-model/sources.md                            |    2 +
+ packages/kernel/package.json                       |    2 +-
+ packages/kernel/src/coordinator.ts                 | 1322 ++++++--
+ packages/kernel/src/driver.ts                      |   64 +-
+ packages/kernel/src/envelope.ts                    |  191 ++
+ packages/kernel/src/identity.ts                    |   29 +-
+ packages/kernel/src/index.ts                       |   41 +-
+ packages/kernel/src/inspection.ts                  |  177 +-
+ packages/kernel/src/lifecycle.ts                   |   11 +-
+ packages/kernel/src/outcome.ts                     |  560 ++++
+ packages/kernel/src/refusal.ts                     |   56 +-
+ packages/kernel/src/unsupported.ts                 |   16 +-
+ packages/kernel/tests/control-authority.test.ts    |  396 +++
+ packages/kernel/tests/delivery-attribution.test.ts |  224 ++
+ packages/kernel/tests/dispatch.test.ts             |   97 +-
+ packages/kernel/tests/harness.ts                   |  199 +-
+ packages/kernel/tests/history-attribution.test.ts  |  197 ++
+ packages/kernel/tests/hold-permitted.test.ts       |  273 ++
+ packages/kernel/tests/ingress.test.ts              |   16 +-
+ packages/kernel/tests/late-reports.test.ts         |  133 +
+ packages/kernel/tests/nondisclosure.test.ts        |  118 +-
+ packages/kernel/tests/outcome-acceptance.test.ts   |  672 ++++
+ packages/kernel/tests/outcome-evidence.test.ts     |  120 +
+ packages/kernel/tests/outcome-hostile.test.ts      |  312 ++
+ packages/kernel/tests/outcome-limits.test.ts       |  113 +
+ packages/kernel/tests/recovery-evidence.test.ts    |  843 +++++
+ packages/kernel/tests/recovery-history.test.ts     |  306 ++
+ packages/kernel/tests/recovery.test.ts             |  306 ++
+ packages/kernel/tests/refusals.test.ts             |   16 +-
+ packages/kernel/tests/submission-authority.test.ts |  300 ++
+ packages/kernel/tests/submission-lifetime.test.ts  |  155 +
+ packages/kernel/tests/takeover-reentrancy.test.ts  |  273 ++
+ packages/kernel/tests/takeover.test.ts             |  226 ++
+ packages/kernel/tests/terminal.test.ts             |  211 ++
+ packages/kernel/tests/transaction.test.ts          |  365 +++
+ packages/kernel/tests/unsupported.test.ts          |   28 +-
+ .../architecture/kernel-landing-zone.test.ts       |   63 +-
+ 131 files changed, 61265 insertions(+), 418 deletions(-)
+docs/development/002-implemented-kernel-baseline.md:24:classified only until it exceeds what an accepted container owns (K1.1-correction-02). `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+docs/development/002-implemented-kernel-baseline.md:25:reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
+docs/development/002-implemented-kernel-baseline.md:69:K1.3), plus the attempt-bound `SubmissionGrant` the Kernel handed to the Driver with the current
+docs/development/002-implemented-kernel-baseline.md:150:  `SubmissionGrant` per writer-epoch attempt, handed to the Driver with the Activation and required
+docs/development/002-implemented-kernel-baseline.md:174:  `authority` (`control` for checked control power, `attempt_submission` for a grant-authorized
+docs/development/work/K1.2/contract.md:238:| C8 attempt authority lifetime (DEC-20) | capture the first delivery's grant before ordinary redeliveries; repeat with the grant captured at takeover before redelivering that attempt | accept with the saved reference in both schedules; takeover's grant differs from the retired grant; each delivery has a distinct reporting capability; retired authority stays fenced; hold-ending History distinguishes attempt submission from control | `submission-lifetime.test.ts`; B10/B11 in `ablations.mjs` |
+docs/development/work/K1.2/contract.md:248:| C9/C10 recorded recovery commands (evidence.md, state.md History; DEC-18) | enter code hold, change reason, clear by declaration, clear protocol by takeover, end by Outcome; idempotent duplicates | each accepted decision appends one frozen history record with `authority` (`control` vs `attempt_submission`), actor, and exchange/epoch causation; history survives hold clearing, resolution, next dispatch and terminal; duplicates append nothing | `recovery-history.test.ts`, `history-attribution.test.ts`, `recovery.test.ts`, `hold-permitted.test.ts` |
+docs/development/work/K1.2/contract.md:251:| C10 submission authority (DEC-20) | visible caller without a current attempt grant submits `continue`, terminal `complete`/`fail`, and hold-ending Outcomes with forged/absent grants; same Outcomes with the attempt grant; old grant after takeover; hidden/missing callers | grant-less refused `unauthorized_submission` with zero accepted-state mutation (lifecycle, holds, history, receipts, B-5 unchanged; attempt still answerable); grant-holding proposal accepted; retired grant cannot commit (`stale_exchange` fencing preserved); hidden≡missing `unknown_destination`; views expose no grant | `submission-authority.test.ts` |
+docs/development/work/K1.2/contract.md:366:  but insufficient: DEC-20 requires the separate current-attempt `SubmissionGrant`, without requiring
+docs/development/work/K1.2/contract.md:397:  takeovers) and `attempt_submission` when the accepted Outcome presented the current attempt's
+docs/development/work/K1.2/contract.md:402:- **K1.2-DEC-20 — attempt-bound Outcome-submission authority (correction, K12-R3-AUTH-02).**
+docs/development/work/K1.2/contract.md:403:  `submitOutcome(caller, envelope, submission)` requires the `SubmissionGrant` the Kernel minted for
+docs/development/work/K1.2/contract.md:417:  The in-process carrier `deliver(activation, settlement, submission)` is authorized by owner
+docs/development/work/K1.2/decision-01.md:13:`deliver(activation, settlement): undefined`, with Kernel-owned delivery reporting, no
+docs/development/work/K1.2/decision-01.md:17:K1.2 implements DEC-20 attempt-bound Outcome-submission authority: the Kernel mints one
+docs/development/work/K1.2/decision-01.md:22:`deliver(activation, settlement, submission): undefined`. Review-06 finding
+docs/development/work/K1.2/decision-01.md:37:delivery boundary from `deliver(activation, settlement): undefined` to the equivalent
+docs/development/work/K1.2/decision-01.md:38:binding that also supplies the current Runtime attempt's Outcome-submission authority,
+docs/development/work/K1.2/decision-01.md:39:currently represented as `deliver(activation, settlement, submission): undefined`.
+docs/development/work/K1.2/decision-01.md:47:  Outcome-submission authority, while receiving a fresh per-delivery
+docs/development/work/K1.2/decision-01.md:50:  the Outcome-submission authority.
+docs/development/work/K1.2/decision-01.md:51:- A fresh Outcome must possess the current attempt's submission authority in addition to
+docs/development/work/K1.2/decision-01.md:55:- Visibility, explicit control authority, and Runtime-attempt submission authority remain
+docs/development/work/K1.2/decision-01.md:60:- `SubmissionGrant` is the current in-process representation of this authority. This
+mental-model/concepts/core.md:86:Inbound comes later, by its own route. When the native side eventually produces a result, the Driver turns that result into an Outcome — a separate act, at a time nobody fixed in advance. It submits the Outcome with the [submission authority](../mechanisms/execution-cycle.md#submission-authority) it was handed with the Activation, which shows the answer comes from the attempt allowed to give it. What it produces is still only a proposal until [Outcome acceptance](../mechanisms/execution-cycle.md#outcome-acceptance) rules on it. No part of the outbound call is held open waiting for it.
+mental-model/concepts/identity.md:107:Knowing the current epoch is not the right to use it. Anyone who may inspect the Execution can read the epoch, so an Outcome that merely quotes it proves nothing about who produced it. The Kernel therefore gives each attempt a [submission authority](../mechanisms/execution-cycle.md#submission-authority) that only that attempt holds: the epoch says which attempt may commit, and the authority shows that a submission comes from it.
+mental-model/mechanisms/execution-cycle.md:13:As one decision, the Kernel atomically reserves the exact Event [batch](../concepts/core.md#batch-reservation-and-acknowledgment) and records: [dispatch intent](../concepts/identity.md#dispatch-and-delivery), the current [writer epoch](../concepts/identity.md#writer-epoch), accepted [progress](../concepts/state.md#progress) and base revision, the progress [codec](../concepts/values.md#codec), pinned Runtime/[Definition](../concepts/core.md#definition) revisions, and the supplied authorized [execution view](../concepts/roles.md#view-and-disclosure). It also fixes the current [Runtime attempt](../concepts/identity.md#runtime-attempt), with its [submission authority](#submission-authority). This makes the Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost. Recording all of this before sending is what makes a crash between "decided to dispatch" and "the Runtime heard about it" recoverable: on restart the Kernel finds a pinned exchange it can redeliver unchanged, rather than having to guess which Events it had meant to hand over.
+mental-model/mechanisms/execution-cycle.md:26:presented:  the attempt's submission authority, beside the Outcome, not inside it
+mental-model/mechanisms/execution-cycle.md:35:It lives exactly as long as its attempt. Ordinary delivery retry keeps the attempt, so it keeps the same authority. Authorized takeover replaces the attempt, so it replaces the authority, and the superseded attempt's authority stops working when the epoch advances. The next exchange begins with a new attempt and a new authority. The [delivery reporting capability](#delivery-reporting-boundary) is a different thing with a shorter life, one physical delivery. Neither stands in for the other: a delivery report cannot propose anything, and submission authority reports nothing about delivery.
+mental-model/mechanisms/execution-cycle.md:39:What the authority physically is belongs to each binding: the in-process binding's representation is recorded in [the implemented baseline](../../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api), and it fixes no token, wire format, remote credential or policy language. How a persistent deployment keeps one attempt's authority valid across a Kernel restart, as ordinary redelivery requires, is not decided yet. <!-- OPEN(K3.2): how submission authority survives a Kernel restart in a persistent profile, so that redelivery after recovery keeps the same attempt's authority while a superseded attempt's stays dead. The in-process binding has no restart. When K3.2 settles it: state the rule here and delete this marker. rewrite-index.md §4 -->
+mental-model/mechanisms/execution-cycle.md:47:The Kernel owns delivery-attempt evidence. The Driver owns its asynchronous work and handles its internal Promise rejections. For the in-process TypeScript binding, delivery uses a Kernel-created reporting capability, carries the attempt's [submission authority](#submission-authority) beside it, and returns only `undefined`:
+mental-model/mechanisms/execution-cycle.md:54:// SubmissionGrant: this binding's representation of submission authority (see BASELINE).
+mental-model/mechanisms/execution-cycle.md:56:deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined;
+mental-model/mechanisms/execution-cycle.md:63:Ordinary redelivery supplies a fresh reporting capability for the new physical delivery while preserving the exact Activation and the Runtime attempt, with its writer epoch and submission authority. A late report can settle only its original retained pending attempt, even after a newer delivery attempt reports; it cannot overwrite that newer attempt. After exchange resolution, cancellation or takeover, a report may only update that original retained operational record, never the current exchange or logical state. If its record has been retired, the capability is inert and cannot recreate it. These latter lifecycle interactions belong to K1.2/K1.3 and retention to K5; this rule does not bring those implementations into K1.1.
+mental-model/mechanisms/execution-cycle.md:65:Reporting or throwing changes no dispatch receipt, accepted progress/revision, writer epoch, submission authority, reservation, acknowledgment, mailbox disposition or Execution lifecycle. `delivered` reports the Driver's delivery acknowledgment, not native completion or Outcome acceptance. `failed` does not prove that native work never started and does not authorize repeating it. Outcome acceptance and safe native retry retain their separate owners.
+mental-model/mechanisms/execution-cycle.md:87:The Outcome is a proposal until this procedure accepts it. The order matters: authentication comes before anything is read so an unauthenticated caller learns nothing; the duplicate lookup comes before fresh validation so a retried Outcome gets the same answer it got the first time even if policy has since changed; exchange currency is checked before submission authority so a superseded attempt is refused as stale, which is what it is, rather than as unauthorized; submission authority is checked before content so a proposal's content is examined only for the attempt entitled to make it; and the commit is a single atomic step so no observer can ever see acknowledged Events without the progress that accounted for them, or progress without the intents it proposed.
+mental-model/mechanisms/execution-cycle.md:92:2. Look for an already accepted matching Outcome. An exact duplicate returns its original [receipt](../concepts/identity.md#acceptance-boundary-and-receipt) without repeating any mutation or publication, and without requiring submission authority. Different content under the accepted identity conflicts. This lookup precedes all fresh validation, including later policy changes or cancellation.
+mental-model/mechanisms/execution-cycle.md:93:3. For a new proposal, validate the whole envelope in this order. First the exchange: cancellation fence or terminal state, current Activation, writer epoch and base progress revision. Then the current attempt's [submission authority](#submission-authority). Then the content: bounded values, unique proposal/emission keys, supported next step, wait references and completion obligations. A proposal that no longer answers the current exchange is refused as stale whatever authority it presents; only a current proposal without the current authority is refused as unauthorized. Bind any same-Outcome [Effect](../concepts/actions.md#effect) reference by its local proposal key.
+mental-model/mechanisms/integration.md:7:In-process adapters obey the Kernel's [delivery reporting boundary](execution-cycle.md#delivery-reporting-boundary): translate native asynchronous success/failure into the supplied operational reporting capability, present the attempt's [submission authority](execution-cycle.md#submission-authority) with each Outcome, and own all internal Promise handling. This K1 boundary is separate from the R1 native-fidelity support claims below.
+mental-model/reference.md:168:| submission authority, SubmissionGrant | [Submission authority](mechanisms/execution-cycle.md#submission-authority); `SubmissionGrant` is the in-process representation, recorded in the [implemented baseline](../docs/development/002-implemented-kernel-baseline.md#outcome-acceptance-api) |
+mental-model/rewrite-index.md:220:| K1.2 submission authority and the in-process carrier extension | `mechanisms/execution-cycle.md#submission-authority` (links from `#delivery-reporting-boundary`, `#retry-versus-takeover`, `#outcome-acceptance`, `concepts/identity.md#writer-epoch`, `concepts/core.md#execution-driver`, `mechanisms/integration.md`) | Owner decision 2026-09-25, `work/K1.2/decision-01.md`, resolving `work/K1.2/blocker-01.md`; historical KC1-ARCH-1 record sealed; in-process `SubmissionGrant` recorded in BASELINE `#outcome-acceptance-api` |
+mental-model/rewrite-index.md:276:- How submission authority is represented — no `OPEN(...)` marker; the architecture fixes its
+mental-model/rewrite-index.md:280:  one frozen `SubmissionGrant` per writer-epoch attempt, supplied as the third `deliver`
+mental-model/rewrite-index.md:283:- **How submission authority survives a Kernel restart** in a persistent profile, so that
+mental-model/sources.md:32:On 2026-09-25 the owner authorized K1.2 to extend that in-process delivery call from `deliver(activation, settlement)` to `deliver(activation, settlement, submission)`, so that it also carries the current Runtime attempt's [submission authority](mechanisms/execution-cycle.md#submission-authority) ([K1.2 decision 01](../docs/development/work/K1.2/decision-01.md), resolving [blocker-01](../docs/development/work/K1.2/blocker-01.md)). The decision supersedes only the two-argument signature; every other KC1-ARCH-1 guarantee stands, and the historical KC1-ARCH-1 record stays sealed.
+packages/kernel/src/coordinator.ts:65:import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
+packages/kernel/src/coordinator.ts:377:  submission: SubmissionGrant;
+packages/kernel/src/coordinator.ts:566:const mintSubmission = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>
+packages/kernel/src/coordinator.ts:1357:    submission: SubmissionGrant,
+packages/kernel/src/coordinator.ts:1434:    // K1.2-DEC-20: attempt-bound submission authority, checked after currency so takeover fencing
+packages/kernel/src/coordinator.ts:1442:          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
+packages/kernel/src/coordinator.ts:1957:          authority: "attempt_submission" as const,
+packages/kernel/src/coordinator.ts:1972:          authority: "attempt_submission" as const,
+packages/kernel/src/coordinator.ts:2051:   * submission: visibility plus the separate current-attempt `SubmissionGrant` can authorize a
+packages/kernel/src/driver.ts:96: * Unforgeable attempt-bound Outcome-submission authority (K1.2-DEC-20).
+packages/kernel/src/driver.ts:107:export interface SubmissionGrant {
+packages/kernel/src/driver.ts:120:  deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined;
+packages/kernel/src/identity.ts:25: * paths. A caller with visibility and the current attempt's separate `SubmissionGrant` may submit
+packages/kernel/src/index.ts:55:export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
+packages/kernel/src/inspection.ts:161:   * `attempt_submission` means the accepted Outcome presented the current attempt's submission
+packages/kernel/src/inspection.ts:164:   * `attempt_submission`, never as a control actor.
+packages/kernel/src/inspection.ts:166:  readonly authority: "control" | "attempt_submission";
+packages/kernel/src/inspection.ts:173:   * `attempt_submission` record asserts no such power.
+packages/kernel/src/refusal.ts:63:   * about the separate attempt-submission authority: visibility plus the current `SubmissionGrant`
+packages/kernel/src/refusal.ts:77:   * K1.2-DEC-20: the Outcome proposal carries no submission authority for the current attempt.
+packages/kernel/tests/delivery-attribution.test.ts:15:import { accepted, caller, createRequest, delayedDriver, outcomeFor, recordingDriver, submissionFor } from "./harness.ts";
+packages/kernel/tests/delivery-attribution.test.ts:175:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/delivery-attribution.test.ts:201:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...first, writerEpoch: 2 }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/dispatch.test.ts:304:        deliver(activation, settlement): undefined {
+packages/kernel/tests/dispatch.test.ts:1364:        deliver(activation, settlement): undefined {
+packages/kernel/tests/harness.ts:19:  SubmissionGrant,
+packages/kernel/tests/harness.ts:319:  readonly submissions: SubmissionGrant[];
+packages/kernel/tests/harness.ts:332:export const submissionFor = (
+packages/kernel/tests/harness.ts:333:  driver: { readonly submissions: readonly SubmissionGrant[] },
+packages/kernel/tests/harness.ts:335:): SubmissionGrant => {
+packages/kernel/tests/harness.ts:337:    const grant = readAt(driver.submissions, index) as SubmissionGrant | undefined;
+packages/kernel/tests/harness.ts:346:  const submissions: SubmissionGrant[] = [];
+packages/kernel/tests/harness.ts:351:    deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/harness.ts:369:  readonly submissions: SubmissionGrant[];
+packages/kernel/tests/harness.ts:384:  const submissions: SubmissionGrant[] = [];
+packages/kernel/tests/harness.ts:390:    deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/harness.ts:406:export const unsafeDriver = (driverId = "fake-unsafe"): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+packages/kernel/tests/harness.ts:407:  const submissions: SubmissionGrant[] = [];
+packages/kernel/tests/harness.ts:411:    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/harness.ts:423:export const throwingDriver = (driverId = "fake-throwing"): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+packages/kernel/tests/harness.ts:424:  const submissions: SubmissionGrant[] = [];
+packages/kernel/tests/harness.ts:428:    deliver(_activation: Activation, _settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/harness.ts:442:): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+packages/kernel/tests/harness.ts:443:  const submissions: SubmissionGrant[] = [];
+packages/kernel/tests/harness.ts:447:    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/harness.ts:468:): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+packages/kernel/tests/harness.ts:469:  const submissions: SubmissionGrant[] = [];
+packages/kernel/tests/harness.ts:473:    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/history-attribution.test.ts:6: * protocol-failure reports, takeovers) from `attempt_submission` (the accepted Outcome presented
+packages/kernel/tests/history-attribution.test.ts:32:  submissionFor,
+packages/kernel/tests/history-attribution.test.ts:57:  test("ended_by_outcome records attempt_submission, never a control claim", () => {
+packages/kernel/tests/history-attribution.test.ts:70:    const grant = submissionFor(driver, open.activationId);
+packages/kernel/tests/history-attribution.test.ts:82:    assert.equal(ended?.authority, "attempt_submission");
+packages/kernel/tests/history-attribution.test.ts:146:    const grant = submissionFor(driver, open.activationId);
+packages/kernel/tests/history-attribution.test.ts:180:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
+packages/kernel/tests/history-attribution.test.ts:195:    assert.equal(second.recoveryHistory[1]?.authority, "attempt_submission");
+packages/kernel/tests/hold-permitted.test.ts:22:import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
+packages/kernel/tests/hold-permitted.test.ts:38:  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/hold-permitted.test.ts:105:    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } }), submissionFor(driver, open.activationId)));
+packages/kernel/tests/hold-permitted.test.ts:148:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
+packages/kernel/tests/hold-permitted.test.ts:216:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
+packages/kernel/tests/late-reports.test.ts:20:import { accepted, caller, createRequest, delayedDriver, outcomeFor, refused, submissionFor } from "./harness.ts";
+packages/kernel/tests/late-reports.test.ts:47:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/late-reports.test.ts:62:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/late-reports.test.ts:99:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/late-reports.test.ts:112:    const original = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/late-reports.test.ts:117:    const exact = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/late-reports.test.ts:124:    const changed = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, baseProgressRevision: 1 }, { progress: { cursor: 2 } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/nondisclosure.test.ts:35:import { accepted, caller, createRequest, recordingDriver, refused, submissionFor, type RecordingDriver } from "./harness.ts";
+packages/kernel/tests/nondisclosure.test.ts:508:  record(accepted(kernel.submitOutcome(authorA, envelope, submissionFor(driver, first.activationId))));
+packages/kernel/tests/nondisclosure.test.ts:510:  record(accepted(kernel.submitOutcome(authorA, envelope, submissionFor(driver, first.activationId))));
+packages/kernel/tests/nondisclosure.test.ts:511:  record(refused(kernel.submitOutcome(authorA, { ...envelope, progress: { phase: "changed" } }, submissionFor(driver, first.activationId))));
+packages/kernel/tests/nondisclosure.test.ts:515:  record(refused(kernel.submitOutcome(authorA, { ...envelope, activationId: second.activationId, writerEpoch: 2, baseProgressRevision: 1 }, submissionFor(driver, second.activationId))));
+packages/kernel/tests/nondisclosure.test.ts:543:      }, submissionFor(driver, second.activationId)),
+packages/kernel/tests/nondisclosure.test.ts:565:  refused(kernel.submitOutcome(authorB, { ...envelope, writerEpoch: 9 }, submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/nondisclosure.test.ts:566:  accepted(kernel.submitOutcome(authorB, envelope, submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/nondisclosure.test.ts:567:  refused(kernel.submitOutcome(authorB, { ...envelope, progress: { hidden: "conflict" } }, submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/nondisclosure.test.ts:578:    kernel.submitOutcome(authorB, { ...envelope, activationId: next.activationId, writerEpoch: 2, baseProgressRevision: 1, next: { step: "fail", error: { hidden: true } } }, submissionFor(driver, next.activationId)),
+packages/kernel/tests/outcome-acceptance.test.ts:18:import { ExecutionCoordinator, type ExecutionView, type OutcomeEnvelope, type SubmissionGrant } from "../src/index.ts";
+packages/kernel/tests/outcome-acceptance.test.ts:19:import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor, type RecordingDriver } from "./harness.ts";
+packages/kernel/tests/outcome-acceptance.test.ts:84:    const hidden = refused(kernel.submitOutcome(outsider, envelope, submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:85:    const missing = refused(kernel.submitOutcome(outsider, { ...outcomeFor("execution-404", dispatched) }, submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:118:    accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:121:    const refusal = refused(kernel.submitOutcome(revoked, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:132:    const first = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:136:    const again = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:149:    const accepted1 = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:155:    const replay = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:164:    accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:178:      const refusal = refused(kernel.submitOutcome(author, variant, submissionFor(driver, variant.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:187:    const first = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [], effects: [] }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:188:    const again = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:200:    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, activationId: `${dispatched.activationId}-other` }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:204:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:211:    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:220:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:225:    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...second, baseProgressRevision: 0 }), submissionFor(driver, second.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:233:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:236:    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...first, activationId: `${executionId}/activation-2` }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:251:      const refusal = refused(kernel.submitOutcome(author, omit(field), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:283:      const refusal = refused(kernel.submitOutcome(author, envelope as unknown as OutcomeEnvelope, submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:289:    accepted(kernel.submitOutcome(author, base, submissionFor(driver, base.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:296:      kernel.submitOutcome(author, { ...outcomeFor(executionId, dispatched), progress: Number.POSITIVE_INFINITY, next: { step: "pause" }, extra: 1 } as never, submissionFor(driver, dispatched.activationId)),
+packages/kernel/tests/outcome-acceptance.test.ts:308:    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: three }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:313:    const two = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: three.slice(0, 2) }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:327:    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: list }), submissionFor(driver, dispatched.activationId))).classification, "capacity_exhausted");
+packages/kernel/tests/outcome-acceptance.test.ts:346:      refused(kernel.submitOutcome(author, bad, submissionFor(driver, bad.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:372:        submissionFor(driver, dispatched.activationId),
+packages/kernel/tests/outcome-acceptance.test.ts:433:        submissionFor(driver, dispatched.activationId),
+packages/kernel/tests/outcome-acceptance.test.ts:444:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:445:    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { progress: { phase: "second writer" } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:457:        kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 1 }] }), submissionFor(driver, dispatched.activationId)),
+packages/kernel/tests/outcome-acceptance.test.ts:478:    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:488:    const grants: SubmissionGrant[] = [];
+packages/kernel/tests/outcome-acceptance.test.ts:492:        deliver(activation, settlement, g) {
+packages/kernel/tests/outcome-acceptance.test.ts:502:          }, grants[grants.length - 1] as SubmissionGrant);
+packages/kernel/tests/outcome-acceptance.test.ts:523:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:547:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:565:        submissionFor(driver, dispatched.activationId),
+packages/kernel/tests/outcome-acceptance.test.ts:590:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:604:    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { effects }), submissionFor(driver, dispatched.activationId))).classification, "malformed_envelope");
+packages/kernel/tests/outcome-acceptance.test.ts:617:      assert.equal(refused(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId))).classification, "malformed_envelope");
+packages/kernel/tests/outcome-acceptance.test.ts:622:    assert.equal(accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: { ok: true } } }), submissionFor(driver, dispatched.activationId))).nextState, "COMPLETED");
+packages/kernel/tests/outcome-acceptance.test.ts:637:    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:650:    const outcome1 = accepted(kernel.submitOutcome(author, outcomeFor(executionId, first), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:651:    refused(kernel.submitOutcome(author, outcomeFor(executionId, first, { progress: "conflict" }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:653:    refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...second, writerEpoch: 5 }), submissionFor(driver, second.activationId)));
+packages/kernel/tests/outcome-acceptance.test.ts:654:    const outcome2 = accepted(kernel.submitOutcome(author, outcomeFor(executionId, second, { next: { step: "complete", result: 1 } }), submissionFor(driver, second.activationId)));
+packages/kernel/tests/outcome-evidence.test.ts:14:import { accepted, caller, createRequest, outcomeFor, recordingDriver, submissionFor } from "./harness.ts";
+packages/kernel/tests/outcome-evidence.test.ts:31:  const answer = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/outcome-evidence.test.ts:52:    const replay = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/outcome-evidence.test.ts:95:    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { nested: { cursor: 1 } } }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/outcome-hostile.test.ts:35:  submissionFor,
+packages/kernel/tests/outcome-hostile.test.ts:85:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:105:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:135:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:166:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:206:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:226:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:280:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:291:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-hostile.test.ts:305:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/outcome-limits.test.ts:20:import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
+packages/kernel/tests/outcome-limits.test.ts:30:  return { kernel, executionId, submit: (overrides) => kernel.submitOutcome(author, outcomeFor(executionId, dispatched, overrides), submissionFor(driver, dispatched.activationId)) };
+packages/kernel/tests/recovery-evidence.test.ts:30:  submissionFor,
+packages/kernel/tests/recovery-evidence.test.ts:171:      submissionFor(driver, dispatchedB.activationId),
+packages/kernel/tests/recovery-evidence.test.ts:182:      submissionFor(driver, secondB.activationId),
+packages/kernel/tests/recovery-evidence.test.ts:452:        submissionFor(driver, dispatched.activationId),
+packages/kernel/tests/recovery-evidence.test.ts:495:        submissionFor(driver, dispatched.activationId),
+packages/kernel/tests/recovery-evidence.test.ts:808:      submissionFor(driver, dispatchedB.activationId),
+packages/kernel/tests/recovery-history.test.ts:18:import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
+packages/kernel/tests/recovery-history.test.ts:34:  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/recovery-history.test.ts:134:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } }), submissionFor(driver, open.activationId)));
+packages/kernel/tests/recovery-history.test.ts:152:      kernel.submitOutcome(author, outcomeFor(executionId, next, { next: { step: "complete", result: { report: "week 37" } } }), submissionFor(driver, next.activationId)),
+packages/kernel/tests/recovery-history.test.ts:172:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
+packages/kernel/tests/recovery-history.test.ts:267:    accepted(kernel.submitOutcome(author, outcomeFor(execA.executionId, firstA, { progress: { cursor: 1 } }), submissionFor(driver, firstA.activationId)));
+packages/kernel/tests/recovery-history.test.ts:271:    accepted(kernel.submitOutcome(authorB, outcomeFor(execB.executionId, firstB, { progress: { cursor: 2 } }), submissionFor(driver, firstB.activationId)));
+packages/kernel/tests/recovery.test.ts:20:import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
+packages/kernel/tests/recovery.test.ts:38:  accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, first, { progress: { cursor: 7 } }), submissionFor(driver, first.activationId)));
+packages/kernel/tests/recovery.test.ts:128:    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { progress: { cursor: 8 } }), submissionFor(driver, open.activationId)));
+packages/kernel/tests/recovery.test.ts:155:    accepted(failed.kernel.submitOutcome(author, outcomeFor(failed.executionId, failed.open, { next: { step: "fail", error: { code: "x" } } }), submissionFor(failed.driver, failed.open.activationId)));
+packages/kernel/tests/recovery.test.ts:183:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
+packages/kernel/tests/recovery.test.ts:196:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
+packages/kernel/tests/recovery.test.ts:273:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...open, writerEpoch: 2 }), submissionFor(driver, open.activationId)));
+packages/kernel/tests/recovery.test.ts:303:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)));
+packages/kernel/tests/submission-authority.test.ts:6: * grants no attempt-submission or general control power),
+packages/kernel/tests/submission-authority.test.ts:10: * K1.2-DEC-20 binds submission authority to the attempt: the Kernel mints one unforgeable grant
+packages/kernel/tests/submission-authority.test.ts:26:  type SubmissionGrant,
+packages/kernel/tests/submission-authority.test.ts:36:  submissionFor,
+packages/kernel/tests/submission-authority.test.ts:46:const forged = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>
+packages/kernel/tests/submission-authority.test.ts:47:  ({ executionId, activationId, writerEpoch }) as SubmissionGrant;
+packages/kernel/tests/submission-authority.test.ts:85:      refused(kernel.submitOutcome(author, outcomeFor(executionId, open), undefined as unknown as SubmissionGrant)).classification,
+packages/kernel/tests/submission-authority.test.ts:125:        submissionFor(driver, open.activationId),
+packages/kernel/tests/submission-authority.test.ts:137:    const first = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, open.activationId)));
+packages/kernel/tests/submission-authority.test.ts:149:    const grant1 = submissionFor(driver, open.activationId);
+packages/kernel/tests/submission-authority.test.ts:208:    const grant = submissionFor(driver, open.activationId);
+packages/kernel/tests/submission-authority.test.ts:224:    const grant2 = submissionFor(driver, second.activationId);
+packages/kernel/tests/submission-authority.test.ts:234:    const grant1 = submissionFor(driver, open.activationId);
+packages/kernel/tests/submission-authority.test.ts:237:    const grant2 = submissionFor(driver, open.activationId);
+packages/kernel/tests/submission-authority.test.ts:270:describe("K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable", () => {
+packages/kernel/tests/submission-lifetime.test.ts:14:  type SubmissionGrant,
+packages/kernel/tests/submission-lifetime.test.ts:22:  const deliveries: { activation: Activation; settlement: DeliverySettlement; grant: SubmissionGrant }[] = [];
+packages/kernel/tests/submission-lifetime.test.ts:25:    deliver(activation, settlement, grant): undefined {
+packages/kernel/tests/submission-lifetime.test.ts:48:describe("K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts", () => {
+packages/kernel/tests/submission-lifetime.test.ts:89:      ["ended_by_outcome", "attempt_submission"], ["ended_by_outcome", "attempt_submission"],
+packages/kernel/tests/submission-lifetime.test.ts:98:    const replay = accepted(kernel.submitOutcome(runtime, proposal, undefined as unknown as SubmissionGrant));
+packages/kernel/tests/takeover-reentrancy.test.ts:28:  type SubmissionGrant,
+packages/kernel/tests/takeover-reentrancy.test.ts:121:    const grants: SubmissionGrant[] = [];
+packages/kernel/tests/takeover-reentrancy.test.ts:125:        deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/takeover-reentrancy.test.ts:137:                grants[grants.length - 1] as SubmissionGrant,
+packages/kernel/tests/takeover-reentrancy.test.ts:167:      kernel.submitOutcome(author, envelope(executionId, open.activationId), grants[grants.length - 1] as SubmissionGrant),
+packages/kernel/tests/takeover-reentrancy.test.ts:174:    const grants: SubmissionGrant[] = [];
+packages/kernel/tests/takeover-reentrancy.test.ts:178:        deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+packages/kernel/tests/takeover-reentrancy.test.ts:192:              grants[grants.length - 1] as SubmissionGrant,
+packages/kernel/tests/takeover.test.ts:18:import { ExecutionCoordinator, type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+packages/kernel/tests/takeover.test.ts:19:import { accepted, caller, createRequest, delayedDriver, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
+packages/kernel/tests/takeover.test.ts:76:    const stale = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: { draft: "good" } } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/takeover.test.ts:85:    const current = accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }, { progress: { from: "attempt 2" } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/takeover.test.ts:95:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 2 }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/takeover.test.ts:98:    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId))).classification, "duplicate_conflict");
+packages/kernel/tests/takeover.test.ts:131:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/takeover.test.ts:148:    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/takeover.test.ts:164:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/takeover.test.ts:174:    const grants: SubmissionGrant[] = [];
+packages/kernel/tests/takeover.test.ts:178:        deliver(activation, settlement, submission) {
+packages/kernel/tests/takeover.test.ts:183:          return delayed.deliver(activation, settlement, submission);
+packages/kernel/tests/takeover.test.ts:195:    assert.equal(refused(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched), submissionFor({ submissions: grants }, dispatched.activationId))).classification, "stale_exchange");
+packages/kernel/tests/takeover.test.ts:205:        deliver(activation, settlement) {
+packages/kernel/tests/terminal.test.ts:20:import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
+packages/kernel/tests/terminal.test.ts:52:      const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/terminal.test.ts:74:    const answer = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/terminal.test.ts:81:    refused(kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, writerEpoch: 3 }, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/terminal.test.ts:92:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/terminal.test.ts:119:    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched, { next: { step: "fail", error: { code: "x" } } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/terminal.test.ts:131:    accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: 1 } }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/terminal.test.ts:139:      ["new Outcome", kernel.submitOutcome(author, outcomeFor(executionId, { ...dispatched, activationId: `${executionId}/activation-2`, baseProgressRevision: 1 }), submissionFor(driver, dispatched.activationId))],
+packages/kernel/tests/terminal.test.ts:169:    const first = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/terminal.test.ts:171:    const again = accepted(kernel.submitOutcome(author, envelope, submissionFor(driver, envelope.activationId)));
+packages/kernel/tests/terminal.test.ts:188:      const answer = accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/terminal.test.ts:208:    accepted(kernel.submitOutcome(author, outcomeFor(created.executionId, dispatched), submissionFor(driver, dispatched.activationId)));
+packages/kernel/tests/transaction.test.ts:24:  submissionFor,
+packages/kernel/tests/transaction.test.ts:67:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/transaction.test.ts:116:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/transaction.test.ts:157:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/transaction.test.ts:243:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/transaction.test.ts:275:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/transaction.test.ts:297:    assert.equal(after.recoveryHistory[1]?.authority, "attempt_submission", "the Runtime grant is not general control power");
+packages/kernel/tests/transaction.test.ts:323:    const grant = submissionFor(driver, dispatched.activationId);
+packages/kernel/tests/transaction.test.ts:352:      ["control", "control", "attempt_submission", "attempt_submission"],
+
+--- output ends ---
+exit 0

@@ -1,0 +1,14 @@
+payload C: 360538522be8c1b17d23948f632fd4f568a76ed0
+cwd: /Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01
+command: git diff --check a20d278185eaffc7f8b7489345a3624231ff6e6d HEAD
+environment: 00-environment.json
+started: 2026-09-26T02:51:58.067Z
+
+docs/development/work/K1.2/review-09/ablations-reviewer.txt:3: trailing whitespace.
++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-12/11-preservation-and-links.txt:201: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-13/02-typecheck.txt:4: new blank line at EOF.
+docs/development/work/K1.2/validation-14/02-typecheck.txt:4: new blank line at EOF.
+
+exit: 2; signal: null; error: none

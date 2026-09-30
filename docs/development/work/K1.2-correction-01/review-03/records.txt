@@ -1,0 +1,3 @@
+Prerequisite ancestry, historical records/36 ablations, every original test, identity/value producer code and creation-through-dispatch preservation verified.
+Local reference check: 11 files, 538 links/anchors; remote links not fetched.
+exit 0

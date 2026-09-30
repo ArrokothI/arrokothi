@@ -1,0 +1,1 @@
+30/30 whole-view comparisons passed; no inherited reads/reentry, no foreign-reference mutation, and receipt/progress/mailbox/output expectations passed.

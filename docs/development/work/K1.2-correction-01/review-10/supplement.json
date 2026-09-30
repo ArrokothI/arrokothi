@@ -1,0 +1,48 @@
+{
+  "H": "35c6ba0277542236f21f95d695154fa0164feb96",
+  "cwd": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+  "node": "v25.2.1",
+  "npm": "11.6.2",
+  "typescript": "Version 5.9.3",
+  "runs": [
+    {
+      "command": "node docs/development/work/K1.2-correction-01/review-10/probe-enforcement.mjs",
+      "exit": 0,
+      "interpretation": "Gap reproducer: 3 of 6 optional reads found; two broken-order variants each pass 1331 Kernel tests. Exact commands/replacements in enforcement-results.json.",
+      "log": "probe-enforcement.txt"
+    },
+    {
+      "command": "node docs/development/work/K1.2-correction-01/review-10/probe-read-effects.mjs",
+      "exit": 0,
+      "log": "read-effects.txt",
+      "interpretation": "All six equivalent forms invoke inherited getter; independent all-zone syntax inventory produced."
+    },
+    {
+      "command": "node docs/development/work/K1.2-correction-01/review-10/probe-whole-view.mjs",
+      "exit": 0,
+      "log": "whole-view.txt",
+      "observations": "whole-view-results.json",
+      "interpretation": "30 complete-view comparisons pass."
+    }
+  ],
+  "reviewer_fixture_correction": {
+    "command": "node docs/development/work/K1.2-correction-01/review-10/probe-whole-view.mjs",
+    "initial_exit": 1,
+    "reason": "Reviewer supplied nested input:{kind,payload} to submitInput; it requires top-level kind,payload. Initial tool stderr showed malformed_value before scenarios began.",
+    "correction": "Changed only reviewer fixture to the declared top-level API and reran successfully.",
+    "initial_output_location": "Tool response in this review session; not saved as a raw attachment."
+  },
+  "limits": [
+    "No external/native/crash/second-engine validation",
+    "Live remote lookup failed DNS; local complete Git objects available",
+    "Production source unchanged; mutants run in removed temporary package copies"
+  ],
+  "final_record_checks": {
+    "manifest_entries": 20,
+    "review_owner_note_local_links": 29,
+    "check_records_exit": 0,
+    "check_records_links": 698,
+    "staged_diff_check_exit": 2,
+    "staged_diff_check_diagnostic": "review-10/typecheck.txt:4: new blank line at EOF. Raw stdout retained unchanged."
+  }
+}

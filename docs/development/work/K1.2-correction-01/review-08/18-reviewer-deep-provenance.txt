@@ -1,0 +1,4 @@
+prevh {"shape":"R-foreign-deep","ok":false,"records":10,"issues":1044481,"codes":["unsupported_form","too_many_bytes"],"ms":4337,"heapMiB":15.9}
+prevh {"shape":"A-chain-W22-L8","ok":true,"bytes":1044555,"records":0,"issues":0,"codes":[],"ms":2963,"heapMiB":144.3}
+b {"shape":"R-foreign-deep","ok":false,"records":1044481,"issues":1044481,"codes":["unsupported_form","too_many_bytes"],"ms":6153,"heapMiB":270.8}
+b {"shape":"A-chain-W22-L8","ok":true,"bytes":1044555,"records":0,"issues":0,"codes":[],"ms":2862,"heapMiB":121.3}

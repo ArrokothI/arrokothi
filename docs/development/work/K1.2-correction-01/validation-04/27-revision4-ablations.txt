@@ -1,0 +1,109 @@
+payload C: 2b8a50297ebe83cb0922bb239aa834a2ecebc1ac
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/ablations-03.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T14:15:57.814Z
+
+CONTROL : exit=0 tests=35 pass=35 fail=0 cancelled=0
+REJECTED X8 Emission ID derived from diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X9 result ID derived from diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X10 acknowledged disposition names diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X11 code hold stores diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X12 recovery history stores diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X13 delivery row stores diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X14 resolved exchange stores diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X15 Outcome receipt token uses diagnostic Execution spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X16 history actor namespace rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X17 decision answer activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X18 takeover answer activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X19 recovery answer activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X20 protocol answer activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X21 protocol hold stores diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X22 Emission record activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED X23 result record activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED V1 restore unbounded per-position issues: exit=1 tests=35 pass=5 fail=30 cancelled=0
+  V-D1 every issue family: undefined array members
+  V-D1 every issue family: nonfinite
+  V-D1 every issue family: unsupported primitive
+  V-D1 every issue family: foreign object prototype
+REJECTED V2 skip siblings after eight diagnostics: exit=1 tests=35 pass=10 fail=25 cancelled=0
+  V-D1 every issue family: nonfinite
+  V-D1 every issue family: unsupported primitive
+  V-D1 every issue family: foreign object prototype
+  V-D1 every issue family: foreign array prototype
+REJECTED V3 count each summarized suffix as one issue: exit=1 tests=35 pass=30 fail=5 cancelled=0
+  V-D1 suffix counts preserve late codes and first occurrence order across root consumers
+  V-D1 own-only multiplicity under ambient pollution and capture-time mutation
+  V-D1 eight eager roots before authority: every position once, no forbidden mutation
+  V-D1 creation, ingress, all recovery roots, complete and fail consume weighted evidence
+REJECTED V4 inherited multiplicity affects diagnostics: exit=1 tests=35 pass=34 fail=1 cancelled=0
+  V-D1 own-only multiplicity under ambient pollution and capture-time mutation
+  V-D1 own-only multiplicity under ambient pollution and capture-time mutation
+SURVIVED V5 retain unbounded first-detail messages: exit=0 tests=35 pass=35 fail=0 cancelled=0
+20/21 revision-4 ablations rejected
+
+exit: 1; signal: null; error: none

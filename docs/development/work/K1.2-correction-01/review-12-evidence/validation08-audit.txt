@@ -1,0 +1,358 @@
+01-typecheck: exit=0 signal=None error=None command=['npm', 'run', 'typecheck']
+exit: 0; signal: null; error: none
+
+02-full: exit=0 signal=None error=None command=['npm', 'test']
+  ✔ a user.input envelope cannot be delivered from outside the kernel (0.677917ms)
+  ✔ the real Active View resolver never exposes an imported operation outside the ceiling (63.609875ms)
+  ✔ the authorizer is not even asked about an operation outside the ceiling (3.545ms)
+  ✔ a field outside the readable set never appears, and an unknown readable key is ignored (0.211083ms)
+  ✔ keeps provider diagnostics outside semantic output (0.239583ms)
+ℹ tests 3507
+ℹ pass 3507
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+exit: 0; signal: null; error: none
+
+03-kernel: exit=0 signal=None error=None command=['npm', 'run', 'test:kernel']
+  ✔ recovery history mutated through an alias outside the commit paths (290.183334ms)
+  ✔ an Execution is invisible outside its authority scope, exactly as a missing one is (0.6125ms)
+  ✔ outsider partial-stale proposals stay unknown_destination and indistinguishable (0.69375ms)
+  ✔ an own-name listing reporting a canonical index outside length with no backing property is refused (0.22525ms)
+  ✔ a backed canonical index outside length is also refused rather than silently dropped (0.134959ms)
+ℹ tests 1453
+ℹ pass 1453
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+exit: 0; signal: null; error: none
+
+04-conformance: exit=0 signal=None error=None command=['npm', 'run', 'test:conformance']
+  ✔ a user.input envelope cannot be delivered from outside the kernel (0.7645ms)
+  ✔ the real Active View resolver never exposes an imported operation outside the ceiling (84.435875ms)
+  ✔ the authorizer is not even asked about an operation outside the ceiling (24.476583ms)
+  ✔ a field outside the readable set never appears, and an unknown readable key is ignored (0.11975ms)
+  ✔ keeps provider diagnostics outside semantic output (0.140208ms)
+ℹ tests 1945
+ℹ pass 1945
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+exit: 0; signal: null; error: none
+
+05-sdk: exit=0 signal=None error=None command=['npm', 'run', 'test:sdk']
+ℹ tests 22
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+exit: 0; signal: null; error: none
+
+06-builder-docs: exit=0 signal=None error=None command=['npm', 'run', 'check:builder-docs']
+exit: 0; signal: null; error: none
+
+07-original-ablations: exit=1 signal=None error=None command=['node', 'docs/development/work/K1.2/ablations.mjs']
+REJECTED       B10 ordinary redelivery rotates the Runtime attempt grant
+REJECTED       B11 redelivery rotates only a takeover attempt grant
+NOT APPLICABLE B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)
+NOT APPLICABLE B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)
+NOT APPLICABLE B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)
+REJECTED       B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)
+REJECTED       B16 epoch-only partial fix, base-half currency dropped (K12-R11-ORDER-01 incomplete repair)
+REJECTED       B17 malformed Activation identity refused before replay and terminal (decision-02 early return)
+REJECTED       B18 malformed Activation identity treated as naming another exchange (decision-02 stale instead of authority/content)
+REJECTED       B19 malformed-identity diagnostic returned or retained before submission authority (decision-02 identity check after currency)
+REJECTED       B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)
+exit: 1; signal: null; error: none
+
+08-correction-ablations: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/ablations.mjs']
+REJECTED G4 details 7: exit=1 tests=571 pass=565 fail=6 cancelled=0
+REJECTED G5 details 9: exit=1 tests=571 pass=565 fail=6 cancelled=0
+REJECTED G6 path limit 127: exit=1 tests=571 pass=570 fail=1 cancelled=0
+REJECTED G7 message limit 1023: exit=1 tests=571 pass=570 fail=1 cancelled=0
+REJECTED G8 message limit 1025: exit=1 tests=571 pass=570 fail=1 cancelled=0
+REJECTED G9 lose captured suffix multiplicity: exit=1 tests=571 pass=566 fail=5 cancelled=0
+REJECTED G10 reverse detail order: exit=1 tests=571 pass=566 fail=5 cancelled=0
+REJECTED G11 reverse summary code order: exit=1 tests=571 pass=570 fail=1 cancelled=0
+REJECTED G12 lose root label on detail: exit=1 tests=571 pass=563 fail=8 cancelled=0
+REJECTED G13 project after root prefix: exit=1 tests=571 pass=570 fail=1 cancelled=0
+REJECTED G14 inherited root metadata: exit=1 tests=571 pass=570 fail=1 cancelled=0
+exit: 0; signal: null; error: none
+
+09-r11-probe: exit=0 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2/review-11/probe-partial-claim.ts']
+exit: 0; signal: null; error: none
+
+10-records-links: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/check-records.mjs']
+exit: 0; signal: null; error: none
+
+11-evals: exit=0 signal=None error=None command=['npm', 'run', 'test:evals']
+  ✔ 08 an operation outside the exposed set is never selected (1.12225ms)
+ℹ tests 12
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+exit: 0; signal: null; error: none
+
+14-original-ablations-adapted: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/original-ablations-02.mjs']
+REJECTED       B10 ordinary redelivery rotates the Runtime attempt grant
+REJECTED       B11 redelivery rotates only a takeover attempt grant
+REJECTED       B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)
+REJECTED       B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)
+REJECTED       B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)
+REJECTED       B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)
+REJECTED       B16 epoch-only partial fix, base-half currency dropped (K12-R11-ORDER-01 incomplete repair)
+REJECTED       B17 malformed Activation identity refused before replay and terminal (decision-02 early return)
+REJECTED       B18 malformed Activation identity treated as naming another exchange (decision-02 stale instead of authority/content)
+REJECTED       B19 malformed-identity diagnostic returned or retained before submission authority (decision-02 identity check after currency)
+REJECTED       B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)
+exit: 0; signal: null; error: none
+
+15-review-identity: exit=0 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-01/probe-identity.ts']
+exit: 0; signal: null; error: none
+
+16-review-maxlen: exit=0 signal=None error=None command=['node', '--max-old-space-size=4096', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts']
+exit: 0; signal: null; error: none
+
+17-review-namespace: exit=0 signal=None error=None command=['node', '--max-old-space-size=8192', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts']
+exit: 0; signal: null; error: none
+
+18-diagnostics-maxlen: exit=0 signal=None error=None command=['node', '--max-old-space-size=4096', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts']
+exit: 0; signal: null; error: none
+
+20-review-aggregate: exit=0 signal=None error=None command=['node', '--max-old-space-size=8192', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts', '130', '980']
+exit: 0; signal: null; error: none
+
+21-review-equality: exit=0 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-02/probe-equality.ts']
+exit: 0; signal: null; error: none
+
+23-review-cost-accept: exit=0 signal=None error=None command=['node', '--max-old-space-size=4096', '--experimental-strip-types', '--expose-gc', 'docs/development/work/K1.2-correction-01/review-02/probe-cost.ts']
+exit: 0; signal: null; error: none
+
+24-review-cost-refuse-undefined: exit=0 signal=None error=None command=['node', '--max-old-space-size=4096', '--experimental-strip-types', '--expose-gc', 'docs/development/work/K1.2-correction-01/review-02/probe-cost.ts']
+exit: 0; signal: null; error: none
+
+25-review-cost-refuse-ctor: exit=0 signal=None error=None command=['node', '--max-old-space-size=4096', '--experimental-strip-types', '--expose-gc', 'docs/development/work/K1.2-correction-01/review-02/probe-cost.ts']
+exit: 0; signal: null; error: none
+
+26-review-aggregate-pre-authority: exit=0 signal=None error=None command=['node', '--max-old-space-size=8192', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts', '130', '980']
+exit: 0; signal: null; error: none
+
+27-revision4-ablations: exit=1 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/ablations-03.mjs']
+REJECTED X8 Emission ID derived from diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X9 result ID derived from diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X10 acknowledged disposition names diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X11 code hold stores diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+exit: 1; signal: null; error: none
+
+28-review4-p4-p5: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/refusal-cost-probe-03.mjs']
+exit: 0; signal: null; error: none
+
+30-review6-exact-ablations: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/ablations-04.mjs']
+REJECTED Z6-replay-map-key: exit=1 tests=1453 pass=1441 fail=12 cancelled=0 skipped=0 todo=0
+REJECTED Z7-event-destination: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED Z8-redeliver-answer: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED Z9-dispatch-grant-exec: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED Z10-acknowledged-ids: exit=1 tests=1453 pass=1443 fail=10 cancelled=0 skipped=0 todo=0
+REJECTED Z11-takeover-answer-batch-receipt: exit=1 tests=1453 pass=1445 fail=8 cancelled=0 skipped=0 todo=0
+REJECTED Z12-view-activation-id: exit=1 tests=1453 pass=1440 fail=13 cancelled=0 skipped=0 todo=0
+REJECTED Z13-view-execution-id: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED Z14-view-queued-ids: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED Z15-view-mailbox-destination: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED Z16-view-hold-activation: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+exit: 0; signal: null; error: none
+
+31-diagnostic-work-ablations: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/diagnostic-ablations-04.mjs']
+REJECTED T1 restore all diagnostic constructor/name lookups: exit=1 tests=20 pass=9 fail=11
+REJECTED T2 reintroduce one diagnostic constructor read: exit=1 tests=20 pass=9 fail=11
+REJECTED T3 array inspection of thrown/revoked values: exit=1 tests=20 pass=18 fail=2
+REJECTED T4 remove the pre-read oversized-string guard: exit=1 tests=20 pass=17 fail=3
+exit: 0; signal: null; error: none
+
+32-review6-cost-and-blocker: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs']
+All probes executed; Proxy engine timing is outside V-D1 under owner decisions 03/04; Kernel-selected observation/count assertions passed.
+exit: 0; signal: null; error: none
+
+33-round4-diff-check: exit=2 signal=None error=None command=['git', 'diff', '--check', '3287640f045cf2e6adeefcd32f21d897480a6a7d', 'HEAD']
+
+34-handler-direct-0: exit=0 signal=None error=None command=['node', '--expose-gc', 'docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs', '.', '0', 'direct']
+exit: 0; signal: null; error: none
+
+34-handler-direct-1000: exit=0 signal=None error=None command=['node', '--expose-gc', 'docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs', '.', '1000', 'direct']
+exit: 0; signal: null; error: none
+
+34-handler-direct-10000: exit=0 signal=None error=None command=['node', '--expose-gc', 'docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs', '.', '10000', 'direct']
+exit: 0; signal: null; error: none
+
+34-handler-outcome-0: exit=0 signal=None error=None command=['node', '--expose-gc', 'docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs', '.', '0', 'outcome']
+exit: 0; signal: null; error: none
+
+34-handler-outcome-1000: exit=0 signal=None error=None command=['node', '--expose-gc', 'docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs', '.', '1000', 'outcome']
+exit: 0; signal: null; error: none
+
+34-handler-outcome-10000: exit=0 signal=None error=None command=['node', '--expose-gc', 'docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs', '.', '10000', 'outcome']
+exit: 0; signal: null; error: none
+
+35-string-work: exit=0 signal=None error=None command=['node', '--expose-gc', 'docs/development/work/K1.2-correction-01/probe-string-work-04.mjs']
+exit: 0; signal: null; error: none
+
+37-round6-ablations: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/ablations-06.mjs']
+REJECTED H12 takeover receipt token through the diagnostic spelling: exit=1 tests=1453 pass=1433 fail=20 cancelled=0 skipped=0 todo=0
+REJECTED H13 takeover receipt not retained: exit=1 tests=1453 pass=1430 fail=23 cancelled=0 skipped=0 todo=0
+REJECTED H14 takeover acceptance index not advanced: exit=1 tests=1453 pass=1439 fail=14 cancelled=0 skipped=0 todo=0
+REJECTED H15 ordinary optional controlScopes read restored: exit=1 tests=1453 pass=1444 fail=9 cancelled=0 skipped=0 todo=0
+REJECTED H16 ordinary optional isSafeToReplace call restored: exit=1 tests=1453 pass=1443 fail=10 cancelled=0 skipped=0 todo=0
+REJECTED H17 ordinary optional mailboxCapacity read restored: exit=1 tests=1453 pass=1446 fail=7 cancelled=0 skipped=0 todo=0
+REJECTED H18 ordinary optional emissionsPerOutcome read restored: exit=1 tests=1453 pass=1446 fail=7 cancelled=0 skipped=0 todo=0
+REJECTED H19 hostMember answers from Object.prototype: exit=1 tests=1453 pass=1442 fail=11 cancelled=0 skipped=0 todo=0
+REJECTED H20 hostMember answers from Function.prototype: exit=1 tests=1453 pass=1452 fail=1 cancelled=0 skipped=0 todo=0
+REJECTED H21 hostMember ignores members the host's own prototype supplies: exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED H22 descriptor field read without its own-value check: exit=1 tests=1453 pass=1452 fail=1 cancelled=0 skipped=0 todo=0
+exit: 0; signal: null; error: none
+
+38-revision4-ablations-rebound: exit=1 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/ablations-03-rebound-06.mjs']
+REJECTED X18 takeover answer activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X19 recovery answer activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X20 protocol answer activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X21 protocol hold stores diagnostic Activation spelling: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X22 Emission record activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED X23 result record activationId rendered lossy: exit=1 tests=35 pass=31 fail=4 cancelled=0
+REJECTED V1 restore unbounded per-position issues: exit=1 tests=35 pass=5 fail=30 cancelled=0
+REJECTED V2 skip siblings after eight diagnostics: exit=1 tests=35 pass=10 fail=25 cancelled=0
+REJECTED V3 count each summarized suffix as one issue: exit=1 tests=35 pass=30 fail=5 cancelled=0
+REJECTED V4 inherited multiplicity affects diagnostics: exit=1 tests=35 pass=34 fail=1 cancelled=0
+SURVIVED V5 retain unbounded first-detail messages: exit=0 tests=35 pass=35 fail=0 cancelled=0
+exit: 1; signal: null; error: none
+
+39-review9-probe-history: exit=1 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-09/probe-history.mjs']
+exit: 1; signal: null; error: none
+
+40-review9-probe-history-mutable: exit=1 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-09/probe-history-mutable.mjs']
+exit: 1; signal: null; error: none
+
+41-review9-matrix: exit=0 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs']
+exit: 0; signal: null; error: none
+
+42-review9-matrix-expect-correct: exit=0 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs', '--expect-correct']
+{"intendedOracle":"No inherited resultingEpoch read, no invented coordinate, and no boundary exception","cases":22,"violations":[]}
+exit: 0; signal: null; error: none
+
+43-host-members-probe: exit=0 signal=None error=None command=['node', '--experimental-strip-types', 'docs/development/work/K1.2-correction-01/probe-host-members-06.ts']
+exit: 0; signal: null; error: none
+
+44-claim-alias-search: exit=0 signal=None error=None command=['git', 'grep', '-n', '-i', '-E', 'costs? no more|refusing costs|refusal[- ]cost|cheap|bounded by the limits|no more than accepting|no more time or memory|V-D1|KC2-1', '--', 'packages/kernel/src', 'packages/kernel/package.json', 'docs/development/002-implemented-kernel-baseline.md', 'docs/development/007-work-packets.md', 'docs/development/001-current-status-and-roadmap.md', 'docs/development/003-evidence-and-findings.md', 'docs/development/014-owner-progress-summary.md', 'docs/development/kernel-ownership.md', 'docs/guides', 'mental-model', '.agents']
+exit: 0; signal: null; error: none
+
+45-round6-diff-check: exit=2 signal=None error=None command=['git', 'diff', '--check', '60eebc24113eb834e5d88015ca2a196c95c60493', 'HEAD']
+
+47-round7-ablations: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/ablations-07.mjs']
+REJECTED C6 early write inside a local closure: exit=1 tests=1453 pass=1448 fail=5 cancelled=0 skipped=0 todo=0
+REJECTED C15 an early write through a binding set by logical assignment: exit=1 tests=1453 pass=1445 fail=8 cancelled=0 skipped=0 todo=0
+REJECTED C16 an early truncation through an object whose constructor keeps a Kernel list: exit=1 tests=1453 pass=1435 fail=18 cancelled=0 skipped=0 todo=0
+REJECTED C7 a Kernel list widened, disguised as a string and appended to through a helper: exit=1 tests=1453 pass=1441 fail=12 cancelled=0 skipped=0 todo=0
+REJECTED C8 foreign code after the decision is being built: exit=1 tests=1453 pass=1450 fail=3 cancelled=0 skipped=0 todo=0
+REJECTED C9 a refusal recorded without exiting: exit=1 tests=1453 pass=1443 fail=10 cancelled=0 skipped=0 todo=0
+REJECTED C10 a builder that also changes module state: exit=1 tests=1453 pass=1450 fail=3 cancelled=0 skipped=0 todo=0
+REJECTED C11 the Driver handed the attempt before it is recorded: exit=1 tests=1453 pass=974 fail=479 cancelled=0 skipped=0 todo=0
+REJECTED C12 a protocol hold written before its record is built: exit=1 tests=1453 pass=1450 fail=3 cancelled=0 skipped=0 todo=0
+REJECTED C13 the recovery answer projected after the commit (round 6 H7): exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+REJECTED C14 holds written before their history append (round 6 H3): exit=1 tests=1453 pass=1449 fail=4 cancelled=0 skipped=0 todo=0
+exit: 0; signal: null; error: none
+
+48-review10-enforcement-rebound: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/probe-enforcement-rebound-07.mjs']
+REJECTED early-mint: exit=1 tests=1453 pass=1433 fail=20 cancelled=0 skipped=0 todo=0
+REJECTED early-increment: exit=1 tests=1453 pass=1432 fail=21 cancelled=0 skipped=0 todo=0
+exit: 0; signal: null; error: none
+
+49-new-oracles-and-name-probe-on-reviewed-H: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/probe-reviewed-h-07.mjs']
+exit: 0; signal: null; error: none
+
+50-review10-probes-rerun: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/probe-review10-rerun-07.mjs']
+exit: 0; signal: null; error: none
+
+51-round7-diff-check: exit=2 signal=None error=None command=['git', 'diff', '--check', '0efe0ba2ebb3fdde71ac8ab5b7a3ae048f5f5ac1', 'HEAD']
+
+52-fault-sweep: exit=0 signal=None error=None command=['node', '--experimental-strip-types', '--no-warnings', 'packages/kernel/tests/sweep/fault-child.ts']
+   "violations": []
+   "name": "outcome: complete with an Emission and a queued outside-batch input",
+   "violations": []
+   "violations": []
+   "violations": []
+   "violations": []
+   "violations": []
+   "violations": []
+   "violations": []
+   "violations": []
+   "violations": []
+exit: 0; signal: null; error: none
+
+53-poison-sweep: exit=0 signal=None error=None command=['node', '--experimental-strip-types', '--no-warnings', 'packages/kernel/tests/sweep/run-poison-sweep.ts']
+POISON SWEEP PASSED
+exit: 0; signal: null; error: none
+
+54-zone-coverage-suite: exit=0 signal=None error=None command=['node', '--test', '--experimental-strip-types', '--experimental-test-coverage', '--test-coverage-include=packages/kernel/src/**', 'packages/kernel/tests/activation-identity.test.ts', 'packages/kernel/tests/aggregate-refusal.test.ts', 'packages/kernel/tests/ambient-reads.test.ts', 'packages/kernel/tests/boundary.test.ts', 'packages/kernel/tests/control-authority.test.ts', 'packages/kernel/tests/control-commits.test.ts', 'packages/kernel/tests/creation.test.ts', 'packages/kernel/tests/delivery-attribution.test.ts', 'packages/kernel/tests/dispatch.test.ts', 'packages/kernel/tests/evidence.test.ts', 'packages/kernel/tests/exact-coordinates.test.ts', 'packages/kernel/tests/history-attribution.test.ts', 'packages/kernel/tests/hold-permitted.test.ts', 'packages/kernel/tests/host-members.test.ts', 'packages/kernel/tests/ingress.test.ts', 'packages/kernel/tests/inspection.test.ts', 'packages/kernel/tests/late-reports.test.ts', 'packages/kernel/tests/nondisclosure.test.ts', 'packages/kernel/tests/outcome-acceptance.test.ts', 'packages/kernel/tests/outcome-evidence.test.ts', 'packages/kernel/tests/outcome-hostile.test.ts', 'packages/kernel/tests/outcome-limits.test.ts', 'packages/kernel/tests/outcome-partial-claim.test.ts', 'packages/kernel/tests/receipts.test.ts', 'packages/kernel/tests/recovery-ambient.test.ts', 'packages/kernel/tests/recovery-evidence.test.ts', 'packages/kernel/tests/recovery-history.test.ts', 'packages/kernel/tests/recovery.test.ts', 'packages/kernel/tests/refusal-diagnostics.test.ts', 'packages/kernel/tests/refusals.test.ts', 'packages/kernel/tests/review-11-probes.test.ts', 'packages/kernel/tests/submission-authority.test.ts', 'packages/kernel/tests/submission-lifetime.test.ts', 'packages/kernel/tests/takeover-reentrancy.test.ts', 'packages/kernel/tests/takeover.test.ts', 'packages/kernel/tests/terminal.test.ts', 'packages/kernel/tests/transaction.test.ts', 'packages/kernel/tests/unsupported.test.ts', 'packages/kernel/tests/value-diagnostic-work.test.ts', 'packages/kernel/tests/value-refusal-cost.test.ts', 'packages/kernel/tests/values.test.ts', 'packages/kernel/tests/whole-view-ambient.test.ts']
+  ✔ recovery history mutated through an alias outside the commit paths (1541.307708ms)
+  ✔ an Execution is invisible outside its authority scope, exactly as a missing one is (0.747291ms)
+  ✔ outsider partial-stale proposals stay unknown_destination and indistinguishable (2.468875ms)
+  ✔ an own-name listing reporting a canonical index outside length with no backing property is refused (0.199875ms)
+  ✔ a backed canonical index outside length is also refused rather than silently dropped (0.14725ms)
+ℹ tests 1445
+ℹ pass 1445
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+exit: 0; signal: null; error: none
+
+55-zone-coverage-suite-and-catalog: exit=0 signal=None error=None command=['node', '--test', '--experimental-strip-types', '--experimental-test-coverage', '--test-coverage-include=packages/kernel/src/**', 'packages/kernel/tests/activation-identity.test.ts', 'packages/kernel/tests/aggregate-refusal.test.ts', 'packages/kernel/tests/ambient-reads.test.ts', 'packages/kernel/tests/boundary.test.ts', 'packages/kernel/tests/control-authority.test.ts', 'packages/kernel/tests/control-commits.test.ts', 'packages/kernel/tests/creation.test.ts', 'packages/kernel/tests/delivery-attribution.test.ts', 'packages/kernel/tests/dispatch.test.ts', 'packages/kernel/tests/evidence.test.ts', 'packages/kernel/tests/exact-coordinates.test.ts', 'packages/kernel/tests/history-attribution.test.ts', 'packages/kernel/tests/hold-permitted.test.ts', 'packages/kernel/tests/host-members.test.ts', 'packages/kernel/tests/ingress.test.ts', 'packages/kernel/tests/inspection.test.ts', 'packages/kernel/tests/late-reports.test.ts', 'packages/kernel/tests/nondisclosure.test.ts', 'packages/kernel/tests/outcome-acceptance.test.ts', 'packages/kernel/tests/outcome-evidence.test.ts', 'packages/kernel/tests/outcome-hostile.test.ts', 'packages/kernel/tests/outcome-limits.test.ts', 'packages/kernel/tests/outcome-partial-claim.test.ts', 'packages/kernel/tests/poison-catalog.test.ts', 'packages/kernel/tests/receipts.test.ts', 'packages/kernel/tests/recovery-ambient.test.ts', 'packages/kernel/tests/recovery-evidence.test.ts', 'packages/kernel/tests/recovery-history.test.ts', 'packages/kernel/tests/recovery.test.ts', 'packages/kernel/tests/refusal-diagnostics.test.ts', 'packages/kernel/tests/refusals.test.ts', 'packages/kernel/tests/review-11-probes.test.ts', 'packages/kernel/tests/submission-authority.test.ts', 'packages/kernel/tests/submission-lifetime.test.ts', 'packages/kernel/tests/takeover-reentrancy.test.ts', 'packages/kernel/tests/takeover.test.ts', 'packages/kernel/tests/terminal.test.ts', 'packages/kernel/tests/transaction.test.ts', 'packages/kernel/tests/unsupported.test.ts', 'packages/kernel/tests/value-diagnostic-work.test.ts', 'packages/kernel/tests/value-refusal-cost.test.ts', 'packages/kernel/tests/values.test.ts', 'packages/kernel/tests/whole-view-ambient.test.ts']
+  ✔ recovery history mutated through an alias outside the commit paths (1558.558125ms)
+  ✔ an Execution is invisible outside its authority scope, exactly as a missing one is (0.784125ms)
+  ✔ outsider partial-stale proposals stay unknown_destination and indistinguishable (0.901208ms)
+  ✔ an own-name listing reporting a canonical index outside length with no backing property is refused (0.249375ms)
+  ✔ a backed canonical index outside length is also refused rather than silently dropped (0.142833ms)
+ℹ tests 1451
+ℹ pass 1451
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+exit: 0; signal: null; error: none
+
+56-sweep-negative-controls: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/sweeps-08.mjs']
+REJECTED read: R3 assignment destructuring reads the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R4 bare binding reads the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R5 a cast makes the optional controlScopes required: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R6 a rest copy then an optional read: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R8 a String.prototype method replaces an index read: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R11 a lib global read after load: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: R12 a caller envelope read directly: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: K1 hostMember walks on to the built-in prototypes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: K2 an ordinary descriptor literal in defineData: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+REJECTED read: K3 an ordinary read of the optional controlScopes: catalog sweep exit=1; failing: count: no zone frame reaches a poisoned member; every window was live | throw: no zone frame reaches a poisoned member; every window was live | reenter: no zone frame reaches a poisoned member; every window was live
+ALL SWEEP NEGATIVE CONTROLS REJECTED; CLEAN CONTROLS PASSED
+exit: 0; signal: null; error: none
+
+57-sweeps-on-reviewed-H: exit=0 signal=None error=None command=['node', 'docs/development/work/K1.2-correction-01/probe-reviewed-h-08.mjs']
+FAULT SWEEP AT H: exit=1 scenarios=37 runs=43446 violations=57
+  scenarios with violations (19): recover: refused without control power | recover: refused malformed request | recover: refused stale Activation | recover: refused with no unresolved exchange | recover: refused after the Execution ended | report: refused stale writer epoch | report: refused without control power | report: refused malformed report | takeover: refused stale writer epoch | takeover: refused while a code hold stands | takeover: refused by a Driver that cannot replace safely | takeover: refused without control power | takeover: refused malformed request | takeover: refused with no unresolved exchange | outcome: refused conflicting replay | outcome: refused stale writer epoch | outcome: refused without the attempt's grant | outcome: refused malformed content | outcome: refused over the Emission capacity
+WHOLE-SUITE POISON AT H: POISON SWEEP PASSED
+exit: 0; signal: null; error: none
+
+58-round8-diff-check: exit=0 signal=None error=None command=['git', 'diff', '--check', 'b93ed1df6b70569ada060481523e5b37c206e324', 'HEAD']
+exit: 0; signal: null; error: none
+
+59-guard-claim-search: exit=1 signal=None error=None command=['git', 'grep', '-n', '-i', '-E', 'closed-world|closed world|comprehensive', '--', 'docs/development/002-implemented-kernel-baseline.md', 'docs/development/work/K1.2-correction-01/contract.md', 'packages/kernel/src', 'packages/kernel/tests']
+exit: 1; signal: null; error: none
+
+29-round3-diff-check: exit=2 signal=None error=None command=['git', 'diff', '--check', '8a418d408f715e999a403a3e84b73a9db1b43712', 'HEAD']
+
+22-correction-diff-check: exit=2 signal=None error=None command=['git', 'diff', '--check', 'b18a729d989dea334a86ec08bdf8773ee77de4db', 'HEAD']
+
+19-round2-diff-check: exit=2 signal=None error=None command=['git', 'diff', '--check', '449b243cd31d5596c457e091233dfc4d77a4eff4', 'HEAD']
+
+12-diff-check: exit=2 signal=None error=None command=['git', 'diff', '--check', 'a20d278185eaffc7f8b7489345a3624231ff6e6d', 'HEAD']

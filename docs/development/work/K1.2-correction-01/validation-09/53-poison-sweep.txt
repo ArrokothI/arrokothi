@@ -1,0 +1,21 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/run-poison-sweep.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:10:50.789Z
+
+ENV node=v25.2.1 platform=darwin arch=arm64
+SCOPE 43 Kernel test files; 310 poisoned names on Object.prototype, Function.prototype, Array.prototype, String.prototype; modes off,count,throw,reenter
+OUT /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kernel-poison-sweep-60Mjok
+RUN off: {"exit":0,"tests":1712,"pass":1712,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":42}
+RUN count: {"exit":0,"tests":1712,"pass":1712,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":293}
+RUN throw: {"exit":0,"tests":1712,"pass":1712,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":308}
+RUN reenter: {"exit":0,"tests":1712,"pass":1712,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":285}
+MODE off: {"windows":11532,"calls":11578,"liveProbes":0,"callerFirings":0,"handlerFirings":0,"reentries":0,"zoneFirings":0,"skippedSlots":0}
+MODE count: {"windows":11532,"calls":11578,"liveProbes":11532,"callerFirings":3252437,"handlerFirings":18056,"reentries":0,"zoneFirings":0,"skippedSlots":34596}
+MODE throw: {"windows":11532,"calls":11578,"liveProbes":11532,"callerFirings":3252437,"handlerFirings":18056,"reentries":0,"zoneFirings":0,"skippedSlots":34596}
+MODE reenter: {"windows":11532,"calls":11578,"liveProbes":11532,"callerFirings":3252437,"handlerFirings":18056,"reentries":0,"zoneFirings":0,"skippedSlots":34596}
+BOUNDARY 11532 outermost windows; 11578 traced calls per run
+POISON SWEEP PASSED
+
+exit: 0; signal: null; error: none

@@ -1,0 +1,17 @@
+payload C: 2b8a50297ebe83cb0922bb239aa834a2ecebc1ac
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --experimental-strip-types docs/development/work/K1.2/review-11/probe-partial-claim.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T14:10:11.512Z
+
+ok   control: stale epoch 1, base 0, retired grant    -> stale_exchange
+ok   stale epoch 1, base missing, retired grant       -> stale_exchange
+ok   stale epoch 1, base -1, retired grant            -> stale_exchange
+ok   stale epoch 1, base missing, no grant            -> stale_exchange
+ok   stale epoch 1, base missing, current grant       -> stale_exchange
+ok   future epoch 5, base missing, no grant           -> stale_exchange
+ok   epoch missing, stale base 7, current grant       -> stale_exchange
+ok   epoch missing, stale base 7, no grant            -> stale_exchange
+accepted state unchanged: RUNNING, progress revision 0, epoch 2
+
+exit: 0; signal: null; error: none

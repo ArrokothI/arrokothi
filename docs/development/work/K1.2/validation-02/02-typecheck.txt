@@ -1,0 +1,16 @@
+candidate C: c395abfb27c4a0bc7d5c18ed1d9edd2b8b840c47
+base: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+command: npm run typecheck
+environment: v25.2.1, npm 11.6.2, macOS 26.6.2 25G83 arm64
+config: default CoordinatorOptions (mailboxCapacity 1024, emissionsPerOutcome 256); no external fixtures
+output-sha256: a2051020811e29fd9b6835fc0916e232da583bb86b9bbfc4f0f9c28df44084be
+--- output begins ---
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+--- output ends ---
+exit 0
+2026-09-24T22:40:24Z

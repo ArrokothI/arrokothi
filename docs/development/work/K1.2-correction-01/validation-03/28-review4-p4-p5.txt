@@ -1,0 +1,50 @@
+payload C: 652e5e73478684651cff697fef2a3ddbe34458e0
+cwd: /Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01
+command: node docs/development/work/K1.2-correction-01/refusal-cost-probe-03.mjs
+environment: 00-environment.json; {"TREE":"/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01"}
+started: 2026-09-27T11:00:06.017Z
+
+COMMAND node --experimental-strip-types --expose-gc --max-old-space-size=4096 probes/p4-exact-coordinates.ts
+{
+ "precondition: minted IDs are unrenderable": "ok",
+ "X17 decision.activationId exact": "ok",
+ "X10 acknowledgment names exact Activation": "ok",
+ "X11 code hold coordinate exact (answer and view)": "ok",
+ "X21 protocol hold coordinate exact": "ok",
+ "X20 protocol answer exact": "ok",
+ "X13 delivery rows exact": "ok",
+ "X8 Emission IDs distinct across exchanges with one key": "ok",
+ "X8 Emission ID derivation (K1.2-DEC-4)": "ok",
+ "X22 Emission record activationId exact": "ok",
+ "X23 result record activationId exact": "ok",
+ "X9 result ID derivation (K1.2-DEC-4)": "ok",
+ "X15 Outcome receipts of two Executions distinct": "ok"
+}
+
+exit=0 signal=null error=none
+COMMAND node --experimental-strip-types --expose-gc --max-old-space-size=4096 probes/p5-refusal-cost.ts accept
+{"mode":"accept","ok":true,"bytes":1040261,"issues":0,"ms":406,"heapDeltaMiB":19.8,"rssMiB":138}
+
+exit=0 signal=null error=none
+COMMAND node --experimental-strip-types --expose-gc --max-old-space-size=4096 probes/p5-refusal-cost.ts refuse
+{"mode":"refuse","ok":false,"issues":9,"ms":72,"heapDeltaMiB":2.3,"rssMiB":109}
+
+exit=0 signal=null error=none
+COMMAND node --experimental-strip-types --expose-gc --max-old-space-size=4096 probes/p5-refusal-cost.ts accept outcome 1
+{"mode":"accept","path":"submitOutcome (no grant)","roots":1,"classification":"unauthorized_submission","ms":395,"heapDeltaMiB":27.4,"rssMiB":138}
+
+exit=0 signal=null error=none
+COMMAND node --experimental-strip-types --expose-gc --max-old-space-size=4096 probes/p5-refusal-cost.ts refuse outcome 1
+{"mode":"refuse","path":"submitOutcome (no grant)","roots":1,"classification":"unauthorized_submission","ms":73,"heapDeltaMiB":2.5,"rssMiB":106}
+
+exit=0 signal=null error=none
+COMMAND node --experimental-strip-types --expose-gc --max-old-space-size=4096 probes/p5-refusal-cost.ts accept outcome 8
+{"mode":"accept","path":"submitOutcome (no grant)","roots":8,"classification":"unauthorized_submission","ms":3060,"heapDeltaMiB":58.5,"rssMiB":218}
+
+exit=0 signal=null error=none
+COMMAND node --experimental-strip-types --expose-gc --max-old-space-size=4096 probes/p5-refusal-cost.ts refuse outcome 8
+{"mode":"refuse","path":"submitOutcome (no grant)","roots":8,"classification":"unauthorized_submission","ms":525,"heapDeltaMiB":8.7,"rssMiB":111}
+
+exit=0 signal=null error=none
+
+exit: 0; signal: null; error: none

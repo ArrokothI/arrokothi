@@ -1,0 +1,10 @@
+{"variant":"absent isSafeToReplace","holds":["protocol_failure"],"permitted":[["request_takeover","submit_outcome"]],"takeover":"unsafe_replacement","redeliver":"recovery_held"}
+{"variant":"isSafeToReplace returns false","holds":["protocol_failure"],"permitted":[["request_takeover","submit_outcome"]],"takeover":"unsafe_replacement","redeliver":"recovery_held"}
+{"label":"CE1 key at limit","activationIdScalars":65578,"hold":"pinned_code_unavailable","clear":0,"protocol":true,"takeover":"1->2 same=true","accepted":"COMPLETED rev=1 ackd=1 holds=0 history=entered/cleared_by_declaration/entered/cleared_by_takeover","replay":"replayed=true sameReceipt=true","conflict":"duplicate_conflict","refusalsAdded":1,"maxReasonUnits":146}
+{"exchange9Scalars":65536}
+{"label":"CE2 key 65,494 (this probe's names), exchange 10","activationIdScalars":65537,"hold":"pinned_code_unavailable","clear":0,"protocol":true,"takeover":"1->2 same=true","accepted":"COMPLETED rev=10 ackd=0 holds=0 history=entered/cleared_by_declaration/entered/cleared_by_takeover","replay":"replayed=true sameReceipt=true","conflict":"duplicate_conflict","refusalsAdded":1,"maxReasonUnits":146}
+{"control":"takeover","reentry":"resolve","fired":1,"result":"no_unresolved_exchange","epoch":null,"state":"READY","holds":0,"receiptsAdded":1,"deliveriesAdded":1}
+{"control":"takeover","reentry":"takeover","fired":1,"result":"stale_exchange","epoch":2,"state":"RUNNING","holds":0,"receiptsAdded":1,"deliveriesAdded":2}
+{"control":"protocol","reentry":"takeover","fired":1,"result":"stale_exchange","epoch":2,"state":"RUNNING","holds":0,"receiptsAdded":1,"deliveriesAdded":2}
+{"control":"recover","reentry":"resolve","fired":1,"result":"no_unresolved_exchange","epoch":null,"state":"READY","holds":0,"receiptsAdded":1,"deliveriesAdded":1}
+{"control":"protocol","reentry":"complete","fired":1,"result":"terminal_destination","epoch":null,"state":"COMPLETED","holds":0,"receiptsAdded":1,"deliveriesAdded":1}

@@ -1,0 +1,28 @@
+candidate C: 61059a3e43d7057de9be29f101a65ebed9416ae2
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12-r8-valid/checkout
+command: git status --porcelain=v1 --untracked-files=all; git rev-parse HEAD; git rev-parse HEAD^{tree}; git branch --show-current; node --version; npm --version; sw_vers; uname -m; date -u
+environment: {"node":"v25.2.1","npm":"11.6.2","typescript":"5.9.3","OS":"ProductName:\t\tmacOS\\nProductVersion:\t\t26.6.2\\nBuildVersion:\t\t25G83","arch":"arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs":"90996ac232a3d661d190e101836d9536032bdfc319d97de606b63a6aae473ba5","docs/development/work/K1.2/checks-07.mjs":"dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88","docs/development/work/K1.2/contract.md":"62a637b4d3eddb308de78cc23f3985b43e168a1cdebb0b729503dc78a0e52741","docs/development/work/K1.2/decision-01.md":"0fca83a370a5612745dec362cb430aa587394fec11c8804fa1cfa101bcf877c9","mental-model/mechanisms/execution-cycle.md":"e4bd1e2ec73c33ae1ac313e2f454fdfea741b0d5f2547e9f60639199447d5091","package-lock.json":"a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d","package.json":"081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1","packages/kernel/package.json":"47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5","packages/kernel/tests/submission-lifetime.test.ts":"f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401","tsconfig.json":"596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI":"<unset>","LANG":"C.UTF-8","LC_ALL":"<unset>","NODE_ENV":"<unset>","NODE_OPTIONS":"<unset>","TZ":"<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T18:53:34.214Z
+finished-utc: 2026-09-25T18:53:34.415Z
+output-bytes: 197
+output-sha256: 20e61e604051054e153a449ed3552e75083178ac9f804a01529ac8af0160a800
+--- output begins ---
+61059a3e43d7057de9be29f101a65ebed9416ae2
+1c4805d90fa53296dba5f9b8d03ac8e21e060ae6
+v25.2.1
+11.6.2
+ProductName:		macOS
+ProductVersion:		26.6.2
+BuildVersion:		25G83
+arm64
+Fri Sep 25 18:53:34 UTC 2026
+
+--- output ends ---
+exit 0

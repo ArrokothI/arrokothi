@@ -52,17 +52,26 @@
  *    repairing a bad scalar.
  * 3. **Each root is measured on its own.** `values.md`, "Fixed semantic limits": "Two sibling roots
  *    of about 700 KiB each, in one Outcome, both pass." Callers pass one root at a time.
- * 4. **Refusing costs no more than accepting.** A live object can hold one member in many places,
- *    which JSON text cannot: thirty-two arrays, each holding the next one twice, pass the depth limit
- *    and stand for a value of over four billion arrays. The capture pass therefore keeps the root's
+ * 4. **Reading stops at the byte limit.** A live object can hold one member in many places, which
+ *    JSON text cannot: thirty-two arrays, each holding the next one twice, pass the depth limit and
+ *    stand for a value of over four billion arrays. The capture pass therefore keeps the root's
  *    canonical byte count *while* it reads, counting every occurrence in full, and stops reading once
  *    that count passes the size limit. Before this, the limit was checked only on the finished
  *    canonical string, so such a value was expanded in full — time and memory doubling per level —
  *    before it could be refused. The count is exact for content that is accepted, so it never refuses
- *    a value the finished-bytes check would accept; that check stays as well. The same bound holds
- *    inside a single visit (KC2-R1-01): a string or member name is read only until its answer is
- *    settled — at most one scalar value past the length limit — and a container's own-names listing
- *    is classified only until it holds more names than an accepted container can own.
+ *    a value the finished-bytes check would accept; that check stays as well. Within a single visit
+ *    (KC2-R1-01) a string or member name is read only until its answer is settled — at most one scalar
+ *    value past the length limit — and a container's own-names listing is classified only until it
+ *    holds more names than an accepted container can own. Diagnostic storage stays bounded: eight
+ *    bounded details per root, then exact counts per remaining code, with bounded path construction.
+ *    Reading does not stop at eight issues.
+ *
+ *    These are read and retention bounds, not a proof that refusing a value costs no more time or
+ *    memory than accepting one at the limits (`values.md` V-D1). Some refusal work is not charged to
+ *    the byte count: review 08 of K1.2-correction-01 measured refused containers at nesting depth
+ *    costing more than the costliest acceptance found. The V-D1 claim is **held** for this binding and
+ *    is not certified by this implementation; K1.1-correction-03 owns the metered bound (owner
+ *    decision-05, K1.2-correction-01 amendment 01).
  *
  * K1.0 assigned `packages/core/src/util/json.ts` to this packet as `DX-2` (migratable). It is not
  * extracted. The legacy `canonicalJson` in `packages/core/src/util/hash.ts` is an
@@ -259,10 +268,12 @@ export type ValueIssueCode =
 
 /** One reason a value is not an acceptable boundary value, located within that value. */
 export interface ValueIssue {
-  /** Dotted/bracketed path from the root; `""` is the root itself. */
+  /** Dotted/bracketed path; `""` is the root on details, or no location on a counted suffix. */
   readonly path: string;
   readonly code: ValueIssueCode;
   readonly message: string;
+  /** Counted suffix entry (no individual location); absent on the first eight details. */
+  readonly occurrences?: number;
 }
 
 /** A validated root together with its canonical form. Equality compares `canonical`. */
@@ -277,35 +288,32 @@ export interface CanonicalValue {
   readonly canonicalBytes: number;
 }
 
-const describe = (value: unknown): string => {
-  try {
-    if (value === null) return "null";
-    if (PrimordialArrayIsArray(value)) return "array";
-    if (typeof value === "object") {
-      // A hostile thrown value can throw again when its `constructor` (or `constructor.name`)
-      // is read. This formatter must never let that second error escape the Kernel boundary:
-      // it names refusals, never canonical bytes, so any inspection failure degrades to a
-      // generic label rather than a raw exception (K11-R2-VAL-02).
-      let constructorName: unknown;
-      try {
-        constructorName = (value as { constructor?: unknown }).constructor;
-        if (constructorName !== undefined && constructorName !== null) {
-          const name = (constructorName as { name?: unknown }).name;
-          if (typeof name === "string" && name !== "Object") return `${name} instance`;
-        }
-        return "object";
-      } catch {
-        return "uninspectable value";
-      }
-    }
-    return typeof value;
-  } catch {
-    return "uninspectable value";
-  }
-};
+/**
+ * A diagnostic label, never another observation of caller-owned state. Even an ordinary
+ * constructor/name read can walk an unbounded prototype chain, and a thrown value can be a
+ * Proxy or a revoked Proxy. Only language-level type classification is needed here. In
+ * particular, do not inspect constructor, name, message, toStringTag or array/proxy structure.
+ * The surrounding refusal identifies the failed form or observation; this label executes no caller code.
+ */
+const describe = (value: unknown): string => value === null ? "null" : typeof value;
 
-const child = (path: string, key: string): string => (path === "" ? key : `${path}.${key}`);
-const element = (path: string, index: number): string => `${path}[${index}]`;
+// A fixed over-limit sentinel keeps omission sticky without confusing a caller's literal
+// "<omitted>" member with the sentinel. No caller-sized path is ever concatenated.
+const OMITTED_PATH = ".................................................................................................................................";
+const child = (path: string, key: string): string =>
+  path.length + key.length + (path === "" ? 0 : 1) > 128 ? OMITTED_PATH : path === "" ? key : `${path}.${key}`;
+const element = (path: string, index: number): string => childElement(path, `[${index}]`);
+const childElement = (path: string, suffix: string): string =>
+  path.length + suffix.length > 128 ? OMITTED_PATH : `${path}${suffix}`;
+
+/** Bounded diagnostics only; never used for accepted content or identity. */
+const issueText = (text: string, limit: number, omitted: string): string => {
+  if (text.length > limit) return omitted;
+  for (let index = 0; index < text.length; index += 1) {
+    if (text[index]! < " " || text[index]! > "~") return omitted;
+  }
+  return text;
+};
 
 /**
  * What one bounded pass over a string found. `ok` carries the string's exact canonical bytes.
@@ -327,10 +335,10 @@ const TOO_LONG: StringScan = PrimordialObjectFreeze({ kind: "too_long" } as cons
  * 33,554,432-character string cost 67,108,864 character reads before it was refused. This pass reads
  * code units only until the answer is settled: an unpaired surrogate ends it, and so does the 65,537th
  * scalar value, because a string that long is refused whatever follows. At most
- * `2 * (stringScalarValues + 1)` code units are ever read, which is no more than accepting a string at
- * the limit costs. A string refused for length is therefore reported as longer than the limit, not by
- * its exact length, and an unpaired surrogate past that point is not reported; either way the string
- * is refused.
+ * `2 * (stringScalarValues + 1)` code units are ever read: one scalar value (at most two code
+ * units) past the most an accepted string can need. A string refused for length is therefore
+ * reported as longer than the limit, not by its exact length, and an unpaired surrogate past that
+ * point is not reported; either way the string is refused.
  *
  * `values.md` rejects lone surrogates rather than repairing them, so well-formedness is checked here
  * rather than taken from `String.prototype.isWellFormed`, which is newer than the `ES2023` library this
@@ -344,6 +352,11 @@ const TOO_LONG: StringScan = PrimordialObjectFreeze({ kind: "too_long" } as cons
  */
 const scanBoundaryString = (input: string): StringScan => {
   const units = input.length;
+  // Any valid scalar uses at most two UTF-16 units. A larger extent cannot fit the scalar
+  // limit, regardless of its contents. Refuse before a character read can make the engine
+  // flatten a caller-sized rope string. Remaining string extents and scalar reads are bounded.
+  // This preflight also wins for malformed oversized text.
+  if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;
   let scalars = 0;
   let bytes = 2;
   for (let index = 0; index < units; index += 1) {
@@ -384,7 +397,26 @@ const scanBoundaryString = (input: string): StringScan => {
  * owns why the replacement is structural rather than another captured method.
  */
 const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
-  appendOwn(issues, issue);
+  // Keep every code occurrence, but never a per-position suffix object/path/message. This
+  // collector is shared by ALL refusal sites, including pre-member structural observations.
+  // Observation and the running byte budget are unchanged: later siblings still run.
+  if (issues.length < 8) {
+    appendOwn(issues, {
+      path: issueText(issue.path, 128, "<omitted>"),
+      code: issue.code,
+      message: issueText(issue.message, 1_024, "<message omitted>"),
+    });
+    return;
+  }
+  for (let index = 8; index < issues.length; index += 1) {
+    const entry = readAt(issues, index) as ValueIssue;
+    if (entry.code === issue.code) {
+      // Every suffix entry owns occurrences; no caller or inherited value is consulted.
+      (entry as { occurrences: number }).occurrences += 1;
+      return;
+    }
+  }
+  appendOwn(issues, { path: "", code: issue.code, message: "additional occurrences (locations omitted)", occurrences: 1 });
 };
 
 /**
@@ -404,8 +436,9 @@ interface CaptureState {
    *
    * A plain identity stack compared with `===`, not a `Set`: `Set` construction consults the
    * global `Set` binding and `has`/`add`/`delete` consult `Set.prototype`, all of which a
-   * capture-time side effect can replace mid-pass. Depth is bounded by `containerDepth`, so a
-   * linear scan is trivially cheap and consults nothing ambient.
+   * capture-time side effect can replace mid-pass. Depth is bounded by `containerDepth`, so one scan
+   * compares at most that many identities and consults nothing ambient. The scans are not charged to
+   * the byte count; their total over a refused value is part of the held V-D1 question (item 4 above).
    */
   readonly open: object[];
   /**
@@ -428,10 +461,11 @@ interface CaptureState {
  *
  * The first time the count passes the limit, one root-located `too_many_bytes` issue is recorded and
  * the pass stops: every later `capture` returns at once and every container loop ends. The reported
- * size is a lower bound — the part of the value read before stopping — which is the point: nothing
- * past the limit is read, so the refusal costs no more than a value at the limit would. `state` is a
- * Kernel-created literal and `bytes`/`stopped` are its own data properties, so these writes consult
- * no prototype.
+ * size is a lower bound — the part of the value read before stopping. Nothing past the byte stop is
+ * read, which bounds the reading this count charges. It does not bound refusal work the count does not
+ * charge, so it is no claim that a refusal costs no more than a value at the limit: that V-D1 claim is
+ * held pending K1.1-correction-03 (item 4 of the module comment). `state` is a Kernel-created literal
+ * and `bytes`/`stopped` are its own data properties, so these writes consult no prototype.
  */
 const charge = (state: CaptureState, bytes: number): boolean => {
   if (state.stopped) return false;
@@ -580,8 +614,8 @@ function describedValue(
  * and `values.md`'s depth is the greatest level any path reaches. Descent stops one level past the
  * limit: a value nested ten thousand deep is reported as too deep rather than exhausting the stack.
  *
- * Refusals are collected rather than thrown: `values.md` expects every reason a value was refused,
- * located, so a caller can fix all of them at once. A refused position stops contributing to the
+ * Refusals are collected rather than thrown: eight bounded located details, followed by exact
+ * counts for every remaining code. A refused position stops contributing to the
  * snapshot but does not stop its siblings from being examined — with one exception. Once the running
  * canonical size passes the limit (`charge`), reading stops outright, because examining the rest is
  * exactly the unbounded work the limit exists to prevent. Reasons past that point are not collected.
@@ -614,7 +648,7 @@ function capture(value: unknown, path: string, level: number, state: CaptureStat
       pushIssue(state.issues, {
         path,
         code: "string_too_long",
-        message: `string has more than ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values, the limit`,
+        message: `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
       });
       // Charged at its full length, which is free to read and never less than the reading the scan
       // did, so repeated occurrences of one refused string exhaust the budget quickly.
@@ -923,7 +957,7 @@ function captureObject(container: object, path: string, entered: number, state: 
       pushIssue(state.issues, {
         path: where,
         code: "string_too_long",
-        message: `member name has more than ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values, the limit`,
+        message: `member name cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
       });
       refused = true;
       if (!charge(state, key.length)) return REFUSED;
@@ -1446,7 +1480,7 @@ function accept(value: unknown): { readonly ok: true; readonly value: CanonicalV
   return { ok: true, value: PrimordialObjectFreeze({ value: snapshot, canonical, canonicalBytes }) };
 }
 
-/** Every reason `value` is not an acceptable boundary value root. Empty means it is one. */
+/** Bounded details and exact suffix code counts for a refused root. Empty means valid. */
 export function boundaryValueIssues(value: unknown): ValueIssue[] {
   const result = accept(value);
   return result.ok ? [] : result.issues;
@@ -1456,8 +1490,8 @@ export function boundaryValueIssues(value: unknown): ValueIssue[] {
 export const isBoundaryValue = (value: unknown): value is BoundaryValue => boundaryValueIssues(value).length === 0;
 
 /**
- * Validates one root and returns the captured snapshot with its canonical form, or every reason it
- * was refused.
+ * Validates one root and returns its exact canonical snapshot, or bounded issue details and
+ * exact suffix code counts. Diagnostic compression never changes which positions are observed.
  *
  * The returned object is what identity decisions compare: two requests carry the same logical value
  * exactly when their `canonical` strings are equal. `value` is the structure those bytes were taken

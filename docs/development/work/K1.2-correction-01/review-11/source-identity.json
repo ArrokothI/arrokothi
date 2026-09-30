@@ -1,0 +1,20 @@
+{
+  "baseTree": "688a8786dac7cc494886a5e46b328fdff8b9c83a",
+  "payloadTree": "b7aadec6b52bd1bc79de92144a589ad5cc6e3f6c",
+  "candidateTree": "c88032598629647001d27d4c79be221b9f0fc38b",
+  "contractBlob": "3535f38f34feda675f82dd252e613c3e7851f0c2",
+  "parentContractBlob": "edea43ed1c7583c28cca9c4a7612bf4163a75d2d",
+  "implementationBlob": "25f1960e7e61598145ba058a6091c401f5c4decf",
+  "fullDiffs": [
+    {
+      "range": "a20d278185eaffc7f8b7489345a3624231ff6e6d..dcac779bdf7e887bcf42c8a6407c1b24c2083a55",
+      "sha256": "585b36e6afad17f7bfc2082bc26f36260286425052e870dceef9bed26d71d6c8",
+      "bytes": 30141910
+    },
+    {
+      "range": "35c6ba0277542236f21f95d695154fa0164feb96..dcac779bdf7e887bcf42c8a6407c1b24c2083a55",
+      "sha256": "a6d5ffbefe090612aa29df8dc13fb4dd02e9dcc9173258e05bc3dd7741631992",
+      "bytes": 9425104
+    }
+  ]
+}

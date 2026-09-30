@@ -1,0 +1,8 @@
+command: npm run typecheck
+tree: 312f2584d14b0c168c2152c373a4f07d4a292d74
+Sun Sep 27 09:26:26 UTC 2026
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+exit 0

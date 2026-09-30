@@ -1,0 +1,27 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/probe-reviewed-h-08.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:33:20.234Z
+
+worktree /var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/k12c1-r8-h-deaB2Z/h at dcac779bdf7e887bcf42c8a6407c1b24c2083a55
+MAINTAINED PROBES AND CATALOG SWEEP AT H: exit=0 tests=40 pass=40 fail=0 cancelled=0 skipped=0 todo=0
+FAULT SWEEP AT H: exit=1 scenarios=66 runs=54288 violations=117
+  every violation is a fault while a refusal record is built or appended: true
+  scenarios with violations (39): recover: refused without control power | recover: refused malformed request | recover: refused stale Activation | recover: refused with no unresolved exchange | recover: refused after the Execution ended | report: refused without control power | report: refused malformed report | report: refused stale Activation | report: refused with no unresolved exchange | report: refused after the Execution ended | report: refused stale writer epoch | takeover: refused without control power | takeover: refused malformed request | takeover: refused stale Activation | takeover: refused with no unresolved exchange | takeover: refused after the Execution ended | takeover: refused stale writer epoch | takeover: refused while a code hold stands | takeover: refused by a Driver that cannot replace safely | takeover: refused, the safety callback ended the Execution | takeover: refused, the safety callback resolved the exchange | takeover: refused, the safety callback dispatched a different exchange | takeover: refused, the safety callback took the exchange over itself | takeover: refused, the safety callback held the exchange's code | outcome: refused conflicting replay | outcome: refused after the Execution ended | outcome: refused with no unresolved exchange | outcome: refused with no unresolved exchange, identity unusable | outcome: refused stale Activation | outcome: refused stale writer epoch | outcome: refused stale writer epoch, identity unusable | outcome: refused stale base revision | outcome: refused stale base revision, identity unusable | outcome: refused without the attempt's grant | outcome: refused without the attempt's grant, identity unusable | outcome: refused over the Emission capacity | outcome: refused over the Emission capacity, identity unusable | outcome: refused malformed content | outcome: refused malformed content, identity unusable
+  recover: refused without control power: operation 5/7 (Object.freeze at refusal.ts:144 mintRefusal): threw and left a state no complete decision explains
+  recover: refused without control power: operation 6/7 (Object.create at own-array.ts:145 defineData): threw and left a state no complete decision explains
+  recover: refused without control power: operation 7/7 (Object.defineProperty at own-array.ts:155 defineData): threw and left a state no complete decision explains
+  recover: refused malformed request: operation 20/22 (Object.freeze at refusal.ts:144 mintRefusal): threw and left a state no complete decision explains
+  recover: refused malformed request: operation 21/22 (Object.create at own-array.ts:145 defineData): threw and left a state no complete decision explains
+  recover: refused malformed request: operation 22/22 (Object.defineProperty at own-array.ts:155 defineData): threw and left a state no complete decision explains
+WHOLE-SUITE POISON AT H: SCOPE 42 Kernel test files; 310 poisoned names on Object.prototype, Function.prototype, Array.prototype, String.prototype; modes off,count
+WHOLE-SUITE POISON AT H: RUN off: {"exit":0,"tests":1445,"pass":1445,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":35}
+WHOLE-SUITE POISON AT H: RUN count: {"exit":0,"tests":1445,"pass":1445,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":282}
+WHOLE-SUITE POISON AT H: MODE off: {"windows":11532,"calls":11578,"liveProbes":0,"callerFirings":0,"handlerFirings":0,"reentries":0,"zoneFirings":0,"skippedSlots":0}
+WHOLE-SUITE POISON AT H: MODE count: {"windows":11532,"calls":11578,"liveProbes":11532,"callerFirings":3252437,"handlerFirings":18056,"reentries":0,"zoneFirings":0,"skippedSlots":34596}
+WHOLE-SUITE POISON AT H: BOUNDARY 11532 outermost windows; 11578 traced calls per run
+WHOLE-SUITE POISON AT H: POISON SWEEP PASSED
+Preparing worktree (detached HEAD dcac779)
+
+exit: 0; signal: null; error: none

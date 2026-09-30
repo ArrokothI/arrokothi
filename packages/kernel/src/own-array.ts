@@ -103,8 +103,27 @@ const hasOwnField = (holder: object, key: string): boolean =>
  */
 const ownFieldValue = (holder: object, key: string): unknown => {
   const fieldDescriptor = PrimordialGetOwnPropertyDescriptor(holder, key);
-  return fieldDescriptor === undefined ? undefined : (fieldDescriptor as { readonly value?: unknown }).value;
+  // The field descriptor of an own data field owns `value`; checking it anyway keeps every
+  // descriptor `.value` read in the zone behind the same own-field test (amendment 02).
+  if (fieldDescriptor === undefined || !hasOwnValue(fieldDescriptor)) return undefined;
+  return (fieldDescriptor as { readonly value?: unknown }).value;
 };
+
+/**
+ * Whether an engine-built property descriptor describes data rather than an accessor.
+ *
+ * A data descriptor owns `value`; an accessor descriptor owns `get` and `set` instead. Exported for
+ * `envelope.ts`'s trusted-host member lookup, so that module never reads a descriptor field itself.
+ */
+export const isDataDescriptor = (descriptor: PropertyDescriptor): boolean => hasOwnValue(descriptor);
+
+/** A data descriptor's own `value`, or `undefined` for an accessor descriptor. Invokes nothing. */
+export const descriptorValue = (descriptor: PropertyDescriptor): unknown =>
+  hasOwnValue(descriptor) ? ownFieldValue(descriptor, "value") : undefined;
+
+/** An accessor descriptor's own `get`, or `undefined` when it owns none. Invokes nothing. */
+export const descriptorGetter = (descriptor: PropertyDescriptor): unknown =>
+  hasOwnField(descriptor, "get") ? ownFieldValue(descriptor, "get") : undefined;
 
 /**
  * A property descriptor no prototype can steer (K11-R7-STATE-03).

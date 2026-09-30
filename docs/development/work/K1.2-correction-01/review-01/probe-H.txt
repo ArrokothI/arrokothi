@@ -1,0 +1,23 @@
+P1 exch10 id length 65537
+P1 recover(missing) ok
+P1 recover(all) ok
+P1 protocol ok
+P1 takeover ok epoch=2
+P1 outcome(complete+emission) ok rev=10 resultId.len=131079
+P1 state COMPLETED emissions=1 result=completed
+P2 replay after terminal (no grant) replayed=true sameReceipt=true
+P2 truncated exch10 === exch1 id? true
+P2 submit truncated exch10 (== exch1 id, different content) -> duplicate_conflict
+P2b prefix (different) -> stale_exchange
+P2b suffix (different) -> stale_exchange
+P2b NFD (different) -> stale_exchange
+P2b upper (different) -> stale_exchange
+P2b rope-equal (equal) -> ok
+P3 surrogate namespace fail+2 emissions ok emissionIds distinct=true
+P3 view state FAILED
+P4 visibility-only huge stale Outcome -> stale_exchange reasonLength=50000147
+P4 visibility-only surrogate stale Outcome -> stale_exchange reasonHasLoneSurrogate=true
+P4 another viewer inspects refusal reasons: maxLength=50000147
+P4 control huge stale takeover -> stale_exchange reasonLength=50000093
+P4 no-exchange huge -> stale_exchange reasonLength=50000148
+P4 heap delta MB ~ 0

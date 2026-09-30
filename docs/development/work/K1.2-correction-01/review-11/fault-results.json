@@ -1,0 +1,20 @@
+[
+  {
+    "name": "clean",
+    "exit": 0,
+    "stdout": "{\"wholeViewUnchanged\":true,\"priorReceipt\":{\"boundary\":\"dispatch_intent\",\"token\":\"dsp:execution-8:review118:tenant-a9:report-17:2\",\"position\":2},\"inputReceipt\":{\"boundary\":\"input_ingress\",\"token\":\"inp:execution-8:review118:tenant-a9:report-17:3\",\"position\":3}}\n",
+    "stderr": ""
+  },
+  {
+    "name": "default-parameter",
+    "exit": 0,
+    "stdout": "{\"wholeViewUnchanged\":true,\"priorReceipt\":{\"boundary\":\"dispatch_intent\",\"token\":\"dsp:execution-8:review118:tenant-a9:report-17:2\",\"position\":2},\"inputReceipt\":{\"boundary\":\"input_ingress\",\"token\":\"inp:execution-8:review118:tenant-a9:report-17:4\",\"position\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "name": "shadowed-undefined",
+    "exit": 0,
+    "stdout": "{\"wholeViewUnchanged\":true,\"priorReceipt\":{\"boundary\":\"dispatch_intent\",\"token\":\"dsp:execution-8:review118:tenant-a9:report-17:2\",\"position\":2},\"inputReceipt\":{\"boundary\":\"input_ingress\",\"token\":\"inp:execution-8:review118:tenant-a9:report-17:4\",\"position\":4}}\n",
+    "stderr": ""
+  }
+]

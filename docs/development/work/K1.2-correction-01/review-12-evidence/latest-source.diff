@@ -1,0 +1,48 @@
+diff --git a/package.json b/package.json
+index 5f399cc..5fecf7a 100644
+--- a/package.json
++++ b/package.json
+@@ -28,6 +28,7 @@
+     "canary:mcp:gemini": "node --env-file-if-exists=.env --experimental-strip-types scripts/mcp-gemini-canary.ts",
+     "test:core": "node --test --experimental-strip-types packages/core/tests/*.test.ts",
+     "test:kernel": "node --test --experimental-strip-types packages/kernel/tests/*.test.ts",
++    "test:kernel-sweeps": "node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/fault-child.ts --summary && node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/run-poison-sweep.ts",
+     "test:retrieval-local": "node --test --experimental-strip-types packages/retrieval/local/tests/*.test.ts",
+     "test:strands": "node --test --experimental-strip-types packages/agents/strands/tests/*.test.ts",
+     "test:mcp": "node --test --experimental-strip-types packages/interoperability/mcp/tests/*.test.ts tests/conformance/mcp/*.test.ts",
+diff --git a/packages/kernel/src/coordinator.ts b/packages/kernel/src/coordinator.ts
+index 0e90b6b..6977c4f 100644
+--- a/packages/kernel/src/coordinator.ts
++++ b/packages/kernel/src/coordinator.ts
+@@ -187,11 +187,11 @@ import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue
+  * they declare, because each is built by one literal and only declared required members are read;
+  * caller envelopes are read through `observeOwn`; an optional member of a trusted host object (the
+  * caller's `controlScopes`, the options' limits, the Driver's `isSafeToReplace`) through `hostMember`,
+- * which never answers from a built-in prototype. `ambient-reads.test.ts` enforces this over the
+- * zone with the TypeScript checker (contract revision 8): the zone may use only an allowlisted
+- * syntax, and every access that could reach a member its object does not own — optional, undeclared,
+- * built-in, computed, spread, asserted, coerced or on a caller envelope — must match a reasoned entry
+- * in `zone-inventory.ts`. `control-commits.test.ts` enforces the recovery-control commit order below.
++ * which never answers from a built-in prototype. The evidence is at run time (contract revision 9):
++ * the poisoned-prototype sweep runs the maintained scenarios with every member name the zone uses
++ * installed as an accessor on the built-in prototypes, and no zone frame may reach one; the
++ * fault-injection sweep checks the recovery-control commit order below. `ambient-reads.test.ts` and
++ * `control-commits.test.ts` are static regression guards for accidental forms, with stated gaps.
+  */
+ const PrimordialNumberIsInteger = Number.isInteger;
+ const PrimordialObjectFreeze = Object.freeze;
+@@ -2255,10 +2255,13 @@ export class ExecutionCoordinator {
+     // refusal that names no Execution advances nothing at all — it carries position 0. Either
+     // way no caller-visible sequence moves for activity outside the caller's visible domain.
+     if (record === null) return mintRefusal(classification, reason, 0, null);
++    // Built, then appended, then the index advanced (SELF-R8-REFUSAL-01, found by the fault sweep):
++    // advancing first let an exception while minting or appending consume a position with no
++    // retained refusal behind it, so the next refusal skipped one.
+     const position = record.nextRefusalPosition;
+-    record.nextRefusalPosition += 1;
+     const refusal = mintRefusal(classification, reason, position, record.executionId);
+     appendOwn(record.refusals, refusal);
++    record.nextRefusalPosition = position + 1;
+     return refusal;
+   }
+ 

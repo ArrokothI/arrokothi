@@ -1,0 +1,20 @@
+refuse-undefined: refused unauthorized_submission in 1125 ms; heapUsed +153 MiB, rss 293 MiB
+        1.24 real         1.41 user         0.04 sys
+           308264960  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               21066  page reclaims
+                  77  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                 915  involuntary context switches
+         20366897112  instructions retired
+          4501890376  cycles elapsed
+           288311936  peak memory footprint
+exit 0

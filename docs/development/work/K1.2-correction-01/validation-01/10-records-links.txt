@@ -1,0 +1,10 @@
+payload C: 360538522be8c1b17d23948f632fd4f568a76ed0
+cwd: /Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01
+command: node docs/development/work/K1.2-correction-01/check-records.mjs
+environment: 00-environment.json
+started: 2026-09-26T02:51:57.593Z
+
+Prerequisite ancestry, historical records/36 ablations, every original test, identity/value producer code and creation-through-dispatch preservation verified.
+Local reference check: 8 files, 501 links/anchors; remote links not fetched.
+
+exit: 0; signal: null; error: none

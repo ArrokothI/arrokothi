@@ -378,12 +378,11 @@ describe("K1.1-C2 destinations that refuse", () => {
     assert.equal(view(kernel, executionId).refusals.length, 0, "and records nothing against it");
   });
 
-  test("K11-R1-SCOPE-01 terminal-ingress rule is specified with live-terminal evidence deferred to K1.3", () => {
-    // Governing 007 assigns out-of-band cancellation and terminal disposition to K1.3. K1.1 owns
-    // the rule that *new* ordinary input to a terminal destination is refused, but must not
-    // manufacture that terminal state to evidence it. No terminal state is reachable in this
-    // packet, so live-terminal ingress/replay/conflict exercise awaits K1.3, which will own the
-    // terminal it arrives through. What K1.1 does evidence here:
+  test("K11-R1-SCOPE-01 terminal-ingress rule as K1.1 specified it (live evidence in terminal.test.ts)", () => {
+    // K1.1 owned the rule that *new* ordinary input to a terminal destination is refused, but had no
+    // terminal state to evidence it with. K1.2 makes `COMPLETED`/`FAILED` reachable and exercises
+    // the rule live - refusal, replay and conflict after the end - in `terminal.test.ts`; the
+    // cancellation path to `CANCELLED` stays K1.3's. What K1.1 evidenced, and still holds:
     const kernel = coordinator();
     const { executionId } = start(kernel);
 
@@ -400,9 +399,8 @@ describe("K1.1-C2 destinations that refuse", () => {
 
     // The implementation orders Input ID lookup before the terminal check (creation.md: a replay
     // of input accepted before the end is a lookup, not new input), so replay and conflict keep
-    // their meaning after an end when K1.3 provides one. That ordering is read directly from
-    // `submitInput`: existing-input branch precedes `isTerminal`, which precedes capacity.
-    // Manufacturing a CANCELLED Execution here to execute that branch would steal K1.3 scope.
+    // their meaning after an end: `terminal.test.ts` now executes that branch through an accepted
+    // `complete` and `fail`.
   });
 
   test("a capacity below one is a configuration error, not a refusal to discover at runtime", () => {

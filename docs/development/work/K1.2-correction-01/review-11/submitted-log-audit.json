@@ -1,0 +1,449 @@
+{
+  "payload": "58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f",
+  "commands": 53,
+  "statusAfter": "clean",
+  "rows": [
+    {
+      "name": "01-typecheck",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "02-full",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "\u2139 tests 3465",
+        "\u2139 pass 3465",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0"
+      ]
+    },
+    {
+      "name": "03-kernel",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "\u2139 tests 1411",
+        "\u2139 pass 1411",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0"
+      ]
+    },
+    {
+      "name": "04-conformance",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "\u2139 tests 1945",
+        "\u2139 pass 1945",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0"
+      ]
+    },
+    {
+      "name": "05-sdk",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "\u2139 tests 22",
+        "\u2139 pass 22",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0"
+      ]
+    },
+    {
+      "name": "06-builder-docs",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "07-original-ablations",
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL        unablated copy: tests 1411, pass 1411, fail 0",
+        "NOT APPLICABLE B6 no post-callback revalidation (outer takeover commits on stale pre-callback state)",
+        "NOT APPLICABLE B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
+        "NOT APPLICABLE B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
+        "NOT APPLICABLE B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
+        "32/36 ablations rejected by the kernel suite."
+      ]
+    },
+    {
+      "name": "08-correction-ablations",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL exit=0 tests=571 pass=571 fail=0 cancelled=0",
+        "67/67 correction ablations rejected."
+      ]
+    },
+    {
+      "name": "09-r11-probe",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "10-records-links",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "11-evals",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "\u2139 tests 12",
+        "\u2139 pass 12",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0"
+      ]
+    },
+    {
+      "name": "14-original-ablations-adapted",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL        unablated copy: tests 1411, pass 1411, fail 0",
+        "36/36 ablations rejected by the kernel suite."
+      ]
+    },
+    {
+      "name": "15-review-identity",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "16-review-maxlen",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "17-review-namespace",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "18-diagnostics-maxlen",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "20-review-aggregate",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "21-review-equality",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "23-review-cost-accept",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "24-review-cost-refuse-undefined",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "25-review-cost-refuse-ctor",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "26-review-aggregate-pre-authority",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "27-revision4-ablations",
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL : exit=0 tests=35 pass=35 fail=0 cancelled=0"
+      ]
+    },
+    {
+      "name": "28-review4-p4-p5",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "30-review6-exact-ablations",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL full Kernel suite: exit=0 tests=1411 pass=1411 fail=0 cancelled=0 skipped=0 todo=0",
+        "16/16 review-06 coordinate ablations rejected by the maintained exact-coordinate oracle within the full Kernel suite"
+      ]
+    },
+    {
+      "name": "31-diagnostic-work-ablations",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL diagnostic work: exit=0 tests=20 pass=20 fail=0",
+        "4/4 diagnostic/string-work mutations rejected; whole-packet review remains separate"
+      ]
+    },
+    {
+      "name": "32-review6-cost-and-blocker",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "33-round4-diff-check",
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "34-handler-direct-0",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "34-handler-direct-1000",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "34-handler-direct-10000",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "34-handler-outcome-0",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "34-handler-outcome-1000",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "34-handler-outcome-10000",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "35-string-work",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "37-round6-ablations",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL full Kernel suite: exit=0 tests=1411 pass=1411 fail=0 cancelled=0 skipped=0 todo=0",
+        "22/22 round-6 mutants rejected by the full Kernel suite"
+      ]
+    },
+    {
+      "name": "38-revision4-ablations-rebound",
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL : exit=0 tests=35 pass=35 fail=0 cancelled=0",
+        "SURVIVED V5 retain unbounded first-detail messages: exit=0 tests=35 pass=35 fail=0 cancelled=0",
+        "20/21 revision-4 ablations rejected"
+      ]
+    },
+    {
+      "name": "39-review9-probe-history",
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "40-review9-probe-history-mutable",
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "41-review9-matrix",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "42-review9-matrix-expect-correct",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "43-host-members-probe",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "44-claim-alias-search",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "45-round6-diff-check",
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "47-round7-ablations",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "CONTROL full Kernel suite: exit=0 tests=1411 pass=1411 fail=0 cancelled=0 skipped=0 todo=0",
+        "28/28 round-7 mutants rejected by the full Kernel suite, each by an enforcement rule test"
+      ]
+    },
+    {
+      "name": "48-review10-enforcement-rebound",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "2/2 review-10 regressions rejected (sealed result at H: both passed 1,331/1,331)"
+      ]
+    },
+    {
+      "name": "49-new-oracles-and-name-probe-on-reviewed-H",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "50-review10-probes-rerun",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": [
+        "30/30 whole-view comparisons passed; no inherited reads/reentry, no foreign-reference mutation, and receipt/progress/mailbox/output expectations passed."
+      ]
+    },
+    {
+      "name": "51-round7-diff-check",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "29-round3-diff-check",
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "22-correction-diff-check",
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "19-round2-diff-check",
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "observations": []
+    },
+    {
+      "name": "12-diff-check",
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "observations": []
+    }
+  ],
+  "manifestSha256": "86f7103c9382a7fc98b6feec887b86755cc436ca42621e1682f375bf7760019d"
+}

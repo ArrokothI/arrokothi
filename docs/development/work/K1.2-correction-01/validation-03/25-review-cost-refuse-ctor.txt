@@ -1,0 +1,9 @@
+payload C: 652e5e73478684651cff697fef2a3ddbe34458e0
+cwd: /Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01
+command: node --max-old-space-size=4096 --experimental-strip-types --expose-gc docs/development/work/K1.2-correction-01/review-02/probe-cost.ts
+environment: 00-environment.json; {"TREE":"/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01","MODE":"refuse-ctor"}
+started: 2026-09-27T10:59:56.607Z
+
+refuse-ctor: refused unauthorized_submission in 434 ms; heapUsed +3 MiB, rss 114 MiB
+
+exit: 0; signal: null; error: none

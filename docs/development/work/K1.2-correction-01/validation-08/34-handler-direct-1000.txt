@@ -1,0 +1,9 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --expose-gc docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs . 1000 direct
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T11:36:03.471Z
+
+{"depth":1000,"surface":"direct","repeats":8,"width":4096,"elapsedMs":601.334917,"counts":{"descriptor":32776,"elementDescriptor":32768,"read":32776,"ownKeys":16,"prototype":8},"classification":"undefined_member","logicalAssertions":"passed; timing and cost-claim scope remain separate"}
+
+exit: 0; signal: null; error: none

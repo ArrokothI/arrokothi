@@ -1,0 +1,365 @@
+[
+  {
+    "id": "CONTROL",
+    "exit": 0,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1268,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7991,
+    "failed": [],
+    "verdict": "CONTROL OK"
+  },
+  {
+    "id": "N1 catch path reads thrown constructor",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1263,
+    "fail": 5,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8142,
+    "failed": [
+      "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight",
+      "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected",
+      "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state",
+      "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics",
+      "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N2 foreign array reads constructor",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1266,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8327,
+    "failed": [
+      "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight",
+      "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N3 foreign object reads constructor",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1263,
+    "fail": 5,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8499,
+    "failed": [
+      "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight",
+      "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected",
+      "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+      "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics",
+      "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N4 primitive label reads function name",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1267,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8650,
+    "failed": [
+      "V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N5 preflight refuses at exactly 131072 units",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1264,
+    "fail": 4,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8797,
+    "failed": [
+      "maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable",
+      "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values",
+      "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges",
+      "decoded string length counts Unicode scalar values",
+      "K1.1-C3 the four semantic limits, at the limit and one over"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N6 preflight admits 131073 units",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1266,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8746,
+    "failed": [
+      "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values",
+      "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N7 index read before preflight flattens",
+    "exit": 0,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1268,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8929,
+    "failed": [],
+    "verdict": "SURVIVED"
+  },
+  {
+    "id": "N8 second ordinary length read",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1262,
+    "fail": 6,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8603,
+    "failed": [
+      "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+      "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+      "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+      "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+      "decision-04 handler probe: the byte stop bounds Kernel-selected observations",
+      "decision-04 handler probe: eager roots preserve selected counts and whole state before authority"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N9 object half lists symbols twice",
+    "exit": 0,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1268,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 9022,
+    "failed": [],
+    "verdict": "SURVIVED"
+  },
+  {
+    "id": "N10 object half observes prototype twice",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1265,
+    "fail": 3,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 9124,
+    "failed": [
+      "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight",
+      "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+      "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N11 object member descriptor read twice",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1267,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8952,
+    "failed": [
+      "an oversized own-names listing is classified after at most one descriptor past the entry limit",
+      "refusing a value costs no more than the size limit allows"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N12 member ordinary read twice",
+    "exit": 1,
+    "signal": null,
+    "tests": 1235,
+    "pass": 1224,
+    "fail": 11,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 59604,
+    "failed": [
+      "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+      "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state",
+      "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+      "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+      "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+      "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N13 array half lists names twice",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1262,
+    "fail": 6,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7669,
+    "failed": [
+      "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+      "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+      "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+      "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+      "decision-04 handler probe: the byte stop bounds Kernel-selected observations",
+      "decision-04 handler probe: eager roots preserve selected counts and whole state before authority"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N14 seven details instead of eight",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1252,
+    "fail": 16,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7290,
+    "failed": [
+      "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight",
+      "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight",
+      "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight",
+      "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected",
+      "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation",
+      "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "N15 array surplus names uncharged",
+    "exit": 0,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1268,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7709,
+    "failed": [],
+    "verdict": "SURVIVED"
+  },
+  {
+    "id": "F1 refusal record executionId lossy",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1256,
+    "fail": 12,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7765,
+    "failed": [
+      "DEC-4 exact retained coordinates: \"actor-é\" complete",
+      "DEC-4 exact retained coordinates: \"actor-é\" fail",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail",
+      "matched long identity: every Outcome refusal renderer, exact replay and answerability",
+      "matched long identity: control, hold and unsafe-replacement renderers"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "F2 visibleExecutions lossy",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1264,
+    "fail": 4,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7971,
+    "failed": [
+      "DEC-4 exact retained coordinates: \"actor-é\" complete",
+      "DEC-4 exact retained coordinates: \"actor-é\" fail",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "F3 view creationKey lossy",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1264,
+    "fail": 4,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 8211,
+    "failed": [
+      "DEC-4 exact retained coordinates: \"actor-é\" complete",
+      "DEC-4 exact retained coordinates: \"actor-é\" fail",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+    ],
+    "verdict": "REJECTED"
+  },
+  {
+    "id": "F4 creation answer initialEventId lossy",
+    "exit": 1,
+    "signal": null,
+    "tests": 1268,
+    "pass": 1264,
+    "fail": 4,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7996,
+    "failed": [
+      "DEC-4 exact retained coordinates: \"actor-é\" complete",
+      "DEC-4 exact retained coordinates: \"actor-é\" fail",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete",
+      "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+    ],
+    "verdict": "REJECTED"
+  }
+]

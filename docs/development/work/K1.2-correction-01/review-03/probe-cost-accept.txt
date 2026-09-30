@@ -1,0 +1,20 @@
+accept: accepted in 640 ms; heapUsed +12 MiB, rss 129 MiB
+        0.75 real         0.85 user         0.02 sys
+           136036352  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                9938  page reclaims
+                  88  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+                 646  involuntary context switches
+         13367636439  instructions retired
+          2680152994  cycles elapsed
+           102431872  peak memory footprint
+exit 0

@@ -1,0 +1,426 @@
+{
+  "payload": "6d9fbb3db4955ee2216fedf0d0b69c8e104367bf",
+  "results": [
+    {
+      "name": "01-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:01:38.841Z",
+      "end": "2026-09-27T04:01:42.602Z"
+    },
+    {
+      "name": "02-full",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:01:42.603Z",
+      "end": "2026-09-27T04:01:56.832Z"
+    },
+    {
+      "name": "03-kernel",
+      "command": [
+        "npm",
+        "run",
+        "test:kernel"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:01:56.840Z",
+      "end": "2026-09-27T04:02:03.924Z"
+    },
+    {
+      "name": "04-conformance",
+      "command": [
+        "npm",
+        "run",
+        "test:conformance"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:02:03.926Z",
+      "end": "2026-09-27T04:02:14.315Z"
+    },
+    {
+      "name": "05-sdk",
+      "command": [
+        "npm",
+        "run",
+        "test:sdk"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:02:14.317Z",
+      "end": "2026-09-27T04:02:14.740Z"
+    },
+    {
+      "name": "06-builder-docs",
+      "command": [
+        "npm",
+        "run",
+        "check:builder-docs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:02:14.741Z",
+      "end": "2026-09-27T04:02:15.280Z"
+    },
+    {
+      "name": "07-original-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2/ablations.mjs"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:02:15.281Z",
+      "end": "2026-09-27T04:06:09.773Z"
+    },
+    {
+      "name": "08-correction-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:06:09.774Z",
+      "end": "2026-09-27T04:06:54.603Z"
+    },
+    {
+      "name": "09-r11-probe",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2/review-11/probe-partial-claim.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:06:54.607Z",
+      "end": "2026-09-27T04:06:54.706Z"
+    },
+    {
+      "name": "10-records-links",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/check-records.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:06:54.707Z",
+      "end": "2026-09-27T04:06:55.683Z"
+    },
+    {
+      "name": "11-evals",
+      "command": [
+        "npm",
+        "run",
+        "test:evals"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:06:55.683Z",
+      "end": "2026-09-27T04:06:56.272Z"
+    },
+    {
+      "name": "14-original-ablations-adapted",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/original-ablations-02.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:06:56.272Z",
+      "end": "2026-09-27T04:11:59.937Z"
+    },
+    {
+      "name": "15-review-identity",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-identity.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:11:59.938Z",
+      "end": "2026-09-27T04:12:00.061Z"
+    },
+    {
+      "name": "16-review-maxlen",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:00.061Z",
+      "end": "2026-09-27T04:12:00.156Z"
+    },
+    {
+      "name": "17-review-namespace",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:00.156Z",
+      "end": "2026-09-27T04:12:00.250Z"
+    },
+    {
+      "name": "18-diagnostics-maxlen",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:00.250Z",
+      "end": "2026-09-27T04:12:00.358Z"
+    },
+    {
+      "name": "20-review-aggregate",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts",
+        "130",
+        "980"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:00.359Z",
+      "end": "2026-09-27T04:12:08.713Z"
+    },
+    {
+      "name": "21-review-equality",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-equality.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:08.713Z",
+      "end": "2026-09-27T04:12:08.812Z"
+    },
+    {
+      "name": "23-review-cost-accept",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi",
+        "MODE": "accept"
+      },
+      "start": "2026-09-27T04:12:08.813Z",
+      "end": "2026-09-27T04:12:09.619Z"
+    },
+    {
+      "name": "24-review-cost-refuse-undefined",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi",
+        "MODE": "refuse-undefined"
+      },
+      "start": "2026-09-27T04:12:09.619Z",
+      "end": "2026-09-27T04:12:10.999Z"
+    },
+    {
+      "name": "25-review-cost-refuse-ctor",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi",
+        "MODE": "refuse-ctor"
+      },
+      "start": "2026-09-27T04:12:10.999Z",
+      "end": "2026-09-27T04:12:13.044Z"
+    },
+    {
+      "name": "26-review-aggregate-pre-authority",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts",
+        "130",
+        "980"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi",
+        "PRE": "1"
+      },
+      "start": "2026-09-27T04:12:13.045Z",
+      "end": "2026-09-27T04:12:16.580Z"
+    },
+    {
+      "name": "22-correction-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "b18a729d989dea334a86ec08bdf8773ee77de4db",
+        "HEAD"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:16.580Z",
+      "end": "2026-09-27T04:12:16.633Z"
+    },
+    {
+      "name": "19-round2-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "449b243cd31d5596c457e091233dfc4d77a4eff4",
+        "HEAD"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:16.634Z",
+      "end": "2026-09-27T04:12:16.681Z"
+    },
+    {
+      "name": "12-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"
+      },
+      "start": "2026-09-27T04:12:16.682Z",
+      "end": "2026-09-27T04:12:16.858Z"
+    }
+  ],
+  "statusAfter": "clean"
+}
