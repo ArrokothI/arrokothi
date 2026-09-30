@@ -24,6 +24,10 @@
  *
  * `docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs` disables each entry of the
  * oracle's `CHECKS` in turn and requires this file to fail.
+ *
+ * The test list is fixed: `EXAMPLE_CLASSES` names the decision classes each example scenario reaches
+ * on clean code, and every lookup happens inside a test. A mutated Kernel or oracle can then only make
+ * tests fail, never change how many there are, which the full-suite ablation runners require.
  */
 
 import { describe, test } from "node:test";
@@ -68,15 +72,41 @@ interface Report {
   examples?: Record<string, { context: Context; byClass: Record<string, Attempt> }>;
 }
 
-const child = (args: string[]): { status: number | null; report: Report } => {
+/** The decision classes each example scenario reaches on clean code (the sweep's own record). */
+const EXAMPLE_CLASSES: Record<string, readonly string[]> = {
+  "report: enter a protocol hold": ["threw: no-call state", "refused: exactly one refusal recorded", "accepted after a contained fault: the declared alternate", "completed"],
+  "report: enter a protocol hold without a diagnostic": ["threw: no-call state", "refused: exactly one refusal recorded", "accepted after a contained fault: the uninjected decision", "completed"],
+  "report: enter a protocol hold beside a code hold": ["threw: no-call state", "refused: exactly one refusal recorded", "accepted after a contained fault: the declared alternate", "completed"],
+  "report: the same hold again (idempotent)": ["threw: no-call state", "refused: exactly one refusal recorded", "accepted after a contained fault: the uninjected decision", "completed"],
+  "report: refused, unknown Execution": ["threw: no-call state", "completed"],
+  "report: refused malformed report": ["threw: no-call state", "refused: exactly one refusal recorded", "completed"],
+  "takeover: accepted, clearing a protocol hold": [
+    "threw: no-call state",
+    "refused: exactly one refusal recorded",
+    "threw inside the declared takeover apply window: receipt appended, clearing record not",
+    "threw while delivering after the commit: delivery row absent",
+    "threw while delivering after the commit: delivery row pending",
+    "accepted; the Driver's delivery failed after the commit",
+    "completed",
+  ],
+  "takeover: refused, the safety callback took the exchange over itself": ["threw: no-call state", "refused: exactly one refusal recorded", "threw after the safety callback: its decision only", "completed"],
+  "outcome: continue": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "threw inside the declared Outcome apply window: a permitted prefix", "completed"],
+  "outcome: continue, ending a code and a protocol hold": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "threw inside the declared Outcome apply window: a permitted prefix", "completed"],
+  "outcome: exact replay": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "completed"],
+};
+
+const child = (args: string[]): { status: number | null; failure: string | null; report: Report } => {
   const run = spawnSync(process.execPath, ["--experimental-strip-types", "--no-warnings", CHILD, ...args], {
     cwd: resolve(TESTS, "../../.."),
     encoding: "utf8",
     timeout: 300_000,
     maxBuffer: 256 * 1024 * 1024,
   });
-  assert.equal(run.error, undefined);
-  return { status: run.status, report: JSON.parse(run.stdout) as Report };
+  try {
+    return { status: run.status, failure: run.error === undefined ? null : String(run.error), report: JSON.parse(run.stdout) as Report };
+  } catch {
+    return { status: run.status, failure: `no JSON report: ${String(run.error ?? "")} ${(run.stderr ?? "").slice(-2000)}`, report: { violations: -1, results: [], inventory: null } };
+  }
 };
 
 const sweep = child(["--scenarios", EXAMPLE_SCENARIOS.join("|"), "--examples"]);
@@ -119,6 +149,8 @@ const lineOf = (lines: readonly [number, number] | null | undefined): number => 
 };
 
 test("the example scenarios' sweep and the whole exit inventory are clean", () => {
+  assert.equal(sweep.failure, null);
+  assert.equal(inventoryRun.failure, null);
   const failures = sweep.report.results.flatMap((result) => result.violations.map((violation) => `${result.name}: ${violation}`));
   assert.deepEqual(failures, [], "the clean run stays at zero violations");
   assert.equal(sweep.status, 0);
@@ -128,18 +160,17 @@ test("the example scenarios' sweep and the whole exit inventory are clean", () =
   assert.equal(MODEL.problems.length, 0, MODEL.problems.join("; "));
 });
 
-test("every recorded example reclassifies as recorded", () => {
-  let checked = 0;
+test("every recorded example reclassifies as recorded, and reaches exactly its declared classes", () => {
+  assert.deepEqual(Object.keys(examples).sort(), Object.keys(EXAMPLE_CLASSES).sort());
   for (const [name, { context, byClass }] of Object.entries(examples)) {
     assert.deepEqual(checkContext(context, MODEL), [], `${name}: reference`);
+    assert.deepEqual(Object.keys(byClass).sort(), [...(EXAMPLE_CLASSES[name] ?? [])].sort(), name);
     for (const [kind, attempt] of Object.entries(byClass)) {
       const verdict = judge(context, attempt);
       assert.ok(verdict.ok, `${name}: ${kind}: ${verdict.ok ? "" : verdict.violation}`);
       assert.equal(verdict.ok && verdict.kind, kind, name);
-      checked += 1;
     }
   }
-  assert.ok(checked >= 20, `${checked} examples`);
 });
 
 describe("review 12's three altered observations (K12C1-R12-ORACLE-01)", () => {
@@ -212,15 +243,15 @@ describe("every part of every permitted decision is compared", () => {
     ["setup grant", (attempt) => withState(attempt, (state) => ({ ...state, setupGrant: `${state.setupGrant} (altered)` }))],
   ];
   const classes = new Set<string>();
-  for (const [name, entry] of Object.entries(examples)) {
-    for (const [kind, attempt] of Object.entries(entry.byClass)) {
+  for (const [name, kinds] of Object.entries(EXAMPLE_CLASSES)) {
+    for (const kind of kinds) {
       classes.add(kind);
       for (const [part, alter] of alterations) {
-        test(`${name} / ${kind} / ${part}`, () => rejected(entry.context, alter(attempt), `${part} altered`));
+        test(`${name} / ${kind} / ${part}`, () => rejected(contextOf(name), alter(exampleOf(name, kind)), `${part} altered`));
       }
     }
   }
-  test("the examples reach every decision class", () => {
+  test("the examples reach every decision class a fault run reaches in the full sweep", () => {
     for (const kind of [
       "threw: no-call state",
       "threw after the safety callback: its decision only",
@@ -241,21 +272,22 @@ describe("every part of every permitted decision is compared", () => {
 });
 
 describe("a recorded refusal is this Execution's next one", () => {
-  const context = contextOf("report: enter a protocol hold");
-  const attempt = exampleOf("report: enter a protocol hold", "refused: exactly one refusal recorded");
+  const context = (): Context => contextOf("report: enter a protocol hold");
   const replaced = (change: (refusal: Extract<Observation["returned"], { kind: "err" }>["refusal"]) => Extract<Observation["returned"], { kind: "err" }>["refusal"]): Attempt => {
+    const attempt = exampleOf("report: enter a protocol hold", "refused: exactly one refusal recorded");
     const returned = attempt.observation.returned;
     assert.equal(returned.kind, "err");
     const refusal = change((returned as Extract<Observation["returned"], { kind: "err" }>).refusal);
     const state = attempt.observation.state;
     return withObservation(attempt, { returned: { kind: "err", refusal }, state: { ...state, view: { ...state.view, refusals: [...state.view.refusals.slice(0, -1), refusal] } } });
   };
-  test("at another position, returned and retained alike", () => rejected(context, replaced((refusal) => ({ ...refusal, position: refusal.position + 7 })), "refusal position"));
-  test("naming another Execution, returned and retained alike", () => rejected(context, replaced((refusal) => ({ ...refusal, executionId: "another-execution" })), "refusal Execution"));
+  test("at another position, returned and retained alike", () => rejected(context(), replaced((refusal) => ({ ...refusal, position: refusal.position + 7 })), "refusal position"));
+  test("naming another Execution, returned and retained alike", () => rejected(context(), replaced((refusal) => ({ ...refusal, executionId: "another-execution" })), "refusal Execution"));
 });
 
 describe("every located exception needs its location", () => {
-  const takeover = contextOf("takeover: accepted, clearing a protocol hold");
+  const TAKEOVER = "takeover: accepted, clearing a protocol hold";
+  const takeover = (): Context => contextOf(TAKEOVER);
   const deliverySite = (site: string): number => lineOf(MODEL.deliverySites.find((entry) => entry.site === site)?.lines);
   const moveDeliverFrame = (attempt: Attempt, line: number): Attempt =>
     withStack(attempt, (stack) => {
@@ -264,62 +296,64 @@ describe("every located exception needs its location", () => {
       return stack.map((frame, index) => (index === call - 1 ? { ...frame, line } : frame));
     });
   test("a delivery row left absent, at the capability's freeze", () =>
-    rejected(takeover, moveDeliverFrame(exampleOf(takeover.name, "threw while delivering after the commit: delivery row absent"), deliverySite("pending")), "absent row, pending location"));
+    rejected(takeover(), moveDeliverFrame(exampleOf(TAKEOVER, "threw while delivering after the commit: delivery row absent"), deliverySite("pending")), "absent row, pending location"));
   test("a delivery row left pending, at the row's append", () =>
-    rejected(takeover, moveDeliverFrame(exampleOf(takeover.name, "threw while delivering after the commit: delivery row pending"), deliverySite("absent")), "pending row, absent location"));
+    rejected(takeover(), moveDeliverFrame(exampleOf(TAKEOVER, "threw while delivering after the commit: delivery row pending"), deliverySite("absent")), "pending row, absent location"));
   test("a failed delivery, at the row's append", () =>
-    rejected(takeover, moveDeliverFrame(exampleOf(takeover.name, "accepted; the Driver's delivery failed after the commit"), deliverySite("absent")), "failed row, absent location"));
+    rejected(takeover(), moveDeliverFrame(exampleOf(TAKEOVER, "accepted; the Driver's delivery failed after the commit"), deliverySite("absent")), "failed row, absent location"));
   test("a delivery state with no location", () =>
-    rejected(takeover, withStack(exampleOf(takeover.name, "threw while delivering after the commit: delivery row absent"), () => []), "delivery state, no location"));
+    rejected(takeover(), withStack(exampleOf(TAKEOVER, "threw while delivering after the commit: delivery row absent"), () => []), "delivery state, no location"));
   test("the takeover window's receipt-only state, outside the clearing append", () =>
     rejected(
-      takeover,
-      withStack(exampleOf(takeover.name, "threw inside the declared takeover apply window: receipt appended, clearing record not"), (stack) =>
+      takeover(),
+      withStack(exampleOf(TAKEOVER, "threw inside the declared takeover apply window: receipt appended, clearing record not"), (stack) =>
         stack.map((frame) => (frame.file === "coordinator.ts" && frame.line === lineOf(MODEL.takeoverClearingAppend) ? { ...frame, line: lineOf(MODEL.takeoverDeliverCall) } : frame)),
       ),
       "receipt only, outside the window",
     ));
 
-  const outcome = contextOf("outcome: continue, ending a code and a protocol hold");
-  const inWindow = exampleOf(outcome.name, "threw inside the declared Outcome apply window: a permitted prefix");
+  const OUTCOME = "outcome: continue, ending a code and a protocol hold";
+  const outcome = (): Context => contextOf(OUTCOME);
+  const inWindow = (): Attempt => exampleOf(OUTCOME, "threw inside the declared Outcome apply window: a permitted prefix");
   const steps = MODEL.outcomeApply.filter((entry) => entry.lines !== null);
   const stepLine = (frame: Frame) => steps.find((entry) => entry.lines !== null && frame.file === "coordinator.ts" && frame.line >= entry.lines[0] && frame.line <= entry.lines[1]);
   test("an Outcome prefix, outside the apply window", () =>
-    rejected(outcome, withStack(inWindow, (stack) => stack.map((frame) => (stepLine(frame) !== undefined ? { ...frame, line: lineOf(MODEL.outcomeApply[0]?.lines) - 1 } : frame))), "prefix, outside the window"));
+    rejected(outcome(), withStack(inWindow(), (stack) => stack.map((frame) => (stepLine(frame) !== undefined ? { ...frame, line: lineOf(MODEL.outcomeApply[0]?.lines) - 1 } : frame))), "prefix, outside the window"));
   test("an Outcome prefix, at another apply statement", () => {
-    const own = inWindow.fault?.stack.map(stepLine).find((entry) => entry !== undefined);
+    const own = inWindow().fault?.stack.map(stepLine).find((entry) => entry !== undefined);
     assert.ok(own !== undefined, "the example is located at an apply statement");
-    const other = steps.find((entry) => entry.step !== own.step && ["acknowledge", "emissions", "exchanges", "acceptedOutcomes", "receipts", "history"].includes(entry.step) && entry.step !== "emissions");
+    const other = steps.find((entry) => entry.step !== own.step && ["acknowledge", "exchanges", "acceptedOutcomes", "receipts", "history"].includes(entry.step));
     assert.ok(other !== undefined);
-    rejected(outcome, withStack(inWindow, (stack) => stack.map((frame) => (stepLine(frame) !== undefined ? { ...frame, line: lineOf(other.lines) } : frame))), `prefix at ${own.step}, located at ${other.step}`);
+    rejected(outcome(), withStack(inWindow(), (stack) => stack.map((frame) => (stepLine(frame) !== undefined ? { ...frame, line: lineOf(other.lines) } : frame))), `prefix at ${own.step}, located at ${other.step}`);
   });
   test("a declared apply sequence that no longer matches the source", () => {
     const model: SourceModel = { ...MODEL, problems: ["#accept: statement 2 of the declared sequence differs"] };
-    rejected(outcome, inWindow, "apply window with a mismatched declaration", model);
-    assert.notDeepEqual(checkContext(outcome, model), [], "the reference check reports the mismatch");
+    rejected(outcome(), inWindow(), "apply window with a mismatched declaration", model);
+    assert.notDeepEqual(checkContext(outcome(), model), [], "the reference check reports the mismatch");
   });
 
   test("a located exception in a scenario whose uninjected call does not accept", () => {
     const refusing = { refused: "stale_exchange" } as Expect;
     for (const kind of ["threw while delivering after the commit: delivery row absent", "threw inside the declared takeover apply window: receipt appended, clearing record not", "accepted; the Driver's delivery failed after the commit"]) {
-      rejected({ ...takeover, expect: refusing }, exampleOf(takeover.name, kind), `${kind}, refusing scenario`);
+      rejected({ ...takeover(), expect: refusing }, exampleOf(TAKEOVER, kind), `${kind}, refusing scenario`);
     }
-    rejected({ ...outcome, expect: refusing }, inWindow, "Outcome prefix, refusing scenario");
+    rejected({ ...outcome(), expect: refusing }, inWindow(), "Outcome prefix, refusing scenario");
   });
   test("a run whose faulted operation is not the reference run's", () => {
-    const attempt = exampleOf(takeover.name, "threw: no-call state");
-    rejected(takeover, { ...attempt, fault: attempt.fault === null ? null : { ...attempt.fault, label: "Object.is" } }, "another operation");
-    rejected({ ...takeover, labels: takeover.labels.map(() => "Object.is") }, attempt, "another reference operation");
+    const attempt = exampleOf(TAKEOVER, "threw: no-call state");
+    rejected(takeover(), { ...attempt, fault: attempt.fault === null ? null : { ...attempt.fault, label: "Object.is" } }, "another operation");
+    rejected({ ...takeover(), labels: takeover().labels.map(() => "Object.is") }, attempt, "another reference operation");
   });
 
-  const reentry = contextOf("takeover: refused, the safety callback took the exchange over itself");
+  const REENTRY = "takeover: refused, the safety callback took the exchange over itself";
+  const reentry = (): Context => contextOf(REENTRY);
   test("a fault after the safety callback, in a run where it did not run", () =>
-    rejected(reentry, { ...exampleOf(reentry.name, "threw after the safety callback: its decision only"), callbackRan: false }, "callback position"));
+    rejected(reentry(), { ...exampleOf(REENTRY, "threw after the safety callback: its decision only"), callbackRan: false }, "callback position"));
   test("a fault before the safety callback, in a run where it ran", () =>
-    rejected(reentry, { ...exampleOf(reentry.name, "threw: no-call state"), callbackRan: true }, "callback position"));
+    rejected(reentry(), { ...exampleOf(REENTRY, "threw: no-call state"), callbackRan: true }, "callback position"));
   test("a fault that did not fire, and a repeat in which one did", () => {
-    rejected(reentry, { ...exampleOf(reentry.name, "threw: no-call state"), fired: false }, "fault not fired");
-    rejected(reentry, { ...exampleOf(reentry.name, "completed"), fired: true }, "repeat fired");
+    rejected(reentry(), { ...exampleOf(REENTRY, "threw: no-call state"), fired: false }, "fault not fired");
+    rejected(reentry(), { ...exampleOf(REENTRY, "completed"), fired: true }, "repeat fired");
   });
 });
 
