@@ -1,0 +1,8 @@
+{
+  "archive": "evidence-bundle.tar.gz",
+  "bytes": 78330000,
+  "sha256": "53ec15544d923eb4548187266101c5ecfdca4b2cd6246a37e10b2924867ba634",
+  "manifestSHA256": "f81804e8e906a6ad9c2369d08ffb20f1233d95a0ea673b7b989276d203132d20",
+  "verifiedFiles": 239,
+  "reviewSHA256": "83d0eeef17a4610f5d01a439d66f072a3210bbe9c70992159659393d6978adcd"
+}
