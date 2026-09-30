@@ -1,8 +1,8 @@
 # Owner progress summary
 
-Snapshot: checked accepted candidate `b7191dbf630defeff7756122a6798e15d0b73dd3`
-(K1.2-correction-01), its review/status transcription `b0ff7052aa8993d7547fbde48123dd058d2e0107`,
-and remote main `a20d278185eaffc7f8b7489345a3624231ff6e6d`. Current authority is the
+Snapshot: checked remote main `ed509e11dc39ff24e10c1ace68189776c4270919`, which integrates
+K1.2-correction-01's accepted candidate `b7191dbf630defeff7756122a6798e15d0b73dd3` and its
+review/status transcription `b0ff7052aa8993d7547fbde48123dd058d2e0107`. Current authority is the
 [status ledger](007-work-packets.md); exact acceptance and integration identities stay there and
 in its linked records.
 
@@ -12,7 +12,7 @@ in its linked records.
 | K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed |
 | Repository cleanup and planning | DOCS-CLEANUP-01 and PLAN-01 accepted, integrated and owner-closed; archive cloud upload remains an owner action |
 | Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; its V-D1 cost claim is held for K1.1-correction-03 |
-| K1.2 Outcome acceptance | Cumulative correction K1.2-correction-01 independently accepted; awaits owner merge. The earlier H14 acceptance stays invalidated, and its integration hold is the owner's to resolve |
+| K1.2 Outcome acceptance | K1.2 and its cumulative correction K1.2-correction-01 accepted, integrated and owner-closed; the earlier H14 integration hold is lifted |
 | DESIGN-AUDIT-01, K1.1-correction-03 | Planned; not released |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
@@ -21,9 +21,9 @@ in its linked records.
 
 **A private Kernel foundation.** The question was whether execution coordination could be separated
 from the legacy runtime. On main, the private Kernel creates Executions, accepts input, reserves
-batches and dispatches asynchronous Activations. K1.0 and the earlier K1.1 work are accepted,
-integrated and owner-closed. Outcome acceptance, below, reaches main only when the owner merges it;
-waits, cancellation and mediated Effects are later packets. The supported application SDK still uses
+batches, dispatches asynchronous Activations and, since K1.2, rules on their Outcomes (below).
+K1.0 and the earlier K1.1 work are accepted, integrated and owner-closed. Waits, cancellation and
+mediated Effects are later packets. The supported application SDK still uses
 the legacy core. [002](002-implemented-kernel-baseline.md) describes the implemented surface.
 
 **Answerable Outcome acceptance.** K1.2, completed by its cumulative correction, answered whether
@@ -57,8 +57,8 @@ establishing the general claim. The accepted evidence names every comparison its
 shows each one is needed, and draws its list of control exits from the source rather than from the
 scenarios.
 
-Status: independently accepted at the candidate above; integration awaits the owner's merge, and
-K1.3 is not released. Limits:
+Status: independently accepted at the candidate above, integrated and owner-closed; K1.3 is not
+released. Limits:
 - The Kernel is in-process and not durable. How submission authority survives a restart is open
   for K3.2.
 - There are no Effects (K2), waits, deadlines or cancellation (K1.3), and no output reads (K4.4).
@@ -89,18 +89,15 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-1. Manually merge `codex/k1.2-correction-01-activation-identity`, then record verified integration
-   using the records linked from [007](007-work-packets.md). That record also carries the owner
-   discussion, the disposition of the K1.2 H14 integration hold, and `next_release`.
-2. Decide whether to release DESIGN-AUDIT-01, which settles the in-process capture threat model.
+1. Decide whether to release DESIGN-AUDIT-01, which settles the in-process capture threat model.
    K1.1-correction-03, the metered V-D1 bound, waits on it. Its ledger seed names K1.2-correction-01
    revision 6 as a prerequisite, but revision 10, which changes production code, is what was
    accepted. Confirm that dependency when releasing it. The V-D1 claim stays held until then.
-3. K1.3 (waits, deadlines, cancellation) needs a separate owner release. K1.4 then owns the SDK host
+2. K1.3 (waits, deadlines, cancellation) needs a separate owner release. K1.4 then owns the SDK host
    bridge and the full K1/E1 gate. External blocker: before K1.3 closes, the benchmark owner must
    confirm that the E1 fixtures drive the new supported entry; otherwise K1.4 is BLOCKED_EXTERNAL.
    Fixture preparation is not an E1 result.
-4. Upload the verified archive to owner-controlled cloud storage.
+3. Upload the verified archive to owner-controlled cloud storage.
 
 Carry forward:
 - the historical Node 22.22.3 legacy Effect-test cancellation limitation;
