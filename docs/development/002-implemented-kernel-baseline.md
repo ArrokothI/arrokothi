@@ -67,7 +67,7 @@ handler-chain tests pin those counts; their timing probes are observations only.
 hostile in-process code requires isolation or transport containment, not V-D1. This binding provides
 neither CPU preemption nor physical containment. [Blocker-01](work/K1.2-correction-01/blocker-01.md)
 and [blocker-02](work/K1.2-correction-01/blocker-02.md) retain the counterexamples and owner resolutions.
-Review status and the V-D1 claim hold remain in 007 until independent review.
+Acceptance status and the V-D1 claim hold are recorded in 007.
 
 Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit
 cannot fit even if every scalar uses a surrogate pair; refusing there avoids an engine flattening
