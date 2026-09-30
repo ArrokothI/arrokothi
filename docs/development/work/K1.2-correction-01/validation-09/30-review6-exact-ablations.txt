@@ -1,0 +1,132 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/ablations-04.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T04:15:17.195Z
+
+SOURCE docs/development/work/K1.2-correction-01/review-06/mutants.py sha256=b2906ec25130ddd22073cf6bd47694f9fb78ef2b96b6698b7b617a5926550a0e
+ENV node=v25.2.1 platform=darwin arch=arm64 files=45
+COMMAND ["/opt/homebrew/Cellar/node/25.2.1/bin/node","--experimental-strip-types","--test","--test-reporter=spec","packages/kernel/tests/activation-identity.test.ts","packages/kernel/tests/aggregate-refusal.test.ts","packages/kernel/tests/ambient-reads.test.ts","packages/kernel/tests/boundary.test.ts","packages/kernel/tests/control-authority.test.ts","packages/kernel/tests/control-commits.test.ts","packages/kernel/tests/creation.test.ts","packages/kernel/tests/delivery-attribution.test.ts","packages/kernel/tests/dispatch.test.ts","packages/kernel/tests/evidence.test.ts","packages/kernel/tests/exact-coordinates.test.ts","packages/kernel/tests/fault-oracle.test.ts","packages/kernel/tests/fault-sweep.test.ts","packages/kernel/tests/history-attribution.test.ts","packages/kernel/tests/hold-permitted.test.ts","packages/kernel/tests/host-members.test.ts","packages/kernel/tests/ingress.test.ts","packages/kernel/tests/inspection.test.ts","packages/kernel/tests/late-reports.test.ts","packages/kernel/tests/nondisclosure.test.ts","packages/kernel/tests/outcome-acceptance.test.ts","packages/kernel/tests/outcome-evidence.test.ts","packages/kernel/tests/outcome-hostile.test.ts","packages/kernel/tests/outcome-limits.test.ts","packages/kernel/tests/outcome-partial-claim.test.ts","packages/kernel/tests/poison-catalog.test.ts","packages/kernel/tests/receipts.test.ts","packages/kernel/tests/recovery-ambient.test.ts","packages/kernel/tests/recovery-evidence.test.ts","packages/kernel/tests/recovery-history.test.ts","packages/kernel/tests/recovery.test.ts","packages/kernel/tests/refusal-diagnostics.test.ts","packages/kernel/tests/refusals.test.ts","packages/kernel/tests/review-11-probes.test.ts","packages/kernel/tests/submission-authority.test.ts","packages/kernel/tests/submission-lifetime.test.ts","packages/kernel/tests/takeover-reentrancy.test.ts","packages/kernel/tests/takeover.test.ts","packages/kernel/tests/terminal.test.ts","packages/kernel/tests/transaction.test.ts","packages/kernel/tests/unsupported.test.ts","packages/kernel/tests/value-diagnostic-work.test.ts","packages/kernel/tests/value-refusal-cost.test.ts","packages/kernel/tests/values.test.ts","packages/kernel/tests/whole-view-ambient.test.ts"]
+CONTROL full Kernel suite: exit=0 tests=1720 pass=1720 fail=0 cancelled=0 skipped=0 todo=0
+REJECTED Z1-mint-receipt-token: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z2-creation-receipt-token: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z3-activation-executionId: exit=1 tests=1720 pass=1701 fail=19 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+  matched long identity: takeover callback epoch revalidation
+  matched long identity: takeover callback resolved revalidation
+  matched long identity: takeover callback next-exchange revalidation
+  matched long identity: takeover callback terminal revalidation
+REJECTED Z4-activation-activationId: exit=1 tests=1720 pass=1617 fail=103 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  minted long / current / current / invalid=false
+  minted long / current / current / invalid=true
+  minted long / current / retired / invalid=false
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z5-takeover-activation-copy: exit=1 tests=1720 pass=1657 fail=63 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  minted long / current / current / invalid=false
+  minted long / current / current / invalid=true
+  minted long / current / retired / invalid=false
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z6-replay-map-key: exit=1 tests=1720 pass=1686 fail=34 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z7-event-destination: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z8-redeliver-answer: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z9-dispatch-grant-exec: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z10-acknowledged-ids: exit=1 tests=1720 pass=1710 fail=10 cancelled=0 skipped=0 todo=0
+  reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  maximal caller parts and long host namespace: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  trusted namespace lone low surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable
+  minted long / current / current / invalid=false
+  minted surrogate / current / current / invalid=false
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z11-takeover-answer-batch-receipt: exit=1 tests=1720 pass=1712 fail=8 cancelled=0 skipped=0 todo=0
+  the answer built inside the apply step
+  foreign code run after the decision is being built
+  correction DEC-9 negative controls: every forbidden shape is reported
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+  inner takeover commits epoch 2; the outer stale arm refuses with no orphan receipt or delivery
+REJECTED Z12-view-activation-id: exit=1 tests=1720 pass=1707 fail=13 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+  matched long identity: takeover callback epoch revalidation
+  matched long identity: takeover callback next-exchange revalidation
+  matched long identity: takeover callback hold revalidation
+  matched surrogate-high identity: takeover callback epoch revalidation
+REJECTED Z13-view-execution-id: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z14-view-queued-ids: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z15-view-mailbox-destination: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+REJECTED Z16-view-hold-activation: exit=1 tests=1720 pass=1716 fail=4 cancelled=0 skipped=0 todo=0
+  DEC-4 exact retained coordinates: "actor-é" complete
+  DEC-4 exact retained coordinates: "actor-é" fail
+  DEC-4 exact retained coordinates: "actor-\ud800" complete
+  DEC-4 exact retained coordinates: "actor-\ud800" fail
+16/16 review-06 coordinate ablations rejected by the maintained exact-coordinate oracle within the full Kernel suite
+
+exit: 0; signal: null; error: none

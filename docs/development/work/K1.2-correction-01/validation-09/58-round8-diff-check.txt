@@ -1,0 +1,164 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: git diff --check b93ed1df6b70569ada060481523e5b37c206e324 HEAD
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:40:52.679Z
+
+docs/development/work/K1.2-correction-01/review-12-evidence/latest-source.diff:48: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/latest-source.diff:48: new blank line at EOF.
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:6: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:8: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:11: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:13: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:18: trailing whitespace.
++@@ -78,6 +78,26 @@ One identity used throughout this page is defined elsewhere. The Execution ID 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:19: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:21: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:43: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:46: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:48: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:53: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:55: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:61: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:63: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:101: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:108: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:110: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:113: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:115: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:122: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:136: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:138: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:141: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:144: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:155: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:157: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:160: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:163: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:166: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:168: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:170: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:172: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:185: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:187: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:189: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:192: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:194: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:203: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:209: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:211: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:214: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:216: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:244: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:313: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:315: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:337: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:344: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:346: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:357: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:359: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:361: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/layer3.diff:373: trailing whitespace.
++ 
+docs/development/work/K1.2-correction-01/review-12-evidence/reviewer-typecheck.log:4: new blank line at EOF.
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1744: trailing whitespace.
++ℹ packages          |        |          |         | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1745: trailing whitespace.
++ℹ  kernel           |        |          |         | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1746: trailing whitespace.
++ℹ   src             |        |          |         | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1749: trailing whitespace.
++ℹ    identity.ts    | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1750: trailing whitespace.
++ℹ    index.ts       | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1751: trailing whitespace.
++ℹ    lifecycle.ts   | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1753: trailing whitespace.
++ℹ    own-array.ts   | 100.00 |    88.57 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1754: trailing whitespace.
++ℹ    refusal.ts     | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1755: trailing whitespace.
++ℹ    result.ts      | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1756: trailing whitespace.
++ℹ    unsupported.ts | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/54-zone-coverage-suite.txt:1759: trailing whitespace.
++ℹ all files         |  99.48 |    96.01 |   99.29 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1752: trailing whitespace.
++ℹ packages          |        |          |         | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1753: trailing whitespace.
++ℹ  kernel           |        |          |         | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1754: trailing whitespace.
++ℹ   src             |        |          |         | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1755: trailing whitespace.
++ℹ    coordinator.ts | 100.00 |    98.68 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1757: trailing whitespace.
++ℹ    identity.ts    | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1758: trailing whitespace.
++ℹ    index.ts       | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1759: trailing whitespace.
++ℹ    lifecycle.ts   | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1760: trailing whitespace.
++ℹ    outcome.ts     | 100.00 |    93.51 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1761: trailing whitespace.
++ℹ    own-array.ts   | 100.00 |    88.57 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1762: trailing whitespace.
++ℹ    refusal.ts     | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1763: trailing whitespace.
++ℹ    result.ts      | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1764: trailing whitespace.
++ℹ    unsupported.ts | 100.00 |   100.00 |  100.00 | 
+docs/development/work/K1.2-correction-01/validation-08/55-zone-coverage-suite-and-catalog.txt:1767: trailing whitespace.
++ℹ all files         |  99.77 |    96.97 |  100.00 | 
+
+exit: 2; signal: null; error: none
