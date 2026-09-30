@@ -272,8 +272,14 @@ The contract lists this under "Not fault points". It excludes none of review 12'
     test count. The round-4, round-6 and round-7 runners require every mutant to run the control's
     complete suite, so they stopped at that assertion (entries 30, 37 and 47, exit 1) instead of
     recording a verdict. After the fix, a manual rerun of the three gave 16/16, 22/22 and 28/28, and
-    the validation below ran on C. Neither commit was published before this handoff. Nothing from
-    the first commit's validation is attached or used;
+    the validation below ran on C. Nothing from the first commit's validation is attached or used.
+
+    Both commits reached the remote before this report. The remote-tracking reflog of this clone
+    records pushes of `a0137f8` (with the review-12 recording) at 20:34 and of C at 21:08 EDT on
+    2026-09-29, while their validations were running. This session did not run those pushes, and it
+    does not know who did: the clone has no hook or push configuration, and no validation script
+    pushes. Neither pushed commit was presented as a candidate. The report's first commit (H) was then
+    pushed by this session, and a later commit corrected this paragraph;
   - **candidate H:** the commit containing this report. The external handoff gives its full SHA.
 - **C..H:** only the allowlist at the end of this report.
 
