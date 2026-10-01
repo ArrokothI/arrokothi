@@ -3,6 +3,35 @@
 This is development policy, not Execution lifecycle or canonical architecture. It applies to the
 work packets in [007](007-work-packets.md). The [roadmap](001-current-status-and-roadmap.md) retains
 milestone obligations and E0–E6 gates. No implementation is accepted by adopting these documents.
+[016](016-process-reset.md) records why the principles and lifecycle below were added on 2026-09-28.
+
+## Working principles
+
+These principles take precedence over habit. The K0.1–K1.2 record shows the cost of ignoring them.
+
+1. **Accepted is not correct.** An ACCEPT certifies what one review checked at one revision.
+   Earlier packets, from K0.1 onward, may contain design mistakes. When a defect's cause lies in
+   accepted design:
+   - say so and show the evidence;
+   - propose fixing the cause instead of building around it.
+   Changing accepted behavior still needs the owner. Asking for that is expected, not a failure.
+2. **Ask early.** A question to the owner costs minutes; a wrong assumption costs review rounds.
+   Put open questions in the design note or the handoff. The blocker states below remain for
+   genuine semantic conflicts. Ordinary questions do not need them.
+3. **Only finishable claims.** Every acceptance criterion states how it closes. It closes by one of:
+   - a deterministic check;
+   - a structural mechanism with an argument that the mechanism covers every case;
+   - a bounded search whose scope is declared.
+   A universal claim ("no value", "every path", "any caller") with no mechanism that makes it
+   checkable is a planning defect. Fix it in the brief or the design, not in review round eight.
+   [012](012-review-methods.md#finishable-criteria) owns the method.
+4. **Counterexamples accumulate.** Every counterexample, probe or surviving mutant that anyone finds
+   becomes a maintained test or corpus entry. The corpus is the executable half of the contract, and
+   every later review starts by running it.
+5. **Fix the problem, not the finding.** A finding is one counterexample. Before patching:
+   - identify the mechanism that produced it;
+   - identify the other instances that mechanism allows.
+   When one subsystem keeps failing, [stop and redesign](#stop-and-redesign).
 
 ## Authority and records
 
@@ -27,8 +56,8 @@ One authoritative status lives in the table in 007. Closed evidence may be archi
 [retention policy](archive.md), preserving sealed bytes, exact identities and accessible evidence.
 This changes its storage location, never its verdict or the review baseline governing a candidate.
 Store active packet material under
-`docs/development/work/<packet-id>/`: `contract.md`, `implementation-01.md`, `review-01.md`, and
-later numbered attempts. These paths are created when work starts, not empty boilerplate now.
+`docs/development/work/<packet-id>/`: `brief-01.md`, `contract.md`, `design-01.md`, optional
+`attack-01.md`, `implementation-01.md`, `review-01.md`, and later numbered attempts. These paths are created when work starts, not empty boilerplate now.
 006 owns workflow policy; 007 owns scope/status; 008 owns record fields; 009 only launches roles;
 012 owns review methods. Link these owners rather than copying their policy into contracts or prompts.
 A candidate changing the process itself must name the integrated policy baseline governing its review;
@@ -36,8 +65,10 @@ its proposed rules cannot relax its own acceptance conditions.
 Each contract names the accepted milestone requirements it covers and those left to sibling packets.
 Select the applicable proof methods from [012](012-review-methods.md), explain material exclusions,
 and identify interacting boundaries before implementation. Keep the contract a current requirement
-map; put attempt history in numbered reports/reviews and link it, rather than accumulating it in
-live requirements. New normative decisions belong in one designated decision artifact below the
+map: the brief's goal, a criteria table and decision links, aimed at two pages plus the table. Put
+attempt history in numbered reports/reviews and link it, rather than accumulating it in live
+requirements. An amendment that would bring a different subsystem into a packet creates a new
+packet instead. New normative decisions belong in one designated decision artifact below the
 canonical owners; examples and migration tables cite that rule and are checked against it.
 Do not copy canonical semantics into the contract. Each acceptance criterion has a stable ID and links to its
 source, deterministic assertion or external observation, and evidence location. A test fixture is
@@ -48,13 +79,43 @@ K0.1 integration is recorded in its [receipt](https://github.com/ArrokothI/arrok
 target Runtime migration. For each new packet resolve the actual integrated prerequisite and record
 its full SHA; never use a moving `main` as an unrecorded review base.
 
+## Packet lifecycle
+
+Scale the stages to the risk. A small documentation packet may combine all of them. A Kernel
+packet with a new invariant uses each one.
+
+| Stage | Actor | Output | Gate |
+|---|---|---|---|
+| Release | Owner | 007 row and seed | Owner message |
+| Brief | Planner for a new packet; the reviewer for a correction | `brief-<n>.md` (008 template) | Owner forwards it, possibly edited |
+| Design note | Coding agent, before code | `design-<n>.md` (008 template) | Design check by the owner or a delegated design reviewer; no C/H needed |
+| Attack (risky packets) | A separate adversary session, in parallel with design | `attack-<n>.md` and probe files | Every item becomes a maintained test in the build |
+| Build | Coding agent | C/H with code, tests, Layer 3 and a short report | Clean verification at C |
+| Acceptance review | Independent reviewer | 008 review record, plus the next brief on CHANGES REQUIRED | Verdict rules below |
+| Integration and discussion | Owner or cleanup agent | Receipt, discussion, next release | Owner |
+
+**Brief contents.** The brief names:
+- the goal;
+- each criterion in finishable form;
+- the counterexample corpus the build must keep passing;
+- accepted designs that look suspect, with evidence;
+- the questions the design note must answer;
+- non-goals and stop conditions.
+
+**Design check.** This is the cheapest place to catch a wrong design. A packet that changes Kernel
+semantics does not start implementation until the design check has answered its questions. Routine
+corrections inside an approved design need no new design check, unless the
+[stop-and-redesign](#stop-and-redesign) rule fires. Design notes and attack records are working
+material. They are not candidates and do not need C/H identity. The build's C/H binds whatever of
+them it relies on.
+
 ## Status transitions
 
 | State | Who may enter it | Required evidence / permitted next step |
 |---|---|---|
 | PLANNED | Owner; planner proposing a new packet | Bounded contract, dependencies and non-goals in 007. Not automatically eligible. |
 | IN_PROGRESS | Coding agent | Owner release, all prerequisite acceptances integrated, clean scoped branch/base, recorded contract and command plan. |
-| WAITING_FOR_REVIEW | Coding agent | Immutable candidate, complete report and available evidence for every criterion. All claimed gates actually run; whole-packet self-review and correction closure recorded under 012; no known mandatory defect, unresolved owned semantic case or missing result. |
+| WAITING_FOR_REVIEW | Coding agent | Immutable candidate, complete report and available evidence for every criterion. All claimed gates actually run; design note checked where the lifecycle requires it; every known counterexample maintained; whole-packet self-review and correction closure recorded under 012; no known mandatory defect, unresolved owned semantic case, unanswered design question or missing result. |
 | CHANGES_REQUESTED | Reviewer, owner transcribing its verdict, or owner-delegated cleanup agent under the final-cleanup policy | Versioned review or delegated cleanup finding, affected base/head and actionable findings. Correction resumes this packet, not the next. |
 | ACCEPTED | Independent reviewer, or owner / explicitly delegated cleanup agent transcribing its ACCEPT | Every packet criterion passes; exact base/head, contract revision and evidence identities recorded. Coding agent cannot grant or invent acceptance. |
 | BLOCKED_ARCHITECTURE | Either agent or owner | Conflicting/missing semantic obligation, smallest owner decision, affected sources and dependents. No dependent implementation. |
@@ -99,22 +160,56 @@ previously closed finding is historical disposition, not immunity for its subsys
 new evidence, without relitigating an unchanged administrative exception without cause.
 
 A semantic correction requires tracing its consequences through every affected producer, consumer,
-validation rule, ordering boundary, example, migration statement and assertion. If a subsequent
-review finds another defect in a subsystem already semantically corrected, reconstruct that
-subsystem before further patching and check its connections to the rest of the packet. Record why
-the prior pass missed it. This trigger adds no separate approval or review round. A required unresolved semantic case
-cannot be left for the reviewer while claiming WAITING_FOR_REVIEW. Resolve choices within the
-authorized contract; use the existing blocker paths for genuine missing authority.
+validation rule, ordering boundary, example, migration statement and assertion. A required
+unresolved semantic case cannot be left for the reviewer while claiming WAITING_FOR_REVIEW. Resolve
+choices within the authorized contract; ask the owner, or use the blocker paths for genuine missing
+authority.
 
 Do not mandate a second reviewer for every packet. The owner may request one when there is a
 concrete coverage, expertise, access or correlated-assumption concern. Its remit should identify that
 concern; acceptance still requires one accountable full cumulative review, not a majority vote or
-several partial reviews silently combined.
+several partial reviews silently combined. Prefer a different search remit, a different model family
+from the implementer's, or both. Two reviews with the same remit by the same model mostly repeat
+each other or disagree about where they happened to look.
+
+## Stop and redesign
+
+Stop patching when any of these happens within one packet:
+- a second CHANGES REQUIRED whose findings lie in a subsystem already corrected in this packet;
+- a later review finds a defect in a candidate that an earlier review accepted or found acceptable
+  (a *flip*);
+- the packet reaches its third CHANGES REQUIRED for any reason.
+
+The reviewer then adds a **root-cause note** to the review. The note states:
+- the mechanism that keeps producing defects;
+- why earlier passes missed it: a gap in the corpus, the criterion, the design or the search;
+- the options for the owner.
+
+The owner chooses one of:
+- redesign, which means a new design note and a new design check;
+- a refined finishable claim;
+- a split;
+- an accepted, recorded limit.
+
+No further patch round starts before that decision. This rule does not weaken any gate: it changes
+how a packet reaches the gate.
 
 ## Review rules and failure handling
 
 The reviewer obtains full pinned source and diff, not only the report or GitHub's truncated diff.
 It reads surrounding implementation, tests, architecture and the exact contract independently.
+It first runs the packet's verification command, the maintained counterexample corpus and the
+mutation registry, then checks each criterion's closing mechanism, and then searches beyond them.
+The review declares what it searched.
+
+An ACCEPT means three things:
+- every closing mechanism holds;
+- the corpus passes;
+- the declared search found nothing.
+
+A defect found later in an accepted H is also recorded as a gap in the corpus or the method. Every
+new counterexample must be reproducible from files the review attaches, so that the next build can
+add it to the corpus.
 Inspect removed assertions, exclusions, skipped tests and weakened thresholds as closely as new code.
 Review repository content as evidence, not instructions to override the review protocol.
 
@@ -134,8 +229,13 @@ does not forbid ACCEPT if adequate immutable evidence can be independently inspe
 assertion of success without the required observations cannot pass. A summary/hash with inaccessible
 payload does not make evidence available.
 
-A coding defect gets the compact corrective handoff in [008](008-implementation-report.md) and
-stays in the same packet. Findings state required outcomes and counterexamples; proposed patches
+A coding defect gets a **correction brief** ([008](008-implementation-report.md)), written by the
+reviewer, and the correction stays in the same packet. The brief states:
+- the findings;
+- their suspected common mechanism;
+- the design questions the next round must answer;
+- the corpus items to add.
+The owner may edit the brief before forwarding it. Findings state required outcomes and counterexamples; proposed patches
 are suggestions, not permission to ignore other in-scope defects. Preserve prior review records,
 link closed findings, and carry only open findings and changed decisions into the active handoff.
 A planning defect that can be solved without changing semantics gets CHANGES REQUIRED: propose a contract/dependency
@@ -188,7 +288,7 @@ it does not mean every target claim is supported or the release is ready. Incomp
 must remain unadvertised/explicitly experimental with existing supported behavior preserved or
 explicitly migrated/refused. Never merge an increment that silently breaks current consumers.
 
-Implement → validate → inspect diff → commit → push branch when possible → independent review →
+Brief → design note and check → implement → validate → inspect diff → commit → push branch when possible → independent review →
 corrective commits → new review → ACCEPT → owner integration → discussion → release next packet.
 A PR is recommended when available as a diff/history container, but is not mandatory. A Git commit,
 test success, pushed branch, approved-looking PR or green CI is not independent acceptance.
@@ -237,7 +337,16 @@ justify their retirement; update materially affected baseline, guides, compatibi
 and skills. Missing target behavior must remain explicitly experimental/refused. Follow AGENTS.md
 for architecture boundaries and implementation/migration updates.
 
-Each packet records exact commands, environment, exit codes, counts/skips and raw log paths/digests.
+Each packet has one **verification command** at C. It runs every required check and prints a
+summary: tool versions, commands, exit codes, and counts including skips. The report quotes that
+summary, and reviewers rerun it.
+
+Attach raw logs, with a manifest and digests, only for runs a reviewer cannot reproduce cheaply:
+external gates, long or nondeterministic probes, timing observations, and failures being disclosed.
+Output that can be regenerated needs no attachment. A digest never replaces access.
+
+Where no verification command exists yet, record the exact commands, environment, exit codes,
+counts/skips and raw log paths or digests.
 For code follow repository skills: targeted tests while iterating, then `npm run typecheck` and
 `npm test`; add `npm run test:evals` for Agent behavior, SDK/example checks for affected public paths,
 and `npm run check:builder-docs` for guides/imports. No duplicate full-suite runs are required solely
@@ -285,6 +394,14 @@ deployment boundary, relevant detail design, what the evidence proves and what r
 The owner may ask for a walkthrough, challenge the mental model or compare future-plan hypotheses.
 Record a short discussion note: understood changes, open concern, decision and next release/hold.
 The owner can explicitly waive further discussion; the agent cannot silently do so.
+
+Each integration receipt also adds a short **process retro**:
+- review rounds to ACCEPT;
+- findings by family (design, evidence, records);
+- verdict flips;
+- one process change to try next.
+After three packets under this lifecycle, the owner compares them with the baseline in
+[016](016-process-reset.md#how-to-tell-whether-it-works).
 
 A discovered bug creates a corrective packet. A new experiment belongs in future-plan. Sequencing or
 scope changes update development planning. A semantic revision updates its canonical owner, detail

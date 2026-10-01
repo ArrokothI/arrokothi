@@ -25,6 +25,78 @@ review notes with evidence, not a request to disclose private reasoning or dupli
 The reviewer must inspect the report, prior findings and evidence before deciding; the ordering is
 intended to avoid inheriting the implementer's coverage assumptions.
 
+## Finishable criteria
+
+A criterion is finishable when a reviewer can close it without an open-ended hunt. Each criterion
+names one of three ways it closes.
+
+- **Deterministic check.** A maintained test or command decides the criterion from pinned inputs.
+  Use this for exact outputs, orderings, identities and limit edges.
+- **Structural mechanism.** A mechanism makes the property hold for every input, and an argument
+  shows that nothing bypasses the mechanism. Examples: every capture operation passes through one
+  metered helper; every submission path checks one grant; every stored identity comes from one
+  producer. Prefer mechanisms that hold at runtime by construction: a null-prototype record cannot
+  answer an inherited read; state that only one commit function can write cannot be mutated early; a
+  type only the mechanism can construct cannot be forged. Tests confirm the mechanism. A reviewer's
+  job is then to check that the mechanism is complete and enforced, not to search for a missed input.
+- **Declared bounded search.** When neither of the others fits, state the families, sizes, depths
+  and schedules searched. The claim is then made only for that scope, and the corpus keeps it.
+
+**Rules about future code are different from rules about inputs.** "No Kernel code reads an unowned
+member" constrains what maintainers write, not what callers send. Prove it at runtime: sweep the
+maintained scenarios with poisoned prototypes, inject faults at each step, and assert whole results
+plus the next receipt. A lint or static analysis is a regression guard for plausible accidental
+mistakes, and its known gaps are stated. Do not require a static analysis to be sound against
+deliberately evasive code unless an existing sound tool is used. Do not build a custom analyzer inside
+a feature packet: it is a product of its own, with its own soundness problem (see 016, rounds 6–7).
+Mutants used as evidence must be plausible mistakes a maintainer could make.
+
+Prefer operation or allocation counts to wall-clock time. Timing depends on the engine and the
+machine, so use it as an observation that points at a mechanism, not as a gate.
+
+A universal claim with no mechanism ("no value costs more to refuse", "no path discloses") is a
+planning defect. Rewrite it at the brief or the design note, or take it to the owner. Do not leave
+it for review to discover. Owner decision-05 did this for V-D1.
+
+## Maintained corpus and mutation registry
+
+Every counterexample anyone finds is kept. That includes review probes, attack items, blocker
+witnesses and surviving mutants. The build turns each one into a maintained test with its
+provenance, so the next implementer and reviewer start from everything already known.
+
+Mutants live in one registry with one runner, not in a runner script per round. Each entry records:
+- its target site;
+- the obligation it violates;
+- the test expected to reject it.
+When a mutant is equivalent, the entry records the equivalence argument.
+
+A review adds its new mutants and counterexamples to the registry and the corpus, through its
+evidence and then the next build. A surviving non-equivalent mutant is either an evidence finding
+or a declared limit.
+
+### Oracles are claims too
+
+A test oracle, sweep or coverage inventory is itself a claim, and it gets the same scrutiny as code.
+For each one, state three things:
+- the whole observable result it checks: state, receipts, records, returns, and forbidden mutations;
+- the legal outcomes it accepts;
+- the schedules or exits it actually runs.
+An inventory may not claim more than it executes. A reviewer checks that the oracle is complete
+before trusting its passes. K1.2-correction-01's revision-9 round failed on exactly this point.
+
+## Root-cause analysis
+
+When 006's [stop-and-redesign](006-development-process.md#stop-and-redesign) rule fires, the review
+answers four questions:
+1. Which mechanism produced all the findings in this family?
+2. Which accepted design or criterion allows that mechanism?
+3. Why did earlier passes miss it? A missing corpus shape, a criterion that could not be finished,
+   a search that never varied a dimension (for example nesting depth), or evidence that could not
+   distinguish.
+4. What options does the owner have, and what does each cost?
+
+A redesign answer names the mechanism that removes the family, not a patch for the listed instances.
+
 ## Methods by kind of claim
 
 | Method | Use when | Examination and evidence |
@@ -70,7 +142,9 @@ is not permission to rewrite accepted K0.1 evidence.
 A completed pass covers every obligation and relevant interaction in the contract, checks both the
 cumulative candidate and correction delta, and reconciles source, evidence and prior dispositions.
 List the scope of checks, the strongest additional counterexamples examined, the assumptions still
-needed and any unexamined obligation. Finding one blocker does not finish the remaining review.
+needed and any unexamined obligation. Run the corpus and the mutation registry before searching
+further, and declare what the further search covered. Vary every dimension the governing rule
+quantifies over: size, repetition, depth, order, identity form and caller role. Finding one blocker does not finish the remaining review.
 No finite matrix proves absence of all bugs; explain why the selected cases exercise the claim and
 where they do not. Do not count checklist ticks as a measure of review quality.
 

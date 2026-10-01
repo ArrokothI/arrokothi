@@ -13,8 +13,9 @@ implementation facts, migration scope, review policy and status.
 | [Findings](003-evidence-and-findings.md) | Known gaps and their dispositions |
 | [Development process](006-development-process.md) | Actor permissions, review and handoff |
 | [Report template](008-implementation-report.md) | Candidate, review and integration record fields |
-| [Role launchers](009-universal-prompts.md) | Coding, independent-review and cleanup entry points |
+| [Role launchers](009-universal-prompts.md) | Short launchers for coding, review, cleanup, brief writing and adversary roles |
 | [Review methods](012-review-methods.md) | Coverage and semantic correction closure |
+| [Process reset](016-process-reset.md) | Evidence and rationale for the 2026-09-28 principles, lifecycle and briefs |
 | [Structure and evidence sequencing](013-structure-and-evidence-sequencing.md) | Retained benchmark interlock and extraction constraints; its old status is historical |
 | [Kernel ownership](kernel-ownership.md) | Live machine-checked source/export/dependency inventory |
 | [Structural evidence rules](015-structural-evidence-rules.md) | How that inventory is read and compared |

@@ -25,6 +25,13 @@ owner overrides stale skill text. Using this skill does not justify editing it. 
 an accepted architecture or workflow change makes it materially false, obsolete, misleading, or
 incomplete, and never infer permanent policy from implementation observations.
 
+## Stance
+
+Accepted earlier work is evidence, not an invariant. Before patching, look for the mechanism
+behind a finding and the design that allows it. Ask the owner early. Follow 006's lifecycle: brief →
+design note and check → build → independent review, with stop-and-redesign after repeated failure.
+Every criterion must be finishable ([012](../../../docs/development/012-review-methods.md#finishable-criteria)).
+
 ## Procedure
 
 1. **Establish exact scope and acceptance criteria.** Start with the active baseline and roadmap.
@@ -49,7 +56,9 @@ incomplete, and never infer permanent policy from implementation observations.
 7. **Check invariants and doc consistency.** Re-derive the current protected distinctions from
    `mental-model/README.md` and the owning canonical documents. If semantics changed, confirm the
    owning normative doc and conformance tests were updated in the same change.
-8. **Report findings (audit tasks).** For each acceptance criterion, give a clear verdict:
+8. **Keep counterexamples.** Run the maintained corpus and mutation registry first. Turn every new
+   counterexample or surviving mutant into a corpus entry, or into reproducible review evidence.
+9. **Report findings (audit tasks).** For each acceptance criterion, give a clear verdict:
    - **PASS** — implemented and covered by validation, with the test/evidence named.
    - **FAIL** — missing, incorrect, or breaks an invariant; state the specific gap.
    - **DEFERRED** — intentionally out of the scoped milestone; cite where it is deferred.
