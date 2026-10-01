@@ -17,7 +17,7 @@ than findings.
 |---|---|---|---|
 | DA-1 | Every finding ID in the review records of K0.1, K0.2, K1.0, K1.1 (all corrections and reference) and K1.2 (and correction-01) is enumerated and classified as design, evidence or records, and by subsystem. Closed packets are read at the pinned archive `9fd2faa`; open ones at the audit's base | Deterministic check: a script lists the IDs from the pinned records and a table classifies each one | Script, output and table |
 | DA-2 | Every family with at least three findings, or findings in at least two rounds, has a register entry that contains: the design choice that allowed it (code sites and rule links); why reviews found it one instance at a time; at least two options, one of them "keep", each with its cost, its benefit and the accepted claims it affects | Declared search: the families come from DA-1 | `register.md` |
-| DA-3 | The register covers these starting items, whether or not DA-2 selects them: (a) the in-process capture threat model (b) the own-array and serializer-sandbox discipline (c) exotic-object classification (d) the shape of `coordinator.ts` (e) any design the DA-1 evidence implicates. Details are under **Suspect design** | Declared scope: items (a)–(e) | Register entries (a)–(e) |
+| DA-3 | The register covers these starting items, whether or not DA-2 selects them: (a) the in-process capture threat model (b) the own-array and serializer-sandbox discipline (c) exotic-object classification (d) the shape of `coordinator.ts` (e) the test and evidence infrastructure added by K1.2-correction-01 (f) any design the DA-1 evidence implicates. Details are under **Suspect design** | Declared scope: items (a)–(f) | Register entries (a)–(f) |
 | DA-4 | Each option names the finishable criteria its follow-up packet would use, so no follow-up packet inherits a claim that cannot be finished | Structural: every option row has a criteria column | Register |
 | DA-5 | Every quantitative statement (cost, size, count) is backed by a small reproducible probe | Deterministic check: the probes rerun | `probes/` plus outputs |
 | DA-6 | Each item ends in a draft owner decision: a recommended option with its alternatives. The audit decides nothing itself | Structural | `decision-drafts/` |
@@ -29,7 +29,18 @@ than findings.
   N15, exotic enumeration, re-prototyped built-ins); blockers 01 and 02; review 06's R-P probes.
 - **Hostile-JS findings in K1.1:** the `VAL`, `STATE`, `LIMIT` and `JCS` findings, which review 08's
   analysis and [016](../../016-process-reset.md) summarize.
-- **Owner decisions:** K1.2 decisions 02–05.
+- **K1.2-correction-01 after review 08** (accepted at revision 10, integrated at `ed509e1`):
+  - Review 09's `HISTORY-01` and reviews 10–11's `READ` and `COMMIT` findings are the
+    hostile-JavaScript family in the coordinator, not in value capture.
+  - Amendment 02 lifted the production-code freeze; DEC-8 and DEC-9 were the resulting rules
+    (unowned-member reads, prebuilt control commits).
+  - Rounds 7–8 produced a 1,638-line static analyzer, `tests/zone-analysis.ts`, which amendment 03
+    replaced as evidence with runtime sweeps, about 2,700 lines across `zone-inventory.ts` and
+    `tests/sweep/`.
+  - Review 12 and the independent revision-9 review found the sweep oracle incomplete; revision 10
+    rebuilt it as a complete-decision oracle.
+  Each of these is evidence for item (a): what defending against hostile same-process code costs.
+- **Owner decisions:** K1.2 decisions 02–05; correction amendments 01–03.
 
 ## Suspect design
 
@@ -45,6 +56,8 @@ than findings.
     - bytes or text intake at the Kernel boundary, with an in-process convenience wrapper.
   - **For each option, state:** the code, tests, Layer-3 rules and claims that would change; the
     K1.1 findings that become moot; SDK compatibility; the effect on V-D1 and decision-05's meter.
+  - **Also state for each option** which DEC-8/DEC-9 rules, sweeps and test infrastructure it would
+    keep, simplify or delete. Count lines of production and test code devoted to this defense.
 - **(b) Own-array and serializer-sandbox discipline.**
   - `own-array.ts` reads a property descriptor on every internal list step.
   - The JCS window restores primordials and prototype shapes on every call.
@@ -53,10 +66,15 @@ than findings.
 - **(c) Exotic-object classification (O-R8-4).** Re-prototyped Map, Set, Date, ArrayBuffer and typed
   arrays are accepted as plain objects, which silently drops their content, although `values.md`
   refuses those forms.
-- **(d) Coordinator shape.** `coordinator.ts` is 2,382 lines in one class. Assess whether its
+- **(d) Coordinator shape.** `coordinator.ts` is 2,471 lines in one class at `ed509e1`. Assess whether its
   structure scales to waits (K1.3), Effects (K2) and persistence (K3), or will produce the same
   ordering and authority families again. The authority/grant family took five rounds in K1.2.
-- **(e) Anything else DA-1 surfaces**, for example repeated records defects that point to a
+- **(e) Test and evidence infrastructure.** Assess the analyzer, inventory and sweep code that
+  K1.2-correction-01 added:
+  - what each piece protects;
+  - whether it would survive the threat-model options in (a);
+  - whether a single maintained corpus and mutation registry (TOOLS-01) should absorb it.
+- **(f) Anything else DA-1 surfaces**, for example repeated records defects that point to a
   process design problem. Hand those to the process owner rather than solving them here.
 
 ## Questions before starting

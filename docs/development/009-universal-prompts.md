@@ -205,7 +205,9 @@ get wrong. Look at:
 - identity collisions;
 - ordering and reentrancy races;
 - values that are hostile but inside the declared threat model;
-- paths that bypass the claimed mechanism.
+- paths that bypass the claimed mechanism;
+- gaps in the build's own evidence: an oracle that omits part of the observable result, an inventory
+  that claims more coverage than it runs, a mutant that no plausible mistake would produce.
 Derive each expected result from the governing sources, never from an implementation.
 
 Deliver work/<id>/attack-<n>.md with one row per item (criterion, input, expected result, why it is

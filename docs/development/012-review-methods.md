@@ -74,6 +74,16 @@ A review adds its new mutants and counterexamples to the registry and the corpus
 evidence and then the next build. A surviving non-equivalent mutant is either an evidence finding
 or a declared limit.
 
+### Oracles are claims too
+
+A test oracle, sweep or coverage inventory is itself a claim, and it gets the same scrutiny as code.
+For each one, state three things:
+- the whole observable result it checks: state, receipts, records, returns, and forbidden mutations;
+- the legal outcomes it accepts;
+- the schedules or exits it actually runs.
+An inventory may not claim more than it executes. A reviewer checks that the oracle is complete
+before trusting its passes. K1.2-correction-01's revision-9 round failed on exactly this point.
+
 ## Root-cause analysis
 
 When 006's [stop-and-redesign](006-development-process.md#stop-and-redesign) rule fires, the review

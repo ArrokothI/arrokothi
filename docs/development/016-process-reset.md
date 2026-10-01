@@ -21,9 +21,12 @@ process rather than the agents.
 | K1.1 | 16 | 17 |
 | K1.1-correction-01 | 8 | 5 |
 | K1.2 | 15 | 14 |
-| K1.2-correction-01 (to review 08) | 8 | 4 |
+| K1.2-correction-01 | 12 recorded (plus 2 unrecorded drafts) | 9 |
 
-Counts come from the pinned archive `9fd2faa` for closed packets and from `work/` for open ones.
+Counts come from the pinned archive `9fd2faa` for closed packets and from `work/` for the others.
+When this page was first written, K1.2-correction-01 stood at review 08. It then needed reviews
+09–12 and two independent revision reviews. It was accepted at revision 10 on 2026-09-30 and
+integrated at `ed509e1`.
 
 **Verdict flips on identical candidates.** Four times, a later review found a defect in exactly the
 H an earlier review had accepted or found acceptable: K1.2 reviews 13 → 14, K1.2-correction-01
@@ -41,6 +44,14 @@ Of 25 K1.2 findings, 9 concern records (`PROC`, `DOC`, `REC`) and 4 concern evid
 distinguish a wrong implementation (`EVID`). Of 9 K1.2-correction-01 findings, 5 concern value
 refusal cost and diagnostics, and 4 are `EVID`.
 
+The whole correction packet produced 19 distinct findings:
+- 5 on value refusal cost and diagnostics;
+- 5 on Kernel reads or commits that ambient caller state could influence (`HISTORY`, `READ`,
+  `COMMIT`), which is the hostile-JavaScript family again;
+- 8 on evidence that did not distinguish a wrong implementation, or on an oracle or scope that was
+  incomplete (`EVID`, `ORACLE`, `SCOPE`);
+- 1 on a stale claim.
+
 **Record weight.** The K1.2 contract is 51 KB and the correction contract 22 KB at revision 5.
 Reports are about 27 KB and reviews 21–35 KB each. The K1.2 and correction folders hold 7.8 MB and
 8.4 MB. The correction round 4 attached 42 raw logs. The packet used six separate ablation runners,
@@ -53,7 +64,14 @@ review 09's inherited-read defect. The runtime fix was correct, but its contract
 all 1,411 Kernel tests: a member introduced through a cast, a default parameter, a local named
 `undefined`. The runtime passed every check. The claim was a sound static analysis of future code,
 which no round can finish. The prompt that asked for mechanical enforcement came from the drafter of
-this page. Amendment 03 moves the proof to runtime sweeps.
+this page. Amendment 03 moved the proof to runtime sweeps.
+
+The runtime method then failed one level further out. Review 12 and the independent revision-9
+review found that the sweep's own oracle omitted parts of the observable decision, and that its
+declared exit coverage exceeded the scenarios it actually ran. That reviewer's owner note named the
+pattern: the implementation received adversarial scrutiny, and the evidence's oracle did not.
+Revision 10 rebuilt the check as a complete-decision oracle with an exit inventory, and it was
+accepted.
 
 ## Root causes
 
@@ -85,6 +103,9 @@ this page. Amendment 03 moves the proof to runtime sweeps.
 8. **Generic prompts, specific packets.** The launchers carried policy, while the packet-specific
    knowledge (where the traps are, which design looks suspect, which questions to answer first) was
    left for each agent to rediscover.
+9. **Evidence was not attacked like code.** Test oracles, sweeps and inventories were trusted once
+   they passed. Several rounds were spent discovering that a check was incomplete, not that the code
+   was wrong.
 
 ## What changes
 
@@ -98,15 +119,17 @@ this page. Amendment 03 moves the proof to runtime sweeps.
 | 6 | Short contracts; one verification command; raw logs only when not cheaply reproducible | 006; 008 |
 | 7 | Runtime or by-construction proof for rules about future code; analyzers are guards | 012 finishable criteria |
 | 8 | Packet briefs written by the planner or the reviewer; short universal launchers | 008 templates; 009 Prompts D and E |
+| 9 | The adversary attacks the build's oracles and inventories as well as its code; reviewers check that an oracle covers the whole observable result | 009 Prompt E; 012 |
 
 Independence, exact C/H identity, owner release, no self-acceptance, Layer-3 ownership rules and
 the E-gate rules are unchanged.
 
 ## Sequence
 
-1. **K1.2-correction-01, revision 6.** Narrowed by [amendment 01](https://github.com/ArrokothI/arrokothi/blob/13a73ad9ad0662fe585d1453280c5ac3da4f79bb/docs/development/work/K1.2-correction-01/amendment-01.md),
-   with no production-code change. It is reviewed under the policy baseline it started under, then
-   integrated with K1.2 if accepted.
+1. **K1.2-correction-01. Done:** accepted at revision 10 and integrated at `ed509e1` (receipt
+   `f2188a8`). It was narrowed by [amendment 01](https://github.com/ArrokothI/arrokothi/blob/13a73ad9ad0662fe585d1453280c5ac3da4f79bb/docs/development/work/K1.2-correction-01/amendment-01.md),
+   and amendments 02 and 03 later reopened production code for the review-09 to review-12
+   findings. It was reviewed under the policy baseline it started under.
 2. **Adopt this reset.** It applies to work that starts after adoption.
 3. **DESIGN-AUDIT-01.** The first packet under the new process. It changes no code and delivers a
    design-debt register with options. It can run in parallel with step 4.
