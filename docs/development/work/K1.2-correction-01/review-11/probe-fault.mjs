@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+const root=process.argv[2];
+const {ExecutionCoordinator}=await import(pathToFileURL(path.join(root,'packages/kernel/src/index.ts')));
+const {accepted,caller,createRequest,recordingDriver}=await import(pathToFileURL(path.join(root,'packages/kernel/tests/harness.ts')));
+const who=caller('review11','tenant-a');
+const driver=recordingDriver(); const kernel=new ExecutionCoordinator({driver});
+const id=accepted(kernel.createExecution(who,createRequest())).executionId;
+const open=accepted(kernel.dispatch(who,id,{bound:1}));
+const before=accepted(kernel.inspect(who,id));
+assert.throws(()=>kernel.requestTakeover(who,id,{activationId:open.activationId,writerEpoch:1}),/reviewer injected construction fault/);
+const after=accepted(kernel.inspect(who,id));
+assert.deepEqual(after,before,'no retained receipt, hold, history, progress, batch, delivery or attempt changes before the injected failure');
+const input=accepted(kernel.submitInput(who,{destination:id,requestKey:'after-fault',kind:'update',payload:{after:true}}));
+console.log(JSON.stringify({wholeViewUnchanged:true,priorReceipt:before.receipts.at(-1),inputReceipt:input.receipt}));

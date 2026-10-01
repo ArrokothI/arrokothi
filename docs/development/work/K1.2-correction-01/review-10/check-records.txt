@@ -1,0 +1,2 @@
+Prerequisite ancestry, historical records/36 ablations, original tests (one declared diagnostic-label assertion updated), identity producer code (values.ts amended by owner for V-D1) and creation-through-dispatch preservation verified.
+Local reference check: 24 files, 696 links/anchors; remote links not fetched.

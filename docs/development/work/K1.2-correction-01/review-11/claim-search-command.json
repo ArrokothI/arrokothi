@@ -1,0 +1,19 @@
+{
+  "cwd": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+  "argv": [
+    "rg",
+    "-n",
+    "-i",
+    "V-D1|refusal.{0,35}(cost|cheap|bound|time)|bound.{0,35}(work|diagnostic|allocation|traversal)|time.bound|meter|per.issue|costliest|linear|constant.time|amortized|diagnostic.{0,35}(retention|expansion|construction)",
+    "packages/kernel",
+    "mental-model",
+    "docs/development",
+    "docs/guides",
+    "packages/sdk/README.md",
+    "README.md",
+    "--glob",
+    "!docs/development/work/**"
+  ],
+  "exit": 0,
+  "interpretation": "Navigation followed by source inspection; historical work records searched/read separately."
+}

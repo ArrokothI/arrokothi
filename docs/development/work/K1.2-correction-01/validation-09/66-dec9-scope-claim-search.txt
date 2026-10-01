@@ -1,0 +1,8 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: git grep -n -i -E every exit|every boundary exit -- docs/development/002-implemented-kernel-baseline.md docs/development/work/K1.2-correction-01/contract.md packages/kernel/tests/sweep packages/kernel/tests/fault-sweep.test.ts packages/kernel/tests/fault-oracle.test.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:50:16.815Z
+
+
+exit: 1; signal: null; error: none

@@ -1,0 +1,197 @@
+mental-model/runtime.md:23:That boundary matters most for frameworks that pause mid-step. Some native frameworks pause by suspending their work and holding the paused state in memory until a tool result comes back; nothing about the pause itself is written anywhere that outlives the process. A Driver can wire that pause to a Kernel Effect, and under a [persistent operating profile](concepts/operations.md#operating-profile-and-durability) the Kernel's own record of the Execution and the Effect survives a crash. The paused state does not. It was neither a checkpoint nor a locator for anything that outlives the process — it was memory, and it went with the process. [Driver integration](mechanisms/integration.md) says what a Driver must show before treating such a pause as recoverable, rather than as something that only works while one process stays up.
+docs/guides/kernel/capabilities-effects-and-authority.md:87:  work blocks automatic redispatch. Equivalent confirmations approved concurrently linearize at
+docs/guides/kernel/capabilities-effects-and-authority.md:103:`structuralSpawnBudget` as relevant. These bound work and do not grant it. Agent `maxModelCalls`
+docs/guides/execution/providers/current-wiring.md:48:5. Use SDK `runUntilBlocked` in a bounded host worker loop, inspect its reason, and configure provider timeouts separately.
+docs/development/009-universal-prompts.md:47:Implement the bounded work. Include the Layer-3 updates your semantic change requires in the
+packages/kernel/src/refusal.ts:92: * only; `mintRefusal` below establishes the runtime one.
+docs/development/014-owner-progress-summary.md:14:| Value-capture refusal bound | Independently accepted as K1.1-correction-02; accepted candidate awaits owner integration |
+docs/development/014-owner-progress-summary.md:35:an oversized scalar could make refusal require unbounded Kernel traversal. Capture now charges each
+docs/development/001-current-status-and-roadmap.md:113:K1.0 establishes a narrow target-code boundary and quarantines the working legacy implementation,
+docs/development/001-current-status-and-roadmap.md:188:**Exit / E3, before K3 design freezes:** a real native boundary can express useful work without
+docs/development/001-current-status-and-roadmap.md:308:the Runtime or metered provider boundary; retain uncertain
+docs/development/013-structure-and-evidence-sequencing.md:22:| `packages/core/src/runtime/controller-registry.ts` selects by closed `DefinitionKind`; current Harness awaits controllers | Renaming folders cannot produce the generic asynchronous Runtime boundary |
+docs/development/002-implemented-kernel-baseline.md:25:[Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+docs/development/002-implemented-kernel-baseline.md:55:work attributable to a live Proxy reached while observing a value. No time bound is claimed for
+docs/development/002-implemented-kernel-baseline.md:58:[values](../../mental-model/concepts/values.md#fixed-semantic-limits). The KC2-1/V-D1 claim for
+docs/development/002-implemented-kernel-baseline.md:61:about 1.5× the costliest at-limit acceptance. Owner [decision-05](work/K1.2/decision-05.md) redefines
+docs/development/002-implemented-kernel-baseline.md:62:V-D1 for this binding as a metered-work bound, which K1.1-correction-03 implements. Counts cover Kernel-selected observations and
+docs/development/002-implemented-kernel-baseline.md:67:hostile in-process code requires isolation or transport containment, not V-D1. This binding provides
+docs/development/002-implemented-kernel-baseline.md:70:Review status and the V-D1 claim hold remain in 007 until independent review.
+docs/development/002-implemented-kernel-baseline.md:161:The K1.2-added redelivery recovery-held refusal also bounds its Activation fragment under DEC-4.
+docs/development/002-implemented-kernel-baseline.md:371:Controller-local model controls do not cross an Execution/runtime boundary and are deliberately
+mental-model/concepts/core.md:130:An **Activation** is one immutable semantic exchange asking a Runtime to advance an Execution from pinned progress and a fixed [Event](#event) batch — a fixed set of observations the Kernel has already accepted on this Execution's behalf, defined two sections below. It carries a [finite batch](#batch-reservation-and-acknowledgment) and [bounded values](values.md#fixed-semantic-limits); the computation it requests is not time-bounded. An [Activation ID](identity.md#runtime-attempt) names this exchange.
+docs/development/007-work-packets.md:155:### K1.1-correction-02 — Bounded refusal cost in value capture
+docs/development/007-work-packets.md:190:brings the refusal cost of integrated K1.1 value capture (`values.ts`, `values.md` V-D1) into this packet; other accepted
+docs/development/007-work-packets.md:200:[decision-05](work/K1.2/decision-05.md)):** the value refusal-cost scope added on 2026-09-27 moves to
+docs/development/007-work-packets.md:202:with no production-code change. It also corrects BASELINE's V-D1 claim to "held". Under revision 6,
+docs/development/007-work-packets.md:205:- the K1.1-correction-02 read bounds and accepted values unchanged, and the V-D1 claim held;
+docs/development/007-work-packets.md:212:### K1.1-correction-03 — Metered value refusal cost
+docs/development/007-work-packets.md:220:- Implement decision-05's per-root work meter, the budget `B` derived from the four limits, and
+docs/development/007-work-packets.md:225:- Convert every recorded refusal-cost counterexample into a maintained corpus test: reviews 04, 06
+docs/development/007-work-packets.md:233:- The metered bound is argued structurally and asserted on the corpus.
+docs/development/007-work-packets.md:236:- Invalidation-02's V-D1 claim hold is released.
+docs/development/007-work-packets.md:542:| K1.1-correction-02 | ACCEPTED | H `719abbf9e55e7489b6255a08cbb9e97a1e960a5e`; [independent review 03](work/K1.1-correction-02/review-03.md) (Codex, GPT-6, 2026-09-23), over C `1d5a3e11f3629a8fdc5070088255db8b0936f5ac`; KC2-R1-01 and KC2-R2-PROC-01 closed. Verified cumulative code base `227cd053244e0be52aca58ac26aac9519a8dd374` supersedes the erroneous full base string in earlier records. [Contract](work/K1.1-correction-02/contract.md), [round 3](work/K1.1-correction-02/implementation-03.md), [decision 01](work/K1.1-correction-02/decision-01.md); earlier reviews remain historical. Initial payload `66e9e84` integrated through PR #35 before review (disclosed departure); integration of accepted H remains pending owner merge. [Cleanup complete](work/K1.1-correction-02/cleanup-01.md); integration pending owner manual merge; `next_release: none`. Integrated `954d31b00eb7` (PR #36); [receipt](work/K1.1-correction-02/integration-01.md). Owner-closed. **Hold notice 2026-09-27:** the V-D1 claim is held for uncharged per-issue allocation ([K1.2 invalidation-02](work/K1.2/invalidation-02.md)); historical ACCEPT and integration unchanged; correction proceeds in K1.2-correction-01 revision 4. **2026-09-28:** that correction moves to K1.1-correction-03 under [decision-05](work/K1.2/decision-05.md); the hold stays. |
+docs/development/007-work-packets.md:545:| K1.2-correction-01 | WAITING_FOR_REVIEW | [Implementation 07](work/K1.2-correction-01/implementation-07.md) (Claude Code, `claude-opus-5-5`, 2026-09-29), contract revision 8, payload C `58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f` / base `a20d278185eaffc7f8b7489345a3624231ff6e6d`; candidate H is the commit containing that report. It addresses [review 10](work/K1.2-correction-01/review-10.md)'s `K12C1-R10-READ-01` and `K12C1-R10-COMMIT-01` with closed-world DEC-8/DEC-9 enforcement (a permitted-syntax allowlist, checker classification of every access, and an effect analysis of every call, each with negative controls), and one implementer-found defect of the same mechanism (SELF-R7-UNSUPPORTED-01). Review 10 (CHANGES REQUIRED, H `35c6ba0277542236f21f95d695154fa0164feb96`), its [owner note](work/K1.2-correction-01/owner-note-10.md) and earlier reviews remain historical. [Amendment 01](work/K1.2-correction-01/amendment-01.md) under [decision-05](work/K1.2/decision-05.md) still transfers V-D1 to K1.1-correction-03; no V-D1 claim is made. Both [invalidation-01](work/K1.2/invalidation-01.md) integration hold and [invalidation-02](work/K1.2/invalidation-02.md) claim hold remain. No self-acceptance, merge or K1.3 release. |
+docs/development/007-work-packets.md:546:| K1.1-correction-03 | PLANNED | Seeded by [amendment 01](work/K1.2-correction-01/amendment-01.md) under [decision-05](work/K1.2/decision-05.md); depends on DESIGN-AUDIT-01's threat-model outcome and K1.2-correction-01 revision 6 acceptance. Carries the [invalidation-02](work/K1.2/invalidation-02.md) V-D1 claim hold. Not released. |
+docs/guides/execution/native/evaluation-and-diagnosis.md:4:runtime boundaries. `npm run test:evals` is the repository's reference-Agent behavior baseline, not an
+docs/guides/execution/native/worked-examples.md:81:exercise both branches without a provider key. This is a bounded Workflow, not an Agent, and performs
+docs/guides/execution/native/worked-examples.md:110:bounds. Dynamic orchestrator/worker plans exceed stock Agent child authoring: keep known workers in
+mental-model/concepts/roles.md:159:A **service** exposes selected input, result and interaction contracts while keeping its implementation private. An **interaction template** supplies parameterized predefined or context input. An **async handle** correlates native external work.
+packages/kernel/src/coordinator.ts:88:  boundDiagnostic,
+packages/kernel/src/coordinator.ts:518: * Bounded total diagnostic for one delivery report (KC1-ARCH-1).
+packages/kernel/src/coordinator.ts:532:const describeDeliveryFailure = (reason: unknown): string => boundDiagnostic(reason, DELIVERY_FAILURE_FALLBACK);
+packages/kernel/src/coordinator.ts:1370:   * list itself. Total work is necessarily linear in the number of Executions — listing must look
+packages/kernel/src/coordinator.ts:1919:   * attempt and carries a bounded diagnostic; state, progress, epoch, batch and receipts are
+packages/kernel/src/coordinator.ts:1940:    const diagnostic = diagnosticSeen.threw ? PROTOCOL_FAILURE_FALLBACK : boundDiagnostic(diagnosticSeen.observed, PROTOCOL_FAILURE_FALLBACK);
+packages/kernel/src/coordinator.ts:2216:   * This normalizes application-level lookup work. It does not claim cryptographic constant-time
+packages/kernel/src/coordinator.ts:2420:  // small and bounded by the mailbox capacity, so a linear scan is exact and dependency-free.
+mental-model/writing-craft-study.md:45:  obligations, parameters, algorithms, limits, or errors. Organize for lookup.
+mental-model/writing-craft-study.md:547:reference can briefly explain a parameter's consequence without developing a full
+mental-model/deployment.md:43:Two consequences follow, and [capacity, cancellation and retention](mechanisms/resources.md#capacity-cancellation-and-retention) owns both. First, the costs of running Executions accrue in independent places — in Kernel Workers, in native compute, in queues, in dormant waits — and a deployment that meters them as one number cannot tell which one is saturated. Second, each layer enforces a different limit, and none substitutes for another: a Kernel cap on admitted mediated actions does not bound a Runtime's own model calls, and neither bounds raw CPU, which only the host can.
+mental-model/deployment.md:53:Re-running a step is safe when the step only computes, and when computing it a second time costs nothing. A step that already charged a card or sent a message fails the first condition: re-running it does the thing twice. A metered model call can fail the second: it is billed again, and it may not return the same answer.
+mental-model/rewrite-index.md:438:15. **Inferring API parameters from an atomic semantic binding.** Creation binding Execution ID,
+mental-model/concepts/values.md:195:Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
+mental-model/concepts/values.md:202:No time bound is claimed for values containing live Proxies. Protection against hostile
+mental-model/concepts/values.md:205:Every lookup the Kernel itself chooses to perform remains bound, on any value. The refusal-cost
+mental-model/concepts/values.md:216:The cost includes diagnostic construction and retention, not just accepted-value traversal. Bounding
+mental-model/concepts/values.md:224:<!-- OPEN(implementation): diagnostic storage for bounded refusal cost. The in-process binding
+mental-model/concepts/values.md:230:V-D1; record a binding choice here and in its baseline without changing semantic limits. Leave this
+mental-model/concepts/values.md:287:- If the binding cannot establish the environment the call needs, it refuses the value. A refusal costs availability; wrong bytes would cost identity.
+mental-model/sources.md:48:refusal-cost claim's caller-trap boundary to include engine processing of values returned by required
+mental-model/sources.md:52:superseded decision-03 item 1 with a single boundary for all engine-internal work attributable to
+mental-model/sources.md:53:live Proxies. It clarified Kernel-selected observation counts and the absence of a time bound for
+mental-model/mechanisms/external-protocols.md:37:| MCP Prompt | Parameterized context template | Untrusted provenance and parameters; no grant |
+packages/kernel/src/identity.ts:201: * This normalizes application-level lookup work; it does not claim cryptographic constant-time
+mental-model/mechanisms/actions.md:17:Unknown [operations](../concepts/actions.md#operation), invalid input and unsupported schema constructs refuse before executor invocation. A business refusal is an observation the Runtime can handle, not necessarily Execution failure. Waiting for [consent](../concepts/actions.md#exact-consent) consumes no physical attempt. [Authority](authority.md#order-revocation-against-admission) owns the final ordered admission.
+packages/kernel/src/driver.ts:88:   * Records this attempt as failed with a bounded total diagnostic. Inert unless the bound
+mental-model/roadmap.md:101:Bounded refusal cost ([values](concepts/values.md#fixed-semantic-limits) V-D1) is no longer this
+mental-model/roadmap.md:108:Metered value refusal cost. Expected owner: [values](concepts/values.md#fixed-semantic-limits), whose
+mental-model/roadmap.md:109:V-D1 wording changes to the metered bound of [decision-05](../docs/development/work/K1.2/decision-05.md)
+mental-model/roadmap.md:112:[Scope and dependencies](../docs/development/007-work-packets.md#k11-correction-03--metered-value-refusal-cost).
+packages/kernel/src/envelope.ts:181:    // must become the same located refusal — never an exception escaping the boundary.
+packages/kernel/src/envelope.ts:309: * A bounded, total diagnostic from caller-supplied data (`execution-cycle.md`, delivery reporting).
+packages/kernel/src/envelope.ts:318:export const boundDiagnostic = (reason: unknown, fallback: string): string => {
+packages/kernel/src/values.ts:70: *    memory than accepting one at the limits (`values.md` V-D1). Some refusal work is not charged to
+packages/kernel/src/values.ts:72: *    costing more than the costliest acceptance found. The V-D1 claim is **held** for this binding and
+packages/kernel/src/values.ts:73: *    is not certified by this implementation; K1.1-correction-03 owns the metered bound (owner
+packages/kernel/src/values.ts:309:/** Bounded diagnostics only; never used for accepted content or identity. */
+packages/kernel/src/values.ts:441:   * the byte count; their total over a refused value is part of the held V-D1 question (item 4 above).
+packages/kernel/src/values.ts:465: * read, which bounds the reading this count charges. It does not bound refusal work the count does not
+packages/kernel/src/values.ts:466: * charge, so it is no claim that a refusal costs no more than a value at the limit: that V-D1 claim is
+packages/kernel/src/values.ts:621: * exactly the unbounded work the limit exists to prevent. Reasons past that point are not collected.
+packages/kernel/src/values.ts:735:  // looping to `length - 1` would turn a known over-limit root into effectively unbounded work.
+mental-model/mechanisms/resources.md:55:Measure coordinator transitions separately from active native compute, READY admission, provider concurrency, output queues and dormant [waits](waits.md). An embedded CPU loop can block the event loop; use process/worker pools where needed. A timeout field does not preempt it. Kernel bounds mediated work/[children](../concepts/operations.md#child-and-ownership), Runtime/provider bounds internal calls, [host](../concepts/operations.md#execution-host) bounds physical resources. Estimates and unknown consumption must stay labeled.
+mental-model/mechanisms/communication.md:38:A policy-driven retry of terminal child work creates a new Execution with explicit causation, authorized input and a new budget debit. Bound attempts and total work across the replacement lineage; do not reset root credits when a replacement finishes or a supervisor restarts. Driver recovery of the same unresolved Activation and native provider retries are different operations governed by [recovery](recovery.md). Retrying a child does not authorize repetition of an unknown external action from the prior child. Preserve that action's original evidence and reconciliation owner.
+mental-model/mechanisms/communication.md:59:B asks A for a missing parameter
+packages/kernel/tests/refusal-diagnostics-fixture.ts:29:export function runBoundaryDiagnosticSchedule(identity: string, observed?: (caseName: string) => void): number {
+packages/kernel/tests/values.test.ts:1374:   * substitute-all `next` could make it pass vacuously. `assert.equal` takes fixed parameters and
+packages/kernel/tests/dispatch.test.ts:228:      assert.equal(refusal.classification, "invalid_batch_bound", `bound ${String(bound)} is refused`);
+packages/kernel/tests/dispatch.test.ts:1536:      assert.equal(refusal.classification, "invalid_batch_bound");
+packages/kernel/tests/dispatch.test.ts:1552:      assert.equal(refusal.classification, "invalid_batch_bound");
+packages/kernel/tests/dispatch.test.ts:1564:    assert.equal(refusal.classification, "invalid_batch_bound");
+packages/kernel/tests/aggregate-refusal.test.ts:139:test("aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics", () => {
+packages/kernel/tests/activation-identity.test.ts:208:    test(`O3 unknown ${holder} field ${label}: bounded diagnostic, whole refusal`, () => {
+packages/kernel/tests/outcome-hostile.test.ts:9: *   refusal, never an exception escaping the boundary (K11-R16-ID-01);
+packages/kernel/tests/submission-authority.test.ts:352:        const envelope = outcomeFor(executionId, open, { progress: 1, ...content }) as Parameters<typeof kernel.submitOutcome>[1];
+packages/kernel/tests/submission-authority.test.ts:448:        const refusal = refused(kernel.submitOutcome(dashboard, base as unknown as Parameters<typeof kernel.submitOutcome>[1], grant as unknown as SubmissionGrant));
+packages/kernel/tests/submission-authority.test.ts:468:        outcomeFor(executionId, open, { progress: 1, effects: [1], baseProgressRevision: -1 }) as Parameters<typeof kernel.submitOutcome>[1],
+packages/kernel/tests/submission-authority.test.ts:490:    } as unknown as Parameters<typeof kernel.submitOutcome>[1];
+packages/kernel/tests/boundary.test.ts:54:describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:61:  test(`V-D1 ${kind}: deep prototype diagnostics do zero lookups before and after detail eight`, () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:75:test("V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label", () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:87:test("V-D1 own constructor, constructor.name, and thrown-value properties are never inspected", () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:114:test("V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation", () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:134:  test(`V-D1 ${kind}: eight eager Outcome roots preserve observations and whole refusal state`, () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:170:  test(`V-D1 ${kind}: creation, ingress and recovery use the same zero-lookup diagnostics`, () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:508:test("V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values", () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:541:test("V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges", () => {
+packages/kernel/tests/value-diagnostic-work.test.ts:573:test("V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads", () => {
+packages/kernel/tests/zone-analysis.ts:20: * type predicates and caller-envelope parameters are those claims, and they are classified too. The
+packages/kernel/tests/zone-analysis.ts:150:  ts.isTypeNode(node) || ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node) || ts.isTypeParameterDeclaration(node);
+packages/kernel/tests/zone-analysis.ts:175:  K.Constructor, K.MethodDeclaration, K.PropertyDeclaration, K.Parameter,
+packages/kernel/tests/zone-analysis.ts:235:  /** A parameter type that is trusted host authentication context rather than an envelope. */
+packages/kernel/tests/zone-analysis.ts:237:  /** Further parameters that receive caller-owned envelopes, as `functionName#index`. */
+packages/kernel/tests/zone-analysis.ts:238:  readonly extraEnvelopeParameters?: readonly string[];
+packages/kernel/tests/zone-analysis.ts:265:      if ((part.flags & ts.TypeFlags.TypeParameter) !== 0) {
+packages/kernel/tests/zone-analysis.ts:279:        (part.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown | ts.TypeFlags.NonPrimitive | ts.TypeFlags.TypeParameter)) !== 0 ||
+packages/kernel/tests/zone-analysis.ts:322:  // Caller envelopes: the declared types of the public class's parameters, and their member types.
+packages/kernel/tests/zone-analysis.ts:345:          member.parameters.forEach((parameter, index) => {
+packages/kernel/tests/zone-analysis.ts:346:            const type = checker.getTypeAtLocation(parameter);
+packages/kernel/tests/zone-analysis.ts:357:  const extraSeeds = new Set(options.extraEnvelopeParameters ?? []);
+packages/kernel/tests/zone-analysis.ts:363:          node.parameters.forEach((_parameter, index) => {
+packages/kernel/tests/zone-analysis.ts:453:        const parameter = node.parameters.find((candidate) => candidate.name.getText() === predicate.parameterName.getText());
+packages/kernel/tests/zone-analysis.ts:454:        const sourceType = parameter === undefined ? undefined : checker.getTypeAtLocation(parameter);
+packages/kernel/tests/zone-analysis.ts:472:  // Caller envelopes: a public parameter may be compared, tested, or handed to a call; nothing else.
+packages/kernel/tests/zone-analysis.ts:481:    const parameter = fn.parameters[index];
+packages/kernel/tests/zone-analysis.ts:482:    if (parameter === undefined || !ts.isIdentifier(parameter.name)) continue;
+packages/kernel/tests/zone-analysis.ts:483:    const symbol = checker.getSymbolAtLocation(parameter.name);
+packages/kernel/tests/zone-analysis.ts:487:      if (ts.isIdentifier(node) && node !== parameter.name && checker.getSymbolAtLocation(node) === symbol) references.push(node);
+packages/kernel/tests/zone-analysis.ts:518:  if ((ts.isVariableDeclaration(parent) || ts.isParameter(parent) || ts.isFunctionDeclaration(parent) || ts.isClassDeclaration(parent) || ts.isFunctionExpression(parent)) && parent.name === node) return false;
+packages/kernel/tests/zone-analysis.ts:552:  | { readonly kind: "parameter"; readonly index: number; readonly args: readonly ts.Expression[] }
+packages/kernel/tests/zone-analysis.ts:604:  if (declaration !== undefined && ts.isParameter(declaration) && isFn(declaration.parent) && ts.isIdentifier(callee)) {
+packages/kernel/tests/zone-analysis.ts:605:    return { kind: "parameter", index: declaration.parent.parameters.indexOf(declaration), args };
+packages/kernel/tests/zone-analysis.ts:610:/** Where `used` is passed as an argument, if anywhere: the callee and its parameter position. */
+packages/kernel/tests/zone-analysis.ts:639: * parameter's own object; `parameters` anything reachable from one. A function's receiver, captured
+packages/kernel/tests/zone-analysis.ts:646:  readonly parameters: ReadonlySet<number>;
+packages/kernel/tests/zone-analysis.ts:652:const NONE: Provenance = { fresh: false, exact: new Set(), parameters: new Set(), self: false, captured: new Set(), other: false };
+packages/kernel/tests/zone-analysis.ts:660:  parameters: new Set(parts.flatMap((part) => [...part.parameters])),
+packages/kernel/tests/zone-analysis.ts:669:  value.exact.size > 0 || value.parameters.size > 0 || value.self || value.captured.size > 0 || value.other;
+packages/kernel/tests/zone-analysis.ts:683:  /** Invokes the function passed as these parameters. */
+packages/kernel/tests/zone-analysis.ts:684:  readonly callsParameters: Set<number>;
+packages/kernel/tests/zone-analysis.ts:737:  readonly overrides?: ReadonlyMap<string, { readonly foreign: boolean; readonly mutates: boolean; readonly callsParameters: readonly number[] }>;
+packages/kernel/tests/zone-analysis.ts:775:  for (const parameter of fn.parameters) if (parameter.initializer !== undefined) walk(parameter.initializer);
+packages/kernel/tests/zone-analysis.ts:812:  const effects = new Map<Fn, Effects>(functions.map((fn) => [fn, { mutated: NONE, returned: NONE, returnsFresh: true, foreign: false, callsParameters: new Set<number>() }]));
+packages/kernel/tests/zone-analysis.ts:868:  /** The parameter, captured, module or local nature of a binding, with its declaration. */
+packages/kernel/tests/zone-analysis.ts:869:  const bindingOf = (symbol: ts.Symbol, fn: Fn): { kind: "parameter"; index: number } | { kind: "captured" } | { kind: "other" } | { kind: "local"; declaration: ts.VariableDeclaration } => {
+packages/kernel/tests/zone-analysis.ts:872:    if (ts.isParameter(declaration)) {
+packages/kernel/tests/zone-analysis.ts:873:      if (declaration.parent === fn) return { kind: "parameter", index: fn.parameters.indexOf(declaration) };
+packages/kernel/tests/zone-analysis.ts:941:    if (binding.kind === "parameter") return { ...NONE, exact: new Set([binding.index]) };
+packages/kernel/tests/zone-analysis.ts:952:    if (binding.kind === "parameter") return { ...NONE, parameters: new Set([binding.index]) };
+packages/kernel/tests/zone-analysis.ts:1060:  /** Re-expresses a callee's provenance (in terms of its parameters and receiver) at one call site. */
+packages/kernel/tests/zone-analysis.ts:1068:    for (const index of summary.parameters) {
+packages/kernel/tests/zone-analysis.ts:1084:      const indices = new Set([...summary.mutated.exact, ...summary.mutated.parameters]);
+packages/kernel/tests/zone-analysis.ts:1114:    // The callback's parameters receive values the callee chose: anything the call's arguments reach.
+packages/kernel/tests/zone-analysis.ts:1115:    if (summary.mutated.exact.size > 0 || summary.mutated.parameters.size > 0) parts.push(...resolve(call).args.map((argument) => reach(argument, fn)));
+packages/kernel/tests/zone-analysis.ts:1129:      for (const index of summary.callsParameters) {
+packages/kernel/tests/zone-analysis.ts:1153:    if (callee.kind === "parameter") {
+packages/kernel/tests/zone-analysis.ts:1154:      effects.get(fn)?.callsParameters.add(callee.index);
+packages/kernel/tests/zone-analysis.ts:1190:    `${value.fresh}/${[...value.exact].sort().join(",")}/${[...value.parameters].sort().join(",")}/${value.self}/${value.captured.size}/${value.other}`;
+packages/kernel/tests/zone-analysis.ts:1192:    `${text(summary.mutated)}|${text(summary.returned)}|${summary.returnsFresh}|${summary.foreign}|${[...summary.callsParameters].sort().join(",")}`;
+packages/kernel/tests/zone-analysis.ts:1208:        for (const index of override.callsParameters) summary.callsParameters.add(index);
+packages/kernel/tests/zone-analysis.ts:1507: * the record or exchange, and nothing else; its derived effects stay on those two parameters.
+packages/kernel/tests/zone-analysis.ts:1513:  if (body === undefined || !ts.isBlock(body) || helper.parameters.length !== 3) return [`${name}: expected (record, exchange, commit) and a block body`];
+packages/kernel/tests/zone-analysis.ts:1514:  const [record, exchange, commit] = helper.parameters.map((parameter) => parameter.name.getText()) as [string, string, string];
+packages/kernel/tests/zone-analysis.ts:1546:  if (summary === undefined || summary.self || summary.other || analysis.effects.get(helper)!.foreign || summary.captured.size > 0 || [...summary.parameters, ...summary.exact].some((index) => index > 1)) {
+packages/kernel/tests/zone-analysis.ts:1558:    const indices = new Set([...summary.mutated.exact, ...summary.mutated.parameters]);
+packages/kernel/tests/zone-analysis.ts:1628:    `${value.fresh ? "F" : ""}${[...value.exact].sort().map((index) => `x${index}`).join("")}${[...value.parameters].sort().map((index) => `p${index}`).join("")}${value.self ? "S" : ""}${[...value.captured].map((symbol) => `c:${symbol.getName()}`).sort().join("")}${value.other ? "O" : ""}`;
+packages/kernel/tests/zone-analysis.ts:1631:    out.set(`${basename(fn.getSourceFile().fileName)}:${fn.getStart()} ${fnName(fn) ?? "<anonymous>"}`, `mutated=${text(summary.mutated)} returned=${text(summary.returned)} fresh=${summary.returnsFresh} foreign=${summary.foreign} calls=${[...summary.callsParameters].sort().join(",")}`);
+packages/kernel/tests/nondisclosure.test.ts:28: * timing, and `visibleExecutions` documents linear-in-corpus listing work.
+packages/kernel/tests/refusal-diagnostics.test.ts:13:import { assertDiagnostic, assertOnlyRefusal, runBoundaryDiagnosticSchedule } from "./refusal-diagnostics-fixture.ts";
+packages/kernel/tests/refusal-diagnostics.test.ts:25:    assert.equal(runBoundaryDiagnosticSchedule(identity), 21);
+packages/kernel/tests/recovery.test.ts:204:  test("a report for the current attempt holds with a bounded diagnostic and changes nothing else", () => {
+packages/kernel/tests/zone-inventory.ts:31:  { file: "coordinator.ts", kind: "assertion", mode: "introduce", text: "initialObserved as InputContent", count: 1, reason: "an observed caller value already checked to be a non-null object; acceptInputContent reads it only through observeField (its parameter is an envelope seed below)" },
+packages/kernel/tests/zone-inventory.ts:91: * Parameters that receive caller-owned envelopes although they are not public-method parameters,
+packages/kernel/tests/zone-inventory.ts:94:export const EXTRA_ENVELOPE_PARAMETERS: readonly string[] = ["acceptInputContent#0"];
+packages/kernel/tests/zone-inventory.ts:110:export const EFFECT_OVERRIDES: ReadonlyMap<string, { readonly foreign: boolean; readonly mutates: boolean; readonly callsParameters: readonly number[]; readonly reason: string }> = new Map([
+packages/kernel/tests/zone-inventory.ts:111:  ["withSerializerEnvironment", { foreign: true, mutates: false, callsParameters: [0], reason: "install-and-restore of built-in slots around the serializer call (K1.1 serializer boundary)" }],
+packages/kernel/tests/ambient-reads.test.ts:32:import { ACCESS_INVENTORY, EFFECT_OVERRIDES, EXTRA_ENVELOPE_PARAMETERS, FOREIGN_CALLS, getterReads } from "./zone-inventory.ts";
+packages/kernel/tests/ambient-reads.test.ts:35:const sites = analyseAccesses(zone, { extraEnvelopeParameters: EXTRA_ENVELOPE_PARAMETERS });
+packages/kernel/tests/ambient-reads.test.ts:230:  { name: "parameter destructuring", source: "export const f = ({ resultingEpoch }: E): unknown => resultingEpoch;", expect: [["syntax", "ObjectBindingPattern"]] },
+packages/kernel/tests/creation.test.ts:934:      const request = createRequest({ [field]: revokedProxy() } as Partial<Parameters<ExecutionCoordinator["createExecution"]>[1]>);
+packages/kernel/tests/value-refusal-cost.test.ts:17:  assert.ok(result.issues.length <= 19, `unbounded allocation: ${result.issues.length} records`);
+packages/kernel/tests/value-refusal-cost.test.ts:56:  test(`V-D1 every issue family: ${name}`, () => {
+packages/kernel/tests/value-refusal-cost.test.ts:64:test("V-D1 holes and accessors retain all occurrences without invoking accessors", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:74:test("V-D1 cycle and depth issues share the collector", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:84:test("V-D1 long strings/names and oversized listings keep the existing stopping/read bounds", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:92:test("V-D1 P5: 532480 invalid positions retain nine records and exact ordered details", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:100:test("V-D1 bounded paths include phantom names, long ancestors, and literal omission text", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:110:test("V-D1 suffix counts preserve late codes and first occurrence order across root consumers", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:120:test("V-D1 own-only multiplicity under ambient pollution and capture-time mutation", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:147:test("V-D1 eight eager roots before authority: every position once, no forbidden mutation", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:173:test("V-D1 creation, ingress, all recovery roots, complete and fail consume weighted evidence", () => {
+packages/kernel/tests/value-refusal-cost.test.ts:193:test("V-D1 different root suffixes compose in global capture order", () => {
+packages/kernel/tests/ingress.test.ts:46:const input = (destination: string, overrides: Partial<Parameters<ExecutionCoordinator["submitInput"]>[1]> = {}) => ({
+packages/kernel/tests/ingress.test.ts:406:  test("a capacity below one is a configuration error, not a refusal to discover at runtime", () => {
+packages/kernel/tests/evidence.test.ts:207:    assert.deepEqual(snapshot.map((refusal) => refusal.classification), ["invalid_batch_bound", "malformed_value"]);
+packages/kernel/tests/control-commits.test.ts:139:      assert.ok(summary !== undefined && !summary.mutated.self && !summary.mutated.other, `${name} mutates only through its record parameter, in its refusal exits`);
+packages/kernel/tests/outcome-partial-claim.test.ts:385:    } as unknown as Parameters<ExecutionCoordinator["submitOutcome"]>[1];

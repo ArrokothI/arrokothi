@@ -1,0 +1,1132 @@
+{
+  "payload": "81dca4575ea56cfdde5b5f8ed72c439c7ec31821",
+  "results": [
+    {
+      "name": "01-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:05:40.534Z",
+      "end": "2026-09-29T11:05:44.584Z"
+    },
+    {
+      "name": "02-full",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:05:44.584Z",
+      "end": "2026-09-29T11:06:14.574Z"
+    },
+    {
+      "name": "03-kernel",
+      "command": [
+        "npm",
+        "run",
+        "test:kernel"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:06:14.577Z",
+      "end": "2026-09-29T11:06:32.025Z"
+    },
+    {
+      "name": "04-conformance",
+      "command": [
+        "npm",
+        "run",
+        "test:conformance"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:06:32.026Z",
+      "end": "2026-09-29T11:06:44.730Z"
+    },
+    {
+      "name": "05-sdk",
+      "command": [
+        "npm",
+        "run",
+        "test:sdk"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:06:44.731Z",
+      "end": "2026-09-29T11:06:45.136Z"
+    },
+    {
+      "name": "06-builder-docs",
+      "command": [
+        "npm",
+        "run",
+        "check:builder-docs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:06:45.136Z",
+      "end": "2026-09-29T11:06:45.703Z"
+    },
+    {
+      "name": "07-original-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2/ablations.mjs"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:06:45.703Z",
+      "end": "2026-09-29T11:16:35.427Z"
+    },
+    {
+      "name": "08-correction-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:16:35.429Z",
+      "end": "2026-09-29T11:17:18.137Z"
+    },
+    {
+      "name": "09-r11-probe",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2/review-11/probe-partial-claim.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:17:18.138Z",
+      "end": "2026-09-29T11:17:18.232Z"
+    },
+    {
+      "name": "10-records-links",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/check-records.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:17:18.233Z",
+      "end": "2026-09-29T11:17:19.512Z"
+    },
+    {
+      "name": "11-evals",
+      "command": [
+        "npm",
+        "run",
+        "test:evals"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:17:19.512Z",
+      "end": "2026-09-29T11:17:20.064Z"
+    },
+    {
+      "name": "14-original-ablations-adapted",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/original-ablations-02.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:17:20.064Z",
+      "end": "2026-09-29T11:28:32.296Z"
+    },
+    {
+      "name": "15-review-identity",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-identity.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:32.297Z",
+      "end": "2026-09-29T11:28:32.409Z"
+    },
+    {
+      "name": "16-review-maxlen",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:32.410Z",
+      "end": "2026-09-29T11:28:32.506Z"
+    },
+    {
+      "name": "17-review-namespace",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:32.507Z",
+      "end": "2026-09-29T11:28:32.603Z"
+    },
+    {
+      "name": "18-diagnostics-maxlen",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:32.604Z",
+      "end": "2026-09-29T11:28:32.723Z"
+    },
+    {
+      "name": "20-review-aggregate",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts",
+        "130",
+        "980"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:32.724Z",
+      "end": "2026-09-29T11:28:36.036Z"
+    },
+    {
+      "name": "21-review-equality",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-equality.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:36.037Z",
+      "end": "2026-09-29T11:28:36.136Z"
+    },
+    {
+      "name": "23-review-cost-accept",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+        "MODE": "accept"
+      },
+      "start": "2026-09-29T11:28:36.136Z",
+      "end": "2026-09-29T11:28:37.004Z"
+    },
+    {
+      "name": "24-review-cost-refuse-undefined",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+        "MODE": "refuse-undefined"
+      },
+      "start": "2026-09-29T11:28:37.004Z",
+      "end": "2026-09-29T11:28:37.244Z"
+    },
+    {
+      "name": "25-review-cost-refuse-ctor",
+      "command": [
+        "node",
+        "--max-old-space-size=4096",
+        "--experimental-strip-types",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+        "MODE": "refuse-ctor"
+      },
+      "start": "2026-09-29T11:28:37.244Z",
+      "end": "2026-09-29T11:28:38.149Z"
+    },
+    {
+      "name": "26-review-aggregate-pre-authority",
+      "command": [
+        "node",
+        "--max-old-space-size=8192",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts",
+        "130",
+        "980"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+        "PRE": "1"
+      },
+      "start": "2026-09-29T11:28:38.150Z",
+      "end": "2026-09-29T11:28:39.865Z"
+    },
+    {
+      "name": "27-revision4-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations-03.mjs"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:39.865Z",
+      "end": "2026-09-29T11:28:42.923Z"
+    },
+    {
+      "name": "28-review4-p4-p5",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-03.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:42.923Z",
+      "end": "2026-09-29T11:28:52.427Z"
+    },
+    {
+      "name": "30-review6-exact-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations-04.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:28:52.427Z",
+      "end": "2026-09-29T11:34:11.906Z"
+    },
+    {
+      "name": "31-diagnostic-work-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/diagnostic-ablations-04.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:34:11.907Z",
+      "end": "2026-09-29T11:34:26.509Z"
+    },
+    {
+      "name": "32-review6-cost-and-blocker",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:34:26.509Z",
+      "end": "2026-09-29T11:36:03.119Z"
+    },
+    {
+      "name": "33-round4-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "3287640f045cf2e6adeefcd32f21d897480a6a7d",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:03.120Z",
+      "end": "2026-09-29T11:36:03.323Z"
+    },
+    {
+      "name": "34-handler-direct-0",
+      "command": [
+        "node",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs",
+        ".",
+        "0",
+        "direct"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:03.338Z",
+      "end": "2026-09-29T11:36:03.471Z"
+    },
+    {
+      "name": "34-handler-direct-1000",
+      "command": [
+        "node",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs",
+        ".",
+        "1000",
+        "direct"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:03.471Z",
+      "end": "2026-09-29T11:36:04.163Z"
+    },
+    {
+      "name": "34-handler-direct-10000",
+      "command": [
+        "node",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs",
+        ".",
+        "10000",
+        "direct"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:04.163Z",
+      "end": "2026-09-29T11:36:10.075Z"
+    },
+    {
+      "name": "34-handler-outcome-0",
+      "command": [
+        "node",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs",
+        ".",
+        "0",
+        "outcome"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:10.076Z",
+      "end": "2026-09-29T11:36:10.219Z"
+    },
+    {
+      "name": "34-handler-outcome-1000",
+      "command": [
+        "node",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs",
+        ".",
+        "1000",
+        "outcome"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:10.219Z",
+      "end": "2026-09-29T11:36:10.950Z"
+    },
+    {
+      "name": "34-handler-outcome-10000",
+      "command": [
+        "node",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs",
+        ".",
+        "10000",
+        "outcome"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:10.950Z",
+      "end": "2026-09-29T11:36:16.746Z"
+    },
+    {
+      "name": "35-string-work",
+      "command": [
+        "node",
+        "--expose-gc",
+        "docs/development/work/K1.2-correction-01/probe-string-work-04.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:16.747Z",
+      "end": "2026-09-29T11:36:20.924Z"
+    },
+    {
+      "name": "37-round6-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations-06.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:36:20.925Z",
+      "end": "2026-09-29T11:43:17.144Z"
+    },
+    {
+      "name": "38-revision4-ablations-rebound",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations-03-rebound-06.mjs"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:17.146Z",
+      "end": "2026-09-29T11:43:30.531Z"
+    },
+    {
+      "name": "39-review9-probe-history",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-09/probe-history.mjs"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:30.531Z",
+      "end": "2026-09-29T11:43:30.633Z"
+    },
+    {
+      "name": "40-review9-probe-history-mutable",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-09/probe-history-mutable.mjs"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:30.633Z",
+      "end": "2026-09-29T11:43:30.734Z"
+    },
+    {
+      "name": "41-review9-matrix",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:30.735Z",
+      "end": "2026-09-29T11:43:30.866Z"
+    },
+    {
+      "name": "42-review9-matrix-expect-correct",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs",
+        "--expect-correct"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:30.866Z",
+      "end": "2026-09-29T11:43:31.070Z"
+    },
+    {
+      "name": "43-host-members-probe",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "docs/development/work/K1.2-correction-01/probe-host-members-06.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:31.070Z",
+      "end": "2026-09-29T11:43:31.748Z"
+    },
+    {
+      "name": "44-claim-alias-search",
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-i",
+        "-E",
+        "costs? no more|refusing costs|refusal[- ]cost|cheap|bounded by the limits|no more than accepting|no more time or memory|V-D1|KC2-1",
+        "--",
+        "packages/kernel/src",
+        "packages/kernel/package.json",
+        "docs/development/002-implemented-kernel-baseline.md",
+        "docs/development/007-work-packets.md",
+        "docs/development/001-current-status-and-roadmap.md",
+        "docs/development/003-evidence-and-findings.md",
+        "docs/development/014-owner-progress-summary.md",
+        "docs/development/kernel-ownership.md",
+        "docs/guides",
+        "mental-model",
+        ".agents"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:31.748Z",
+      "end": "2026-09-29T11:43:31.898Z"
+    },
+    {
+      "name": "45-round6-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "60eebc24113eb834e5d88015ca2a196c95c60493",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:31.899Z",
+      "end": "2026-09-29T11:43:32.093Z"
+    },
+    {
+      "name": "47-round7-ablations",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/ablations-07.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:43:32.153Z",
+      "end": "2026-09-29T11:52:57.640Z"
+    },
+    {
+      "name": "48-review10-enforcement-rebound",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/probe-enforcement-rebound-07.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:52:57.641Z",
+      "end": "2026-09-29T11:53:29.022Z"
+    },
+    {
+      "name": "49-new-oracles-and-name-probe-on-reviewed-H",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/probe-reviewed-h-07.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:53:29.023Z",
+      "end": "2026-09-29T11:53:41.319Z"
+    },
+    {
+      "name": "50-review10-probes-rerun",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/probe-review10-rerun-07.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:53:41.319Z",
+      "end": "2026-09-29T11:53:42.494Z"
+    },
+    {
+      "name": "51-round7-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "0efe0ba2ebb3fdde71ac8ab5b7a3ae048f5f5ac1",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:53:42.495Z",
+      "end": "2026-09-29T11:53:42.565Z"
+    },
+    {
+      "name": "52-fault-sweep",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--no-warnings",
+        "packages/kernel/tests/sweep/fault-child.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:53:42.572Z",
+      "end": "2026-09-29T11:54:30.582Z"
+    },
+    {
+      "name": "53-poison-sweep",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--no-warnings",
+        "packages/kernel/tests/sweep/run-poison-sweep.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T11:54:30.585Z",
+      "end": "2026-09-29T12:03:14.459Z"
+    },
+    {
+      "name": "54-zone-coverage-suite",
+      "command": [
+        "node",
+        "--test",
+        "--experimental-strip-types",
+        "--experimental-test-coverage",
+        "--test-coverage-include=packages/kernel/src/**",
+        "packages/kernel/tests/activation-identity.test.ts",
+        "packages/kernel/tests/aggregate-refusal.test.ts",
+        "packages/kernel/tests/ambient-reads.test.ts",
+        "packages/kernel/tests/boundary.test.ts",
+        "packages/kernel/tests/control-authority.test.ts",
+        "packages/kernel/tests/control-commits.test.ts",
+        "packages/kernel/tests/creation.test.ts",
+        "packages/kernel/tests/delivery-attribution.test.ts",
+        "packages/kernel/tests/dispatch.test.ts",
+        "packages/kernel/tests/evidence.test.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/history-attribution.test.ts",
+        "packages/kernel/tests/hold-permitted.test.ts",
+        "packages/kernel/tests/host-members.test.ts",
+        "packages/kernel/tests/ingress.test.ts",
+        "packages/kernel/tests/inspection.test.ts",
+        "packages/kernel/tests/late-reports.test.ts",
+        "packages/kernel/tests/nondisclosure.test.ts",
+        "packages/kernel/tests/outcome-acceptance.test.ts",
+        "packages/kernel/tests/outcome-evidence.test.ts",
+        "packages/kernel/tests/outcome-hostile.test.ts",
+        "packages/kernel/tests/outcome-limits.test.ts",
+        "packages/kernel/tests/outcome-partial-claim.test.ts",
+        "packages/kernel/tests/receipts.test.ts",
+        "packages/kernel/tests/recovery-ambient.test.ts",
+        "packages/kernel/tests/recovery-evidence.test.ts",
+        "packages/kernel/tests/recovery-history.test.ts",
+        "packages/kernel/tests/recovery.test.ts",
+        "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "packages/kernel/tests/refusals.test.ts",
+        "packages/kernel/tests/review-11-probes.test.ts",
+        "packages/kernel/tests/submission-authority.test.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts",
+        "packages/kernel/tests/takeover-reentrancy.test.ts",
+        "packages/kernel/tests/takeover.test.ts",
+        "packages/kernel/tests/terminal.test.ts",
+        "packages/kernel/tests/transaction.test.ts",
+        "packages/kernel/tests/unsupported.test.ts",
+        "packages/kernel/tests/value-diagnostic-work.test.ts",
+        "packages/kernel/tests/value-refusal-cost.test.ts",
+        "packages/kernel/tests/values.test.ts",
+        "packages/kernel/tests/whole-view-ambient.test.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:03:14.461Z",
+      "end": "2026-09-29T12:04:16.724Z"
+    },
+    {
+      "name": "55-zone-coverage-suite-and-catalog",
+      "command": [
+        "node",
+        "--test",
+        "--experimental-strip-types",
+        "--experimental-test-coverage",
+        "--test-coverage-include=packages/kernel/src/**",
+        "packages/kernel/tests/activation-identity.test.ts",
+        "packages/kernel/tests/aggregate-refusal.test.ts",
+        "packages/kernel/tests/ambient-reads.test.ts",
+        "packages/kernel/tests/boundary.test.ts",
+        "packages/kernel/tests/control-authority.test.ts",
+        "packages/kernel/tests/control-commits.test.ts",
+        "packages/kernel/tests/creation.test.ts",
+        "packages/kernel/tests/delivery-attribution.test.ts",
+        "packages/kernel/tests/dispatch.test.ts",
+        "packages/kernel/tests/evidence.test.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/history-attribution.test.ts",
+        "packages/kernel/tests/hold-permitted.test.ts",
+        "packages/kernel/tests/host-members.test.ts",
+        "packages/kernel/tests/ingress.test.ts",
+        "packages/kernel/tests/inspection.test.ts",
+        "packages/kernel/tests/late-reports.test.ts",
+        "packages/kernel/tests/nondisclosure.test.ts",
+        "packages/kernel/tests/outcome-acceptance.test.ts",
+        "packages/kernel/tests/outcome-evidence.test.ts",
+        "packages/kernel/tests/outcome-hostile.test.ts",
+        "packages/kernel/tests/outcome-limits.test.ts",
+        "packages/kernel/tests/outcome-partial-claim.test.ts",
+        "packages/kernel/tests/poison-catalog.test.ts",
+        "packages/kernel/tests/receipts.test.ts",
+        "packages/kernel/tests/recovery-ambient.test.ts",
+        "packages/kernel/tests/recovery-evidence.test.ts",
+        "packages/kernel/tests/recovery-history.test.ts",
+        "packages/kernel/tests/recovery.test.ts",
+        "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "packages/kernel/tests/refusals.test.ts",
+        "packages/kernel/tests/review-11-probes.test.ts",
+        "packages/kernel/tests/submission-authority.test.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts",
+        "packages/kernel/tests/takeover-reentrancy.test.ts",
+        "packages/kernel/tests/takeover.test.ts",
+        "packages/kernel/tests/terminal.test.ts",
+        "packages/kernel/tests/transaction.test.ts",
+        "packages/kernel/tests/unsupported.test.ts",
+        "packages/kernel/tests/value-diagnostic-work.test.ts",
+        "packages/kernel/tests/value-refusal-cost.test.ts",
+        "packages/kernel/tests/values.test.ts",
+        "packages/kernel/tests/whole-view-ambient.test.ts"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:04:16.724Z",
+      "end": "2026-09-29T12:05:21.606Z"
+    },
+    {
+      "name": "56-sweep-negative-controls",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/sweeps-08.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:05:21.607Z",
+      "end": "2026-09-29T12:07:30.763Z"
+    },
+    {
+      "name": "57-sweeps-on-reviewed-H",
+      "command": [
+        "node",
+        "docs/development/work/K1.2-correction-01/probe-reviewed-h-08.mjs"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:07:30.764Z",
+      "end": "2026-09-29T12:11:29.008Z"
+    },
+    {
+      "name": "58-round8-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "b93ed1df6b70569ada060481523e5b37c206e324",
+        "HEAD"
+      ],
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:11:29.010Z",
+      "end": "2026-09-29T12:11:29.055Z"
+    },
+    {
+      "name": "59-guard-claim-search",
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-i",
+        "-E",
+        "closed-world|closed world|comprehensive",
+        "--",
+        "docs/development/002-implemented-kernel-baseline.md",
+        "docs/development/work/K1.2-correction-01/contract.md",
+        "packages/kernel/src",
+        "packages/kernel/tests"
+      ],
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:11:29.055Z",
+      "end": "2026-09-29T12:11:29.094Z"
+    },
+    {
+      "name": "29-round3-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "8a418d408f715e999a403a3e84b73a9db1b43712",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:11:29.094Z",
+      "end": "2026-09-29T12:11:29.317Z"
+    },
+    {
+      "name": "22-correction-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "b18a729d989dea334a86ec08bdf8773ee77de4db",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:11:29.331Z",
+      "end": "2026-09-29T12:11:29.474Z"
+    },
+    {
+      "name": "19-round2-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "449b243cd31d5596c457e091233dfc4d77a4eff4",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:11:29.490Z",
+      "end": "2026-09-29T12:11:29.616Z"
+    },
+    {
+      "name": "12-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+        "HEAD"
+      ],
+      "exit": 2,
+      "signal": null,
+      "error": null,
+      "env": {
+        "TREE": "/Users/rex-shih/Documents/ArrokothI/arrokothi"
+      },
+      "start": "2026-09-29T12:11:29.625Z",
+      "end": "2026-09-29T12:11:29.864Z"
+    }
+  ],
+  "statusAfter": "clean"
+}

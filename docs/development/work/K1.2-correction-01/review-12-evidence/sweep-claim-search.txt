@@ -1,0 +1,50 @@
+docs/development/002-implemented-kernel-baseline.md:258:  covering every exit of the three controls and Outcome acceptance, and requires each fault to leave a state a complete decision
+docs/development/002-implemented-kernel-baseline.md:259:  explains, checked on the whole view, the next refusal and acceptance positions and the setup
+docs/development/002-implemented-kernel-baseline.md:271:  boundary call of the maintained Kernel suite and of a catalog of every boundary exit, and requires
+docs/development/work/K1.2-correction-01/contract.md:274:  every boundary result must equal an unpoisoned run. Code in `packages/kernel/tests/sweep/`:
+docs/development/work/K1.2-correction-01/contract.md:352:  - *Oracle:* every run leaves a state some complete decision explains. A thrown fault leaves the
+docs/development/work/K1.2-correction-01/contract.md:357:    leaves the decision with its own delivery row absent, pending or failed. The two apply windows the
+docs/development/work/K1.2-correction-01/contract.md:363:  - *Scope:* 37 scenarios, covering every exit of `recoverExecution` (12), `reportProtocolFailure` (7)
+docs/development/work/K1.2-correction-01/contract.md:429:| R11-READ-01 / DEC-8, C12, C13 (revision 9) | every maintained Kernel test file with every zone member name poisoned on four built-in prototypes (count, throw, reenter) during every boundary call; a catalog of every boundary exit and the paths the suite misses, with the descriptor fields poisoned too; review 11's Pick-cast read and 15 other read mutants | no accessor reached from a zone frame; every call's result equal to the unpoisoned run; liveness in every window; the in-scope mutants rejected, `in`, an own read respelled and `Error.prototype` reported as outside | `sweep/run-poison-sweep.ts`; `poison-catalog.test.ts`; `sweeps-08.mjs` |
+docs/development/work/K1.2-correction-01/contract.md:430:| R11-COMMIT-01 / DEC-9, C8–C10, C12 (revision 9) | an exception at every intercepted operation of 37 scenarios (every exit of the three controls; Outcome acceptance); review 11's seed; review 11's two and review 10's two mutants plus C3–C16 | every fault leaves a state a complete decision explains, checked on the whole view, both next positions and the setup grant; seed: view unchanged, next input at 3; the in-scope mutants rejected, C8/C10/C12 reported as invisible at the boundary | `sweep/fault-child.ts`; `fault-sweep.test.ts`; `sweeps-08.mjs` |
+docs/development/work/K1.2-correction-01/implementation-08.md:33:- *Pass condition.* No zone firing, and every boundary result digest-equal, call by call, to the
+docs/development/work/K1.2-correction-01/implementation-08.md:101:- *Observation after each run.* The sweep records the whole view, the positions the next refusal and
+docs/development/work/K1.2-correction-01/implementation-08.md:102:  the next accepted input receive, and what the setup attempt's grant can still do. The view shows
+docs/development/work/K1.2-correction-01/implementation-08.md:105:**Oracle.** Each run must leave a state that some complete decision explains:
+docs/development/work/K1.2-correction-01/implementation-08.md:113:Where the contract declares apply windows with more than one step (a takeover that clears a hold;
+docs/development/work/K1.2-correction-01/implementation-08.md:121:  compares the next refusal position and the setup grant.
+docs/development/work/K1.2-correction-01/implementation-08.md:133:- every exit of `recoverExecution` (12), `reportProtocolFailure` (7) and `requestTakeover` (8);
+docs/development/work/K1.2-correction-01/implementation-08.md:145:no-call state nor a complete decision. Review 11's own fault probe is one of these fault points, and
+docs/development/work/K1.2-correction-01/implementation-08.md:257:| DEC-9 at run time; R11-COMMIT-01, C8–C10, C12 | an exception at each of 43,446 intercepted operations in 37 scenarios | every state explained by a complete decision (view, both next positions, setup grant) | fault sweep (entry 52): 43,446 runs, 0 violations |
+docs/development/work/K1.2-correction-01/implementation-08.md:281:  - For DEC-8: every public boundary and every exit of the three controls and of Outcome acceptance.
+docs/development/work/K1.2-correction-01/implementation-08.md:284:  - For DEC-9: every exit of the three controls, including refusal and idempotent exits, which is
+docs/development/work/K1.2-correction-01/implementation-08.md:286:  - Future receipts: the next acceptance position, the next refusal position, and the setup grant's
+docs/development/work/K1.2-correction-01/implementation-08.md:309:  whole view and every next position after each fault, rejects both mutants, and reproduces review
+docs/development/work/K1.2-correction-01/implementation-08.md:325:  - *Scope.* The defect is in the shared helper, so it affected every boundary's recorded refusals.
+docs/development/work/K1.2-correction-01/implementation-08.md:361:- **O5. The takeover apply window.** The declared apply window of a takeover that clears a hold appears
+docs/development/work/K1.2-correction-01/implementation-08.md:423:| [48](validation-08/48-review10-enforcement-rebound.txt), [49](validation-08/49-new-oracles-and-name-probe-on-reviewed-H.txt), [50](validation-08/50-review10-probes-rerun.txt) | 0 | As in round 7. Review 10's whole view is byte-identical (SHA-256 `bb2763cc…`) |
+docs/development/work/K1.2-correction-01/implementation-08.md:424:| **[52-fault-sweep](validation-08/52-fault-sweep.txt)** | 0 | 37 scenarios, 43,446 runs, **0 violations**; 35 intercepted operations. Classes: 41,968 refused (a fault contained as an unobservable field); 1,348 threw with the no-call state; 37 completed; 10 accepted after a contained fault; 10 refusals naming no Execution; 14 post-commit takeover delivery outcomes; 2 in the takeover apply window; 57 in the Outcome apply window. Seed: operation 25, view unchanged, next input at 3 |
+docs/development/work/K1.2-correction-01/implementation-08.md:447:  - No zone frame reached any of 310 names on four built-in prototypes, across every boundary call
+docs/development/work/K1.2-correction-01/implementation-08.md:454:  - No fault at any of 43,446 intercepted operations left a state that no complete decision explains
+docs/development/work/K1.2-correction-01/implementation-08.md:455:    (entry 52). The state is checked beyond the view: both next positions and the setup grant.
+docs/development/work/K1.2-correction-01/implementation-08.md:461:- **Behaviour unchanged.** Full suites pass. Review 10's whole view is byte-identical (entry 50).
+packages/kernel/tests/sweep/run-poison-sweep.ts:10: * - every boundary call returned or threw exactly what it did in the unpoisoned run, call by call
+packages/kernel/tests/sweep/fault-child.ts:7: * state that no complete decision explains; in particular it can leave no invisible change that only
+packages/kernel/tests/sweep/fault-child.ts:28: * Each run must leave a state some complete decision explains:
+packages/kernel/tests/sweep/fault-child.ts:49: * The scenarios below: every exit of the three recovery controls (accepted, idempotent and each
+packages/kernel/tests/sweep/fault-child.ts:289:  // recoverExecution: every exit.
+packages/kernel/tests/sweep/fault-child.ts:300:  { name: "recover: refused with no unresolved exchange", control: "recoverExecution", oracle: "strict", setup: (env) => { harness.accepted(env.kernel.submitOutcome(env.who, outcome(env), grant(env))); }, call: recover(MISSING_DEFINITION) },
+packages/kernel/tests/sweep/fault-child.ts:301:  { name: "recover: refused after the Execution ended", control: "recoverExecution", oracle: "strict", setup: (env) => { harness.accepted(env.kernel.submitOutcome(env.who, outcome(env, { next: { step: "complete", result: { done: true } } }), grant(env))); }, call: recover(MISSING_DEFINITION) },
+packages/kernel/tests/sweep/fault-child.ts:302:  // reportProtocolFailure: every exit.
+packages/kernel/tests/sweep/fault-child.ts:310:  // requestTakeover: every exit.
+packages/kernel/tests/sweep/fault-child.ts:318:  { name: "takeover: refused with no unresolved exchange", control: "requestTakeover", oracle: "strict", setup: (env) => { harness.accepted(env.kernel.submitOutcome(env.who, outcome(env), grant(env))); }, call: takeover() },
+packages/kernel/tests/sweep/fault-child.ts:324:  { name: "outcome: exact replay", control: "submitOutcome", oracle: "strict", setup: (env) => { harness.accepted(env.kernel.submitOutcome(env.who, outcome(env), grant(env))); }, call: submit() },
+packages/kernel/tests/sweep/fault-child.ts:325:  { name: "outcome: refused conflicting replay", control: "submitOutcome", oracle: "strict", setup: (env) => { harness.accepted(env.kernel.submitOutcome(env.who, outcome(env), grant(env))); }, call: submit({ progress: { phase: "other" } }) },
+packages/kernel/tests/sweep/fault-child.ts:338:  /** What the setup exchange's attempt can still do with the grant the Driver received for it. */
+packages/kernel/tests/sweep/fault-child.ts:358: * The Execution's retained state as far as the boundary can show it: the whole view; the positions
+packages/kernel/tests/sweep/fault-child.ts:360: * grant the Driver received at setup can still do, since the current grant is not in the view either
+packages/kernel/tests/sweep/fault-child.ts:361: * (a `continue` Outcome for the setup exchange at its first epoch, presented with that grant).
+packages/kernel/tests/sweep/fault-child.ts:377:    setupGrant: grant,
+packages/kernel/tests/sweep/fault-child.ts:491:        classify("threw inside the declared takeover apply window: receipt appended, clearing record not");
+packages/kernel/tests/sweep/fault-child.ts:495:        classify("threw inside the declared Outcome apply window");
+packages/kernel/tests/sweep/fault-child.ts:498:      result.violations.push(`${where}: threw and left a state no complete decision explains`);

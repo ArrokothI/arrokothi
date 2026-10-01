@@ -1,0 +1,7 @@
+submitOutcome, visibility-only caller, wrong huge activationId: returned stale_exchange (reason length 158)
+requestTakeover, control caller, wrong huge activationId: returned stale_exchange (reason length 104)
+recoverExecution, control caller, wrong huge activationId: returned stale_exchange (reason length 104)
+reportProtocolFailure, control caller, wrong huge activationId: returned stale_exchange (reason length 104)
+submitOutcome, visibility-only caller, huge activationId after resolution (no exchange): returned stale_exchange (reason length 158)
+refusals recorded: 5; state READY; exchange open false; progressRevision 1
+exit 0

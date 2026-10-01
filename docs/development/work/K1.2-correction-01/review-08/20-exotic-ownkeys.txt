@@ -1,0 +1,4 @@
+u8 16777216 16777216 3721 ms rss +996 MiB
+u8 134217728 threw RangeError: Too many properties to enumerate 2957 ms rss +769 MiB
+string 16777216 threw RangeError: Too many properties to enumerate 2512 ms rss +771 MiB
+string 268435456 threw RangeError: Too many properties to enumerate 2540 ms rss +737 MiB

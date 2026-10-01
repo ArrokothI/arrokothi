@@ -1,0 +1,12 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --max-old-space-size=8192 --experimental-strip-types docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts 130 980
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T11:28:32.724Z
+
+tree=/Users/rex-shih/Documents/ArrokothI/arrokothi innerArrays=130 nameLength=980 issues≈532480
+A1 entitled submitOutcome: refused malformed_envelope, reason 757 units, refusals +1, 838 ms
+A1 later valid answer: accepted
+A2 control recoverExecution: refused malformed_value, reason 519 units, refusals +1, 2372 ms
+
+exit: 0; signal: null; error: none

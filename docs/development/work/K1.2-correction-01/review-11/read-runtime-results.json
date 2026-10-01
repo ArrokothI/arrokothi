@@ -1,0 +1,76 @@
+[
+  {
+    "variant": "clean",
+    "mode": "count",
+    "reads": 0,
+    "returnedState": "RUNNING",
+    "afterState": "RUNNING",
+    "progressRevision": 0,
+    "receipts": 2,
+    "history": [
+      "entered"
+    ]
+  },
+  {
+    "variant": "clean",
+    "mode": "throw",
+    "reads": 0,
+    "returnedState": "RUNNING",
+    "afterState": "RUNNING",
+    "progressRevision": 0,
+    "receipts": 2,
+    "history": [
+      "entered"
+    ]
+  },
+  {
+    "variant": "clean",
+    "mode": "reenter",
+    "reads": 0,
+    "returnedState": "RUNNING",
+    "afterState": "RUNNING",
+    "progressRevision": 0,
+    "receipts": 2,
+    "history": [
+      "entered"
+    ]
+  },
+  {
+    "variant": "partial-type-assertion",
+    "mode": "count",
+    "reads": 1,
+    "returnedState": "RUNNING",
+    "afterState": "RUNNING",
+    "progressRevision": 0,
+    "receipts": 2,
+    "history": [
+      "entered"
+    ]
+  },
+  {
+    "variant": "partial-type-assertion",
+    "mode": "throw",
+    "reads": 1,
+    "error": "reviewer inherited read",
+    "afterState": "RUNNING",
+    "progressRevision": 0,
+    "receipts": 2,
+    "history": [
+      "entered"
+    ]
+  },
+  {
+    "variant": "partial-type-assertion",
+    "mode": "reenter",
+    "reads": 1,
+    "nestedAccepted": true,
+    "returnedState": "COMPLETED",
+    "afterState": "COMPLETED",
+    "progressRevision": 1,
+    "receipts": 3,
+    "history": [
+      "entered",
+      "ended_by_outcome"
+    ]
+  }
+]

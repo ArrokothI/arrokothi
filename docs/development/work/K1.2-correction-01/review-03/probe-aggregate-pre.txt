@@ -1,0 +1,22 @@
+tree=/private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/483373ef-4d4d-4869-be5b-137e6686233a/scratchpad/wt-h2 innerArrays=130 nameLength=980 issues≈532480
+A3 visibility-only submitOutcome (no grant): refused unauthorized_submission, reason 216 units, refusals +1, 1617 ms
+A4 grant holder, stale epoch: refused stale_exchange, reason 144 units, refusals +1, 1547 ms
+        3.26 real         3.45 user         0.07 sys
+           418725888  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               30688  page reclaims
+                 154  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  13  voluntary context switches
+                3008  involuntary context switches
+         54725579443  instructions retired
+         10917942354  cycles elapsed
+           407851968  peak memory footprint
+exit 0

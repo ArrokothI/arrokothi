@@ -1,0 +1,21 @@
+{"mode":"accept-zeros","D":0,"N":4096,"M":256,"ok":true,"bytes":1040639,"records":0,"total":0,"ms":647,"heapMiB":12.8,"rssMiB":125}
+{"mode":"accept-empty-objects","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1007,"heapMiB":109,"rssMiB":279}
+{"mode":"accept-empty-arrays","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1299,"heapMiB":108.8,"rssMiB":250}
+{"mode":"refuse-undefined","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":222,"heapMiB":3.2,"rssMiB":91}
+{"mode":"refuse-chain","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1487,"heapMiB":4.7,"rssMiB":112}
+{"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":6983,"heapMiB":9.7,"rssMiB":74}
+NODESCRIBE {"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1406,"heapMiB":5.7,"rssMiB":101}
+{"mode":"accept-zeros","D":0,"N":4096,"M":256,"ok":true,"bytes":1040639,"records":0,"total":0,"ms":670,"heapMiB":12.8,"rssMiB":124}
+{"mode":"accept-empty-objects","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":985,"heapMiB":114.6,"rssMiB":295}
+{"mode":"accept-empty-arrays","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1215,"heapMiB":109.2,"rssMiB":280}
+{"mode":"refuse-undefined","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":239,"heapMiB":1,"rssMiB":88}
+{"mode":"refuse-chain","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1555,"heapMiB":9.1,"rssMiB":89}
+{"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":7041,"heapMiB":5.3,"rssMiB":77}
+NODESCRIBE {"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1423,"heapMiB":3.6,"rssMiB":78}
+{"mode":"accept-zeros","D":0,"N":4096,"M":256,"ok":true,"bytes":1040639,"records":0,"total":0,"ms":688,"heapMiB":12.7,"rssMiB":124}
+{"mode":"accept-empty-objects","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1015,"heapMiB":110.7,"rssMiB":280}
+{"mode":"accept-empty-arrays","D":0,"N":4096,"M":256,"ok":true,"bytes":1044651,"records":0,"total":0,"ms":1241,"heapMiB":108.7,"rssMiB":249}
+{"mode":"refuse-undefined","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":228,"heapMiB":2.1,"rssMiB":89}
+{"mode":"refuse-chain","D":0,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1566,"heapMiB":5,"rssMiB":114}
+{"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":7154,"heapMiB":5.1,"rssMiB":81}
+NODESCRIBE {"mode":"refuse-chain","D":1000,"N":4096,"M":256,"ok":false,"bytes":null,"records":10,"total":1044481,"ms":1448,"heapMiB":3.6,"rssMiB":102}

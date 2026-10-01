@@ -29,11 +29,30 @@ K0.2's [accepted review](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc
 
 The owner delegated the K1.1-correction-01 architecture decision on 2026-09-15. [Decision 01](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/decision-01.md) replaces arbitrary Driver-returned Promise observation with the [delivery reporting boundary](mechanisms/execution-cycle.md#delivery-reporting-boundary). This authorized target change is implemented in exact H5 `52b1600f3b42e3a360fdc3395178f1d147edf304`, independently accepted by [review-08](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/review-08.md); integration remains a separate ledger decision. It does not reinterpret historical K1.1 reviews.
 
+On 2026-09-25 the owner authorized K1.2 to extend that in-process delivery call from `deliver(activation, settlement)` to `deliver(activation, settlement, submission)`, so that it also carries the current Runtime attempt's [submission authority](mechanisms/execution-cycle.md#submission-authority) ([K1.2 decision 01](../docs/development/work/K1.2/decision-01.md), resolving [blocker-01](../docs/development/work/K1.2/blocker-01.md)). The decision supersedes only the two-argument signature; every other KC1-ARCH-1 guarantee stands, and the historical KC1-ARCH-1 record stays sealed.
+
+On 2026-09-26 [K1.2 decision 02](../docs/development/work/K1.2/decision-02.md) fixed the
+Activation identity's place in the Outcome acceptance order: only a well-formed identity can
+address replay or establish staleness; an unusable identity is a content issue after authority.
+The canonical order lives in [execution-cycle](mechanisms/execution-cycle.md#outcome-acceptance).
+[K1.2-correction-01](../docs/development/work/K1.2-correction-01/contract.md) records the binding's
+producer-compatible identity representation under [identity](concepts/identity.md#runtime-attempt).
+
 The [reference supplement](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-reference-01/contract.md) brings two accepted implementation decisions into their canonical owners: KC1-DEC-1's creation/ingress domain separation in [identity](concepts/identity.md#request-key-and-input-id), and K1.1 C3 plus KC1-DEC-3/6's coherent in-process capture and representation limits in [values](concepts/values.md#in-process-value-capture). Their sources are the accepted [correction contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1-correction-01/contract.md), original [K1.1 contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/contract.md) and H5 source/tests. The supplemental prose requires its own independent review; the original implementation ACCEPT is preserved.
 
 On 2026-09-24 the owner adopted the accepted [K1.1 contract](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/contract.md)'s binding of the progress codec at creation (C1, with C4 forbidding dispatch to infer it) as the sixth fact of [one atomic creation](mechanisms/creation.md#one-atomic-creation). Worksheet PC-4 and [progress](concepts/state.md#progress) already required progress to be pinned to its codec version, but no page said where the first pin comes from, before any progress exists.
 
 The owner's 2026-09-23 rewrite of [values](concepts/values.md) stated three obligations that no worksheet decision or K1.1 record states in those words: refusing a value must cost no more than accepting one at the limits; a digest that alone decides duplicate-versus-conflict after deletion must resist deliberate collisions and cover the full canonical bytes; and each request-envelope field is read once, with that one answer used for everything the call does. [K1.1-correction-02 decision 01](../docs/development/work/K1.1-correction-02/decision-01.md) records them as owner decisions, with their relation to accepted K1.1 behavior and the implementation change the first one required.
+
+On 2026-09-27 [K1.2 decision 03](../docs/development/work/K1.2/decision-03.md) scoped the in-process
+refusal-cost claim's caller-trap boundary to include engine processing of values returned by required
+caller code, including Proxy descriptor conversion. [Values](concepts/values.md#fixed-semantic-limits)
+owns that boundary and the unchanged observation limits; the decision leaves Kernel-chosen lookups
+and ordinary non-Proxy data covered. On 2026-09-28 [decision 04](../docs/development/work/K1.2/decision-04.md)
+superseded decision-03 item 1 with a single boundary for all engine-internal work attributable to
+live Proxies. It clarified Kernel-selected observation counts and the absence of a time bound for
+values containing live Proxies. Neither decision authorizes Proxy rejection, observation reuse or
+out-of-process capture.
 
 ## Misunderstandings that shaped these pages
 

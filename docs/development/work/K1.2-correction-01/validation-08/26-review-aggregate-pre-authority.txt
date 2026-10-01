@@ -1,0 +1,11 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --max-old-space-size=8192 --experimental-strip-types docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts 130 980
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi","PRE":"1"}
+started: 2026-09-29T11:28:38.150Z
+
+tree=/Users/rex-shih/Documents/ArrokothI/arrokothi innerArrays=130 nameLength=980 issues≈532480
+A3 visibility-only submitOutcome (no grant): refused unauthorized_submission, reason 216 units, refusals +1, 831 ms
+A4 grant holder, stale epoch: refused stale_exchange, reason 144 units, refusals +1, 795 ms
+
+exit: 0; signal: null; error: none

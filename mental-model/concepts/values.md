@@ -194,6 +194,42 @@ A value over a limit is refused in the same way as any other malformed value. It
 
 Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
 
+In the in-process binding, engine own-key enumeration and execution of caller traps are outside
+the cost claim. The caller-code boundary also excludes all engine-internal work attributable to a
+live Proxy (an object whose internal methods are caller-defined) reached while observing a value.
+This includes trap discovery, absent-trap forwarding, nested targets and array classification,
+invariant checks and their induced target/handler operations, and conversion of trap results.
+No time bound is claimed for values containing live Proxies. Protection against hostile
+in-process code requires isolation or transport containment; these semantic limits do not provide it.
+
+Every lookup the Kernel itself chooses to perform remains bound, on any value. The refusal-cost
+requirement remains unchanged for values containing no Proxy, including ordinary objects and
+arrays with any prototype chain. Counts bound the observations and invocations selected by Kernel
+code: at most one observation per position, the fixed per-container structural observations, and
+the byte stop and four limits. Callbacks induced by the engine inside one selected operation are
+not counted or promised. This boundary changes neither exact accepted values, coherent-Proxy
+acceptance, ambient safety nor diagnostic occurrence counts, and permits no reuse of observations.
+
+The cost also includes materializing a string during a character read. A bounded number of reads
+does not suffice if the first read materializes an oversized representation in full.
+
+The cost includes diagnostic construction and retention, not just accepted-value traversal. Bounding
+a message after an unbounded property lookup or concatenation does not bound its construction. A
+refused position must not leave a separate unbounded path or message in memory for every occurrence
+in a shared graph. Diagnostic compression may retain bounded details plus exact counts of the
+remaining reasons; it does not make an invalid value valid, change any accepted bytes, or waive
+single observation. A summary describes the positions actually examined, never positions beyond a
+traversal stop. The same cost obligation applies when several roots are captured eagerly before a
+request's authority is decided; their semantic budgets remain separate.
+<!-- OPEN(implementation): diagnostic storage for bounded refusal cost. The in-process binding
+retains the first eight bounded details per root followed by exact occurrence counts per remaining
+code, ordered by first remaining occurrence; paths are bounded before construction and messages
+before retention. Type labels use only null/typeof classification, without another structural or
+property observation of the caller value. Traversal and byte-budget stopping are unchanged. The choice is recorded in
+BASELINE #value-refusal-diagnostics. Other bindings may choose a different representation meeting
+V-D1; record a binding choice here and in its baseline without changing semantic limits. Leave this
+marker while representation remains an implementation choice. rewrite-index.md §4 -->
+
 These are *semantic* limits: they decide which values are valid. They make no promise about messages or bytes on the wire. No semantic limit applies to the sum of a message's roots, and no transport's byte size is guaranteed. A deployment may impose tighter limits on its transport, such as a smaller maximum request body. It may not silently redefine these four. If a transport limit could change which values the protocol considers valid, two deployments of the same protocol could disagree about validity. These numbers change only through an explicit, versioned amendment to the protocol.
 
 It follows that these limits do not protect anything from an oversized message. One Outcome can carry many roots, each just under 1 MiB. A deployment that accepts messages from a party it does not fully trust, such as a Runtime in an [Isolated Execution](operations.md#isolated-execution), has to bound whole messages in its transport. A message refused there was never delivered. Its values were not judged invalid.

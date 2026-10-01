@@ -1,0 +1,62 @@
+packages/kernel/src/driver.ts:145:  isSafeToReplace?(activation: Activation): boolean;
+packages/kernel/src/refusal.ts:61:   * Execution's scope in the caller's `controlScopes`; a visible principal lacking it is refused
+packages/kernel/src/envelope.ts:13: * `hostMember` applies the same rule to an optional member of a trusted host object (amendment 02).
+packages/kernel/src/envelope.ts:272: * `Object.prototype.controlScopes` granted control power, an inherited `isSafeToReplace` installed
+packages/kernel/src/envelope.ts:284:export function hostMember(holder: object, key: string): unknown {
+packages/kernel/src/identity.ts:20: * `controlScopes` is the separate control power `evidence.md` requires: inspection privilege does
+packages/kernel/src/identity.ts:23: * protocol-failure report) additionally require the Execution's scope in `controlScopes`. Absent
+packages/kernel/src/identity.ts:26: * a fresh Outcome without `controlScopes`; accepting it resolves the exchange and may end its
+packages/kernel/src/identity.ts:35:  readonly controlScopes?: readonly string[];
+packages/kernel/src/own-array.ts:87:const hasOwnValue = (holder: object): boolean =>
+packages/kernel/src/own-array.ts:108:  if (fieldDescriptor === undefined || !hasOwnValue(fieldDescriptor)) return undefined;
+packages/kernel/src/own-array.ts:118:export const isDataDescriptor = (descriptor: PropertyDescriptor): boolean => hasOwnValue(descriptor);
+packages/kernel/src/own-array.ts:122:  hasOwnValue(descriptor) ? ownFieldValue(descriptor, "value") : undefined;
+packages/kernel/src/own-array.ts:243:  if (descriptor === undefined || !hasOwnValue(descriptor)) return undefined;
+packages/kernel/src/inspection.ts:159:   * `control` means the caller held control power over the Execution's scope (`controlScopes`,
+packages/kernel/src/inspection.ts:163:   * The two are never conflated: a Runtime submitter without `controlScopes` is recorded as
+packages/kernel/src/inspection.ts:177:  readonly resultingEpoch?: number;
+packages/kernel/src/values.ts:214:const hasOwnValue = (holder: object): boolean =>
+packages/kernel/src/values.ts:593:  if (!hasOwnValue(descriptor)) {
+packages/kernel/src/values.ts:719:    !hasOwnValue(lengthDescriptor) ||
+packages/kernel/src/values.ts:1071:      lengthDescriptor !== undefined && hasOwnValue(lengthDescriptor) && typeof lengthDescriptor.value === "number"
+packages/kernel/src/values.ts:1080:        descriptor !== undefined && hasOwnValue(descriptor) ? (descriptor.value as BoundaryValue) : (undefined as unknown as BoundaryValue);
+packages/kernel/src/values.ts:1091:        lengthDescriptorInner !== undefined && hasOwnValue(lengthDescriptorInner) && typeof lengthDescriptorInner.value === "number"
+packages/kernel/src/values.ts:1102:        const innerValue = innerDescriptor !== undefined && hasOwnValue(innerDescriptor) ? innerDescriptor.value : undefined;
+packages/kernel/src/values.ts:1116:    if (descriptor === undefined || !hasOwnValue(descriptor)) continue;
+packages/kernel/src/coordinator.ts:92:  hostMember,
+packages/kernel/src/coordinator.ts:185: * from an options object whose optional `resultingEpoch` the Kernel read back after changing the
+packages/kernel/src/coordinator.ts:189: * caller's `controlScopes`, the options' limits, the Driver's `isSafeToReplace`) through `hostMember`,
+packages/kernel/src/coordinator.ts:480:  nextAcceptancePosition: number;
+packages/kernel/src/coordinator.ts:487:  nextRefusalPosition: number;
+packages/kernel/src/coordinator.ts:547:  // `controlScopes` is optional, so an ordinary read of a caller that has none reached
+packages/kernel/src/coordinator.ts:549:  // host never gave (amendment 02). `hostMember` answers from the caller's own chain only.
+packages/kernel/src/coordinator.ts:550:  const controls = hostMember(caller, "controlScopes") as readonly string[] | undefined;
+packages/kernel/src/coordinator.ts:613: * the previous helper took an options object whose type declared `resultingEpoch?` and read that field
+packages/kernel/src/coordinator.ts:631:/** K1.2-DEC-18: a takeover's `cleared_by_takeover` record, the only one that owns `resultingEpoch`. */
+packages/kernel/src/coordinator.ts:638:  resultingEpoch: number,
+packages/kernel/src/coordinator.ts:649:    resultingEpoch,
+packages/kernel/src/coordinator.ts:663: * from the plan. Only then does `applyControlCommit` change anything.
+packages/kernel/src/coordinator.ts:678:const applyControlCommit = (record: ExecutionRecord, exchange: ActivationRecord, commit: ControlCommit): void => {
+packages/kernel/src/coordinator.ts:840:  // (`nextAcceptancePosition`/`nextRefusalPosition` below), Execution and Event identities are
+packages/kernel/src/coordinator.ts:846:    // Both limits are optional options, read through `hostMember`: an ordinary read of an omitted
+packages/kernel/src/coordinator.ts:849:    const capacity = hostMember(options, "mailboxCapacity") ?? DEFAULT_MAILBOX_CAPACITY;
+packages/kernel/src/coordinator.ts:856:    const emissionLimit = hostMember(options, "emissionsPerOutcome") ?? DEFAULT_EMISSIONS_PER_OUTCOME;
+packages/kernel/src/coordinator.ts:1028:      nextAcceptancePosition: 2,
+packages/kernel/src/coordinator.ts:1029:      nextRefusalPosition: 1,
+packages/kernel/src/coordinator.ts:1651:   * The Kernel advances the epoch only when the Driver's `isSafeToReplace` returns exactly `true`
+packages/kernel/src/coordinator.ts:1699:      // `isSafeToReplace` is an optional Driver member. The request observed above may have
+packages/kernel/src/coordinator.ts:1701:      // answered from there: a safety the Driver never established (amendment 02). `hostMember`
+packages/kernel/src/coordinator.ts:1703:      const establish = hostMember(this.#driver, "isSafeToReplace");
+packages/kernel/src/coordinator.ts:1778:    const position = record.nextAcceptancePosition;
+packages/kernel/src/coordinator.ts:1814:    record.nextAcceptancePosition = position + 1;
+packages/kernel/src/coordinator.ts:1844:   * (`applyControlCommit`; amendment 02).
+packages/kernel/src/coordinator.ts:1871:    // is planned from Kernel data before anything changes (amendment 02); `applyControlCommit` then
+packages/kernel/src/coordinator.ts:1909:    applyControlCommit(record, exchange, commit);
+packages/kernel/src/coordinator.ts:1974:    applyControlCommit(record, exchange, commit);
+packages/kernel/src/coordinator.ts:2047:    const acceptancePosition = record.nextAcceptancePosition;
+packages/kernel/src/coordinator.ts:2171:    record.nextAcceptancePosition = acceptancePosition + 1;
+packages/kernel/src/coordinator.ts:2196:    const position = record.nextAcceptancePosition;
+packages/kernel/src/coordinator.ts:2197:    record.nextAcceptancePosition += 1;
+packages/kernel/src/coordinator.ts:2232:   * Execution's scope in `controlScopes` is refused as `unauthorized_control`, with the Execution
+packages/kernel/src/coordinator.ts:2261:    const position = record.nextRefusalPosition;
+packages/kernel/src/coordinator.ts:2264:    record.nextRefusalPosition = position + 1;

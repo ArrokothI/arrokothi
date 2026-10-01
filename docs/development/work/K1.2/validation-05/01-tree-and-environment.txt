@@ -1,0 +1,29 @@
+candidate C: aa8709673e6d53455f226d0fc01bdca6fb55e600
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /private/tmp/k12-r5-csjhg5od/checkout
+command: git status --porcelain=v1 --untracked-files=all; git rev-parse HEAD; git rev-parse HEAD^{tree}; git branch --show-current; node --version; npm --version; sw_vers; uname -m; date -u
+environment: {"node": "v26.8.1", "npm": "11.19.0", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t15.6.1\nBuildVersion:\t\t24G90", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "434f5ef165b0db0abbc8deeb8f24d40542c3ec26690d1db8126a314c57140eba", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T05:01:20.862704+00:00
+finished-utc: 2026-09-25T05:01:20.991763+00:00
+output-bytes: 238
+output-sha256: 94b3ad0d3a47a525f7d459d8a9ee80c61a161bc84fd515015a65429a854d10a4
+--- output begins ---
+aa8709673e6d53455f226d0fc01bdca6fb55e600
+c3961ebc6472f2ec391dd381b2f30bad5ae7fdda
+claude/k1.2-outcome-acceptance-receipts
+v26.8.1
+11.19.0
+ProductName:		macOS
+ProductVersion:		15.6.1
+BuildVersion:		24G90
+arm64
+Fri Sep 25 05:01:20 UTC 2026
+
+--- output ends ---
+exit 0

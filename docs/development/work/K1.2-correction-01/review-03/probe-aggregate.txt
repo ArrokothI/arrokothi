@@ -1,0 +1,23 @@
+tree=/private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/483373ef-4d4d-4869-be5b-137e6686233a/scratchpad/wt-h2 innerArrays=130 nameLength=980 issues≈532480
+A1 entitled submitOutcome: refused malformed_envelope, reason 8621 units, refusals +1, 2434 ms
+A1 later valid answer: accepted
+A2 control recoverExecution: refused malformed_value, reason 519 units, refusals +1, 4958 ms
+        7.50 real         7.54 user         0.20 sys
+           573865984  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               61966  page reclaims
+                  79  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   2  voluntary context switches
+                6340  involuntary context switches
+        122196789200  instructions retired
+         23924330493  cycles elapsed
+           699245440  peak memory footprint
+exit 0

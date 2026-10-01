@@ -1,0 +1,6 @@
+submitOutcome, visibility-only caller, wrong huge activationId: THREW RangeError: Invalid string length
+requestTakeover, control caller, wrong huge activationId: THREW RangeError: Invalid string length
+recoverExecution, control caller, wrong huge activationId: THREW RangeError: Invalid string length
+reportProtocolFailure, control caller, wrong huge activationId: THREW RangeError: Invalid string length
+submitOutcome, visibility-only caller, huge activationId after resolution (no exchange): THREW RangeError: Invalid string length
+refusals recorded: 0; state READY; exchange open false; progressRevision 1

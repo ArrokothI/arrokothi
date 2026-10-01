@@ -1,0 +1,12 @@
+payload C: 2b8a50297ebe83cb0922bb239aa834a2ecebc1ac
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: npm run typecheck
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T14:04:29.833Z
+
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+exit: 0; signal: null; error: none

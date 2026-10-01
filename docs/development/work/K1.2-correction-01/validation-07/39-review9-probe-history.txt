@@ -1,0 +1,30 @@
+payload C: 58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --experimental-strip-types docs/development/work/K1.2-correction-01/review-09/probe-history.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T05:56:38.029Z
+
+{"mode":"data","reads":0,"answer":{"ok":true,"value":{"activationId":"execution-8:reviewer8:tenant-a4:data/activation-1","writerEpoch":1,"recoveryHolds":[{"cause":"protocol_failure","reason":"the response of the attempt at writer epoch 1 could not be classified as an Outcome: unclassifiable","activationId":"execution-8:reviewer8:tenant-a4:data/activation-1","writerEpoch":1,"permittedNextActions":["request_takeover","submit_outcome"]}],"changed":true}},"beforeHolds":0,"afterHolds":1,"history":[{"activationId":"execution-8:reviewer8:tenant-a4:data/activation-1","writerEpoch":1,"cause":"protocol_failure","transition":"entered","reason":"the response of the attempt at writer epoch 1 could not be classified as an Outcome: unclassifiable","authority":"control","actorNamespace":"reviewer","actorScope":"tenant-a"}],"receipts":2}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+undefined !== 777
+
+    at file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.2-correction-01/review-09/probe-history.mjs:27:31
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: 777,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+
+exit: 1; signal: null; error: none

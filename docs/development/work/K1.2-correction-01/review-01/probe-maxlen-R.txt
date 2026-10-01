@@ -1,0 +1,6 @@
+submitOutcome, visibility-only caller, wrong huge activationId: returned unauthorized_submission (reason length 195)
+requestTakeover, control caller, wrong huge activationId: returned malformed_value (reason length 93)
+recoverExecution, control caller, wrong huge activationId: returned malformed_value (reason length 93)
+reportProtocolFailure, control caller, wrong huge activationId: returned malformed_value (reason length 100)
+submitOutcome, visibility-only caller, huge activationId after resolution (no exchange): returned stale_exchange (reason length 182)
+refusals recorded: 5; state READY; exchange open false; progressRevision 1

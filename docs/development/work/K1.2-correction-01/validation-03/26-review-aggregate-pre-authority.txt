@@ -1,0 +1,11 @@
+payload C: 652e5e73478684651cff697fef2a3ddbe34458e0
+cwd: /Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01
+command: node --max-old-space-size=8192 --experimental-strip-types docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts 130 980
+environment: 00-environment.json; {"TREE":"/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01","PRE":"1"}
+started: 2026-09-27T10:59:57.135Z
+
+tree=/Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01 innerArrays=130 nameLength=980 issues≈532480
+A3 visibility-only submitOutcome (no grant): refused unauthorized_submission, reason 216 units, refusals +1, 441 ms
+A4 grant holder, stale epoch: refused stale_exchange, reason 144 units, refusals +1, 437 ms
+
+exit: 0; signal: null; error: none

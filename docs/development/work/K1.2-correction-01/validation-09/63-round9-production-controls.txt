@@ -1,0 +1,43 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/sweeps-09.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:47:26.434Z
+
+ENV node=v25.2.1 platform=darwin arch=arm64 mutants=5 reviewed-H=4a917f8caac04e7d9861e0ec3638662d52f9d3ae
+CONTROL clean tree: this sweep "takeover: accepted" 2 scenarios/75 runs/0 violations; reviewed H's sweep "takeover: accepted" 2/75/0
+CONTROL clean tree: this sweep "=report: enter a protocol hold" 1 scenarios/26 runs/0 violations; reviewed H's sweep "report: enter a protocol hold" 3/80/0
+CONTROL clean tree: this sweep "=outcome: continue" 1 scenarios/1087 runs/0 violations; reviewed H's sweep "outcome: continue" 2/2190/0
+CONTROL clean tree: this sweep "recover: refused, Execution hidden from the caller" 1 scenarios/4 runs/0 violations; reviewed H's sweep "recover:" 12/29623/0
+CONTROL clean tree: this sweep "takeover: refused, the safety callback ended the Execution" 1 scenarios/27 runs/0 violations; reviewed H's sweep "takeover:" 8/187/0
+REJECTED M1 a contained takeover refusal also revokes the setup attempt's grant (ORACLE-01 item 1)
+  this sweep "takeover: accepted": exit=1 runs=75 violations=4
+  first violation: takeover: accepted (review 11's seed): operation 11/35 (Object.getOwnPropertyDescriptor at envelope.ts:242 observeOwn): refused and left a state other than the no-call state plus that refusal
+  ACCEPTED by reviewed H's sweep "takeover: accepted": exit=0 scenarios=2 runs=75 violations=0
+  Kernel suite (context only): exit=1 tests=1445 fail=4
+  ACCEPTED by this sweep with CHECKS.setupGrant disabled: exit=0 violations=0
+REJECTED M2 a report whose diagnostic could not be read answers with no holds (ORACLE-01 item 2)
+  this sweep "=report: enter a protocol hold": exit=1 runs=26 violations=1
+  first violation: report: enter a protocol hold: operation 15/25 (Object.getOwnPropertyDescriptor at envelope.ts:242 observeOwn): accepted with an answer or state other than the uninjected decision or the declared alternate
+  ACCEPTED by reviewed H's sweep "report: enter a protocol hold": exit=0 scenarios=3 runs=80 violations=0
+  Kernel suite (context only): exit=0 tests=1445 fail=0
+  ACCEPTED by this sweep with CHECKS.returned disabled: exit=0 violations=0
+REJECTED M3 Outcome acceptance appends its receipt out of the declared apply order (ORACLE-01 item 3)
+  this sweep "=outcome: continue": exit=1 runs=1087 violations=10
+  first violation: outcome: continue: reference: the declared apply sequences do not match coordinator.ts: #accept: statement 2 of the declared sequence is "appendOwn(record.receipts, receipt);", not "for (let index = 0; index < toAcknowledge.length; index += 1) (readAt(toAcknowledge, index) as MailboxEntry).disposition = acknowledgment;"
+  ACCEPTED by reviewed H's sweep "outcome: continue": exit=0 scenarios=2 runs=2190 violations=0
+  Kernel suite (context only): exit=0 tests=1445 fail=0
+REJECTED M4 a hidden caller's recovery refusal consumes the Execution's refusal position (SCOPE-01)
+  this sweep "recover: refused, Execution hidden from the caller": exit=1 runs=6 violations=2
+  first violation: recover: refused, Execution hidden from the caller: reference: the uninjected refusal naming no Execution changed the Execution or returned another refusal
+  ACCEPTED by reviewed H's sweep "recover:": exit=0 scenarios=12 runs=29623 violations=0
+  Kernel suite (context only): exit=1 tests=1445 fail=2
+REJECTED M5 the post-callback terminal exit advances the refusal index before its record exists (SCOPE-01)
+  this sweep "takeover: refused, the safety callback ended the Execution": exit=1 runs=27 violations=3
+  first violation: takeover: refused, the safety callback ended the Execution: operation 24/26 (Object.freeze at refusal.ts:144 mintRefusal): threw and left a state no complete decision explains
+  ACCEPTED by reviewed H's sweep "takeover:": exit=0 scenarios=8 runs=187 violations=0
+  Kernel suite (context only): exit=1 tests=1445 fail=2
+  ACCEPTED by this sweep with CHECKS.nextRefusal disabled: exit=0 violations=0
+ALL ROUND-9 PRODUCTION CONTROLS REJECTED HERE AND ACCEPTED BY REVIEWED H'S SWEEP; CLEAN CONTROLS PASSED
+
+exit: 0; signal: null; error: none

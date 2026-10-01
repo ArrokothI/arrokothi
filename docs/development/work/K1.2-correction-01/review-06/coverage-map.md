@@ -1,0 +1,23 @@
+# Independent coverage map (derived before reading implementation-03 / closure-03 / coverage-04)
+
+Sources: 007 correction row + amendment; contract rev 4 (DEC-1..7); invalidation-02; review-04 required
+outcomes; values.md fixed semantic limits (V-D1) at H; K1.1-correction-02 KC2-1..6; K1.2 C1..C15 (rev 9);
+decision-01/02; 006/008/012 at base a20d278.
+
+| # | Obligation / source | Distinguishing schedule | Expected / forbidden | Planned evidence |
+|---|---|---|---|---|
+| V1 | V-D1 refusal memory, every issue-producing family (values.ts: 25 pushIssue sites; codes undefined_member, unsupported_form, non_finite_number, lone_surrogate, string_too_long, cycle, too_deep, too_many_entries, unrepresentable_member, unstable_representation, too_many_bytes) | high-cardinality roots per family (shared inner arrays; 1-byte positions) vs costliest at-limit accepted root | retained issues <= 8 + #codes per root; peak memory <= accept | own probe: per-family retained count + heap/RSS vs accept |
+| V2 | V-D1 refusal time | same, incl. long constructor-name describe(), long member names, over-long paths | time <= at-limit accept | own timing probe (canonicalize, submitOutcome) |
+| V3 | Multi-root eager capture pre-authority (values.md new para; invalidation-02) | 8 and many roots, no grant, visible caller | refusal (unauthorized) cost <= accepting same count at limit; each root's budget separate | own probe via submitOutcome |
+| V4 | Preserve accepted semantics: exact values, 4 limits, single observation, ambient safety, byte-budget stop, sibling traversal continues, KC2-1..5 | getters counting reads; byte stop 1,048,576/1,048,577; prototype pollution of occurrences/code/path setters | identical accept/refuse decisions and read counts vs prevH; no new ambient reads | diff trace + targeted mutants + existing KC2 tests |
+| V5 | DEC-7 weights: every captured issue -> detail or exact code count; first 8 details; order by first remaining occurrence; suffix never consumes detail slot; no invented location | >8 issues mixed codes within one root; multi-root; envelope issues interleaved; creation/ingress explain | counts exact; order correct across consumers (located spread, appendRootIssues, explain, explainDiagnosticIssues) | trace + mutants (drop occurrences in located/appendRootIssues; count 1 per suffix; wrong ordering) |
+| V6 | Path construction bounded before concatenation; omission sticky below omitted ancestor; sentinel not confusable | long key then short child; exactly 128/129 path; literal "<omitted>" member | path <=128 or <omitted>; child of omitted stays omitted | trace + mutants on child/element bounds |
+| V7 | Summary describes only positions examined; nothing past byte stop | byte stop mid-array with later refused siblings | no counts for unread positions | trace + test |
+| V8 | DEC-5 16,384 bound still holds with weighted counts | max roots x max counts | reason <= 16,384 | trace + existing aggregate tests |
+| V9 | EVID-01: exact retained/returned coordinates for unrenderable minted IDs (receipt, Emission ID/record, result ID/record, ack disposition, hold coords, delivery row, answers); Emission uniqueness across exchanges; receipt uniqueness across Executions | X8..X23-style store/return-through-diagnosticIdentity mutants | every such mutant rejected by suite vs clean control | own mutant runner, full kernel suite |
+| V10 | Other diagnosticIdentity-adjacent sites (006 closure) | grep all diagnosticIdentity/diagnosticText call sites for non-diagnostic use | none flows into retained/compared state | trace |
+| V11 | C1..C15 cumulative (K1.2 rev 9) incl. decision-02 order, controls order, replay, takeover, holds, late reports, B-5 terminal | carried ablations (sealed/adapted 36, correction set) + own spot mutants on changed code | all hold | reruns + trace of changed dependents |
+| V12 | Layer 3 payload: values.md new para + OPEN marker; rewrite-index §4; roadmap; BASELINE section | one owner; no status; no silently settled open choice; §5 #3/#26/#28/#30 | compliant; new normative text within invalidation-02 "settles no new semantics" | read + grep |
+| V13 | Tests changed: removed/weakened assertions replaced by stronger weighted assertions | diff of prevH..C tests | no dropped ordering/authority/forbidden-mutation checks | diff read |
+| V14 | Process: C/H identity, C..H allowlist output-only, manifest digests, report fields (008), 007 row, no self-acceptance | git | exact | git checks |
+| V15 | Public surface: ValueIssue gains `occurrences`; boundaryValueIssues/canonicalize exported; SDK preflight consumer | SDK preflight renders issue.path/message; suffix entries | no silent misreport | trace |

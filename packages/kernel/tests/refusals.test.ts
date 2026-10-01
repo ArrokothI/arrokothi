@@ -17,15 +17,11 @@ const author = caller("app-a", "tenant-a");
 describe("K1.1-C7 unlanded surfaces", () => {
   test("each refuses, names its owner packet, and returns nothing", () => {
     const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
-    // Governing 007: Outcome acceptance, takeover and the recovery hold are K1.2's;
-    // out-of-band cancellation and terminal disposition are K1.3's. K1.1 implements none
-    // of them (K11-R1-SCOPE-01); each refuses naming its owner.
-    const expectations: [() => unknown, string, string][] = [
-      [() => kernel.submitOutcome(), "submitOutcome", "K1.2"],
-      [() => kernel.requestTakeover(), "requestTakeover", "K1.2"],
-      [() => kernel.recoverExecution(), "recoverExecution", "K1.2"],
-      [() => kernel.cancelExecution(), "cancelExecution", "K1.3"],
-    ];
+    // Governing 007: out-of-band cancellation and its terminal disposition are K1.3's, and the
+    // surface refuses naming its owner (K11-R1-SCOPE-01). Outcome submission, takeover and the
+    // recovery hold refused here as K1.2's until K1.2 implemented them; their behavior is now pinned
+    // by that packet's own suites (`outcome-acceptance`, `takeover`, `recovery` tests).
+    const expectations: [() => unknown, string, string][] = [[() => kernel.cancelExecution(), "cancelExecution", "K1.3"]];
 
     for (const [call, surface, owner] of expectations) {
       let returned: unknown = "sentinel";
@@ -51,7 +47,7 @@ describe("K1.1-C7 unlanded surfaces", () => {
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     const before = accepted(kernel.inspect(author, created.executionId));
 
-    for (const call of [() => kernel.submitOutcome(), () => kernel.requestTakeover(), () => kernel.recoverExecution(), () => kernel.cancelExecution()]) {
+    for (const call of [() => kernel.cancelExecution()]) {
       assert.throws(call, UnsupportedKernelSurfaceError);
     }
 

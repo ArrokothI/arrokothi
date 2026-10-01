@@ -2,7 +2,7 @@
  * Controlled fakes for the K1.1 cases.
  *
  * 012's deterministic-execution method asks for "controlled fakes and explicit barriers": the
- * Drivers here never do work of their own, and the one that delays holds its promise until a test
+ * Drivers here never do work of their own, and the one that delays retains its reporting capability until a test
  * releases it, so "the coordinator did not wait" is an observed fact rather than a timing accident.
  *
  * Nothing here re-derives protocol behaviour. A fake that decided what the Kernel should have done
@@ -15,8 +15,10 @@ import type {
   CreateExecutionRequest,
   DeliverySettlement,
   ExecutionDriver,
+  OutcomeEnvelope,
+  SubmissionGrant,
 } from "../src/index.ts";
-import { defineAt, restoreDescriptor } from "../src/own-array.ts";
+import { defineAt, readAt, restoreDescriptor } from "../src/own-array.ts";
 
 /**
  * The `Object.prototype` state before descriptor-field pollution, so it can be restored exactly.
@@ -271,7 +273,30 @@ export function inheritedIndexIsLive(index: number): boolean {
   return probe.length === 0 || !Object.prototype.hasOwnProperty.call(probe, `${index}`);
 }
 
-export const caller = (namespace: string, ...scopes: string[]): AuthenticatedCaller => ({
+/**
+ * A control-authorized caller: may inspect Executions in `scopes` and may also use the three
+ * K1.2 exchange controls there (K1.2-DEC-14).
+ *
+ * Existing suites use this for all operations, so they exercise the control-authorized arm. New
+ * distinguishing cases use `observer` for the arm lacking control authority. Outcome submission
+ * separately requires the current attempt grant for either caller (K1.2-DEC-20).
+ */
+export const caller = (namespace: string, ...scopes: string[]): AuthenticatedCaller => {
+  const resolved = scopes.length > 0 ? scopes : ["tenant-a"];
+  return {
+    namespace,
+    scopes: resolved,
+    controlScopes: [...resolved],
+  };
+};
+
+/**
+ * A caller with visibility: may inspect Executions in `scopes` but holds no control power there
+ * (K1.2-DEC-14). Takeover, recovery declarations and protocol-failure reports from this caller are
+ * refused as `unauthorized_control` with no control-state mutation. The caller may separately
+ * receive a current attempt grant and submit an Outcome that ends holds (K1.2-DEC-20).
+ */
+export const observer = (namespace: string, ...scopes: string[]): AuthenticatedCaller => ({
   namespace,
   scopes: scopes.length > 0 ? scopes : ["tenant-a"],
 });
@@ -290,18 +315,49 @@ export const createRequest = (overrides: Partial<CreateExecutionRequest> = {}): 
 
 export interface RecordingDriver extends ExecutionDriver {
   readonly seen: Activation[];
+  /** Every submission grant handed over with a delivery, in delivery order (K1.2-DEC-20). */
+  readonly submissions: SubmissionGrant[];
 }
+
+/**
+ * The latest grant observed by this fake Driver for one Activation, for ordinary test setup.
+ *
+ * This lookup does not prove grant lifetime or validity: it also returns a rotated grant from a
+ * broken redelivery, or an old grant after resolution. Tests of preservation/retirement must save
+ * the earlier delivery's reference before the transition and submit that saved reference.
+ * `submission-lifetime.test.ts` records Driver arguments directly and never uses this helper.
+ * Reads through the hardened accessor so an inherited indexed trap left live by an earlier
+ * hostile window cannot substitute a different grant.
+ */
+export const submissionFor = (
+  driver: { readonly submissions: readonly SubmissionGrant[] },
+  activationId: string,
+): SubmissionGrant => {
+  for (let index = driver.submissions.length - 1; index >= 0; index -= 1) {
+    const grant = readAt(driver.submissions, index) as SubmissionGrant | undefined;
+    if (grant !== undefined && grant.activationId === activationId) return grant;
+  }
+  throw new Error(`no submission grant recorded for Activation ${activationId}`);
+};
 
 /** Records every Activation handed to it and reports delivered synchronously. */
 export function recordingDriver(driverId = "fake-recording"): RecordingDriver {
   const seen: Activation[] = [];
+  const submissions: SubmissionGrant[] = [];
   return {
     driverId,
     seen,
-    deliver(activation: Activation, settlement: DeliverySettlement): undefined {
+    submissions,
+    deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
       recordOwn(seen, activation);
+      recordOwn(submissions, submission);
       settlement.delivered();
       return undefined;
+    },
+    // K1.2-DEC-15: this fake declares the current phase safe to replace, so takeovers proceed.
+    // A Driver that cannot establish this refuses the takeover instead.
+    isSafeToReplace(): boolean {
+      return true;
     },
   };
 }
@@ -309,6 +365,8 @@ export function recordingDriver(driverId = "fake-recording"): RecordingDriver {
 export interface DelayedDriver extends ExecutionDriver {
   readonly seen: Activation[];
   readonly settlements: DeliverySettlement[];
+  /** Every submission grant handed over with a delivery, in delivery order (K1.2-DEC-20). */
+  readonly submissions: SubmissionGrant[];
   /** Reports delivered for every captured settlement still outstanding. */
   release(): void;
 }
@@ -323,14 +381,20 @@ export interface DelayedDriver extends ExecutionDriver {
 export function delayedDriver(driverId = "fake-delayed"): DelayedDriver {
   const seen: Activation[] = [];
   const settlements: DeliverySettlement[] = [];
+  const submissions: SubmissionGrant[] = [];
   return {
     driverId,
     seen,
     settlements,
-    deliver(activation: Activation, settlement: DeliverySettlement): undefined {
+    submissions,
+    deliver(activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
       recordOwn(seen, activation);
       recordOwn(settlements, settlement);
+      recordOwn(submissions, submission);
       return undefined;
+    },
+    isSafeToReplace(): boolean {
+      return true;
     },
     release(): void {
       while (settlements.length > 0) (settlements.pop() as DeliverySettlement).delivered();
@@ -338,22 +402,58 @@ export function delayedDriver(driverId = "fake-delayed"): DelayedDriver {
   };
 }
 
+/** A Driver that never establishes safe replacement (K1.2-DEC-15): takeovers are refused. */
+export const unsafeDriver = (driverId = "fake-unsafe"): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      settlement.delivered();
+      return undefined;
+    },
+    isSafeToReplace(): boolean {
+      return false;
+    },
+  };
+};
+
 /** Throws synchronously from `deliver` (implicit failure report, no explicit report). */
-export const throwingDriver = (driverId = "fake-throwing"): ExecutionDriver => ({
-  driverId,
-  deliver(): undefined {
-    throw new Error("native submit refused");
-  },
-});
+export const throwingDriver = (driverId = "fake-throwing"): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, _settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      throw new Error("native submit refused");
+    },
+    isSafeToReplace(): boolean {
+      return true;
+    },
+  };
+};
 
 /** Reports failed synchronously with a primitive string reason (retained, bounded). */
-export const failingDriver = (reason = "native submit lost", driverId = "fake-failing"): ExecutionDriver => ({
-  driverId,
-  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
-    settlement.failed(reason);
-    return undefined;
-  },
-});
+export const failingDriver = (
+  reason = "native submit lost",
+  driverId = "fake-failing",
+): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      settlement.failed(reason);
+      return undefined;
+    },
+    isSafeToReplace(): boolean {
+      return true;
+    },
+  };
+};
 
 /**
  * A conforming Driver with internal asynchronous work (KC1-ARCH-1).
@@ -362,18 +462,29 @@ export const failingDriver = (reason = "native submit lost", driverId = "fake-fa
  * the failure through the capability. No promise crosses into Kernel observation, so no
  * unhandled rejection can escape from the reporting mechanism itself.
  */
-export const asyncFailingDriver = (reason = "native submit lost", driverId = "fake-async-failing"): ExecutionDriver => ({
-  driverId,
-  deliver(_activation: Activation, settlement: DeliverySettlement): undefined {
-    Promise.reject(new Error(reason)).then(
-      () => {},
-      (error: unknown) => {
-        settlement.failed(error);
-      },
-    );
-    return undefined;
-  },
-});
+export const asyncFailingDriver = (
+  reason = "native submit lost",
+  driverId = "fake-async-failing",
+): ExecutionDriver & { readonly submissions: SubmissionGrant[] } => {
+  const submissions: SubmissionGrant[] = [];
+  return {
+    driverId,
+    submissions,
+    deliver(_activation: Activation, settlement: DeliverySettlement, submission: SubmissionGrant): undefined {
+      recordOwn(submissions, submission);
+      Promise.reject(new Error(reason)).then(
+        () => {},
+        (error: unknown) => {
+          settlement.failed(error);
+        },
+      );
+      return undefined;
+    },
+    isSafeToReplace(): boolean {
+      return true;
+    },
+  };
+};
 
 /** The holder of the Array iterator `next` the exact JCS call reads (K11-R16-VAL-01). */
 export const arrayIteratorPrototype = (): object => Object.getPrototypeOf([][Symbol.iterator]()) as object;
@@ -443,3 +554,31 @@ export function refused<E>(result: { ok: true; value: unknown } | { ok: false; e
   if (result.ok) throw new Error("expected a refusal, but the request was accepted");
   return result.error;
 }
+
+/** What an Outcome answers: the exchange and the attempt, as a dispatch or takeover reported them. */
+export interface AnsweredExchange {
+  readonly activationId: string;
+  readonly writerEpoch: number;
+  readonly baseProgressRevision: number;
+}
+
+/**
+ * A well-formed `continue` Outcome answering `exchange`, with one thing varied per test.
+ *
+ * It names the exchange explicitly, as every submission must (PLAN-01); the builder never looks the
+ * current exchange up, so a test that wants a stale answer passes the stale identities.
+ */
+export const outcomeFor = (
+  executionId: string,
+  exchange: AnsweredExchange,
+  overrides: Partial<Record<keyof OutcomeEnvelope, unknown>> & Record<string, unknown> = {},
+): OutcomeEnvelope =>
+  ({
+    executionId,
+    activationId: exchange.activationId,
+    writerEpoch: exchange.writerEpoch,
+    baseProgressRevision: exchange.baseProgressRevision,
+    progress: { phase: "draft", draftRef: "draft-1" },
+    next: { step: "continue" },
+    ...overrides,
+  }) as OutcomeEnvelope;

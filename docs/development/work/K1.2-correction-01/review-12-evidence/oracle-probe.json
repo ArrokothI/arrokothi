@@ -1,0 +1,58 @@
+{
+  "purpose": "Mechanical challenge of the exact candidate oracle branches. These altered observations are not claims of production executions or analyzer-escaping programs.",
+  "results": [
+    {
+      "name": "refusal revokes the setup grant",
+      "originalSetupGrant": "accepted at 5",
+      "changedSetupGrant": "unauthorized_submission",
+      "decision": {
+        "classes": {
+          "refused: exactly one refusal recorded": 1
+        },
+        "violations": []
+      }
+    },
+    {
+      "name": "accepted report returns the opposite hold answer",
+      "originalAnswer": {
+        "activationId": "execution-5:fault8:tenant-a9:report-17/activation-1",
+        "writerEpoch": 1,
+        "recoveryHolds": [
+          {
+            "cause": "protocol_failure",
+            "reason": "the response of the attempt at writer epoch 1 could not be classified as an Outcome: unclassifiable",
+            "activationId": "execution-5:fault8:tenant-a9:report-17/activation-1",
+            "writerEpoch": 1,
+            "permittedNextActions": [
+              "request_takeover",
+              "submit_outcome"
+            ]
+          }
+        ],
+        "changed": true
+      },
+      "changedAnswer": {
+        "activationId": "execution-5:fault8:tenant-a9:report-17/activation-1",
+        "writerEpoch": 1,
+        "recoveryHolds": [],
+        "changed": false
+      },
+      "decision": {
+        "classes": {
+          "accepted after a contained fault: the uninjected decision": 1
+        },
+        "violations": []
+      }
+    },
+    {
+      "name": "arbitrary progress corruption is labeled an Outcome apply prefix solely by method name",
+      "changedProgressRevision": 123456,
+      "decision": {
+        "classes": {
+          "threw inside the declared Outcome apply window": 1
+        },
+        "violations": []
+      }
+    }
+  ]
+}

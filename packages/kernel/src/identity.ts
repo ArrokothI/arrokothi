@@ -16,10 +16,23 @@
  * `namespace` is the trusted producer namespace: the first member of an Input ID and the scope of a
  * creation key. `scopes` are the authority scopes this caller may reach; an Execution is bound to
  * exactly one at creation, and a caller outside it cannot see the Execution at all.
+ *
+ * `controlScopes` is the separate control power `evidence.md` requires: inspection privilege does
+ * not grant re-execution or settlement privilege. A caller may inspect an Execution it can reach
+ * through `scopes`, but the three K1.2 exchange controls (takeover, recovery declaration,
+ * protocol-failure report) additionally require the Execution's scope in `controlScopes`. Absent
+ * (or not containing the scope) denies these explicit control commands, not all state-changing
+ * paths. A caller with visibility and the current attempt's separate `SubmissionGrant` may submit
+ * a fresh Outcome without `controlScopes`; accepting it resolves the exchange and may end its
+ * holds (K1.2-DEC-20). Visibility alone is insufficient for a fresh Outcome. This is the in-process
+ * binding's Kernel-enforced distinction (K1.2-DEC-14); it introduces no universal token format or
+ * remote policy backend, which stay K2's (`authority.md`). Like `scopes`, this list is a trusted
+ * host input, not caller-observed state.
  */
 export interface AuthenticatedCaller {
   readonly namespace: string;
   readonly scopes: readonly string[];
+  readonly controlScopes?: readonly string[];
 }
 
 /**
@@ -100,13 +113,16 @@ export const inputIdKey = (id: InputId): string => packIdentity([id.producerName
 export const creationRequestIdKey = (id: CreationRequestId): string => packIdentity([id.producerNamespace, id.scope, id.requestKey]);
 
 /**
- * The acceptance boundaries this packet implements.
+ * The acceptance boundaries this package implements.
  *
- * `identity.md` names six receipt scopes. Three of them belong to boundaries no accepted packet has
- * built - Outcome acceptance is K1.2's, Effect admission and settlement are K2's, child and message
- * operations are K4's - so this union has three members rather than a placeholder for each.
+ * `identity.md` names six receipt scopes. K1.1 built creation/input ingress (two members here,
+ * because the creation receipt also covers the initial input) and dispatch intent; K1.2 adds Outcome
+ * acceptance. The other three belong to boundaries no packet has built yet - Effect admission and
+ * settlement are K2's, child and message operations are K4's - so this union has no placeholder for
+ * them. An authorized takeover re-records the dispatch intent's current attempt and is receipted at
+ * that boundary rather than inventing a seventh (K1.2-DEC-6).
  */
-export type ReceiptBoundary = "creation" | "input_ingress" | "dispatch_intent";
+export type ReceiptBoundary = "creation" | "input_ingress" | "dispatch_intent" | "outcome_acceptance";
 
 /**
  * Evidence that one specific request was accepted at one named boundary.
@@ -139,6 +155,7 @@ const BOUNDARY_PREFIX: Record<ReceiptBoundary, string> = {
   creation: "crt",
   input_ingress: "inp",
   dispatch_intent: "dsp",
+  outcome_acceptance: "out",
 };
 
 /**

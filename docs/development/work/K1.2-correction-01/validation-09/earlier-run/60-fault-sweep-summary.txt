@@ -1,0 +1,76 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/fault-child.ts --summary
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T02:50:24.249Z
+
+PASS recover: enter a code hold [recoverExecution L1910]: 2946 operations; 68 threw: no-call state; 2878 refused: exactly one refusal recorded; 1 completed
+PASS recover: update a code hold [recoverExecution L1910]: 2950 operations; 68 threw: no-call state; 2882 refused: exactly one refusal recorded; 1 completed
+PASS recover: clear a code hold [recoverExecution L1910]: 2996 operations; 69 threw: no-call state; 2927 refused: exactly one refusal recorded; 1 completed
+PASS recover: nothing to change [recoverExecution L1906]: 2993 operations; 66 threw: no-call state; 2927 refused: exactly one refusal recorded; 1 completed
+PASS recover: the same hold again (idempotent) [recoverExecution L1906]: 2942 operations; 64 threw: no-call state; 2878 refused: exactly one refusal recorded; 1 completed
+PASS recover: enter a code hold beside a protocol hold [recoverExecution L1910]: 2950 operations; 72 threw: no-call state; 2878 refused: exactly one refusal recorded; 1 completed
+PASS recover: clear a code hold beside a protocol hold [recoverExecution L1910]: 3000 operations; 73 threw: no-call state; 2927 refused: exactly one refusal recorded; 1 completed
+PASS recover: refused, unknown Execution [recoverExecution L1848]: 3 operations; 3 threw: no-call state; 1 completed
+PASS recover: refused, Execution hidden from the caller [recoverExecution L1848]: 3 operations; 3 threw: no-call state; 1 completed
+PASS recover: refused without control power [recoverExecution #requireControl L2239]: 7 operations; 7 threw: no-call state; 1 completed
+PASS recover: refused malformed request [recoverExecution L1855]: 22 operations; 20 threw: no-call state; 2 refused: exactly one refusal recorded; 1 completed
+PASS recover: refused stale Activation [recoverExecution #openExchange L2004]: 2935 operations; 57 threw: no-call state; 2878 refused: exactly one refusal recorded; 1 completed
+PASS recover: refused with no unresolved exchange [recoverExecution #openExchange L2001]: 2935 operations; 57 threw: no-call state; 2878 refused: exactly one refusal recorded; 1 completed
+PASS recover: refused after the Execution ended [recoverExecution #openExchange L1995]: 2935 operations; 57 threw: no-call state; 2878 refused: exactly one refusal recorded; 1 completed
+PASS report: enter a protocol hold [reportProtocolFailure L1975]: 25 operations; 20 threw: no-call state; 2 refused: exactly one refusal recorded; 3 accepted after a contained fault: the declared alternate; 1 completed
+PASS report: enter a protocol hold without a diagnostic [reportProtocolFailure L1975]: 23 operations; 20 threw: no-call state; 2 refused: exactly one refusal recorded; 1 accepted after a contained fault: the uninjected decision; 1 completed
+PASS report: enter a protocol hold beside a code hold [reportProtocolFailure L1975]: 29 operations; 24 threw: no-call state; 2 refused: exactly one refusal recorded; 3 accepted after a contained fault: the declared alternate; 1 completed
+PASS report: the same hold again (idempotent) [reportProtocolFailure L1958]: 21 operations; 16 threw: no-call state; 2 refused: exactly one refusal recorded; 3 accepted after a contained fault: the uninjected decision; 1 completed
+PASS report: refused, unknown Execution [reportProtocolFailure L1933]: 3 operations; 3 threw: no-call state; 1 completed
+PASS report: refused, Execution hidden from the caller [reportProtocolFailure L1933]: 3 operations; 3 threw: no-call state; 1 completed
+PASS report: refused without control power [reportProtocolFailure #requireControl L2239]: 7 operations; 7 threw: no-call state; 1 completed
+PASS report: refused malformed report [reportProtocolFailure L1942]: 23 operations; 20 threw: no-call state; 3 refused: exactly one refusal recorded; 1 completed
+PASS report: refused stale Activation [reportProtocolFailure #openExchange L2004]: 20 operations; 15 threw: no-call state; 5 refused: exactly one refusal recorded; 1 completed
+PASS report: refused with no unresolved exchange [reportProtocolFailure #openExchange L2001]: 20 operations; 15 threw: no-call state; 5 refused: exactly one refusal recorded; 1 completed
+PASS report: refused after the Execution ended [reportProtocolFailure #openExchange L1995]: 20 operations; 15 threw: no-call state; 5 refused: exactly one refusal recorded; 1 completed
+PASS report: refused stale writer epoch [reportProtocolFailure L1949]: 20 operations; 15 threw: no-call state; 5 refused: exactly one refusal recorded; 1 completed
+PASS takeover: accepted (review 11's seed) [requestTakeover L1822]: 35 operations; 17 threw: no-call state; 11 refused: exactly one refusal recorded; 2 threw while delivering after the commit: delivery row absent; 1 threw while delivering after the commit: delivery row pending; 4 accepted; the Driver's delivery failed after the commit; 1 completed
+PASS takeover: accepted, clearing a protocol hold [requestTakeover L1822]: 38 operations; 18 threw: no-call state; 11 refused: exactly one refusal recorded; 2 threw inside the declared takeover apply window: receipt appended, clearing record not; 2 threw while delivering after the commit: delivery row absent; 1 threw while delivering after the commit: delivery row pending; 4 accepted; the Driver's delivery failed after the commit; 1 completed
+PASS takeover: refused, unknown Execution [requestTakeover L1666]: 3 operations; 3 threw: no-call state; 1 completed
+PASS takeover: refused, Execution hidden from the caller [requestTakeover L1666]: 3 operations; 3 threw: no-call state; 1 completed
+PASS takeover: refused without control power [requestTakeover #requireControl L2239]: 7 operations; 7 threw: no-call state; 1 completed
+PASS takeover: refused malformed request [requestTakeover L1673]: 22 operations; 20 threw: no-call state; 2 refused: exactly one refusal recorded; 1 completed
+PASS takeover: refused stale Activation [requestTakeover #openExchange L2004]: 17 operations; 15 threw: no-call state; 2 refused: exactly one refusal recorded; 1 completed
+PASS takeover: refused with no unresolved exchange [requestTakeover #openExchange L2001]: 17 operations; 15 threw: no-call state; 2 refused: exactly one refusal recorded; 1 completed
+PASS takeover: refused after the Execution ended [requestTakeover #openExchange L1995]: 17 operations; 15 threw: no-call state; 2 refused: exactly one refusal recorded; 1 completed
+PASS takeover: refused stale writer epoch [requestTakeover L1680]: 17 operations; 15 threw: no-call state; 2 refused: exactly one refusal recorded; 1 completed
+PASS takeover: refused while a code hold stands [requestTakeover L1689]: 17 operations; 15 threw: no-call state; 2 refused: exactly one refusal recorded; 1 completed
+PASS takeover: refused by a Driver that cannot replace safely [requestTakeover L1709]: 26 operations; 15 threw: no-call state; 11 refused: exactly one refusal recorded; 1 completed
+PASS takeover: refused, the safety callback ended the Execution [requestTakeover L1724]: 26 operations; 12 threw: no-call state; 11 refused: exactly one refusal recorded; 3 threw after the safety callback: its decision only; 1 completed
+PASS takeover: refused, the safety callback resolved the exchange [requestTakeover L1734]: 26 operations; 12 threw: no-call state; 11 refused: exactly one refusal recorded; 3 threw after the safety callback: its decision only; 1 completed
+PASS takeover: refused, the safety callback dispatched a different exchange [requestTakeover L1742]: 26 operations; 12 threw: no-call state; 11 refused: exactly one refusal recorded; 3 threw after the safety callback: its decision only; 1 completed
+PASS takeover: refused, the safety callback took the exchange over itself [requestTakeover L1751]: 26 operations; 12 threw: no-call state; 11 refused: exactly one refusal recorded; 3 threw after the safety callback: its decision only; 1 completed
+PASS takeover: refused, the safety callback held the exchange's code [requestTakeover L1765]: 26 operations; 12 threw: no-call state; 11 refused: exactly one refusal recorded; 3 threw after the safety callback: its decision only; 1 completed
+PASS outcome: continue [submitOutcome L1631]: 1086 operations; 1 refused without naming the Execution: nothing recorded; 48 threw: no-call state; 1028 refused: exactly one refusal recorded; 9 threw inside the declared Outcome apply window: a permitted prefix; 1 completed
+PASS outcome: complete with an Emission and a queued outside-batch input [submitOutcome L1631]: 3959 operations; 1 refused without naming the Execution: nothing recorded; 102 threw: no-call state; 3839 refused: exactly one refusal recorded; 17 threw inside the declared Outcome apply window: a permitted prefix; 1 completed
+PASS outcome: fail [submitOutcome L1631]: 2063 operations; 1 refused without naming the Execution: nothing recorded; 65 threw: no-call state; 1985 refused: exactly one refusal recorded; 12 threw inside the declared Outcome apply window: a permitted prefix; 1 completed
+PASS outcome: continue, ending a code and a protocol hold [submitOutcome L1631]: 1102 operations; 1 refused without naming the Execution: nothing recorded; 54 threw: no-call state; 1028 refused: exactly one refusal recorded; 19 threw inside the declared Outcome apply window: a permitted prefix; 1 completed
+PASS outcome: exact replay [submitOutcome L1457]: 1052 operations; 1 refused without naming the Execution: nothing recorded; 23 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused conflicting replay [submitOutcome L1459]: 1000 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 973 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused, the destination cannot be read [submitOutcome L1431]: 2 operations; 1 refused without naming the Execution: nothing recorded; 1 threw: no-call state; 1 completed
+PASS outcome: refused, unknown Execution [submitOutcome L1433]: 4 operations; 1 refused without naming the Execution: nothing recorded; 3 threw: no-call state; 1 completed
+PASS outcome: refused, Execution hidden from the caller [submitOutcome L1433]: 4 operations; 1 refused without naming the Execution: nothing recorded; 3 threw: no-call state; 1 completed
+PASS outcome: refused after the Execution ended [submitOutcome L1470]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused with no unresolved exchange [submitOutcome L1483]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused with no unresolved exchange, identity unusable [submitOutcome L1491]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused stale Activation [submitOutcome L1500]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused stale writer epoch [submitOutcome L1524]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused stale writer epoch, identity unusable [submitOutcome L1534]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused stale base revision [submitOutcome L1547]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused stale base revision, identity unusable [submitOutcome L1555]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused without the attempt's grant [submitOutcome L1571]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused without the attempt's grant, identity unusable [submitOutcome L1579]: 1055 operations; 1 refused without naming the Execution: nothing recorded; 26 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused over the Emission capacity [submitOutcome L1589]: 1056 operations; 1 refused without naming the Execution: nothing recorded; 25 threw: no-call state; 1030 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused over the Emission capacity, identity unusable [submitOutcome L1597]: 1056 operations; 1 refused without naming the Execution: nothing recorded; 25 threw: no-call state; 1030 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused malformed content [submitOutcome L1614]: 43 operations; 1 refused without naming the Execution: nothing recorded; 31 threw: no-call state; 11 refused: exactly one refusal recorded; 1 completed
+PASS outcome: refused malformed content, identity unusable [submitOutcome L1618]: 1065 operations; 1 refused without naming the Execution: nothing recorded; 36 threw: no-call state; 1028 refused: exactly one refusal recorded; 1 completed
+EXIT INVENTORY: 57 exits, 57 taken, 0 violations
+FAULT SWEEP PASSED: 66 scenarios, 54288 runs, 0 violations; 35 intercepted operations
+
+exit: 0; signal: null; error: none

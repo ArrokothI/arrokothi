@@ -1,0 +1,36 @@
+payload C: 81dca4575ea56cfdde5b5f8ed72c439c7ec31821
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: npm run test:evals
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-29T11:17:19.512Z
+
+
+> arrokothi-agent-kernel@0.8.1 test:evals
+> node --test --experimental-strip-types tests/evals/*/*.eval.test.ts
+
+▶ an imported MCP operation is indistinguishable from a native one at the Agent layer
+  ✔ the same Agent configuration produces the same behaviour over either executor (46.3615ms)
+✔ an imported MCP operation is indistinguishable from a native one at the Agent layer (46.832041ms)
+▶ reference Agent behavioural baseline
+  ✔ 01 selects the operation the task needs (26.347625ms)
+  ✔ 02 passes semantically correct arguments (2.378291ms)
+  ✔ 03 does not call an operation the task does not need (1.076125ms)
+  ✔ 04 a succeeding operation changes the world (2.114417ms)
+  ✔ 05 recovers and reports when the operation fails (2.10475ms)
+  ✔ 06 recovers and reports when policy denies the operation (2.648584ms)
+  ✔ 07 does not claim success after an unknown outcome (1.740875ms)
+  ✔ 08 an operation outside the exposed set is never selected (1.12225ms)
+  ✔ 09 exhausting the model-call budget is a reported failure, not a loop (2.62025ms)
+  ✔ 10 a confident claim with an unchanged world is graded as a failure (1.120292ms)
+  ✔ the trial abstraction repeats, and a deterministic case repeats identically (4.941291ms)
+✔ reference Agent behavioural baseline (49.053417ms)
+ℹ tests 12
+ℹ suites 2
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 348.568458
+
+exit: 0; signal: null; error: none

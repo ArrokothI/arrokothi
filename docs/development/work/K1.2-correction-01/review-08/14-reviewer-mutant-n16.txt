@@ -1,0 +1,3 @@
+TREE /private/tmp/claude-501/-Users-rex-shih-Documents-ArrokothI-arrokothi/0a1ca599-4930-4cb0-9368-969f6540ae92/scratchpad/h; node v25.2.1; 36 test files
+CONTROL OK CONTROL — tests 1268 pass 1268 fail 0 cancelled 0 (7224 ms)
+REJECTED   N16 object half charges only enumerable names — tests 1268 pass 1267 fail 1 cancelled 0 (16282 ms) — e.g. an oversized own-names listing is classified after at most one descriptor past the entry limit | refusing a value costs no more than the size limit allows

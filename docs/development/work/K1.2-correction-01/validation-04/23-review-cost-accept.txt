@@ -1,0 +1,9 @@
+payload C: 2b8a50297ebe83cb0922bb239aa834a2ecebc1ac
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --max-old-space-size=4096 --experimental-strip-types --expose-gc docs/development/work/K1.2-correction-01/review-02/probe-cost.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi","MODE":"accept"}
+started: 2026-09-28T14:15:53.642Z
+
+accept: accepted in 811 ms; heapUsed +20 MiB, rss 101 MiB
+
+exit: 0; signal: null; error: none

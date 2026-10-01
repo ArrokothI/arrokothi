@@ -1,0 +1,72 @@
+packages/kernel/src/coordinator.ts:84:  acceptActivationIdentity,
+packages/kernel/src/coordinator.ts:89:  diagnosticIdentity,
+packages/kernel/src/coordinator.ts:115:  mintReceipt,
+packages/kernel/src/coordinator.ts:116:  packIdentity,
+packages/kernel/src/coordinator.ts:740:    identity: packIdentity([
+packages/kernel/src/coordinator.ts:815:    identity: packIdentity([
+packages/kernel/src/coordinator.ts:969:    const receipt = mintReceipt("creation", 1, executionId);
+packages/kernel/src/coordinator.ts:1335:          `Activation ${diagnosticIdentity(intent.activation.activationId)} is recovery-held and is not redelivered: ${hold.reason}`,
+packages/kernel/src/coordinator.ts:1440:    const identityUsable = activationField.ok && acceptActivationIdentity(activationField.observed, "activationId", idIssues);
+packages/kernel/src/coordinator.ts:1462:            `an Outcome for Activation ${diagnosticIdentity(activationId)} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,
+packages/kernel/src/coordinator.ts:1473:          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; no further Outcome can be accepted for it`,
+packages/kernel/src/coordinator.ts:1486:            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,
+packages/kernel/src/coordinator.ts:1494:          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,
+packages/kernel/src/coordinator.ts:1503:          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,
+packages/kernel/src/coordinator.ts:1521:    const epochForCurrency = capture.epochForCurrency;
+packages/kernel/src/coordinator.ts:1522:    if (epochForCurrency !== null && epochForCurrency !== currentEpoch) {
+packages/kernel/src/coordinator.ts:1527:            epochForCurrency < currentEpoch
+packages/kernel/src/coordinator.ts:1528:              ? `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
+packages/kernel/src/coordinator.ts:1529:              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
+packages/kernel/src/coordinator.ts:1537:          epochForCurrency < currentEpoch
+packages/kernel/src/coordinator.ts:1538:            ? `The proposal's Activation identity was not usable; writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`
+packages/kernel/src/coordinator.ts:1539:            : `The proposal's Activation identity was not usable; writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,
+packages/kernel/src/coordinator.ts:1544:    const baseForCurrency = capture.baseForCurrency;
+packages/kernel/src/coordinator.ts:1545:    if (baseForCurrency !== null && baseForCurrency !== intent.activation.baseProgressRevision) {
+packages/kernel/src/coordinator.ts:1550:            `Outcome for Activation ${diagnosticIdentity(activationId)}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
+packages/kernel/src/coordinator.ts:1558:          `The proposal's Activation identity was not usable; base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,
+packages/kernel/src/coordinator.ts:1569:    if (submission !== intent.submission) {
+packages/kernel/src/coordinator.ts:1574:            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,
+packages/kernel/src/coordinator.ts:1592:            `the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,
+packages/kernel/src/coordinator.ts:1615:          this.#refusal("malformed_envelope", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined)}`, record),
+packages/kernel/src/coordinator.ts:1683:          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,
+packages/kernel/src/coordinator.ts:1692:          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${exchange.codeHold.reason}`,
+packages/kernel/src/coordinator.ts:1712:          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded native work`,
+packages/kernel/src/coordinator.ts:1727:          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to take over`,
+packages/kernel/src/coordinator.ts:1737:            `Activation ${diagnosticIdentity(named.activationId)} resolved while establishing safe replacement; there is no unresolved exchange to take over`,
+packages/kernel/src/coordinator.ts:1745:          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,
+packages/kernel/src/coordinator.ts:1754:          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,
+packages/kernel/src/coordinator.ts:1768:          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,
+packages/kernel/src/coordinator.ts:1779:    const receipt = mintReceipt("dispatch_intent", position, record.executionId);
+packages/kernel/src/coordinator.ts:1864:      missing += `${missing === "" ? "" : "; "}pinned ${what} ${diagnosticIdentity(value)} is unavailable`;
+packages/kernel/src/coordinator.ts:1952:          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a superseded attempt cannot hold the exchange`,
+packages/kernel/src/coordinator.ts:1996:        this.#refusal("terminal_destination", `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to ${verb}`, record),
+packages/kernel/src/coordinator.ts:2001:      return err(this.#refusal("no_unresolved_exchange", `Execution ${diagnosticIdentity(record.executionId)} has no unresolved Activation to ${verb}`, record));
+packages/kernel/src/coordinator.ts:2007:          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,
+packages/kernel/src/coordinator.ts:2048:    const receipt = mintReceipt("outcome_acceptance", acceptancePosition, record.executionId);
+packages/kernel/src/coordinator.ts:2058:      const emissionId = `emission-${packIdentity([record.executionId, activationId, emission.emissionKey])}`;
+packages/kernel/src/coordinator.ts:2069:        resultId: `result-${packIdentity([record.executionId, activationId])}`,
+packages/kernel/src/coordinator.ts:2198:    return mintReceipt(boundary, position, record.executionId);
+packages/kernel/src/coordinator.ts:2241:      `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,
+packages/kernel/src/index.ts:57:export { creationRequestIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
+packages/kernel/src/outcome.ts:39:  acceptActivationIdentity,
+packages/kernel/src/outcome.ts:40:  diagnosticIdentity,
+packages/kernel/src/outcome.ts:49:import { packIdentity } from "./identity.ts";
+packages/kernel/src/outcome.ts:161: * `epochForCurrency` and `baseForCurrency` carry each number independently: the well-formed value
+packages/kernel/src/outcome.ts:170:  readonly epochForCurrency: number | null;
+packages/kernel/src/outcome.ts:171:  readonly baseForCurrency: number | null;
+packages/kernel/src/outcome.ts:327:      appendIssue(issues, { path: `${label}.emissionKey`, code: "duplicate_key", message: `Emission key "${diagnosticIdentity(emissionKey)}" appears more than once in this Outcome` });
+packages/kernel/src/outcome.ts:429:    return PrimordialObjectFreeze({ claim, epochForCurrency: writerEpoch, baseForCurrency: baseProgressRevision, issues, overCapacity: captured.overCapacity, outcome: null });
+packages/kernel/src/outcome.ts:440:  const identity = packIdentity([
+packages/kernel/src/outcome.ts:446:    packIdentity(emissionParts),
+packages/kernel/src/outcome.ts:458:  return PrimordialObjectFreeze({ claim, epochForCurrency: writerEpoch, baseForCurrency: baseProgressRevision, issues, overCapacity: null, outcome });
+packages/kernel/src/outcome.ts:514:  const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, "activationId", issues);
+packages/kernel/src/outcome.ts:550:  const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, "activationId", issues);
+packages/kernel/src/identity.ts:70: * Load-time `TypeError`: `packIdentity` raises on a non-text part *after* caller-owned values have
+packages/kernel/src/identity.ts:93:export const packIdentity = (parts: readonly string[]): string => {
+packages/kernel/src/identity.ts:112:export const inputIdKey = (id: InputId): string => packIdentity([id.producerNamespace, id.destination, id.requestKey]);
+packages/kernel/src/identity.ts:113:export const creationRequestIdKey = (id: CreationRequestId): string => packIdentity([id.producerNamespace, id.scope, id.requestKey]);
+packages/kernel/src/identity.ts:134: * the Kernel can still return unchanged on a later replay — is held by `mintReceipt` freezing every
+packages/kernel/src/identity.ts:185:export const mintReceipt = (boundary: ReceiptBoundary, position: number, executionId: string): Receipt =>
+packages/kernel/src/envelope.ts:86:export const diagnosticIdentity = (identity: string): string => diagnosticText(identity, "<identity omitted>", 128);
+packages/kernel/src/envelope.ts:163: * from `packIdentity`'s length-prefixed packing, which is injective **over text**. A field that is
+packages/kernel/src/envelope.ts:209:export function acceptActivationIdentity(value: unknown, label: string, issues: LocatedIssue[]): value is string {

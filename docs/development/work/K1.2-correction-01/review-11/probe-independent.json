@@ -1,0 +1,37 @@
+[
+  {
+    "name": "clean",
+    "errors": [],
+    "violations": []
+  },
+  {
+    "name": "default-parameter",
+    "typeErrors": [],
+    "sameAccessInventory": true,
+    "violations": []
+  },
+  {
+    "name": "shadowed-undefined",
+    "typeErrors": [],
+    "sameAccessInventory": true,
+    "violations": []
+  },
+  {
+    "name": "assert-add-member",
+    "typeErrors": [],
+    "sites": [],
+    "unclassified": []
+  },
+  {
+    "name": "predicate-add-member",
+    "typeErrors": [],
+    "sites": [],
+    "unclassified": []
+  },
+  {
+    "name": "nested-strengthening",
+    "typeErrors": [],
+    "sites": [],
+    "unclassified": []
+  }
+]

@@ -1,0 +1,32 @@
+// Reviewer probe: review-14 counterexamples on every surface, independent of the packet's tests.
+import { ExecutionCoordinator } from "../packages/kernel/src/index.ts";
+import { caller, createRequest, accepted, refused, recordingDriver, submissionFor, outcomeFor } from "../packages/kernel/tests/harness.ts";
+const avail = { definitionRevisions: ["weekly-report@3"], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] };
+for (const [label, key, exchanges] of [["CE1 key at limit", "k".repeat(65_536), 1], ["CE2 key 65,494 (this probe's names), exchange 10", "k".repeat(65_494), 10]] as const) {
+  const who = caller("app", "tenant"); const driver = recordingDriver(); const k = new ExecutionCoordinator({ driver });
+  const { executionId } = accepted(k.createExecution(who, createRequest({ creationKey: key, scope: "tenant" })));
+  let open: any;
+  for (let n = 1; n <= exchanges; n++) {
+    open = accepted(k.dispatch(who, executionId, { bound: 1 }));
+    if (n < exchanges && n === 9) console.log(JSON.stringify({ exchange9Scalars: [...open.activationId].length }));
+    if (n < exchanges) accepted(k.submitOutcome(who, outcomeFor(executionId, open, { progress: n }), submissionFor(driver, open.activationId)));
+  }
+  const idLen = [...open.activationId].length;
+  const r: Record<string, unknown> = { label, activationIdScalars: idLen };
+  r.hold = accepted(k.recoverExecution(who, executionId, { activationId: open.activationId, available: { ...avail, progressCodecs: [] } })).recoveryHolds.map((h: any) => h.cause).join();
+  r.clear = accepted(k.recoverExecution(who, executionId, { activationId: open.activationId, available: avail })).recoveryHolds.length;
+  r.protocol = accepted(k.reportProtocolFailure(who, executionId, { activationId: open.activationId, writerEpoch: 1 })).changed;
+  const tk = accepted(k.requestTakeover(who, executionId, { activationId: open.activationId, writerEpoch: 1 }));
+  r.takeover = `${tk.supersededEpoch}->${tk.writerEpoch} same=${tk.activationId === open.activationId}`;
+  const env = outcomeFor(executionId, tk, { progress: "done", next: { step: "complete", result: { ok: true } } });
+  const before = accepted(k.inspect(who, executionId));
+  const dec = accepted(k.submitOutcome(who, env, submissionFor(driver, open.activationId)));
+  const after = accepted(k.inspect(who, executionId));
+  r.accepted = `${dec.nextState} rev=${dec.progressRevision} ackd=${dec.acknowledged.length} holds=${after.recoveryHolds.length} history=${after.recoveryHistory.map((h: any) => h.transition).join("/")}`;
+  const replay = accepted(k.submitOutcome(who, env, undefined as never));
+  r.replay = `replayed=${replay.replayed} sameReceipt=${replay.receipt === dec.receipt}`;
+  r.conflict = refused(k.submitOutcome(who, { ...env, progress: "other" }, undefined as never)).classification;
+  r.refusalsAdded = accepted(k.inspect(who, executionId)).refusals.length - before.refusals.length;
+  r.maxReasonUnits = Math.max(...accepted(k.inspect(who, executionId)).refusals.map((x: any) => x.reason.length));
+  console.log(JSON.stringify(r));
+}

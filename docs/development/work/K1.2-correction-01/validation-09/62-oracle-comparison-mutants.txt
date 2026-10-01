@@ -1,0 +1,98 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:43:04.107Z
+
+ENV node=v25.2.1 platform=darwin arch=arm64 oracle-comparisons=29
+CHECKS: returned, view, nextRefusal, nextAcceptance, setupGrant, refusalPosition, refusalExecution, acceptingExit, fired, sameOperation, quietRepeat, callbackRan, deliveredAt, takeoverWindowAt, outcomeStepAt, outcomePrefix, applySequence, applyModel, referenceKind, referenceRefusal, referenceUnnamed, referenceUnchanged, referenceReplay, recoveryAnswer, takeoverAnswer, outcomeAnswer, declaredExit, attributed, exitReached
+CONTROL unmutated oracle: exit=0 tests=267 fail=0
+KILLED CHECKS.returned: exit=1 failing controls=38 of 267
+  ✖ an accepted report returning the opposite hold answer is a violation, after a fault and without one
+  ✖ report: enter a protocol hold / threw: no-call state / returned value
+  ✖ report: enter a protocol hold / accepted after a contained fault: the declared alternate / returned value
+  ✖ report: enter a protocol hold / completed / returned value
+KILLED CHECKS.view: exit=1 failing controls=73 of 267
+  ✖ a changed progress revision labelled as an Outcome apply fault by method name is a violation
+  ✖ report: enter a protocol hold / threw: no-call state / view
+  ✖ report: enter a protocol hold / refused: exactly one refusal recorded / returned value
+  ✖ report: enter a protocol hold / refused: exactly one refusal recorded / view
+KILLED CHECKS.nextRefusal: exit=1 failing controls=47 of 267
+  ✖ report: enter a protocol hold / threw: no-call state / next refusal position
+  ✖ report: enter a protocol hold / refused: exactly one refusal recorded / next refusal position
+  ✖ report: enter a protocol hold / accepted after a contained fault: the declared alternate / next refusal position
+  ✖ report: enter a protocol hold / completed / next refusal position
+KILLED CHECKS.nextAcceptance: exit=1 failing controls=46 of 267
+  ✖ report: enter a protocol hold / threw: no-call state / next acceptance position
+  ✖ report: enter a protocol hold / refused: exactly one refusal recorded / next acceptance position
+  ✖ report: enter a protocol hold / accepted after a contained fault: the declared alternate / next acceptance position
+  ✖ report: enter a protocol hold / completed / next acceptance position
+KILLED CHECKS.setupGrant: exit=1 failing controls=48 of 267
+  ✖ a refusal that leaves the setup grant unauthorized is a violation
+  ✖ report: enter a protocol hold / threw: no-call state / setup grant
+  ✖ report: enter a protocol hold / refused: exactly one refusal recorded / setup grant
+  ✖ report: enter a protocol hold / accepted after a contained fault: the declared alternate / setup grant
+KILLED CHECKS.refusalPosition: exit=1 failing controls=1 of 267
+  ✖ at another position, returned and retained alike
+KILLED CHECKS.refusalExecution: exit=1 failing controls=1 of 267
+  ✖ naming another Execution, returned and retained alike
+KILLED CHECKS.acceptingExit: exit=1 failing controls=1 of 267
+  ✖ a located exception in a scenario whose uninjected call does not accept
+KILLED CHECKS.fired: exit=1 failing controls=1 of 267
+  ✖ a fault that did not fire, and a repeat in which one did
+KILLED CHECKS.sameOperation: exit=1 failing controls=1 of 267
+  ✖ a run whose faulted operation is not the reference run's
+KILLED CHECKS.quietRepeat: exit=1 failing controls=1 of 267
+  ✖ a fault that did not fire, and a repeat in which one did
+KILLED CHECKS.callbackRan: exit=1 failing controls=2 of 267
+  ✖ a fault after the safety callback, in a run where it did not run
+  ✖ a fault before the safety callback, in a run where it ran
+KILLED CHECKS.deliveredAt: exit=1 failing controls=4 of 267
+  ✖ a delivery row left absent, at the capability's freeze
+  ✖ a delivery row left pending, at the row's append
+  ✖ a failed delivery, at the row's append
+  ✖ a delivery state with no location
+KILLED CHECKS.takeoverWindowAt: exit=1 failing controls=1 of 267
+  ✖ the takeover window's receipt-only state, outside the clearing append
+KILLED CHECKS.outcomeStepAt: exit=1 failing controls=2 of 267
+  ✖ an Outcome prefix, outside the apply window
+  ✖ an Outcome prefix, at another apply statement
+KILLED CHECKS.outcomePrefix: exit=1 failing controls=12 of 267
+  ✖ a changed progress revision labelled as an Outcome apply fault by method name is a violation
+  ✖ outcome: continue / threw inside the declared Outcome apply window: a permitted prefix / returned value
+  ✖ outcome: continue / threw inside the declared Outcome apply window: a permitted prefix / view
+  ✖ outcome: continue / threw inside the declared Outcome apply window: a permitted prefix / next refusal position
+KILLED CHECKS.applySequence: exit=1 failing controls=1 of 267
+  ✖ a declared apply sequence that no longer matches the source
+KILLED CHECKS.applyModel: exit=1 failing controls=1 of 267
+  ✖ an Outcome decision the declared apply sequence cannot reproduce
+KILLED CHECKS.referenceKind: exit=1 failing controls=1 of 267
+  ✖ an uninjected call that did not take its declared exit
+KILLED CHECKS.referenceRefusal: exit=1 failing controls=2 of 267
+  ✖ a refusal that also revokes the grant
+  ✖ a safety-callback baseline without the callback's decision
+KILLED CHECKS.referenceUnnamed: exit=1 failing controls=1 of 267
+  ✖ a refusal naming no Execution that consumes a position
+KILLED CHECKS.referenceUnchanged: exit=1 failing controls=1 of 267
+  ✖ an idempotent answer that changed the history
+KILLED CHECKS.referenceReplay: exit=1 failing controls=1 of 267
+  ✖ an exact replay returning another decision
+KILLED CHECKS.recoveryAnswer: exit=1 failing controls=4 of 267
+  ✖ an accepted report returning the opposite hold answer is a violation, after a fault and without one
+  ✖ a recovery answer that disagrees with the holds it left
+  ✖ a declared alternate whose answer disagrees with its state
+  ✖ an idempotent answer that disagrees with the holds it left
+KILLED CHECKS.takeoverAnswer: exit=1 failing controls=1 of 267
+  ✖ a takeover answer with another receipt
+KILLED CHECKS.outcomeAnswer: exit=1 failing controls=1 of 267
+  ✖ an Outcome answer naming other Emissions
+KILLED CHECKS.declaredExit: exit=1 failing controls=2 of 267
+  ✖ a scenario that does not take its declared exit
+  ✖ a declaration matching more than one return
+KILLED CHECKS.attributed: exit=1 failing controls=1 of 267
+  ✖ an exit no scenario takes
+KILLED CHECKS.exitReached: exit=1 failing controls=1 of 267
+  ✖ an exit no scenario takes
+EVERY ORACLE COMPARISON IS NEEDED BY A NEGATIVE CONTROL; CLEAN CONTROL PASSED
+
+exit: 0; signal: null; error: none

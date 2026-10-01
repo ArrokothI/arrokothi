@@ -12,21 +12,70 @@ and incremental migration notes are preserved in the [archive](archive.md).
 
 The private `@arrokothi/kernel` package separately implements an in-memory `ExecutionCoordinator`:
 atomic creation with initial input, post-creation ingress under the Input ID triple, separate
-receipts, batch reservation, asynchronous Driver dispatch, ordinary redelivery and scoped inspection.
-It refuses new ordinary input to a terminal destination; exercising that through a live terminal
-transition awaits K1.3. Boundary validation, limits and sealing are local; canonical bytes use the
+receipts, batch reservation, asynchronous Driver dispatch, ordinary redelivery and scoped inspection;
+and Outcome acceptance with replay and conflict, whole-batch acknowledgment, progress, Emissions,
+`continue`/`complete`/`fail`, terminal disposition of unprocessed input, authorized takeover and
+inspectable recovery holds ([Outcome acceptance API](#outcome-acceptance-api)). It refuses new
+ordinary input to a terminal destination. Boundary validation, limits and sealing are local; canonical bytes use the
 approved unmodified `canonicalize@3.0.0`. In-process capture keeps each root's canonical byte count
 while it reads and stops once that count passes the 1 MiB limit, so a live object that repeats one
 shared member is refused without being expanded in full. Within one visit, a string or member name
 is read only until one scalar value past the length limit, and a container's own-names listing is
-classified only until it exceeds what an accepted container owns (K1.1-correction-02). `ExecutionDriver.deliver` returns only `undefined` and
-reports delivery through a Kernel-owned capability; the Kernel never observes a Driver-returned
-Promise.
+classified only until it exceeds what an accepted container owns (K1.1-correction-02).
+[Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
+Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
-Outcome acceptance and the recovery hold belong to K1.2; out-of-band cancellation, terminal
-disposition, waits and deadlines to K1.3; Effects to K2. Those unimplemented surfaces refuse by name.
-No supported SDK consumer is routed through the private target package yet; K1.4 owns that bridge.
-This cleanup changes documentation/evidence locations, not any executable capability.
+Out-of-band cancellation and its terminal disposition, waits and deadlines belong to K1.3; Effects to
+K2. Those unimplemented surfaces refuse by name, and an Outcome proposing an Effect or a wait is
+refused whole. No supported SDK consumer is routed through the private target package yet; K1.4 owns
+that bridge.
+
+## Value refusal diagnostics
+
+`values.ts` preserves its exact accepted-value capture, canonical bytes, four limits, single
+observations and byte-budget stopping rules. For each refused root it retains at most eight details
+with relative paths of at most 128 printable ASCII units (otherwise `<omitted>`) and messages of at
+most 1,024 printable ASCII units (otherwise `<message omitted>`). Paths are bounded before member
+names are concatenated, including phantom properties and paths below long ancestors. The remaining
+issues contribute exact `occurrences` counts per code, ordered by first remaining occurrence, with
+no individual locations. Thus a root retains at most 19 diagnostic records (8 details + 11 codes),
+not one object per invalid position. Only diagnostics are compressed; all originally observable
+positions up to the byte stop are still observed, including sibling roots before Outcome authority.
+Diagnostic type labels use only null/typeof classification. They do not inspect constructor, name,
+message, array shape or a thrown value's properties. This removes the diagnostic prototype-chain
+walk on every refused foreign object and structural-observation failure.
+
+`canonicalize`, `boundaryValueIssues`, creation/ingress and Outcome/control consumers preserve these
+counts. Creation/ingress render suffix multiplicity explicitly; Outcome/control rendering composes
+the weighted roots into DEC-5's first eight details and exact remaining counts without expansion.
+No aggregate semantic size cap is introduced. This records the in-process choice at
+[values' diagnostic-storage marker](../../mental-model/concepts/values.md#fixed-semantic-limits).
+The cost claim excludes engine own-key enumeration, execution of caller traps, and all engine-internal
+work attributable to a live Proxy reached while observing a value. No time bound is claimed for
+values containing live Proxies. [Owner decision-04](work/K1.2/decision-04.md) supersedes item 1 of
+[decision-03](work/K1.2/decision-03.md); the boundary is stated once in
+[values](../../mental-model/concepts/values.md#fixed-semantic-limits). The KC2-1/V-D1 claim for
+plain data and Kernel-selected lookups is **held**. Review 08 of K1.2-correction-01
+(`K12C1-R8-VALUE-DEPTH-01`) found that refusing foreign-prototype containers at nesting depth costs
+about 1.5× the costliest at-limit acceptance. Owner [decision-05](work/K1.2/decision-05.md) redefines
+V-D1 for this binding as a metered-work bound, which K1.1-correction-03 implements. Counts cover Kernel-selected observations and
+invocations, including each position and fixed structural observations; engine-induced callbacks
+inside those operations are not counted or promised. The byte stop, all four limits, exact values,
+coherent-Proxy acceptance, ambient safety and DEC-7 weights remain unchanged. Descriptor- and
+handler-chain tests pin those counts; their timing probes are observations only. Protection against
+hostile in-process code requires isolation or transport containment, not V-D1. This binding provides
+neither CPU preemption nor physical containment. [Blocker-01](work/K1.2-correction-01/blocker-01.md)
+and [blocker-02](work/K1.2-correction-01/blocker-02.md) retain the counterexamples and owner resolutions.
+Acceptance status and the V-D1 claim hold are recorded in 007.
+
+Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit
+cannot fit even if every scalar uses a surrogate pair; refusing there avoids an engine flattening
+the entire oversized string on its first character access. Such inputs report `string_too_long`,
+including those that are also malformed Unicode. Shorter strings keep the existing bounded scalar
+scan. Exact accepted values, scalar limits, read-count upper bounds and full refusal byte charges
+are unchanged. [String closure](work/K1.2-correction-01/string-closure-04.md) records this additional
+implementer-found dependency and its distinguishing evidence.
 
 ## Request identity API
 
@@ -46,7 +95,8 @@ by the symbol cleanup.
 `inputIdKey(...)` and `creationRequestIdKey(...)` pack their parts with `packIdentity`, which
 length-prefixes each part rather than hashing it, so no choice of caller text makes two identities
 collide. A `Receipt` is a frozen in-memory record `{ boundary, token, position }`. `boundary` is one of
-the three implemented `ReceiptBoundary` values: `creation`, `input_ingress` or `dispatch_intent`.
+the four implemented `ReceiptBoundary` values: `creation`, `input_ingress`, `dispatch_intent` or
+`outcome_acceptance`.
 `token` is opaque to callers and derives only from the owning Execution and its position, so it reveals
 no coordinator-wide order. `position` is that Execution's own acceptance index, and creation is 1.
 Exact replay returns the same receipt object. Receipts have no serialized form yet. These are this
@@ -56,6 +106,224 @@ Retention, as the in-memory coordinator publishes it: no creation key and no Inp
 while the coordinator lives, and nothing survives it. Deduplication is therefore exact for the
 coordinator's lifetime, and no expired-key case exists. A profile that expires keys must publish
 its own expired-key policy before enabling expiry (`mechanisms/evidence.md#retention-and-deletion`).
+
+## Outcome acceptance API
+
+`ExecutionCoordinator.submitOutcome(caller, envelope, submission)` takes an `OutcomeEnvelope`:
+`executionId`, `activationId`, `writerEpoch`, `baseProgressRevision`, `progress`, optional
+`emissions` (each `{ emissionKey, value }`), optional `effects` and `next` (`{ step: "continue" }`,
+`{ step: "complete", result }`, `{ step: "fail", error }`; `{ step: "await", wait }` is refused until
+K1.3), plus the attempt-bound `SubmissionGrant` the Kernel handed to the Driver with the current
+attempt. The envelope names the exchange and the attempt it answers; nothing is defaulted from the
+current exchange. Every field is read once from the envelope's own data, and each value root
+(progress, each Emission value, the result or error) is captured once and measured on its own. An own
+field the binding does not know is refused rather than ignored, as is any non-empty `effects`.
+
+The Activation field is an opaque primitive JavaScript string, compared unchanged by exact UTF-16
+code-unit equality. Empty text, lone surrogates and strings over 65,536 scalars are structurally
+well formed; a different string names a different exchange, not malformed content. No coercion,
+normalization, truncation, Unicode check or boundary-value size limit is applied to this ID.
+Missing, non-string (including boxed-string) and unobservable fields remain unusable. The same rule
+is used by Outcome replay/currency/content and `requestTakeover`, `recoverExecution`, and
+`reportProtocolFailure`. [Identity](../../mental-model/concepts/identity.md#runtime-attempt) owns the
+producer/consumer requirement. Creation and Execution-ID behavior are unchanged: the ID combines
+bounded caller scope/key with an unbounded trusted namespace, then dispatch adds its exchange
+suffix. The binding adds no semantic identity-length limit; JavaScript string-allocation limits
+still apply to both individual IDs and their compositions. At a trusted namespace above half the
+engine maximum, creation, dispatch and `continue` can succeed while Emission/result ID construction
+throws before acceptance mutates state; input ingress can likewise exceed allocation limits while
+packing the same namespace twice, before mutation. This binding does not claim producer/consumer closure
+beyond those allocation limits. Caller keys,
+Emission keys and the value roots keep their existing Unicode and size checks.
+
+Unknown-field diagnostic names on the Outcome, `next` and Emission envelopes retain at most 128
+printable ASCII code units per name; longer or other names are replaced by a fixed omission marker.
+The field is still refused whole and its value is never read. Outcome/control identity fragments,
+including matched Activation IDs, Execution IDs, duplicate Emission keys and missing-code pins,
+likewise retain at most 128 printable ASCII units or become `<identity omitted>` before
+concatenation. Identity-only refusals are at most 1,024 units and missing-code reasons at most 600.
+Structured IDs and actor attribution stay exact; no proposed content is repaired or accepted.
+
+Outcome/control content diagnostics follow [correction DEC-5](work/K1.2-correction-01/contract.md):
+the first eight captured issues retain ordered details; remaining issues contribute exact counts
+for every code, in first remaining occurrence order. Value paths are bounded during capture and again at rendering to
+128 printable ASCII units or `<omitted>` before adding their root label; messages use 1,024 units
+or `<message omitted>`. The complete content reason is at most 16,384 UTF-16 units regardless of
+issue count or configured Emission capacity. Classification still uses the complete captured
+result. Capture remains eager; value diagnostics are stored under [DEC-7](work/K1.2-correction-01/contract.md)
+and envelope diagnostics are projected at rendering. DEC-5 owns the whole-reason bound and its
+derivation; the value collector preserves its counts without a per-position retained list.
+
+A hold's permitted actions describe operations the hold itself does not refuse. Takeover still
+requires the Driver's safe-replacement declaration; an absent or denying callback can refuse it as
+`unsafe_replacement`. This list is not a promise that all other preconditions are met.
+
+The K1.2-added redelivery recovery-held refusal also bounds its Activation fragment under DEC-4.
+Explicit delivery/protocol diagnostic payloads keep their separate first-1,024-UTF-16-unit rule;
+hold/history and redelivery explanations add fixed text.
+
+The order is `execution-cycle.md`'s: the caller is scoped to the named Execution before anything else
+is read; an already accepted Outcome under the same Activation ID is looked up next, and an exact
+duplicate (equal captured content) returns the original receipt and decision while anything else is
+refused as `duplicate_conflict` (only a well-formed Activation ID is looked up; a missing, malformed
+or unobservable one addresses no accepted Outcome); then terminal state, then the exchange's current Activation ID, writer
+epoch and base progress revision (`stale_exchange`), then the submission grant: only a proposal
+presenting the exchange's current grant — by reference identity, never by fields — is the current
+attempt answering, and anything else is refused as `unauthorized_submission` with no accepted-state
+mutation beyond the recorded refusal; then content (`malformed_envelope`, or
+`capacity_exhausted` above the declared Emission limit). Exchange currency is per-coordinate, and the
+Activation ID is one of the coordinates: no unresolved exchange, or a well-formed Activation ID,
+writer epoch or base progress revision that does not match the unresolved exchange, refuses as
+`stale_exchange` whatever the other coordinates or the grant present, while a missing, malformed or
+unobservable coordinate alone never establishes staleness and is a content-group refusal after
+authority, reported with the other content issues (K12-R11-ORDER-01, K1.2 decision-02). Capture is
+eager and may compute content diagnostics, but a refusal before authority neither is decided by them
+nor returns or retains them, and its reason does not render a malformed coordinate's value. The in-process representation carries both halves
+separately (`epochForCurrency`/`baseForCurrency`, each the well-formed value or `null`) alongside the
+atomic full claim used for the accepted-content identity. Scope is still required alongside the grant;
+replay and conflict precede authority because they answer from retained evidence without accepting
+anything. An accepted Outcome acknowledges the whole
+reserved batch, installs the progress under revision base + 1, records each Emission, records the
+typed result (`kind: "completed"` or `"failed"`) for `complete`/`fail`, resolves the exchange and moves
+the Execution to `READY`, `COMPLETED` or `FAILED`; at `complete`/`fail`, every Event still
+unacknowledged receives a terminal disposition in the same decision. The answer, `OutcomeAccepted`,
+carries the `outcome_acceptance` receipt and the decision's lists; inspection adds `acknowledged`,
+`terminalDispositions`, `emissions`, `result`, `exchanges` (resolved exchanges with their delivery
+attempts, each naming its `activationId`/`writerEpoch`), `recoveryHolds` (each with its reason and
+`permittedNextActions`) and `recoveryHistory` (accepted recovery/control decisions retained after the
+hold changes or disappears).
+
+`requestTakeover(caller, executionId, { activationId, writerEpoch })` advances the named current epoch
+by one within the same exchange and delivers the same Activation at the new epoch, but only for a
+control-authorized caller (`AuthenticatedCaller.controlScopes` contains the Execution's scope;
+otherwise `unauthorized_control` with no state change) and only when the Driver's
+`isSafeToReplace(currentActivation)` returns exactly `true` (otherwise `unsafe_replacement`).
+Because that callback can synchronously reenter the coordinator, the Kernel revalidates the same
+unresolved exchange, current epoch, and hold state after it returns and before committing, with no
+further reentrant code in between; a nested takeover, resolving Outcome, terminal end, or newly
+established code hold makes the outer request refuse (`stale_exchange`, `no_unresolved_exchange`,
+`terminal_destination`, or `recovery_held`) with no orphan receipt, extra delivery, or overwritten
+evidence. At most one takeover commits per request.
+Kernel fencing rejects later writes from the superseded attempt but does not itself stop or exclude
+superseded native work; the Driver's exclusion or refusal is what establishes that precondition
+(`identity.md#writer-epoch`, `recovery.md`, `driver.md`, `kernel.md`).
+`recoverExecution(caller, executionId, { activationId, available })` compares the exchange's pinned
+Definition revision, Runtime contract revision and progress codec with the declared
+`available.definitionRevisions`, `runtimeContractRevisions` and `progressCodecs`, and holds the
+exchange (`RUNNING`, `recoveryHolds` naming what is missing and what may be done next) or clears that
+hold; it requires control authority (`unauthorized_control` otherwise). Each accepted decision that
+enters, updates, or clears a hold appends one frozen `RecoveryHistoryRecord` (actor, authority,
+exchange/epoch causation) to `recoveryHistory`.
+`reportProtocolFailure(caller, executionId, { activationId, writerEpoch, diagnostic? })` holds the
+current attempt's exchange because its response could not be classified; it requires control authority
+and appends to `recoveryHistory` on entry. Redelivery is refused while
+any hold stands, takeover while a code hold stands; a takeover clears a protocol-failure hold (recorded
+as `cleared_by_takeover`), and an
+accepted Outcome of the current attempt resolves the exchange and ends its holds (recorded as
+`ended_by_outcome`). Idempotent duplicates (`changed:false`) append no history. Each history record
+owns exactly its fields; only a `cleared_by_takeover` record owns `resultingEpoch`, and no record
+holds a caller-owned object. Each of the three controls builds its whole decision (hold, history
+record, takeover receipt/Activation/grant, answer) from Kernel data before changing anything, then
+applies it ([correction DEC-9](work/K1.2-correction-01/contract.md)).
+
+These are this in-process binding's choices where the architecture leaves the representation open
+(`mental-model/rewrite-index.md` §4):
+
+- **Writer epoch** (`concepts/identity.md#writer-epoch`): an integer, 1 at each new exchange, advanced
+  by exactly 1 per accepted takeover. Epochs are not comparable across Activation IDs.
+- **Outcome-acceptance transaction** (`mechanisms/execution-cycle.md#atomic-decisions-across-the-system`):
+  one synchronous call on the single-threaded coordinator. Every caller-owned field is observed first,
+  every retained decision record the acceptance needs — receipt, Emissions, result, dispositions,
+  resolved exchange, Outcome decision, hold-ending history records, and the retained accepted-Outcome
+  wrapper binding the captured identity to the decision for replay — is then built from Kernel data
+  only, and only then is accepted state mutated by inserting those prebuilt records — the
+  Outcome-acceptance receipt's position is read while building and committed with the rest of the
+  decision, so no acceptance index advances before the records are complete — through
+  load-time primitives with no caller code between first check and last mutation; the apply phase
+  constructs no retained record, and the only post-mutation construction is the returned answer
+  projection, which is not retained state. A
+  getter that reenters the Kernel is ordered before the decision's checks. Atomic within the process,
+  not durable.
+- **Recovery-control transaction** (same owner; [correction DEC-9](work/K1.2-correction-01/contract.md)):
+  `recoverExecution`, `reportProtocolFailure` and `requestTakeover` observe the request, check
+  accepted state, then build every record and the answer from Kernel data. The apply phase appends
+  the prebuilt records first, then performs plain writes of Kernel-owned fields; nothing is built,
+  read from the caller or run between the first and last mutation. For hold entry, update and
+  declaration clear the only call in the apply phase is the history append, which comes first, so no
+  fault separates a hold change from its record. A takeover's receipt position is read while
+  building and committed with the rest; its two appends carry the Outcome transaction's narrower
+  claim (no caller code or read between them). Every refusal record is built and appended before its
+  Execution's refusal index advances. Evidence (contract revision 10): a fault-injection sweep throws
+  at each call of a built-in method the zone captured at load, one call per run, in the 66 scenarios
+  the contract lists (14 of `recoverExecution`, 12 of `reportProtocolFailure`, 17 of `requestTakeover`,
+  five of them after a Driver safety callback that decides first, and 23 of Outcome acceptance). Each
+  run must equal one permitted complete decision: its returned value, whole view, next refusal and
+  acceptance positions, and what the setup attempt's grant can still do. The delivery and apply-window
+  exceptions are admitted only for a fault its own stack locates at the declared statements. The
+  uninjected decision is itself checked: a refusal, an idempotent answer or an exact replay against the
+  no-call state (after a safety callback, the state its decision leaves), and an accepted answer
+  against the state it leaves. Each of the 57 exits the sweep finds in the
+  source (every `return` of the four methods, and every refusal `return` of the helpers they call) is
+  taken by a scenario. The scope is those scenarios and the operations the sweep intercepts; faults
+  inside a safety callback and engine faults in allocation or property access stay outside the claim.
+  `fault-oracle.test.ts` holds the sweep checker's negative controls, and a mutant of each of its
+  comparisons shows that comparison is needed. `control-commits.test.ts` is a static
+  regression guard for accidental reordering, with known gaps (a default parameter that supplies a
+  Kernel object, a local named `undefined`); it is not a proof.
+- **Ambient reads** ([correction DEC-8](work/K1.2-correction-01/contract.md)): the zone reads no
+  member its object may not own. Kernel records own every declared field; caller envelopes are read
+  own-only; an optional member of a trusted host object (`controlScopes`, `mailboxCapacity`,
+  `emissionsPerOutcome`, `isSafeToReplace`) is resolved on the host object or its own prototype
+  chain and never answered by `Object.prototype` or `Function.prototype`. Evidence (contract revision
+  9): a poisoned-prototype sweep installs every member name the zone uses as an accessor on
+  `Object.prototype`, `Function.prototype`, `Array.prototype` and `String.prototype` during every
+  boundary call of the maintained Kernel suite and of a catalog that calls every public boundary with
+  accepted, idempotent and refused exits, and requires
+  that no zone frame reaches one and that every result equals an unpoisoned run. Its scope is the
+  paths those scenarios reach (every zone line but two defensive ones) and reads that run an
+  accessor; `in` and other built-in prototypes are outside it. `ambient-reads.test.ts` is a static
+  regression guard for accidental forms (an allowlisted syntax and a reasoned inventory of accesses),
+  with known gaps (a member introduced through a partially declared or nested type assertion or
+  predicate); it is not a proof.
+- **Per-entry disposition storage** (WS §3 "Left open"): each mailbox entry holds its own frozen
+  disposition, `queued`, `acknowledged` (naming the acknowledging Activation) or `terminal` (with its
+  reason).
+- **Takeover evidence**: a takeover re-records the dispatch intent's current attempt and mints a
+  `dispatch_intent` receipt; it introduces no new receipt boundary. It also mints the new attempt's
+  submission grant and retires the old one.
+- **Submission authority** (`execution-cycle.md`, `identity.md`, `evidence.md`): one frozen
+  `SubmissionGrant` per writer-epoch attempt, handed to the Driver with the Activation and required
+  back by reference identity on `submitOutcome` (`unauthorized_submission` otherwise); never
+  inspected; redelivery preserves it, takeover replaces it. Not K2 policy — one unforgeable
+  reference per attempt.
+- **Emission and result identity**: `emission-…` and `result-…` IDs are packed from the Execution ID,
+  the Activation ID and, for an Emission, its key, so a replay cannot mint another and no identity
+  reflects activity elsewhere. Output positions, reads and cursors are K4.4's.
+- **Declared limit**: `CoordinatorOptions.emissionsPerOutcome`, default 256, an operational bound
+  checked before any Emission is read, not a semantic value limit. An omitted limit takes its default
+  even when ambient state carries one (correction DEC-8).
+- **Control authority** (`evidence.md`, `authority.md`): `AuthenticatedCaller.controlScopes` is the
+  separate control power; the three exchange controls require it (`unauthorized_control` otherwise).
+  A fresh Outcome requires visibility plus the separate current-attempt grant; `controlScopes`
+  is not required and cannot substitute for that grant. A visible grant holder without general
+  control authority can submit an accepted Outcome that resolves the exchange and ends its holds.
+  Replay/conflict retain the ordering described above. A `controlScopes` only a built-in prototype
+  would supply is absent (correction DEC-8).
+- **Driver safe replacement** (`identity.md#writer-epoch`, `recovery.md`, `driver.md`): takeover
+  advances only on `isSafeToReplace() === true` (`unsafe_replacement` otherwise); Kernel fencing does
+  not stop native work. The method comes from the Driver or its own prototype chain, never from a
+  built-in prototype, so ambient state cannot establish safety a Driver did not declare (correction DEC-8).
+- **Delivery attribution** (`identity.md#dispatch-and-delivery`): each delivery row names its
+  `activationId`/`writerEpoch`.
+- **Permitted actions** (`evidence.md`): each hold exposes `permittedNextActions` from the same rules
+  that refuse the controls (`declare_code_availability`/`request_takeover`/`submit_outcome`).
+- **Recovery history** (`state.md#execution-history`, `evidence.md`): `recoveryHistory` retains
+  entered/updated/cleared_by_declaration/cleared_by_takeover/ended_by_outcome with an explicit
+  `authority` (`control` for checked control power, `attempt_submission` for a grant-authorized
+  Runtime proposal that claims no general control power), actor, and exchange/epoch causation;
+  duplicates append nothing; no seventh receipt.
+- **Retention**: accepted-Outcome records, resolved exchanges, Emissions and results are kept for the
+  coordinator's lifetime, so an exact Outcome replay is answered for as long as the coordinator lives.
 
 ## 1. Execution and Harness
 

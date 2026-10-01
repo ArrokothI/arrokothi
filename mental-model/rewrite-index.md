@@ -217,6 +217,8 @@ owner pages' own scope statements and correct whichever is wrong, in the same co
 | K1.1 creation/ingress domain separation (`KC1-DEC-1`) | `concepts/identity.md#request-key-and-input-id`, `mechanisms/creation.md#later-input-has-a-destination` | `work/K1.1/review-15.md` `K11-R15-ID-01`; `K1.1-correction-01/contract.md`; `K1.1-reference-01` REF-1 |
 | K1.1 in-process value capture (C3, `KC1-DEC-3`), and its distinction from request-envelope own-field observation (`KC1-DEC-6`) | `concepts/values.md#in-process-value-capture` | `work/K1.1/contract.md` C3; `K1.1-correction-01` review-08 C3; `K1.1-reference-01` REF-2, and its review-02 row "Envelope ≠ value capture" |
 | K1.1 delivery reporting (`KC1-ARCH-1`) | `mechanisms/execution-cycle.md#delivery-reporting-boundary` (+ link from `mechanisms/integration.md`) | `work/K1.1-correction-01/decision-01.md` incl. its superseding note; `review-08.md`; roadmap §K1.1-correction-01 |
+| K1.2 submission authority and the in-process carrier extension | `mechanisms/execution-cycle.md#submission-authority` (links from `#delivery-reporting-boundary`, `#retry-versus-takeover`, `#outcome-acceptance`, `concepts/identity.md#writer-epoch`, `concepts/core.md#execution-driver`, `mechanisms/integration.md`) | Owner decision 2026-09-25, `work/K1.2/decision-01.md`, resolving `work/K1.2/blocker-01.md`; historical KC1-ARCH-1 record sealed; in-process `SubmissionGrant` recorded in BASELINE `#outcome-acceptance-api` |
+| K1.2 Activation coordinate classification | `mechanisms/execution-cycle.md#outcome-acceptance` | Owner decision 2026-09-26, `work/K1.2/decision-02.md`; binding well-formedness in `concepts/identity.md#runtime-attempt`, BASELINE and `work/K1.2-correction-01/contract.md` |
 | Status ownership moved off specification pages | `MM/README.md#how-these-pages-are-organized`, `#target-not-shipped` | `K1.1-reference-01` REF-3, `review-02.md` `REF1-R1-CONV-01` |
 | Architecture-level decisions and their counterexamples | The Layer-3 owner of each rule, found through `MM/reference.md`; provenance in `MM/sources.md` | Retired `docs/development/004-architecture-review.md` (decisions table), refined by `005-detail-design-review.md` |
 | Packet status / accepted / integrated / released | LEDGER only | `006-development-process.md#status-transitions`; `014-owner-progress-summary.md` is the readable account |
@@ -256,6 +258,10 @@ naming an `OPEN(...)` marker claim that one exists.
 
 - Transport wire codec, framing, compression, and the storage layout/engine —
   `concepts/values.md#codec`, WS §1 "Left open" and §14.
+- Refusal diagnostic storage — `OPEN(implementation)` in `concepts/values.md#fixed-semantic-limits`.
+  The in-process binding records eight bounded details per root plus exact suffix code counts in
+  BASELINE `#value-refusal-diagnostics`; type labels use null/typeof without inspecting caller
+  properties. Eager single observation and byte-budget stops are preserved.
 - Receipt serialization / token representation; request-key hashing — `OPEN(implementation)` in
   `concepts/identity.md#acceptance-boundary-and-receipt`; WS §2. The in-process binding's choice,
   recorded in BASELINE `#request-identity-api`: a receipt is a structured record of its boundary,
@@ -267,21 +273,49 @@ naming an `OPEN(...)` marker claim that one exists.
   scope" object and fixes no wire representation. What the architecture fixes is only that the ID
   combines caller context with the creation key and covers the complete creation content. The
   implementation records its own answer in BASELINE `#request-identity-api`.
+- Activation-identity representation and well-formedness — `OPEN(implementation)` in
+  `concepts/identity.md#runtime-attempt`. That owner states producer/consumer closure and its
+  engine-allocation qualification.
+  The in-process binding's choice is any primitive JavaScript string with exact UTF-16 code-unit
+  equality, no length or Unicode-content check; recorded in BASELINE `#outcome-acceptance-api`.
 - Writer-epoch representation, and **whether it resets across a later Activation** —
-  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. (K1.1-DEC-2 chose one epoch per
-  exchange starting at 1 — an *implementation* choice, not architecture.)
+  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. The
+  in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`: an integer restarting at
+  1 for each new exchange, advanced by exactly 1 per accepted takeover — an *implementation* choice,
+  not architecture.
+- How submission authority is represented — no `OPEN(...)` marker; the architecture fixes its
+  per-attempt lifetime and its place in the acceptance order in
+  `mechanisms/execution-cycle.md#submission-authority`, while the representation is each binding's
+  choice. The in-process binding's choice, recorded in BASELINE `#outcome-acceptance-api`:
+  one frozen `SubmissionGrant` per writer-epoch attempt, supplied as the third `deliver`
+  argument and required back by reference identity. That choice fixes no universal token,
+  wire format, remote credential, or K2 policy language.
+- **How submission authority survives a Kernel restart** in a persistent profile, so that
+  redelivery after recovery keeps the same attempt's authority while a superseded attempt's stays
+  dead — `OPEN(K3.2)` in `mechanisms/execution-cycle.md#submission-authority`. The in-process binding
+  has no restart.
 - Wait generation representation; declared-input-subscription spelling — `mechanisms/waits.md#declare-what-can-wake-the-execution`,
   WS W-9/§5. WS assigns the subscription spelling to K1.3.
 - Timeout Event wire kind token, discriminant, encoded schema, storage layout and timer
   mechanism — WS W-9 "Left open", which says K1.3 chooses them.
 - Per-entry batch disposition storage, and how a wait-ended readiness is stored — WS §3 "Left
-  open" (after B-8); `mechanisms/waits.md`.
+  open" (after B-8); `mechanisms/waits.md`. The in-process binding's choice for disposition storage,
+  recorded in BASELINE `#outcome-acceptance-api`: each mailbox entry holds its own frozen disposition.
+  Wait-ended readiness storage stays K1.3's.
 - Cancellation-request storage, rejection encoding and physical interruption mechanics — WS §6
   "Left open"; `mechanisms/lifecycle.md#cancellation-order`. A pending/applied marker may not
   change the acceptance order.
 - The Outcome-acceptance transaction mechanism (a DB transaction, an append-only log, an
   in-memory compare-and-swap) — WS §7 "Left open", which accepts any of them only if the atomicity
-  is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`.
+  is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`. The in-process
+  binding's choice, recorded in BASELINE `#outcome-acceptance-api`: one synchronous call that observes
+  all caller-owned fields, builds every retained decision record (receipt, Emissions, result,
+  dispositions, resolved exchange, Outcome decision, hold-ending history records, and the retained
+  accepted-Outcome wrapper for replay) and only then mutates by inserting those prebuilt records —
+  atomic within the process, not durable. The apply phase constructs no retained record; only the
+  returned answer projection is built after mutation, and it is not retained state. The three
+  recovery controls (hold declaration, protocol-failure report, takeover) use the same build-then-apply
+  discipline, their answers included, recorded in the same BASELINE section (K1.2-correction-01 DEC-9).
 - Checkpoint storage and pinning — WS §9 "Left open"; `concepts/state.md#checkpoint-and-locator`,
   `mechanisms/recovery.md#checkpoint-publication`. Upload tickets plus a grace period are one
   option, not a requirement, as `recovery.md` states.

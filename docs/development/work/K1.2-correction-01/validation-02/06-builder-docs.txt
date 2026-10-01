@@ -1,0 +1,13 @@
+payload C: 6d9fbb3db4955ee2216fedf0d0b69c8e104367bf
+cwd: /Users/rex-shih/.codex/worktrees/k12-correction/arrokothi
+command: npm run check:builder-docs
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi"}
+started: 2026-09-27T04:02:14.741Z
+
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 72 Markdown files, 1806 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+
+exit: 0; signal: null; error: none

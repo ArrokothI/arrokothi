@@ -1,0 +1,11 @@
+payload C: 6d9fbb3db4955ee2216fedf0d0b69c8e104367bf
+cwd: /Users/rex-shih/.codex/worktrees/k12-correction/arrokothi
+command: node --max-old-space-size=8192 --experimental-strip-types docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts 130 980
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi","PRE":"1"}
+started: 2026-09-27T04:12:13.045Z
+
+tree=/Users/rex-shih/.codex/worktrees/k12-correction/arrokothi innerArrays=130 nameLength=980 issues≈532480
+A3 visibility-only submitOutcome (no grant): refused unauthorized_submission, reason 216 units, refusals +1, 1732 ms
+A4 grant holder, stale epoch: refused stale_exchange, reason 144 units, refusals +1, 1708 ms
+
+exit: 0; signal: null; error: none

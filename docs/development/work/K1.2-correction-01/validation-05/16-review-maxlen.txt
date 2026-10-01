@@ -1,0 +1,14 @@
+payload C: 2613f2b8dee37c934743d9b730e925705086c4c9
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: node --max-old-space-size=4096 --experimental-strip-types docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-28T16:33:37.056Z
+
+submitOutcome, visibility-only caller, wrong huge activationId: returned stale_exchange (reason length 158)
+requestTakeover, control caller, wrong huge activationId: returned stale_exchange (reason length 104)
+recoverExecution, control caller, wrong huge activationId: returned stale_exchange (reason length 104)
+reportProtocolFailure, control caller, wrong huge activationId: returned stale_exchange (reason length 104)
+submitOutcome, visibility-only caller, huge activationId after resolution (no exchange): returned stale_exchange (reason length 158)
+refusals recorded: 5; state READY; exchange open false; progressRevision 1
+
+exit: 0; signal: null; error: none

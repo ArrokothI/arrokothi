@@ -1,0 +1,148 @@
+== sdk: npm run test:sdk @ 6541115e2e5389a7e5cff86f87d857b4eb486d7d 2026-09-26T13:17:32Z
+
+> arrokothi-agent-kernel@0.8.1 test:sdk
+> node --test --experimental-strip-types packages/sdk/tests/*.test.ts
+
+TAP version 13
+# Subtest: a pure Function Workflow needs no model or policy and preserves emission versus terminal result
+ok 1 - a pure Function Workflow needs no model or policy and preserves emission versus terminal result
+  ---
+  duration_ms: 14.691517
+  type: 'test'
+  ...
+# Subtest: registration is idempotent, rejects version changes, and start pins definitions
+ok 2 - registration is idempotent, rejects version changes, and start pins definitions
+  ---
+  duration_ms: 3.774108
+  type: 'test'
+  ...
+# Subtest: registration validates a whole batch before inserting conflicting versions
+ok 3 - registration validates a whole batch before inserting conflicting versions
+  ---
+  duration_ms: 0.61786
+  type: 'test'
+  ...
+# Subtest: missing handlers/models fail before any Execution is queued and preflight does no inference
+ok 4 - missing handlers/models fail before any Execution is queued and preflight does no inference
+  ---
+  duration_ms: 2.154308
+  type: 'test'
+  ...
+# Subtest: preflight finds a missing provider and incompatible static model features
+ok 5 - preflight finds a missing provider and incompatible static model features
+  ---
+  duration_ms: 1.612286
+  type: 'test'
+  ...
+# Subtest: custom model resolution, policy, and custom view resolvers are never probed by preflight
+ok 6 - custom model resolution, policy, and custom view resolvers are never probed by preflight
+  ---
+  duration_ms: 0.501255
+  type: 'test'
+  ...
+# Subtest: catalog and exposure never grant dispatch permission
+ok 7 - catalog and exposure never grant dispatch permission
+  ---
+  duration_ms: 11.510275
+  type: 'test'
+  ...
+# Subtest: operation ceiling is independent from policy; default views use the supplied runtime store
+ok 8 - operation ceiling is independent from policy; default views use the supplied runtime store
+  ---
+  duration_ms: 2.288879
+  type: 'test'
+  ...
+# Subtest: approved exact payload dispatches once through the shared catalog, store, and authorizer
+ok 9 - approved exact payload dispatches once through the shared catalog, store, and authorizer
+  ---
+  duration_ms: 8.185729
+  type: 'test'
+  ...
+# Subtest: memory binding and write exposure do not authorize a WriteMemory Effect
+ok 10 - memory binding and write exposure do not authorize a WriteMemory Effect
+  ---
+  duration_ms: 7.102941
+  type: 'test'
+  ...
+# Subtest: a slow model yields; host timeout/abort preserve pending work and later resume exactly once
+ok 11 - a slow model yields; host timeout/abort preserve pending work and later resume exactly once
+  ---
+  duration_ms: 22.196376
+  type: 'test'
+  ...
+# Subtest: slow capabilities settle without an unbounded drain and cancellation remains explicit
+ok 12 - slow capabilities settle without an unbounded drain and cancellation remains explicit
+  ---
+  duration_ms: 19.959722
+  type: 'test'
+  ...
+# Subtest: conversation response yields input_required and cumulative budgets are unchanged
+ok 13 - conversation response yields input_required and cumulative budgets are unchanged
+  ---
+  duration_ms: 2.693222
+  type: 'test'
+  ...
+# Subtest: bounded loops report activation_limit, leaving the Execution runnable
+ok 14 - bounded loops report activation_limit, leaving the Execution runnable
+  ---
+  duration_ms: 1.896459
+  type: 'test'
+  ...
+# Subtest: SDK start serializes initial input ahead of concurrent scheduler driving
+ok 15 - SDK start serializes initial input ahead of concurrent scheduler driving
+  ---
+  duration_ms: 4.148523
+  type: 'test'
+  ...
+# Subtest: malformed initial data refuses before creation and a failed start does not poison the SDK lock
+ok 16 - malformed initial data refuses before creation and a failed start does not poison the SDK lock
+  ---
+  duration_ms: 1.346756
+  type: 'test'
+  ...
+# Subtest: controller hooks receive actual services and diagnostics reflect the effective registries
+ok 17 - controller hooks receive actual services and diagnostics reflect the effective registries
+  ---
+  duration_ms: 0.83912
+  type: 'test'
+  ...
+# Subtest: child definitions are preflighted recursively; confirmation in a called child reaches the host
+ok 18 - child definitions are preflighted recursively; confirmation in a called child reaches the host
+  ---
+  duration_ms: 9.00024
+  type: 'test'
+  ...
+# Subtest: preflight checks child kind, absent spawn credits, child input waits, and memory bindings
+ok 19 - preflight checks child kind, absent spawn credits, child input waits, and memory bindings
+  ---
+  duration_ms: 0.63524
+  type: 'test'
+  ...
+# Subtest: recursive definition graphs remain legal and terminate preflight traversal
+ok 20 - recursive definition graphs remain legal and terminate preflight traversal
+  ---
+  duration_ms: 7.803907
+  type: 'test'
+  ...
+# Subtest: Function adapters and explicit fork/join execute inside one Workflow
+ok 21 - Function adapters and explicit fork/join execute inside one Workflow
+  ---
+  duration_ms: 5.13067
+  type: 'test'
+  ...
+# Subtest: distinct colon-bearing grants and Agent requests survive authority and view deduplication
+ok 22 - distinct colon-bearing grants and Agent requests survive authority and view deduplication
+  ---
+  duration_ms: 21.692076
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 452.056588
+exit: 0

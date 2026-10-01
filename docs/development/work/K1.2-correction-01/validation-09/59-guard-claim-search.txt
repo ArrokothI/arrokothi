@@ -1,0 +1,8 @@
+payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+command: git grep -n -i -E closed-world|closed world|comprehensive -- docs/development/002-implemented-kernel-baseline.md docs/development/work/K1.2-correction-01/contract.md packages/kernel/src packages/kernel/tests
+environment: 00-environment.json; {"TREE":"/Users/rex-shih/Documents/ArrokothI/arrokothi"}
+started: 2026-09-30T05:40:53.036Z
+
+
+exit: 1; signal: null; error: none

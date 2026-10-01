@@ -122,7 +122,7 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
       value = 1;
     }
     assert.deepEqual(issueCodes({ h: new Holder() }), ["unsupported_form"]);
-    assert.match(boundaryValueIssues({ h: new Holder() })[0]?.message ?? "", /Holder instance/);
+    assert.match(boundaryValueIssues({ h: new Holder() })[0]?.message ?? "", /expected a plain object, received object/);
   });
 
   test("members canonical form cannot represent are refused, never dropped", () => {

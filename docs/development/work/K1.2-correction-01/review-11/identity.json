@@ -1,0 +1,227 @@
+{
+  "commits": {
+    "B": {
+      "sha": "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+      "subject": "docs: finish the creation codec decision and release K1.2",
+      "ancestorH": true,
+      "ancestorB": true
+    },
+    "C": {
+      "sha": "58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f",
+      "subject": "fix(kernel): closed-world DEC-8/DEC-9 enforcement (K1.2-correction-01 review 10)",
+      "ancestorH": true,
+      "ancestorB": false
+    },
+    "H": {
+      "sha": "dcac779bdf7e887bcf42c8a6407c1b24c2083a55",
+      "subject": "docs(K1.2-correction-01): hand off revision 8 candidate and clean-C evidence",
+      "ancestorH": true,
+      "ancestorB": false
+    },
+    "previousH": {
+      "sha": "35c6ba0277542236f21f95d695154fa0164feb96",
+      "subject": "docs(K1.2-correction-01): hand off revision 7 candidate and clean-C evidence",
+      "ancestorH": true,
+      "ancestorB": false
+    },
+    "review10": {
+      "sha": "0efe0ba2ebb3fdde71ac8ab5b7a3ae048f5f5ac1",
+      "subject": "docs: record independent K1.2 correction review 10",
+      "ancestorH": true,
+      "ancestorB": false
+    },
+    "release": {
+      "sha": "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+      "subject": "review(K1.2): record review 14 of H14 \u2014 CHANGES REQUIRED; invalidate and hold",
+      "ancestorH": true,
+      "ancestorB": false
+    },
+    "decision": {
+      "sha": "13a73ad9ad0662fe585d1453280c5ac3da4f79bb",
+      "subject": "decision(K1.2): record owner decision-05 and correction-01 amendment 01",
+      "ancestorH": true,
+      "ancestorB": false
+    },
+    "amendment02": {
+      "sha": "60eebc24113eb834e5d88015ca2a196c95c60493",
+      "subject": "decision(K1.2-correction-01): record owner amendment 02 after review 09",
+      "ancestorH": true,
+      "ancestorB": false
+    },
+    "K11H": {
+      "sha": "52b1600f3b42e3a360fdc3395178f1d147edf304",
+      "subject": "report(K1.1-correction-01): round-6 record correction for KC1-R5-PROC-01 (H5)",
+      "ancestorH": true,
+      "ancestorB": true
+    },
+    "K11integration": {
+      "sha": "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+      "subject": "Merge pull request #28 from ArrokothI/codex/k1.1-correction-01-review-findings",
+      "ancestorH": true,
+      "ancestorB": true
+    },
+    "K11C2H": {
+      "sha": "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+      "subject": "report(K1.1-correction-02): round 3 report and status for independent review",
+      "ancestorH": true,
+      "ancestorB": true
+    },
+    "K11C2integration": {
+      "sha": "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+      "subject": "Merge pull request #36 from ArrokothI/claude/pre-k1.2-reviews",
+      "ancestorH": true,
+      "ancestorB": true
+    }
+  },
+  "branch": "codex/k1.2-correction-01-activation-identity",
+  "remote": "https://github.com/ArrokothI/arrokothi.git",
+  "status": "",
+  "adminFiles": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.2-correction-01/implementation-07.md",
+    "docs/development/work/K1.2-correction-01/validation-07/00-environment.json",
+    "docs/development/work/K1.2-correction-01/validation-07/01-typecheck.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/02-full.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/03-kernel.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/04-conformance.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/05-sdk.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/06-builder-docs.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/07-original-ablations.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/08-correction-ablations.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/09-r11-probe.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/10-records-links.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/11-evals.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/12-diff-check.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/13-results.json",
+    "docs/development/work/K1.2-correction-01/validation-07/14-original-ablations-adapted.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/15-review-identity.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/16-review-maxlen.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/17-review-namespace.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/18-diagnostics-maxlen.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/19-round2-diff-check.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/20-review-aggregate.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/21-review-equality.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/22-correction-diff-check.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/23-review-cost-accept.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/24-review-cost-refuse-undefined.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/25-review-cost-refuse-ctor.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/26-review-aggregate-pre-authority.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/27-revision4-ablations.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/28-review4-p4-p5.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/29-round3-diff-check.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/30-review6-exact-ablations.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/31-diagnostic-work-ablations.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/32-review6-cost-and-blocker.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/33-round4-diff-check.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/34-handler-direct-0.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/34-handler-direct-1000.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/34-handler-direct-10000.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/34-handler-outcome-0.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/34-handler-outcome-1000.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/34-handler-outcome-10000.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/35-string-work.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/37-round6-ablations.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/38-revision4-ablations-rebound.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/39-review9-probe-history.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/40-review9-probe-history-mutable.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/41-review9-matrix.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/42-review9-matrix-expect-correct.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/43-host-members-probe.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/44-claim-alias-search.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/45-round6-diff-check.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/47-round7-ablations.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/48-review10-enforcement-rebound.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/49-new-oracles-and-name-probe-on-reviewed-H.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/50-review10-probes-rerun.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/51-round7-diff-check.txt",
+    "docs/development/work/K1.2-correction-01/validation-07/MANIFEST.sha256"
+  ],
+  "policyUnchanged": [
+    "AGENTS.md",
+    ".agents/skills/arrokothi-architecture/SKILL.md",
+    ".agents/skills/arrokothi-slice-audit/SKILL.md",
+    "docs/development/006-development-process.md",
+    "docs/development/008-implementation-report.md",
+    "docs/development/012-review-methods.md"
+  ],
+  "manifests": [
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-01/MANIFEST.sha256",
+      "sha256": "8198183aa88bffbfef47654f52cbab81fc8d62a0acae95989bcdbe7c99648457",
+      "entries": 22
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-02/MANIFEST.sha256",
+      "sha256": "a395aab4eaa2ce16d8edf2bf015d7fbc1733d3829f0fe4d65c41c68453f08ad7",
+      "entries": 22
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-03/MANIFEST.sha256",
+      "sha256": "da061b0494aa1351c719ae4202417ea5c812a38a81f675a17edf06940ab48ed3",
+      "entries": 25
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-04/MANIFEST.sha256",
+      "sha256": "94e5bf1235b7a66eb977128f5846276f5c3d646a169c12fc6a22714ff77c371d",
+      "entries": 24
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-06/MANIFEST.sha256",
+      "sha256": "11c08bad72a6871d4a31eb2277f3beeaaa48811e255fffe84cae911644e725e7",
+      "entries": 28
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-08/MANIFEST.sha256",
+      "sha256": "ba7f5df73b2d1817df2349487f60275593b3fec7ddd4134a9fea3d219587d62d",
+      "entries": 35
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-09/MANIFEST.sha256",
+      "sha256": "fa6a80a77f727736099a227ee9fb8b050fd46562a9cfbb03af50d3c13614e357",
+      "entries": 13
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/review-10/MANIFEST.sha256",
+      "sha256": "0c4140584b3fe27db36281849cb9370c9bea9d49069cb75d0a19b09a668733b7",
+      "entries": 20
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/validation-01/MANIFEST.sha256",
+      "sha256": "505c8338ea866e94bb63ca15d75c673fb6f3bed5f38e58c4a4faaa72a7c5a3f1",
+      "entries": 15
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/validation-02/MANIFEST.sha256",
+      "sha256": "c5cf9e835ba7e880c9da49893d2090ee79a50f9438690b6f0eba26fe4c7a42dc",
+      "entries": 27
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/validation-03/MANIFEST.sha256",
+      "sha256": "c57e462e1ef4b7189726841cfb3b81e6f625b7bc2cb1a05bb637ae78da0b8b21",
+      "entries": 30
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/validation-04/MANIFEST.sha256",
+      "sha256": "f4576cefb4f2c838031d20833fd250e01add53a24003507b0710cadc8914b1af",
+      "entries": 41
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/validation-05/MANIFEST.sha256",
+      "sha256": "baedc9a600f3105f2f8f7d91f3d05439e2c766b08ef8b9ac5de1b8b0d1ed4478",
+      "entries": 42
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/validation-06/MANIFEST.sha256",
+      "sha256": "8e4d83584484dce4bf5ae6269c736cdd5cec648d73a85c1e44a9d1f461d52649",
+      "entries": 51
+    },
+    {
+      "path": "docs/development/work/K1.2-correction-01/validation-07/MANIFEST.sha256",
+      "sha256": "86f7103c9382a7fc98b6feec887b86755cc436ca42621e1682f375bf7760019d",
+      "entries": 55
+    }
+  ],
+  "cumulativeStat": "752 files changed, 390964 insertions(+), 478 deletions(-)",
+  "productionDelta": "packages/kernel/src/coordinator.ts | 6 ++++--\n packages/kernel/src/unsupported.ts | 7 ++++++-\n 2 files changed, 10 insertions(+), 3 deletions(-)",
+  "fullDiffSha256": "585b36e6afad17f7bfc2082bc26f36260286425052e870dceef9bed26d71d6c8"
+}

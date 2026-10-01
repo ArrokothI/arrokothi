@@ -1,0 +1,4 @@
+== records: node docs/development/work/K1.2-correction-01/check-records.mjs @ 6541115e2e5389a7e5cff86f87d857b4eb486d7d 2026-09-26T13:25:44Z
+Prerequisite ancestry, historical records/36 ablations, every original test, identity/value producer code and creation-through-dispatch preservation verified.
+Local reference check: 8 files, 501 links/anchors; remote links not fetched.
+exit: 0

@@ -1,0 +1,74 @@
+candidate C: aa8709673e6d53455f226d0fc01bdca6fb55e600
+base B: a20d278185eaffc7f8b7489345a3624231ff6e6d
+branch: claude/k1.2-outcome-acceptance-receipts
+cwd: /private/tmp/k12-r5-csjhg5od/checkout
+command: node --input-type=module <<'JS'
+import ts from 'typescript';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {readFileSync,existsSync} from 'node:fs';
+import {dirname,resolve} from 'node:path';
+const prior='7237704fddb267779930a94f320591c8d92adf98';
+const c4='da82de9de1e51c4b1980e4450a6daf1126945ad2';
+const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+const paths=git('ls-files','packages/kernel/src','packages/kernel/tests').split('\n').filter(p=>p.endsWith('.ts'));
+for(const p of paths){
+ const old=git('show',`${c4}:${p}`);
+ let next=readFileSync(p,'utf8');
+ if(p==='packages/kernel/tests/control-authority.test.ts') next=next.replace('K12-R1-AUTH-01 visible caller without control vs control on all three controls','K12-R1-AUTH-01 inspect-only vs control on all three controls');
+ const print=s=>ts.createPrinter({removeComments:true}).printFile(ts.createSourceFile(p,s,ts.ScriptTarget.Latest,true));
+ assert.equal(print(next),print(old),p);
+}
+console.log(`PASS: ${paths.length} source/test TypeScript files preserve printed syntax versus C4 after removing comments and normalizing the one disclosed suite title.`);
+assert.equal(git('diff',c4,'HEAD','--','docs/development/work/K1.2/ablations.mjs'),'');
+console.log('PASS: all 25 ablation definitions are byte-identical to C4.');
+const changed=git('diff','--name-only',prior,'HEAD').split('\n');
+for(const p of changed) assert(!/\/(?:implementation-|review-|validation-|handoff-|cleanup-|integration-)/.test(p),p);
+console.log('PASS: no historical report/review/evidence changed since the administrative head.');
+console.log('Correction delta files:\n'+changed.join('\n'));
+console.log('Cumulative B..C5 summary:\n'+git('diff','--shortstat','a20d278185eaffc7f8b7489345a3624231ff6e6d','HEAD'));
+console.log('Whitespace check: '+(git('diff','--check',prior,'HEAD')||'PASS'));
+let links=0;
+for(const p of ['docs/development/work/K1.2/contract.md','docs/development/002-implemented-kernel-baseline.md']){
+ const text=readFileSync(p,'utf8');
+ for(const m of text.matchAll(/\[[^\]\n]*\]\(([^)\s]+)\)/g)){
+  const target=m[1]; if(/^[a-z][a-z0-9+.-]*:/i.test(target)) continue;
+  const [rel,anchor]=target.split('#'); const dest=rel?resolve(dirname(p),decodeURIComponent(rel)):resolve(p);
+  assert(existsSync(dest),`${p}: ${target}`);
+  if(anchor){const headings=[...readFileSync(dest,'utf8').matchAll(/^#{1,6}\s+(.+)$/gm)].map(h=>h[1].toLowerCase().replace(/<[^>]*>/g,'').replace(/[^\p{L}\p{N}_\-\s]/gu,'').replace(/\s/g,'-')); assert(headings.includes(decodeURIComponent(anchor)),`${p}: ${target}`);}
+  links++;
+ }
+}
+console.log(`PASS: ${links} local links/anchors in changed contract and baseline.`);
+JS
+environment: {"node": "v26.8.1", "npm": "11.19.0", "typescript": "5.9.3", "OS": "ProductName:\t\tmacOS\nProductVersion:\t\t15.6.1\nBuildVersion:\t\t24G90", "arch": "arm64"}
+config: repository scripts/config at C; default CoordinatorOptions unless a test overrides them; no external fixtures; copied existing node_modules with relative workspace links resolving inside this clean checkout
+config-sha256: {"docs/development/work/K1.2/ablations.mjs": "434f5ef165b0db0abbc8deeb8f24d40542c3ec26690d1db8126a314c57140eba", "package-lock.json": "a34ef0cd89cee1da26347238cff32b9872075290fdafba32f1b8717e16c88b8d", "package.json": "081c2ce88c9d98d14b2b73e98543aa4c8108273bc0ec10b5cd130abd01cf11c1", "packages/kernel/package.json": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5", "tsconfig.json": "596a75a819d6b1ce928e3760e8bf25bf49fa78c3ff13b9fd229b5e82eb380ec4"}
+environment-settings: {"CI": "<unset>", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "NODE_ENV": "<unset>", "NODE_OPTIONS": "<unset>", "TZ": "<unset>"}
+pre-command git status --porcelain=v1 --untracked-files=all: empty
+post-command git status --porcelain=v1 --untracked-files=all: empty
+started-utc: 2026-09-25T05:02:33.482618+00:00
+finished-utc: 2026-09-25T05:02:34.363532+00:00
+output-bytes: 835
+output-sha256: 18a8fa72253c8bdb63d5fea6499e75b35c31a7cf97a18b7a41db027c1ff86261
+--- output begins ---
+PASS: 42 source/test TypeScript files preserve printed syntax versus C4 after removing comments and normalizing the one disclosed suite title.
+PASS: all 25 ablation definitions are byte-identical to C4.
+PASS: no historical report/review/evidence changed since the administrative head.
+Correction delta files:
+docs/development/002-implemented-kernel-baseline.md
+docs/development/007-work-packets.md
+docs/development/work/K1.2/contract.md
+packages/kernel/src/coordinator.ts
+packages/kernel/src/identity.ts
+packages/kernel/src/refusal.ts
+packages/kernel/tests/control-authority.test.ts
+packages/kernel/tests/harness.ts
+packages/kernel/tests/submission-authority.test.ts
+Cumulative B..C5 summary:
+83 files changed, 37316 insertions(+), 395 deletions(-)
+Whitespace check: PASS
+PASS: 56 local links/anchors in changed contract and baseline.
+
+--- output ends ---
+exit 0

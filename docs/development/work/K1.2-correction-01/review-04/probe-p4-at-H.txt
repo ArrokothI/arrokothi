@@ -1,0 +1,16 @@
+{
+ "precondition: minted IDs are unrenderable": "ok",
+ "X17 decision.activationId exact": "ok",
+ "X10 acknowledgment names exact Activation": "ok",
+ "X11 code hold coordinate exact (answer and view)": "ok",
+ "X21 protocol hold coordinate exact": "ok",
+ "X20 protocol answer exact": "ok",
+ "X13 delivery rows exact": "ok",
+ "X8 Emission IDs distinct across exchanges with one key": "ok",
+ "X8 Emission ID derivation (K1.2-DEC-4)": "ok",
+ "X22 Emission record activationId exact": "ok",
+ "X23 result record activationId exact": "ok",
+ "X9 result ID derivation (K1.2-DEC-4)": "ok",
+ "X15 Outcome receipts of two Executions distinct": "ok"
+}
+exit=0

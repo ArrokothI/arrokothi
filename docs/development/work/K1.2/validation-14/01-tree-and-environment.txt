@@ -1,0 +1,16 @@
+=== status ===
+?? docs/development/work/K1.2/validation-14/
+=== HEAD ===
+2f4e64b1f51c679e2b381f9fb9800f2e290ddd30
+=== branch ===
+claude/k1.2-outcome-acceptance-receipts
+=== base ===
+a20d278185eaffc7f8b7489345a3624231ff6e6d
+=== versions ===
+v25.2.1
+11.6.2
+Version 5.9.3
+=== date ===
+Sat Sep 26 01:08:03 UTC 2026
+=== payload range ===
+2f4e64b K1.2 C12: Activation identity as third exchange coordinate per decision-02

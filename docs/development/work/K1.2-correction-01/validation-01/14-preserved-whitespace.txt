@@ -1,0 +1,29 @@
+payload C: 360538522be8c1b17d23948f632fd4f568a76ed0
+cwd: /Users/linzhenglin/Desktop/ArrokothAI/k1.2-correction-01
+environment: 00-environment.json
+
+command: ["git", "diff", "--check", "a20d278185eaffc7f8b7489345a3624231ff6e6d", "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb"]
+docs/development/work/K1.2/review-09/ablations-reviewer.txt:3: trailing whitespace.
++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-12/11-preservation-and-links.txt:201: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-13/02-typecheck.txt:4: new blank line at EOF.
+docs/development/work/K1.2/validation-14/02-typecheck.txt:4: new blank line at EOF.
+exit: 2
+
+command: ["git", "diff", "--check", "a20d278185eaffc7f8b7489345a3624231ff6e6d", "360538522be8c1b17d23948f632fd4f568a76ed0"]
+docs/development/work/K1.2/review-09/ablations-reviewer.txt:3: trailing whitespace.
++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-12/11-preservation-and-links.txt:201: trailing whitespace.
+++               tests 450, pass 450, fail 0; failing: 
+docs/development/work/K1.2/validation-13/02-typecheck.txt:4: new blank line at EOF.
+docs/development/work/K1.2/validation-14/02-typecheck.txt:4: new blank line at EOF.
+exit: 2
+
+command: ["git", "diff", "--check", "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb", "360538522be8c1b17d23948f632fd4f568a76ed0"]
+exit: 0
+
+command: ["git", "diff", "--check", "a20d278185eaffc7f8b7489345a3624231ff6e6d", "360538522be8c1b17d23948f632fd4f568a76ed0", "--", ".", ":(exclude)docs/development/work/K1.2"]
+exit: 0
+
+PASS: cumulative whitespace diagnostics are byte-identical at release and C; correction delta and cumulative non-historical files pass. Historical evidence preserved under 006/008, not silently repaired or counted as a green cumulative check.

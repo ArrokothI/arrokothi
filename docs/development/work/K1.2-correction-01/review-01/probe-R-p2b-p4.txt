@@ -1,0 +1,13 @@
+P2b prefix (different) -> stale_exchange
+P2b suffix (different) -> stale_exchange
+P2b NFD (different) -> stale_exchange
+P2b upper (different) -> stale_exchange
+P2b rope-equal (equal) -> ok
+P3 surrogate namespace fail+2 emissions malformed_envelope emissionIds distinct=false
+P3 view state RUNNING
+P4 visibility-only huge stale Outcome -> unauthorized_submission reasonLength=195
+P4 visibility-only surrogate stale Outcome -> unauthorized_submission reasonHasLoneSurrogate=false
+P4 another viewer inspects refusal reasons: maxLength=195
+P4 control huge stale takeover -> malformed_value reasonLength=93
+P4 no-exchange huge -> stale_exchange reasonLength=189
+P4 heap delta MB ~ 100

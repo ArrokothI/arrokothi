@@ -1,0 +1,223 @@
+{
+  "pins": [
+    {
+      "sha": "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "81dca4575ea56cfdde5b5f8ed72c439c7ec31821",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "dcac779bdf7e887bcf42c8a6407c1b24c2083a55",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "13a73ad9ad0662fe585d1453280c5ac3da4f79bb",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "60eebc24113eb834e5d88015ca2a196c95c60493",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "b93ed1df6b70569ada060481523e5b37c206e324",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "52b1600f3b42e3a360fdc3395178f1d147edf304",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "644dfffc7904176ee3a4f9943310cf926408a113",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+      "type": "commit",
+      "ancestor_of_H": true
+    },
+    {
+      "sha": "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+      "type": "commit",
+      "ancestor_of_H": true
+    }
+  ],
+  "HEAD": "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+  "status": "",
+  "allowlist_exact": true,
+  "C_H_diff": "docs/development/007-work-packets.md               |    2 +-\n .../work/K1.2-correction-01/implementation-08.md   |  561 +++\n .../validation-08/00-environment.json              |   12 +\n .../validation-08/01-typecheck.txt                 |   12 +\n .../K1.2-correction-01/validation-08/02-full.txt   | 4412 ++++++++++++++++++++\n .../K1.2-correction-01/validation-08/03-kernel.txt | 1755 ++++++++\n .../validation-08/04-conformance.txt               | 2530 +++++++++++\n .../K1.2-correction-01/validation-08/05-sdk.txt    |   42 +\n .../validation-08/06-builder-docs.txt              |   13 +\n .../validation-08/07-original-ablations.txt        |   83 +\n .../validation-08/08-correction-ablations.txt      |  276 ++\n .../validation-08/09-r11-probe.txt                 |   17 +\n .../validation-08/10-records-links.txt             |   10 +\n .../K1.2-correction-01/validation-08/11-evals.txt  |   36 +\n .../validation-08/12-diff-check.txt.gz             |  Bin 0 -> 154255 bytes\n .../validation-08/13-results.json                  | 1132 +++++\n .../14-original-ablations-adapted.txt              |   88 +\n .../validation-08/15-review-identity.txt           |   31 +\n .../validation-08/16-review-maxlen.txt             |   14 +\n .../validation-08/17-review-namespace.txt          |   14 +\n .../validation-08/18-diagnostics-maxlen.txt        |   31 +\n .../validation-08/19-round2-diff-check.txt.gz      |  Bin 0 -> 154052 bytes\n .../validation-08/20-review-aggregate.txt          |   12 +\n .../validation-08/21-review-equality.txt           |   14 +\n .../validation-08/22-correction-diff-check.txt.gz  |  Bin 0 -> 154053 bytes\n .../validation-08/23-review-cost-accept.txt        |    9 +\n .../24-review-cost-refuse-undefined.txt            |    9 +\n .../validation-08/25-review-cost-refuse-ctor.txt   |    9 +\n .../26-review-aggregate-pre-authority.txt          |   11 +\n .../validation-08/27-revision4-ablations.txt       |   50 +\n .../validation-08/28-review4-p4-p5.txt             |   50 +\n .../validation-08/29-round3-diff-check.txt.gz      |  Bin 0 -> 154020 bytes\n .../validation-08/30-review6-exact-ablations.txt   |  132 +\n .../validation-08/31-diagnostic-work-ablations.txt |   41 +\n .../validation-08/32-review6-cost-and-blocker.txt  |  159 +\n .../validation-08/33-round4-diff-check.txt.gz      |  Bin 0 -> 153926 bytes\n .../validation-08/34-handler-direct-0.txt          |    9 +\n .../validation-08/34-handler-direct-1000.txt       |    9 +\n .../validation-08/34-handler-direct-10000.txt      |    9 +\n .../validation-08/34-handler-outcome-0.txt         |    9 +\n .../validation-08/34-handler-outcome-1000.txt      |    9 +\n .../validation-08/34-handler-outcome-10000.txt     |    9 +\n .../validation-08/35-string-work.txt               |   19 +\n .../validation-08/37-round6-ablations.txt          |  158 +\n .../38-revision4-ablations-rebound.txt             |  114 +\n .../validation-08/39-review9-probe-history.txt     |   30 +\n .../40-review9-probe-history-mutable.txt           |   33 +\n .../validation-08/41-review9-matrix.txt            |   31 +\n .../42-review9-matrix-expect-correct.txt           |   32 +\n .../validation-08/43-host-members-probe.txt        |   11 +\n .../validation-08/44-claim-alias-search.txt        |   43 +\n .../validation-08/45-round6-diff-check.txt.gz      |  Bin 0 -> 150559 bytes\n .../validation-08/47-round7-ablations.txt          |  124 +\n .../48-review10-enforcement-rebound.txt            |   30 +\n ...49-new-oracles-and-name-probe-on-reviewed-H.txt |   19 +\n .../validation-08/50-review10-probes-rerun.txt     |   33 +\n .../validation-08/51-round7-diff-check.txt.gz      |  Bin 0 -> 130216 bytes\n .../validation-08/52-fault-sweep.txt               | 1151 +++++\n .../validation-08/53-poison-sweep.txt              |   21 +\n .../validation-08/54-zone-coverage-suite.txt       | 1763 ++++++++\n .../55-zone-coverage-suite-and-catalog.txt         | 1771 ++++++++\n .../validation-08/56-sweep-negative-controls.txt   |   73 +\n .../validation-08/57-sweeps-on-reviewed-H.txt      |   27 +\n .../validation-08/58-round8-diff-check.txt         |    8 +\n .../validation-08/59-guard-claim-search.txt        |    8 +\n .../validation-08/MANIFEST.sha256                  |   63 +\n 66 files changed, 17182 insertions(+), 1 deletion(-)",
+  "policy_unchanged": {
+    "AGENTS.md": true,
+    ".agents/skills/arrokothi-slice-audit/SKILL.md": true,
+    ".agents/skills/arrokothi-architecture/SKILL.md": true,
+    "docs/development/006-development-process.md": true,
+    "docs/development/008-implementation-report.md": true,
+    "docs/development/012-review-methods.md": true,
+    "docs/development/README.md": false
+  },
+  "manifests": [
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-01/MANIFEST.sha256",
+      "sha256": "8198183aa88bffbfef47654f52cbab81fc8d62a0acae95989bcdbe7c99648457",
+      "entries": 22,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-02/MANIFEST.sha256",
+      "sha256": "a395aab4eaa2ce16d8edf2bf015d7fbc1733d3829f0fe4d65c41c68453f08ad7",
+      "entries": 22,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-03/MANIFEST.sha256",
+      "sha256": "da061b0494aa1351c719ae4202417ea5c812a38a81f675a17edf06940ab48ed3",
+      "entries": 25,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-04/MANIFEST.sha256",
+      "sha256": "94e5bf1235b7a66eb977128f5846276f5c3d646a169c12fc6a22714ff77c371d",
+      "entries": 24,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-06/MANIFEST.sha256",
+      "sha256": "11c08bad72a6871d4a31eb2277f3beeaaa48811e255fffe84cae911644e725e7",
+      "entries": 28,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-08/MANIFEST.sha256",
+      "sha256": "ba7f5df73b2d1817df2349487f60275593b3fec7ddd4134a9fea3d219587d62d",
+      "entries": 35,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-09/MANIFEST.sha256",
+      "sha256": "fa6a80a77f727736099a227ee9fb8b050fd46562a9cfbb03af50d3c13614e357",
+      "entries": 13,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-10/MANIFEST.sha256",
+      "sha256": "0c4140584b3fe27db36281849cb9370c9bea9d49069cb75d0a19b09a668733b7",
+      "entries": 20,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/review-11/MANIFEST.sha256",
+      "sha256": "6e60ba7c784b4ae0945b1275fa5b98e3ef0970a241450067707daf11e45bf036",
+      "entries": 38,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-01/MANIFEST.sha256",
+      "sha256": "505c8338ea866e94bb63ca15d75c673fb6f3bed5f38e58c4a4faaa72a7c5a3f1",
+      "entries": 15,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-02/MANIFEST.sha256",
+      "sha256": "c5cf9e835ba7e880c9da49893d2090ee79a50f9438690b6f0eba26fe4c7a42dc",
+      "entries": 27,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-03/MANIFEST.sha256",
+      "sha256": "c57e462e1ef4b7189726841cfb3b81e6f625b7bc2cb1a05bb637ae78da0b8b21",
+      "entries": 30,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-04/MANIFEST.sha256",
+      "sha256": "f4576cefb4f2c838031d20833fd250e01add53a24003507b0710cadc8914b1af",
+      "entries": 41,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-05/MANIFEST.sha256",
+      "sha256": "baedc9a600f3105f2f8f7d91f3d05439e2c766b08ef8b9ac5de1b8b0d1ed4478",
+      "entries": 42,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-06/MANIFEST.sha256",
+      "sha256": "8e4d83584484dce4bf5ae6269c736cdd5cec648d73a85c1e44a9d1f461d52649",
+      "entries": 51,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-07/MANIFEST.sha256",
+      "sha256": "86f7103c9382a7fc98b6feec887b86755cc436ca42621e1682f375bf7760019d",
+      "entries": 55,
+      "errors": []
+    },
+    {
+      "manifest": "docs/development/work/K1.2-correction-01/validation-08/MANIFEST.sha256",
+      "sha256": "1414096365f04eea0b851a7ad07ad52bb60c609fc8ccf156b63387110f451da5",
+      "entries": 63,
+      "errors": []
+    }
+  ],
+  "compressed_evidence": [
+    {
+      "file": "33-round4-diff-check.txt.gz",
+      "bytes": 7963810,
+      "sha256": "bce9893ff76d56f8ef1e39dda76da5de0c841c301e49b37e34564315a8b8e256"
+    },
+    {
+      "file": "51-round7-diff-check.txt.gz",
+      "bytes": 6814034,
+      "sha256": "00eb65e43a67718eba70c755a23fc06419908a6ee4efca9083ef1cef7e3a51f0"
+    },
+    {
+      "file": "22-correction-diff-check.txt.gz",
+      "bytes": 7970184,
+      "sha256": "76386eb36b805a2e579319a3cb10516c4ab50163bd1cc381e4638ebe1aca5b9e"
+    },
+    {
+      "file": "29-round3-diff-check.txt.gz",
+      "bytes": 7968943,
+      "sha256": "6e9ead7fedc11b1870ba5d340440cf19ebdba8b466e2b4538d905dfbfcc59390"
+    },
+    {
+      "file": "12-diff-check.txt.gz",
+      "bytes": 7971608,
+      "sha256": "a5cf0899ad950700eb6a732e191bf7e1cbe4fc031a23138d1ab5b6ae04dd34b3"
+    },
+    {
+      "file": "45-round6-diff-check.txt.gz",
+      "bytes": 7779572,
+      "sha256": "9766086376f3e183de02b7ded88864d467b7a818839edd156443898a5e74caf1"
+    },
+    {
+      "file": "19-round2-diff-check.txt.gz",
+      "bytes": 7970184,
+      "sha256": "0ef73f7715fd20985c7acd859f608e3ad85339dd3e8200912392dd233d064dcc"
+    }
+  ]
+}
