@@ -1,0 +1,21 @@
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "node": "v26.8.1",
+  "dependency": "canonicalize@3.0.0",
+  "original_probe": "docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+  "original_probe_sha256": "85be0931eae562940641ece061ef13f1a91278ace246d8d6beb5b8298d7660ae",
+  "values_sha256": "eb1f5c3b5705ade2d90427cbac598518430aaf68085d0c62f7d8e6bf47d97cae",
+  "adaptation": "import relocation only; original cases and output unchanged",
+  "command": "node --experimental-strip-types --no-warnings <temporary probe.mts>",
+  "exit": 0
+}
+Map(null proto, 1 entry) ACCEPT {}
+Date(null proto) ACCEPT {}
+Set(Object.prototype) ACCEPT {}
+Uint8Array(3, null proto) ACCEPT {"0":7,"1":8,"2":9}
+ArrayBuffer(null proto) ACCEPT {}
+RegExp(null proto) REFUSE unrepresentable_member
+Error(null proto) REFUSE unrepresentable_member
+String wrapper(null proto) REFUSE unrepresentable_member
+Boolean wrapper(null proto) ACCEPT {}
+WeakMap(null proto) ACCEPT {}
