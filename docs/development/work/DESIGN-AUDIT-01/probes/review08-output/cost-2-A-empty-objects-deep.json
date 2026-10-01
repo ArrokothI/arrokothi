@@ -1,0 +1,16 @@
+{
+  "label": "cost-2-A-empty-objects-deep",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "A-empty-objects-deep"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"A-empty-objects-deep\",\"ok\":true,\"bytes\":1044709,\"records\":0,\"issues\":0,\"codes\":[],\"ms\":1253,\"heapMiB\":95.5}\n",
+  "stderr": "",
+  "elapsed_seconds": 1.339
+}

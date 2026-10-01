@@ -1,0 +1,17 @@
+{
+  "label": "outcome-8",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/deep-outcome.ts",
+    "<repo>",
+    "8"
+  ],
+  "timeout_seconds": 120,
+  "exit": 0,
+  "stdout": "{\"roots\":8,\"ok\":false,\"classification\":\"unauthorized_submission\",\"ms\":22083,\"sameExchange\":true,\"deliveries\":1}\n",
+  "stderr": "",
+  "elapsed_seconds": 22.181
+}

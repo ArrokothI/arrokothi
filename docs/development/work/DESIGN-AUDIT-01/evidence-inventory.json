@@ -1,0 +1,2082 @@
+[
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-correction-01/blocker-01.md",
+    "line": 76,
+    "kind": "inline ts",
+    "sha256": "fe1093d192103cc44021ac4c08a9a92192c73d31ac43705271ead49dd6644069",
+    "lines": 6,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-correction-01/contract.md",
+    "line": 239,
+    "kind": "inline bash",
+    "sha256": "75e758dd12d11f119a522543a735b37514c9646877eeeb8b59b07e8f3bbe5dfc",
+    "lines": 7,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-correction-01/contract.md",
+    "line": 256,
+    "kind": "inline bash",
+    "sha256": "6012b2f32efecad5ac8a806684e17e9f74917f8e0043580615200c8272615fcd",
+    "lines": 2,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-correction-01/review-02.md",
+    "line": 51,
+    "kind": "inline ts",
+    "sha256": "21163f6e80759ea89151d46cbb5da973e028c9358ca7dde422a8e414d3ea32d6",
+    "lines": 1,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-correction-01/review-02.md",
+    "line": 59,
+    "kind": "inline ts",
+    "sha256": "2eae8cad2c867c6afefa16a6a5f27d3f80372b53acc34a6d8542be5424214689",
+    "lines": 5,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-correction-01/review-02.md",
+    "line": 113,
+    "kind": "inline ts",
+    "sha256": "124942a66eae8fbc7565500f1834c7b3e29f5670f637199901b0d72b89f42943",
+    "lines": 1,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-reference-01/contract.md",
+    "line": 157,
+    "kind": "inline bash",
+    "sha256": "ac1ea7130df424cf92308d250d4d92b40d48546448e994c307b3af0d569b044c",
+    "lines": 1,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1-reference-01/review-05.md",
+    "line": 109,
+    "kind": "inline inferred executable",
+    "sha256": "163d7937d487321b44eafb998d4bfda6249413fb160490950f9d4b75c6b647c5",
+    "lines": 12,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/contract.md",
+    "line": 262,
+    "kind": "inline bash",
+    "sha256": "75e758dd12d11f119a522543a735b37514c9646877eeeb8b59b07e8f3bbe5dfc",
+    "lines": 7,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/review-01.md",
+    "line": 62,
+    "kind": "inline js",
+    "sha256": "500e6e782a180c3609df8c97ddcd0a848eaa0333be7d5494cd9afce5144f4ddd",
+    "lines": 1,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/review-02.md",
+    "line": 84,
+    "kind": "inline js",
+    "sha256": "967adec870c1bf94e4a3d31e56f9ba41174141e5114b6031cf2288e544d9b9e4",
+    "lines": 7,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/review-02.md",
+    "line": 129,
+    "kind": "inline ts",
+    "sha256": "e7bb1ffffca50fcb610b4a163c9e5e91ed90694a9073bc9d829600e7b2dc3165",
+    "lines": 2,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/review-05.md",
+    "line": 84,
+    "kind": "inline ts",
+    "sha256": "1c12b0a8d34ae5ce28bf2ee398b19ef5a5aa96ac628a2250794cb92076d3d3a8",
+    "lines": 2,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/review-06-supplement-01.md",
+    "line": 90,
+    "kind": "inline ts",
+    "sha256": "eeb449d0ed20cbe3adb51b3969e3f6c2c923b0ce8d7ab10531f970ef362108a4",
+    "lines": 3,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/review-06-supplement-01.md",
+    "line": 98,
+    "kind": "inline ts",
+    "sha256": "6a3e47c40f2d6fcd41b85867bbbaa04a0fe4fab7ac1df895079c728888498e5f",
+    "lines": 4,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "docs/development/work/K1.1/review-07.md",
+    "line": 70,
+    "kind": "inline ts",
+    "sha256": "2c6414a76a481b2c4b93eca4887b043a0d8eab81a7ab7d37218c6f92abbf026a",
+    "lines": 6,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/boundary.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "742f22072f175bc900852f0ba3eb7001d4d99c9e0212252338ceb6d66c6f4d9b",
+    "lines": 207,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/creation.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "8497173f0bf2acfa303ac559471fa2de67c01986c8ca82fafa90278b77251e2e",
+    "lines": 1067,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "f4eb6eec8b48a677698efd767277c832fb2afe3415987af5cd1fbd91b6671cd8",
+    "lines": 1533,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/evidence.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "27d6a44f371e208562f71a2c1b5d967b8a5fa585cf5e3b5a0df9c450491490b3",
+    "lines": 351,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/harness.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "949b6211d703e592611e810d5dff6743cd3726372d539cdc39dce2c56837269b",
+    "lines": 445,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/ingress.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "4b7804af015a618c6d4c1258e50f6b65e45a8edadbe48592ea34b5ae1b3e6b73",
+    "lines": 866,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/inspection.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "84f9d42bfbc98538336f621fd9cb0888b0e597725853f13cba0fe79a2fcd85cf",
+    "lines": 273,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/nondisclosure.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "7ec05d5535be0a2039c324da9c21ffe82184da987033c82e3addf69ec5e76309",
+    "lines": 477,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/receipts.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "30baed0d10e0e27ef7c3444a46d2c3192c2cd28b3a8af316cf0802a070f07996",
+    "lines": 311,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/refusals.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "69f255e34f994c84f0488fc6bd6018728e5792d95ed8811d3ddfd4dd8dce7b9a",
+    "lines": 79,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/unsupported.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "ad36a96b0e68240f8f96ba105af2ff8b129fa2029c375b7e1bc5afabb25d3ed5",
+    "lines": 72,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/values.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "6e309be5729cf198c1e51565ecbe938102402a8bff0ad4678c14a8e0fd46ddd4",
+    "lines": 1570,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "scripts/check-builder-docs.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "891f9d291468eeff97fa210053641b3a8e2dedc353f098396eb6d6d3c1b0c469",
+    "lines": 117,
+    "disposition": "Retire as a reusable runner; retain sealed provenance",
+    "reason": "Candidate identity, docs scope or historical gate; common record verifier should replace duplicate runner"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "scripts/gemini-provider-canary.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "147e19f58f688083483db4cfcc23480508c0fe9f51a6f7ff22a6c587872c3122",
+    "lines": 184,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "scripts/mcp-gemini-canary.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "91856559c08cb05f7bebd6089eecb5c7ad525f81f38507d847766280fd49812b",
+    "lines": 240,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "scripts/workflow-scenario-canary.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "cae7ef95dd22a14acc520f15e2ff6df8623c013534abbdabefe6a59a6f8a516d",
+    "lines": 219,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/agent-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "af0fd4377a684fc07c44f5a54ddc20d04d643ce81aa1b88f0210a980c684cbcc",
+    "lines": 650,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/boundary-policy.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "382664980a402429bbb308d282b21815b808bbf7e2491c84af09592faf26d227",
+    "lines": 229,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/composition-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "27a3603e7f4dc8924cf2312804755822da9170b61da04bffa17dc3b0ce34a09e",
+    "lines": 357,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/evidence-records.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "f2796e057605e8fefa83e25fde02c0c08c6a710dff4cfd3bd5c786f2bde640c4",
+    "lines": 210,
+    "disposition": "Retire as a reusable runner; retain sealed provenance",
+    "reason": "Candidate identity, docs scope or historical gate; common record verifier should replace duplicate runner"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/import-scanner.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "3382a991c2792336df2ba5959298b1aaacb6836ad29e6ce66db3d4fe6fa6e326",
+    "lines": 395,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/inventory-oracle.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "07006721f1eb3bb43d8cb5f9f9d5583369281416b588fb4f819bb8db41c696c9",
+    "lines": 1833,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "06f065d151af04916ee34a6ae14d22a1164f66fbb5ccf2a5d36952e7809fc9a2",
+    "lines": 4496,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/legacy-core-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "6327b7dc91e2e714ee65c277d8fd128e4f0b513361d4ea57e055cb97e68ac732",
+    "lines": 355,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/mcp-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "9b78c2f12083273b88d82cd900e7ae97b92b11f87fa82248d40f53e18d809c97",
+    "lines": 298,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/module-graph.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "cdc4a3e9632f8fdbf8987552f5945c6958db01479aad6305c566839ffa72ad6e",
+    "lines": 345,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/workflow-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "14b7ba1eaacefd857ae2d6cf6185b3a2cae35c4f2df9370ba0161140cd08a3b4",
+    "lines": 252,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.1-correction-02/measure-probe.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "616919a5d71502c3290d14ff2cede239ea07a0410f9a6283fb88e786670313dd",
+    "lines": 25,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.1-correction-02/review-01.md",
+    "line": 58,
+    "kind": "inline js",
+    "sha256": "ddfed81b00d5fcaabdea6af075350a5816769bf8dec94715055899cea1c80c2e",
+    "lines": 12,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/ablations-03-rebound-06.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "dd58f0c4312f7d4798cf3a2d97208b294c553fef3dfdec4c31feb9654c2fc14d",
+    "lines": 74,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/ablations-03.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "fef23a334dd15f427bed658f915f8a48914b08253ca918b53b879ee5e83b1dc2",
+    "lines": 54,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/ablations-04.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "07bf50a9809c72fe5c4b88a14d1395025749262559369e622e4ac5864023c94e",
+    "lines": 79,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/ablations-06.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "b2231028aeefdddb438fa7a1fa79f8b077acae906488285f468e1accdcaff406",
+    "lines": 147,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/ablations-07.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "e1faa1db04bb7295367a4b8dc38da0e0430df1062617e5f257bfc8104363c397",
+    "lines": 140,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/ablations.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "c3ba810264b80543d1ebc5a98cfc34a5491b4d87fe45d2596000d63b402fb842",
+    "lines": 97,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/check-records.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "2b8c6f0ad24da07631d37c06030578bf1a6049e1c1f3df2cdf3fdb8410a3c95a",
+    "lines": 88,
+    "disposition": "Retire as a reusable runner; retain sealed provenance",
+    "reason": "Candidate identity, docs scope or historical gate; common record verifier should replace duplicate runner"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/diagnostic-ablations-04.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "45f17c123a13a04eaa63d3d9cb3d578ceb6db8ff2e9dfe715243ad59529e281a",
+    "lines": 39,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/diagnostic-closure-04.md",
+    "line": 114,
+    "kind": "inline sh",
+    "sha256": "4cedb243e862a55d0985ea14b8bd09fec7f660c33e9587b7e9eb791d63f3b620",
+    "lines": 1,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "421a40f3ae82f4904ad7f7531fca10f3085f7a03113c25f786dc646b771b4bde",
+    "lines": 88,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/original-ablations-02.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "b9b5901b9ad0a57525c298e2d1742a14558a417edade445f12d38d57d7f09f08",
+    "lines": 46,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-descriptor-chain-04.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "33bb11ac48307448b64b9df224263f0b5e44d0b38e34f3d579665a4f0afaf061",
+    "lines": 59,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "3034d5e49639e8a88689350ae1de44bbb457497b03cc8d1e384c38929d878e1c",
+    "lines": 21,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-enforcement-rebound-07.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "8fac81e44e2588a6a974acfd834d62af041c4d56f09e4348ef42daa2abe2fb8d",
+    "lines": 96,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-handler-chain-04.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "ff2dcb84e9230230b8c86ddd05cc64bb8d206ffca3bb03bc2fcb0f92f870f9cf",
+    "lines": 80,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-host-members-06.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "e2ca13c70d54e7334e524ffd34d5d3ae4e2f5a104e674c33b18636d2bd9fe67f",
+    "lines": 98,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-review10-rerun-07.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "b3e9269d3cccf2d0509bf39e75a33294fa6942ac0e630e576aa2d009d61ba282",
+    "lines": 52,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-review12-09.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "2eaf6b152e28034a3f5ccdbd25b3c56ecec31406dbf2aa745a365ce346dc6711",
+    "lines": 74,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-reviewed-h-07.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "677216e0723fb233a6891a299d86e78b6cde6e2ccd3a6c8e700d3429cf608ee4",
+    "lines": 83,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-reviewed-h-08.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "0729b1b4b5ce88f7c2f4afbaecd2a57c548693a8a8a664156218bdc6edd3386d",
+    "lines": 69,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/probe-string-work-04.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "96b6e8a1eda75a84e8b2d0fd1501f4eb5bd804b54f191ec196d1cd21184670b3",
+    "lines": 107,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/refusal-cost-probe-03.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "597a43c189cbf1322d48392240a78a8a5e81551bb9271c2cc38ed0985b7a0b47",
+    "lines": 24,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "2a335aede221de0f0974def1f78b117ce909a6ed9748d4e9d6495d38da34db7e",
+    "lines": 46,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-01/probe-identity.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "afdcbef60fe90840277c48436549f254f3d3441b7e5a4064070e31a24f0ece61",
+    "lines": 107,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "052e564406d7723788d57f347ce9f0e958f27dfd75ed6de7f455486c62aad577",
+    "lines": 41,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "5288df4422450f614a3caec3bab665a0c599d3698e28ee2926706fad6775b45b",
+    "lines": 23,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-02/probe-aggregate.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "1361d24fa5a0dff29977e49414cd3896f0b4872036ad642b7c087aa978b69fb6",
+    "lines": 64,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "0b5ea78bb0d368c59d1426ebdffe8168638643ef460aea7a69621578693c5690",
+    "lines": 40,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-02/probe-equality.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "c1ae8da011e35738f7287e8acab7cbe75459d224a9ed17f5056c456c8bbada90",
+    "lines": 39,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-02/reviewer-ablations.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "5ba3e8bdd8da23efee080957ac22081b7aa8c266f6a2e3346a77c9615b49fbe7",
+    "lines": 68,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-03/reviewer-ablations-h2.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "6bf952543e38e01ec0927a3ff89012213f70ead1f31187c334539b2f34ed7cc0",
+    "lines": 58,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/linkcheck.py",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "359bd46c265e64f11852cb990f3e0b0fd3ca8edd41d46bcfe0ec35fa3e13c0fb",
+    "lines": 43,
+    "disposition": "Retire as a reusable runner; retain sealed provenance",
+    "reason": "Candidate identity, docs scope or historical gate; common record verifier should replace duplicate runner"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/oracle-vs-mutants.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "761782149b97820fef4b11e80c3236e1dc73ae4cc94dc1079bda3760403db65e",
+    "lines": 23,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/p1-permitted-unsafe.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "2a5905586361d42f0c4dc17a6e991ea84e0fce145e8f7e973ad3022b71d2bbac",
+    "lines": 19,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/p2-review14.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "a37846e1267962d57d4b8d115cf1b8297ceed450c60ed675ad7408a2d28b1ffa",
+    "lines": 32,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/p3-control-reentry.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "0bf972e2f44a175eece76b72506baeed7cbfd0c71560645a78cfa27787084369",
+    "lines": 23,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/p4-exact-coordinates.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "a5866fb63e882428e36c50c87bffdf1cbac19f9a799bceaaafcc2b820b7f126b",
+    "lines": 49,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/p5-refusal-cost.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "b60a595dcfeb4344de3cf09075dee7bd408240ba9f450fb5b87caf589ccf7bf1",
+    "lines": 27,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-04/reviewer-ablations.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "98a6ac4c3c6e520bedffe8b2ff25e089c93c10ec4ca2c9de3766a5aa34909c71",
+    "lines": 59,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-06/links.py",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "fe343643331bf901db25e2438ad079e194d37aacc2c633037eaa22a79f6d0e0f",
+    "lines": 33,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-06/mutants.py",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "b2906ec25130ddd22073cf6bd47694f9fb78ef2b96b6698b7b617a5926550a0e",
+    "lines": 61,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-06/p-chain-catch.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "d7912c11de92c9f3c4303287eaf9c3b0a1f6037810a6dbc8797bf48720294b74",
+    "lines": 15,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-06/p-chain-ingress.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "991edcd5285c345c2d8210a982e2f4af618ef2b4115ce53b33f12a115d38a858",
+    "lines": 19,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-06/p-chain-outcome.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "625a6505287e0a7e2ea7ac2b817418f79901d9c7327c695dcf1807d8971ce34a",
+    "lines": 21,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-06/p-chain.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "63dd4983d37152403fe6f0cda8e304c265a1d59533517572bd493c09c26d0f2c",
+    "lines": 26,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-06/p-receipts.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "8858948a52560a2c4d41dd213adbb54ae84806f5b7021085eb1edb8dbc591af0",
+    "lines": 34,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "c2a051f027f6f2f3325129ae4e2bb9af6310a71cec7aacb3b3e7d197d2990904",
+    "lines": 37,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/deep-outcome.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "d46666f297154099b72410a1ebc795c54ba11e4f1d1334fa9068ac16f83d8289",
+    "lines": 24,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/mutants.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "7d0ea235d311325e1eb2b70df07e13e6ce7cdaf236e906084a42a3bfc28efe75",
+    "lines": 62,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "75dbe4ae4dcb95801582a8ebe7699278ae29a770fe43d00b6ba46b482b65b675",
+    "lines": 15,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/p-exotic-ownkeys.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "5b97d481124bee4f5b2ea49276c18faf518cc53fd0c2882ea59d366f637bb7d5",
+    "lines": 12,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "85be0931eae562940641ece061ef13f1a91278ace246d8d6beb5b8298d7660ae",
+    "lines": 12,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/p-rope-ops-2.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "91b3ac81202395d9bef5eb19bd6a6955935a8eb0e213349a1a20c0cd354c0ec1",
+    "lines": 12,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/p-rope-ops.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "02ca9c2a77e2b39cda857a8f0bef14a92fa37afebd4103a2726ad507d9fd4860",
+    "lines": 15,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-08/run-cost.sh",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "16a1047e7e9b3894174aa9488f0aef842dcd3167cb07f0646733c6a73982f032",
+    "lines": 12,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-09/probe-history-mutable.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "fcac71fe6630c42237848c1a5b323e8371f9ad6bb387e85e4e964fc01131c614",
+    "lines": 14,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-09/probe-history.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "1f622ffb085a685414cb58b960d8375eb609399d00f3a4d15f20e8ffd82a5c07",
+    "lines": 29,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-09/probe-recovery-matrix.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "98d1ceb890605f9813f1b56a850029d3e34ec34c07eb53ef41498af0d8725f3f",
+    "lines": 50,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-10.md",
+    "line": 172,
+    "kind": "inline ts",
+    "sha256": "434f451610c47f0205fb61fb504534ff2e7248a583345a8dfa6d1f96a2b575fa",
+    "lines": 3,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-10/probe-enforcement.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "5695f73c581e01241af82b8a658c4d70c82a8aa6b70a13846b0d4fa641d6273b",
+    "lines": 51,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-10/probe-read-effects.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "2c42c85dccfeab9f94553c0b842eb67931eb5821669b0ffbbc27554e3bdafcfb",
+    "lines": 53,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-10/probe-whole-view.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "dca0a6a7e66d626c29047fcb82ee7a5993179123fbb232474ece6804d21ffa98",
+    "lines": 83,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11.md",
+    "line": 164,
+    "kind": "inline ts",
+    "sha256": "efa6fa61dad951008abe362e020718abb97d8f577b5b8572c3c41ad395b1f419",
+    "lines": 5,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11.md",
+    "line": 174,
+    "kind": "inline ts",
+    "sha256": "2626af039b89583bbeba75c83bb8f7cca92d8cfc41755cc37f2e7338aa6375d9",
+    "lines": 2,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11.md",
+    "line": 216,
+    "kind": "inline ts",
+    "sha256": "94f2f27a885fa510dd69adaa44a318454b8bced5b75ecfa692081969e227ff55",
+    "lines": 3,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11.md",
+    "line": 222,
+    "kind": "inline ts",
+    "sha256": "8cf363084dd9fc2e0ebc32fc0b7753514dbc5207e9b4490a8f892f3f73a00349",
+    "lines": 2,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/README.md",
+    "line": 27,
+    "kind": "inline sh",
+    "sha256": "77b4cbe2ae0a7d86d8ea4a9c7035bda2089af9183a9d28b3fb9a40685206b631",
+    "lines": 7,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/probe-fault.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "6c98248e3c0180a4eec0329a069d90c1ddec4843e6cb4907fb92927a5b907c48",
+    "lines": 17,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/probe-independent.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "61f64620f2ab31aa8ebf1913433324fc72ae8f6032b21e4c31ff1c43068bcdd1",
+    "lines": 46,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/probe-read-runtime.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "653c5c9d6f40bf0c4205e8c10bf36de00145166903e458751a12db2425fe0bc0",
+    "lines": 14,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/probe-recovery-matrix.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "5228576e7d57056df53ec0702b5dc512def9abde1a99da37ecbd6f0136c8035e",
+    "lines": 50,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/probe-whole-view.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "fd675b862f26961f9ef933f64cafc7916e95093701440a3d4cfb2510fa9e2c45",
+    "lines": 83,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/run-faults.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "54a3a9c36ae4f1615dda0c61854b2e308e7937a35801fd7b63ee62ac891a30b3",
+    "lines": 10,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/run-mutants.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "e8296b772c78abb1e349375ef43eec144c0a74876a04244f62fbf7ab6bf2bb41",
+    "lines": 22,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/run-read-mutant.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "381d1ca2e55ee03aa8606fb47de173d9822ab7546f854794446a6da703e492b5",
+    "lines": 5,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-11/verify-identity.py",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "57fe992ad0adbd9556e3f57655786dfac5db0a45d1036c9f72e28f40851e3c26",
+    "lines": 29,
+    "disposition": "Retire as a reusable runner; retain sealed provenance",
+    "reason": "Candidate identity, docs scope or historical gate; common record verifier should replace duplicate runner"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-12-evidence/README.md",
+    "line": 58,
+    "kind": "inline sh",
+    "sha256": "5a6b30c1fa94927cfd3a6437c35deb759496779f5b109ed2ba9966c238fb3278",
+    "lines": 3,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-12-evidence/build-oracle-probe.py",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "02ceec800d50cbc9b23a1b08dd8e228b5075db82b44e70d175641b2cd9719836",
+    "lines": 39,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/review-12-evidence/scope-probe.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "05317856f76d38f7c86d3040f8087a793c44153a573d61e128663d13b344f456",
+    "lines": 33,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/string-closure-04.md",
+    "line": 71,
+    "kind": "inline sh",
+    "sha256": "677b9151032ad377a438cf84925cde534c485a34d7505aaf3d2d482221e489ef",
+    "lines": 1,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/sweeps-08.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "b5c768b738b800d1ae2724b9f6e5744b213624feef8c2d000f9b09183b91c38f",
+    "lines": 177,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/sweeps-09.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "3b5343daf8bafcaac3edca4a85a0d7872b8ac535fd0680d5390c0bb17a6dd115",
+    "lines": 192,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2-correction-01/validate.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "19d2ca2d984fa6df5312af105c4daf5c3bd90fa48b2e2405175b7e30ee2efbd2",
+    "lines": 105,
+    "disposition": "Retire as a reusable runner; retain sealed provenance",
+    "reason": "Candidate identity, docs scope or historical gate; common record verifier should replace duplicate runner"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/ablations.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "9ea4cecb45f440fe8d6c972bc1ecbeacbf926ef1cd91c3daa683c4909b501f55",
+    "lines": 344,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/checks-06.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "ee5e2cd5c5cc354f6857ba1494d9574d842d1659158b69246eb98b1ef9a6563d",
+    "lines": 53,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/checks-07.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "dd7be8dd74d7d5e313e782097b3362eb22dda4bf46f427c5e349b8411ba58a88",
+    "lines": 63,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/contract.md",
+    "line": 276,
+    "kind": "inline bash",
+    "sha256": "66798cd5a543e5296fde0553903994decdf1bc8baea114707fc75843453a1545",
+    "lines": 6,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/review-03-merged.md",
+    "line": 172,
+    "kind": "inline ts",
+    "sha256": "c8c86a5764c0a4bee93dfc133a0ff361f042a30523024af4120347eea090eaa1",
+    "lines": 5,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/review-03.md",
+    "line": 113,
+    "kind": "inline ts",
+    "sha256": "c8c86a5764c0a4bee93dfc133a0ff361f042a30523024af4120347eea090eaa1",
+    "lines": 5,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/review-09/ablations-reviewer.mjs",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "ba9b2454af8e10a2db6f83b27f1ef5cfb4948a16fab7ae782cdb6874b455f8af",
+    "lines": 189,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/review-09/probe-order.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "fe4d8177c39036c7daed0d1bfe5d0924952080c6932f9dd42379b1753190758e",
+    "lines": 131,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/review-09/probe-race.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "da30e2faeb674e2338d202ac133215c4114ea66a0122bad29500c3b0a4aa13dc",
+    "lines": 28,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "docs/development/work/K1.2/review-11/probe-partial-claim.ts",
+    "line": 1,
+    "kind": "record artifact",
+    "sha256": "4dbb11d2e9b584a2680f40e2f87462043c8eee78a14d069ada3ccffa6bf528e7",
+    "lines": 67,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/activation-identity.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "d0ef80fd3183f1192507ede04e4ba0ed7594a623722e0e35d71448ff03b05ebf",
+    "lines": 288,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "c5ea96a2790e8a4c9de7beef060cbecff9de50a3e0830113de51d0056928e51b",
+    "lines": 193,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/ambient-reads.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "277c4a15897dfda67c54e4b1c844a452213fdd06241d2526361ad46eabaeb70b",
+    "lines": 327,
+    "disposition": "TOOLS-01 registry (optional static regression guard)",
+    "reason": "DEC-8/9 syntactic ownership/effect regressions; never a completeness oracle"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/boundary.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "742f22072f175bc900852f0ba3eb7001d4d99c9e0212252338ceb6d66c6f4d9b",
+    "lines": 207,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/control-authority.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "ed7ca86d44a0f24b14ed3c15f05f6992e1b5b030bac98a75c3b6c389c90612c3",
+    "lines": 396,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/control-commits.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "50458e4239c8d4b82218c882cbb3b5c2dc95e5fd440dee8d817a9e951096e672",
+    "lines": 243,
+    "disposition": "TOOLS-01 registry (optional static regression guard)",
+    "reason": "DEC-8/9 syntactic ownership/effect regressions; never a completeness oracle"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/creation.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "8497173f0bf2acfa303ac559471fa2de67c01986c8ca82fafa90278b77251e2e",
+    "lines": 1067,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/delivery-attribution.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "da155431d00681c1f8496bf66c577eb2e9f200dfde323705e02e3fe8c312ac55",
+    "lines": 224,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "84b2b74f2690617604c9bdae64da0340e32aafbee05b64f27970551364f802b6",
+    "lines": 1566,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/evidence.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "27d6a44f371e208562f71a2c1b5d967b8a5fa585cf5e3b5a0df9c450491490b3",
+    "lines": 351,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/exact-coordinates.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "babd9d88818b330d573684273810c0112619ef03cacadf00d56487845e067c86",
+    "lines": 211,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/fault-oracle.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "81ab0896d471b0360388974b2dc66ad1e0827abab32cf961b4ad6c6c7f9856dd",
+    "lines": 424,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/fault-sweep.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "93bb53c240a2c66a199338920571aadcdd3fb33e67867e6a1b622be53e77b7c5",
+    "lines": 91,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/harness.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "b52d53a8e3f28922680eb0e07cdfa84173126795bfa9009e3515274c12abc980",
+    "lines": 584,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/history-attribution.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "760ed5218c7d1f6a970f61affa82496e65661ab7f1a9d3345a7b5097abf3d762",
+    "lines": 197,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/hold-permitted.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "c5b1a9f028b8ce27ec3ab4aa0c158428bdc83d316e82e9c6f278d2870c5c53b7",
+    "lines": 273,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/host-members.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "164480a9552af241e0613f9cb47363324a76793c9865b2417484eef9c74b1a57",
+    "lines": 275,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/ingress.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "365ff0e7a8919b175fb238da7354faa5fd7891dbeecb66636517f8804df12a9d",
+    "lines": 864,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/inspection.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "84f9d42bfbc98538336f621fd9cb0888b0e597725853f13cba0fe79a2fcd85cf",
+    "lines": 273,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/late-reports.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "94da7345779ee37f51c35bad7fabea29889bcefc7000c3b4e825b1382f2b75dc",
+    "lines": 133,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/nondisclosure.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "8faceb4d925ac35df853135fccfb8acea4d2f5dde6077f23f9e588d9e0b4fc7c",
+    "lines": 593,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/outcome-acceptance.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "56c24bf44a91286c89dbc6321bb6c7347d3b3ac73f79e81b597361099c661f8d",
+    "lines": 672,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/outcome-evidence.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "74d34c9f8f11e4fcf9fe196e5bf324956b6c881a33948c7fa60441fa0c613c10",
+    "lines": 120,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/outcome-hostile.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "b0def326ebedaf242ae691568d80ba5d545183d4b782eeaa5a5129285c663caa",
+    "lines": 383,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/outcome-limits.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "1e314f4dd5925de8850f41b77db5537e190f8d4a97f5aaa1d71dc58ac87bab6f",
+    "lines": 113,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/outcome-partial-claim.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "69957b689ab4d68118bca5d4634476518cbca63aa53b350ceb98fe1520821a72",
+    "lines": 754,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/poison-catalog.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "06e0713761314a8bd746931c606d9835e0d70c764d44a4a2c9184849ac02fbac",
+    "lines": 296,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/receipts.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "30baed0d10e0e27ef7c3444a46d2c3192c2cd28b3a8af316cf0802a070f07996",
+    "lines": 311,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/recovery-ambient.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "cb572dff4f443a4974bfc366f261072ae5f539669d4b3ad421add5b49f4ea896",
+    "lines": 366,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/recovery-evidence.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "e232fe9aad648b2137aa481c33889c81d68fe2fef603d56c0e105d6677e15da1",
+    "lines": 843,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/recovery-history.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "abf7663a3702b6b65e70f45f97abd8ba64077b9d32166d4ac1b120b84cb91426",
+    "lines": 306,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/recovery.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "5e0b3919a564db49cc695bdf9be2d7358cab3481bd0791fae6d30439feadb8ea",
+    "lines": 306,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "cf976677822ff8d5a4ccb6e4f85e0da5d3464b2cc7d84b346731a2c8cb2b8231",
+    "lines": 84,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/refusal-diagnostics.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "a002ca196216f2fe35cb0004129f64ff8a765e2ca0c9f4d95e39eca1e7a83817",
+    "lines": 293,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/refusals.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "1fd1fa2e3d881b4ae59def807f82456c6a36b7e5f57161fa750eee341ac28b19",
+    "lines": 75,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/review-11-probes.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "da3b6dae80a06f5470bc8bf4daf4201dd23d6e321aa9024a6ff3fd65dd6d99bf",
+    "lines": 80,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/submission-authority.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "9e0614a2ef467a46b51e35115538526df78aa661bf6d7b4c3d07c6ba6c9fd02f",
+    "lines": 533,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/submission-lifetime.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401",
+    "lines": 155,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/sweep/fault-child.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "6d9b91118daf2e5333b1c2e744593cd593c77caaec20aa41f8d09af55d852836",
+    "lines": 475,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "4adcc9b9387929ab8bd2baba3a163978b62330b9b2090b0a75db820963dfdd36",
+    "lines": 790,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/sweep/fault-scenarios.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "a0f2dc8f198dc7085b902a7ff1792168e995aa723bcd066e57484c810251ef78",
+    "lines": 306,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/sweep/poison.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "1cfbef9450fd83eba2e464fbfd2801cef45c132ae0df571e7a521adb97fb7953",
+    "lines": 536,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/sweep/preload.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "4ea7d5d17d1cc2dd9a76152ff526f2d6a004f9558b952bbeabfbd4a13766b93f",
+    "lines": 172,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/sweep/run-poison-sweep.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "e1d27d598173bc939d1fc2fff5b25b9888a06dc9686b5420a2ca4f0e38f53779",
+    "lines": 162,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/sweep/zone-names.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "735b842d8c74029c30935b074af701df8af38dcaede5ce991a41def789277cd0",
+    "lines": 130,
+    "disposition": "TOOLS-01 corpus + mutation registry (binding profile)",
+    "reason": "Ambient/read/intake counterexamples; hostile cases conditional on owner threat-model choice"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/takeover-reentrancy.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "a720897219a6eaf891cd11140f79d7a9edbf2bbf03daf4e6d068e4ef39dda868",
+    "lines": 273,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/takeover.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "10df29da4e0be434830e89567d260471c30a4222f12fba95931503a63f24788a",
+    "lines": 226,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/terminal.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "959ed5e53b4f1c62c3b5ebf87ce54bbda58f49db552184423d66fd9e6cf04be5",
+    "lines": 211,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/transaction.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "ba20292cce42070bdb3b9eab41b04fc2783621c014693951e3f4b31af205baf4",
+    "lines": 365,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/unsupported.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "047e73c78b8a94a0035becfcf27916bf8faa2a04ecea8315696dfc41abaa30d1",
+    "lines": 74,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/value-diagnostic-work.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "9082ea98c62fef5b912550cc85b6a8a0078f64aca56cd5b2b6cc57ec29d87091",
+    "lines": 618,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/value-refusal-cost.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "5ce3bea807645322193d13f8c1d0e2b3453f5f89c5e2f7bb550278f996d760cb",
+    "lines": 202,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/values.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "96c78364c04f26883357729f4d22f27bc0508a1aa074ea1feff162eaeddde680",
+    "lines": 1874,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/whole-view-ambient.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "fb11d86fcf8d638d0f7b33d155540764a74d458f953be58368fe002336499998",
+    "lines": 133,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Complete permitted decisions and returned/retained evidence; preserve independent oracle controls"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/zone-analysis.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "05767ecdbb23e7c9f1b39a0fcc7ea620e22cbe65a380729a955bfa9b69483083",
+    "lines": 1638,
+    "disposition": "TOOLS-01 registry (optional static regression guard)",
+    "reason": "DEC-8/9 syntactic ownership/effect regressions; never a completeness oracle"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/zone-inventory.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "2c06727a3f2a873108d131b6cf58cb42122de53c9132f8d95e5e09651ed818e0",
+    "lines": 127,
+    "disposition": "Covered by maintained test suite; index in TOOLS-01",
+    "reason": "Keep runnable test ownership; register obligation and mutation without copying the test"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "scripts/check-builder-docs.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "fe25e01da31ab178197c7a97f0420b290b53f9e995c48ee4434a7446b1a1cf8d",
+    "lines": 117,
+    "disposition": "Retire as a reusable runner; retain sealed provenance",
+    "reason": "Candidate identity, docs scope or historical gate; common record verifier should replace duplicate runner"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "scripts/gemini-provider-canary.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "147e19f58f688083483db4cfcc23480508c0fe9f51a6f7ff22a6c587872c3122",
+    "lines": 184,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "scripts/mcp-gemini-canary.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "91856559c08cb05f7bebd6089eecb5c7ad525f81f38507d847766280fd49812b",
+    "lines": 240,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "scripts/workflow-scenario-canary.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "cae7ef95dd22a14acc520f15e2ff6df8623c013534abbdabefe6a59a6f8a516d",
+    "lines": 219,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/agent-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "af0fd4377a684fc07c44f5a54ddc20d04d643ce81aa1b88f0210a980c684cbcc",
+    "lines": 650,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/boundary-policy.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "ac9fb74efcff41a9754fa3ca99b600478c50e626d596f3e7101c0268d3d05cd1",
+    "lines": 229,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/composition-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "27a3603e7f4dc8924cf2312804755822da9170b61da04bffa17dc3b0ce34a09e",
+    "lines": 357,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/import-scanner.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "3382a991c2792336df2ba5959298b1aaacb6836ad29e6ce66db3d4fe6fa6e326",
+    "lines": 395,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/inventory-oracle.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "07006721f1eb3bb43d8cb5f9f9d5583369281416b588fb4f819bb8db41c696c9",
+    "lines": 1833,
+    "disposition": "TOOLS-01 corpus + mutation registry",
+    "reason": "Extract distinct input, mutation site and expected complete result; timing is observation, never universal proof"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+    "lines": 4501,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/legacy-core-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "6327b7dc91e2e714ee65c277d8fd128e4f0b513361d4ea57e055cb97e68ac732",
+    "lines": 355,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/mcp-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "9b78c2f12083273b88d82cd900e7ae97b92b11f87fa82248d40f53e18d809c97",
+    "lines": 298,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/module-graph.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "cdc4a3e9632f8fdbf8987552f5945c6958db01479aad6305c566839ffa72ad6e",
+    "lines": 345,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  },
+  {
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/workflow-boundaries.test.ts",
+    "line": 1,
+    "kind": "supporting test/gate superset",
+    "sha256": "14b7ba1eaacefd857ae2d6cf6185b3a2cae35c4f2df9370ba0161140cd08a3b4",
+    "lines": 252,
+    "disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+    "reason": "Retain the distinct assertions/fixtures as corpus entries; reuse current runner rather than historical plumbing"
+  }
+]

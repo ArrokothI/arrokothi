@@ -1,0 +1,20 @@
+Command: ['git', 'grep', '-n', '-i', '-E', 're-prototyp|exotic|Maps|Dates|typed arrays|ArrayBuffer|unsupported_form', '66bc041175e6fc191c2e7cf88de198111e7d97c9', '--', 'docs/development/002-implemented-kernel-baseline.md', 'docs/guides', 'mental-model/concepts/values.md']
+Exit: 0
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:3:This page maps the implemented surface; [007](007-work-packets.md) owns acceptance, integration
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:201:Because that callback can synchronously reenter the coordinator, the Kernel revalidates the same
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:215:enters, updates, or clears a hold appends one frozen `RecoveryHistoryRecord` (actor, authority,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:719:not implemented fixes. The benchmark canary predates SDK HEAD and does not establish durability.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/deployment/quick-start.md:75:| Custom model routing | `models: { providers, resolver }`; runtime validates actual resolution |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/deployment/quick-start.md:113:It does not exhaustively prove reachability. The kernel validates topology, resolves actual models,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/deployment/quick-start.md:138:Your transport authenticates callers, maps jobs/conversations to Execution IDs, serializes chat turns,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/README.md:35:| Known process with an autonomous subtask | Workflow Agent Stage → Function Stage validates the child's answer | Child needs `complete_on_response`, a string terminal schema, spawn permission and credits |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/state-memory-and-context.md:22:with `view.values[key]?.value`. Each write validates its value and increments the **whole-view**
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/state-memory-and-context.md:54:## Concurrent updates
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/worked-examples.md:27:the turn invalidates a stale publish payload. The title is a user preference; its acceptance standard
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/worked-examples.md:86:For a fixed input: LLM Stage returns text → Function parses and validates → exact calculation →
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/workflow-agent-and-stages.md:70:Function Stage parses/validates; persist accepted facts through that Function Stage's WriteMemory
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:96:- **Anything outside the forms above.** Dates, byte arrays, functions and anything else a language might hand over are refused. None is coerced into something that happens to fit.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:250:- **It can hold what JSON cannot.** Plain JSON conversion drops or alters `undefined` members, symbol keys, array holes, Maps and Dates. For example, `{a: undefined}` becomes `{}`.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:273:- forms outside those two, such as class instances, Maps, Dates and typed arrays;
+
+Manual context inspection: BASELINE preserves exact accepted-value capture generically; no explicit reprototyped-built-in refusal sentence in BASELINE or guides. Explicit unsupported-form list is values.md:273, covered by invalidation-01.

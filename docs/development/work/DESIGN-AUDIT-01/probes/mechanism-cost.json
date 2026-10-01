@@ -1,0 +1,72 @@
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "node": "v26.8.1",
+  "platform": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+  "scope": "one small cooperative value; sequential variants, timing only; output JSON equality checked, no hostile inputs or validity claim",
+  "results": [
+    {
+      "variant": "control",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          71.349042,
+          68.147625,
+          67.424792,
+          67.08841699999999,
+          66.34191699999997
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    },
+    {
+      "variant": "no-serializer-window",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          17.35875,
+          16.634458000000002,
+          16.544708,
+          16.116917,
+          15.375666999999993
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    },
+    {
+      "variant": "direct-internal-read",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          63.851917,
+          61.153290999999996,
+          61.060749999999985,
+          61.35137500000002,
+          60.07050000000004
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    },
+    {
+      "variant": "both",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          16.56125,
+          15.518499999999996,
+          15.508375000000001,
+          15.055834000000004,
+          14.596833000000004
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    }
+  ]
+}

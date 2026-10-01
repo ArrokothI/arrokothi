@@ -138,3 +138,9 @@ wording above records the prior stage and is superseded. The sole DA-7 extension
 one cross-reference sentence in K1.1's 007 row. Recorded/held findings and O-R8-3/4
 variants do not trigger another stop; only a new accepted-claim contradiction or an
 indispensable semantic decision does. No other packet is released.
+
+## Completed search and design-note outcome
+
+The owner's adoption in invalidation-01 resolved the only blocking question encountered. The continuation comparison does not need a further semantic choice: each option is evaluated as a hypothetical owner decision and remains a draft. No new accepted-claim contradiction outside the recorded/held families was identified in the declared search.
+
+The implemented enumeration also preserves local observations and self-finding references, distinguishes aliases and origin rounds, and inventories every searched review file. Historical verdict reversals include cleanup reopenings and disclosed draft ACCEPTs, labelled separately. The cost probe was supplemented by cooperative-only scratch ablations and known-O-R8-4 consumer traces; neither changes a product file or expands the claim hold. Final scope checks implement the owner's explicit exception for one cross-reference sentence in the K1.1 row.

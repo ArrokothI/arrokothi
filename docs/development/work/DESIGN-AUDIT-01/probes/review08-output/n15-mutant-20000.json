@@ -1,0 +1,24 @@
+{
+  "label": "n15-mutant-20000",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs",
+    "/var/folders/9_/v7jswj911pgd8x04p368t23r0000gn/T/da-n15-x3brtgzv",
+    "20000"
+  ],
+  "timeout_seconds": 30,
+  "exit": null,
+  "timed_out": true,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 30.007,
+  "mutation": {
+    "file": "packages/kernel/src/values.ts",
+    "old": "containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount",
+    "new": "containerStructureBytes(length, false) + symbolCount",
+    "copies_only": true
+  }
+}

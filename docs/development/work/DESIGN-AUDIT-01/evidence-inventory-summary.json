@@ -1,0 +1,15 @@
+{
+  "artifacts_and_fences": 208,
+  "record_artifacts": 82,
+  "inline_fences": 29,
+  "supporting_snapshot_entries": 97,
+  "prose_evidence_locators": 1333,
+  "by_disposition": {
+    "Covered by maintained test suite; index in TOOLS-01": 49,
+    "Retire as a reusable runner; retain sealed provenance": 7,
+    "TOOLS-01 corpus + mutation registry": 69,
+    "TOOLS-01 corpus + mutation registry (binding profile)": 15,
+    "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction": 65,
+    "TOOLS-01 registry (optional static regression guard)": 3
+  }
+}

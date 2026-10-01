@@ -1,0 +1,9 @@
+Command: ['git', 'grep', '-n', '-E', '@arrokothi/kernel|packages/kernel|kernel/src', '66bc041175e6fc191c2e7cf88de198111e7d97c9', '--', 'packages/sdk', 'packages/agents', 'packages/runtime-integrations', 'package.json']
+Exit: 0
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:9:    "packages/kernel",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:21:    "test": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts packages/sdk/tests/*.test.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:30:    "test:kernel": "node --test --experimental-strip-types packages/kernel/tests/*.test.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:31:    "test:kernel-sweeps": "node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/fault-child.ts --summary && node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/run-poison-sweep.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:37:    "test:packages": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts packages/sdk/tests/*.test.ts",
+
+BASELINE source: docs/development/002-implemented-kernel-baseline.md:31; private manifest: packages/kernel/package.json. Search covers in-repository SDK/runtime packages, not unknown external code.
