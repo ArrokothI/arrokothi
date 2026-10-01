@@ -1,0 +1,135 @@
+Clean-C validation — DESIGN-AUDIT-01
+Date: 2026-10-01 (owner/session date)
+B: 66bc041175e6fc191c2e7cf88de198111e7d97c9
+C: ce3ec854ff126498e0b807ba97626d12015572c7
+Working tree: clean before and after these checks.
+Node v26.8.1; Python 3.13.7; TypeScript 5.9.3; canonicalize@3.0.0.
+
+Command 1:
+python3 docs/development/work/DESIGN-AUDIT-01/probes/verify.py --require-clean
+Exit: 0
+enumerate.py PASS
+catalog.py PASS
+records.py PASS
+measure.py PASS
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "head": "ce3ec854ff126498e0b807ba97626d12015572c7",
+  "changed_tracked_files": 144,
+  "finding_labels": 278,
+  "qualifying_families": 16,
+  "decision_drafts": 22,
+  "local_file_links": 115,
+  "scope": "packet plus audit row and single adopted-hold sentence in K1.1 row",
+  "result": "PASS"
+}
+
+Command 2:
+node --experimental-strip-types scripts/check-builder-docs.ts
+Exit: 0
+Builder checks passed: 73 Markdown files, 1867 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+
+Command 3:
+python3 - <<'PY'
+import subprocess,pathlib,json,ast
+p=pathlib.Path('docs/development/work/DESIGN-AUDIT-01'); checks=[(['python3',str(p/'probes/reverify-exotics.py')],p/'probes/reverify-exotics.txt'),(['node','--experimental-strip-types','--no-warnings',str(p/'probes/exotic-consumers.mts')],p/'probes/exotic-consumers.json'),(['python3',str(p/'probes/source-map.py')],p/'probes/source-map.txt')]
+for cmd,saved in checks:
+ r=subprocess.run(cmd,text=True,capture_output=True);assert r.returncode==0,(cmd,r.stderr);assert r.stdout==saved.read_text(),str(saved);print(saved.name,'exact reproduction PASS')
+for script in p.rglob('*.py'):ast.parse(script.read_text(),filename=str(script))
+print('All audit Python scripts parse successfully')
+PY
+Exit: 0
+reverify-exotics.txt exact reproduction PASS
+exotic-consumers.json exact reproduction PASS
+source-map.txt exact reproduction PASS
+All audit Python scripts parse successfully
+
+Command 4:
+git diff 66bc041175e6fc191c2e7cf88de198111e7d97c9 --check
+Exit: 0
+
+Expensive observational R8 runs were performed before C with unchanged B Kernel/original probe bytes. Their commands, timeouts and source hashes are sealed in C under probes/review08-output; clean-C verification checked source identities and saved dispositions, not a new timing run.
+
+
+Sealed observational-output identities (path TAB SHA-256 LF; sorted review08 JSON, then mechanism-cost):
+probes/review08-output/cost-1-A-chain-W0-L30.json	fbb0011f86613182b5e7bc31b7bae1c8d8d54ebb4552f7519d26bbfc8fcc4558
+probes/review08-output/cost-1-A-chain-W14-L16.json	f55af764f0c1945c40cdbef557438f2fe600f5378d7eb139b8dca3de28bf1033
+probes/review08-output/cost-1-A-chain-W22-L8.json	827dedf295ca0b63908a49e35213ef550e8739d5f99c978e020f864f1f84e513
+probes/review08-output/cost-1-A-chain-W26-L4.json	17953114ae64330685f6d36335721c8f919ef9ab2b6c44623ff36e45078fd003
+probes/review08-output/cost-1-A-chain-W28-L2.json	d025ddbe9cce6676bcd5b5806fcdfa10cf998da77bc25ffa800c73e23276788b
+probes/review08-output/cost-1-A-empty-arrays-deep.json	4959294091ce18fb182ac18ed1e41655a5ab2cd70db7ac06173ce77e1a04175e
+probes/review08-output/cost-1-A-empty-arrays.json	1c952019f2273f0dcf1519b45d3fdd0733e793da0a513166578b988d68adcddd
+probes/review08-output/cost-1-A-empty-objects-deep.json	c16b9f5489ce0883be46b47d5f3042bc7c4e15e026ac63ebfd6a47d4e07065c0
+probes/review08-output/cost-1-A-members-null.json	108e11d71cc39c22c4900625c9deb29d26cb08a785fdac64cd0ca9857908e576
+probes/review08-output/cost-1-A-zeros.json	1bb7b9af5d8f5f2f7ecad7509ccbb9507f99f43dbda2fa00f417aee36b8626b6
+probes/review08-output/cost-1-R-accessor.json	aff3843a3a8e2c98b02820c16ef3b9c85f02c22348a2f63f547608ef0a6a332d
+probes/review08-output/cost-1-R-cycle-deep.json	08ab370166efea7a5f345b67882663bf9ba0d9e215879c0d84dabfc2c5a546fb
+probes/review08-output/cost-1-R-foreign-arrays.json	a26e70f0909b99fb263eb4ab0e200b170cfc53f4cad9d90cefda87b79d49bfe1
+probes/review08-output/cost-1-R-foreign-deep.json	f015052d60f96fa4318ee9568e5f4ee49753fc9a209fa1e412d14159c913245e
+probes/review08-output/cost-1-R-foreign-depth16.json	91cee844fc4d78f3ea6cd0b9540fddf67e9d9d00a888824d3393cacfbac1e4e3
+probes/review08-output/cost-1-R-foreign.json	1ac51ef7e73318cf0a2c99c3a6e70eefe5b9255feb0f94383b96f5b0b5acf600
+probes/review08-output/cost-1-R-nan-deep.json	e5cd21005f2ce7ea8d0e3d35b09956c12a6314108ce8fdc360812a284151cc51
+probes/review08-output/cost-1-R-nonenumerable.json	d7fc4e5859dfca9abe12642ca3c8a5717de442158455ab84dbf505c7886c8006
+probes/review08-output/cost-1-R-too-deep.json	1e9870227ab1b536da3624ec6bef294edd76f65b870a4e1d6144bed0b925aae5
+probes/review08-output/cost-1-R-undefined-deep.json	ced41c6c4beccb1eaf9da7818ed77dd2365c00ec196335f98e3e71e7e18b63a7
+probes/review08-output/cost-1-R-undefined-members.json	981f14e6ded3eaa6396a66e61da20abdd7539915c1d3e2fee0fe121e5d84ef11
+probes/review08-output/cost-2-A-chain-W0-L30.json	5564d37b595902f7522b7c3cd378e146f3cd028f1e37d9ad75e36bc4cd4829a8
+probes/review08-output/cost-2-A-chain-W14-L16.json	86f3442146a8a6964d026a3bbf511f78e8338c7ee354b56886bbab08174ff988
+probes/review08-output/cost-2-A-chain-W22-L8.json	1f9ea7c399b23c5e2768b4b73ddac220b1629059bf40b345f2055e50a1829994
+probes/review08-output/cost-2-A-chain-W26-L4.json	e6333ad614c5e577310da03895a8f67fc57456d9600da157b654c5be644f40dd
+probes/review08-output/cost-2-A-chain-W28-L2.json	696dfb896a8ab2dd02c6a84866ec3b08f95789023051c3dfe783a6305f5919e7
+probes/review08-output/cost-2-A-empty-arrays-deep.json	6fc55b764e86ecc55471017ad4cb37943a616b837f6619963574e78bc3963ea7
+probes/review08-output/cost-2-A-empty-arrays.json	db9d9d5293ba2d3de465f7b989c39bf1b73cd27c1f0ca2bb1ae3f5697852a8cd
+probes/review08-output/cost-2-A-empty-objects-deep.json	a5c1f02c003431d28472ca7c232f77f178c8ea1a00ccdfcd5b749867ee240f89
+probes/review08-output/cost-2-A-members-null.json	2faaa413e51541dcd617dde0c73d50ed51e64dbbc2ffeb9a2ac681f3f92471ba
+probes/review08-output/cost-2-A-zeros.json	d81e175478ee1d3c90133ba57428bf8127c25bbc5786dacb1af56c007d3693c7
+probes/review08-output/cost-2-R-accessor.json	a87330dc0638072ae7d38d724e2412c7f2772c411d72d2a31b2134d71854f2b3
+probes/review08-output/cost-2-R-cycle-deep.json	55fd4468653f8a32fe72dc1090b17a6327ecb12864e66ba31f5536c7e64ddc53
+probes/review08-output/cost-2-R-foreign-arrays.json	ac50f4aa4266e26917f7bc550291974b74581aaf1f5f5111c8e47284db2e0890
+probes/review08-output/cost-2-R-foreign-deep.json	ae945d6e99fec9ff2f09cf9e048779f5ddab3f65fd1af2545d412d3533b9c134
+probes/review08-output/cost-2-R-foreign-depth16.json	35eacdb794e952f36f39d2d3e2eaeff6987b03a00589053f8b9972769e44898c
+probes/review08-output/cost-2-R-foreign.json	1e45c5706c96307cbd19e2cb41c33e04c3f5164e7ea5c61ae88ec32877049a0c
+probes/review08-output/cost-2-R-nan-deep.json	306a3cd393a846b8ad6bf968611c3e85140a499c78958620a7c77ccb9f03f1f3
+probes/review08-output/cost-2-R-nonenumerable.json	4c1f65f57eec6470e50c5471d6ca13529689f3b1d1bd8516e97a242d6694b92c
+probes/review08-output/cost-2-R-too-deep.json	a4d12007b2bed233e714e88e721ada5fb13ccf30724de7605d85e3bf2f6f5302
+probes/review08-output/cost-2-R-undefined-deep.json	b6fc1d3f49895431878d9283715011d4456ad62136252287c200fc4f4280621c
+probes/review08-output/cost-2-R-undefined-members.json	8e5a828eb7bcc41e244438052c20f45d782eca8bf412690eedfb25a5c4d6fbb5
+probes/review08-output/cost-3-A-chain-W0-L30.json	145cb9913ae6be1af74f5c2632e1bd044d5b4c33da65a58c252c0e720988673d
+probes/review08-output/cost-3-A-chain-W14-L16.json	6e04f3fd65c93528d2073315181edbb47dd944492c3503817ed47325d48b083a
+probes/review08-output/cost-3-A-chain-W22-L8.json	f67da9b688b3158884f11fceaf1193162b45761cf904036906cc343e535067f8
+probes/review08-output/cost-3-A-chain-W26-L4.json	8ba3abafa61fd10ba4bc9f5c4dfb46a94a1324b46982aedb6923e333ac97c14d
+probes/review08-output/cost-3-A-chain-W28-L2.json	60fd4d7d9058a967e0a7062d4ef2b201c11beed4e5b00615aca1efceca3b1c95
+probes/review08-output/cost-3-A-empty-arrays-deep.json	a2b5fe8be94c877d37eda954db3ee1d288fe1c3f6f94d0a1bbc781c786b0f700
+probes/review08-output/cost-3-A-empty-arrays.json	254eb176fb49b6aca35abbef8d77720d714d1eeecb65d910836957f1566df4ef
+probes/review08-output/cost-3-A-empty-objects-deep.json	3645631abb54ad1495817de729cfd218989e5f937e27b2ddf2d2a29f09a6597f
+probes/review08-output/cost-3-A-members-null.json	dbcf0c7b4c0c2811a5e4841b682f45233ec0a15be96e012253886573d7da3a3e
+probes/review08-output/cost-3-A-zeros.json	2de2979d11a09d8d45344729220e64c2db7a2f4f8ffb34af5382ad79ce54d6f9
+probes/review08-output/cost-3-R-accessor.json	12107b68b05eeea0e97d8f7c8b13c8b75002e612acd051a4faac7aa84d984e7d
+probes/review08-output/cost-3-R-cycle-deep.json	b5323a7f737a9690b54652ecd15bea77dc03fa4cd2b92a379169b9e54a31e807
+probes/review08-output/cost-3-R-foreign-arrays.json	7c405a594bd87131018eed33213570cd8bf7836945132102d137a57b331a0aab
+probes/review08-output/cost-3-R-foreign-deep.json	92762ade6cf3a5c7e33718fc42f674e6b3748339adc6318ddf4efe397ad659ba
+probes/review08-output/cost-3-R-foreign-depth16.json	419c7484005118056ccce6979d3384fbbe5b1150e02de340ff015856b2628212
+probes/review08-output/cost-3-R-foreign.json	ff2c87f02fe3105bf57c8a0fbd0f87460a4ef6ff2509e0eae2383fdc7c2f9906
+probes/review08-output/cost-3-R-nan-deep.json	be3922e827d612287a8e29ddc07267359d34667ed533d4cdbd404903c40154f5
+probes/review08-output/cost-3-R-nonenumerable.json	e47d30c31d82b3ba91409412f8c25872f4be57cb2342307215584dec3101440e
+probes/review08-output/cost-3-R-too-deep.json	fa87aae51748d871be93546d706f30199206e9401aaa7ad4629a2a180fd0923c
+probes/review08-output/cost-3-R-undefined-deep.json	c3a772f9f61f5d5bcdcb131f9bb9ea5530034631cbaa7e34046b980033d8e842
+probes/review08-output/cost-3-R-undefined-members.json	af86663498d8947ad2ead669262717083206e1357c28018bc225d38e3392f2cc
+probes/review08-output/manifest-all.json	eb1ddb3f339e960b1a37e9a65e9a01504a6724ae96b9071d2fa50ad790fffcaf
+probes/review08-output/n15-control-20000.json	356f85a2d55852f708bf9b6859f0e6dd60145e8df2ee1f84d0c74d8159883bb1
+probes/review08-output/n15-control-4096.json	9418e4f8041824ff442786312886aa8f81aaacd96f563a213cb4d8b21e41518c
+probes/review08-output/n15-mutant-20000.json	fe2b155afd2d8425068070f07ceab18a51c4cea22c6b8f5f58da2cd199123b54
+probes/review08-output/n15-mutant-4096.json	1aa0aae03aa0d3688070431caa499157b239b4ea243ab59437deca808338aaa6
+probes/review08-output/n15-suite-results.json	8912e9dc688e7385863621526a268a7dfdf19f0aaf77d7caf5ad38b28cf1e04f
+probes/review08-output/n15-suite.json	fd0bfdc1eaaf41aef4f48b1937125036a0d0ffd78b6686b487a8dc6d3e9939f8
+probes/review08-output/outcome-1.json	c03c37f4f22665e20e1899cc1c14f95563673331190ba455e088ec861b70769e
+probes/review08-output/outcome-8.json	a3cbba9195778775a558d8fc167e453d115872e5d9faf58c843a540f571e83e3
+probes/review08-output/ownkeys-string-16777216.json	0636dc8b31f9ae54d1a76f5e707437499928ddd5bcd08e9b2300baff06ef3b53
+probes/review08-output/ownkeys-string-268435456.json	a36d5ab0e1a58077295b64d22876ea37ba8ffc662b509167e273440298dc84ef
+probes/review08-output/ownkeys-string-65536.json	9247e5c231d9af2a06496543de7923baa7318a9af9de94d9679193424c4afdb7
+probes/review08-output/ownkeys-u8-1048576.json	82a9e78a6871e3c69a5026ff44d2d654c086959846abf9e94ae188472f21b7e8
+probes/review08-output/ownkeys-u8-134217728.json	dcbaa75b85ade85a8dc6ca19f3273ba8555bae91ef7e0d70f91d8ea6b51c3b53
+probes/review08-output/ownkeys-u8-16777216.json	ee911b48f8a6aaf23702775aa4e0e78371d125e81f3776b6582d8bfd6585280f
+probes/review08-output/ownkeys-u8-65536.json	5749f90d69402889e94c9dfb3bb540f75c4deff1bec1175c9fba08284a3eaf58
+probes/mechanism-cost.json	91bead40cb337fbd9b14096846865e49f1c201f15a3443be847d96a7ee647bc4
+Listing SHA-256: 050e7305264e8e865a699ea038e856aa7b97278a383d657bff431781f328ee96
