@@ -1,0 +1,25 @@
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "node": "v25.2.1",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "mode": "enumeration",
+  "sources": {
+    "docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs": "c2a051f027f6f2f3325129ae4e2bb9af6310a71cec7aacb3b3e7d197d2990904",
+    "docs/development/work/K1.2-correction-01/review-08/deep-outcome.ts": "d46666f297154099b72410a1ebc795c54ba11e4f1d1334fa9068ac16f83d8289",
+    "docs/development/work/K1.2-correction-01/review-08/mutants.mjs": "7d0ea235d311325e1eb2b70df07e13e6ce7cdaf236e906084a42a3bfc28efe75",
+    "docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs": "75dbe4ae4dcb95801582a8ebe7699278ae29a770fe43d00b6ba46b482b65b675",
+    "docs/development/work/K1.2-correction-01/review-08/p-exotic-ownkeys.mjs": "5b97d481124bee4f5b2ea49276c18faf518cc53fd0c2882ea59d366f637bb7d5",
+    "docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts": "85be0931eae562940641ece061ef13f1a91278ace246d8d6beb5b8298d7660ae",
+    "docs/development/work/K1.2-correction-01/review-08/p-rope-ops-2.mjs": "91b3ac81202395d9bef5eb19bd6a6955935a8eb0e213349a1a20c0cd354c0ec1",
+    "docs/development/work/K1.2-correction-01/review-08/p-rope-ops.mjs": "02ca9c2a77e2b39cda857a8f0bef14a92fa37afebd4103a2726ad507d9fd4860"
+  },
+  "runs": [
+    "ownkeys-u8-65536",
+    "ownkeys-u8-1048576",
+    "ownkeys-u8-16777216",
+    "ownkeys-u8-134217728",
+    "ownkeys-string-65536",
+    "ownkeys-string-16777216",
+    "ownkeys-string-268435456"
+  ]
+}

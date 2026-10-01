@@ -1,0 +1,11 @@
+"x"
+node:internal/async_hooks:549
+  execution_async_resources[offset] = resource;
+                                    ^
+
+TypeError: Cannot set property 0 of [object Array] which has only a getter
+    at pushAsyncContext (node:internal/async_hooks:549:37)
+    at emitBeforeScript (node:internal/async_hooks:518:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:79:7)
+
+Node.js v25.2.1

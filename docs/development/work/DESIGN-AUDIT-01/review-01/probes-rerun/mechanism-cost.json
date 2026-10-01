@@ -1,0 +1,72 @@
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "node": "v25.2.1",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "scope": "one small cooperative value; sequential variants, timing only; output JSON equality checked, no hostile inputs or validity claim",
+  "results": [
+    {
+      "variant": "control",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          106.79391699999996,
+          101.888916,
+          103.28500000000003,
+          99.45008299999995,
+          98.98245800000007
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    },
+    {
+      "variant": "no-serializer-window",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          26.187333000000002,
+          24.76925,
+          24.864417000000003,
+          23.625875000000008,
+          23.30741599999999
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    },
+    {
+      "variant": "direct-internal-read",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          95.624042,
+          92.937208,
+          91.69562499999998,
+          93.58195799999999,
+          90.55341600000003
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    },
+    {
+      "variant": "both",
+      "exit": 0,
+      "result": {
+        "n": 2000,
+        "repeats": 5,
+        "times": [
+          24.684083000000008,
+          23.410666000000006,
+          23.187084,
+          22.494832999999986,
+          23.72158399999998
+        ],
+        "expected": "{\"ok\":true,\"value\":{\"value\":{\"b\":[true,null,\"text\"],\"a\":1},\"canonical\":\"{\\\"a\\\":1,\\\"b\\\":[true,null,\\\"text\\\"]}\",\"canonicalBytes\":30}}"
+      }
+    }
+  ]
+}

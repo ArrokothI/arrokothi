@@ -1,0 +1,602 @@
+[
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 82,
+  "test": "a field present only on a prototype reads as missing, never as the caller's",
+  "hostile_marker": true,
+  "lines": 21
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 103,
+  "test": "each field is read exactly once, and the accepted decision is the one reading",
+  "hostile_marker": true,
+  "lines": 30
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 133,
+  "test": "a missing, non-text or throwing activationId still reads every other field once (decision-02)",
+  "hostile_marker": true,
+  "lines": 71
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 204,
+  "test": "a field whose observation throws is a located refusal, not an escaping exception",
+  "hostile_marker": true,
+  "lines": 31
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 235,
+  "test": "an inherited indexed accessor on Array.prototype drops nothing from the accepted lists",
+  "hostile_marker": true,
+  "lines": 40
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 275,
+  "test": "inherited descriptor fields on Object.prototype cannot make the commit throw or run a getter",
+  "hostile_marker": true,
+  "lines": 20
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 295,
+  "test": "builtins replaced mid-observation are not consulted by the checks or the commit",
+  "hostile_marker": true,
+  "lines": 54
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 349,
+  "test": "a takeover made from inside observation fences the Outcome being observed",
+  "hostile_marker": true,
+  "lines": 11
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 360,
+  "test": "an identical Outcome accepted from inside observation makes the outer one a replay",
+  "hostile_marker": true,
+  "lines": 14
+ },
+ {
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "span": "1-383",
+  "line": 374,
+  "test": "a different Outcome accepted from inside observation makes the outer one a conflict",
+  "hostile_marker": true,
+  "lines": 10
+ },
+ {
+  "path": "packages/kernel/tests/poison-catalog.test.ts",
+  "span": "1-296",
+  "line": 273,
+  "test": "${mode}: no zone frame reaches a poisoned member; every window was live",
+  "hostile_marker": true,
+  "lines": 13
+ },
+ {
+  "path": "packages/kernel/tests/poison-catalog.test.ts",
+  "span": "1-296",
+  "line": 286,
+  "test": "every poisoned run returned exactly what the unpoisoned run returned",
+  "hostile_marker": true,
+  "lines": 5
+ },
+ {
+  "path": "packages/kernel/tests/poison-catalog.test.ts",
+  "span": "1-296",
+  "line": 291,
+  "test": "the catalog poisons the complete name set, the descriptor fields included",
+  "hostile_marker": true,
+  "lines": 6
+ },
+ {
+  "path": "packages/kernel/tests/recovery-ambient.test.ts",
+  "span": "1-366",
+  "line": 259,
+  "test": "${transition} / ${mode}",
+  "hostile_marker": false,
+  "lines": 5
+ },
+ {
+  "path": "packages/kernel/tests/recovery-ambient.test.ts",
+  "span": "1-366",
+  "line": 264,
+  "test": "the matrix is review 09's 22 cases",
+  "hostile_marker": false,
+  "lines": 7
+ },
+ {
+  "path": "packages/kernel/tests/recovery-ambient.test.ts",
+  "span": "1-366",
+  "line": 271,
+  "test": "${transition}: an inherited caller object never enters, and later mutation changes nothing",
+  "hostile_marker": true,
+  "lines": 15
+ },
+ {
+  "path": "packages/kernel/tests/recovery-ambient.test.ts",
+  "span": "1-366",
+  "line": 286,
+  "test": "takeover clear owns resultingEpoch = the new epoch, not the inherited 777",
+  "hostile_marker": true,
+  "lines": 7
+ },
+ {
+  "path": "packages/kernel/tests/recovery-ambient.test.ts",
+  "span": "1-366",
+  "line": 293,
+  "test": "Outcome end owns no resultingEpoch at all, even while one is inherited",
+  "hostile_marker": true,
+  "lines": 34
+ },
+ {
+  "path": "packages/kernel/tests/recovery-ambient.test.ts",
+  "span": "1-366",
+  "line": 327,
+  "test": "${transition}: counting inherited accessors ${timing}",
+  "hostile_marker": true,
+  "lines": 40
+ },
+ {
+  "path": "packages/kernel/tests/review-11-probes.test.ts",
+  "span": "1-80",
+  "line": 24,
+  "test": "${mode}: no read, no exception, no nested decision; the view is review 11's clean result",
+  "hostile_marker": true,
+  "lines": 57
+ },
+ {
+  "path": "packages/kernel/tests/whole-view-ambient.test.ts",
+  "span": "1-133",
+  "line": 123,
+  "test": "${transition} / ${mode}",
+  "hostile_marker": true,
+  "lines": 7
+ },
+ {
+  "path": "packages/kernel/tests/whole-view-ambient.test.ts",
+  "span": "1-133",
+  "line": 130,
+  "test": "the comparison set is review 10's 30",
+  "hostile_marker": false,
+  "lines": 4
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "893-953",
+  "line": 893,
+  "test": "an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot",
+  "hostile_marker": true,
+  "lines": 17
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "893-953",
+  "line": 910,
+  "test": "an inherited Array.prototype.toJSON cannot divert canonical bytes either",
+  "hostile_marker": true,
+  "lines": 16
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "893-953",
+  "line": 926,
+  "test": "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure",
+  "hostile_marker": true,
+  "lines": 28
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1065-1178",
+  "line": 1065,
+  "test": "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+  "hostile_marker": true,
+  "lines": 30
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1065-1178",
+  "line": 1095,
+  "test": "a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes",
+  "hostile_marker": true,
+  "lines": 31
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1065-1178",
+  "line": 1126,
+  "test": "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+  "hostile_marker": true,
+  "lines": 21
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1065-1178",
+  "line": 1147,
+  "test": "K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plai",
+  "hostile_marker": true,
+  "lines": 32
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1307,
+  "test": "an inherited accessor at the indices the serializer writes cannot choose the bytes",
+  "hostile_marker": true,
+  "lines": 16
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1323,
+  "test": "an inherited data property at those indices cannot either, and equality still follows the bytes",
+  "hostile_marker": true,
+  "lines": 19
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1342,
+  "test": "the prototypes are left exactly as found, including properties the Kernel never installed",
+  "hostile_marker": true,
+  "lines": 72
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1414,
+  "test": "a caller-mutated iterator next cannot omit, substitute, duplicate or reorder the keys",
+  "hostile_marker": true,
+  "lines": 40
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1454,
+  "test": "an iterator result without its own done cannot be ended early through Object.prototype",
+  "hostile_marker": true,
+  "lines": 26
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1480,
+  "test": "a deleted holder next plus an Object.prototype next shadow still binds the snapshot",
+  "hostile_marker": true,
+  "lines": 18
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1498,
+  "test": "the byte limit is enforced on the snapshot bytes, not on bytes the pollution chose",
+  "hostile_marker": true,
+  "lines": 20
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1518,
+  "test": "retained content accepted under pollution re-canonicalizes to the accepting bytes",
+  "hostile_marker": true,
+  "lines": 35
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1553,
+  "test": "an object inserted between Array.prototype and Object.prototype cannot choose the bytes",
+  "hostile_marker": true,
+  "lines": 26
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1579,
+  "test": "the top of the chain is engine-pinned, so bare results have nowhere hostile to resolve",
+  "hostile_marker": true,
+  "lines": 36
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1615,
+  "test": "an object inserted on the iterator chain cannot supply next",
+  "hostile_marker": true,
+  "lines": 16
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1631,
+  "test": "a capture-time trap that inserts the chain still binds the observed structure",
+  "hostile_marker": true,
+  "lines": 34
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1282-1711",
+  "line": 1665,
+  "test": "an unresettable chain degrades to a refusal, never to wrong bytes",
+  "hostile_marker": true,
+  "lines": 47
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1772-1874",
+  "line": 1786,
+  "test": "every hostile data-field combination still yields the exact clean bytes",
+  "hostile_marker": true,
+  "lines": 30
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1772-1874",
+  "line": 1816,
+  "test": "an inherited descriptor getter never runs inside capture, cloning or the serializer window",
+  "hostile_marker": true,
+  "lines": 18
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1772-1874",
+  "line": 1834,
+  "test": "an own __proto__ member still installs while conversion is hostile",
+  "hostile_marker": true,
+  "lines": 13
+ },
+ {
+  "path": "packages/kernel/tests/values.test.ts",
+  "span": "1772-1874",
+  "line": 1847,
+  "test": "restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host",
+  "hostile_marker": true,
+  "lines": 28
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "362-485",
+  "line": 362,
+  "test": "K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement",
+  "hostile_marker": true,
+  "lines": 53
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "362-485",
+  "line": 415,
+  "test": "K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding",
+  "hostile_marker": true,
+  "lines": 26
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "362-485",
+  "line": 441,
+  "test": "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+  "hostile_marker": true,
+  "lines": 45
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "630-690",
+  "line": 630,
+  "test": "a coherent array whose prototype observation installs an indexed accessor binds its own value",
+  "hostile_marker": true,
+  "lines": 61
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "693-916",
+  "line": 742,
+  "test": "a payload observation that installs get/set still creates the exact Execution",
+  "hostile_marker": true,
+  "lines": 81
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "693-916",
+  "line": 823,
+  "test": "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+  "hostile_marker": true,
+  "lines": 60
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "693-916",
+  "line": 883,
+  "test": "retry still replays and changed content still conflicts",
+  "hostile_marker": true,
+  "lines": 34
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "992-1056",
+  "line": 1009,
+  "test": "ambient identity text cannot complete an empty creation envelope",
+  "hostile_marker": true,
+  "lines": 22
+ },
+ {
+  "path": "packages/kernel/tests/creation.test.ts",
+  "span": "992-1056",
+  "line": 1031,
+  "test": "an earlier-field trap cannot steer a later field through ambient state in the same tick",
+  "hostile_marker": true,
+  "lines": 26
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "178-197",
+  "line": 178,
+  "test": "K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it",
+  "hostile_marker": true,
+  "lines": 20
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "567-643",
+  "line": 567,
+  "test": "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+  "hostile_marker": true,
+  "lines": 48
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "567-643",
+  "line": 615,
+  "test": "K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution",
+  "hostile_marker": true,
+  "lines": 29
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "676-726",
+  "line": 676,
+  "test": "a bound getter that installs Array.prototype[\\",
+  "hostile_marker": true,
+  "lines": 51
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "774-1043",
+  "line": 806,
+  "test": "a bound getter that installs Object.prototype.get still reserves the exact prefix",
+  "hostile_marker": true,
+  "lines": 63
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "774-1043",
+  "line": 869,
+  "test": "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it",
+  "hostile_marker": true,
+  "lines": 47
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "774-1043",
+  "line": 916,
+  "test": "an inherited descriptor getter runs zero times inside the hardened operation",
+  "hostile_marker": true,
+  "lines": 42
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "774-1043",
+  "line": 958,
+  "test": "descriptor pollution and an inherited indexed trap together still commit the exact batch",
+  "hostile_marker": true,
+  "lines": 46
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "774-1043",
+  "line": 1004,
+  "test": "batch, Activation payload and redelivery are stable under an omit-all next",
+  "hostile_marker": true,
+  "lines": 40
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "1390-1426",
+  "line": 1390,
+  "test": "Promise independence: hostile ambient constructor/species slots change nothing",
+  "hostile_marker": true,
+  "lines": 37
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "1525-1558",
+  "line": 1529,
+  "test": "an ambient Object.prototype bound cannot dispatch an empty envelope",
+  "hostile_marker": true,
+  "lines": 16
+ },
+ {
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "span": "1525-1558",
+  "line": 1545,
+  "test": "an array envelope cannot inherit its bound through the Array.prototype chain",
+  "hostile_marker": true,
+  "lines": 14
+ },
+ {
+  "path": "packages/kernel/tests/ingress.test.ts",
+  "span": "535-561",
+  "line": 535,
+  "test": "K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement",
+  "hostile_marker": true,
+  "lines": 27
+ },
+ {
+  "path": "packages/kernel/tests/ingress.test.ts",
+  "span": "576-816",
+  "line": 598,
+  "test": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+  "hostile_marker": true,
+  "lines": 63
+ },
+ {
+  "path": "packages/kernel/tests/ingress.test.ts",
+  "span": "576-816",
+  "line": 661,
+  "test": "a creation whose payload traps the first mailbox index still binds its initial Event",
+  "hostile_marker": true,
+  "lines": 65
+ },
+ {
+  "path": "packages/kernel/tests/ingress.test.ts",
+  "span": "576-816",
+  "line": 726,
+  "test": "a payload observation that installs get/set still retains the accepted Event",
+  "hostile_marker": true,
+  "lines": 64
+ },
+ {
+  "path": "packages/kernel/tests/ingress.test.ts",
+  "span": "576-816",
+  "line": 790,
+  "test": "replay returns the retained disposition and changed content conflicts",
+  "hostile_marker": true,
+  "lines": 27
+ },
+ {
+  "path": "packages/kernel/tests/transaction.test.ts",
+  "span": "149-234",
+  "line": 150,
+  "test": "Test C \"hostile pollution during observation cannot split the commit\"",
+  "hostile_marker": true,
+  "lines": 85
+ },
+ {
+  "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+  "span": "185-193",
+  "line": 185,
+  "test": "DEC-5 root metadata is own-only under ambient pollution",
+  "hostile_marker": true,
+  "lines": 9
+ },
+ {
+  "path": "packages/kernel/tests/value-refusal-cost.test.ts",
+  "span": "120-138",
+  "line": 120,
+  "test": "V-D1 own-only multiplicity under ambient pollution and capture-time mutation",
+  "hostile_marker": true,
+  "lines": 19
+ }
+]

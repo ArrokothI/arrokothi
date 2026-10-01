@@ -1,0 +1,21 @@
+Reviewer rerun of packet verifier at H
+date: 2026-10-01T14:27:53Z
+node v25.2.1; Python 3.13.5; git version 2.39.5 (Apple Git-154)
+HEAD 7ebf80d461c439459d0c8010c04c9fb197281a59
+command: python3 docs/development/work/DESIGN-AUDIT-01/probes/verify.py --require-clean --C ce3ec854ff126498e0b807ba97626d12015572c7
+enumerate.py PASS
+catalog.py PASS
+records.py PASS
+measure.py PASS
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "head": "7ebf80d461c439459d0c8010c04c9fb197281a59",
+  "changed_tracked_files": 146,
+  "finding_labels": 278,
+  "qualifying_families": 16,
+  "decision_drafts": 22,
+  "local_file_links": 130,
+  "scope": "packet plus audit row and single adopted-hold sentence in K1.1 row",
+  "result": "PASS"
+}
+exit=0

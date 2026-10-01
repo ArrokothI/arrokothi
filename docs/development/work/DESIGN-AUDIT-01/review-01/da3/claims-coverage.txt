@@ -1,0 +1,24 @@
+decision-03        register:0 drafts:0 other:0
+decision-04        register:0 drafts:0 other:0
+decision-05        register:4 drafts:4 other:4
+K1.4               register:0 drafts:0 other:0
+cannot steer       register:0 drafts:0 other:0
+One reading        register:0 drafts:0 other:0
+Kernel-mediated    register:0 drafts:0 other:0
+coherent-Proxy     register:2 drafts:2 other:0
+ambient safety     register:0 drafts:0 other:0
+DEC-8              register:9 drafts:8 other:8
+DEC-9              register:4 drafts:4 other:0
+single observation register:1 drafts:1 other:0
+stable-realm       register:1 drafts:1 other:0
+Trusted            register:5 drafts:5 other:1
+frozen-intrinsics  register:0 drafts:0 other:0
+lockdown           register:0 drafts:0 other:0
+ShadowRealm        register:0 drafts:0 other:0
+--- values.md anchor cited by register A root choice (register.md:11):
+7:**Meaning.** Canonical equality is sameness of the value, not of what it means. `37` and `"37"` are different values, even if an application reads them identically. Two strings that render as the sa
+--- where values.md actually says it:
+202:No time bound is claimed for values containing live Proxies. Protection against hostile
+290:These are guarantees about accepting a value. They do not contain code that shares the process. Anything running in that process can still do whatever the process can do, and preventing that belongs to [physical enforcement](../mechanisms/resources.md#containment-claims), which has its own owner and its own evidence.
+--- whole-word SES (Hardened JavaScript) mentions:
+register:0 drafts:0

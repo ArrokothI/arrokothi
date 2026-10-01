@@ -1,0 +1,868 @@
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "node": "v25.2.1",
+  "expectation": "Current behavior reproduction, not desired-domain conformance: different hidden Map contents replay as the same projected value.",
+  "results": [
+    {
+      "field": "authorityContext",
+      "answer": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "receipt": {
+          "boundary": "creation",
+          "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+          "position": 1
+        },
+        "replayed": false,
+        "initialEventId": "event-creation-5:app-a8:tenant-a9:report-17"
+      },
+      "replay": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "receipt": {
+          "boundary": "creation",
+          "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+          "position": 1
+        },
+        "replayed": true,
+        "initialEventId": "event-creation-5:app-a8:tenant-a9:report-17"
+      },
+      "view": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "state": "READY",
+        "scope": "tenant-a",
+        "creationKey": "report-17",
+        "definitionRevision": "weekly-report@3",
+        "runtimeContractRevision": "runtime-contract@1",
+        "progressCodec": "inline-json@1",
+        "acceptedProgress": null,
+        "progressRevision": 0,
+        "authorityContext": {},
+        "activation": null,
+        "recoveryHolds": [],
+        "recoveryHistory": [],
+        "exchanges": [],
+        "emissions": [],
+        "result": null,
+        "mailbox": [
+          {
+            "eventId": "event-creation-5:app-a8:tenant-a9:report-17",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "report-17"
+            },
+            "kind": "application.request",
+            "payload": {
+              "text": "report for week 37"
+            },
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 1,
+            "disposition": {
+              "kind": "queued"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "creation",
+              "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+              "position": 1
+            }
+          }
+        ],
+        "queued": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "acknowledged": [],
+        "terminalDispositions": [],
+        "refusals": [],
+        "receipts": [
+          {
+            "boundary": "creation",
+            "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "field": "initialInput",
+      "answer": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "receipt": {
+          "boundary": "creation",
+          "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+          "position": 1
+        },
+        "replayed": false,
+        "initialEventId": "event-creation-5:app-a8:tenant-a9:report-17"
+      },
+      "replay": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "receipt": {
+          "boundary": "creation",
+          "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+          "position": 1
+        },
+        "replayed": true,
+        "initialEventId": "event-creation-5:app-a8:tenant-a9:report-17"
+      },
+      "view": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "state": "READY",
+        "scope": "tenant-a",
+        "creationKey": "report-17",
+        "definitionRevision": "weekly-report@3",
+        "runtimeContractRevision": "runtime-contract@1",
+        "progressCodec": "inline-json@1",
+        "acceptedProgress": null,
+        "progressRevision": 0,
+        "authorityContext": {
+          "tenant": "a"
+        },
+        "activation": null,
+        "recoveryHolds": [],
+        "recoveryHistory": [],
+        "exchanges": [],
+        "emissions": [],
+        "result": null,
+        "mailbox": [
+          {
+            "eventId": "event-creation-5:app-a8:tenant-a9:report-17",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "report-17"
+            },
+            "kind": "x",
+            "payload": {},
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 1,
+            "disposition": {
+              "kind": "queued"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "creation",
+              "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+              "position": 1
+            }
+          }
+        ],
+        "queued": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "acknowledged": [],
+        "terminalDispositions": [],
+        "refusals": [],
+        "receipts": [
+          {
+            "boundary": "creation",
+            "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "field": "ingress",
+      "answer": {
+        "eventId": "event-5:app-a38:execution-5:app-a8:tenant-a9:report-171:i",
+        "receipt": {
+          "boundary": "input_ingress",
+          "token": "inp:execution-5:app-a8:tenant-a9:report-17:2",
+          "position": 2
+        },
+        "replayed": false,
+        "acceptancePosition": 2,
+        "disposition": {
+          "kind": "queued"
+        }
+      },
+      "replay": {
+        "eventId": "event-5:app-a38:execution-5:app-a8:tenant-a9:report-171:i",
+        "receipt": {
+          "boundary": "input_ingress",
+          "token": "inp:execution-5:app-a8:tenant-a9:report-17:2",
+          "position": 2
+        },
+        "replayed": true,
+        "acceptancePosition": 2,
+        "disposition": {
+          "kind": "queued"
+        }
+      },
+      "view": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "state": "READY",
+        "scope": "tenant-a",
+        "creationKey": "report-17",
+        "definitionRevision": "weekly-report@3",
+        "runtimeContractRevision": "runtime-contract@1",
+        "progressCodec": "inline-json@1",
+        "acceptedProgress": null,
+        "progressRevision": 0,
+        "authorityContext": {
+          "tenant": "a"
+        },
+        "activation": null,
+        "recoveryHolds": [],
+        "recoveryHistory": [],
+        "exchanges": [],
+        "emissions": [],
+        "result": null,
+        "mailbox": [
+          {
+            "eventId": "event-creation-5:app-a8:tenant-a9:report-17",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "report-17"
+            },
+            "kind": "application.request",
+            "payload": {
+              "text": "report for week 37"
+            },
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 1,
+            "disposition": {
+              "kind": "queued"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "creation",
+              "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+              "position": 1
+            }
+          },
+          {
+            "eventId": "event-5:app-a38:execution-5:app-a8:tenant-a9:report-171:i",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "i"
+            },
+            "kind": "x",
+            "payload": {},
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 2,
+            "disposition": {
+              "kind": "queued"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "input_ingress",
+              "token": "inp:execution-5:app-a8:tenant-a9:report-17:2",
+              "position": 2
+            }
+          }
+        ],
+        "queued": [
+          "event-creation-5:app-a8:tenant-a9:report-17",
+          "event-5:app-a38:execution-5:app-a8:tenant-a9:report-171:i"
+        ],
+        "acknowledged": [],
+        "terminalDispositions": [],
+        "refusals": [],
+        "receipts": [
+          {
+            "boundary": "creation",
+            "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+            "position": 1
+          },
+          {
+            "boundary": "input_ingress",
+            "token": "inp:execution-5:app-a8:tenant-a9:report-17:2",
+            "position": 2
+          }
+        ]
+      }
+    },
+    {
+      "field": "progress",
+      "answer": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "READY",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [],
+        "resultId": null,
+        "terminalDispositions": [],
+        "replayed": false
+      },
+      "replay": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "READY",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [],
+        "resultId": null,
+        "terminalDispositions": [],
+        "replayed": true
+      },
+      "view": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "state": "READY",
+        "scope": "tenant-a",
+        "creationKey": "report-17",
+        "definitionRevision": "weekly-report@3",
+        "runtimeContractRevision": "runtime-contract@1",
+        "progressCodec": "inline-json@1",
+        "acceptedProgress": {},
+        "progressRevision": 1,
+        "authorityContext": {
+          "tenant": "a"
+        },
+        "activation": null,
+        "recoveryHolds": [],
+        "recoveryHistory": [],
+        "exchanges": [
+          {
+            "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+            "writerEpoch": 1,
+            "baseProgressRevision": 0,
+            "batch": [
+              "event-creation-5:app-a8:tenant-a9:report-17"
+            ],
+            "dispatchReceipt": {
+              "boundary": "dispatch_intent",
+              "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+              "position": 2
+            },
+            "outcomeReceipt": {
+              "boundary": "outcome_acceptance",
+              "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+              "position": 3
+            },
+            "deliveries": [
+              {
+                "attempt": 1,
+                "status": "delivered",
+                "failure": null,
+                "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+                "writerEpoch": 1
+              }
+            ]
+          }
+        ],
+        "emissions": [],
+        "result": null,
+        "mailbox": [
+          {
+            "eventId": "event-creation-5:app-a8:tenant-a9:report-17",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "report-17"
+            },
+            "kind": "application.request",
+            "payload": {
+              "text": "report for week 37"
+            },
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 1,
+            "disposition": {
+              "kind": "acknowledged",
+              "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "creation",
+              "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+              "position": 1
+            }
+          }
+        ],
+        "queued": [],
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "terminalDispositions": [],
+        "refusals": [],
+        "receipts": [
+          {
+            "boundary": "creation",
+            "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+            "position": 1
+          },
+          {
+            "boundary": "dispatch_intent",
+            "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+            "position": 2
+          },
+          {
+            "boundary": "outcome_acceptance",
+            "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+            "position": 3
+          }
+        ]
+      }
+    },
+    {
+      "field": "emission",
+      "answer": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "READY",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [
+          "emission-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-11:e"
+        ],
+        "resultId": null,
+        "terminalDispositions": [],
+        "replayed": false
+      },
+      "replay": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "READY",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [
+          "emission-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-11:e"
+        ],
+        "resultId": null,
+        "terminalDispositions": [],
+        "replayed": true
+      },
+      "view": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "state": "READY",
+        "scope": "tenant-a",
+        "creationKey": "report-17",
+        "definitionRevision": "weekly-report@3",
+        "runtimeContractRevision": "runtime-contract@1",
+        "progressCodec": "inline-json@1",
+        "acceptedProgress": {
+          "phase": "draft",
+          "draftRef": "draft-1"
+        },
+        "progressRevision": 1,
+        "authorityContext": {
+          "tenant": "a"
+        },
+        "activation": null,
+        "recoveryHolds": [],
+        "recoveryHistory": [],
+        "exchanges": [
+          {
+            "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+            "writerEpoch": 1,
+            "baseProgressRevision": 0,
+            "batch": [
+              "event-creation-5:app-a8:tenant-a9:report-17"
+            ],
+            "dispatchReceipt": {
+              "boundary": "dispatch_intent",
+              "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+              "position": 2
+            },
+            "outcomeReceipt": {
+              "boundary": "outcome_acceptance",
+              "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+              "position": 3
+            },
+            "deliveries": [
+              {
+                "attempt": 1,
+                "status": "delivered",
+                "failure": null,
+                "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+                "writerEpoch": 1
+              }
+            ]
+          }
+        ],
+        "emissions": [
+          {
+            "emissionId": "emission-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-11:e",
+            "emissionKey": "e",
+            "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+            "value": {},
+            "receipt": {
+              "boundary": "outcome_acceptance",
+              "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+              "position": 3
+            }
+          }
+        ],
+        "result": null,
+        "mailbox": [
+          {
+            "eventId": "event-creation-5:app-a8:tenant-a9:report-17",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "report-17"
+            },
+            "kind": "application.request",
+            "payload": {
+              "text": "report for week 37"
+            },
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 1,
+            "disposition": {
+              "kind": "acknowledged",
+              "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "creation",
+              "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+              "position": 1
+            }
+          }
+        ],
+        "queued": [],
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "terminalDispositions": [],
+        "refusals": [],
+        "receipts": [
+          {
+            "boundary": "creation",
+            "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+            "position": 1
+          },
+          {
+            "boundary": "dispatch_intent",
+            "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+            "position": 2
+          },
+          {
+            "boundary": "outcome_acceptance",
+            "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+            "position": 3
+          }
+        ]
+      }
+    },
+    {
+      "field": "result",
+      "answer": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "COMPLETED",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [],
+        "resultId": "result-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "terminalDispositions": [],
+        "replayed": false
+      },
+      "replay": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "COMPLETED",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [],
+        "resultId": "result-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "terminalDispositions": [],
+        "replayed": true
+      },
+      "view": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "state": "COMPLETED",
+        "scope": "tenant-a",
+        "creationKey": "report-17",
+        "definitionRevision": "weekly-report@3",
+        "runtimeContractRevision": "runtime-contract@1",
+        "progressCodec": "inline-json@1",
+        "acceptedProgress": {
+          "phase": "draft",
+          "draftRef": "draft-1"
+        },
+        "progressRevision": 1,
+        "authorityContext": {
+          "tenant": "a"
+        },
+        "activation": null,
+        "recoveryHolds": [],
+        "recoveryHistory": [],
+        "exchanges": [
+          {
+            "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+            "writerEpoch": 1,
+            "baseProgressRevision": 0,
+            "batch": [
+              "event-creation-5:app-a8:tenant-a9:report-17"
+            ],
+            "dispatchReceipt": {
+              "boundary": "dispatch_intent",
+              "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+              "position": 2
+            },
+            "outcomeReceipt": {
+              "boundary": "outcome_acceptance",
+              "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+              "position": 3
+            },
+            "deliveries": [
+              {
+                "attempt": 1,
+                "status": "delivered",
+                "failure": null,
+                "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+                "writerEpoch": 1
+              }
+            ]
+          }
+        ],
+        "emissions": [],
+        "result": {
+          "resultId": "result-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-1",
+          "kind": "completed",
+          "value": {},
+          "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+          "receipt": {
+            "boundary": "outcome_acceptance",
+            "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+            "position": 3
+          }
+        },
+        "mailbox": [
+          {
+            "eventId": "event-creation-5:app-a8:tenant-a9:report-17",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "report-17"
+            },
+            "kind": "application.request",
+            "payload": {
+              "text": "report for week 37"
+            },
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 1,
+            "disposition": {
+              "kind": "acknowledged",
+              "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "creation",
+              "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+              "position": 1
+            }
+          }
+        ],
+        "queued": [],
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "terminalDispositions": [],
+        "refusals": [],
+        "receipts": [
+          {
+            "boundary": "creation",
+            "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+            "position": 1
+          },
+          {
+            "boundary": "dispatch_intent",
+            "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+            "position": 2
+          },
+          {
+            "boundary": "outcome_acceptance",
+            "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+            "position": 3
+          }
+        ]
+      }
+    },
+    {
+      "field": "error",
+      "answer": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "FAILED",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [],
+        "resultId": "result-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "terminalDispositions": [],
+        "replayed": false
+      },
+      "replay": {
+        "receipt": {
+          "boundary": "outcome_acceptance",
+          "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+          "position": 3
+        },
+        "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "nextState": "FAILED",
+        "progressRevision": 1,
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "emissionIds": [],
+        "resultId": "result-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-1",
+        "terminalDispositions": [],
+        "replayed": true
+      },
+      "view": {
+        "executionId": "execution-5:app-a8:tenant-a9:report-17",
+        "state": "FAILED",
+        "scope": "tenant-a",
+        "creationKey": "report-17",
+        "definitionRevision": "weekly-report@3",
+        "runtimeContractRevision": "runtime-contract@1",
+        "progressCodec": "inline-json@1",
+        "acceptedProgress": {
+          "phase": "draft",
+          "draftRef": "draft-1"
+        },
+        "progressRevision": 1,
+        "authorityContext": {
+          "tenant": "a"
+        },
+        "activation": null,
+        "recoveryHolds": [],
+        "recoveryHistory": [],
+        "exchanges": [
+          {
+            "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+            "writerEpoch": 1,
+            "baseProgressRevision": 0,
+            "batch": [
+              "event-creation-5:app-a8:tenant-a9:report-17"
+            ],
+            "dispatchReceipt": {
+              "boundary": "dispatch_intent",
+              "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+              "position": 2
+            },
+            "outcomeReceipt": {
+              "boundary": "outcome_acceptance",
+              "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+              "position": 3
+            },
+            "deliveries": [
+              {
+                "attempt": 1,
+                "status": "delivered",
+                "failure": null,
+                "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+                "writerEpoch": 1
+              }
+            ]
+          }
+        ],
+        "emissions": [],
+        "result": {
+          "resultId": "result-38:execution-5:app-a8:tenant-a9:report-1751:execution-5:app-a8:tenant-a9:report-17/activation-1",
+          "kind": "failed",
+          "value": {},
+          "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1",
+          "receipt": {
+            "boundary": "outcome_acceptance",
+            "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+            "position": 3
+          }
+        },
+        "mailbox": [
+          {
+            "eventId": "event-creation-5:app-a8:tenant-a9:report-17",
+            "inputId": {
+              "producerNamespace": "app-a",
+              "destination": "execution-5:app-a8:tenant-a9:report-17",
+              "requestKey": "report-17"
+            },
+            "kind": "application.request",
+            "payload": {
+              "text": "report for week 37"
+            },
+            "subscriptionClass": null,
+            "sourceCategory": "application_input",
+            "acceptancePosition": 1,
+            "disposition": {
+              "kind": "acknowledged",
+              "activationId": "execution-5:app-a8:tenant-a9:report-17/activation-1"
+            },
+            "reserved": false,
+            "receipt": {
+              "boundary": "creation",
+              "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+              "position": 1
+            }
+          }
+        ],
+        "queued": [],
+        "acknowledged": [
+          "event-creation-5:app-a8:tenant-a9:report-17"
+        ],
+        "terminalDispositions": [],
+        "refusals": [],
+        "receipts": [
+          {
+            "boundary": "creation",
+            "token": "crt:execution-5:app-a8:tenant-a9:report-17:1",
+            "position": 1
+          },
+          {
+            "boundary": "dispatch_intent",
+            "token": "dsp:execution-5:app-a8:tenant-a9:report-17:2",
+            "position": 2
+          },
+          {
+            "boundary": "outcome_acceptance",
+            "token": "out:execution-5:app-a8:tenant-a9:report-17:3",
+            "position": 3
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+distinct (family,subsystem,category) triples: 16 families: 16 subsystems: 16
+
+### F01
+K01-REV-02 | finding | design | K0.1/review-01.md | hostile=False | Kernel wait ownership and generations
+K01-R2-03 | finding | design | K0.1/review-02.md | hostile=False | Correct Event-wait migration and fully state the target K1 wait shape
+K01-R4-01 | finding | design | K0.1/review-04.md | hostile=False | repair the wait contract cumulatively, not just one paragraph (P1)
+K01-R5-01 | finding | design | K0.1/review-05.md | hostile=False | make wake-derived READY preserve the wait eligibility rule through the next dispatch (P1)
+K01-R5-02 | finding | design | K0.1/review-05.md | hostile=False | state one exact dependency-alternative selector grammar (P2)
+K01-R6-01 | finding | design | K0.1/review-06.md | hostile=False | correct B-6's acceptance-boundary atomicity (P1)
+K01-R6-02 | finding | design | K0.1/review-06.md | hostile=False | make empty kind-set semantics normative in W-1 (P2)
+K01-R7-01 | finding | design | K0.1/review-07.md | hostile=False | application input must not bypass declared subscriptions (P1)
+K01-R7-02 | finding | design | K0.1/review-07.md | hostile=False | give deadline expiry the same crash-safe batch semantics as Event wake (P1)
+K01-R7-03 | finding | design | K0.1/review-07.md | hostile=False | separate durable child routing obligation from destination Event acceptance (P2)
+K01-R8-01 | finding | design | K0.1/review-08.md | hostile=False | B-2 still carries the superseded eligibility rule (P1)
+K01-R8-02 | finding | design | K0.1/review-08.md | hostile=False | the timeout observation has no coherent semantic home (P1)
+K01-R8-03 | finding | design | K0.1/review-08.md | hostile=False | current eligibility made conditional on a future K1.3 choice (P2)
+K01-R8-04 | finding | design | K0.1/review-08.md | hostile=False | already-expired deadline at wait registration left undecided (P2)
+K01-R9-01 | finding | design | K0.1/review-09.md | hostile=False | W-1 registration well-formedness contradicts its intentionally permitted inert alternatives (P2)
+K01-R10-01 | finding | design | K0.1/review-10.md | hostile=False | P2: stale selection claims contradict the consolidated lifecycle
+K01-R11-01 | finding | design | K0.1/review-11.md | hostile=False | P2 — the cancel-versus-in-flight-Outcome race has no stated acceptance/rejection result
+K01-R11-02 | finding | design | K0.1/review-11.md | hostile=False | P3 — B-8's "live" qualifier contradicts W-3 and §3's own exhaustiveness paragraph
+K01-R11-04 | finding | design | K0.1/review-11.md | hostile=False | P3 — B-4's "when it becomes eligible" reads as a filter B-2's ordinary case does not apply
+
+### F02
+K01-R2-01 | finding | design | K0.1/review-02.md | hostile=False | Complete the canonical value encoding
+K01-R3-01 | finding | design | K0.1/review-03.md | hostile=False | make E-7's canonical encoding and its standards guidance agree (P1)
+K01-O12-01 | owner-supplement | design | K0.1/review-11.md | hostile=False | P2 | Worksheet E-6: deepest-scalar depth is undefined for empty-container trees | Total recursive depth: scalars 0, empty containers 1, non-empty cont
+K01-O12-02 | owner-supplement | design | K0.1/review-11.md | hostile=False | Member-name strings share the scalar limit.
+K01-O12-03 | owner-supplement | design | K0.1/review-11.md | hostile=False | P2 | Worksheet E-1/E-6 and contract C2: field/value/envelope terminology leaves the size root ambiguous | Check canonical bytes independently for each
+K11-R1-JCS-01 | finding | design | K1.1/review-01.md | hostile=False | P1 — a mandatory canonical-value implementation decision remains unresolved at review handoff
+K1.2-correction-01::O-R8-3 | observation | design | K1.2-correction-01/review-08.md | hostile=False | (own-key enumeration of no-Proxy exotic objects):
+K1.2-correction-01::O-R8-4 | observation | design | K1.2-correction-01/review-08.md | hostile=False | (outside this packet, pre-existing K1.1 behavior): re-prototyped built-ins are
+
+### F03
+K01-REV-01 | finding | design | K0.1/review-01.md | hostile=False | Activation identity / writer epoch
+K11-R1-ID-01 | finding | design | K1.1/review-01.md | hostile=False | P1 — hidden and missing Executions remain distinguishable by lookup work
+K11-R3-ID-03 | finding | design | K1.1/review-03.md | hostile=False | P2 — non-text scope is classified before the new identity-text validation can run
+K11-R3-ID-02 | finding | design | K1.1/review-03.md | hostile=False | Non-text identity packing collisions; referenced prior finding, not a new round-3 discovery.
+K11-R12-ID-01 | finding | design | K1.1/review-11.md | hostile=False | P1 — coordinator-global receipt/refusal positions disclose activity in inaccessible scopes
+K11-R15-ID-01 | finding | design | K1.1/review-15.md | hostile=False | P2 — the initial input occupies a post-creation Input ID in the producer's own key space
+K11-R16-ID-01 | finding | design | K1.1/review-16.md | hostile=False | P2 — malformed non-text identity diagnostics can throw on revoked Proxy
+docs/development/work/K1.2-correction-01/review-01.md::O1 | observation | design | K1.2-correction-01/review-01.md | hostile=False | the engine limit bounds the closure claim. Take a trusted namespace just over half of
+K12-R14-ID-01 | finding | design | K1.2/review-14.md | hostile=False | P2 — the Kernel refuses its own minted Activation ID as malformed
+
+### F04
+K01-REV-03 | finding | design | K0.1/review-01.md | hostile=False | Rebuild the legacy-data classification
+K01-REV-04 | finding | design | K0.1/review-01.md | hostile=False | Close the K0 decisions that were improperly deferred
+K01-R2-02 | finding | design | K0.1/review-02.md | hostile=False | Give PendingOperation a valid legacy disposition
+K01-R3-02 | finding | design | K0.1/review-03.md | hostile=False | Legacy disposition vocabulary contradicts the required exact classes.
+
+### F05
+K02-R1-01 | finding | evidence | K0.2/review-01.md | hostile=False | P1 — §11 semantic coverage materially under-covers the accepted K0 boundary assertions
+K02-R1-02 | finding | evidence | K0.2/review-01.md | hostile=False | P1 — the independent operation ledger can be rewritten through candidate-held nested references
+K02-R1-03 | finding | evidence | K0.2/review-01.md | hostile=False | P1 — a declared independent-ledger assertion fails open when its observer is omitted
+K02-R2-01 | finding | evidence | K0.2/review-02.md | hostile=False | P1 — the completion control invents a rejection-reason distinction that the accepted K1 protocol does not require
+K02-R2-02 | finding | evidence | K0.2/review-02.md | hostile=False | P1 — snapshot() is not a value-preserving immutable snapshot for every valid E-1 object member name
+K02-R3-01 | finding | evidence | K0.2/review-03.md | hostile=False | P1 — the “obligation-granular” coverage map is still not semantically atomic; K02-R1-01 is reopened
+K02-R4-01 | finding | evidence | K0.2/review-04.md | hostile=False | P1 — the new W-1 subscription test invents an empty-string-invalid rule that the accepted protocol deliberately leaves implementation-owned
+K02-R4-02 | finding | evidence | K0.2/review-04.md | hostile=False | P1 — C4's independently-distinguishable-assertion rule is still not applied consistently; K02-R3-01 is not fully closed
+K02-R5-01 | finding | evidence | K0.2/review-05.md | hostile=False | P1 — one TokenRelation incorrectly imposes cross-namespace uniqueness between receipts and Activation IDs
+K02-R5-02 | finding | evidence | K0.2/review-05.md | hostile=False | P1 — the atomicity guard is circular/incomplete and a canonical row-7 deadline mutation remains unobservable; K02-R4-02 is not fully closed
+K02-R6-01 | finding | evidence | K0.2/review-06.md | hostile=False | P1 — pendingTimers conflates accepted deadline state with an implementation-owned timer mechanism
+K02-R7-01 | finding | evidence | K0.2/review-07.md | hostile=False | P1 — the new semantic deadline field is still only partially integrated into assertion-granular coverage
+K02-R8-01 | finding | evidence | K0.2/review-08.md | hostile=False | P1 — deadline cleanup is still unowned on B-6 path B, a distinct acceptance boundary
+K02-R9-01 | finding | evidence | K0.2/review-09.md | hostile=False | P1 — OA-5 deadline inertness on malformed rejected Outcomes is visible but still unattributed
+K02-R10-01 | finding | evidence | K0.2/review-10.md | hostile=False | P1 — the malformed-rejection OA-5 family is still only partly assertion-owned
+K02-R10-02 | finding | evidence | K0.2/review-10.md | hostile=False | P1 — row 2 still under-covers the accepted Activation-exchange identity rule
+K02-R10-03 | finding | evidence | K0.2/review-10.md | hostile=False | P1 — row 1's producer scope and accepted-receipt surface are not representable by the fixture
+K02-R11-01 | finding | evidence | K0.2/review-11.md | hostile=False | P1 — R3-c7's readiness-only transcript requires a second readiness bug, so it does not isolate OA-5
+K02-R11-02 | finding | evidence | K0.2/review-11.md | hostile=False | P1 — the producer component of ID-2 is still not independently exercised
+K02-R13-01 | finding | evidence | K0.2/review-13.md | hostile=False | P1 — writerEpoch over-constrains ID-4 across new Activation IDs
+K02-R13-02 | finding | evidence | K0.2/review-13.md | hostile=False | P1 — R5-c2's empty-dependency W-2 clause is defended by the wrong schedule
+K02-R14-01 | finding | evidence | K0.2/review-14.md | hostile=False | P1 — cited-decision reconstruction is still incomplete
+K02-R15-01 | finding | evidence | K0.2/review-15.md | hostile=False | P1 — two new selector counterexamples are rejected through an independent W-3 lifecycle violation
+K02-R15-02 | finding | evidence | K0.2/review-15.md | hostile=False | P1 — the explicit cited-decision inventory still bundles independently distinguishable clauses
+K02-R16-01 | finding | evidence | K0.2/review-16.md | hostile=False | P1 — B-2 wait-ended batch selection still combines independently violable membership/mandatory rules
+
+### F06
+K0.2-SELF-01 | self-reference | evidence | K0.2/review-12.md | hostile=False | Raw-text dependency scanner false positive, referenced as unchanged outside K0.2.
+K10-CORR1-CLEANUP-01 | cleanup | evidence | K1.0-correction-01/cleanup-01.md | hostile=False | P2, C4
+K1.0-SELF-29 | self-reference | evidence | K1.0-correction-01/review-01.md | hostile=False | closure leaves the same silent-discard invariant open one structural level above the cell decoders.
+K10-CORR1-R1-01 | finding | evidence | K1.0-correction-01/review-01.md | hostile=False | P2 — C4
+K1.0-correction-01::SELF-29 | alias | evidence | K1.0-correction-01/review-01.md | hostile=False | Historical alias of K1.0-SELF-29
+K1.0-correction-02::CORR2-SELF-01 | self-reference | evidence | K1.0-correction-02/review-01.md | hostile=False | the reverse-direction collision is a genuine consequence of the same equality and is covered by the correction.
+K1.0-correction-02::CORR2-SELF-02 | self-reference | evidence | K1.0-correction-02/review-01.md | hostile=False | the ambiguous diagnostic is corrected; this is a useful evidence/readability hardening rather than a separate false-agreement invariant.
+K1.0-correction-02::CORR2-SELF-03 | self-reference | evidence | K1.0-correction-02/review-01.md | hostile=False | removal of the decoded dependency Set is correctly described as defence in depth, not falsely presented as a reproduced reachable defect.
+K10-CLEANUP-01 | cleanup | evidence | K1.0/cleanup-01.md | hostile=False | P2 — C4 whole-cell meaning is lost
+K10-R1-01 | finding | evidence | K1.0/review-01.md | hostile=False | P1 — the import scanner can miss a real forbidden dependency
+K10-R1-02 | finding | evidence | K1.0/review-01.md | hostile=False | P2 — the ownership inventory has false measurement provenance and its agreement proof is overstated
+K1.0-SELF-01 | self-reference | evidence | K1.0/review-01.md | hostile=False | demonstration: four over-attributed violations before the traversal correction, one
+K1.0-SELF-03 | self-reference | evidence | K1.0/review-02.md | hostile=False | Inventory duplicate/path corrections referenced by the review.
+K1.0-SELF-04 | self-reference | evidence | K1.0/review-02.md | hostile=False | Inventory agreement/provenance correction referenced by the review.
+K10-R2-01 | finding | evidence | K1.0/review-02.md | hostile=False | P1 — the corrected scanner still misses a legal type-only dependency
+K10-R2-02 | finding | evidence | K1.0/review-02.md | hostile=False | P2 — the inventory agreement oracle is still non-relational while claiming exact bidirectional agreement
+K10-R3-01 | finding | evidence | K1.0/review-03.md | hostile=False | P2 — the “strict” relational inventory oracle silently erases contradictory duplicate rows
+K10-R4-01 | finding | evidence | K1.0/review-04.md | hostile=False | P2 — the dependency-table parser still drops malformed keyed rows before uniqueness checking
+K10-R5-01 | finding | evidence | K1.0/review-05.md | hostile=False | P2 — the “total” C4 parser silently ignores valid GFM rows that omit an edge pipe
+K10-R6-01 | finding | evidence | K1.0/review-06.md | hostile=False | P2 — body rows whose first cell equals the header label are silently discarded as headers
+K1.0-SELF-12 | self-reference | evidence | K1.0/review-07.md | hostile=False | Governed-section discovery must respect Markdown context.
+K1.0::SELF-13 | alias | evidence | K1.0/review-07.md | hostile=False | Historical alias of K1.0-SELF-13
+K1.0-SELF-13 | self-reference | evidence | K1.0/review-07.md | hostile=False | Further-table rows need the same fail-closed interpretation.
+K1.0::SELF-12 | alias | evidence | K1.0/review-07.md | hostile=False | Historical alias of K1.0-SELF-12
+K10-R7-01 | finding | evidence | K1.0/review-07.md | hostile=False | P2 — section selection can still truncate at a literal next-heading string that is not a heading
+K10-R8-01 | finding | evidence | K1.0/review-08.md | hostile=False | P2 — a fence opened immediately after a table body is processed twice and can turn literal code into a further table
+K10-R8-02 | finding | evidence | K1.0/review-08.md | hostile=False | P2 — section heading recognition ignores GFM raw-HTML block context and can still truncate on non-heading bytes
+K1.0-SELF-18 | self-reference | evidence | K1.0/review-09.md | hostile=False | and K1.0-SELF-19 are useful neighboring corrections. Indented-code table shapes no
+K1.0-SELF-19 | self-reference | evidence | K1.0/review-09.md | hostile=False | are useful neighboring corrections. Indented-code table shapes no
+K10-R9-01 | finding | evidence | K1.0/review-09.md | hostile=False | P2 — a heading nested in a list item can be mistaken for a top-level governed-section delimiter
+K10-R9-02 | finding | evidence | K1.0/review-09.md | hostile=False | P2 — the claimed type-7 raw-HTML recognizer rejects valid complete tags with quoted </> and can reopen silent heading truncation
+K1.0::SELF-20 | self-reference | evidence | K1.0/review-10.md | hostile=False | CRLF handling in inventory parsing.
+K10-R10-01 | finding | evidence | K1.0/review-10.md | hostile=False | P2 — an open raw leaf block outlives the list container that owns it
+K10-R10-02 | finding | evidence | K1.0/review-10.md | hostile=False | P2 — parseCompleteTag still accepts missing whitespace between attributes
+K10-R10-03 | finding | evidence | K1.0/review-10.md | hostile=False | P2 — the raw-HTML rule set is a hybrid newer-CommonMark grammar but is reported as published GFM
+K10-R11-01 | finding | evidence | K1.0/review-11.md | hostile=False | P2 — type-6 HTML start accepts a bare / (and literal $) after a block tag name
+K1.0::SELF-21 | self-reference | evidence | K1.0/review-11.md | hostile=False | observation — absolute indentation versus container-relative fence recognition
+K10-R12-01 | finding | evidence | K1.0/review-12.md | hostile=False | P2 — the raw-HTML scanner conflates three different GFM whitespace classes
+K10-R13-01 | finding | evidence | K1.0/review-13.md | hostile=False | P2 — physical-line tokenization omits GFM lone-CR line endings
+K10-R14-01 | finding | evidence | K1.0/review-15.md | hostile=False | P2 — ATX title normalization can erase NBSP and create a false governed-section boundary
+K1.0::SELF-24 | self-reference | evidence | K1.0/review-16.md | hostile=False | Host normalization also changes table key/value identity.
+K10-R15-01 | finding | evidence | K1.0/review-16.md | hostile=False | P2 — C4: the correction substitutes the broad §2.1 whitespace class where GFM requires structural space/tab semantics
+
+### F07
+K01-REV-05 | finding | records | K0.1/review-01.md | hostile=False | Supply inspectable validation evidence
+K01-R2-05 | finding | records | K0.1/review-02.md | hostile=False | Preserve/correct review provenance without rewriting history
+K01-R2-06 | finding | records | K0.1/review-02.md | hostile=False | Provide actual reviewer-accessible validation evidence
+K01-R3-03 | finding | records | K0.1/review-03.md | hostile=False | restore the C/H commit-identity convention without rewriting H3 (P2)
+K01-R3-04 | finding | records | K0.1/review-03.md | hostile=False | correct historical review metadata in review-03 without rewriting review-02 (P2)
+K01-R9-02 | finding | records | K0.1/review-09.md | hostile=False | review-08.md omits the complete corrective prompt and sufficient source references required by 008 (P2)
+K10-R4-02 | finding | records | K1.0/review-04.md | hostile=False | P2 — validation-04 records an impossible SHA-256 identity for the SDK log
+K1.0-SELF-08 | self-reference | records | K1.0/review-05.md | hostile=False | Historical validation identity correction referenced by the review.
+K1.0-SELF-09 | self-reference | records | K1.0/review-05.md | hostile=False | Adjacent validation-identity correction referenced by the review.
+K1.0::SELF-23 | alias | records | K1.0/review-12.md | hostile=False | Historical alias of K1.0-SELF-23
+K1.0-SELF-23 | self-reference | records | K1.0/review-12.md | hostile=False | historical evidence identity correction is properly superseding rather than a
+K1.0::SELF-25 | self-reference | records | K1.0/review-16.md | hostile=False | Restore accidentally truncated status ledger.
+K1.0::SELF-26 | self-reference | records | K1.0/review-16.md | hostile=False | Historical control-byte spellings must match the actual evidence.
+K1.0::SELF-27 | self-reference | records | K1.0/review-16.md | hostile=False | Remove dead section wrappers.
+K1.0::SELF-28 | self-reference | records | K1.0/review-16.md | hostile=False | Reconcile the stale inventory evidence count.
+KC1-CLEANUP-REF-01 | cleanup | records | K1.1-correction-01/cleanup-01.md | hostile=False | Reference maintenance was not bound to the accepted executable candidate.
+KC1-R2-PROC-01 | finding | records | K1.1-correction-01/review-02.md | hostile=False | Prematurely closed finding genealogy in the status record.
+KC1-R4-PROC-01 | finding | records | K1.1-correction-01/review-05.md | hostile=False | P2 — the contract's mandatory B-anchored documentation scope guard was disabled, and no artifact authorizes that
+KC1-R4-PROC-02 | finding | records | K1.1-correction-01/review-05.md | hostile=False | P2 — 007 is self-contradictory about this packet's scope at H3
+KC1-R5-PROC-01 | finding | records | K1.1-correction-01/review-06.md | hostile=False | (P2). Same family as earlier false identity counts — not a Kernel bug.
+KC1-R6-PROC-01 | self-reference | records | K1.1-correction-01/review-08.md | hostile=False | Implementer-found ablation C4 label still names the old bound claim.
+KC2-R2-PROC-01 | finding | records | K1.1-correction-02/review-02.md | hostile=False | P2: measurement script is payload introduced in C..H
+REF1-CLEANUP-HISTORY-01 | cleanup | records | K1.1-reference-01/cleanup-01.md | hostile=False | (P3): review-08 §5.3 says every
+REF1-R5-CHK-01 | finding | records | K1.1-reference-01/review-05.md | hostile=False | Pinned whitespace-check result and reported exact-candidate scope disagree.
+REF1-R6-AUTH-01 | finding | records | K1.1-reference-01/review-06.md | hostile=False | Owner scope authority is supported only by session-authored quotations.
+REF1-R6-CHK-01 | finding | records | K1.1-reference-01/review-06.md | hostile=False | P2 — fails REF-5.
+REF1-R6-EXCL-01 | finding | records | K1.1-reference-01/review-06.md | hostile=False | P2 — misstated claim about the amendment (governs REF-5's proof step and REF-4's
+REF1-R6-EVID-01 | finding | records | K1.1-reference-01/review-06.md | hostile=False | P3 — 008 record fidelity.
+REF1-R5-SCOPE-01 | finding | records | K1.1-reference-01/review-06.md | hostile=False | Live ledger seed still states an obsolete reference revision and scope.
+REF1-R7-DIGEST-01 | finding | records | K1.1-reference-01/review-07.md | hostile=False | P2 — contract revision 6's load-bearing census is false
+REF1-R7-QUOTE-02 | finding | records | K1.1-reference-01/review-07.md | hostile=False | P2 — "Its text follows unedited" is false about revision 5's preserved block
+REF1-R7-COUNT-03 | finding | records | K1.1-reference-01/review-07.md | hostile=False | P2 — the report presents one class of warnings as the total, and contradicts itself
+REF1-R7-EVID-04 | finding | records | K1.1-reference-01/review-07.md | hostile=False | P2 — the closure of REF1-R6-EVID-01 rests on a universal that is false
+REF1-R9-LOCATE-01 | finding | records | K1.1-reference-01/review-08.md | hostile=False | a self-found defect is attributed to a log that does not contain it.
+REF1-R9-DIGEST-02 | finding | records | K1.1-reference-01/review-08.md | hostile=False | "nothing is unpinned" is true of 457 of 458, and the residual 2 are not
+REF1-R9-COUNT-03 | finding | records | K1.1-reference-01/review-08.md | hostile=False | two incidental counts do not reproduce. (a) Report 08:159: "014:139 …
+REF1-R9-QUOTE-01 | finding | records | K1.1-reference-01/review-08.md | hostile=False | REF1-DEC-4 misstates what review-06 required. Four places assert that
+REF1-R9-EVID-05 | finding | records | K1.1-reference-01/review-08.md | hostile=False | sealed captures that are byte-identical re-runs are not labelled as such.
+K11-R1-SCOPE-01 | finding | records | K1.1/review-01.md | hostile=False | P1 — K1.1 implements a K1.3 boundary and its own contract is contradictory
+K11-R1-PROC-01 | finding | records | K1.1/review-01.md | hostile=False | P1 — the governing entry prerequisite was still outstanding when K1.1 was released
+K11-R3-PROC-02 | finding | records | K1.1/review-03.md | hostile=False | P1 / BLOCKED_EXTERNAL — H4 does not contain or otherwise expose the raw validation attachments its manifest/report require
+K11-R4-PROC-01 | finding | records | K1.1/review-04.md | hostile=False | P1 — H5 was handed off as WAITING_FOR_REVIEW after mandatory defects were known
+K11-R10-EVID-01 | finding | records | K1.1/review-08.md | hostile=False | P2 — validation record integrity
+K11-R14-PROC-01 | finding | records | K1.1/review-13.md | hostile=False | False cumulative scope claim and unreviewed administrative payload.
+K11-R15-PROC-01 | finding | records | K1.1/review-15.md | hostile=False | P1 — H..A carries payload, and no verdict reaches the status owner
+K1.2-correction-01::O-R2-3 | observation | records | K1.2-correction-01/review-02.md | hostile=False | Disclose the sealed runner’s failed anchors and the adapted run separately.
+K12-R1-REC-01 | finding | records | K1.2/review-01.md | hostile=False | P2 — validation attachments 02..08 do not satisfy 006's attachment identity rule
+K12-R5-LAYER3-01 | finding | records | K1.2/review-05.md | hostile=False | P1 — post-H5 Layer-3 payload is outside the reviewed candidate
+K12-R5-PROC-01 | finding | records | K1.2/review-05.md | hostile=False | P2 — submitted branch head is not H5
+K12-R7-PROC-01 | finding | records | K1.2/review-07.md | hostile=False | P2 — the best current canonical rewrite is post-H7 payload
+docs/development/work/K1.2/review-09.md::O2 | observation | records | K1.2/review-09.md | hostile=False | . implementation-10 says "24 files at H9; H10 adds only the two files named". The C8..H10
+docs/development/work/K1.2/review-09.md::O3 | observation | records | K1.2/review-09.md | hostile=False | . implementation-10 omits several 008 fields rather than saying "none"/"unchanged"
+K12-R10-VAL-01 | finding | records | K1.2/review-10.md | hostile=False | P2 — required raw validation evidence and digests are not reviewable from H11
+docs/development/work/K1.2/review-11.md::O2 | alias | records | K1.2/review-11.md | hostile=False | Explicitly carried observation from review 09.
+docs/development/work/K1.2/review-11.md::O3 | observation | records | K1.2/review-11.md | hostile=False | C10 changed a contract coverage row, but the contract still says revision 7.
+docs/development/work/K1.2/review-11.md::O6 | observation | records | K1.2/review-11.md | hostile=False | see the adjacent branch under K12-R11-ORDER-01.
+K12-R13-REC-01 | finding | records | K1.2/review-12.md | hostile=False | contract revision identity is inconsistent
+docs/development/work/K1.2/review-14.md::O3 | observation | records | K1.2/review-14.md | hostile=False | after authority succeeds, malformed_envelope reasons render caller-owned unknown field
+
+### F08
+K01-R2-04 | finding | records | K0.1/review-02.md | hostile=False | Correct the reference-store claims
+K01-R4-02 | finding | records | K0.1/review-04.md | hostile=False | correct PC-1's progress compatibility wording (P2)
+K01-R11-03 | finding | records | K0.1/review-11.md | hostile=False | P3 — ID-6 points at a section that contains no boundary list
+K02-R11-03 | finding | records | K0.2/review-11.md | hostile=False | P3 — two round-11 self-descriptions are stale
+K02-R12-01 | finding | records | K0.2/review-12.md | hostile=False | P3 — introductory ledger prose is stale, authoritative row is current
+KC1-R3-DOC-01 | finding | records | K1.1-correction-01/review-03.md | hostile=False | current candidate says its completed migration is still pending (P2)
+KC1-R4-DOC-01 | finding | records | K1.1-correction-01/review-05.md | hostile=False | P2 — the report does not enumerate or classify the cumulative documentation change it carries
+REF1-R1-STATUS-01 | finding | records | K1.1-reference-01/review-02.md | hostile=False | the authoritative status ledger still says acceptance is outstanding (P2)
+REF1-R1-CONV-01 | finding | records | K1.1-reference-01/review-02.md | hostile=False | new canonical prose asserts accepted/shipped behavior against the convention that concept pages carry none (P2)
+REF1-R1-NAV-01 | finding | records | K1.1-reference-01/review-02.md | hostile=False | the canonical-definitions list gains its only two-target entry (P3)
+REF1-R2-DOC-01 | finding | records | K1.1-reference-01/review-03.md | hostile=False | Current reference prose still contains a stale implementation-status claim.
+REF1-R5-WORD-01 | finding | records | K1.1-reference-01/review-05.md | hostile=False | (optional) → mental-model/README.md ## How these pages are organized headline vs its provenance carve-out / sources.md.
+REF1-R6-WORD-02 | finding | records | K1.1-reference-01/review-06.md | hostile=False | P3 — REF-4 residual, sixth appearance of the family; inside the authorized
+REF1-R7-WORD-05 | finding | records | K1.1-reference-01/review-07.md | hostile=False | P3 — one clause of the fixed README still mis-routes an "implemented" note
+K11-R1-DOC-01 | finding | records | K1.1/review-01.md | hostile=False | P2 — shipped-in-tree support/refusal descriptions still assert that no target protocol exists
+K11-R3-DOC-02 | finding | records | K1.1/review-03.md | hostile=False | P2 — the target Kernel entry module still says third-party imports are forbidden although canonicalize is approved and present
+K11-R10-DOC-01 | finding | records | K1.1/review-08.md | hostile=False | P2 — stale current-state prose in 007
+K11-R15-DOC-01 | finding | records | K1.1/review-15.md | hostile=False | P1 — undeclared Layer-1/2 documentation in the cumulative candidate, contradicted by the packet's own records
+K11-R15-DOC-02 | finding | records | K1.1/review-15.md | hostile=False | P2 — broken canonical cross-reference introduced by the candidate
+K11-R16-DOC-01 | finding | records | K1.1/review-16.md | hostile=False | P2 — atomic acceptance is stated as durability
+K1.2-correction-01::O-R6-1 | observation | records | K1.2-correction-01/review-06.md | hostile=False | Roadmap diagnostic detail count must be qualified to this binding.
+K1.2-correction-01::O-R6-2 | observation | records | K1.2-correction-01/review-06.md | hostile=False | (API precision). ValueIssue.path is documented as """ is the root itself". Suffix
+K12C1-R9-CLAIM-01 | finding | records | K1.2-correction-01/review-09.md | hostile=False | P2 — live implementation comments still claim transferred V-D1
+K12-R1-DOC-01 | finding | records | K1.2/review-01.md | hostile=False | P2 — maintained transaction-choice text does not match the implementation
+K12-R4-AUTH-DOC-01 | finding | records | K1.2/review-04.md | hostile=False | P2 — old control-authority prose contradicts the new attempt-grant model
+K12-R6-LAYER3-01 | finding | records | K1.2/review-06.md | hostile=False | P2 — the canonical delivery boundary no longer describes the binding K1.2 ships
+K12-R6-DOC-01 | finding | records | K1.2/review-06.md | hostile=False | P3 — the development front door understates the implemented package
+K12-R8-DOC-01 | finding | records | K1.2/review-08.md | hostile=False | P2 — exact H8 fails the repository documentation gate
+docs/development/work/K1.2/review-09.md::O1 | observation | records | K1.2/review-09.md | hostile=False | . The 007 introductory prose (007-work-packets.md:7-10) still describes only the first
+docs/development/work/K1.2/review-09.md::O4 | observation | records | K1.2/review-09.md | hostile=False | . Carried from review-08: the fail wording tension between the concept prose and BASELINE's
+K12-R6-SELF-COMMENT-01 | self-reference | records | K1.2/review-09.md | hostile=False | Implementer-found stale delivery comment, retained as own provenance.
+docs/development/work/K1.2/review-11.md::O1 | alias | records | K1.2/review-11.md | hostile=False | Explicitly carried observation from review 09.
+docs/development/work/K1.2/review-11.md::O5 | alias | records | K1.2/review-11.md | hostile=False | Explicitly carried observation from review 09.
+K12-R13-DOC-01 | finding | records | K1.2/review-12.md | hostile=False | “no content diagnostic is produced” overstates the implemented guarantee
+docs/development/work/K1.2/review-14.md::O1 | observation | records | K1.2/review-14.md | hostile=False | mental-model/sources.md and rewrite-index §3 record decision-01's provenance but not
+docs/development/work/K1.2/review-14.md::O2 | observation | records | K1.2/review-14.md | hostile=False | execution-cycle.md Outcome-acceptance wording has two problems. The preamble's "a
+
+### F09
+K11-R1-VAL-01 | finding | design | K1.1/review-01.md | hostile=False | P1 — accepted boundary values are not faithfully retained over the accepted object-key space
+K11-R2-VAL-02 | finding | design | K1.1/review-02.md | hostile=True | P1 — accepted Proxy-backed values can bind canonical bytes different from the retained value
+K11-R5-STATE-01 | finding | design | K1.1/review-05.md | hostile=True | P1 — caller-observation side effects still escape into the Kernel commit/projection path
+K11-R5-VAL-03 | finding | design | K1.1/review-05.md | hostile=True | P1 — plain-object validation itself still consults caller-mutated ambient Object.prototype
+K11-R6-STATE-02 | finding | design | K1.1/review-06.md | hostile=True | P1 — post-observation accumulation still depends on caller-mutable inherited indexed accessors
+K11-R6-VAL-04 | finding | design | K1.1/review-06.md | hostile=True | P1 — array capture can retain/canonicalize a value different from the one coherent caller observation
+K11-R7-STATE-03 | finding | design | K1.1/review-07.md | hostile=True | P1 — the new own-data primitive still depends on caller-mutable Object.prototype through property-descriptor conversion
+K11-R6-VAL-05 | self-reference | design | K1.1/review-07.md | hostile=True | Self-found inherited-index channel in unmodified JCS window.
+K11-R16-VAL-01 | finding | design | K1.1/review-16.md | hostile=True | P1 — serializer window leaves Array iterator next caller-steerable
+K11-R15-VAL-01 | alias | design | K1.1/review-16.md | hostile=False | Historical alias of K11-R16-VAL-01
+K12C1-R9-HISTORY-01 | finding | design | K1.2-correction-01/review-09.md | hostile=True | P1 — recovery history consults caller-controlled inherited state after changing a hold
+K1.2-correction-01::SELF-R6-HOST-01 | self-reference | design | K1.2-correction-01/review-10.md | hostile=True | –03 retain implementer provenance, not reviewer discovery. Correction reviews 05/07
+K1.2-correction-01::SELF-R6-HOST-02 | self-reference | design | K1.2-correction-01/review-10.md | hostile=True | Optional trusted-host lookup hardening; disclosed grouped self-finding.
+K1.2-correction-01::SELF-R6-HOST-03 | self-reference | design | K1.2-correction-01/review-10.md | hostile=True | Optional trusted-host lookup hardening; disclosed grouped self-finding.
+K1.2-correction-01::SELF-R7-UNSUPPORTED-01 | self-reference | design | K1.2-correction-01/review-11.md | hostile=True | Unsupported error must own name rather than read Error.prototype.
+K1.2-correction-01::SELF-R8-REFUSAL-01 | self-reference | design | K1.2-correction-01/review-revision-09-independent-2026-09-30/review.md | hostile=False | is an implementer finding, not a reviewer discovery. Source order, clean sweep results and pinned before-fix evidence support that specific repair. Th
+
+### F10
+KC2-R1-01 | finding | design | K1.1-correction-02/review-01.md | hostile=False | P1: enforce the refusal budget before unbounded scans
+K11-R3-LIMIT-01 | finding | design | K1.1/review-03.md | hostile=False | P2 — arrays already over the 4,096-entry limit still drive work proportional to their full declared length
+K12C1-R1-DIAG-01 | finding | design | K1.2-correction-01/review-01.md | hostile=False | P2 — caller-supplied Activation text reaches refusal reasons unbounded, and a long one throws instead of refusing
+K1.2-correction-01::SELF-DIAG-01 | self-reference | design | K1.2-correction-01/review-02.md | hostile=False | /02): bounded and total, every issue accounted | entitled attempt; one root with ~533K refused positions, each an object whose inherited constructor n
+K1.2-correction-01::SELF-DIAG-02 | self-reference | design | K1.2-correction-01/review-02.md | hostile=False | Second bounded-diagnostic self-find, explicitly grouped as SELF-DIAG-01/02 in review.
+K12C1-R2-AGG-01 | finding | design | K1.2-correction-01/review-02.md | hostile=False | P2 — combined content diagnostics have no aggregate bound, and an entitled Outcome throws instead of refusing
+K1.2-correction-01::O-R2-1 | observation | design | K1.2-correction-01/review-02.md | hostile=False | pre-authority cost of the eager projection.
+K1.2-correction-01::O-R2-2 | observation | design | K1.2-correction-01/review-02.md | hostile=False | one K1.2 renderer outside the four boundaries. redeliver's recovery_held
+K1.2-correction-01::O-R3-2 | observation | design | K1.2-correction-01/review-03.md | hostile=False | values.md refusal cost, for the owner. Owner: integrated K1.1 value capture, not
+K12C1-R4-VALUE-COST-01 | finding | design | K1.2-correction-01/review-04.md | hostile=False | P1 — issue allocation is uncharged, so refusing a root costs more than accepting one at the limits
+K12C1-R6-VALUE-TIME-01 | finding | design | K1.2-correction-01/review-06.md | hostile=False | P1 — refusal time is not bounded by the limits: a per-position diagnostic read walks a caller-built prototype chain
+K1.2-correction-01::O-R6-3 | observation | design | K1.2-correction-01/review-06.md | hostile=False | (measurement). Even without prototype depth, the foreign-prototype refusal family ran
+K1.2-correction-01::SELF-R3-PATH-01 | self-reference | design | K1.2-correction-01/review-06.md | hostile=False | closed. Path construction is bounded before
+K1.2-correction-01::SELF-R4-STRING-01 | self-reference | design | K1.2-correction-01/review-08.md | hostile=False | preflight exact, accepted values unchanged, full charges kept | 131,072 / 131,073 units; mixed malformed; N5/N6 edges; N7 adds a flattening index read
+K12C1-R8-VALUE-DEPTH-01 | finding | design | K1.2-correction-01/review-08.md | hostile=False | P1 — plain-data refusal at nesting depth costs about 1.5× the costliest at-limit acceptance, before authority
+K1.2-correction-01::SELF-R4-DESCRIPTOR-01 | self-reference | design | K1.2-correction-01/review-08.md | hostile=False | and SELF-R4-HANDLER-01: resolved by owner decisions 03/04. The counts are
+K1.2-correction-01::SELF-R4-HANDLER-01 | self-reference | design | K1.2-correction-01/review-08.md | hostile=False | resolved by owner decisions 03/04. The counts are
+
+### F11
+K12-R1-AUTH-01 | finding | design | K1.2/review-01.md | hostile=False | P1 — inspection scope authorizes control and does not establish the takeover safety prerequisite
+K12-R2-TAKEOVER-01 | finding | design | K1.2/review-02.md | hostile=False | P2 — isSafeToReplace is a reentrancy window between takeover validation and commit
+K12-R3-AUTH-02 | finding | design | K1.2/review-03.md | hostile=False | P2 — visibility-only callers can still exercise Runtime Outcome power
+K12-R3I-AUTH-02 | alias | design | K1.2/review-03.md | hostile=False | Historical alias of K12-R3-AUTH-02
+K12-R9-ORDER-01 | finding | design | K1.2/review-09.md | hostile=False | P2 — content is validated and recorded before submission authority when the claim is malformed
+K12-R11-ORDER-01 | finding | design | K1.2/review-11.md | hostile=False | P2 — a stale proposal with one malformed claim number is not refused as stale
+K12-R13-ARCH-01 | finding | design | K1.2/review-12.md | hostile=False | unresolved malformed Activation identity precedence requires owner authority
+
+### F12
+K11-R2-EVID-01 | finding | design | K1.1/review-02.md | hostile=False | P1 — retained receipts and refusal evidence escape as mutable shared objects
+K1.2-correction-01::O-R4-1 | observation | design | K1.2-correction-01/review-04.md | hostile=False | (source A) — held permitted actions and Driver safety.
+K12-R1-HOLD-01 | finding | design | K1.2/review-01.md | hostile=False | P2 — held RUNNING inspection omits permitted next actions
+K12-R1-HISTORY-01 | finding | design | K1.2/review-01.md | hostile=False | P2 — recovery decisions are transient status edits and disappear from Execution History
+K12-R2-OBS-PERMITTED-01 | finding | design | K1.2/review-02.md | hostile=False | P3 — protocol-only hold wording versus no-op availability declaration
+K12-R3-HISTORY-02 | finding | design | K1.2/review-03.md | hostile=False | P2 — hold-ending History asserts authority that was not checked
+K12-R3I-HISTORY-02 | alias | design | K1.2/review-03.md | hostile=False | Historical alias of K12-R3-HISTORY-02
+
+### F13
+K11-R4-DISPATCH-01 | finding | design | K1.1/review-04.md | hostile=False | P1 — DispatchOptions.bound is validated from two observations and used from a third
+K11-R4-DISP-01 | alias | design | K1.1/review-05.md | hostile=False | Shortened spelling of dispatch observation finding.
+K11-R16-DISP-01 | finding | design | K1.1/review-16.md | hostile=True | P1 — captured Promise methods still expose @@species before rejection handling
+K11-R15-DISP-01 | alias | design | K1.1/review-16.md | hostile=False | Historical alias of K11-R16-DISP-01
+K12-R1-DELIVERY-01 | finding | design | K1.2/review-01.md | hostile=False | P2 — retained delivery evidence cannot attribute each delivery to its writer epoch after takeover
+
+### F14
+docs/development/work/K1.2-correction-01/review-01.md::O2 | observation | evidence | K1.2-correction-01/review-01.md | hostile=False | (environment): two legacy cancellations under Node 22, described above; they reproduce at B.
+K12C1-R2-EVID-01 | finding | evidence | K1.2-correction-01/review-02.md | hostile=False | P2 — "diagnostic lossiness never affects equality" is unpinned where two unrenderable identities differ
+K1.2-correction-01::O-R3-1 | observation | evidence | K1.2-correction-01/review-03.md | hostile=False | two DEC-5 presentation details are unpinned.
+K12C1-R4-EVID-01 | finding | evidence | K1.2-correction-01/review-04.md | hostile=False | Retained coordinates lack exact assertions for newly admitted unrenderable IDs.
+K12C1-R6-EVID-01 | finding | evidence | K1.2-correction-01/review-06.md | hostile=False | P2 — for unrenderable minted IDs, exact receipts, answers and inspection coordinates are still unpinned at #mint, redelivery, the carried Event and th
+K1.2-correction-01::O-R6-4 | observation | evidence | K1.2-correction-01/review-06.md | hostile=False | (runner scope). ablations-03.mjs runs only exact-coordinates and
+K12C1-R8-EVID-01 | finding | evidence | K1.2-correction-01/review-08.md | hostile=False | P2 — the array surplus-name charge that keeps repeated listings bounded has no distinguishing test
+K1.2-correction-01::O-R8-1 | observation | evidence | K1.2-correction-01/review-08.md | hostile=False | (string oracle scope): N7 adds void input[0] before the preflight and survives.
+K1.2-correction-01::O-R8-2 | observation | evidence | K1.2-correction-01/review-08.md | hostile=False | (object-half counts): N9, a second getOwnPropertySymbols per object, survives.
+K12-R2-PROC-01 | finding | evidence | K1.2/review-02.md | hostile=False | P3 — ablation runner depends on test-reporter output spelling
+K12-R6-EVID-01 | finding | evidence | K1.2/review-06.md | hostile=False | P2 — no test distinguishes a redelivery that rotates the attempt's grant
+K12-R9-EVID-01 | finding | evidence | K1.2/review-09.md | hostile=False | P2 — no test distinguishes "authority before content" at all
+K12-R10-EVID-01 | finding | evidence | K1.2/review-10.md | hostile=False | P2 — the new malformed-fail/error distinguishing fixture is not malformed, and the report overstates Case C
+docs/development/work/K1.2/review-11.md::O4 | observation | evidence | K1.2/review-11.md | hostile=False | the retained payload script checks-07.mjs now fails at C10 on superseded pins.
+K12-R14-EVID-01 | finding | evidence | K1.2/review-14.md | hostile=False | P2 — the text-malformed Activation identity class is unevidenced
+docs/development/work/K1.2/review-14.md::O4 | observation | evidence | K1.2/review-14.md | hostile=False | (environment): the two legacy cancellations noted above.
+
+### F15
+K12C1-R10-READ-01 | finding | evidence | K1.2-correction-01/review-10.md | hostile=True | P2 — optional reads escape the required source inventory
+K12C1-R10-COMMIT-01 | finding | evidence | K1.2-correction-01/review-10.md | hostile=False | P2 — first-mutation detection misses actual receipt-index mutation
+K12C1-R11-READ-01 | finding | evidence | K1.2-correction-01/review-11.md | hostile=True | P2 — partial and nested type claims evade the ownership rule
+K12C1-R11-COMMIT-01 | finding | evidence | K1.2-correction-01/review-11.md | hostile=False | P2 — defaults and shadowed names erase mutation provenance
+
+### F16
+K12C1-R12-ORACLE-01 | finding | evidence | K1.2-correction-01/review-12.md | hostile=False | P2 — the fault checker accepts incomplete or inconsistent observations
+K12C1-R12-SCOPE-01 | finding | evidence | K1.2-correction-01/review-12.md | hostile=False | P2 — “every exit” is wider than the fault sweep's reachable scenario coverage
+K12C1-R9I-ORACLE-01 | finding | evidence | K1.2-correction-01/review-revision-09-independent-2026-09-30/review.md | hostile=False | P2 — the fault checker accepts observations that no permitted complete decision explains
+K12C1-R9I-SCOPE-01 | finding | evidence | K1.2-correction-01/review-revision-09-independent-2026-09-30/review.md | hostile=False | P2 — the fault sweep does not cover its declared recovery-control exits
+K1.2-correction-01::CATALOG-01 | self-reference | evidence | K1.2-correction-01/review-revision-10-independent-2026-09-30/review.md | hostile=False | Implementer correction of poison catalog coverage; disclosed in revision-10 review.

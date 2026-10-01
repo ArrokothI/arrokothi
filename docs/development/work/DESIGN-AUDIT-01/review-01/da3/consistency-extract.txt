@@ -1,0 +1,27 @@
+A register.md:19             | Keep adversarial object intake
+    -> -
+A register.md:20 RECOMMENDED | **Recommend cooperative object binding as the convenience API, paired with an isolated bytes bo
+    -> CORE = live objects (cooperative capture inside the Kernel); bytes only for isolated hostile callers
+A register.md:21             | Bytes/text at the Kernel boundary
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+B register.md:33             | Keep current discipline
+    -> -
+B register.md:34 RECOMMENDED | **Recommend simplify internal traversal under A's cooperative profile**
+    -> CORE = live objects (cooperative capture inside the Kernel); bytes only for isolated hostile callers
+B register.md:35             | Move encoding/capture behind bytes adapter
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+C register.md:45             | Keep implementation with claim hold
+    -> -
+C register.md:46             | Brand-check refusal
+    -> -
+    -> conditional in this row: **If A keeps objects and scope remains the listed brands, amend K1.1-correction-03**
+C register.md:47             | Structural projection
+    -> -
+C register.md:48 RECOMMENDED | **Recommend bytes/text core plus explicit cooperative wrapper refusal**
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F02 register.md:111 RECOMMENDED | Recommend: Separate inert core values from explicit wrapper conversion/refusal
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F09 register.md:202 RECOMMENDED | Recommend: Cooperative convenience binding with isolated inert intake for hostile callers
+    -> CORE = live objects (cooperative capture inside the Kernel); bytes only for isolated hostile callers
+F10 register.md:215 RECOMMENDED | Recommend: Use bounded owned-input parser or simpler cooperative traversal
+    -> BOTH (disjunction)

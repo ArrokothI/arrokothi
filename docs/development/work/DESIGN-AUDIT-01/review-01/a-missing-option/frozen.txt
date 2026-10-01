@@ -1,0 +1,18 @@
+(node:24350) ExperimentalWarning: Frozen intristics is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+ "node": "v25.2.1",
+ "execArgv": [
+  "--frozen-intrinsics"
+ ],
+ "out": {
+  "Object.prototype.toJSON =": "threw TypeError",
+  "Array.prototype[0] accessor": "threw TypeError",
+  "ArrayIteratorPrototype.next =": "threw TypeError",
+  "Object.keys =": "threw TypeError",
+  "Promise[Symbol.species]": "threw TypeError",
+  "JSON.stringify([1,{a:2}])": "[1,{\"a\":2}]",
+  "Proxy still constructible": true,
+  "Object.isFrozen(Object.prototype)": true
+ }
+}

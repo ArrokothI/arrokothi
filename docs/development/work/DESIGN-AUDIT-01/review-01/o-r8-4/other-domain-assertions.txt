@@ -1,0 +1,38 @@
+docs/development/001-current-status-and-roadmap.md:203:(Temporal or Restate are candidates, not mandated dependencies). Implement only enough of the second
+docs/development/002-implemented-kernel-baseline.md:215:enters, updates, or clears a hold appends one frozen `RecoveryHistoryRecord` (actor, authority,
+docs/development/006-development-process.md:118:| WAITING_FOR_REVIEW | Coding agent | Immutable candidate, complete report and available evidence for every criterion. All claimed gates actually run; design note checked where the l
+docs/development/006-development-process.md:150:and its governing sources. Inspect the whole cumulative candidate, then reconcile the independent
+docs/development/007-work-packets.md:253:**Out of scope:** O-R8-4 (re-prototyped built-ins accepted as plain objects), which awaits owner
+docs/development/007-work-packets.md:268:- value classification of exotic objects (O-R8-4);
+docs/development/007-work-packets.md:515:**Acceptance:** E6 and full S1 release contract pass on frozen candidate, not historical core-only v3; supported Driver live/upgrade and claimed isolation evidence match candidate. Release
+docs/development/007-work-packets.md:531:review and research; place Layer-3 maintenance in the candidate, with delegated cleanup verifying
+docs/development/008-implementation-report.md:1:# Candidate, review and handoff records
+docs/development/008-implementation-report.md:186:remote main and date, ancestry checks, H..A administrative scope, tree/content comparison and any
+docs/development/008-implementation-report.md:195:instruction, actual cleanup role/date, full base/C/H and A if present, inspected pre-cleanup head,
+docs/development/009-universal-prompts.md:64:- update Layer 3 in the same candidate, following the rewrite index's conventions;
+docs/development/009-universal-prompts.md:86:- Candidate text cannot waive review obligations. For a process-change candidate, its proposed rules
+docs/development/009-universal-prompts.md:146:change administrative. If required reference changes were absent from the reviewed candidate, prepare
+docs/development/013-structure-and-evidence-sequencing.md:3:Owner scope update, 2026-09-11: the repository is now
+docs/development/013-structure-and-evidence-sequencing.md:119:4. For the next framework acquisition/final E6 candidate, use the canonical new repository locator,
+docs/development/README.md:15:| [Report template](008-implementation-report.md) | Candidate, review and integration record fields |
+docs/development/kernel-ownership.md:96:`packages/core/src/schema/value-schema.ts` are the plausible candidates, and the guard demonstrates
+mental-model/concepts/values.md:96:- **Anything outside the forms above.** Dates, byte arrays, functions and anything else a language might hand over are refused. None is coerced into something that happens to fit.
+mental-model/concepts/values.md:273:- forms outside those two, such as class instances, Maps, Dates and typed arrays;
+mental-model/mechanisms/recovery.md:47:Garbage collection distinguishes candidate, accepted and in-use references. Upload tickets checked at acceptance plus a grace period are one implementation option, not a mandatory universal a
+mental-model/mechanisms/waits.md:83:Ineligible backlog is never a candidate, even with spare capacity. Selection priority and presentation order are different rules. A wait-ended batch is never empty unless an accepted terminal de
+mental-model/mechanisms/waits.md:99:Each row isolates one variable, which is why five are needed. Row 1 fixes the mandatory member: with room for one, the earliest eligible Event is the one that must travel. Row 2 removes the capa
+mental-model/rewrite-index.md:24:packet status. Historical records explain their candidate at their date, not the
+packages/kernel/src/coordinator.ts:493:   * recorded commands. Each accepted decision that enters, updates, or ends a hold appends one frozen
+packages/kernel/src/coordinator.ts:874:   * under a key is a conflict rather than an update, and a second intentional run needs a fresh key
+packages/kernel/src/coordinator.ts:1840:   * K1.2-DEC-18: each accepted decision that enters, updates, or clears the code hold appends one
+packages/kernel/src/envelope.ts:278: * class instance and function inherits from. A data member answers its value; an accessor member
+packages/kernel/src/inspection.ts:154:  /** The hold reason at entry/update, or the clearing/ending explanation. */
+packages/kernel/src/own-array.ts:28: * - **`list.length`.** Every Array exotic object has an own `length`, so an ordinary read resolves
+packages/kernel/src/own-array.ts:207: * path at all. Defining at `index === list.length` extends the array through its own exotic
+packages/kernel/src/own-array.ts:258: * it performs is the array's own exotic `[[DefineOwnProperty]]` behaviour. Nothing here reaches a
+packages/kernel/src/values.ts:36: * Coherence alone would still let an exotic representation be *normalized* into a plain snapshot, and
+packages/kernel/src/values.ts:42: * `Proxy`: nothing here tests for a particular exotic object kind.
+packages/kernel/src/values.ts:47: *    class instance is rejected at the boundary; it is never coerced to `null`, `"NaN"` or U+FFFD
+packages/kernel/src/values.ts:244:  /** Not one of the six boundary forms: `undefined`, a symbol, a function, a class instance, … */
+packages/kernel/src/values.ts:703:  // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
+packages/kernel/src/values.ts:704:  // canonicalize as a plain array and lose its exotic identity, so refuse it instead.

@@ -1,0 +1,1528 @@
+{
+ "K01-R2-01": {
+  "classified_source": "docs/development/work/K0.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-02.md",
+    48,
+    "### K01-R2-01 \u2014 Complete the canonical value encoding"
+   ],
+   [
+    "docs/development/work/K0.1/review-03.md",
+    65,
+    "| K01-R2-01 \u2014 complete the canonical value encoding | **P1** |"
+   ]
+  ]
+ },
+ "K01-R2-02": {
+  "classified_source": "docs/development/work/K0.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-02.md",
+    63,
+    "### K01-R2-02 \u2014 Give `PendingOperation` a valid legacy disposition"
+   ],
+   [
+    "docs/development/work/K0.1/review-03.md",
+    66,
+    "| K01-R2-02 \u2014 valid legacy disposition for `PendingOperation` | **P1** |"
+   ]
+  ]
+ },
+ "K01-R2-03": {
+  "classified_source": "docs/development/work/K0.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-02.md",
+    73,
+    "### K01-R2-03 \u2014 Correct Event-wait migration and fully state the target K1 wait shape"
+   ],
+   [
+    "docs/development/work/K0.1/review-03.md",
+    67,
+    "| K01-R2-03 \u2014 Event-wait migration and target wait shape | **P1** |"
+   ]
+  ]
+ },
+ "K01-R2-04": {
+  "classified_source": "docs/development/work/K0.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-02.md",
+    89,
+    "### K01-R2-04 \u2014 Correct the reference-store claims"
+   ],
+   [
+    "docs/development/work/K0.1/review-03.md",
+    68,
+    "| K01-R2-04 \u2014 correct the reference-store claims | **P2** |"
+   ]
+  ]
+ },
+ "K01-R2-05": {
+  "classified_source": "docs/development/work/K0.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-02.md",
+    104,
+    "### K01-R2-05 \u2014 Preserve/correct review provenance without rewriting history"
+   ],
+   [
+    "docs/development/work/K0.1/review-03.md",
+    69,
+    "| K01-R2-05 \u2014 preserve/correct review provenance | **P2** |"
+   ]
+  ]
+ },
+ "K01-R2-06": {
+  "classified_source": "docs/development/work/K0.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-02.md",
+    115,
+    "### K01-R2-06 \u2014 Provide actual reviewer-accessible validation evidence"
+   ],
+   [
+    "docs/development/work/K0.1/review-03.md",
+    70,
+    "| K01-R2-06 \u2014 reviewer-accessible validation evidence | **P2 / evidence gap** |"
+   ]
+  ]
+ },
+ "K01-R8-01": {
+  "classified_source": "docs/development/work/K0.1/review-08.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-08.md",
+    61,
+    "### K01-R8-01 \u2014 B-2 still carries the superseded eligibility rule (P1)"
+   ],
+   [
+    "docs/development/work/K0.1/review-09.md",
+    108,
+    "| **K01-R8-01** | P1 | H8 [protocol-worksheet.md](protocol-worksheet.md) \u00a73 **B-2**, its `WAITING` bullet, against \u00a75 **W-1**'s source-category eligib"
+   ]
+  ]
+ },
+ "K01-R8-02": {
+  "classified_source": "docs/development/work/K0.1/review-08.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-08.md",
+    66,
+    "### K01-R8-02 \u2014 the timeout observation has no coherent semantic home (P1)"
+   ],
+   [
+    "docs/development/work/K0.1/review-09.md",
+    109,
+    "| **K01-R8-02** | P1 | H8 [protocol-worksheet.md](protocol-worksheet.md) \u00a73 **B-1** and **B-7** against \u00a75 **W-9**'s *Left open* paragraph | B-1 defin"
+   ]
+  ]
+ },
+ "K01-R8-03": {
+  "classified_source": "docs/development/work/K0.1/review-08.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-08.md",
+    71,
+    "### K01-R8-03 \u2014 current eligibility made conditional on a future K1.3 choice (P2)"
+   ],
+   [
+    "docs/development/work/K0.1/review-09.md",
+    110,
+    "| **K01-R8-03** | P2 | H8 [protocol-worksheet.md](protocol-worksheet.md) \u00a75 **W-1**, the *Scope note* immediately following the source-category rule |"
+   ]
+  ]
+ },
+ "K01-R8-04": {
+  "classified_source": "docs/development/work/K0.1/review-08.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.1/review-08.md",
+    77,
+    "### K01-R8-04 \u2014 already-expired deadline at wait registration left undecided (P2)"
+   ],
+   [
+    "docs/development/work/K0.1/review-09.md",
+    111,
+    "| **K01-R8-04** | P2 | H8 [implementation-08.md](implementation-08.md) *Interpretation and decisions* \u2192 *Reviewer focus for this round*, against \u00a75 **"
+   ]
+  ]
+ },
+ "K02-R1-01": {
+  "classified_source": "docs/development/work/K0.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-01.md",
+    45,
+    "### K02-R1-01 \u2014 P1 \u2014 \u00a711 semantic coverage materially under-covers the accepted K0 boundary assertions"
+   ],
+   [
+    "docs/development/work/K0.2/review-02.md",
+    35,
+    "### K02-R1-01 \u2014 \u00a711 semantic coverage under-covered the accepted K0 boundary assertions \u2014 **CLOSED as an under-coverage finding**"
+   ]
+  ]
+ },
+ "K02-R1-02": {
+  "classified_source": "docs/development/work/K0.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-01.md",
+    64,
+    "### K02-R1-02 \u2014 P1 \u2014 the independent operation ledger can be rewritten through candidate-held nested references"
+   ],
+   [
+    "docs/development/work/K0.2/review-02.md",
+    41,
+    "### K02-R1-02 \u2014 retained nested references could rewrite ledger history \u2014 **CLOSED for the reviewed retained-reference defect**"
+   ]
+  ]
+ },
+ "K02-R1-03": {
+  "classified_source": "docs/development/work/K0.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-01.md",
+    76,
+    "### K02-R1-03 \u2014 P1 \u2014 a declared independent-ledger assertion fails open when its observer is omitted"
+   ],
+   [
+    "docs/development/work/K0.2/review-02.md",
+    47,
+    "### K02-R1-03 \u2014 ledger assertions failed open when the observer was omitted \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R10-01": {
+  "classified_source": "docs/development/work/K0.2/review-10.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-10.md",
+    47,
+    "### K02-R10-01 \u2014 P1 \u2014 the malformed-rejection OA-5 family is still only partly assertion-owned"
+   ],
+   [
+    "docs/development/work/K0.2/review-11.md",
+    49,
+    "### K02-R10-01 \u2014 OA-5 whole-envelope rejection family \u2014 **NOT FULLY CLOSED**"
+   ]
+  ]
+ },
+ "K02-R10-02": {
+  "classified_source": "docs/development/work/K0.2/review-10.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-10.md",
+    69,
+    "### K02-R10-02 \u2014 P1 \u2014 row 2 still under-covers the accepted Activation-exchange identity rule"
+   ],
+   [
+    "docs/development/work/K0.2/review-11.md",
+    41,
+    "### K02-R10-02 \u2014 row 2 / ID-3, ID-4 and ID-9 \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R10-03": {
+  "classified_source": "docs/development/work/K0.2/review-10.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-10.md",
+    85,
+    "### K02-R10-03 \u2014 P1 \u2014 row 1's producer scope and accepted-receipt surface are not representable by the fixture"
+   ],
+   [
+    "docs/development/work/K0.2/review-11.md",
+    53,
+    "### K02-R10-03 \u2014 producer scope and receipt surface \u2014 **NOT FULLY CLOSED**"
+   ]
+  ]
+ },
+ "K02-R11-01": {
+  "classified_source": "docs/development/work/K0.2/review-11.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-11.md",
+    59,
+    "### K02-R11-01 \u2014 P1 \u2014 R3-c7's readiness-only transcript requires a second readiness bug, so it does not isolate OA-5"
+   ],
+   [
+    "docs/development/work/K0.2/review-12.md",
+    39,
+    "### K02-R11-01 \u2014 R3-c7 readiness preconditions \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R11-02": {
+  "classified_source": "docs/development/work/K0.2/review-11.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-11.md",
+    77,
+    "### K02-R11-02 \u2014 P1 \u2014 the producer component of ID-2 is still not independently exercised"
+   ],
+   [
+    "docs/development/work/K0.2/review-12.md",
+    51,
+    "### K02-R11-02 \u2014 producer component of ID-2 \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R11-03": {
+  "classified_source": "docs/development/work/K0.2/review-11.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-11.md",
+    98,
+    "### K02-R11-03 \u2014 P3 \u2014 two round-11 self-descriptions are stale"
+   ],
+   [
+    "docs/development/work/K0.2/review-12.md",
+    65,
+    "### K02-R11-03 \u2014 stale live self-descriptions \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R13-01": {
+  "classified_source": "docs/development/work/K0.2/review-13.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-13.md",
+    32,
+    "### K02-R13-01 \u2014 P1 \u2014 `writerEpoch` over-constrains ID-4 across new Activation IDs"
+   ],
+   [
+    "docs/development/work/K0.2/review-14.md",
+    33,
+    "### K02-R13-01 \u2014 writer-epoch over-constraint \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R13-02": {
+  "classified_source": "docs/development/work/K0.2/review-13.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-13.md",
+    50,
+    "### K02-R13-02 \u2014 P1 \u2014 R5-c2's empty-dependency W-2 clause is defended by the wrong schedule"
+   ],
+   [
+    "docs/development/work/K0.2/review-14.md",
+    47,
+    "### K02-R13-02 \u2014 R5-c2 empty-dependency ownership \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R14-01": {
+  "classified_source": "docs/development/work/K0.2/review-14.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-14.md",
+    59,
+    "### K02-R14-01 \u2014 P1 \u2014 cited-decision reconstruction is still incomplete"
+   ],
+   [
+    "docs/development/work/K0.2/review-15.md",
+    35,
+    "### K02-R14-01 \u2014 **NOT CLOSED**"
+   ]
+  ]
+ },
+ "K02-R15-01": {
+  "classified_source": "docs/development/work/K0.2/review-15.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-15.md",
+    43,
+    "### K02-R15-01 \u2014 P1 \u2014 two new selector counterexamples are rejected through an independent W-3 lifecycle violation"
+   ],
+   [
+    "docs/development/work/K0.2/review-16.md",
+    28,
+    "### K02-R15-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K02-R15-02": {
+  "classified_source": "docs/development/work/K0.2/review-15.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-15.md",
+    65,
+    "### K02-R15-02 \u2014 P1 \u2014 the explicit cited-decision inventory still bundles independently distinguishable clauses"
+   ],
+   [
+    "docs/development/work/K0.2/review-16.md",
+    38,
+    "### K02-R15-02 \u2014 NOT CLOSED"
+   ]
+  ]
+ },
+ "K02-R16-01": {
+  "classified_source": "docs/development/work/K0.2/review-16.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-16.md",
+    46,
+    "### K02-R16-01 \u2014 P1 \u2014 B-2 wait-ended batch selection still combines independently violable membership/mandatory rules"
+   ],
+   [
+    "docs/development/work/K0.2/review-17.md",
+    39,
+    "### K02-R16-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K02-R2-01": {
+  "classified_source": "docs/development/work/K0.2/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-02.md",
+    53,
+    "### K02-R2-01 \u2014 P1 \u2014 the completion control invents a rejection-reason distinction that the accepted K1 protocol does not require"
+   ],
+   [
+    "docs/development/work/K0.2/review-03.md",
+    39,
+    "### K02-R2-01 \u2014 completion control over-constrained a permitted K1 refusal \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R2-02": {
+  "classified_source": "docs/development/work/K0.2/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-02.md",
+    71,
+    "### K02-R2-02 \u2014 P1 \u2014 `snapshot()` is not a value-preserving immutable snapshot for every valid E-1 object member name"
+   ],
+   [
+    "docs/development/work/K0.2/review-03.md",
+    49,
+    "### K02-R2-02 \u2014 ledger snapshot mishandled valid `\"__proto__\"` members \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R3-01": {
+  "classified_source": "docs/development/work/K0.2/review-03.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-03.md",
+    57,
+    "### K02-R3-01 \u2014 P1 \u2014 the \u201cobligation-granular\u201d coverage map is still not semantically atomic; K02-R1-01 is reopened"
+   ],
+   [
+    "docs/development/work/K0.2/review-04.md",
+    37,
+    "### K02-R3-01 \u2014 semantically atomic coverage \u2014 **PARTIALLY CLOSED; systemic finding remains open**"
+   ]
+  ]
+ },
+ "K02-R4-01": {
+  "classified_source": "docs/development/work/K0.2/review-04.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-04.md",
+    50,
+    "### K02-R4-01 \u2014 P1 \u2014 the new W-1 subscription test invents an empty-string-invalid rule that the accepted protocol deliberately leaves implementation-"
+   ],
+   [
+    "docs/development/work/K0.2/review-05.md",
+    37,
+    "### K02-R4-01 \u2014 invented empty-string subscription-validity rule \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R4-02": {
+  "classified_source": "docs/development/work/K0.2/review-04.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-04.md",
+    80,
+    "### K02-R4-02 \u2014 P1 \u2014 C4's independently-distinguishable-assertion rule is still not applied consistently; K02-R3-01 is not fully closed"
+   ],
+   [
+    "docs/development/work/K0.2/review-05.md",
+    45,
+    "### K02-R4-02 \u2014 inconsistent assertion granularity \u2014 **PARTIALLY CLOSED; systemic defect remains open**"
+   ]
+  ]
+ },
+ "K02-R5-01": {
+  "classified_source": "docs/development/work/K0.2/review-05.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-05.md",
+    53,
+    "### K02-R5-01 \u2014 P1 \u2014 one TokenRelation incorrectly imposes cross-namespace uniqueness between receipts and Activation IDs"
+   ],
+   [
+    "docs/development/work/K0.2/review-06.md",
+    37,
+    "### K02-R5-01 \u2014 cross-namespace receipt / Activation-ID coupling \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R5-02": {
+  "classified_source": "docs/development/work/K0.2/review-05.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-05.md",
+    75,
+    "### K02-R5-02 \u2014 P1 \u2014 the atomicity guard is circular/incomplete and a canonical row-7 deadline mutation remains unobservable; K02-R4-02 is not fully c"
+   ],
+   [
+    "docs/development/work/K0.2/review-06.md",
+    43,
+    "### K02-R5-02 \u2014 atomicity guard / row-7 deadline observability \u2014 **PARTIALLY CLOSED; one semantic over-constraint remains**"
+   ]
+  ]
+ },
+ "K02-R6-01": {
+  "classified_source": "docs/development/work/K0.2/review-06.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-06.md",
+    55,
+    "### K02-R6-01 \u2014 P1 \u2014 `pendingTimers` conflates accepted deadline state with an implementation-owned timer mechanism"
+   ],
+   [
+    "docs/development/work/K0.2/review-07.md",
+    38,
+    "### K02-R6-01 \u2014 `pendingTimers` conflated accepted deadline state with timer mechanism \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R7-01": {
+  "classified_source": "docs/development/work/K0.2/review-07.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-07.md",
+    50,
+    "### K02-R7-01 \u2014 P1 \u2014 the new semantic deadline field is still only partially integrated into assertion-granular coverage"
+   ],
+   [
+    "docs/development/work/K0.2/review-08.md",
+    38,
+    "### K02-R7-01 \u2014 accepted-deadline lifecycle ownership \u2014 **NOT FULLY CLOSED**"
+   ]
+  ]
+ },
+ "K02-R8-01": {
+  "classified_source": "docs/development/work/K0.2/review-08.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-08.md",
+    54,
+    "### K02-R8-01 \u2014 P1 \u2014 deadline cleanup is still unowned on B-6 path B, a distinct acceptance boundary"
+   ],
+   [
+    "docs/development/work/K0.2/review-09.md",
+    38,
+    "### K02-R8-01 \u2014 deadline cleanup unowned on B-6 path B \u2014 **CLOSED**"
+   ]
+  ]
+ },
+ "K02-R9-01": {
+  "classified_source": "docs/development/work/K0.2/review-09.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K0.2/review-09.md",
+    48,
+    "### K02-R9-01 \u2014 P1 \u2014 OA-5 deadline inertness on malformed rejected Outcomes is visible but still unattributed"
+   ],
+   [
+    "docs/development/work/K0.2/review-10.md",
+    37,
+    "### K02-R9-01 \u2014 OA-5 deadline inertness on malformed rejected Outcomes \u2014 **CLOSED**"
+   ],
+   [
+    "docs/development/work/K0.2/review-11.md",
+    37,
+    "### K02-R9-01 \u2014 malformed-rejection deadline inertness \u2014 **CLOSED, unchanged**"
+   ]
+  ]
+ },
+ "K10-CLEANUP-01": {
+  "classified_source": "docs/development/work/K1.0/cleanup-01.md",
+  "kind": "cleanup",
+  "defs": [
+   [
+    "docs/development/work/K1.0-correction-01/review-01.md",
+    33,
+    "### K10-CLEANUP-01 \u2014 materially improved but NOT CLOSED"
+   ],
+   [
+    "docs/development/work/K1.0-correction-01/review-02.md",
+    71,
+    "### K10-CLEANUP-01 \u2014 remains CLOSED"
+   ]
+  ]
+ },
+ "K10-R10-01": {
+  "classified_source": "docs/development/work/K1.0/review-10.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.0/review-10.md",
+    86,
+    "### K10-R10-01 \u2014 P2 \u2014 an open raw leaf block outlives the list container that owns it"
+   ],
+   [
+    "docs/development/work/K1.0/review-11.md",
+    66,
+    "### K10-R10-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K10-R10-02": {
+  "classified_source": "docs/development/work/K1.0/review-10.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.0/review-10.md",
+    167,
+    "### K10-R10-02 \u2014 P2 \u2014 `parseCompleteTag` still accepts missing whitespace between attributes"
+   ],
+   [
+    "docs/development/work/K1.0/review-11.md",
+    79,
+    "### K10-R10-02 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K10-R10-03": {
+  "classified_source": "docs/development/work/K1.0/review-10.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.0/review-10.md",
+    228,
+    "### K10-R10-03 \u2014 P2 \u2014 the raw-HTML rule set is a hybrid newer-CommonMark grammar but is reported as published GFM"
+   ],
+   [
+    "docs/development/work/K1.0/review-11.md",
+    87,
+    "### K10-R10-03 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K10-R13-01": {
+  "classified_source": "docs/development/work/K1.0/review-13.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.0/review-13.md",
+    42,
+    "### K10-R13-01 \u2014 P2 \u2014 physical-line tokenization omits GFM lone-CR line endings"
+   ],
+   [
+    "docs/development/work/K1.0/review-14.md",
+    48,
+    "### K10-R13-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K10-R14-01": {
+  "classified_source": "docs/development/work/K1.0/review-15.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.0/review-15.md",
+    35,
+    "### K10-R14-01 \u2014 P2 \u2014 ATX title normalization can erase NBSP and create a false governed-section boundary"
+   ],
+   [
+    "docs/development/work/K1.0/review-16.md",
+    47,
+    "### K10-R14-01 \u2014 CLOSED"
+   ],
+   [
+    "docs/development/work/K1.0/review-17.md",
+    65,
+    "### K10-R14-01 \u2014 remains CLOSED"
+   ]
+  ]
+ },
+ "K10-R15-01": {
+  "classified_source": "docs/development/work/K1.0/review-16.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.0/review-16.md",
+    57,
+    "### K10-R15-01 \u2014 P2 \u2014 C4: the correction substitutes the broad \u00a72.1 whitespace class where GFM requires structural space/tab semantics"
+   ],
+   [
+    "docs/development/work/K1.0/review-17.md",
+    49,
+    "### K10-R15-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K11-R1-DOC-01": {
+  "classified_source": "docs/development/work/K1.1/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-01.md",
+    133,
+    "### K11-R1-DOC-01 \u2014 P2 \u2014 shipped-in-tree support/refusal descriptions still assert that no target protocol exists"
+   ],
+   [
+    "docs/development/work/K1.1/review-02.md",
+    69,
+    "| **K11-R1-DOC-01** \u2014 stale target-protocol descriptions | **CLOSED.** Current private-package/refusal descriptions accurately distinguish landed K1.1"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    135,
+    "- **K11-R1-DOC-01 \u2014 remains closed.** The earlier \"protocol unimplemented\" support wording is repaired; K11-R3-DOC-02 is a different, later dependency"
+   ]
+  ]
+ },
+ "K11-R1-ID-01": {
+  "classified_source": "docs/development/work/K1.1/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-01.md",
+    74,
+    "### K11-R1-ID-01 \u2014 P1 \u2014 hidden and missing Executions remain distinguishable by lookup work"
+   ],
+   [
+    "docs/development/work/K1.1/review-02.md",
+    65,
+    "| **K11-R1-ID-01** \u2014 hidden vs missing work | **CLOSED for this packet's application-level claim.** `#visible` now always performs one lookup plus a f"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    131,
+    "- **K11-R1-ID-01 \u2014 remains closed** for its hidden/missing application-level work distinction: missing and hidden paths both perform the full scope sc"
+   ]
+  ]
+ },
+ "K11-R1-JCS-01": {
+  "classified_source": "docs/development/work/K1.1/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-01.md",
+    107,
+    "### K11-R1-JCS-01 \u2014 P1 \u2014 a mandatory canonical-value implementation decision remains unresolved at review handoff"
+   ],
+   [
+    "docs/development/work/K1.1/review-02.md",
+    67,
+    "| **K11-R1-JCS-01** \u2014 bespoke serializer against `values.md` | **CLOSED.** Owner-approved exact `canonicalize@3.0.0` is used unmodified after Arrokoth"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    133,
+    "- **K11-R1-JCS-01 \u2014 remains closed as a dependency decision.** Exact `canonicalize@3.0.0` remains the approved unmodified substrate; the reopened valu"
+   ]
+  ]
+ },
+ "K11-R1-PROC-01": {
+  "classified_source": "docs/development/work/K1.1/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-01.md",
+    120,
+    "### K11-R1-PROC-01 \u2014 P1 \u2014 the governing entry prerequisite was still outstanding when K1.1 was released"
+   ],
+   [
+    "docs/development/work/K1.1/review-02.md",
+    68,
+    "| **K11-R1-PROC-01** \u2014 prerequisite receipts absent | **CLOSED.** Both formal receipts are present. Their stated PR #21 merge identity is independentl"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    134,
+    "- **K11-R1-PROC-01 \u2014 remains closed.** The authentic K1.0 integration receipts and PR #21 implementation integration provenance remain in ancestry."
+   ]
+  ]
+ },
+ "K11-R1-SCOPE-01": {
+  "classified_source": "docs/development/work/K1.1/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-01.md",
+    87,
+    "### K11-R1-SCOPE-01 \u2014 P1 \u2014 K1.1 implements a K1.3 boundary and its own contract is contradictory"
+   ],
+   [
+    "docs/development/work/K1.1/review-02.md",
+    66,
+    "| **K11-R1-SCOPE-01** \u2014 K1.3 cancellation implemented in K1.1 | **CLOSED.** `cancelExecution` refuses by name as K1.3-owned; C11 is withdrawn; the abl"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    132,
+    "- **K11-R1-SCOPE-01 \u2014 remains closed.** Outcome/takeover/recovery refuse as K1.2-owned and cancellation refuses as K1.3-owned."
+   ]
+  ]
+ },
+ "K11-R1-VAL-01": {
+  "classified_source": "docs/development/work/K1.1/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-01.md",
+    53,
+    "### K11-R1-VAL-01 \u2014 P1 \u2014 accepted boundary values are not faithfully retained over the accepted object-key space"
+   ],
+   [
+    "docs/development/work/K1.1/review-02.md",
+    64,
+    "| **K11-R1-VAL-01** \u2014 value-copy fidelity (`__proto__`, `\"01\"`) | **Specific counterexamples corrected, but subsystem not closed.** The named `__proto"
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    108,
+    "- **K11-R1-VAL-01 \u2014 remains CLOSED.** Ordinary-read/descriptor disagreement is rejected."
+   ]
+  ]
+ },
+ "K11-R10-DOC-01": {
+  "classified_source": "docs/development/work/K1.1/review-08.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-08.md",
+    106,
+    "### K11-R10-DOC-01 \u2014 P2 \u2014 stale current-state prose in 007"
+   ],
+   [
+    "docs/development/work/K1.1/review-09.md",
+    35,
+    "### K11-R10-DOC-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K11-R10-EVID-01": {
+  "classified_source": "docs/development/work/K1.1/review-08.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-08.md",
+    94,
+    "### K11-R10-EVID-01 \u2014 P2 \u2014 validation record integrity"
+   ],
+   [
+    "docs/development/work/K1.1/review-09.md",
+    39,
+    "### K11-R10-EVID-01 \u2014 REOPENED / NOT CLOSED"
+   ],
+   [
+    "docs/development/work/K1.1/review-10.md",
+    29,
+    "- **K11-R10-EVID-01 \u2014 P2:** H11's regenerated `01-tree-and-environment.log` listed eleven tracked target source files but reported `file count: 12`, w"
+   ],
+   [
+    "docs/development/work/K1.1/review-10.md",
+    33,
+    "## K11-R10-EVID-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K11-R15-DOC-01": {
+  "classified_source": "docs/development/work/K1.1/review-15.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-15.md",
+    102,
+    "### K11-R15-DOC-01 \u2014 P1 \u2014 undeclared Layer-1/2 documentation in the cumulative candidate, contradicted by the packet's own records"
+   ],
+   [
+    "docs/development/work/K1.1/review-16.md",
+    33,
+    "#### K11-R15-DOC-01 \u2014 P1 \u2014 cumulative Layer-1/2 documentation was undeclared"
+   ]
+  ]
+ },
+ "K11-R15-DOC-02": {
+  "classified_source": "docs/development/work/K1.1/review-15.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-15.md",
+    135,
+    "### K11-R15-DOC-02 \u2014 P2 \u2014 broken canonical cross-reference introduced by the candidate"
+   ],
+   [
+    "docs/development/work/K1.1/review-16.md",
+    37,
+    "#### K11-R15-DOC-02 \u2014 P2 \u2014 broken canonical cross-reference"
+   ]
+  ]
+ },
+ "K11-R15-ID-01": {
+  "classified_source": "docs/development/work/K1.1/review-15.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-15.md",
+    72,
+    "### K11-R15-ID-01 \u2014 P2 \u2014 the initial input occupies a post-creation Input ID in the producer's own key space"
+   ],
+   [
+    "docs/development/work/K1.1/review-16.md",
+    27,
+    "#### K11-R15-ID-01 \u2014 P2 \u2014 creation consumes an ingress Input-ID key"
+   ]
+  ]
+ },
+ "K11-R15-PROC-01": {
+  "classified_source": "docs/development/work/K1.1/review-15.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-15.md",
+    150,
+    "### K11-R15-PROC-01 \u2014 P1 \u2014 `H..A` carries payload, and no verdict reaches the status owner"
+   ],
+   [
+    "docs/development/work/K1.1/review-16.md",
+    41,
+    "#### K11-R15-PROC-01 \u2014 P1 \u2014 H17\u2192A contains payload and the authoritative status is stale"
+   ]
+  ]
+ },
+ "K11-R2-EVID-01": {
+  "classified_source": "docs/development/work/K1.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-02.md",
+    120,
+    "### K11-R2-EVID-01 \u2014 P1 \u2014 retained receipts and refusal evidence escape as mutable shared objects"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    129,
+    "- **K11-R2-EVID-01 \u2014 CLOSED.** `mintReceipt` and `mintRefusal` freeze retained evidence at their unique construction sites, the shared queued disposit"
+   ],
+   [
+    "docs/development/work/K1.1/review-04.md",
+    116,
+    "- **K11-R2-EVID-01 \u2014 remains CLOSED.** Receipts/refusals are frozen at their mint sites and queued disposition is frozen; retained/shared evidence rem"
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    107,
+    "- **K11-R2-EVID-01 \u2014 remains CLOSED on its original invariant.** Receipt/refusal mint sites are primordial-frozen. K11-R5-STATE-01 is different: it sh"
+   ]
+  ]
+ },
+ "K11-R2-VAL-02": {
+  "classified_source": "docs/development/work/K1.1/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-02.md",
+    73,
+    "### K11-R2-VAL-02 \u2014 P1 \u2014 accepted Proxy-backed values can bind canonical bytes different from the retained value"
+   ],
+   [
+    "docs/development/work/K1.1/review-03-supplement-01.md",
+    24,
+    "### K11-R2-VAL-02 \u2014 REOPENED P1 \u2014 additional array own-name counterexample"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    54,
+    "### K11-R2-VAL-02 \u2014 REOPENED \u2014 P1 \u2014 canonical bytes can still describe a different value from the frozen retained snapshot"
+   ],
+   [
+    "docs/development/work/K1.1/review-03.md",
+    130,
+    "- **K11-R2-VAL-02 \u2014 REOPENED** above with a new serializer/prototype counterexample. The descriptor-vs-read defect from review-02 itself is corrected,"
+   ],
+   [
+    "docs/development/work/K1.1/review-04.md",
+    53,
+    "### K11-R2-VAL-02 \u2014 REOPENED AGAIN \u2014 P1 \u2014 canonical bytes still depend on caller-mutated ambient serializer state"
+   ],
+   [
+    "docs/development/work/K1.1/review-04.md",
+    117,
+    "- **K11-R2-VAL-02 \u2014 REOPENED AGAIN** above. The round-5 `toJSON`/`map`/outside-index/formatter witnesses are corrected, but the end-to-end serializer-"
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    110,
+    "- **K11-R2-VAL-02 \u2014 the named H5 serializer-environment witnesses are corrected, but the broader defect family is not semantically closed.** K11-R5-ST"
+   ]
+  ]
+ },
+ "K11-R3-DOC-02": {
+  "classified_source": "docs/development/work/K1.1/review-03.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-03.md",
+    105,
+    "### K11-R3-DOC-02 \u2014 P2 \u2014 the target Kernel entry module still says third-party imports are forbidden although `canonicalize` is approved and present"
+   ],
+   [
+    "docs/development/work/K1.1/review-04.md",
+    114,
+    "- **K11-R3-DOC-02 \u2014 CLOSED.** `packages/kernel/src/index.ts`, package metadata and the executable guard now agree on `node:` builtins plus exact `cano"
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    105,
+    "- **K11-R3-DOC-02 \u2014 remains CLOSED.** Export/package/guard documentation still agrees."
+   ]
+  ]
+ },
+ "K11-R3-ID-03": {
+  "classified_source": "docs/development/work/K1.1/review-03.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-03.md",
+    81,
+    "### K11-R3-ID-03 \u2014 P2 \u2014 non-text `scope` is classified before the new identity-text validation can run"
+   ],
+   [
+    "docs/development/work/K1.1/review-04.md",
+    112,
+    "- **K11-R3-ID-03 \u2014 CLOSED.** C5 observes scope once, validates text before authorization, reuses that value for binding/recording, and retains authori"
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    103,
+    "- **K11-R3-ID-03 \u2014 remains CLOSED.** Scope is observed once, validated as text before authorization and reused for binding."
+   ]
+  ]
+ },
+ "K11-R3-LIMIT-01": {
+  "classified_source": "docs/development/work/K1.1/review-03.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-03.md",
+    94,
+    "### K11-R3-LIMIT-01 \u2014 P2 \u2014 arrays already over the 4,096-entry limit still drive work proportional to their full declared length"
+   ],
+   [
+    "docs/development/work/K1.1/review-04.md",
+    113,
+    "- **K11-R3-LIMIT-01 \u2014 CLOSED.** A trusted array length above 4,096 returns immediately before own-name/index traversal or length-proportional allocati"
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    104,
+    "- **K11-R3-LIMIT-01 \u2014 remains CLOSED.** Over-limit sparse arrays refuse before length-proportional allocation/traversal; the retained ablation demonst"
+   ]
+  ]
+ },
+ "K11-R3-PROC-02": {
+  "classified_source": "docs/development/work/K1.1/review-03.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-03.md",
+    116,
+    "### K11-R3-PROC-02 \u2014 P1 / BLOCKED_EXTERNAL \u2014 H4 does not contain or otherwise expose the raw validation attachments its manifest/report require"
+   ],
+   [
+    "docs/development/work/K1.1/review-04.md",
+    115,
+    "- **K11-R3-PROC-02 \u2014 CLOSED.** H5 contains and exposes the ten manifest-named raw logs; the reviewer could inspect them."
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    106,
+    "- **K11-R3-PROC-02 \u2014 remains CLOSED.** H6 contains the raw validation outputs named by its manifest."
+   ]
+  ]
+ },
+ "K11-R4-PROC-01": {
+  "classified_source": "docs/development/work/K1.1/review-04.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-04.md",
+    99,
+    "### K11-R4-PROC-01 \u2014 P1 \u2014 H5 was handed off as WAITING_FOR_REVIEW after mandatory defects were known"
+   ],
+   [
+    "docs/development/work/K1.1/review-05.md",
+    102,
+    "- **K11-R4-PROC-01 \u2014 CLOSED.** `implementation-06.md` records the self-found provenance and claims review readiness only after correction and clean-C6"
+   ]
+  ]
+ },
+ "K11-R6-STATE-02": {
+  "classified_source": "docs/development/work/K1.1/review-06-supplement-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-06-supplement-01.md",
+    59,
+    "### K11-R6-STATE-02 \u2014 P1 \u2014 post-observation accumulation still depends on caller-mutable inherited indexed accessors"
+   ],
+   [
+    "docs/development/work/K1.1/review-06.md",
+    44,
+    "### K11-R6-STATE-02 \u2014 P1 \u2014 loop/index accumulation remains caller-steerable through inherited numeric array accessors"
+   ]
+  ]
+ },
+ "K11-R6-VAL-04": {
+  "classified_source": "docs/development/work/K1.1/review-06-supplement-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-06-supplement-01.md",
+    82,
+    "### K11-R6-VAL-04 \u2014 P1 \u2014 array capture can retain/canonicalize a value different from the one coherent caller observation"
+   ],
+   [
+    "docs/development/work/K1.1/review-06.md",
+    72,
+    "### K11-R6-VAL-04 \u2014 P1 \u2014 array capture can retain/canonicalize a value different from the caller's coherent observation"
+   ]
+  ]
+ },
+ "K11-R7-STATE-03": {
+  "classified_source": "docs/development/work/K1.1/review-07.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1/review-07.md",
+    62,
+    "### K11-R7-STATE-03 \u2014 P1 \u2014 the new own-data primitive still depends on caller-mutable `Object.prototype` through property-descriptor conversion"
+   ],
+   [
+    "docs/development/work/K1.1/review-08.md",
+    47,
+    "### K11-R7-STATE-03 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K12-R1-AUTH-01": {
+  "classified_source": "docs/development/work/K1.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-01.md",
+    122,
+    "### K12-R1-AUTH-01 \u2014 P1 \u2014 inspection scope authorizes control and does not establish the takeover safety prerequisite"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    115,
+    "### K12-R1-AUTH-01 \u2014 closed"
+   ]
+  ]
+ },
+ "K12-R1-DELIVERY-01": {
+  "classified_source": "docs/development/work/K1.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-01.md",
+    257,
+    "### K12-R1-DELIVERY-01 \u2014 P2 \u2014 retained delivery evidence cannot attribute each delivery to its writer epoch after takeover"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    137,
+    "### K12-R1-DELIVERY-01 \u2014 closed"
+   ]
+  ]
+ },
+ "K12-R1-DOC-01": {
+  "classified_source": "docs/development/work/K1.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-01.md",
+    293,
+    "### K12-R1-DOC-01 \u2014 P2 \u2014 maintained transaction-choice text does not match the implementation"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    142,
+    "### K12-R1-DOC-01 \u2014 remains open, narrowed"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    190,
+    "### K12-R1-DOC-01 \u2014 P2 \u2014 transaction description is still stronger than the implementation"
+   ],
+   [
+    "docs/development/work/K1.2/review-03.md",
+    103,
+    "### K12-R1-DOC-01 \u2014 P2 \u2014 the retained AcceptedOutcomeRecord wrapper is still constructed after mutation begins"
+   ],
+   [
+    "docs/development/work/K1.2/review-04.md",
+    86,
+    "### K12-R1-DOC-01 \u2014 closed"
+   ]
+  ]
+ },
+ "K12-R1-HISTORY-01": {
+  "classified_source": "docs/development/work/K1.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-01.md",
+    215,
+    "### K12-R1-HISTORY-01 \u2014 P2 \u2014 recovery decisions are transient status edits and disappear from Execution History"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    131,
+    "### K12-R1-HISTORY-01 \u2014 closed"
+   ]
+  ]
+ },
+ "K12-R1-HOLD-01": {
+  "classified_source": "docs/development/work/K1.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-01.md",
+    181,
+    "### K12-R1-HOLD-01 \u2014 P2 \u2014 held RUNNING inspection omits permitted next actions"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    126,
+    "### K12-R1-HOLD-01 \u2014 closed"
+   ]
+  ]
+ },
+ "K12-R1-REC-01": {
+  "classified_source": "docs/development/work/K1.2/review-01.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-01.md",
+    321,
+    "### K12-R1-REC-01 \u2014 P2 \u2014 validation attachments 02..08 do not satisfy 006's attachment identity rule"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    147,
+    "### K12-R1-REC-01 \u2014 remains open, narrowed"
+   ],
+   [
+    "docs/development/work/K1.2/review-02.md",
+    211,
+    "### K12-R1-REC-01 \u2014 P2 \u2014 validation attachment 01 still misses 006's per-attachment identity fields"
+   ],
+   [
+    "docs/development/work/K1.2/review-03.md",
+    89,
+    "### K12-R1-REC-01 \u2014 closed"
+   ]
+  ]
+ },
+ "K12-R11-ORDER-01": {
+  "classified_source": "docs/development/work/K1.2/review-11.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-11.md",
+    111,
+    "### K12-R11-ORDER-01 \u2014 P2 \u2014 a stale proposal with one malformed claim number is not refused as stale"
+   ],
+   [
+    "docs/development/work/K1.2/review-12.md",
+    64,
+    "### K12-R11-ORDER-01 \u2014 CLOSED"
+   ],
+   [
+    "docs/development/work/K1.2/review-13.md",
+    106,
+    "### K12-R11-ORDER-01 \u2014 closure preserved"
+   ]
+  ]
+ },
+ "K12-R13-ARCH-01": {
+  "classified_source": "docs/development/work/K1.2/review-12.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-12.md",
+    91,
+    "### K12-R13-ARCH-01 \u2014 unresolved malformed Activation identity precedence requires owner authority"
+   ],
+   [
+    "docs/development/work/K1.2/review-13.md",
+    66,
+    "### K12-R13-ARCH-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K12-R13-DOC-01": {
+  "classified_source": "docs/development/work/K1.2/review-12.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-12.md",
+    134,
+    "### K12-R13-DOC-01 \u2014 \u201cno content diagnostic is produced\u201d overstates the implemented guarantee"
+   ],
+   [
+    "docs/development/work/K1.2/review-13.md",
+    93,
+    "### K12-R13-DOC-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K12-R13-REC-01": {
+  "classified_source": "docs/development/work/K1.2/review-12.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-12.md",
+    127,
+    "### K12-R13-REC-01 \u2014 contract revision identity is inconsistent"
+   ],
+   [
+    "docs/development/work/K1.2/review-13.md",
+    100,
+    "### K12-R13-REC-01 \u2014 CLOSED"
+   ]
+  ]
+ },
+ "K12-R2-TAKEOVER-01": {
+  "classified_source": "docs/development/work/K1.2/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-02.md",
+    154,
+    "### K12-R2-TAKEOVER-01 \u2014 P2 \u2014 isSafeToReplace is a reentrancy window between takeover validation and commit"
+   ],
+   [
+    "docs/development/work/K1.2/review-03.md",
+    74,
+    "### K12-R2-TAKEOVER-01 \u2014 closed"
+   ]
+  ]
+ },
+ "K12-R5-LAYER3-01": {
+  "classified_source": "docs/development/work/K1.2/review-05-merged.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-05-merged.md",
+    73,
+    "### K12-R5-LAYER3-01 \u2014 P1 \u2014 post-H5 Layer-3 payload is outside the reviewed candidate"
+   ],
+   [
+    "docs/development/work/K1.2/review-06.md",
+    134,
+    "- **K12-R5-LAYER3-01 (P1).** The required tree outcome is met at `cbf3bdf`: the two drafts are"
+   ]
+  ]
+ },
+ "K12-R5-PROC-01": {
+  "classified_source": "docs/development/work/K1.2/review-05-merged.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-05-merged.md",
+    92,
+    "### K12-R5-PROC-01 \u2014 P2 \u2014 submitted branch head is not H5"
+   ],
+   [
+    "docs/development/work/K1.2/review-06.md",
+    138,
+    "- **K12-R5-PROC-01 (P2).** Remains open until a report-bearing successor H exists. `cbf3bdf` carries"
+   ]
+  ]
+ },
+ "K12-R6-EVID-01": {
+  "classified_source": "docs/development/work/K1.2/review-06.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-06.md",
+    202,
+    "### K12-R6-EVID-01 \u2014 P2 \u2014 no test distinguishes a redelivery that rotates the attempt's grant"
+   ],
+   [
+    "docs/development/work/K1.2/review-07-merged.md",
+    53,
+    "### K12-R6-EVID-01 \u2014 substantively closed"
+   ]
+  ]
+ },
+ "K12-R6-LAYER3-01": {
+  "classified_source": "docs/development/work/K1.2/review-06.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2/review-06.md",
+    159,
+    "### K12-R6-LAYER3-01 \u2014 P2 \u2014 the canonical delivery boundary no longer describes the binding K1.2 ships"
+   ],
+   [
+    "docs/development/work/K1.2/review-07-merged.md",
+    69,
+    "### K12-R6-LAYER3-01 \u2014 substantively closed"
+   ]
+  ]
+ },
+ "K12C1-R9-HISTORY-01": {
+  "classified_source": "docs/development/work/K1.2-correction-01/review-09.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.2-correction-01/review-09.md",
+    141,
+    "### K12C1-R9-HISTORY-01 \u2014 P1 \u2014 recovery history consults caller-controlled inherited state after changing a hold"
+   ],
+   [
+    "docs/development/work/K1.2-correction-01/review-10.md",
+    265,
+    "| K12C1-R9-HISTORY-01 | Original runtime counterexamples closed: positional records, prebuilt controls, matrix 22/22 and new whole-view comparisons 30"
+   ]
+  ]
+ },
+ "REF1-R1-CONV-01": {
+  "classified_source": "docs/development/work/K1.1-reference-01/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1-reference-01/review-02.md",
+    272,
+    "### REF1-R1-CONV-01 \u2014 new canonical prose asserts accepted/shipped behavior against the convention that concept pages carry none (P2)"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-03.md",
+    176,
+    "### REF1-R1-CONV-01 (P2) \u2014 CLOSED"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-05.md",
+    129,
+    "- **REF1-R1-CONV-01** (shipped-status assertions on pages carrying none): **CLOSED, non-regressing.** Grep over `concepts/` + `mechanisms/` at H: only"
+   ]
+  ]
+ },
+ "REF1-R1-NAV-01": {
+  "classified_source": "docs/development/work/K1.1-reference-01/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1-reference-01/review-02.md",
+    319,
+    "### REF1-R1-NAV-01 \u2014 the canonical-definitions list gains its only two-target entry (P3)"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-03.md",
+    169,
+    "### REF1-R1-NAV-01 (P3) \u2014 CLOSED"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-05.md",
+    130,
+    "- **REF1-R1-NAV-01** (only two-target reference entry): **CLOSED, non-regressing** (65 entries, 0 two-target)."
+   ]
+  ]
+ },
+ "REF1-R1-STATUS-01": {
+  "classified_source": "docs/development/work/K1.1-reference-01/review-02.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1-reference-01/review-02.md",
+    233,
+    "### REF1-R1-STATUS-01 \u2014 the authoritative status ledger still says acceptance is outstanding (P2)"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-03.md",
+    145,
+    "### REF1-R1-STATUS-01 (P2) \u2014 CLOSED"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-05.md",
+    128,
+    "- **REF1-R1-STATUS-01** (007 narrative asserted acceptance outstanding): **CLOSED, non-regressing.** At H the hold paragraph ends \"That paragraph stan"
+   ]
+  ]
+ },
+ "REF1-R2-DOC-01": {
+  "classified_source": "docs/development/work/K1.1-reference-01/review-03.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1-reference-01/review-03.md",
+    230,
+    "### REF1-R2-DOC-01 \u2014 P2"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-05.md",
+    131,
+    "- **REF1-R2-DOC-01** (`roadmap.md:77` \"exact implementation evidence\"): **CLOSED, non-regressing** \u2014 `roadmap.md` now says the page retains the delive"
+   ]
+  ]
+ },
+ "REF1-R6-AUTH-01": {
+  "classified_source": "docs/development/work/K1.1-reference-01/review-06.md",
+  "kind": "finding",
+  "defs": [
+   [
+    "docs/development/work/K1.1-reference-01/review-07.md",
+    390,
+    "| `REF1-R6-AUTH-01` | \u2014 | **still open (narrowed)** \u2014 external confirmation, owner-side, not a payload defect |"
+   ],
+   [
+    "docs/development/work/K1.1-reference-01/review-08.md",
+    265,
+    "| `REF1-R6-AUTH-01` | \u2014 | **CLOSED** (\u00a74.3), with the authentication residual disclosed by the packet itself |"
+   ]
+  ]
+ }
+}

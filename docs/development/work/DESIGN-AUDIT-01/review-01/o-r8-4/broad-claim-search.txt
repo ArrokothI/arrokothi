@@ -1,0 +1,17 @@
+docs/development/002-implemented-kernel-baseline.md:46:message, array shape or a thrown value's properties. This removes the diagnostic prototype-chain
+docs/development/002-implemented-kernel-baseline.md:47:walk on every refused foreign object and structural-observation failure.
+docs/development/002-implemented-kernel-baseline.md:59:plain data and Kernel-selected lookups is **held**. Review 08 of K1.2-correction-01
+docs/development/002-implemented-kernel-baseline.md:60:(`K12C1-R8-VALUE-DEPTH-01`) found that refusing foreign-prototype containers at nesting depth costs
+docs/development/002-implemented-kernel-baseline.md:124:well formed; a different string names a different exchange, not malformed content. No coercion,
+docs/development/002-implemented-kernel-baseline.md:141:The field is still refused whole and its value is never read. Outcome/control identity fragments,
+docs/development/002-implemented-kernel-baseline.md:168:refused as `duplicate_conflict` (only a well-formed Activation ID is looked up; a missing, malformed
+docs/development/002-implemented-kernel-baseline.md:257:  at each call of a built-in method the zone captured at load, one call per run, in the 66 scenarios
+docs/development/002-implemented-kernel-baseline.md:276:  `emissionsPerOutcome`, `isSafeToReplace`) is resolved on the host object or its own prototype
+docs/development/002-implemented-kernel-baseline.md:277:  chain and never answered by `Object.prototype` or `Function.prototype`. Evidence (contract revision
+docs/development/002-implemented-kernel-baseline.md:278:  9): a poisoned-prototype sweep installs every member name the zone uses as an accessor on
+docs/development/002-implemented-kernel-baseline.md:279:  `Object.prototype`, `Function.prototype`, `Array.prototype` and `String.prototype` during every
+docs/development/002-implemented-kernel-baseline.md:284:  accessor; `in` and other built-in prototypes are outside it. `ambient-reads.test.ts` is a static
+docs/development/002-implemented-kernel-baseline.md:310:  Replay/conflict retain the ordering described above. A `controlScopes` only a built-in prototype
+docs/development/002-implemented-kernel-baseline.md:314:  not stop native work. The method comes from the Driver or its own prototype chain, never from a
+docs/development/002-implemented-kernel-baseline.md:315:  built-in prototype, so ambient state cannot establish safety a Driver did not declare (correction DEC-8).
+docs/guides/execution/native/current-authoring-surface.md:14:| LLM Stage | Declared `callables`; enough model phases required | No built-in reads or writes | Cannot call/spawn | Cannot send/request |

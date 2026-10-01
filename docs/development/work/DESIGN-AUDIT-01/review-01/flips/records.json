@@ -1,0 +1,2124 @@
+[
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1-process-review",
+  "path": "docs/development/work/K0.1-process-review/review-04.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "3736e580f435e0b9eb91ff49ebb75f6d7750dcaa",
+   "42731300266eea00a9a24d867d5e82d9887c280d",
+   "6bb60674066306a902ab88b56f0c82840a85d4b3",
+   "f7fddcc661e2e2f579d2da5259a274fae9124693"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "b08577c7e85204b1bb3af35500129aab772cdac2"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-02.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "cc61e74455534abf896c46632246615185219b92",
+   "fc84664a873d6a4cfaf1d86d57fb9bcba34a6f04"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-03.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "2b252b05eaf7020fec1e2b4a342d5fea86bad66e",
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "aef1e33ba944a0647bb2319fb97ae40b18b05924",
+   "ca065990835795fffdcb1eca5601572c24791a60",
+   "cc61e74455534abf896c46632246615185219b92",
+   "fc84664a873d6a4cfaf1d86d57fb9bcba34a6f04"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-04.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "2286106dfc8efc43a9f8758b2deaa6a7ddb64fa9",
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "673888425bdc4d9822f7d9e192dc34d66149ae5d",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "a068e2f6c8d67e5e3e2512c765b29427acb4ac68",
+   "aef1e33ba944a0647bb2319fb97ae40b18b05924",
+   "cc61e74455534abf896c46632246615185219b92"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-05.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "a068e2f6c8d67e5e3e2512c765b29427acb4ac68",
+   "ab2ff6d16914edbf89dee24498140ef2a41a5689",
+   "aef1e33ba944a0647bb2319fb97ae40b18b05924",
+   "cc61e74455534abf896c46632246615185219b92",
+   "cef33136c13f311064dff55c76932a444fa2c9da",
+   "d0dbc4800c10dad68a8b4b6c662bf90c963fd926"
+  ],
+  "n": 5
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "35e7de50dc2091d925f918c14c3b2bc5ee62ba0b",
+   "4079effad29bbeef33ded38783706396f70a0c3e",
+   "4a015b316d604f501a9895e85c627b7d0ba0edfd",
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "70350d75627f040ce25fca605c322024a43d577b",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "99768ff09dde8267f3e25e623aac3cbca2bdbe68",
+   "a068e2f6c8d67e5e3e2512c765b29427acb4ac68",
+   "aef1e33ba944a0647bb2319fb97ae40b18b05924",
+   "c5bdd481134cf3691050b16dd6dd3a49aa9ab042",
+   "cc61e74455534abf896c46632246615185219b92",
+   "d0dbc4800c10dad68a8b4b6c662bf90c963fd926",
+   "fd75cde77f3e21c291a5064aebe818a09ccb6341"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-07.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "6b9a66d448e762744c6e473f104754de5c81984c",
+   "6bdc53ad10d50e0e41bccf57bab212d406b7a2ce",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "a068e2f6c8d67e5e3e2512c765b29427acb4ac68",
+   "aef1e33ba944a0647bb2319fb97ae40b18b05924",
+   "bd2689ff5d6f36fb353d8b2a6f55643d3c05d68b",
+   "c5bdd481134cf3691050b16dd6dd3a49aa9ab042",
+   "cc61e74455534abf896c46632246615185219b92",
+   "d0dbc4800c10dad68a8b4b6c662bf90c963fd926",
+   "ecc4e2f32fb762fe10199c6ecba502aa030978a7",
+   "f819fe4dc937aea73bf85913a70231a2d3da3012",
+   "fa0b95ed3a2ea3f5943e753789244a528d15af82",
+   "fdac4ccdce5e674c9aba43b645b8061ca7578526"
+  ],
+  "n": 7
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-08.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0cd56a0608157199572e53354635ee615acafa3d",
+   "40feb095d8e0f964bce854facd90f51d23633380",
+   "5dda5a7fce11b09f98118085ea7f57d46c8e077c",
+   "6290e68fb0231a6a8b4e6956d9a44afe7ac051ab",
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "6bdc53ad10d50e0e41bccf57bab212d406b7a2ce",
+   "75e5c6378bd569c3bce14a5c38b5a3a1ae6da33a",
+   "851efc09d42d8d02e314cd815599efb204681033",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "a068e2f6c8d67e5e3e2512c765b29427acb4ac68",
+   "a18343820301f181740492a3ee65b44db317237f",
+   "aef1e33ba944a0647bb2319fb97ae40b18b05924",
+   "c5bdd481134cf3691050b16dd6dd3a49aa9ab042",
+   "cc61e74455534abf896c46632246615185219b92",
+   "d0dbc4800c10dad68a8b4b6c662bf90c963fd926"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-09.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "00b30eb333024f7093c5a1db122a3772ca2b8b04",
+   "1b2ef1bd83681f302637ffd27c9630575289d37b",
+   "33c46df10772e3bd72e507d7c07b24ac25ae2cc4",
+   "39334ef7bca32f599da0a69878a55f4002b2a29a",
+   "6290e68fb0231a6a8b4e6956d9a44afe7ac051ab",
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "6ac959fef2883ae6bb14427c0f1a92cc54d43a65",
+   "6bdc53ad10d50e0e41bccf57bab212d406b7a2ce",
+   "857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc",
+   "95015d103b31a6709be1cf5b3671872750d2e03c",
+   "a068e2f6c8d67e5e3e2512c765b29427acb4ac68",
+   "aad8377e3ec25ee5370d3c340a02ccebff8b3571",
+   "aef1e33ba944a0647bb2319fb97ae40b18b05924",
+   "c5bdd481134cf3691050b16dd6dd3a49aa9ab042",
+   "cc61e74455534abf896c46632246615185219b92",
+   "d0dbc4800c10dad68a8b4b6c662bf90c963fd926"
+  ],
+  "n": 9
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-10.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "00b30eb333024f7093c5a1db122a3772ca2b8b04",
+   "012ca92574319aa099a91c845f8fb4375c081f34",
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "7f68df367d05641dfdcfca932a1f4c533b5ace3d",
+   "a110737d8199c38400d7dad3cea12ec96c99afc5",
+   "ab3dbd6781a2c59a8bd0dc6386d4f7875c76ae8b",
+   "c0c67084bb1631ae388ca8ede4c9b759b24b2202",
+   "d5e8eec4f16fd3409b2f230298ccc88b8815f78e",
+   "df5f89b706bf075e0dbd83a9315ea42aad70a01a"
+  ],
+  "n": 10
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-11.md",
+  "verdict": "BLOCKED \u2014 ARCHITECTURE DECISION",
+  "shas": [
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "9202571f21e97a51c119b0324f3d279f8772ca9c",
+   "b40cfe968c8e0d2111a88df68c68f64fd02a4be3"
+  ],
+  "n": 11
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.1",
+  "path": "docs/development/work/K0.1/review-12.md",
+  "verdict": null,
+  "shas": [
+   "1d5c3f189d5d62e02bf096e5ae1ffa225b8be2eb",
+   "6464be12c11eb75f7dfbc5ece12ca8d3020a5c15",
+   "78f628bb4d30405314e3a2437b22e64e29c45219",
+   "7a51801afcdf5c13d481e92c5d219a8c9be7c0eb",
+   "9202571f21e97a51c119b0324f3d279f8772ca9c",
+   "93c68bb3f06d2018d2eca81712a18884dbbf9570",
+   "bab7bf6635781e6d2f9b0e8e333f58440ae0b047",
+   "f478be2b5d4f4ad72783fc491121c528cb520b31"
+  ],
+  "n": 12
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "6f162e5a8b6b5bb3b5c0b924e28a1ca4a02c33cf",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "9aa70a82f02d57b2658e0906af53dc31bc34e483",
+   "c079237ee7aff428481426f93e87a68b79f170d4"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-02.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "60a05f822b9415382653e286be1189ec0a01e472",
+   "6f162e5a8b6b5bb3b5c0b924e28a1ca4a02c33cf",
+   "8291da56d228997b736665d9c57dd22237aa95d7",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "9c63b2c1064747b3c00594584d910f30852d2a18",
+   "c079237ee7aff428481426f93e87a68b79f170d4"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-03.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "60a05f822b9415382653e286be1189ec0a01e472",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "a057a122318eb39508542af4b4c5d53200115259",
+   "acb5e01c80f015ebf715f4de3e7fdb10f05f1a33",
+   "b9b54a84393dde11b45c2395fec04f6130a3b0b2",
+   "c079237ee7aff428481426f93e87a68b79f170d4"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-04.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "b9b54a84393dde11b45c2395fec04f6130a3b0b2",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "cec66740c8b749c0706ddd45a0ac0294c619f957",
+   "e2721ddf30416454ddba73a10ae509190e68cbc4",
+   "ed438e88173e8f7306dfdfb16c290ea40fa0a0fd"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-05.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "053bca6c77ad37aa3f3a4816765639707b662a4d",
+   "159f3dc0c13779c54a515aaffb74456bccafda09",
+   "55f11858962c5dfd9f75c20709209684e5abcbc2",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "ed438e88173e8f7306dfdfb16c290ea40fa0a0fd"
+  ],
+  "n": 5
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "053bca6c77ad37aa3f3a4816765639707b662a4d",
+   "66dd526534bcbb737143d47c00e65e5eda9509e3",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "c3fcef35c2de577edad8cebf451afad99f9c2bf7",
+   "c9798894db6f8d844cf0abcc4365c1fa30ef71fe"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-07.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "3377a8c834a07c5170b2cfdd4b76269021341733",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "a9ea3d532c25e9074b7ce11bc102196058a6a41d",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "c9798894db6f8d844cf0abcc4365c1fa30ef71fe",
+   "e9c145023246cc61e8ad65405cc724dabb22c1b1"
+  ],
+  "n": 7
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-08.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "1f3a4393756dda659559f9153844240e8e5830af",
+   "7206dbd64003d3bd32e220cf9ccefced0c9c1d4f",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "a9ea3d532c25e9074b7ce11bc102196058a6a41d",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "c254c7faa414f9046fdab8c55a06b829529d7789"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-09.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "80f2c887600bd2d611a7ef120d443fe6efbcb2d8",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "adb2b7791f674c9a7e4c988010bda60f60a15804",
+   "bba23e3c67c918510d480bc2a5df000c1d275159",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "c254c7faa414f9046fdab8c55a06b829529d7789"
+  ],
+  "n": 9
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-10.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "269ed51e1f3adce44203aff4344bffbe3733122d",
+   "54a0bda358960b049800d8856128eaea90fc6fd1",
+   "80f2c887600bd2d611a7ef120d443fe6efbcb2d8",
+   "94aef9fd8398723fcce63963c4655cc2ba857c4c",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "c079237ee7aff428481426f93e87a68b79f170d4"
+  ],
+  "n": 10
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-11.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0bcea0c08943c355d53541b54f3def8c91b1a237",
+   "54a0bda358960b049800d8856128eaea90fc6fd1",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "a0e034d6acd2e6c541dacb5848da41a0404bab86",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "faac6a1813b7956a286cec3325c6391bfed579f0"
+  ],
+  "n": 11
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-12.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "01324a7da962bd5d044e54d79db8a611a70a5d6c",
+   "05855f446e52e542e3e6fd52f58d7cfaa105253a",
+   "0bcea0c08943c355d53541b54f3def8c91b1a237",
+   "98756f8c10bd806125da8318f1a129bc030aca61",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "e7684a6905a8e406562a159b68f622a5bb528e24"
+  ],
+  "n": 12
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-13.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05855f446e52e542e3e6fd52f58d7cfaa105253a",
+   "5b72d6d0ca420d3f58755dff8f4cb5d37fae2444",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "e7684a6905a8e406562a159b68f622a5bb528e24"
+  ],
+  "n": 13
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-14.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "442a3b93099a193d3acef640e0ea2807497dbce1",
+   "452717dfb4a8d4984bbb4a709a9c8a7a3d3c4401",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "ec8d8cf03583bef925551352df820802a20990ef"
+  ],
+  "n": 14
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-15.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "377bcbeda14b16bfebd325064db1d2617feedc4a",
+   "61732c2f18e6806bcecf83c85e6ad28f26f083ff",
+   "c079237ee7aff428481426f93e87a68b79f170d4",
+   "e2677451ad76caadfcac73473e22d6444f611b83"
+  ],
+  "n": 15
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-16.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "31b9b5fbcf60f9cee5627d82773435663ebd1141",
+   "839f1619bc9a628c55a9c60eeef01992727cc613",
+   "8dce735fab6012fb562cfe2d73787a74de2c9d17",
+   "c079237ee7aff428481426f93e87a68b79f170d4"
+  ],
+  "n": 16
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K0.2",
+  "path": "docs/development/work/K0.2/review-17.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "90a6f37eaeb61009025449a1abc7e6d31dc1dbb2",
+   "96de003c89681b5904c85747bdd03c42c1e4b98d",
+   "9821cc27dbe5990f86028846b07edfb31cb65380",
+   "c079237ee7aff428481426f93e87a68b79f170d4"
+  ],
+  "n": 17
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0-correction-01",
+  "path": "docs/development/work/K1.0-correction-01/cleanup-01.md",
+  "verdict": null,
+  "shas": [
+   "0535160e677231da41b06d9f822e62e2f0364dd1",
+   "1295c68b03ae5d8eb0bbb86e974353402ff9a518",
+   "36460438e95e968beec0b354b07a616b53981256",
+   "41728edfc3cfc5c745e4293c511a740942f7b631",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "90a6f37eaeb61009025449a1abc7e6d31dc1dbb2",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0-correction-01",
+  "path": "docs/development/work/K1.0-correction-01/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "36595f57d1f8cec8c4bf8a6293e888ca27750fab",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "61133e9c8fd6fc80c6995fd26495e11e9f7f2e57",
+   "76ce938074ffa910fbd74374e388ba8d226af4c6",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "b8e394dd2a58b839b131943f4ca9b250abff94af",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d693d59aefe5335c8950d57cec6d6b57e375cadc",
+   "f3aa29d7ecba2a23aa85788b7efdebdd383cab24"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0-correction-01",
+  "path": "docs/development/work/K1.0-correction-01/review-02.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "1295c68b03ae5d8eb0bbb86e974353402ff9a518",
+   "2d50fa3b3d7e23b01823f6d93e80952f70c0c5cc",
+   "36460438e95e968beec0b354b07a616b53981256",
+   "36595f57d1f8cec8c4bf8a6293e888ca27750fab",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "61133e9c8fd6fc80c6995fd26495e11e9f7f2e57",
+   "76ce938074ffa910fbd74374e388ba8d226af4c6",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "b8e394dd2a58b839b131943f4ca9b250abff94af",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d693d59aefe5335c8950d57cec6d6b57e375cadc",
+   "f3aa29d7ecba2a23aa85788b7efdebdd383cab24"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0-correction-02",
+  "path": "docs/development/work/K1.0-correction-02/cleanup-01.md",
+  "verdict": null,
+  "shas": [
+   "0535160e677231da41b06d9f822e62e2f0364dd1",
+   "4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "90a6f37eaeb61009025449a1abc7e6d31dc1dbb2",
+   "95d74530f37c7af8706ef92d29574425a39afcf1",
+   "968d74605cd34b30541bfd868b30bb1d0868cc41",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "def91fb9f34ade40a65cbde999c0ffe192d18239",
+   "e8a1f8cd9f6775d6b025ecef324fa299c96b78fe"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0-correction-02",
+  "path": "docs/development/work/K1.0-correction-02/review-01.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "1295c68b03ae5d8eb0bbb86e974353402ff9a518",
+   "36460438e95e968beec0b354b07a616b53981256",
+   "36595f57d1f8cec8c4bf8a6293e888ca27750fab",
+   "41728edfc3cfc5c745e4293c511a740942f7b631",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "95d74530f37c7af8706ef92d29574425a39afcf1",
+   "968d74605cd34b30541bfd868b30bb1d0868cc41",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d693d59aefe5335c8950d57cec6d6b57e375cadc",
+   "def91fb9f34ade40a65cbde999c0ffe192d18239",
+   "f3aa29d7ecba2a23aa85788b7efdebdd383cab24"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/cleanup-01.md",
+  "verdict": null,
+  "shas": [
+   "0535160e677231da41b06d9f822e62e2f0364dd1",
+   "36595f57d1f8cec8c4bf8a6293e888ca27750fab",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "90a6f37eaeb61009025449a1abc7e6d31dc1dbb2",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d693d59aefe5335c8950d57cec6d6b57e375cadc",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "f3aa29d7ecba2a23aa85788b7efdebdd383cab24"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0535160e677231da41b06d9f822e62e2f0364dd1",
+   "0eb068d960df6ee944de6fbec9ab53950272c7db",
+   "2ed8523421bf4546134dc159ede080fafbfb065a",
+   "40bb07a54cd5ba78aed386cb03cd0fb47579b6f6",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "811758ee1037c3862d1ebd2ec799fad5f6c3b57f",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "90a6f37eaeb61009025449a1abc7e6d31dc1dbb2",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-02.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "40bb07a54cd5ba78aed386cb03cd0fb47579b6f6",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "960a446b77bbd7d6973900eb23e10558c2584763",
+   "bded42da3f309716b463623aefbf8816176e65a1",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d4347837699b80e5cbffa83d48dd7a8c9e53f7e6",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-03.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "839b32d085306b96358295edf86fec85836ce462",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "bddbbc6ee8bc3ce1198c431efedcf9227d8d5cba",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d4347837699b80e5cbffa83d48dd7a8c9e53f7e6",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "eef87cc3dcfc577992dca2d67704ee11cdc12245"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-04.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0f012d4eed6ccc905236ccdafc25148d399619d6",
+   "14cc1c1997573ac434b2491653ab4cb974abf633",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "bddbbc6ee8bc3ce1198c431efedcf9227d8d5cba",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d0694071ae41de1c13fc526a63e96c3f5ccfb7ee",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-05.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "14cc1c1997573ac434b2491653ab4cb974abf633",
+   "2b274e6ecbaa8cdcc4600d8574234fc027c2b37e",
+   "6fd225e0115d6b91bd5088e22d41d137088d9688",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "a9775ab13f6a5a8b465c1f390a7cd6e81cad8a61",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 5
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "2b274e6ecbaa8cdcc4600d8574234fc027c2b37e",
+   "459be4e51370ebb8e859a46b29a966944bbd755a",
+   "5dd570002c082872914291ef0b3cc244bf9bc205",
+   "86fbd8423bf6fbfda1febcab6a9d3c59f0115f4b",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-07.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "249c7a8b04f4a724926efd9ba0c67782a30286ce",
+   "2dfc6d818498263c30cb64db32a91aa0ac0543a5",
+   "3e9779e64305f87b48e773b102d4d1523e7ea4cb",
+   "5dd570002c082872914291ef0b3cc244bf9bc205",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 7
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-08.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "065e864a796da6195ceca1d489201d2d687f7b8d",
+   "2dfc6d818498263c30cb64db32a91aa0ac0543a5",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "b8037aa02f76716d09293fb236e51bf3da9282fb",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "f9bb7f5144b94ac78d4e7d87c61a56f7e38b9334"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-09.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "065e864a796da6195ceca1d489201d2d687f7b8d",
+   "4d7ebb9590c4a0a8da8fff4f5fa79c753eff2120",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "f2b8397eb2f8e743f937594e52f22f9d34fb1e98",
+   "f7dedc3c6fe41019665f5a93fdb29b570c59bbc4"
+  ],
+  "n": 9
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-10.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "4d7ebb9590c4a0a8da8fff4f5fa79c753eff2120",
+   "549e215abba1b9e8737d29c6800af07c8406b8ff",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "784ab871d868693a1984c021b1f23392065cb79e",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "a0a4988b8f4b38709700e1fc38cd0f08de74e3fa",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 10
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-11.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "4cd711f71fcafb64ffaa7d49a715d05eaec3c2dc",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "6880b4825ed1aa2363f8366431052f88d6955be8",
+   "74aee7aa5585fb036bc413a8591b6dbb428ffc1f",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "a0a4988b8f4b38709700e1fc38cd0f08de74e3fa",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 11
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-12.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "4cd711f71fcafb64ffaa7d49a715d05eaec3c2dc",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "da7db0275049a78e069a4068ca68b1b8f296e6a3",
+   "ec713563b8b76273411231aff6f1f3ad49e4ffb0",
+   "f22786173120976be7b8bdfac23c6fa1db660f30"
+  ],
+  "n": 12
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-13.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "82a79451507a239f759dbb3c22e5f3566af33a95",
+   "8c7113578fcc475758e4fcbbaf5beb372385d082",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d299e4215634b496e3ae8c54708b45b0c14231bf",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "da7db0275049a78e069a4068ca68b1b8f296e6a3"
+  ],
+  "n": 13
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-14.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "0a9333faa7ea9cdf742f01b16af1069357b88bad",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "933e357a2d1fab9660f8af4a89b3031594dd3caa",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d299e4215634b496e3ae8c54708b45b0c14231bf",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb",
+   "efb3b11354fe9acde044bad3a4d0e72807faa5d9"
+  ],
+  "n": 14
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-15.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0535160e677231da41b06d9f822e62e2f0364dd1",
+   "0a9333faa7ea9cdf742f01b16af1069357b88bad",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "933e357a2d1fab9660f8af4a89b3031594dd3caa",
+   "9d66313ddc3b90503b666efb4f0079775e7fe9ff",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 15
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-16.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0a9333faa7ea9cdf742f01b16af1069357b88bad",
+   "2ef6f9803ff6f529ed5ffac0709299b49ebf904c",
+   "3616031dfdacafbc85d15bcf9e3c416638212ef7",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d3d614f6cee4393d4ac63ecc2f29045b205505ff",
+   "d8f17549c31f9ee5d995e773c2f211faed2785fb"
+  ],
+  "n": 16
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.0",
+  "path": "docs/development/work/K1.0/review-17.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "0535160e677231da41b06d9f822e62e2f0364dd1",
+   "5a3f1ba525f68244701b1f73a1d29c4902ffe589",
+   "6e08fabb90766dbdcf9cf1a2dc6bfc4215dc8037",
+   "8de04779d279dba82cf834d419e465d2b677ef46",
+   "c9a9ed7e6e538ab0542fc6a999426264abb6212a",
+   "d3d614f6cee4393d4ac63ecc2f29045b205505ff",
+   "d693d59aefe5335c8950d57cec6d6b57e375cadc",
+   "f3aa29d7ecba2a23aa85788b7efdebdd383cab24"
+  ],
+  "n": 17
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/cleanup-01.md",
+  "verdict": null,
+  "shas": [
+   "07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec",
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "2dc3cedb02888d891ec0a6389439b7cfb3b07943",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "56164092d128c6767f501962174ac81c6363af9e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "a8ac787b2a766d897c7bd85311c1b2aee53a1ca8",
+   "b1050133b2b684065251b7b4b7f508e95e771bef",
+   "d4bd49fd49fb6d70a992635cf2b6bf8317c3af89"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "1fd6cd05454ea66eff61b277b7328eedb5dd0a7f",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "a8ac787b2a766d897c7bd85311c1b2aee53a1ca8",
+   "b898ae12f51917c48fef92496ca179773c7744d9",
+   "d93d7d2a0a59b31b3d74ceebfb036837150f729e",
+   "f8926066728510b6354be0f79cc6c9ec0e27dd80"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-02.md",
+  "verdict": "BLOCKED \u2014 ARCHITECTURE DECISION",
+  "shas": [
+   "1fd6cd05454ea66eff61b277b7328eedb5dd0a7f",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9374c13fc2604075ea2e44e5cbd230663ed0cc62",
+   "b898ae12f51917c48fef92496ca179773c7744d9",
+   "bfa4cb4f606525cf93f7d4543f7ebab8604a57b2"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-03.md",
+  "verdict": null,
+  "shas": [
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9e3969c1106719b5ac2616778dbcf3613b972417",
+   "fa8e092555c3835155d76b9ced5dc34c58bf4d70"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-04.md",
+  "verdict": null,
+  "shas": [
+   "462ae3f6753feed7e599c2a62ee9bcea94a1f17e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "901e7a5a3b5eb8359dc15de1b36bb0084db3b5af",
+   "90dec32040aeaf067dcaadca8f918dce6bdb86c4",
+   "9e3969c1106719b5ac2616778dbcf3613b972417",
+   "b883f291d83060b360b419e2a58b771f9abbc74b",
+   "fa8e092555c3835155d76b9ced5dc34c58bf4d70"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-05.md",
+  "verdict": null,
+  "shas": [
+   "462ae3f6753feed7e599c2a62ee9bcea94a1f17e",
+   "484beb07fe150646631985d5e9ce7b2754da7475",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "901e7a5a3b5eb8359dc15de1b36bb0084db3b5af",
+   "90dec32040aeaf067dcaadca8f918dce6bdb86c4",
+   "9e3969c1106719b5ac2616778dbcf3613b972417",
+   "b883f291d83060b360b419e2a58b771f9abbc74b",
+   "fa8e092555c3835155d76b9ced5dc34c58bf4d70"
+  ],
+  "n": 5
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "56164092d128c6767f501962174ac81c6363af9e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "d69671168c0dcf5db6a7683d631027487c7520fe"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-07.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "56164092d128c6767f501962174ac81c6363af9e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "d69671168c0dcf5db6a7683d631027487c7520fe"
+  ],
+  "n": 7
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-correction-01",
+  "path": "docs/development/work/K1.1-correction-01/review-08.md",
+  "verdict": null,
+  "shas": [
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "56164092d128c6767f501962174ac81c6363af9e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/cleanup-01.md",
+  "verdict": null,
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec",
+   "09220e6be976aff90c30fb47d95c46d6d5e18b0f",
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "50eae5a653faa2afeb76d243adf63a1daa14dd98",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "56164092d128c6767f501962174ac81c6363af9e",
+   "644dfffc7904176ee3a4f9943310cf926408a113",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f",
+   "a117b2983278f09c03027e2b3553a9a644d18986",
+   "a8ac787b2a766d897c7bd85311c1b2aee53a1ca8"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-01.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "2dc3cedb02888d891ec0a6389439b7cfb3b07943",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "56164092d128c6767f501962174ac81c6363af9e",
+   "8e5832520644a183e4ee428f8abfae88761fb8a8",
+   "b1050133b2b684065251b7b4b7f508e95e771bef",
+   "d4bd49fd49fb6d70a992635cf2b6bf8317c3af89"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-02.md",
+  "verdict": null,
+  "shas": [
+   "2dc3cedb02888d891ec0a6389439b7cfb3b07943",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "d4bd49fd49fb6d70a992635cf2b6bf8317c3af89"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-03.md",
+  "verdict": null,
+  "shas": [
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "844bee41fd57d7ae6aa60adfd6731305394f83b9",
+   "8bb0de6d6d223850ae930eec63cab6e9d08866dc",
+   "d4bd49fd49fb6d70a992635cf2b6bf8317c3af89",
+   "fc3e450027bf2723a61784eb9d48c4c76f8a0377"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-04.md",
+  "verdict": null,
+  "shas": [
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "7db74aa881155a59acdd3933c118180ea68c6924",
+   "a53757868277f954d55180c63d09b3ebd027ae9f",
+   "bd4a86748c31eb32ed3800e6deff1e18243e3e66"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-05.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec",
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "56164092d128c6767f501962174ac81c6363af9e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "7db74aa881155a59acdd3933c118180ea68c6924",
+   "7fe0bba85f630744253ce0470206fd7e78709b7d",
+   "a53757868277f954d55180c63d09b3ebd027ae9f",
+   "b1050133b2b684065251b7b4b7f508e95e771bef",
+   "b76e494d6b8433650ca745f235a1f56a4211bb62",
+   "bd4a86748c31eb32ed3800e6deff1e18243e3e66",
+   "e1eb5888af6bda071bc57e5aa417bc2496533ccd",
+   "f8dd3b41f7b3e6495dda39d8c65b6036a0c896d8"
+  ],
+  "n": 5
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "2f1a7ced4ab0a4b340132899bd61fc14ae678a6d",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "b1050133b2b684065251b7b4b7f508e95e771bef",
+   "bbcbf300acb583b87dbf6b4bd323700bccd9e90f",
+   "bf4d4e4fd20c7e57001f9945c140c34adbae2eb6"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-07.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec",
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "6535d5739c33a3973d0cce3a2473777a4ce14c2b",
+   "6d0b983b046647b86ace523e88c691d2c97d088c",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "8373455ce3819f72d6a8849f9b8a6caf688d6dda",
+   "bbcbf300acb583b87dbf6b4bd323700bccd9e90f",
+   "f696b21a7a534f8831926e9e7f54403e7c04218a"
+  ],
+  "n": 7
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1-reference-01",
+  "path": "docs/development/work/K1.1-reference-01/review-08.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec",
+   "0ee13f8138af52107d86967043bcc460faba8893",
+   "212855ff849413669f26f0e2d8f0e7a701cc3d11",
+   "30397797852de07c561d27216b87526bbd091ba3",
+   "3ec56b61c10c8cf5bab73627201e2d0b08c3f8ba",
+   "519ba002378707a4deccff1ea0a243d21eb694b7",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "644dfffc7904176ee3a4f9943310cf926408a113",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "8373455ce3819f72d6a8849f9b8a6caf688d6dda",
+   "a117b2983278f09c03027e2b3553a9a644d18986"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0f345b3c9ab49f6c5d9e09b162641cda78f96356",
+   "4f02e6cad2dbc9d5444fededbdc27f0dc695060d",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "8cd9e269b1c08f166dec1b567aedf7d1b4810b34",
+   "b5f632877cc6886926d991b11ce348e2c25d5171"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-02.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "0f345b3c9ab49f6c5d9e09b162641cda78f96356",
+   "1489227b4c80a2d059e8e71f92b233ed76bff8d5",
+   "297cc56ff186638817e0edfba7a3ce9f103d561e",
+   "615cdf884ac560aec659162353680e55f732804c",
+   "6b7e5fb0eb3cb323788f97889b84db845a7b3f9f",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "87ee39c2832f9ebd41aa8e5b084b76af0d14ff8c",
+   "8cd9e269b1c08f166dec1b567aedf7d1b4810b34",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f",
+   "b3cdf33732df1f0645e0d773917b4f82444208c5"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-03-supplement-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "156f13530fc01883608407948d320d12ba4821ca",
+   "1d4e4867b748f9e0b2f4041e17ded836ebc25a75",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-03.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "156f13530fc01883608407948d320d12ba4821ca",
+   "1d4e4867b748f9e0b2f4041e17ded836ebc25a75",
+   "3012b3c3328c49cfa15b2d4330f1bb871f53162a",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-04.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "09eca2a6e4b1a923539ea76865772b0499ee6210",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f",
+   "bd2dab6d91e0af2328aa39fe74de831bffb27818",
+   "e0660effc729b968c528943220d9ba6fbc561c18"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-05.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "417798a3e540acce78d73c7a0fdb92ebfd69faf8",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f",
+   "b3d0d59f18f6c2b1d0a49746428123d84dd80df2",
+   "d1f85e55d4d90173c1316fc6dbabca3c2b0f931f"
+  ],
+  "n": 5
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-06-supplement-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "24ff6b0ef2ea47eb1a85acad604d8a3b8030c2a1",
+   "613bad94ae0d09bd16c772139d0e945461df53da",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f",
+   "9f2954104f92c27f2631b881712e5ba61e9114ad",
+   "ae02c32ae575c70326cd7d2a91aa5c268671d92f",
+   "e59bd312373ca7afacd507a73717b16dfaa0a8f0"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "24ff6b0ef2ea47eb1a85acad604d8a3b8030c2a1",
+   "613bad94ae0d09bd16c772139d0e945461df53da",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f",
+   "ae02c32ae575c70326cd7d2a91aa5c268671d92f",
+   "e59bd312373ca7afacd507a73717b16dfaa0a8f0"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-07.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "5ac76207a05b61f918a1efd2313c25b7108d775c",
+   "5dddc2ad3cfd616b38c062380e450873cbc4c132",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "fa5cba36a2a0ebcde2659f8a01dc85864b06b2ff"
+  ],
+  "n": 7
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-08.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "2cdb1e22f0391079619e97a0fe49bf09c7855ca6",
+   "5dddc2ad3cfd616b38c062380e450873cbc4c132",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14",
+   "fa5cba36a2a0ebcde2659f8a01dc85864b06b2ff"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-09.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "2cdb1e22f0391079619e97a0fe49bf09c7855ca6",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "ccc0140ffca7fe2196cb80e57d6eb2d767666793",
+   "d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14",
+   "fbba168b638840cecc871ce4e787bc29ddc04b5d"
+  ],
+  "n": 9
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-10.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "4c03ce8b1190e4186da1407fda21951b2d32319e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "a047283523f7487cc025f4cf58d17028caad6389",
+   "ccc0140ffca7fe2196cb80e57d6eb2d767666793",
+   "d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14"
+  ],
+  "n": 10
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-11.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0367420d8993075470e8e671e462b643e6d42f10",
+   "05f48c204d1eae021b3464c206e5c11e84bb3505",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9baff3a03662720af6eefe1ecfabc41fde99298f",
+   "a047283523f7487cc025f4cf58d17028caad6389",
+   "aba9209d044f2729c51141d8a73b11e80816e42c",
+   "d1fcffdf8b3f411ecde28ae0b14fe79523dfcc14"
+  ],
+  "n": 11
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-12.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "7f34e5c135b119983a682e639f3d4d6da3bff7e5",
+   "a047283523f7487cc025f4cf58d17028caad6389",
+   "e2d62d1459fe662d8f0ef936f46216bde66eab3f",
+   "f117e6b47c4930af6735aaa3668b8b4c242fd76d"
+  ],
+  "n": 12
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-13.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "620954d4492b5b4b2a1957c774fb44318718d753",
+   "6eaccb4c8dc11d7bbac5e08d9175e742e4d29b9e",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "7f34e5c135b119983a682e639f3d4d6da3bff7e5",
+   "9d5256ebabf218a5ba11552326d0ec93bce10858",
+   "ddf24de5213a000241d04e531cad7d479104a761",
+   "f117e6b47c4930af6735aaa3668b8b4c242fd76d"
+  ],
+  "n": 13
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-14.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "28d24710e76a6232ddbd8371362a57f782170ef1",
+   "41dd2fb14e4744eb71070cab0997225b96a86afc",
+   "45402e0837b303a5724314f5d5f2721a6da6f257",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "9893376143395c0345b8d931e3a65ecfc3db2fe8",
+   "98d6cebcd5861e42c843fab65516829c8818bff8",
+   "d93d7d2a0a59b31b3d74ceebfb036837150f729e",
+   "e94ee6b1e087309eea1a825d33b9293275ec5490"
+  ],
+  "n": 14
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-15.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "98d6cebcd5861e42c843fab65516829c8818bff8",
+   "d93d7d2a0a59b31b3d74ceebfb036837150f729e"
+  ],
+  "n": 15
+ },
+ {
+  "rev": "9fd2faa",
+  "packet": "K1.1",
+  "path": "docs/development/work/K1.1/review-16.md",
+  "verdict": null,
+  "shas": [
+   "4309c3bd87380ad965fb7096c4f20da7e85f0ec8",
+   "777b9955fb3a443f700b4f3d1f4f2aef1869345b",
+   "98d6cebcd5861e42c843fab65516829c8818bff8",
+   "d93d7d2a0a59b31b3d74ceebfb036837150f729e",
+   "f9ebbcbe05041991a65aea7ad215a7f1520d9d0f"
+  ],
+  "n": 16
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.1-correction-02",
+  "path": "docs/development/work/K1.1-correction-02/cleanup-01.md",
+  "verdict": null,
+  "shas": [
+   "1d5a3e11f3629a8fdc5070088255db8b0936f5ac",
+   "227cd053244e0be52aca58ac26aac9519a8dd374",
+   "66e9e8420f422c83d66cbd4e99b3541513c6a16b",
+   "70467f4cf76896529486499db24fcaa953292491",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "8111d428984ba4922bb7a7a23b662afc5832faea",
+   "d418fc62f80d7315ada02b18a1162cca6ff4690c"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.1-correction-02",
+  "path": "docs/development/work/K1.1-correction-02/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "227cd05373f5c5f2d4dbb3e8a6d9ff3cd6c23b3f",
+   "70467f4cf76896529486499db24fcaa953292491",
+   "a6481c3b85811adb94f35d5309e04b9f3d9fc2ac",
+   "c6169506cb358e816a9a0a7696dde026c34dbc29",
+   "d8f7ef473944eaf48ea1d05b2004d2cfce59669e",
+   "e1c751b87ee0e16af1280aefcf485fceeb409664"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.1-correction-02",
+  "path": "docs/development/work/K1.1-correction-02/review-02.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "12bb29cda27369b9d0e91313d4e192c692ec886b",
+   "227cd05373f5c5f2d4dbb3e8a6d9ff3cd6c23b3f",
+   "6f2d51de81c802d6a9967a721be602d15115727c",
+   "70467f4cf76896529486499db24fcaa953292491",
+   "806bae282b542be101e54a3a3d1ca0c681de63cb",
+   "8111d428984ba4922bb7a7a23b662afc5832faea",
+   "e1c751b87ee0e16af1280aefcf485fceeb409664",
+   "eedd8aa50ab4ae71c9461136db543aa64f3e7916"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.1-correction-02",
+  "path": "docs/development/work/K1.1-correction-02/review-03.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "12bb29cda27369b9d0e91313d4e192c692ec886b",
+   "13d49568620326e19c6abc2fc2f5486472173920",
+   "1d5a3e11f3629a8fdc5070088255db8b0936f5ac",
+   "227cd053244e0be52aca58ac26aac9519a8dd374",
+   "227cd05373f5c5f2d4dbb3e8a6d9ff3cd6c23b3f",
+   "61f858d3a7b33fddfe1c2f135ce77731cc616f14",
+   "66e9e8420f422c83d66cbd4e99b3541513c6a16b",
+   "70467f4cf76896529486499db24fcaa953292491",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "806bae282b542be101e54a3a3d1ca0c681de63cb",
+   "8111d428984ba4922bb7a7a23b662afc5832faea"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/cleanup-01.md",
+  "verdict": null,
+  "shas": [
+   "4156646dbbc3aeac1f55074440fa34cf6620f484",
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b0ff7052aa8993d7547fbde48123dd058d2e0107",
+   "b7191dbf630defeff7756122a6798e15d0b73dd3",
+   "c36cbe04f7c97f198794bfede972d4861247cca0",
+   "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-01.md",
+  "verdict": null,
+  "shas": [
+   "360538522be8c1b17d23948f632fd4f568a76ed0",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "6541115e2e5389a7e5cff86f87d857b4eb486d7d",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "c36cbe04f7c97f198794bfede972d4861247cca0"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-01/README.md",
+  "verdict": null,
+  "shas": [
+   "6541115e2e5389a7e5cff86f87d857b4eb486d7d"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-01/reviewer-coverage-before-report.md",
+  "verdict": null,
+  "shas": [],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-02.md",
+  "verdict": null,
+  "shas": [
+   "360538522be8c1b17d23948f632fd4f568a76ed0",
+   "449b243cd31d5596c457e091233dfc4d77a4eff4",
+   "6541115e2e5389a7e5cff86f87d857b4eb486d7d",
+   "67555e3d4da4b6ad70685564f2224091ad48fae5",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "c323e821dffbcd65114447a66593eeec9be699fb"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-02/README.md",
+  "verdict": null,
+  "shas": [
+   "c323e821dffbcd65114447a66593eeec9be699fb"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-03.md",
+  "verdict": null,
+  "shas": [
+   "312f2584d14b0c168c2152c373a4f07d4a292d74",
+   "360538522be8c1b17d23948f632fd4f568a76ed0",
+   "6541115e2e5389a7e5cff86f87d857b4eb486d7d",
+   "6d9fbb3db4955ee2216fedf0d0b69c8e104367bf",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b18a729d989dea334a86ec08bdf8773ee77de4db"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-03/README.md",
+  "verdict": null,
+  "shas": [
+   "312f2584d14b0c168c2152c373a4f07d4a292d74",
+   "6d9fbb3db4955ee2216fedf0d0b69c8e104367bf"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-04.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "312f2584d14b0c168c2152c373a4f07d4a292d74",
+   "6d9fbb3db4955ee2216fedf0d0b69c8e104367bf",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "9b496bfc388b0216d30b9483feda650055c6cdfc",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-04/README.md",
+  "verdict": null,
+  "shas": [
+   "312f2584d14b0c168c2152c373a4f07d4a292d74"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "312f2584d14b0c168c2152c373a4f07d4a292d74",
+   "652e5e73478684651cff697fef2a3ddbe34458e0",
+   "6d9fbb3db4955ee2216fedf0d0b69c8e104367bf",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "8a418d408f715e999a403a3e84b73a9db1b43712",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "d5ffd35f4d659ed685449119b8372c2efbde6204"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-06/README.md",
+  "verdict": null,
+  "shas": [],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-06/coverage-map.md",
+  "verdict": null,
+  "shas": [],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-08.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "2b8a50297ebe83cb0922bb239aa834a2ecebc1ac",
+   "3287640f045cf2e6adeefcd32f21d897480a6a7d",
+   "652e5e73478684651cff697fef2a3ddbe34458e0",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "7249a64ce98ccebb9bd082909cdbbcced14fdb5c",
+   "9248e56705b962bfbce4699536c200fe007be942",
+   "a09223b0c27cd9831b2a85c948a57c8b347c3547",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "d5ffd35f4d659ed685449119b8372c2efbde6204"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-08/README.md",
+  "verdict": null,
+  "shas": [],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-09.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "13a73ad9ad0662fe585d1453280c5ac3da4f79bb",
+   "2613f2b8dee37c934743d9b730e925705086c4c9",
+   "3b0848ce408ddef9165434f7d7c36e9580ac6341",
+   "443b08d52ba065e7146b95906d22300f109c1625",
+   "4a035be01100fca0f807ba1cc6840a2f17925460",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "9248e56705b962bfbce4699536c200fe007be942",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "aef012040618dd35ee76b79bf326cbb2a2be0ec8",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "edea43ed1c7583c28cca9c4a7612bf4163a75d2d"
+  ],
+  "n": 9
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-10.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "13a73ad9ad0662fe585d1453280c5ac3da4f79bb",
+   "2613f2b8dee37c934743d9b730e925705086c4c9",
+   "35c6ba0277542236f21f95d695154fa0164feb96",
+   "3b0848ce408ddef9165434f7d7c36e9580ac6341",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "602ea3b3955f1aea935849e993ebfb66b64ebd5b",
+   "60eebc24113eb834e5d88015ca2a196c95c60493",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "9042cf88ecf800de6dcdb930460e31dcd6bdb2b5",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "edea43ed1c7583c28cca9c4a7612bf4163a75d2d"
+  ],
+  "n": 10
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-11.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0efe0ba2ebb3fdde71ac8ab5b7a3ae048f5f5ac1",
+   "13a73ad9ad0662fe585d1453280c5ac3da4f79bb",
+   "25f1960e7e61598145ba058a6091c401f5c4decf",
+   "3535f38f34feda675f82dd252e613c3e7851f0c2",
+   "35c6ba0277542236f21f95d695154fa0164feb96",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f",
+   "602ea3b3955f1aea935849e993ebfb66b64ebd5b",
+   "60eebc24113eb834e5d88015ca2a196c95c60493",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "dcac779bdf7e887bcf42c8a6407c1b24c2083a55",
+   "edea43ed1c7583c28cca9c4a7612bf4163a75d2d"
+  ],
+  "n": 11
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-11/README.md",
+  "verdict": null,
+  "shas": [
+   "35c6ba0277542236f21f95d695154fa0164feb96",
+   "58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "dcac779bdf7e887bcf42c8a6407c1b24c2083a55"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-11/coverage-before-report.md",
+  "verdict": null,
+  "shas": [
+   "35c6ba0277542236f21f95d695154fa0164feb96",
+   "58d9c5c50ff3561c9f7b719a84acfd0b0d5d4d9f",
+   "602ea3b3955f1aea935849e993ebfb66b64ebd5b",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "dcac779bdf7e887bcf42c8a6407c1b24c2083a55"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-12-evidence/README.md",
+  "verdict": null,
+  "shas": [
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-12-evidence/independent-coverage.md",
+  "verdict": null,
+  "shas": [],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-12.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "13a73ad9ad0662fe585d1453280c5ac3da4f79bb",
+   "1f0c5bb7c780c90560f9624fd6fa3c017160b6a8",
+   "35fa507ae81973e7b8190876dd4a4a98446bb3e7",
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "60eebc24113eb834e5d88015ca2a196c95c60493",
+   "644dfffc7904176ee3a4f9943310cf926408a113",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "81dca4575ea56cfdde5b5f8ed72c439c7ec31821",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "b93ed1df6b70569ada060481523e5b37c206e324",
+   "bacea5d120c6a29f6700773f87ee7350e247bdb7",
+   "d005dc6281a17f75bbad0b32c59aec169cdcc1ae",
+   "dcac779bdf7e887bcf42c8a6407c1b24c2083a55"
+  ],
+  "n": 12
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-revision-09-independent-2026-09-30/README.md",
+  "verdict": null,
+  "shas": [
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+   "b7191dbf630defeff7756122a6798e15d0b73dd3"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-revision-09-independent-2026-09-30/handoff.md",
+  "verdict": null,
+  "shas": [
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-revision-09-independent-2026-09-30/owner-note.md",
+  "verdict": null,
+  "shas": [
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-revision-09-independent-2026-09-30/review.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "81dca4575ea56cfdde5b5f8ed72c439c7ec31821",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "b93ed1df6b70569ada060481523e5b37c206e324",
+   "d005dc6281a17f75bbad0b32c59aec169cdcc1ae",
+   "dcac779bdf7e887bcf42c8a6407c1b24c2083a55",
+   "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-revision-10-independent-2026-09-30/README.md",
+  "verdict": null,
+  "shas": [
+   "b7191dbf630defeff7756122a6798e15d0b73dd3"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2-correction-01",
+  "path": "docs/development/work/K1.2-correction-01/review-revision-10-independent-2026-09-30/review.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "4156646dbbc3aeac1f55074440fa34cf6620f484",
+   "4a917f8caac04e7d9861e0ec3638662d52f9d3ae",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "644dfffc7904176ee3a4f9943310cf926408a113",
+   "6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "b7191dbf630defeff7756122a6798e15d0b73dd3",
+   "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0"
+  ],
+  "n": 0
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-01.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "3b88d32733b89f32744251d71b2d70a8684ccd55",
+   "4babb6ee9550479c09e75d80cb8c17e8fc042b18",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+  ],
+  "n": 1
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-02.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "0c0e644b9c9e621da6a3cd02732f50949f1c0744",
+   "3b88d32733b89f32744251d71b2d70a8684ccd55",
+   "4babb6ee9550479c09e75d80cb8c17e8fc042b18",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "c395abfb27c4a0bc7d5c18ed1d9edd2b8b840c47",
+   "da371b6a09d65b0242010d4fe46e51d64c9e2fbd"
+  ],
+  "n": 2
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-03-merged.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "51d30370ef041106969dc75682ddf37081be1a34",
+   "5797bde3df2f3b6f91f255a0b08a6b42ad2d134d",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-03.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "19d77004b3d8fb9d2cbba9524770c250700016a9",
+   "51d30370ef041106969dc75682ddf37081be1a34",
+   "5797bde3df2f3b6f91f255a0b08a6b42ad2d134d",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d"
+  ],
+  "n": 3
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-04.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "7f08677e617457683a55d5b6c51661ec690f613f",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "da82de9de1e51c4b1980e4450a6daf1126945ad2",
+   "f8c1c5e2b9edc22725857f60e0ea6dbadaf105f6"
+  ],
+  "n": 4
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-05-merged.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "aa8709673e6d53455f226d0fc01bdca6fb55e600",
+   "d13a82881c5fa11aa8fc48eff83a9472eef595a6",
+   "f0de303f2ad20423debef9e88a83436df6a35110"
+  ],
+  "n": 5
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-06.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "8ae4cd336e5e4be73235962100f88ee622d74d70",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "aa8709673e6d53455f226d0fc01bdca6fb55e600",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "cbf3bdf5c814fe544d61038ec3b273426dddff00",
+   "d13a82881c5fa11aa8fc48eff83a9472eef595a6",
+   "f0de303f2ad20423debef9e88a83436df6a35110"
+  ],
+  "n": 6
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-07-merged.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "03a4afffff55050aca5a463694b47c2e60e19bd9",
+   "31ad130d27f73b406d8578710f7d6769e89361b2",
+   "6cb906c31abcd9f44cc5fd207788cfabf7cb7794",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "d13a82881c5fa11aa8fc48eff83a9472eef595a6"
+  ],
+  "n": 7
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-08-merged.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "61059a3e43d7057de9be29f101a65ebed9416ae2",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "ad4a0e8b4bcfa5e3064a53024fe49ae3d63f38c7"
+  ],
+  "n": 8
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-09.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "08fd9162617315f1cbc7fa7682a0fc5f0bed28d3",
+   "4f3c25f6f1b4927fb9f20a23318a598113139062",
+   "61059a3e43d7057de9be29f101a65ebed9416ae2",
+   "6c3ea57275fd850f5eaa1a55206595b0a2b6875a",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "ad4a0e8b4bcfa5e3064a53024fe49ae3d63f38c7"
+  ],
+  "n": 9
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-10.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "870720c9731b6e72da55c616c06bf0f3187f6cee",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "ca0dc2b15b9b276175fe6f48893bc6231ee528a3",
+   "daeba660a09e4fe7f1c68505fe4286ecc099f2d8"
+  ],
+  "n": 10
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-11.md",
+  "verdict": "CHANGES REQUIRED",
+  "shas": [
+   "35e8c9eac24338064c48963189e0d07998004bee",
+   "870720c9731b6e72da55c616c06bf0f3187f6cee",
+   "9655d12cf583967eff08582d175ed8beb5e2506e",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b1c2e3bdad1ab9352e8a95307593cce654bc3e3c"
+  ],
+  "n": 11
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-12.md",
+  "verdict": "BLOCKED \u2014 ARCHITECTURE DECISION",
+  "shas": [
+   "04df5ed67ec4c38ebc3b0515b487d5f7c787cb73",
+   "54c65a7289e90385e01643422d57a015b66c2025",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "9655d12cf583967eff08582d175ed8beb5e2506e",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "ad219a5cf8940d0379bda9b16d693c901931a4b5",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa"
+  ],
+  "n": 12
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-13.md",
+  "verdict": "ACCEPT",
+  "shas": [
+   "2f4e64b1f51c679e2b381f9fb9800f2e290ddd30",
+   "5b5fc53010e20ebbb8aa9f570ebd5216598e13be",
+   "64af8501ff07dff70e1cfe97b48d180763979534",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "c36cbe04f7c97f198794bfede972d4861247cca0"
+  ],
+  "n": 13
+ },
+ {
+  "rev": "66bc041",
+  "packet": "K1.2",
+  "path": "docs/development/work/K1.2/review-14.md",
+  "verdict": null,
+  "shas": [
+   "2f4e64b1f51c679e2b381f9fb9800f2e290ddd30",
+   "52b1600f3b42e3a360fdc3395178f1d147edf304",
+   "5b5fc53010e20ebbb8aa9f570ebd5216598e13be",
+   "719abbf9e55e7489b6255a08cbb9e97a1e960a5e",
+   "954d31b00eb7f2412c22ccf7d4d079699f0c4032",
+   "a20d278185eaffc7f8b7489345a3624231ff6e6d",
+   "b53ccb48a8fd4b9d0b0028fc11e925d563e284fa",
+   "c0e2b01ffa36e4e6be20ed35958f8568008995b8",
+   "c36cbe04f7c97f198794bfede972d4861247cca0"
+  ],
+  "n": 14
+ }
+]
