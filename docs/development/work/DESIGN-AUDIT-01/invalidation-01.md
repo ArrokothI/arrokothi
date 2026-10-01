@@ -1,11 +1,42 @@
-# Draft owner notice — O-R8-4 classification claim hold
+# Owner invalidation notice 01 — O-R8-4 classification claim hold
 
-**DRAFT — NOT ADOPTED.** Prepared on 2026-10-01 by the DESIGN-AUDIT-01 Codex
-implementer after the owner's instruction: “Prepare an invalidation draft first”.
-That instruction authorizes this draft; it does not adopt the notice, change accepted
-claims, or authorize resuming the audit. This is not an independent review verdict.
+## Owner adoption, 2026-10-01
 
-## Recommended decision
+The owner adopted the recommended narrow claim hold and authorized the read-only audit
+to resume in this chat. The operative notice is this file. This is an owner decision,
+not an independent review verdict. Verbatim owner message:
+
+```text
+Owner decision, 2026-10-01: I adopt draft invalidation-01 (O-R8-4 classification claim hold)
+with its recommended option: a narrow claim hold, with the audit resuming read-only.
+
+Recording:
+1. Move decision-drafts/invalidation-01.md to work/DESIGN-AUDIT-01/invalidation-01.md as the
+   operative notice. Replace the DRAFT banner with an owner adoption record quoting this message.
+2. You may add one cross-reference sentence to the K1.1 row in 007 that points to the notice.
+   This is the only change I authorize outside the packet directory and the audit's own 007 row.
+   Do not edit BASELINE, Layer 3, 006, 009 or 012. If any BASELINE or guide sentence asserts that
+   re-prototyped built-ins are refused, list it in your report; do not edit it.
+3. Update stop-01.md and the audit's 007 row: hold adopted, audit resumed.
+
+Continuation rules for the rest of the audit:
+- Re-verifying a finding that is already recorded, already held (invalidation-02:
+  VALUE-DEPTH-01, EVID-01/N15, the V-D1 time dimension) or already the subject of this notice
+  (O-R8-3 enumeration and O-R8-4 classification variants) is NOT a stop condition. Record the
+  result in the register and continue.
+- Stop and ask only for (a) a NEW contradiction of an accepted claim that is not already on
+  record, or (b) a semantic decision without which an item cannot be evaluated.
+- In the register, treat O-R8-4 as a full item. Compare brand-check refusal, structural projection
+  (an explicit semantic change) and bytes/text intake, with cost, affected claims and finishable
+  closure for each. Also say which packet should own the fix: K1.1-correction-03 by amendment, or
+  a separate packet.
+
+Then finish the audit as released: DA-1 through DA-7, items (a)–(f), and my six extra checks. That
+covers the register, decision-drafts/, probes/, the DA-1 table, and implementation-01.md with clean
+C then H. Push, move the row to WAITING_FOR_REVIEW, and give me the full B/C/H.
+```
+
+## Adopted decision
 
 Hold the claim that the current in-process Kernel binding refuses re-prototyped
 exotic objects rather than accepting a plain-object projection that omits or changes
@@ -14,7 +45,7 @@ DESIGN-AUDIT-01 to resume its read-only comparison of root fixes, with this clai
 explicitly held and O-R8-4 open. Select the corrective packet after that comparison;
 no implementation or successor is released by this notice.
 
-This recommendation concerns a demonstrated value-classification defect. It does not
+This decision concerns a demonstrated value-classification defect. It does not
 select an adversarial-caller model, cooperative-caller model, or bytes/text intake.
 
 ## Evidence and the claim affected
@@ -22,14 +53,14 @@ select an adversarial-caller model, cooperative-caller model, or bytes/text inta
 - **Current tree verified:** audit base and advertised main
   `66bc041175e6fc191c2e7cf88de198111e7d97c9`.
 - **Original provenance:** K1.2-correction-01
-  [review 08, O-R8-4](../../K1.2-correction-01/review-08.md), explicitly identified there
+  [review 08, O-R8-4](../K1.2-correction-01/review-08.md), explicitly identified there
   as pre-existing K1.1 behavior requiring owner triage, outside that correction's scope.
-- **Current reproduction:** [script](../probes/reverify-exotics.py) and
-  [output](../probes/reverify-exotics.txt). The wrapper executes the original review-08
+- **Current reproduction:** [script](probes/reverify-exotics.py) and
+  [output](probes/reverify-exotics.txt). The wrapper executes the original review-08
   cases with import relocation only, checks their source identity, and verifies the
   entire Kernel source tree against the base. Environment and hashes are in the output.
-- **Governing owner:** [values / in-process value capture](../../../../../mental-model/concepts/values.md#in-process-value-capture),
-  reached through [reference](../../../../../mental-model/reference.md). It requires
+- **Governing owner:** [values / in-process value capture](../../../../mental-model/concepts/values.md#in-process-value-capture),
+  reached through [reference](../../../../mental-model/reference.md). It requires
   refusal rather than silent dropping for unsupported forms, expressly including Maps,
   Dates and typed arrays.
 - **Contradiction:** a Map with a stored entry and null prototype is accepted as `{}`;
@@ -71,20 +102,20 @@ against every historical H:
   `52b1600f3b42e3a360fdc3395178f1d147edf304`; its accepted reference H is
   `644dfffc7904176ee3a4f9943310cf926408a113`; integrated at
   `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`, as recorded in
-  [007](../../../007-work-packets.md).
+  [007](../../007-work-packets.md).
 - K1.2-correction-01 revision 10 was accepted at
   `b7191dbf630defeff7756122a6798e15d0b73dd3`, payload
   `e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0`, and integrated at `ed509e11dc39`.
-  Its [independent review](../../K1.2-correction-01/review-revision-10-independent-2026-09-30/review.md)
+  Its [independent review](../K1.2-correction-01/review-revision-10-independent-2026-09-30/review.md)
   and integration remain historical evidence for their stated scope.
 
-This notice would qualify the current integrated classification claim. It would not
+This notice qualifies the current integrated classification claim. It does not
 rewrite those verdicts, undo their integrations, or assert that all their criteria
-failed. The existing [invalidation-02 V-D1 hold](../../K1.2/invalidation-02.md) remains
-separate. This notice would not reinstate the superseded K1.2 integration hold from
+failed. The existing [invalidation-02 V-D1 hold](../K1.2/invalidation-02.md) remains
+separate. This notice does not reinstate the superseded K1.2 integration hold from
 invalidation-01.
 
-## Proposed consequences, effective only if the owner adopts
+## Consequences of adoption
 
 1. Record an active hold on the affected re-prototyped-exotic refusal claim. Dependent
    descriptions and releases must not assert that it is implemented correctly until
@@ -99,13 +130,11 @@ invalidation-01.
 5. Keep K1.1-correction-03, K1.3 and every other successor unreleased. No product change,
    merge, acceptance or successor release follows from adopting a claim hold.
 
-If adopted, the owner must explicitly authorize where the operative notice and claim
-cross-references are recorded. The audit's DA-7 scope presently permits only this
-packet directory and its own 007 row. This draft does not grant permission to edit
-other ledger rows, the baseline, Layer 3, 006, 009 or 012. An owner recording step can
-maintain the affected-claim cross-references separately from this audit's candidate.
+The owner authorized this operative notice and one cross-reference sentence in the
+K1.1 row of 007. Other claims, baseline, Layer 3 and process documents remain unchanged.
+The audit's scope check records this explicit DA-7 exception.
 
-## Alternatives and finishable closure
+## Alternatives considered in the adopted draft
 
 | Option | Benefit / cost | Follow-up closure |
 |---|---|---|
@@ -118,9 +147,7 @@ intake to bytes are later semantic choices. This administrative notice cannot ma
 of those choices implicitly. Bytes intake also cannot contain hostile code that still
 shares the Kernel process; AGENTS.md's trust/isolation distinction remains binding.
 
-## Owner response required
+## Recording and continuation
 
-**Adopt the recommended narrow claim hold and authorize the read-only audit to resume,
-or request changes to this draft.** Adoption must identify the operative notice/location
-or authorize recording this artifact as that notice. Until then the draft is pending
-and the audit stays stopped.
+Hold adopted; audit resumed. The quoted owner continuation rules govern subsequent
+re-verification. Corrective semantics and packet release remain undecided.

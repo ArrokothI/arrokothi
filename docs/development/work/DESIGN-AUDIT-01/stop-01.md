@@ -78,7 +78,16 @@ been completed. No independent review readiness is claimed. No successor is rele
 
 The owner answered **“Prepare an invalidation draft first”** through the question
 response in this chat. The implementer prepared
-[draft invalidation 01](decision-drafts/invalidation-01.md). That is draft-only
+[draft invalidation 01](invalidation-01.md). That is draft-only
 authority, not adoption or permission to resume. The audit remains stopped pending
 review of the concrete draft. The added source trace scopes consumers; it does not
 claim end-to-end probes beyond the retained review-08 reproduction.
+
+## Owner adoption and resumption, 2026-10-01
+
+The owner adopted the narrow hold and resumed the read-only audit. The full direction
+is quoted in [operative invalidation notice 01](invalidation-01.md). Earlier pending
+wording above records the prior stage and is superseded. The sole DA-7 extension is
+one cross-reference sentence in K1.1's 007 row. Recorded/held findings and O-R8-3/4
+variants do not trigger another stop; only a new accepted-claim contradiction or an
+indispensable semantic decision does. No other packet is released.

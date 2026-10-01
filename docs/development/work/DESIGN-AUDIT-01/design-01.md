@@ -126,6 +126,15 @@ The audit is stopped pending the owner's invalidation/continuation direction; th
 is no assumption that the existing V-D1 hold covers exotic classification.
 
 The owner selected “Prepare an invalidation draft first”. The resulting
-[draft notice](decision-drafts/invalidation-01.md) is pending adoption; it proposes
+[draft notice](invalidation-01.md) is pending adoption; it proposes
 a narrow claim hold and read-only audit continuation without selecting the corrective
 semantics or releasing any successor.
+
+## Owner adoption and resumption, 2026-10-01
+
+The owner adopted the narrow hold and resumed the read-only audit. The full direction
+is quoted in [operative invalidation notice 01](invalidation-01.md). Earlier pending
+wording above records the prior stage and is superseded. The sole DA-7 extension is
+one cross-reference sentence in K1.1's 007 row. Recorded/held findings and O-R8-3/4
+variants do not trigger another stop; only a new accepted-claim contradiction or an
+indispensable semantic decision does. No other packet is released.
