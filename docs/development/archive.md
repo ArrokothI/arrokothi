@@ -14,7 +14,8 @@ Historical evidence is preserved outside the normal checkout; it is not current 
 | Archive SHA-256 | `8debcfefea80b20392a831eef2373146739eb8de04932ccfbd960e59087b5c8d` |
 | Archive size | 9,858,568 bytes |
 | Contents | 1,238 tracked regular files and four skill symlinks, at their original paths under `snapshot/` |
-| Cloud locator / upload verification | Pending owner upload; no cloud copy is claimed |
+| Cloud locator / upload verification | None. On 2026-10-02 the owner chose local-only retention, so no cloud copy exists or is claimed |
+| Last verification | 2026-10-02, owner-held local copy. The SHA-256 matches the value above, and the archive's `verify.py` reports all 1,238 files at `9fd2faa` plus the cleanup-validation attachments. `snapshot/` is byte-identical to `git archive 9fd2faa…` (`diff -rq --no-dereference`, no differences) |
 | Retention owner | Repository owner |
 
 The archive includes the complete pre-cleanup tracked source snapshot, sealed packet records and
@@ -25,9 +26,10 @@ targets. `verify.py` checks the extracted contents, including separate new `clea
 attachments. Those outputs concern the uncommitted cleanup working tree, not the original snapshot
 or independent acceptance. The original evidence bytes are unchanged.
 
-The artifact and adjacent `.sha256` file are gitignored. Upload both to owner-controlled storage,
-verify the uploaded/downloaded bytes against the digest above, and record the durable locator here
-before removing the local copies. Git history is retained; this cleanup does not rewrite it or
+The artifact and adjacent `.sha256` file are gitignored and are never pushed. The owner keeps them in local
+storage only (decision of 2026-10-02). The pinned Git fallback reproduces the snapshot byte for byte.
+Only the `cleanup-validation/` attachments exist solely in the local artifact. If a cloud copy is made later,
+verify the uploaded and downloaded bytes against the digest above and record the locator here. Git history is retained; this cleanup does not rewrite it or
 claim to reduce historical clone size. A missing cloud copy does not prevent ordinary tests.
 
 ## Retrieve and verify
