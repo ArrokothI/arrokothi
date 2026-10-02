@@ -68,7 +68,7 @@
     },
     "ISOLATION": {
       "source": "../../../../AGENTS.md#security-and-trust",
-      "claim": "Isolated Execution requires physical containment; bytes and observation are not enforcement."
+      "claim": "Isolated Execution is physically contained according to the deployment claim; Kernel authority alone does not prevent ambient native actions. Prevention requires Kernel mediation or isolation; telemetry/observation is not enforcement."
     },
     "BASELINE": {
       "source": "../../002-implemented-kernel-baseline.md#value-refusal-diagnostics",

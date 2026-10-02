@@ -17,11 +17,11 @@
           "closure": "Maintain finite poison, descriptor, iterator, host-member and complete-decision fault cases under the live-object contract; check canonical bytes against independently derived expected data, preserved caller state, and refused environmental setup. The current frozen realm must refuse safely. Decision-05 metered-helper closure and finite brand-refusal matrix remain required.",
           "core": "live",
           "profile": "keep",
-          "method": "structural mechanism",
+          "method": "declared bounded search",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -33,7 +33,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -49,11 +49,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -89,11 +89,11 @@
             },
             "BASELINE": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review."
+              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -118,7 +118,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -130,7 +130,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -146,11 +146,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -186,11 +186,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Alternative requires scope amendment for interim brand refusal plus selected cooperative traversal meter in core; no binding relocation assumed."
+              "reason": "Alternative requires scope amendment for interim brand refusal plus selected cooperative traversal meter in core; no binding relocation assumed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -223,7 +223,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -235,7 +235,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -251,11 +251,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "narrow",
@@ -291,11 +291,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates."
+              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -317,18 +317,18 @@
         {
           "id": "A-hard",
           "label": "Realm hardening with live-object core (alternative defense in depth)",
-          "cost": "Potentially prevents declared intrinsic mutations; Node support/library compatibility must be pinned. Current Kernel window is incompatible; Proxy/getter code and ambient capabilities remain. SES is excluded pending separate exact-version license/compatibility review; no dependency added.",
+          "cost": "Potentially prevents declared intrinsic mutations; Node support/library compatibility must be pinned. Current Kernel window is incompatible; Proxy/getter code and ambient capabilities remain. SES is excluded pending separate exact-version license/compatibility review; no dependency added. Permanent binding pinning restricts host bootstrap/polyfills; startup validation alone is insufficient. A narrowed cooperative V-ENV integrity alternative costs an explicit ambient-guarantee amendment instead.",
           "claims": [
-            "Narrow environment availability to a validated hardened configuration; preserve single observation and current Proxy exclusions; do not claim containment."
+            "Keep V-ENV output independence only with durable binding protection plus the audited intrinsic graph; narrow availability to a positively validated configuration. Flag-only hardening cannot establish either supported Kernel availability or binding integrity. Coherence, DEC-8/9 and no-containment limits remain."
           ],
-          "closure": "At startup check the actual required intrinsic descriptors/prototype chains; incompatible setup refuses before any request. Each maintained poison attempt must throw AND ordinary scalar/object/array canonicalization and complete-decision corpus must succeed under hardening. The current refusal probe is a failing availability control for future implementation, not proof hardening is supported.",
+          "closure": "Before caller code, permanently pin own globalThis bindings isNaN, isFinite, Object, Array, JSON, Set, Error and Symbol to their audited values (non-writable and non-configurable), and freeze/check the relied-on intrinsic graph. Reconcile every hostile_only finding through hardening-corpus.json, including explicitly out-of-reach cases. In coherent Proxy traps mid-capture try all eight replacements and the K11-R5-VAL-03 getPrototypeOf witness; each replacement must throw or be ineffectual and exact bytes/observed prototypes must remain correct. A flag-only startup-checked control must fail this integrity gate. Retain descriptor/read coherence and whole-decision, host lookup, history and fault evidence; freezing is not their proof. Ordinary scalar/object/array encoding and complete decisions must also succeed; current Kernel frozen refusals fail this availability gate.",
           "core": "live",
           "profile": "hard",
           "method": "structural mechanism",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -340,11 +340,11 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
-              "reason": "Availability only in pinned hardening configurations that pass both poison and positive Kernel controls; current window refuses every value. No temporary restoration duty when replacement never mutates realm."
+              "reason": "Keep output independence conditional on permanent protection of the eight call-time bindings and the audited intrinsic graph before caller code; startup-only checks/Node flag are insufficient. Narrow availability to configurations passing both exact integrity and positive Kernel controls; current frozen Kernel is unsupported. No restoration duty only if the replacement performs no temporary writes."
             },
             "V-ENVELOPE": {
               "disposition": "keep",
@@ -356,11 +356,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -396,15 +396,15 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Future replacement must describe startup refusal/compatible hardening; current implementation is incompatible, so no availability claim now."
+              "reason": "Future replacement must describe startup refusal/compatible hardening; current implementation is incompatible, so no availability claim now. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
-              "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "disposition": "narrow",
+              "reason": "Owner scope amendment assigns interim brand refusal (PROXY-01 answer pending), current traversal meter and N15. Compatible hardening redesign is separately gated; current refusal proves no support. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
-              "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "disposition": "narrow",
+              "reason": "Future SDK bridge must propagate unsupported-configuration refusal and the durable binding/realm preconditions; supported legacy SDK remains unchanged."
             }
           },
           "sdk": "No supported SDK consumer currently uses the private target Kernel (BASELINE); supported 0.8.x SDK unchanged. Private host startup/library compatibility changes; K1.4 must propagate refusal and the pinned supported configuration.",
@@ -416,7 +416,7 @@
     "B": {
       "title": "Own-array and serializer environment (brief b; F09, F10)",
       "context": "The capture stack's `isOpen`/`closeContainer` in `values.ts:492\u2013521` scans depth using descriptor-based `readAt`; the serializer window at `values.ts:1334\u20131409` saves, resets and restores intrinsics/prototype shape on each successful encode. The direct root cause of the held depth case is repeated uncharged work on refused containers, not just a slow primitive. A direct index read would reduce overhead without proving a bound. A constant-time active-path membership structure could remove repeated scans, but its construction/access must satisfy the chosen profile and meter.\n\nThe [controlled ablation](probes/mechanism-cost.json) executes the same small cooperative value with the serializer window removed, internal reads simplified, or both, only in disposable copies. Every result is checked for equality. Sequential runs show the window dominates this sample; this does not measure a general speedup, safety or accepted-domain equivalence. The [line manifest](measurements.json) counts the whole modules and explicit spans. The serializer dependency remains approved unmodified `canonicalize@3.0.0`; no dependency replacement was tested or authorized here.",
-      "after": "Realm hardening, including Node --frozen-intrinsics and SES lockdown, is evaluated in [realm evidence](realm-hardening.md). It is not a supported guarantee today.",
+      "after": "Node --frozen-intrinsics is evaluated in [realm evidence](realm-hardening.md); SES lockdown remains excluded pending exact-version review. No supported hardening guarantee is counted today.",
       "options": [
         {
           "id": "B-keep",
@@ -428,11 +428,11 @@
           "closure": "Meter depth-dependent scans and returned listings; mutate iterator.next, descriptors, index shadows and restoration failures and assert exact bytes or safe refusal. Verify restoration on every tested failure; frozen realm refuses safely.",
           "core": "live",
           "profile": "keep",
-          "method": "structural mechanism",
+          "method": "declared bounded search",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -444,7 +444,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -460,11 +460,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -500,11 +500,11 @@
             },
             "BASELINE": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review."
+              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -529,7 +529,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -541,7 +541,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -557,11 +557,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -597,11 +597,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Alternative requires scope amendment for interim brand refusal plus selected cooperative traversal meter in core; no binding relocation assumed."
+              "reason": "Alternative requires scope amendment for interim brand refusal plus selected cooperative traversal meter in core; no binding relocation assumed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -634,7 +634,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -646,7 +646,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -662,11 +662,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "narrow",
@@ -702,11 +702,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates."
+              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -728,18 +728,18 @@
         {
           "id": "B-hard",
           "label": "Replace serializer window with verified hardened-realm encoding (alternative)",
-          "cost": "Avoids per-call realm swaps after a compatibility redesign; startup/library constraints, proxies and unbounded callbacks remain. No SES dependency or source added.",
+          "cost": "Avoids per-call realm swaps after a compatibility redesign; startup/library constraints, proxies and unbounded callbacks remain. No SES dependency or source added. Permanent binding pinning restricts host bootstrap/polyfills; startup validation alone is insufficient. A narrowed cooperative V-ENV integrity alternative costs an explicit ambient-guarantee amendment instead.",
           "claims": [
-            "Narrow environment establishment to startup-validated hardening; temporary restoration becomes inapplicable only when no temporary mutation occurs."
+            "Keep V-ENV output independence only with durable binding protection plus the audited intrinsic graph; narrow availability to a positively validated configuration. Flag-only hardening cannot establish either supported Kernel availability or binding integrity. Coherence, DEC-8/9 and no-containment limits remain."
           ],
-          "closure": "Prove the replacement has no per-call prototype/intrinsic writes; startup checks needed descriptors. Frozen poison cases throw while all ordinary canonical vectors succeed and exceptional serialization leaves environment unchanged. Current keep-window refusal must become a positive encoding control before any support claim.",
+          "closure": "Audit every ambient read of the exact unmodified dependency and adapter; local aliases in the adapter do not close the dependency's free global reads. Before caller code, permanently pin own globalThis bindings isNaN, isFinite, Object, Array, JSON, Set, Error and Symbol to their audited values (non-writable and non-configurable), and freeze/check the relied-on intrinsic graph. Reconcile every hostile_only finding through hardening-corpus.json, including explicitly out-of-reach cases. In coherent Proxy traps mid-capture try all eight replacements and the K11-R5-VAL-03 getPrototypeOf witness; each replacement must throw or be ineffectual and exact bytes/observed prototypes must remain correct. A flag-only startup-checked control must fail this integrity gate. Require no per-call prototype/intrinsic/global writes in the replacement encoder, unchanged environment on exceptional serialization, and exact ordinary canonical vectors. Positive Kernel compatibility is a successor gate, not implemented here.",
           "core": "live",
           "profile": "hard",
           "method": "structural mechanism",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -751,11 +751,11 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
-              "reason": "Availability only in pinned hardening configurations that pass both poison and positive Kernel controls; current window refuses every value. No temporary restoration duty when replacement never mutates realm."
+              "reason": "Keep output independence conditional on permanent protection of the eight call-time bindings and the audited intrinsic graph before caller code; startup-only checks/Node flag are insufficient. Narrow availability to configurations passing both exact integrity and positive Kernel controls; current frozen Kernel is unsupported. No restoration duty only if the replacement performs no temporary writes."
             },
             "V-ENVELOPE": {
               "disposition": "keep",
@@ -767,11 +767,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -807,15 +807,15 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Future replacement must describe startup refusal/compatible hardening; current implementation is incompatible, so no availability claim now."
+              "reason": "Future replacement must describe startup refusal/compatible hardening; current implementation is incompatible, so no availability claim now. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
-              "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "disposition": "narrow",
+              "reason": "Owner scope amendment assigns interim brand refusal (PROXY-01 answer pending), current traversal meter and N15. Compatible hardening redesign is separately gated; current refusal proves no support. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
-              "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "disposition": "narrow",
+              "reason": "Future SDK bridge must propagate unsupported-configuration refusal and the durable binding/realm preconditions; supported legacy SDK remains unchanged."
             }
           },
           "sdk": "No supported SDK consumer currently uses the private target Kernel (BASELINE); supported 0.8.x SDK unchanged. Private host startup/library compatibility changes; K1.4 must propagate refusal and the pinned supported configuration.",
@@ -827,7 +827,7 @@
     "C": {
       "title": "O-R8-4 exotic classification (brief c; F02; full held item)",
       "context": "**Current evidence.** Original [review-08 reproduction](probes/reverify-exotics.txt) accepts re-prototyped Map, Set, Date and ArrayBuffer as empty objects and typed arrays as numeric-key objects. `captureObject` checks a permitted prototype before own-member capture, so hidden built-in state disappears. The snapshot serializer is faithful to the wrong projection. [Consumer probe](probes/exotic-consumers.mts) records full answers/replays/views in [JSON](probes/exotic-consumers.json): creation authority context and initial input, later ingress, and Outcome progress/Emission/result/error all accept the projected Map; changing hidden contents replays. This establishes no grant bypass. Identity primitive-text gates and recovery string-list schemas are separately traced in the notice and do not accept these object projections as identities/lists.\n\nNo explicit re-prototyped-built-in refusal sentence was found in BASELINE or guides; [claim search](probes/claim-search.txt) identifies `values.md:96,273` as the explicit domain claims. BASELINE:36's generic preservation claim depends on that domain and must be treated subject to the notice. None was edited. The reference links, same canonical API and downstream identity comparisons are affected even if current tests were green.",
-      "after": "Owner direction b selects interim brand refusal followed by the bytes binding; projection is rejected. The relevant source comment packages/kernel/src/values.ts:36\u201342 is also a dependent claim under invalidation-01. Both holds remain until their separately accepted corrections. Wrapper package location remains open; CORE compares it without selecting.",
+      "after": "Owner direction b selects interim brand refusal followed by the bytes binding; projection is rejected. The relevant source comment packages/kernel/src/values.ts:36\u201342 is also a dependent claim under invalidation-01. Both holds remain until their separately accepted corrections. Wrapper package location remains open; CORE compares it without selecting.\n\n**Open owner question PROXY-01 (no choice made).** Include review-02/brand/proxy-exotic-probe.mts: internal-slot checks are false through forwarding Proxies. Owner answer 1 accepts coherent presented values (Map targets both {}, typed-array target numeric members); narrow restored O-R8-4 and the proposed invalidation-01 release condition to non-Proxy values, retaining presented-value replay. Owner answer 2 refuses these Proxies, requiring an interim decision-04 item 5 amendment and a separate Proxy refusal mechanism; assert no accepted state/receipt change at every root. Neither answer is selected or releases the hold. Both drafts affect V-DOMAIN, D03/D04, V-READING, BASELINE, K11C03, later wrapper claims and the prospective release condition. The historical invalidation notice remains untouched.",
       "options": [
         {
           "id": "C-hold",
@@ -836,14 +836,14 @@
           "claims": [
             "Keep invalidation-01 and defer brand-refusal correctness; neither acceptance nor release follows."
           ],
-          "closure": "Record the responsible correction and affected root consumers, with held release prerequisite. Reproduce current hidden-content replay collapse as a known defect; this closes triage only, never the hold.",
+          "closure": "Record the responsible correction and affected root consumers, with held release prerequisite. Reproduce current hidden-content replay collapse as a known defect; this closes triage only, never the hold. Also reproduce the forwarding-Proxy hidden-target collapse; PROXY-01 remains draftable under both answers and triage cannot imply an unqualified release condition.",
           "core": "live",
           "profile": "hold",
           "method": "deterministic check",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Refusal remains normative but known implementation violates held exotic classification; this option closes triage only."
+              "reason": "Refusal remains normative but known implementation violates held exotic classification; this option closes triage only. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -855,7 +855,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -871,11 +871,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -911,11 +911,11 @@
             },
             "BASELINE": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "keep",
-              "reason": "Retain current planned meter assignment while explicitly naming proposed classification amendment; deferral does not repair or lift a hold."
+              "reason": "Retain current planned meter assignment while explicitly naming proposed classification amendment; deferral does not repair or lift a hold. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -931,16 +931,16 @@
           "label": "Brand-check refusal in live-object core (interim selected step)",
           "cost": "Smallest interim fix using internal-slot checks before any own-key listing; costs cross-realm and Proxy-safe predicate design.",
           "claims": [
-            "Keep unsupported-brand refusal intent; amend K1.1-correction-03 scope and distinguish listed-brand coverage from every host exotic."
+            "Keep unsupported-brand refusal intent; amend K1.1-correction-03 scope and distinguish listed-brand coverage from every host exotic. PROXY-01 is unresolved: accepting presented Proxies narrows restored V-DOMAIN/O-R8-4 scope; refusing them amends D04 item 5 before the interim correction."
           ],
-          "closure": "Declare the supported built-in brand matrix; on current object capture reject internal-slot Map/Set/Date/ArrayBuffer/typed-array and String-wrapper witnesses before own-key listing, including null/replaced prototypes. Preserve coherent-Proxy rules or obtain a named amendment; all general root consumers refuse with no accepted-state change. Include large re-prototyped typed arrays and String wrappers to ensure rejection precedes own-key listing; record residual exotic policy.",
+          "closure": "Declare and test the finite built-in brand matrix: Map/Set/Date/ArrayBuffer/typed-array and String-wrapper witnesses with ordinary, null, replaced and cross-realm prototypes, spoofed tags and hidden-content variants. Refuse non-Proxy unsupported brands before any own-key listing, including large typed arrays/String wrappers. Cover creation, authorityContext, ingress, progress/emission/result/error roots and replay; state residual exotic policy. Include review-02/brand/proxy-exotic-probe.mts: internal-slot checks are false through forwarding Proxies. Owner answer 1 accepts coherent presented values (Map targets both {}, typed-array target numeric members); narrow restored O-R8-4 and the proposed invalidation-01 release condition to non-Proxy values, retaining presented-value replay. Owner answer 2 refuses these Proxies, requiring an interim decision-04 item 5 amendment and a separate Proxy refusal mechanism; assert no accepted state/receipt change at every root. Neither answer is selected or releases the hold.",
           "core": "live",
           "profile": "keep",
-          "method": "structural mechanism",
+          "method": "declared bounded search",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -952,7 +952,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -968,11 +968,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -1008,11 +1008,11 @@
             },
             "BASELINE": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review."
+              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -1030,14 +1030,14 @@
           "claims": [
             "Remove current refuse-not-project rule for the chosen projection domain; amend accepted equality/domain descriptions explicitly."
           ],
-          "closure": "Specify projection independently of JS prototypes; finite built-in examples assert projected bytes and same/different hidden-content replay outcomes at every root. A separate semantic binding packet must adopt those changed outcomes; current owner direction rejects this choice.",
+          "closure": "Specify projection independently of JS prototypes; finite built-in examples assert projected bytes and same/different hidden-content replay outcomes at every root. A separate semantic binding packet must adopt those changed outcomes; current owner direction rejects this choice. Include forwarding-Proxy targets: specify presented-value projection versus explicit refusal independently; never claim an internal-slot predicate sees through the Proxy.",
           "core": "live",
           "profile": "projection",
           "method": "structural mechanism",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "remove",
-              "reason": "Would replace unsupported-form refusal for selected hidden-slot brands with explicit structural projection, changing accepted content and equality. Owner rejected this alternative."
+              "reason": "Would replace unsupported-form refusal for selected hidden-slot brands with explicit structural projection, changing accepted content and equality. Owner rejected this alternative. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -1049,7 +1049,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -1065,11 +1065,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -1105,11 +1105,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Would require new projection domain and equality description, never claim current refusal correct. Owner rejected this alternative."
+              "reason": "Would require new projection domain and equality description, never claim current refusal correct. Owner rejected this alternative. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Meter remains current traversal; projection requires separate semantic binding packet and explicit owner reversal, not a meter-only change."
+              "reason": "Meter remains current traversal; projection requires separate semantic binding packet and explicit owner reversal, not a meter-only change. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -1127,14 +1127,14 @@
           "claims": [
             "Keep O-R8-4 refusal intent in wrapper; remove live-object classification from core API; amend packet scope/decisions before implementation."
           ],
-          "closure": "Strict canonical-byte validation refuses live objects at the core; the cooperative wrapper rejects the O-R8-4 brands before listing. Test ordinary/exotic, cross-realm and spoofed-tag inputs across creation, authorityContext, ingress and Outcome roots; hidden-content variants cannot collapse into an accepted replay. Interim brand and meter correction must already be accepted. Scope amendment assigns interim brand checks and N15/meter to K1.1-correction-03; the separately released binding packet owns relocation.",
+          "closure": "Strict canonical-byte validation refuses live objects at the core; the cooperative wrapper rejects the non-Proxy O-R8-4 brands before listing. Test ordinary/exotic, cross-realm and spoofed-tag inputs across creation, authorityContext, ingress and Outcome roots; non-Proxy hidden-content variants must refuse rather than collapse into an accepted replay. The wrapper must carry the owner's PROXY-01 limit: accept presented coherent values with an explicit non-Proxy brand claim, or refuse Proxies under a named amendment; a bytes core does not settle this choice. Interim brand and meter correction must already be accepted. Scope amendment assigns interim brand checks and N15/meter to K1.1-correction-03; the separately released binding packet owns relocation.",
           "core": "canonical-bytes",
           "profile": "bytes",
           "method": "structural mechanism",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -1146,7 +1146,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -1162,11 +1162,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "narrow",
@@ -1202,11 +1202,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates."
+              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -1252,8 +1252,8 @@
           ],
           "method": "deterministic check",
           "closure": "Only the state-owner module exports apply; immutable plan union contains owned data and no caller callbacks. A module dependency check denies raw mutable state and bypass mutants fail. Complete-decision corpus remains identical, including rejected decisions with authorized refusal records and reentrant state checks. Required history variants and null-prototype optional records answer amendment-03 item 4; types alone do not establish the boundary.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent mechanism. Owner sequence for the coordinator refactor: after K1.1-correction-03 and the binding packet, before K1.3; sequencing is not a logical dependency on bytes."
         }
       ]
     },
@@ -1282,8 +1282,8 @@
           ],
           "method": "deterministic check",
           "closure": "Every catalog row resolves to maintained case/registry ID, existing suite or explicit retired artifact; every live mutant has control + causal kill/survival; every oracle comparison has a negative control; missing/dead mappings fail a registry check.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent. Owner sequence: TOOLS-01 before K1.1-correction-03; no core amendment is a prerequisite."
         },
         {
           "id": "E3",
@@ -1372,16 +1372,16 @@
           "label": "Keep live-object contract with interim brand-refusal correction",
           "cost": "Smallest object-binding correction; still has Proxy/host-exotic residual policy and enumeration cost",
           "claims": [
-            "Keep listed unsupported forms and coherent-Proxy rules; amend K1.1-correction-03 scope to repair brand refusal before own-key listing."
+            "Keep listed unsupported forms and coherent-Proxy rules; amend K1.1-correction-03 scope to repair brand refusal before own-key listing. PROXY-01 is unresolved: accepting presented Proxies narrows restored V-DOMAIN/O-R8-4 scope; refusing them amends D04 item 5 before the interim correction."
           ],
           "method": "declared bounded search",
-          "closure": "Declare the supported built-in brand matrix; on current object capture reject internal-slot Map/Set/Date/ArrayBuffer/typed-array and String-wrapper witnesses before own-key listing, including null/replaced prototypes. Preserve coherent-Proxy rules or obtain a named amendment; all general root consumers refuse with no accepted-state change.",
+          "closure": "Declare and test the finite built-in brand matrix: Map/Set/Date/ArrayBuffer/typed-array and String-wrapper witnesses with ordinary, null, replaced and cross-realm prototypes, spoofed tags and hidden-content variants. Refuse non-Proxy unsupported brands before any own-key listing, including large typed arrays/String wrappers. Cover creation, authorityContext, ingress, progress/emission/result/error roots and replay; state residual exotic policy. Include review-02/brand/proxy-exotic-probe.mts: internal-slot checks are false through forwarding Proxies. Owner answer 1 accepts coherent presented values (Map targets both {}, typed-array target numeric members); narrow restored O-R8-4 and the proposed invalidation-01 release condition to non-Proxy values, retaining presented-value replay. Owner answer 2 refuses these Proxies, requiring an interim decision-04 item 5 amendment and a separate Proxy refusal mechanism; assert no accepted state/receipt change at every root. Neither answer is selected or releases the hold.",
           "core": "live",
           "profile": "keep",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -1393,7 +1393,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -1409,11 +1409,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -1449,11 +1449,11 @@
             },
             "BASELINE": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review."
+              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -1472,13 +1472,13 @@
             "Remove live-object classification from core; retain refusal in caller-side wrapper after interim correction; binding packet amends capture placement."
           ],
           "method": "structural mechanism",
-          "closure": "Strict canonical-byte validation refuses live objects at the core; the cooperative wrapper rejects the O-R8-4 brands before listing. Test ordinary/exotic, cross-realm and spoofed-tag inputs across creation, authorityContext, ingress and Outcome roots; hidden-content variants cannot collapse into an accepted replay. Interim brand and meter correction must already be accepted.",
+          "closure": "Strict canonical-byte validation refuses live objects at the core; the cooperative wrapper rejects the non-Proxy O-R8-4 brands before listing. Test ordinary/exotic, cross-realm and spoofed-tag inputs across creation, authorityContext, ingress and Outcome roots; non-Proxy hidden-content variants must refuse rather than collapse into an accepted replay. The wrapper must carry the owner's PROXY-01 limit: accept presented coherent values with an explicit non-Proxy brand claim, or refuse Proxies under a named amendment; a bytes core does not settle this choice. Interim brand and meter correction must already be accepted.",
           "core": "canonical-bytes",
           "profile": "bytes",
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -1490,7 +1490,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -1506,11 +1506,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "narrow",
@@ -1546,11 +1546,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates."
+              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -1599,8 +1599,8 @@
           ],
           "method": "structural mechanism",
           "closure": "Permit scope-local identity and sequence creation only through private typed constructors; export no raw constructor/state counter. Module checks reject a direct-construction or global-counter bypass; generated boundary-length values round-trip through dispatch, takeover, replay and inspection with unchanged nondisclosure.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent mechanism. Owner sequence for the coordinator refactor: after K1.1-correction-03 and the binding packet, before K1.3; sequencing is not a logical dependency on bytes."
         }
       ]
     },
@@ -1786,7 +1786,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -1798,7 +1798,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -1814,11 +1814,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -1854,11 +1854,11 @@
             },
             "BASELINE": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review."
+              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -1883,7 +1883,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -1895,7 +1895,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -1911,11 +1911,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "narrow",
@@ -1951,11 +1951,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates."
+              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -1998,7 +1998,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -2010,7 +2010,7 @@
             },
             "V-READING": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "keep",
@@ -2026,11 +2026,11 @@
             },
             "D03": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "keep",
@@ -2066,11 +2066,11 @@
             },
             "BASELINE": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review."
+              "reason": "Preserve live-object meter but propose scope amendment adding listed-brand refusal before own-key enumeration; semantic classification residuals require owner review. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "keep",
@@ -2095,7 +2095,7 @@
           "inventory": {
             "V-DOMAIN": {
               "disposition": "keep",
-              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance."
+              "reason": "Preserve this obligation in the proposed profile; current holds and historical authority remain until separate acceptance. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-LIMITS": {
               "disposition": "keep",
@@ -2107,7 +2107,7 @@
             },
             "V-READING": {
               "disposition": "narrow",
-              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed."
+              "reason": "Retain single coherent ordinary capture; hostile coherent-Proxy behavior is outside supported cooperative contract. No safe universal Proxy detection is claimed. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "V-ENV": {
               "disposition": "narrow",
@@ -2123,11 +2123,11 @@
             },
             "D03": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D04": {
               "disposition": "narrow",
-              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable."
+              "reason": "Amend item 5 and dependent ambient/coherent-Proxy promises before narrowing to cooperative capture; retain once-only observations and excluded engine work where applicable. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "D05": {
               "disposition": "narrow",
@@ -2163,11 +2163,11 @@
             },
             "BASELINE": {
               "disposition": "narrow",
-              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained."
+              "reason": "Successor must replace current unconditional coherent-Proxy/ambient-safety binding description and identify current-versus-migrated surface; DEC-7 weights and holds retained. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K11C03": {
               "disposition": "narrow",
-              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates."
+              "reason": "Amend scope to interim brand checks before listing, current-traversal meter and N15; later binding owns relocation. Both hold closures remain independent acceptance gates. Interim PROXY-01 is pending: answer 1 narrows restored brand refusal/hold release to non-Proxies while retaining coherent presented values; answer 2 amends decision-04 item 5 to permit Proxy refusal. This cell does not select an answer."
             },
             "K14": {
               "disposition": "narrow",
@@ -2216,8 +2216,8 @@
           ],
           "method": "structural mechanism",
           "closure": "Only a private authority/precedence planner creates a validated plan consumed by apply; apply rejects unvalidated raw requests and carries a current-state/version precondition. Authority-skipping and stale-after-callback mutants fail; the existing full decision table remains identical.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent mechanism. Owner sequence for the coordinator refactor: after K1.1-correction-03 and the binding packet, before K1.3; sequencing is not a logical dependency on bytes."
         }
       ]
     },
@@ -2249,8 +2249,8 @@
           ],
           "method": "structural mechanism",
           "closure": "Require immutable tagged history variants in each state-changing plan, with required own fields and null-prototype optional records; projection exports no state writer. Omitted-history and writable-view bypass mutants fail; old views remain immutable and all existing transition results are identical.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent mechanism. Owner sequence for the coordinator refactor: after K1.1-correction-03 and the binding packet, before K1.3; sequencing is not a logical dependency on bytes."
         }
       ]
     },
@@ -2282,8 +2282,8 @@
           ],
           "method": "structural mechanism",
           "closure": "At a proposed authenticated transport boundary, altered attempt/delivery capability, wrong peer, replayed settlement and stale epoch messages are rejected without progress commit; compare local-versus-transport whole decisions and retained delivery attribution. Remote authentication and deployment evidence are additional gates, not implied by bytes.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent. Any remote delivery transport requires its own owner release and authentication evidence; canonical bytes do not require it."
         }
       ]
     },
@@ -2347,8 +2347,8 @@
           ],
           "method": "structural mechanism",
           "closure": "After binding then coordinator refactor, dependency checks reject raw-state exports and unauthorized writers; null-prototype own-data records prevent absent-field inheritance. Deliberate owner-boundary bypass mutants fail. Map each analyzer obligation to structural or retained runtime evidence before retirement; arbitrary future TypeScript soundness is excluded.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent mechanism. Owner sequence for the coordinator refactor: after K1.1-correction-03 and the binding packet, before K1.3; sequencing is not a logical dependency on bytes."
         }
       ]
     },
@@ -2380,8 +2380,8 @@
           ],
           "method": "structural mechanism",
           "closure": "TOOLS-01 registry separates scenario, profile, injection adapter and complete-decision oracle; every migrated source exit maps to a live case and omission fails. Disable each oracle comparison and require its negative control to reject inconsistent decisions; binding retirement removes only hostile-profile gates and preserves all fault/transition obligations.",
-          "core": "canonical-bytes",
-          "dependency": "Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation."
+          "core": "independent",
+          "dependency": "Core-independent. Registry/oracle work belongs to TOOLS-01 first; hostile-gate retirement waits for binding acceptance."
         }
       ]
     }

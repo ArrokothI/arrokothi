@@ -31,7 +31,7 @@ def validate(model,inventory):
                 assert set(o['inventory'])==set(inventory),(key,o['id'],'inventory coverage')
                 assert all(v['disposition'] in ['keep','narrow','remove'] and v['reason'].strip() for v in o['inventory'].values())
                 assert o['sdk'].strip() and isinstance(o['moot_findings'],list) and o['moot_reason'].strip()
-            if 'Recommend' in o['label'] and key in {'A','B','C','D','E','F02','F09','F10'}:
+            if 'Recommend' in o['label'] and key in REQUIRED:
                 assert o['core']=='canonical-bytes',(key,'contradictory selected core')
 def self_test(model,inventory):
     for field in ['claims','closure']:
@@ -52,7 +52,7 @@ def self_test(model,inventory):
         except AssertionError:pass
         else:raise AssertionError('surviving '+kind)
 def table(key,item):
-    lines=['| Option | Benefit and cost | Affected claims | Finishable closure |','|---|---|---|---|']
+    lines=['| Option | Benefit and cost | Affected claims | Finishable closure | Recorded counterexamples |','|---|---|---|---|---|']
     for o in item['options']:
         label=o['label'];label=('**'+label+'**') if len(key)==1 and 'Recommend' in label else label
         claims='; '.join(o['claims'])
@@ -60,7 +60,8 @@ def table(key,item):
         closure=o['method']+': '+o['closure']
         if o.get('dependency'):closure+=' '+o['dependency']
         assert all('|' not in v for v in [label,o['cost'],claims,closure])
-        lines.append('| '+' | '.join([label,o['cost'],claims,closure])+' |')
+        corpus=f"[{o['id']}](closure-corpus.md#{o['id'].lower()})"
+        lines.append('| '+' | '.join([label,o['cost'],claims,closure,corpus])+' |')
     return '\n'.join(lines)
 def main():
     model=json.loads((P/'family-notes.json').read_text());inv=json.loads((P/'claim-inventory.json').read_text())['claims'];validate(model,inv);self_test(model,inv)

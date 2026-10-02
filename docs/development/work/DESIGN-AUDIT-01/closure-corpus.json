@@ -1,0 +1,740 @@
+{
+  "session": "Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.",
+  "scope": "Declared reconciliation of all classified family records; deterministic membership plus semantic reading, not a claim to rerun every historical product suite. aliases/self-references retained, no inflated discovery count.",
+  "families": {
+    "F01": {
+      "labels": [
+        "K01-R10-01",
+        "K01-R11-01",
+        "K01-R11-02",
+        "K01-R11-04",
+        "K01-R2-03",
+        "K01-R4-01",
+        "K01-R5-01",
+        "K01-R5-02",
+        "K01-R6-01",
+        "K01-R6-02",
+        "K01-R7-01",
+        "K01-R7-02",
+        "K01-R7-03",
+        "K01-R8-01",
+        "K01-R8-02",
+        "K01-R8-03",
+        "K01-R8-04",
+        "K01-R9-01",
+        "K01-REV-02"
+      ],
+      "dimensions": "Event/wait order, generation/deadline, cancellation/completion and dependent-obligation relations; no K1.3 implementation is inferred.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F02": {
+      "labels": [
+        "K01-O12-01",
+        "K01-O12-02",
+        "K01-O12-03",
+        "K01-R2-01",
+        "K01-R3-01",
+        "K1.2-correction-01::O-R8-3",
+        "K1.2-correction-01::O-R8-4",
+        "K11-R1-JCS-01"
+      ],
+      "dimensions": "Domain/equality separation, transport versus canonical codec, Unicode/numbers/own __proto__, re-prototyped exotic enumeration and hidden-content replay; review-02 adds forwarding Proxies and clone refusal.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F03": {
+      "labels": [
+        "K01-REV-01",
+        "K11-R1-ID-01",
+        "K11-R12-ID-01",
+        "K11-R15-ID-01",
+        "K11-R16-ID-01",
+        "K11-R3-ID-02",
+        "K11-R3-ID-03",
+        "K12-R14-ID-01",
+        "docs/development/work/K1.2-correction-01/review-01.md::O1"
+      ],
+      "dimensions": "Producer/consumer identity length and suffix growth, request-scope collision, hidden/visible counters, revoked Proxy diagnostics.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F04": {
+      "labels": [
+        "K01-R2-02",
+        "K01-R3-02",
+        "K01-REV-03",
+        "K01-REV-04"
+      ],
+      "dimensions": "Retirement claims versus reachable legacy imports/exports, test consumers and milestone dependencies.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F05": {
+      "labels": [
+        "K02-R1-01",
+        "K02-R1-02",
+        "K02-R1-03",
+        "K02-R10-01",
+        "K02-R10-02",
+        "K02-R10-03",
+        "K02-R11-01",
+        "K02-R11-02",
+        "K02-R13-01",
+        "K02-R13-02",
+        "K02-R14-01",
+        "K02-R15-01",
+        "K02-R15-02",
+        "K02-R16-01",
+        "K02-R2-01",
+        "K02-R2-02",
+        "K02-R3-01",
+        "K02-R4-01",
+        "K02-R4-02",
+        "K02-R5-01",
+        "K02-R5-02",
+        "K02-R6-01",
+        "K02-R7-01",
+        "K02-R8-01",
+        "K02-R9-01"
+      ],
+      "dimensions": "Receipt, state, emitted effects, retained evidence and lost-response/concurrent order; one-field assertions and fake fixture gates are insufficient.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F06": {
+      "labels": [
+        "K0.2-SELF-01",
+        "K1.0-SELF-01",
+        "K1.0-SELF-03",
+        "K1.0-SELF-04",
+        "K1.0-SELF-12",
+        "K1.0-SELF-13",
+        "K1.0-SELF-18",
+        "K1.0-SELF-19",
+        "K1.0-SELF-29",
+        "K1.0-correction-01::SELF-29",
+        "K1.0-correction-02::CORR2-SELF-01",
+        "K1.0-correction-02::CORR2-SELF-02",
+        "K1.0-correction-02::CORR2-SELF-03",
+        "K1.0::SELF-12",
+        "K1.0::SELF-13",
+        "K1.0::SELF-20",
+        "K1.0::SELF-21",
+        "K1.0::SELF-24",
+        "K10-CLEANUP-01",
+        "K10-CORR1-CLEANUP-01",
+        "K10-CORR1-R1-01",
+        "K10-R1-01",
+        "K10-R1-02",
+        "K10-R10-01",
+        "K10-R10-02",
+        "K10-R10-03",
+        "K10-R11-01",
+        "K10-R12-01",
+        "K10-R13-01",
+        "K10-R14-01",
+        "K10-R15-01",
+        "K10-R2-01",
+        "K10-R2-02",
+        "K10-R3-01",
+        "K10-R4-01",
+        "K10-R5-01",
+        "K10-R6-01",
+        "K10-R7-01",
+        "K10-R8-01",
+        "K10-R8-02",
+        "K10-R9-01",
+        "K10-R9-02"
+      ],
+      "dimensions": "Markdown code/HTML enclosing contexts, duplicate keys/rows, Unicode normalization, full-cell consumption, dependency reachability and exact relational equality.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F07": {
+      "labels": [
+        "K01-R2-05",
+        "K01-R2-06",
+        "K01-R3-03",
+        "K01-R3-04",
+        "K01-R9-02",
+        "K01-REV-05",
+        "K1.0-SELF-08",
+        "K1.0-SELF-09",
+        "K1.0-SELF-23",
+        "K1.0::SELF-23",
+        "K1.0::SELF-25",
+        "K1.0::SELF-26",
+        "K1.0::SELF-27",
+        "K1.0::SELF-28",
+        "K1.2-correction-01::O-R2-3",
+        "K10-R4-02",
+        "K11-R1-PROC-01",
+        "K11-R1-SCOPE-01",
+        "K11-R10-EVID-01",
+        "K11-R14-PROC-01",
+        "K11-R15-PROC-01",
+        "K11-R3-PROC-02",
+        "K11-R4-PROC-01",
+        "K12-R1-REC-01",
+        "K12-R10-VAL-01",
+        "K12-R13-REC-01",
+        "K12-R5-LAYER3-01",
+        "K12-R5-PROC-01",
+        "K12-R7-PROC-01",
+        "KC1-CLEANUP-REF-01",
+        "KC1-R2-PROC-01",
+        "KC1-R4-PROC-01",
+        "KC1-R4-PROC-02",
+        "KC1-R5-PROC-01",
+        "KC1-R6-PROC-01",
+        "KC2-R2-PROC-01",
+        "REF1-CLEANUP-HISTORY-01",
+        "REF1-R5-CHK-01",
+        "REF1-R5-SCOPE-01",
+        "REF1-R6-AUTH-01",
+        "REF1-R6-CHK-01",
+        "REF1-R6-EVID-01",
+        "REF1-R6-EXCL-01",
+        "REF1-R7-COUNT-03",
+        "REF1-R7-DIGEST-01",
+        "REF1-R7-EVID-04",
+        "REF1-R7-QUOTE-02",
+        "REF1-R9-COUNT-03",
+        "REF1-R9-DIGEST-02",
+        "REF1-R9-EVID-05",
+        "REF1-R9-LOCATE-01",
+        "REF1-R9-QUOTE-01",
+        "docs/development/work/K1.2/review-09.md::O2",
+        "docs/development/work/K1.2/review-09.md::O3",
+        "docs/development/work/K1.2/review-11.md::O2",
+        "docs/development/work/K1.2/review-11.md::O3",
+        "docs/development/work/K1.2/review-11.md::O6",
+        "docs/development/work/K1.2/review-14.md::O3"
+      ],
+      "dimensions": "B/C/H and interval identity, changed counts/digests, inaccessible evidence, authority quotations, frozen historical bytes, unauthorized exclusions and accepted versus released.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F08": {
+      "labels": [
+        "K01-R11-03",
+        "K01-R2-04",
+        "K01-R4-02",
+        "K02-R11-03",
+        "K02-R12-01",
+        "K1.2-correction-01::O-R6-1",
+        "K1.2-correction-01::O-R6-2",
+        "K11-R1-DOC-01",
+        "K11-R10-DOC-01",
+        "K11-R15-DOC-01",
+        "K11-R15-DOC-02",
+        "K11-R16-DOC-01",
+        "K11-R3-DOC-02",
+        "K12-R1-DOC-01",
+        "K12-R13-DOC-01",
+        "K12-R4-AUTH-DOC-01",
+        "K12-R6-DOC-01",
+        "K12-R6-LAYER3-01",
+        "K12-R6-SELF-COMMENT-01",
+        "K12-R8-DOC-01",
+        "K12C1-R9-CLAIM-01",
+        "KC1-R3-DOC-01",
+        "KC1-R4-DOC-01",
+        "REF1-R1-CONV-01",
+        "REF1-R1-NAV-01",
+        "REF1-R1-STATUS-01",
+        "REF1-R2-DOC-01",
+        "REF1-R5-WORD-01",
+        "REF1-R6-WORD-02",
+        "REF1-R7-WORD-05",
+        "docs/development/work/K1.2/review-09.md::O1",
+        "docs/development/work/K1.2/review-09.md::O4",
+        "docs/development/work/K1.2/review-11.md::O1",
+        "docs/development/work/K1.2/review-11.md::O5",
+        "docs/development/work/K1.2/review-14.md::O1",
+        "docs/development/work/K1.2/review-14.md::O2"
+      ],
+      "dimensions": "Canonical ownership versus summaries/status, atomic versus durable, runtime versus Kernel scope, held claims and unsupported current-target descriptions.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F09": {
+      "labels": [
+        "K1.2-correction-01::SELF-R6-HOST-01",
+        "K1.2-correction-01::SELF-R6-HOST-02",
+        "K1.2-correction-01::SELF-R6-HOST-03",
+        "K1.2-correction-01::SELF-R7-UNSUPPORTED-01",
+        "K1.2-correction-01::SELF-R8-REFUSAL-01",
+        "K11-R1-VAL-01",
+        "K11-R15-VAL-01",
+        "K11-R16-VAL-01",
+        "K11-R2-VAL-02",
+        "K11-R5-STATE-01",
+        "K11-R5-VAL-03",
+        "K11-R6-STATE-02",
+        "K11-R6-VAL-04",
+        "K11-R6-VAL-05",
+        "K11-R7-STATE-03",
+        "K12C1-R9-HISTORY-01"
+      ],
+      "dimensions": "Own __proto__ copying, descriptor/read disagreement, intrinsic/global/iterator/prototype-chain poisoning, descriptor conversion, optional host members, error-name and refusal construction, polluted recovery history.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F10": {
+      "labels": [
+        "K1.2-correction-01::O-R2-1",
+        "K1.2-correction-01::O-R2-2",
+        "K1.2-correction-01::O-R3-2",
+        "K1.2-correction-01::O-R6-3",
+        "K1.2-correction-01::SELF-DIAG-01",
+        "K1.2-correction-01::SELF-DIAG-02",
+        "K1.2-correction-01::SELF-R3-PATH-01",
+        "K1.2-correction-01::SELF-R4-DESCRIPTOR-01",
+        "K1.2-correction-01::SELF-R4-HANDLER-01",
+        "K1.2-correction-01::SELF-R4-STRING-01",
+        "K11-R3-LIMIT-01",
+        "K12C1-R1-DIAG-01",
+        "K12C1-R2-AGG-01",
+        "K12C1-R4-VALUE-COST-01",
+        "K12C1-R6-VALUE-TIME-01",
+        "K12C1-R8-VALUE-DEPTH-01",
+        "KC2-R1-01"
+      ],
+      "dimensions": "Per-root versus aggregate size, depth/alias expansion, diagnostic weight/path/suffix construction, reflection/handler and string-materialization exclusions, active-path scans and refused-root work.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F11": {
+      "labels": [
+        "K12-R1-AUTH-01",
+        "K12-R11-ORDER-01",
+        "K12-R13-ARCH-01",
+        "K12-R2-TAKEOVER-01",
+        "K12-R3-AUTH-02",
+        "K12-R3I-AUTH-02",
+        "K12-R9-ORDER-01"
+      ],
+      "dimensions": "Visibility/control/attempt authority, forged or stale grants, replay/content ordering and reentrant callbacks invalidating earlier checks.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F12": {
+      "labels": [
+        "K1.2-correction-01::O-R4-1",
+        "K11-R2-EVID-01",
+        "K12-R1-HISTORY-01",
+        "K12-R1-HOLD-01",
+        "K12-R2-OBS-PERMITTED-01",
+        "K12-R3-HISTORY-02",
+        "K12-R3I-HISTORY-02"
+      ],
+      "dimensions": "Required hold/recovery variants, writer authority, immutable old views, absent optional fields and truthful histories across alternate transitions.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F13": {
+      "labels": [
+        "K11-R15-DISP-01",
+        "K11-R16-DISP-01",
+        "K11-R4-DISP-01",
+        "K11-R4-DISPATCH-01",
+        "K12-R1-DELIVERY-01"
+      ],
+      "dimensions": "Single bound observation, Promise species/rejection, attempt versus physical delivery attribution and retained epoch; explicit settlement does not accept Outcome.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F14": {
+      "labels": [
+        "K1.2-correction-01::O-R3-1",
+        "K1.2-correction-01::O-R6-4",
+        "K1.2-correction-01::O-R8-1",
+        "K1.2-correction-01::O-R8-2",
+        "K12-R10-EVID-01",
+        "K12-R14-EVID-01",
+        "K12-R2-PROC-01",
+        "K12-R6-EVID-01",
+        "K12-R9-EVID-01",
+        "K12C1-R2-EVID-01",
+        "K12C1-R4-EVID-01",
+        "K12C1-R6-EVID-01",
+        "K12C1-R8-EVID-01",
+        "docs/development/work/K1.2-correction-01/review-01.md::O2",
+        "docs/development/work/K1.2/review-11.md::O4",
+        "docs/development/work/K1.2/review-14.md::O4"
+      ],
+      "dimensions": "Exact-site ablation, passing control versus harness failure, causal kill versus survival, dead patches, N15 surplus-charge survivor and retained evidence identity.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F15": {
+      "labels": [
+        "K12C1-R10-COMMIT-01",
+        "K12C1-R10-READ-01",
+        "K12C1-R11-COMMIT-01",
+        "K12C1-R11-READ-01"
+      ],
+      "dimensions": "Quoted/computed/assignment destructuring; partial/nested assertions and predicates; hidden early writes/reentrant observation and next-position leakage.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    },
+    "F16": {
+      "labels": [
+        "K1.2-correction-01::CATALOG-01",
+        "K12C1-R12-ORACLE-01",
+        "K12C1-R12-SCOPE-01",
+        "K12C1-R9I-ORACLE-01",
+        "K12C1-R9I-SCOPE-01"
+      ],
+      "dimensions": "Unreached exits, prefix-only assertion claims, legal no-call outcomes, mismatched return/view/grant/history/positions, missing next receipt and incomplete comparisons.",
+      "locators": "classifications.json source/line and enumeration-occurrences.json pinned revisions; da-1-table.md renders the source links."
+    }
+  },
+  "options": {
+    "A-keep": {
+      "families": [
+        "F02",
+        "F09",
+        "F10",
+        "F13",
+        "F15",
+        "F16"
+      ],
+      "response": "All hostile labels remain supported obligations: exact bytes from one coherent snapshot, host-state restoration and whole retained decisions must survive each recorded ambient hop. Known cost/classification holds remain; no finite poison pass proves every caller safe."
+    },
+    "A-coop": {
+      "families": [
+        "F02",
+        "F09",
+        "F10",
+        "F13",
+        "F15",
+        "F16"
+      ],
+      "response": "The proposed amendment excludes hostile ambient mutation, not ordinary __proto__, immutable snapshots, accidental accessors/cycles or atomic decisions. Keep meter, explicit settlement and whole fault oracles; retain each excluded hostile witness with its narrowed claim, never call it repaired."
+    },
+    "A-bytes": {
+      "families": [
+        "F02",
+        "F09",
+        "F10",
+        "F13",
+        "F15",
+        "F16"
+      ],
+      "response": "Move ordinary snapshot and meter cases to the cooperative wrapper, preserve core byte/field identity and full decision oracles. Hostile ambient witnesses become scoped limitations only after amendment; bytes in one mutable realm do not make them harmless."
+    },
+    "A-hard": {
+      "families": [
+        "F02",
+        "F09",
+        "F10",
+        "F13",
+        "F15",
+        "F16"
+      ],
+      "response": "Use every hostile label in hardening-corpus.json, eight binding hops, prototype comparison and current frozen positive failures. Require durable pinning plus compatibility. Proxy disagreement/getter execution and static inventory gaps stay obligations; never infer whole-decision integrity from a failed poison installation."
+    },
+    "B-keep": {
+      "families": [
+        "F02",
+        "F09",
+        "F10"
+      ],
+      "response": "Replay own-index and descriptor-conversion channels, iterator next/result and global replacement with the current save/restore discipline; retain depth/list/diagnostic cost cases and failed-environment refusals. Source audit plus these cases must explain which ambient reads are covered."
+    },
+    "B-coop": {
+      "families": [
+        "F02",
+        "F09",
+        "F10"
+      ],
+      "response": "Differentially preserve ordinary bytes, __proto__, diagnostics and old-view immutability while charging traversal/list/stack work. Hostile prototype/global witnesses remain recorded exclusions after the proposed stable-realm amendment, not a claimed serializer fix."
+    },
+    "B-bytes": {
+      "families": [
+        "F02",
+        "F09",
+        "F10"
+      ],
+      "response": "Wrapper retains ordinary coherence, canonical vectors, metering and diagnostics; strict core/adapter have independent byte spelling, duplication and scan/allocation cases. Preserve whole state/replay behavior; do not use wrapper poison or N15 results as parser evidence."
+    },
+    "B-hard": {
+      "families": [
+        "F02",
+        "F09",
+        "F10"
+      ],
+      "response": "Check the exact dependency read graph against binding and two-hop iterator witnesses; all binding replacements must be ineffectual. Current Kernel frozen refusal rejects a support claim. Descriptor/read disagreement, getters and the traversal meter are not discharged by freezing."
+    },
+    "C-hold": {
+      "families": [
+        "F02"
+      ],
+      "response": "Every domain/exotic witness stays a known defect or corrected historical domain case, linked to the responsible amendment and root consumers. Proxy hidden-target replay is reproduced, not assigned an answer. This option closes triage only."
+    },
+    "C-brand": {
+      "families": [
+        "F02"
+      ],
+      "response": "Keep canonical/transport domain distinctions and ordinary Unicode/number/__proto__ vectors. Non-Proxy unsupported brands refuse before listing in all root consumers. Forwarding Proxies follow one of the two explicit unchosen PROXY-01 outcomes; slot checks alone cannot promise refusal."
+    },
+    "C-project": {
+      "families": [
+        "F02"
+      ],
+      "response": "Projection needs its own amended logical-domain and equality rule for bare and forwarded targets; run same/different hidden contents and ordinary canonical vectors through every root. Current refusal contract and owner direction reject adoption here."
+    },
+    "C-bytes": {
+      "families": [
+        "F02"
+      ],
+      "response": "Core refuses live object inputs and strictly validates canonical values; wrapper preserves ordinary domain and refuses unsupported non-Proxy brands before listing. Its Proxy policy still needs the named owner answer; adapter rejects decoded duplicates before erasure."
+    },
+    "D1": {
+      "families": [
+        "F03",
+        "F11",
+        "F12",
+        "F13",
+        "F15",
+        "F16"
+      ],
+      "response": "Re-audit each current authority, identity, delivery/history and commit path against the recorded cases; full return/view/grant/history/next receipt must agree. Source inventory edits alone cannot prove missed read syntax or early mutation absent."
+    },
+    "D2": {
+      "families": [
+        "F03",
+        "F11",
+        "F12",
+        "F13",
+        "F15",
+        "F16"
+      ],
+      "response": "Private constructors/planners/immutable plans and one state writer must block the recorded authority/identity/history/early-write bypasses. Preserve every whole-decision observation and delivery boundary. Core-independent; sequencing after binding does not discharge a case."
+    },
+    "E1": {
+      "families": [
+        "F05",
+        "F06",
+        "F14",
+        "F15",
+        "F16"
+      ],
+      "response": "Each existing parser, oracle, sweep and mutant runner must reproduce its own declared cases, with controls and explicit surviving mutants/coverage gaps. Presence in a catalog cannot certify source reach or a complete comparison."
+    },
+    "E2": {
+      "families": [
+        "F05",
+        "F06",
+        "F14",
+        "F15",
+        "F16"
+      ],
+      "response": "TOOLS-01 maps every inventoried artifact to a maintained case or reasoned retirement; missing cases, comparison omissions and N15 survival remain failures of the corresponding gate. The one registry preserves provenance; it is not itself a semantic oracle."
+    },
+    "E3": {
+      "families": [
+        "F05",
+        "F06",
+        "F14",
+        "F15",
+        "F16"
+      ],
+      "response": "Module/ownership escape tests supplement mapped runtime scenarios; they cannot replace the parser grammar, full comparisons or early-write observations. Retire analyzer artifacts only after each obligation has structural or retained runtime evidence."
+    },
+    "F1": {
+      "families": [
+        "F07",
+        "F08"
+      ],
+      "response": "Recompute record facts for each candidate and manually inspect authority/status meaning, including held and accepted-but-unintegrated histories. A valid link or hash cannot replace accessible evidence."
+    },
+    "F2": {
+      "families": [
+        "F07",
+        "F08"
+      ],
+      "response": "Generate SHA/count/interval/allowlist facts and deliberately corrupt each field; preserve human authority provenance and held-status semantics. Automation does not manufacture adoption or settle a prose ambiguity."
+    },
+    "F01K": {
+      "families": [
+        "F01"
+      ],
+      "response": "Every recorded lifecycle counterexample is a relation-table row with both orders and legal terminal result; unimplemented K1.3 behavior is a future gate, not an omitted case."
+    },
+    "F01R": {
+      "families": [
+        "F01"
+      ],
+      "response": "Map those same relations to model edges and distinguish cancellation/completion and generation/deadline mutants. Reject unmapped relations and conflicting accepted effects; no new lifecycle semantics are chosen."
+    },
+    "F02K": {
+      "families": [
+        "F02"
+      ],
+      "response": "Canonical-domain and codec cases remain required alongside the interim brand matrix. Add all forwarding-Proxy witnesses; acceptance narrows the restored non-Proxy claim, refusal needs an amendment. Root-level forbidden state/receipt effects are checked under either answer."
+    },
+    "F02R": {
+      "families": [
+        "F02"
+      ],
+      "response": "Port ordinary canonical-domain, UTF-8/duplicate and equality cases to strict core plus wrapper/adapter. Hidden non-Proxy state must not silently project; forwarding-Proxy policy remains conditional and interim acceptance precedes relocation."
+    },
+    "F03K": {
+      "families": [
+        "F03"
+      ],
+      "response": "Use actual producer-to-validator paths at identity limits plus revoked-Proxy invalid-text refusal; alternate hidden/visible executions to expose shared counters and preserve all refusal effects."
+    },
+    "F03R": {
+      "families": [
+        "F03"
+      ],
+      "response": "Private constructors prevent cross-scope collision and raw sequence access; bypass tests plus the same maximum-length downstream round trips and total malformed diagnostics distinguish the refactor from types alone."
+    },
+    "F04K": {
+      "families": [
+        "F04"
+      ],
+      "response": "Check every disposition against reachable entry points and consumers at pinned H; external unknowns stay explicit and a historical retirement claim is not current reachability evidence."
+    },
+    "F04R": {
+      "families": [
+        "F04"
+      ],
+      "response": "Generate the same reachability facts and reject a new forbidden edge or stale disposition. Human-authored migration obligations still determine what may retire; graphs cannot infer external consumers."
+    },
+    "F05K": {
+      "families": [
+        "F05"
+      ],
+      "response": "For each recorded oracle failure, vary its missing material field and legal schedule, including no external call; inspect the entire decision and next receipt, not only an assertion count."
+    },
+    "F05R": {
+      "families": [
+        "F05"
+      ],
+      "response": "One complete-result schema must include each missing state/effect/receipt dimension with independent legal relations and omission mutants. A shared partial schema would reproduce the family defect."
+    },
+    "F06K": {
+      "families": [
+        "F06"
+      ],
+      "response": "Run every grammar/normalization/relation counterexample through the maintained parser, asserting whole rows and exact equality. Retain enclosing-context and Unicode cases, not merely happy-path tables."
+    },
+    "F06R": {
+      "families": [
+        "F06"
+      ],
+      "response": "Move the governing relation to structured data and distinguish duplicate/unknown rows and stale renders. Keep dependency scanner syntax/escape cases separately; a renderer does not prove the dependency analysis."
+    },
+    "F07K": {
+      "families": [
+        "F07"
+      ],
+      "response": "Verify all recorded identity/evidence/authority mistakes against immutable commits and accessible artifacts; explicitly distinguish review, acceptance, integration and release."
+    },
+    "F07R": {
+      "families": [
+        "F07"
+      ],
+      "response": "Generate objective facts and corrupt each field to check rejection; owner quotations and independent verdicts remain sourced human records. Inaccessible raw payload remains a failure even with a digest."
+    },
+    "F08K": {
+      "families": [
+        "F08"
+      ],
+      "response": "Bound the current-sentence search and compare each domain/ownership/status claim to its canonical owner, including durability and held states. Historical prose is evidence, not authority."
+    },
+    "F08R": {
+      "families": [
+        "F08"
+      ],
+      "response": "Route current claims to canonical owners without erasing historical evidence; challenge every enumerated consumer with a stale/stronger claim. Navigation checks do not close semantic consistency."
+    },
+    "F09K": {
+      "families": [
+        "F09"
+      ],
+      "response": "Include all hostile labels, global Object replacement in getPrototypeOf and both iterator hops, own __proto__, unsupported-error/refusal and recovery-history channels. Full canonical/state observations and correct environmental refusal are required; flags alone do not protect globals."
+    },
+    "F09R": {
+      "families": [
+        "F09"
+      ],
+      "response": "Amend hostile ambient guarantees explicitly, then preserve ordinary snapshot/__proto__/fault cases in wrapper and core. Retain excluded hostile witnesses as limits; fixed history/host ownership and explicit settlement remain useful even under cooperation."
+    },
+    "F10K": {
+      "families": [
+        "F10"
+      ],
+      "response": "Derive charged abstract operations over every depth/alias/string/diagnostic shape; preserve independent roots and exact weights. Sealed timing observations motivate the meter but are not rerun or used as gates; N15 still needs a distinguishing kill."
+    },
+    "F10R": {
+      "families": [
+        "F10"
+      ],
+      "response": "Carry the same object-work and diagnostic counterexamples into the wrapper, including N15; derive separate scan/allocation bounds for core and adapter with exact cap edges and no aggregate semantic cap. Byte length alone is insufficient."
+    },
+    "F11K": {
+      "families": [
+        "F11"
+      ],
+      "response": "Enumerate recorded authority and callback orders, compare whole decisions and next positions, and ensure a replay/content check cannot disclose or overrule missing authority."
+    },
+    "F11R": {
+      "families": [
+        "F11"
+      ],
+      "response": "Planner/apply boundary and current-version precondition must reject raw/forged plans and stale-after-callback commits; replay the same full precedence table under the preserved authority contract."
+    },
+    "F12K": {
+      "families": [
+        "F12"
+      ],
+      "response": "Each retained-history counterexample needs required writer/epoch/absence facts and immutable old views across all transition routes, including refusals and retries."
+    },
+    "F12R": {
+      "families": [
+        "F12"
+      ],
+      "response": "Required tagged history in every plan plus own optional records and read-only projections must reject omitted-history/writable-view bypasses. Keep the original alternate-transition observations as evidence."
+    },
+    "F13K": {
+      "families": [
+        "F13"
+      ],
+      "response": "Explicit settlement avoids observing returned Promise species; exercise late/duplicate delivery, single bound read and writer attribution with unchanged intent/receipt/acknowledgment state."
+    },
+    "F13R": {
+      "families": [
+        "F13"
+      ],
+      "response": "Transport must preserve those local delivery decisions while adding peer/capability/replay checks. Remote authentication is additional evidence; bytes neither require remote transport nor prove its correctness."
+    },
+    "F14K": {
+      "families": [
+        "F14"
+      ],
+      "response": "Reapply each mutant at its exact site with a passing control and causal test failure; distinguish a timeout, harness error or surviving N15 from a kill."
+    },
+    "F14R": {
+      "families": [
+        "F14"
+      ],
+      "response": "Registry enforces source/control/oracle identities and mappings for the same cases; a semantic survivor remains open until a meaningful new oracle rejects it. No registry-count substitute for a kill."
+    },
+    "F15K": {
+      "families": [
+        "F15"
+      ],
+      "response": "Quoted/computed/assignment destructuring and partial/nested predicates remain explicit guard gaps; runtime poison and full early-write/next-receipt observations close only their declared schedules."
+    },
+    "F15R": {
+      "families": [
+        "F15"
+      ],
+      "response": "Null-prototype optional data removes inherited reads; sole state ownership prevents early writes only if every bypass is excluded. Preserve observed decisions and map all retired analyzer obligations to checks, without a future-TypeScript soundness claim."
+    },
+    "F16K": {
+      "families": [
+        "F16"
+      ],
+      "response": "Enumerate every reached exit and each whole-result comparison, including no-call outcomes and next receipts; missing operations/fields remain gaps despite green sweeps."
+    },
+    "F16R": {
+      "families": [
+        "F16"
+      ],
+      "response": "Registry separates scenarios, adapters and independently derived complete legal outcomes; omission and wrong-comparison mutants must fail. Only hostile-profile gates retire on accepted binding migration, never fault/state observations."
+    }
+  }
+}

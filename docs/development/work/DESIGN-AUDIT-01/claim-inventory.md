@@ -22,7 +22,7 @@ Pinned to B `66bc041175e6fc191c2e7cf88de198111e7d97c9`. These are current obliga
 | AM03-EVIDENCE | Amendment 03 items 1–3: DEC-8/9 binding, bounded poison/fault sweeps are acceptance evidence; static analyzer is a guard with known gaps. | [AM03-EVIDENCE](../K1.2-correction-01/amendment-03.md) |
 | AM03-4 | Amendment 03 item 4 defers structural enforcement by construction (null-prototype records, sole writer) to audit decisions, no sound-analyzer obligation. | [AM03-4](../K1.2-correction-01/amendment-03.md) |
 | TRUST | Trusted Execution may use ambient capabilities; Kernel guarantees apply to Kernel-mediated paths. | [TRUST](../../../../AGENTS.md#security-and-trust) |
-| ISOLATION | Isolated Execution requires physical containment; bytes and observation are not enforcement. | [ISOLATION](../../../../AGENTS.md#security-and-trust) |
+| ISOLATION | Isolated Execution is physically contained according to the deployment claim; Kernel authority alone does not prevent ambient native actions. Prevention requires Kernel mediation or isolation; telemetry/observation is not enforcement. | [ISOLATION](../../../../AGENTS.md#security-and-trust) |
 | BASELINE | Current value section: exact capture, limits, single observations, coherent-Proxy acceptance, ambient safety and DEC-7 weights unchanged; V-D1 held. | [BASELINE](../../002-implemented-kernel-baseline.md#value-refusal-diagnostics) |
 | K11C03 | K1.1-correction-03 row/seed: metered V-D1, audit threat-model dependency, transferred depth/N15; O-R8-4 currently needs scope amendment. | [K11C03](../../007-work-packets.md) |
 | K14 | K1.4 row and BASELINE bridge assignment: no supported SDK consumer uses target Kernel yet; bridge remains unreleased. | [K14](../../007-work-packets.md) |
