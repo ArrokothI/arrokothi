@@ -1,8 +1,12 @@
-# TOOLS-01 contract — revision 1
+# TOOLS-01 contract — revision 2
 
 [Release](release-01.md) authorizes the research-independent foundation first. Governing policy:
 006/008/012 at `b759d0abc01915ea5abc94b4607c6f9101bbbcc7`; proposed tools cannot weaken their
 own review. This contract changes evidence tooling, not Kernel meaning.
+
+[Owner choice 01](owner-choice-01.md) resolves design 02 D02-Q1: deterministic corpus runs by
+default; live-provider and large-memory/timing experiments retain their mappings and commands in
+separate profiles and are explicitly reported as not run. No inventory origin is removed.
 
 | ID | Requirement | Closing evidence |
 |---|---|---|

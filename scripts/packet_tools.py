@@ -383,6 +383,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
     shared.update(dependency_files(git, rev, registry.get('dependencies', [])))
     case_ids, mutant_ids, results = set(), set(), []
     for case in registry['cases']:
+        print('Case ' + case['id'], file=sys.stderr, flush=True)
         require(case['id'] not in case_ids, 'duplicate case ID')
         case_ids.add(case['id'])
         require(type(case['failure_exit']) is int and 1 <= case['failure_exit'] <= 125, 'invalid failure exit')

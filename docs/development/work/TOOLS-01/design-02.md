@@ -74,3 +74,30 @@ policy remain with their existing owners. If extraction reveals that closing a r
 requires changing accepted behavior, a dependency, packet scope or an oracle's legal outcomes,
 record the concrete conflict and ask before dependent implementation. This note is implementer
 rationale, not independent design acceptance.
+
+### Extraction question D02-Q1: execution profiles
+
+Inspection found that the audit's supporting superset includes three paid/live provider canaries
+(`scripts/gemini-provider-canary.ts`, `scripts/mcp-gemini-canary.ts`,
+`scripts/workflow-scenario-canary.ts`) and historical engine-limit/time/heap experiments, including
+`K1.2-correction-01/probe-diagnostics-maxlen.ts` (about 0.5 GiB for its input alone). P2 requires the
+"full current-profile corpus" but does not enumerate these profiles. The audit's filename-based
+recommendation is not authority to retire them, and 006 requires a budget for new paid/live runs.
+
+Proposed execution split, for owner clarification before closing P1/P2:
+
+- Mandatory default: deterministic tooling tests, ordinary repository suites, complete-decision
+  and poison sweeps, all adopted causal mutations and held-defect witnesses. No skipped test is a pass.
+- Separate retained profiles: credentialed/paid provider canaries and large-memory/timing studies.
+  Every source still gets a mapping, executable command and explicit not-run status in the default
+  summary. Nothing gains current execution credit, semantic clearance or hold release from this split.
+- Alternative: make those experiments mandatory in the default run; the live subset then requires
+  the owner's budget/credentials and exact declared parameters before final clean-C verification.
+
+This is a question about P2's execution boundary, not a request to reduce the inventory or change
+Kernel behavior. Continue the deterministic mappings and tooling while it is unanswered. Do not
+claim P1/P2 closure by silently choosing the first option.
+
+**Resolved:** the owner chose the separate-profile option in this conversation; the exact answer
+and its bounded effect are in [owner choice 01](owner-choice-01.md). No design question remains
+about this execution split.

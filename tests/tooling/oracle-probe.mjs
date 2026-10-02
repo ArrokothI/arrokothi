@@ -27,7 +27,7 @@ const failures = observations.filter(row => !row.passed);
 if (failures.some(row => row.code !== 'ERR_ASSERTION')) throw new Error('Non-assertion failure');
 if ((failures.length === 0) !== (run.status === 0)) throw new Error('Exit/result disagreement');
 const named = failures.filter(row => expected.includes(row.name));
-if (failures.length && !named.length) throw new Error('Only unrelated controls failed');
+if (failures.length && !named.length) throw new Error('Only unrelated controls failed: ' + failures.map(row => row.name).join('; '));
 const passed = failures.length === 0;
 console.log(JSON.stringify({ case: `oracle.${name}`, assertion: `oracle.${name}.negative-control`,
   reached: reach.calls > 0, passed, calls: reach.calls, failures: named.map(row => row.name),
