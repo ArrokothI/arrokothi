@@ -5,8 +5,16 @@
       "id": "identity.parts",
       "source": "packages/kernel/src/identity.ts: packIdentity; K11-R3-ID-02 and boundary packing rationale",
       "assertion": "identity.injective-parts",
-      "files": ["packages/kernel/src/identity.ts", "tests/tooling/identity-probe.mjs"],
-      "argv": ["node", "--no-warnings", "--experimental-strip-types", "tests/tooling/identity-probe.mjs"],
+      "files": [
+        "packages/kernel/src/identity.ts",
+        "tests/tooling/identity-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/identity-probe.mjs"
+      ],
       "timeout_seconds": 10,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
@@ -18,6 +26,737 @@
           "after": "out += part;"
         }
       ]
+    },
+    {
+      "id": "oracle.returned",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.returned",
+      "assertion": "oracle.returned.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "returned"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-returned",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "returned: (expected: Observation, observed: Observation): boolean => isDeepStrictEqual(expected.returned, observed.returned)",
+          "after": "returned: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.view",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.view",
+      "assertion": "oracle.view.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "view"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-view",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "view: (expected: Observation, observed: Observation): boolean => isDeepStrictEqual(expected.state.view, observed.state.view)",
+          "after": "view: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.nextRefusal",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.nextRefusal",
+      "assertion": "oracle.nextRefusal.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "nextRefusal"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-nextRefusal",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "nextRefusal: (expected: Observation, observed: Observation): boolean => expected.state.nextRefusal === observed.state.nextRefusal",
+          "after": "nextRefusal: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.nextAcceptance",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.nextAcceptance",
+      "assertion": "oracle.nextAcceptance.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "nextAcceptance"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-nextAcceptance",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "nextAcceptance: (expected: Observation, observed: Observation): boolean => expected.state.nextAcceptance === observed.state.nextAcceptance",
+          "after": "nextAcceptance: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.setupGrant",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.setupGrant",
+      "assertion": "oracle.setupGrant.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "setupGrant"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-setupGrant",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "setupGrant: (expected: Observation, observed: Observation): boolean => expected.state.setupGrant === observed.state.setupGrant",
+          "after": "setupGrant: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.refusalPosition",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.refusalPosition",
+      "assertion": "oracle.refusalPosition.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "refusalPosition"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-refusalPosition",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "refusalPosition: (refusal: RefusalRecord, base: State): boolean => refusal.position === base.nextRefusal",
+          "after": "refusalPosition: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.refusalExecution",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.refusalExecution",
+      "assertion": "oracle.refusalExecution.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "refusalExecution"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-refusalExecution",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "refusalExecution: (refusal: RefusalRecord, executionId: string): boolean => refusal.executionId === executionId",
+          "after": "refusalExecution: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.acceptingExit",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.acceptingExit",
+      "assertion": "oracle.acceptingExit.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "acceptingExit"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-acceptingExit",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "acceptingExit: (context: Context, control: Control): boolean => context.control === control && context.expect === \"accepted\"",
+          "after": "acceptingExit: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.fired",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.fired",
+      "assertion": "oracle.fired.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "fired"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-fired",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "fired: (attempt: Attempt): boolean => attempt.fired",
+          "after": "fired: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.sameOperation",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.sameOperation",
+      "assertion": "oracle.sameOperation.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "sameOperation"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-sameOperation",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "sameOperation: (attempt: Attempt, label: string | undefined): boolean => attempt.fault !== null && attempt.fault.label === label",
+          "after": "sameOperation: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.quietRepeat",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.quietRepeat",
+      "assertion": "oracle.quietRepeat.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "quietRepeat"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-quietRepeat",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "quietRepeat: (attempt: Attempt): boolean => !attempt.fired",
+          "after": "quietRepeat: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.callbackRan",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.callbackRan",
+      "assertion": "oracle.callbackRan.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "callbackRan"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-callbackRan",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "callbackRan: (attempt: Attempt, after: boolean): boolean => attempt.callbackRan === after",
+          "after": "callbackRan: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.deliveredAt",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.deliveredAt",
+      "assertion": "oracle.deliveredAt.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "deliveredAt"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-deliveredAt",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "deliveredAt: (model: SourceModel, fault: Fault | null, site: DeliverySite): boolean => {\n    if (fault === null) return false;\n    const call = fault.stack.findIndex((frame) => inLines(frame, model.takeoverDeliverCall));\n    const inner = call > 0 ? fault.stack[call - 1] : undefined;\n    const lines = model.deliverySites.find((entry) => entry.site === site)?.lines ?? null;\n    return inner !== undefined && inLines(inner, lines);\n  }",
+          "after": "deliveredAt: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.takeoverWindowAt",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.takeoverWindowAt",
+      "assertion": "oracle.takeoverWindowAt.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "takeoverWindowAt"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-takeoverWindowAt",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "takeoverWindowAt: (model: SourceModel, fault: Fault | null): boolean =>\n    fault !== null && fault.stack.some((frame) => inLines(frame, model.takeoverClearingAppend))",
+          "after": "takeoverWindowAt: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.outcomeStepAt",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.outcomeStepAt",
+      "assertion": "oracle.outcomeStepAt.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "outcomeStepAt"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-outcomeStepAt",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "outcomeStepAt: (model: SourceModel, fault: Fault | null, step: OutcomeStep): boolean => {\n    const lines = model.outcomeApply.find((entry) => entry.step === step)?.lines ?? null;\n    return fault !== null && fault.stack.some((frame) => inLines(frame, lines));\n  }",
+          "after": "outcomeStepAt: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.outcomePrefix",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.outcomePrefix",
+      "assertion": "oracle.outcomePrefix.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "outcomePrefix"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-outcomePrefix",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "outcomePrefix: (prefixes: readonly Observation[], observed: Observation): boolean => prefixes.some((expected) => decided(expected, observed))",
+          "after": "outcomePrefix: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.applySequence",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.applySequence",
+      "assertion": "oracle.applySequence.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "applySequence"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-applySequence",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "applySequence: (model: SourceModel): boolean => model.problems.length === 0",
+          "after": "applySequence: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.applyModel",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.applyModel",
+      "assertion": "oracle.applyModel.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "applyModel"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-applyModel",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "applyModel: (context: Context, whole: State): boolean => decided({ returned: context.reference.returned, state: whole }, context.reference)",
+          "after": "applyModel: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.referenceKind",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.referenceKind",
+      "assertion": "oracle.referenceKind.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "referenceKind"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-referenceKind",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "referenceKind: (context: Context): boolean => {\n    const returned = context.reference.returned;\n    const expect = context.expect;\n    if (typeof expect === \"object\") return returned.kind === \"err\" && returned.refusal.classification === expect.refused && returned.refusal.executionId !== null;\n    if (expect === \"unnamed\") return returned.kind === \"err\" && returned.refusal.executionId === null;\n    return returned.kind === \"ok\";\n  }",
+          "after": "referenceKind: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.referenceRefusal",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.referenceRefusal",
+      "assertion": "oracle.referenceRefusal.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "referenceRefusal"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-referenceRefusal",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "referenceRefusal: (context: Context): boolean => {\n    const returned = context.reference.returned;\n    if (returned.kind !== \"err\") return false;\n    const base = context.callback?.state ?? context.s0;\n    return CHECKS.refusalPosition(returned.refusal, base) && CHECKS.refusalExecution(returned.refusal, context.executionId) &&\n      decided({ returned, state: withRefusal(base, returned.refusal) }, context.reference);\n  }",
+          "after": "referenceRefusal: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.referenceUnnamed",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.referenceUnnamed",
+      "assertion": "oracle.referenceUnnamed.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "referenceUnnamed"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-referenceUnnamed",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "referenceUnnamed: (context: Context): boolean => decided({ returned: { kind: \"err\", refusal: context.unnamedRefusal }, state: context.s0 }, context.reference)",
+          "after": "referenceUnnamed: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.referenceUnchanged",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.referenceUnchanged",
+      "assertion": "oracle.referenceUnchanged.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "referenceUnchanged"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-referenceUnchanged",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "referenceUnchanged: (context: Context): boolean => isDeepStrictEqual(context.reference.state, context.s0)",
+          "after": "referenceUnchanged: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.referenceReplay",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.referenceReplay",
+      "assertion": "oracle.referenceReplay.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "referenceReplay"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-referenceReplay",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "referenceReplay: (context: Context): boolean =>\n    decided({ returned: { kind: \"ok\", value: { ...(context.setupAnswer as object), replayed: true } }, state: context.s0 }, context.reference)",
+          "after": "referenceReplay: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.recoveryAnswer",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.recoveryAnswer",
+      "assertion": "oracle.recoveryAnswer.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "recoveryAnswer"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-recoveryAnswer",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "recoveryAnswer: (context: Context, decision: Observation, changed: boolean): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as { activationId: string; writerEpoch: number; recoveryHolds: unknown; changed: boolean };\n    const state = decision.state;\n    const before = context.s0;\n    const activation = state.view.activation;\n    if (activation === null || answer.changed !== changed) return false;\n    if (answer.activationId !== activation.activationId || answer.writerEpoch !== activation.writerEpoch) return false;\n    if (!isDeepStrictEqual(answer.recoveryHolds, state.view.recoveryHolds)) return false;\n    // An idempotent answer's state is `referenceUnchanged`'s to check.\n    if (!changed) return true;\n    // A hold decision changes the holds and appends one history record; it consumes no position and leaves the attempt's grant usable.\n    return !isDeepStrictEqual(state.view.recoveryHolds, before.view.recoveryHolds) &&\n      isDeepStrictEqual(state.view.recoveryHistory.slice(0, -1), before.view.recoveryHistory) &&\n      state.view.recoveryHistory.length === before.view.recoveryHistory.length + 1 &&\n      isDeepStrictEqual(state.view.receipts, before.view.receipts) &&\n      state.nextRefusal === before.nextRefusal && state.nextAcceptance === before.nextAcceptance && state.setupGrant === before.setupGrant;\n  }",
+          "after": "recoveryAnswer: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.takeoverAnswer",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.takeoverAnswer",
+      "assertion": "oracle.takeoverAnswer.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "takeoverAnswer"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-takeoverAnswer",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "takeoverAnswer: (context: Context, decision: Observation): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as { activationId: string; supersededEpoch: number; writerEpoch: number; baseProgressRevision: number; batch: unknown; receipt: { position: number } };\n    const state = decision.state;\n    const before = context.s0.view.activation;\n    const after = state.view.activation;\n    if (before === null || after === null || typeof context.s0.nextAcceptance !== \"number\") return false;\n    return answer.activationId === before.activationId && answer.activationId === after.activationId &&\n      answer.supersededEpoch === before.writerEpoch && answer.writerEpoch === before.writerEpoch + 1 && answer.writerEpoch === after.writerEpoch &&\n      answer.baseProgressRevision === before.baseProgressRevision && answer.baseProgressRevision === after.baseProgressRevision &&\n      isDeepStrictEqual([...(answer.batch as readonly string[])], [...after.batch]) && isDeepStrictEqual([...after.batch], [...before.batch]) &&\n      state.view.receipts.length === context.s0.view.receipts.length + 1 &&\n      isDeepStrictEqual(answer.receipt, state.view.receipts.at(-1)) && isDeepStrictEqual(answer.receipt, after.receipt) &&\n      answer.receipt.position === context.s0.nextAcceptance && state.nextAcceptance === context.s0.nextAcceptance + 1 &&\n      state.nextRefusal === context.s0.nextRefusal && state.setupGrant === \"stale_exchange\";\n  }",
+          "after": "takeoverAnswer: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.outcomeAnswer",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.outcomeAnswer",
+      "assertion": "oracle.outcomeAnswer.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "outcomeAnswer"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-outcomeAnswer",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "outcomeAnswer: (context: Context, decision: Observation): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as {\n      receipt: { position: number };\n      activationId: string;\n      nextState: string;\n      progressRevision: number;\n      acknowledged: readonly string[];\n      emissionIds: readonly string[];\n      resultId: string | null;\n      terminalDispositions: readonly string[];\n      replayed: boolean;\n    };\n    const before = context.s0.view;\n    const after = decision.state.view;\n    const added = (list: readonly string[], base: readonly string[]): string[] => list.filter((id) => !base.includes(id));\n    if (before.activation === null || typeof context.s0.nextAcceptance !== \"number\") return false;\n    return answer.replayed === false && answer.activationId === before.activation.activationId &&\n      after.receipts.length === before.receipts.length + 1 && isDeepStrictEqual(answer.receipt, after.receipts.at(-1)) &&\n      answer.receipt.position === context.s0.nextAcceptance &&\n      answer.nextState === after.state && answer.progressRevision === after.progressRevision && after.progressRevision === before.progressRevision + 1 &&\n      isDeepStrictEqual([...answer.acknowledged], added(after.acknowledged, before.acknowledged)) &&\n      isDeepStrictEqual([...answer.acknowledged], [...before.activation.batch]) &&\n      isDeepStrictEqual([...answer.emissionIds], after.emissions.slice(before.emissions.length).map((emission) => emission.emissionId)) &&\n      answer.resultId === (after.result === null ? null : after.result.resultId) &&\n      isDeepStrictEqual([...answer.terminalDispositions], added(after.terminalDispositions, before.terminalDispositions)) &&\n      after.activation === null && decision.state.nextRefusal === context.s0.nextRefusal &&\n      decision.state.nextAcceptance === (after.state === \"READY\" ? context.s0.nextAcceptance + 1 : \"terminal_destination\") &&\n      decision.state.setupGrant === \"duplicate_conflict\";\n  }",
+          "after": "outcomeAnswer: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.declaredExit",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.declaredExit",
+      "assertion": "oracle.declaredExit.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "declaredExit"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-declaredExit",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "declaredExit: (declared: readonly Exit[], executed: (exit: Exit) => boolean): boolean => declared.length === 1 && executed(declared[0] as Exit)",
+          "after": "declaredExit: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.attributed",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.attributed",
+      "assertion": "oracle.attributed.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "attributed"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-attributed",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "attributed: (exit: Exit, run: ReferenceExits): boolean => exit.via === run.control && run.executed(exit.offset)",
+          "after": "attributed: () => true"
+        }
+      ]
+    },
+    {
+      "id": "oracle.exitReached",
+      "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.exitReached",
+      "assertion": "oracle.exitReached.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "exitReached"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "oracle.disable-exitReached",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "exitReached: (takenBy: readonly string[]): boolean => takenBy.length > 0",
+          "after": "exitReached: () => true"
+        }
+      ]
+    }
+  ],
+  "source_trees": [
+    "packages/kernel/src",
+    "packages/kernel/tests/sweep"
+  ],
+  "files": [
+    "package.json",
+    "packages/kernel/tests/fault-oracle.test.ts",
+    "packages/kernel/tests/harness.ts",
+    "packages/kernel/tests/zone-inventory.ts",
+    "tests/tooling/oracle-probe.mjs",
+    "tests/tooling/oracle-reach.mjs",
+    "tests/tooling/assertion-reporter.mjs",
+    "tests/fixtures/packet-tools/oracle-controls.json"
+  ],
+  "dependencies": [
+    {
+      "path": "node_modules/typescript",
+      "version": "5.9.3",
+      "files": {
+        "package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+        "lib/typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675",
+        "LICENSE.txt": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+        "ThirdPartyNoticeText.txt": "1af3c68039c57e539422da82a4faada506ce6d0ea6f90e0b699d02dbcdb7a90c"
+      }
+    },
+    {
+      "path": "node_modules/canonicalize",
+      "version": "3.0.0",
+      "files": {
+        "package.json": "c9bcb2590b7a2ded24ea63582f2a47cbafb934733ed9429cef120e8d6e55bea9",
+        "lib/canonicalize.js": "c0fd652bd174455567dcbbbab0f306fe5d40a9fb13b0f184b46aca083b29546e",
+        "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      }
     }
   ]
 }

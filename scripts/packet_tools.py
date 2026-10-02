@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import platform
 
 sys.dont_write_bytecode = True
 
@@ -87,6 +88,13 @@ class Git:
 
     def ancestor(self, old, new):
         self.run('merge-base', '--is-ancestor', old, new)
+
+    def files(self, rev, prefix):
+        path_name(prefix)
+        rows = self.run('ls-tree', '-r', '-z', rev, '--', prefix).split(b'\0')
+        names = [row.split(b'\t', 1)[1].decode() for row in rows if row]
+        require(bool(names), f'empty source tree: {prefix}')
+        return names
 
 
 def candidate(git, payload, head, spec_path):
@@ -205,10 +213,90 @@ def inventory(git, revision, spec_path):
             'full_corpus_complete': False, 'acceptance': 'not evaluated'}
 
 
+def corpus(git, revision, spec_path):
+    """Resolve explicit semantic mappings; execution remains a separate observation."""
+    rev = git.commit(revision)
+    spec = git.document(rev, spec_path)
+    intake = inventory(git, rev, spec['inventory'])
+    origins = {row['id']: row for row in intake['origins']}
+    mappings = {}
+    for row in spec['mappings']:
+        key = row['origin']
+        require(key in origins and key not in mappings, f'missing or duplicate mapping origin: {key}')
+        require(isinstance(row.get('rationale'), str) and row['rationale'].strip(), 'mapping needs rationale')
+        require(row.get('status') in ('pending', 'case', 'suite', 'duplicate', 'non_executable'),
+                'unknown adoption status')
+        mappings[key] = row
+    require(set(mappings) == set(origins), 'adoption manifest must account for every origin, including pending')
+    registry = git.document(rev, spec['registry'])
+    cases = {row['id']: row for row in registry['cases']}
+    require(len(cases) == len(registry['cases']), 'duplicate case ID')
+    checks = {row['id']: row for row in spec['suites']}
+    require(len(checks) == len(spec['suites']), 'duplicate suite ID')
+    for suite in checks.values():
+        unique_text(suite['files'], 'suite files')
+        require(bool(suite['files']), 'suite has no source')
+        for path in suite['files']:
+            git.blob(rev, path)
+        require(isinstance(suite.get('command'), str) and suite['command'], 'suite needs verification command ID')
+    def resolve(key, stack):
+        require(key not in stack, 'cyclic duplicate mapping')
+        row = mappings[key]
+        status = row['status']
+        if status == 'duplicate':
+            target = row['target']
+            require(target in mappings, 'duplicate target absent')
+            return resolve(target, stack | {key})
+        if status in ('case', 'suite'):
+            targets = unique_text(row['targets'], 'mapping targets')
+            require(bool(targets), 'mapping needs targets')
+            owner = cases if status == 'case' else checks
+            require(all(target in owner for target in targets), 'mapping target absent')
+        if status == 'non_executable':
+            require(row.get('reason') in ('policy', 'historical_command', 'record', 'unavailable_source'),
+                    'non-executable mapping needs a declared evidence reason')
+            # This records a reviewed explanation; it cannot decide if prose hides a counterexample.
+        return status
+    resolved = {key: resolve(key, set()) for key in mappings}
+    pending = [key for key, status in resolved.items() if status == 'pending']
+    return {'operation': 'corpus', 'result': 'mappings_complete' if not pending else 'extraction_pending',
+            'revision': rev, 'origins': len(origins),
+            'counts': dict(Counter(row['status'] for row in mappings.values())),
+            'pending_adoption': len(pending), 'pending_origins': pending,
+            'mapping_complete': not pending, 'execution': 'not evaluated',
+            'full_corpus_complete': False, 'acceptance': 'not evaluated',
+            'limits': ['Semantic equivalence and non-executable classifications require source review',
+                       'A complete mapping is not a passing corpus run or release of held claims']}
+
+
+def dependency_files(git, rev, spec):
+    """Copy a finite, content-pinned subset of already installed dependencies. Never install."""
+    files = {}
+    lock = json.loads(git.blob(rev, 'package-lock.json')) if spec else {}
+    for dep in spec:
+        root = path_name(dep['path'])
+        require(root.startswith('node_modules/'), 'dependency must be under node_modules')
+        require(lock.get('packages', {}).get(root, {}).get('version') == dep['version'],
+                f'dependency version differs from lock: {root}')
+        require(isinstance(dep['files'], dict) and 'package.json' in dep['files'], 'dependency needs package.json')
+        for relative, expected in dep['files'].items():
+            name = root + '/' + path_name(relative)
+            local = git.repo / name
+            require(not any(part.is_symlink() for part in [local, *local.parents[:len(PurePosixPath(name).parts) - 1]]),
+                    f'dependency symlink refused: {name}')
+            require(local.is_file(), f'missing dependency file: {name}; use the existing locked install')
+            data = local.read_bytes()
+            require(digest(data) == expected, f'dependency digest mismatch: {name}')
+            files[name] = data
+        manifest = json.loads(files[root + '/package.json'])
+        require(manifest['version'] == dep['version'], 'installed dependency version mismatch')
+    return files
+
+
 def command(argv, cwd, timeout, output_limit):
     """POSIX process-group termination; cap captured output while the child is running."""
     require(isinstance(argv, list) and argv and all(isinstance(x, str) for x in argv), 'command needs argv')
-    require(type(timeout) in (int, float) and 0 < timeout <= 300, 'timeout must be in (0, 300] seconds')
+    require(type(timeout) in (int, float) and 0 < timeout <= 3600, 'timeout must be in (0, 3600] seconds')
     require(type(output_limit) is int and 0 < output_limit <= 1048576, 'output cap must be in (0, 1048576]')
     require(os.name == 'posix', 'mutation runner supports POSIX hosts')
     try:
@@ -283,16 +371,23 @@ def run_case(files, case, mutant=None):
         return command(case['argv'], directory, case['timeout_seconds'], case['output_limit_bytes'])
 
 
-def mutations(git, revision, registry_path):
+def mutations(git, revision, registry_path, *, cases_only=False):
     rev = git.commit(revision)
     registry = git.document(rev, registry_path)
+    shared = {}
+    for prefix in registry.get('source_trees', []):
+        for name in git.files(rev, prefix):
+            shared[name] = git.blob(rev, name)
+    for name in unique_text(registry.get('files', []), 'shared files'):
+        shared[path_name(name)] = git.blob(rev, name)
+    shared.update(dependency_files(git, rev, registry.get('dependencies', [])))
     case_ids, mutant_ids, results = set(), set(), []
     for case in registry['cases']:
         require(case['id'] not in case_ids, 'duplicate case ID')
         case_ids.add(case['id'])
         require(type(case['failure_exit']) is int and 1 <= case['failure_exit'] <= 125, 'invalid failure exit')
         names = unique_text(case['files'], 'case files')
-        files = {path_name(name): git.blob(rev, name) for name in names}
+        files = {**shared, **{path_name(name): git.blob(rev, name) for name in names}}
         baseline = run_case(files, case)
         try:
             control = observation(baseline, case)
@@ -301,7 +396,7 @@ def mutations(git, revision, registry_path):
             valid = False
         case_result = {'case': case['id'], 'control': 'passed' if valid else 'invalid_baseline',
                        'baseline': baseline, 'mutations': []}
-        for mutant in case['mutants']:
+        for mutant in ([] if cases_only else case.get('mutants', [])):
             require(mutant['id'] not in mutant_ids, 'duplicate mutant ID')
             mutant_ids.add(mutant['id'])
             require(mutant['path'] in files, 'mutation target absent from declared files')
@@ -323,14 +418,65 @@ def mutations(git, revision, registry_path):
         results.append(case_result)
     require(bool(results), 'registry has no cases')
     counts = dict(Counter(m['status'] for c in results for m in c['mutations']))
-    require(bool(counts), 'registry has no mutations')
-    passed = all(c['control'] == 'passed' for c in results) and set(counts) == {'killed'}
-    return {'operation': 'mutations', 'revision': rev, 'registry': registry_path,
+    if not cases_only:
+        require(bool(counts), 'registry has no mutations')
+    passed = all(c['control'] == 'passed' for c in results) and (cases_only or set(counts) == {'killed'})
+    return {'operation': 'cases' if cases_only else 'mutations', 'revision': rev, 'registry': registry_path,
             'result': 'selected_cases_passed' if passed else 'attention_required',
             'counts': counts, 'cases': results, 'acceptance': 'not evaluated',
             'limits': ['Only the listed cases and mutations were executed',
                        'Structured witnesses rely on reviewed independent fixtures; no universal causal proof',
                        'Trusted repository commands run without containment; temporary copies protect source files']}
+
+
+def clean_payload(git, rev):
+    require(git.run('rev-parse', 'HEAD').decode().strip() == rev, 'HEAD must be payload C')
+    require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')
+
+
+def verify(git, revision, spec_path):
+    rev = git.commit(revision)
+    clean_payload(git, rev)
+    spec = git.document(rev, spec_path)
+    ids = unique_text([step['id'] for step in spec['checks']], 'verification checks')
+    require(bool(ids), 'verification has no checks')
+    results = []
+    for step in spec['checks']:
+        print('Checking ' + step['id'], file=sys.stderr, flush=True)
+        if step.get('operation') in ('inventory', 'corpus', 'mutations', 'cases'):
+            operation = step['operation']
+            if operation == 'inventory':
+                result = inventory(git, rev, step['spec'])
+            elif operation == 'corpus':
+                result = corpus(git, rev, step['spec'])
+            else:
+                result = mutations(git, rev, step['spec'], cases_only=operation == 'cases')
+            ok = result['result'] == step['expected']
+            results.append({'id': step['id'], 'operation': operation, 'passed': ok, 'result': result})
+        else:
+            run = command(step['argv'], git.repo, step['timeout_seconds'], step['output_limit_bytes'])
+            counts = {}
+            for label, expression in step.get('counts', {}).items():
+                matches = re.findall(expression, run['output'], re.MULTILINE)
+                require(len(matches) == 1 and isinstance(matches[0], str), f'ambiguous or missing count {step["id"]}:{label}')
+                counts[label] = int(matches[0])
+            ok = run['status'] == 'finished' and run['exit'] == 0
+            for label, minimum in step.get('minimum_counts', {}).items():
+                ok = ok and counts.get(label, -1) >= minimum
+            for label, exact in step.get('exact_counts', {}).items():
+                ok = ok and counts.get(label) == exact
+            results.append({'id': step['id'], 'argv': step['argv'], 'passed': ok, 'counts': counts, **run})
+        clean_payload(git, rev)
+    return {'operation': 'verify', 'revision': rev, 'specification': spec_path,
+            'result': 'checks_passed' if all(r['passed'] for r in results) else 'attention_required',
+            'environment': {'python': platform.python_version(), 'platform': platform.platform(),
+                            'node': git_command_version('node', '--version'), 'git': git_command_version('git', '--version')},
+            'checks': results, 'acceptance': 'not evaluated',
+            'limits': spec['limits']}
+
+
+def git_command_version(*argv):
+    return subprocess.check_output(argv, text=True).strip()
 
 
 def main():
@@ -341,7 +487,7 @@ def main():
     c.add_argument('--payload', required=True)
     c.add_argument('--head', required=True)
     c.add_argument('--spec', required=True)
-    for name in ('inventory', 'mutations'):
+    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify'):
         child = sub.add_parser(name)
         child.add_argument('--revision', required=True)
         child.add_argument('--spec', required=True)
@@ -352,8 +498,12 @@ def main():
             result = candidate(git, args.payload, args.head, args.spec)
         elif args.operation == 'inventory':
             result = inventory(git, args.revision, args.spec)
+        elif args.operation == 'corpus':
+            result = corpus(git, args.revision, args.spec)
+        elif args.operation == 'verify':
+            result = verify(git, args.revision, args.spec)
         else:
-            result = mutations(git, args.revision, args.spec)
+            result = mutations(git, args.revision, args.spec, cases_only=args.operation == 'cases')
         print(json.dumps(result, indent=2))
         return 1 if result.get('result') == 'attention_required' else 0
     except (CheckError, KeyError, TypeError, ValueError, OSError) as exc:
