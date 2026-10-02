@@ -40,6 +40,12 @@ class RefusalGuardTests(base.RepositoryFixture):
     def test_source_tree_empty(self):
         self.refuses('empty source tree', lambda: self.reader.files(self.b, 'absent'))
 
+    def test_blob_missing_returns_declared_refusal(self):
+        self.refuses('missing regular source', lambda: self.reader.blob(self.b, 'missing.txt'))
+
+    def test_git_command_failure(self):
+        self.refuses('git rev-parse', lambda: self.reader.run('rev-parse', '--verify', 'refs/heads/does-not-exist'))
+
     def test_administrative_allowlist_empty(self):
         c, h = self.candidate_pair(administrative_files=[])
         self.refuses('must not be empty', lambda: tool.candidate(self.reader, c, h, 'spec.json'))
@@ -86,6 +92,10 @@ class RefusalGuardTests(base.RepositoryFixture):
         rev = self.edit('inventory.json', lambda d: d.update(mappings=[dict(origin=key,status='proposed',rationale='retained',destination='')]))
         self.refuses('mapping needs destination', lambda: tool.inventory(self.reader, rev, 'inventory.json'))
 
+    def test_proposed_mapping_unknown_origin(self):
+        self.inventory_change(lambda d: d.update(mappings=[dict(origin='unknown',status='proposed',
+                              rationale='independent malformed input',destination='test')]), 'missing or duplicate mapping')
+
     def corpus_change(self, change, message, path='corpus.json'):
         corpus_tests.CorpusTests.fixture(self)
         rev = self.edit(path, change)
@@ -112,6 +122,12 @@ class RefusalGuardTests(base.RepositoryFixture):
     def test_duplicate_destination(self):
         self.corpus_change(lambda d:d['mappings'][0].update(status='duplicate',target='absent'), 'duplicate target absent')
 
+    def test_duplicate_mapping_cycle(self):
+        def change(d):
+            for index in range(2):
+                d['mappings'][index].update(status='duplicate',target=d['mappings'][1-index]['origin'])
+        self.corpus_change(change, 'cyclic duplicate mapping')
+
     def test_mapping_targets_empty(self):
         self.corpus_change(lambda d:d['mappings'][0].update(status='case',targets=[]), 'mapping needs targets')
 
@@ -134,6 +150,9 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     def test_coverage_unknown_case(self):
         self.coverage_change(lambda d,r:d['families'][0]['cases'][0].update(case='absent'), 'family case')
+
+    def test_coverage_missing_dimension(self):
+        self.coverage_change(lambda d,r:d['families'][0]['cases'][0]['values'].pop('stage'), 'dimensions differ')
 
     def test_coverage_duplicate_coordinates(self):
         def change(d,r):

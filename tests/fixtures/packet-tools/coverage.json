@@ -4,7 +4,8 @@
   "negative_categories": [
     "identity",
     "oracle-decision-field",
-    "held-realm-witness"
+    "held-realm-witness",
+    "work-charge"
   ],
   "families": [
     {
@@ -957,6 +958,30 @@
             "pin": "writableOnly",
             "stage": "pre-pin",
             "environment": "frozen-intrinsics"
+          }
+        }
+      ]
+    },
+    {
+      "id": "work-charge",
+      "domains": {
+        "shape": [
+          "empty-array-surplus-256-repeated-4096"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "capture"
+        ]
+      },
+      "cases": [
+        {
+          "case": "work-charge.array-surplus",
+          "values": {
+            "shape": "empty-array-surplus-256-repeated-4096",
+            "environment": "ordinary",
+            "stage": "capture"
           }
         }
       ]

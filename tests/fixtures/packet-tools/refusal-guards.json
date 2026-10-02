@@ -39,11 +39,11 @@
     },
     {
       "id": "guard.blob.f8a0a451fee7d9d9",
-      "assertion": "test_corpus_tools.CorpusTests.test_missing_suite_source",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_blob_missing_returns_declared_refusal",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: blob",
       "input": {
-        "test": "test_corpus_tools.CorpusTests.test_missing_suite_source"
+        "test": "test_refusal_guards.RefusalGuardTests.test_blob_missing_returns_declared_refusal"
       },
       "files": [],
       "argv": [
@@ -1170,11 +1170,11 @@
     },
     {
       "id": "guard.coverage_manifest.dd7a0e3fb955c7f4",
-      "assertion": "test_research_tools.CoverageTests.test_dimension_missing_from_case",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_missing_dimension",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: coverage_manifest",
       "input": {
-        "test": "test_research_tools.CoverageTests.test_dimension_missing_from_case"
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_missing_dimension"
       },
       "files": [],
       "argv": [
@@ -1750,11 +1750,11 @@
     },
     {
       "id": "guard.inventory.85ec0b7d935e33e5",
-      "assertion": "test_packet_tools.InventoryTests.test_dead_mapping",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_proposed_mapping_unknown_origin",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: inventory",
       "input": {
-        "test": "test_packet_tools.InventoryTests.test_dead_mapping"
+        "test": "test_refusal_guards.RefusalGuardTests.test_proposed_mapping_unknown_origin"
       },
       "files": [],
       "argv": [
@@ -2359,11 +2359,11 @@
     },
     {
       "id": "guard.resolve.4df9841235951ae5",
-      "assertion": "test_corpus_tools.CorpusTests.test_duplicate_cycle",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_duplicate_mapping_cycle",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: resolve",
       "input": {
-        "test": "test_corpus_tools.CorpusTests.test_duplicate_cycle"
+        "test": "test_refusal_guards.RefusalGuardTests.test_duplicate_mapping_cycle"
       },
       "files": [],
       "argv": [
@@ -2475,11 +2475,11 @@
     },
     {
       "id": "guard.run.ddd42c39812fa4f2",
-      "assertion": "test_packet_tools.CandidateTests.test_nonexistent_commit",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_git_command_failure",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: run",
       "input": {
-        "test": "test_packet_tools.CandidateTests.test_nonexistent_commit"
+        "test": "test_refusal_guards.RefusalGuardTests.test_git_command_failure"
       },
       "files": [],
       "argv": [

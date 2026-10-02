@@ -3654,6 +3654,44 @@
           "configurable": true
         }
       }
+    },
+    {
+      "id": "work-charge.array-surplus",
+      "category": "work-charge",
+      "assertion": "work-charge.array-surplus.exact-visits",
+      "input": {
+        "recipe": {
+          "extra_names": 256,
+          "array_length": 0,
+          "root_repetitions": 4096,
+          "name_prefix": "x",
+          "value": 0
+        },
+        "expected_visits": 4049
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs; N15 mutant; bounded implementer count witness",
+      "files": [
+        "tests/tooling/work-charge-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/work-charge-probe.mjs"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "packages/kernel/src/values.ts",
+          "before": "containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount",
+          "after": "containerStructureBytes(length, false) + symbolCount",
+          "operator": "remove-work-charge",
+          "name": "N15 array surplus names uncharged",
+          "id": "mutation-c0830d226881a684d4582d951720ea6e6aab9e3fcee213b7b081722f362014c1"
+        }
+      ]
     }
   ],
   "source_trees": [
@@ -3703,6 +3741,7 @@
     "realm.lexical-shadow.unpinned.ordinary",
     "realm.object-freeze-witness.unpinned.ordinary",
     "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
-    "realm.zone.Map.assign.full.frozen-intrinsics"
+    "realm.zone.Map.assign.full.frozen-intrinsics",
+    "work-charge.array-surplus"
   ]
 }

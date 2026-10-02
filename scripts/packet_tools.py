@@ -507,6 +507,16 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                           'invalid': state in ('setup_error', 'timeout', 'output_limit')}
                 if state == 'killed':
                     result['killed_by'] = seen.get('failures', [case['assertion']])[0]
+                if case['id'] in registry.get('determinism_sample', []):
+                    repeated_run = run_case(files, case, mutant)
+                    try:
+                        stable = observation(repeated_run, case) == observation(run, case)
+                    except CheckError:
+                        stable = False
+                    result['determinism'] = {'passed': stable, 'runs': 2, 'repeat': repeated_run}
+                    if not stable:
+                        result['status'] = 'nondeterministic'
+                        result.pop('killed_by', None)
             result['content_key'] = mutation_key(mutant)
             case_result['mutations'].append(result)
         if case['id'] in registry.get('determinism_sample', []):

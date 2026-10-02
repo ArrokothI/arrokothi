@@ -122,10 +122,20 @@ class ResultTests(RepositoryFixture):
         def run(passed):
             return {'status': 'finished', 'exit': 0 if passed else 17,
                     'output': json.dumps(dict(case='case', assertion='exact-value', reached=True, passed=passed))}
-        with patch.object(tool, 'run_case', side_effect=[run(True), run(False), run(False)]):
+        with patch.object(tool, 'run_case', side_effect=[run(True), run(False), run(False), run(False)]):
             result, _ = self.outcome(rev)
         self.assertFalse(result['cases'][0]['determinism']['passed'])
         self.assertEqual(result['result'], 'attention_required')
+
+    def test_determinism_changed_mutant_is_not_killed(self):
+        rev = self.sampled_fixture()
+        def run(passed):
+            return {'status': 'finished', 'exit': 0 if passed else 17,
+                    'output': json.dumps(dict(case='case', assertion='exact-value', reached=True, passed=passed))}
+        with patch.object(tool, 'run_case', side_effect=[run(True), run(False), run(True), run(True)]):
+            result, status = self.outcome(rev)
+        self.assertEqual(status, 'nondeterministic')
+        self.assertNotIn('killed_by', result['cases'][0]['mutations'][0])
 
 
 if __name__ == '__main__':

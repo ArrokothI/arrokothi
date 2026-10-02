@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "checks": [
+    {
+      "id": "tool-tests",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/tooling",
+        "-p",
+        "test_*.py"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^Ran (\\d+) tests in "
+      },
+      "minimum_counts": {
+        "tests": 128
+      }
+    },
+    {
+      "id": "inventory",
+      "operation": "inventory",
+      "spec": "tests/fixtures/packet-tools/inventory.json",
+      "expected": "provenance_verified"
+    },
+    {
+      "id": "adoption",
+      "operation": "corpus",
+      "spec": "tests/fixtures/packet-tools/adoption.json",
+      "expected": "mappings_complete"
+    },
+    {
+      "id": "dimensions",
+      "operation": "coverage",
+      "spec": "tests/fixtures/packet-tools/coverage.json",
+      "expected": "coverage_reported"
+    },
+    {
+      "id": "registered-mutants",
+      "operation": "mutations",
+      "spec": "tests/fixtures/packet-tools/mutations.json",
+      "expected": "selected_cases_passed"
+    },
+    {
+      "id": "refusal-mutants",
+      "operation": "mutations",
+      "spec": "tests/fixtures/packet-tools/refusal-guards.json",
+      "expected": "selected_cases_passed"
+    },
+    {
+      "id": "refusal-census",
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/check-refusal-registry.py"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "oracle-census",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/registry-check.mjs"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "typecheck",
+      "argv": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "repository-tests",
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
+      },
+      "minimum_counts": {
+        "tests": 3774
+      },
+      "exact_counts": {
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "argv": [
+        "npm",
+        "run",
+        "test:archive-evidence"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
+      },
+      "minimum_counts": {
+        "tests": 1
+      },
+      "exact_counts": {
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "kernel-sweeps",
+      "argv": [
+        "npm",
+        "run",
+        "test:kernel-sweeps"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    }
+  ],
+  "profiles_not_run": [
+    {
+      "id": "live-provider",
+      "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
+      "commands": [
+        "npm run canary:gemini",
+        "npm run canary:mcp:gemini",
+        "npm run canary:workflow"
+      ]
+    },
+    {
+      "id": "large-memory-timing",
+      "reason": "Owner choice 01: historical engine-limit, heap and timing studies retained in the pinned inventory; individual semantic mappings/command adapters remain pending P1. No execution credit.",
+      "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "sources": [
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ]
+    }
+  ],
+  "limits": [
+    "P1 adoption remains pending; a passing executed subset does not complete P1/P2.",
+    "No prior results reused; acceptance and hold release are not evaluated.",
+    "check:builder-docs has an owner-reported pre-existing missing DESIGN-AUDIT-01 README on main; report separately without repairing it.",
+    "Dimension gaps and closed-by-reading reasons are in the dimensions result; no universal coverage claim."
+  ]
+}
