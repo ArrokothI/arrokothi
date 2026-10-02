@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "base": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+  "base": "f62527e8d564a6e2f63b83cbb52e24053f333540",
   "require_direct_parent": true,
   "administrative_files": [
     "docs/development/007-work-packets.md",
@@ -8,51 +8,51 @@
   ],
   "preserve": [
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "packages"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "mental-model"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "docs/development/work/DESIGN-AUDIT-01"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "docs/development/006-development-process.md"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "docs/development/008-implementation-report.md"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "docs/development/009-universal-prompts.md"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "docs/development/012-review-methods.md"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "docs/development/research"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "AGENTS.md"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": "docs/development/README.md"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": ".agents/skills/arrokothi-architecture"
     },
     {
-      "revision": "8292d6f3e56223c425bd5d048299735ccc248ac4",
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
       "path": ".agents/skills/arrokothi-slice-audit"
     }
   ],
