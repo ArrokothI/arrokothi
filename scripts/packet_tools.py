@@ -229,6 +229,26 @@ def inventory(git, revision, spec_path):
             'full_corpus_complete': False, 'acceptance': 'not evaluated'}
 
 
+def execution_plan(spec):
+    """Resolve command ownership, including explicitly unexecuted profiles."""
+    entries = []
+    for step in spec['checks']:
+        entries.append(dict(step, profile='deterministic', execution='required'))
+    profile_ids = unique_text([row['id'] for row in spec.get('profiles_not_run', [])], 'profile IDs')
+    require('deterministic' not in profile_ids, 'deterministic profile must execute')
+    for profile in spec.get('profiles_not_run', []):
+        require(isinstance(profile.get('reason'), str) and bool(profile['reason'].strip()),
+                'unexecuted profile needs a reason')
+        require(bool(profile.get('checks')), 'unexecuted profile needs commands')
+        for step in profile['checks']:
+            require(isinstance(step.get('argv'), list) and bool(step['argv']) and
+                    all(isinstance(arg, str) and bool(arg) for arg in step['argv']),
+                    'profile command needs argv')
+            entries.append(dict(step, profile=profile['id'], execution='not_run', reason=profile['reason']))
+    unique_text([row['id'] for row in entries], 'execution command IDs')
+    return {row['id']: row for row in entries}
+
+
 def corpus(git, revision, spec_path):
     """Resolve explicit semantic mappings; execution remains a separate observation."""
     rev = git.commit(revision)
@@ -245,6 +265,10 @@ def corpus(git, revision, spec_path):
         mappings[key] = row
     require(set(mappings) == set(origins), 'adoption manifest must account for every origin, including pending')
     registry = git.document(rev, spec['registry'])
+    plan = execution_plan(git.document(rev, spec['verification']))
+    require(any(row.get('operation') == 'mutations' and row.get('spec') == spec['registry'] and
+                row.get('expected') == 'selected_cases_passed' and row['execution'] == 'required'
+                for row in plan.values()), 'corpus registry must run in verification')
     cases = {row['id']: row for row in registry['cases']}
     require(len(cases) == len(registry['cases']), 'duplicate case ID')
     checks = {row['id']: row for row in spec['suites']}
@@ -255,6 +279,10 @@ def corpus(git, revision, spec_path):
         for path in suite['files']:
             git.blob(rev, path)
         require(isinstance(suite.get('command'), str) and suite['command'], 'suite needs verification command ID')
+        require(suite['command'] in plan and bool(plan[suite['command']].get('argv')),
+                'suite command absent from verification')
+        require(suite.get('profile', 'deterministic') == plan[suite['command']]['profile'],
+                'suite execution profile disagrees with verification')
     def resolve(key, stack):
         require(key not in stack, 'cyclic duplicate mapping')
         row = mappings[key]
@@ -279,6 +307,11 @@ def corpus(git, revision, spec_path):
             'revision': rev, 'origins': len(origins),
             'counts': dict(Counter(row['status'] for row in mappings.values())),
             'pending_adoption': len(pending), 'pending_origins': pending,
+            'suite_execution': [{'suite': row['id'], 'command': row['command'],
+                                 'profile': plan[row['command']]['profile'],
+                                 'execution': plan[row['command']]['execution'],
+                                 'reason': plan[row['command']].get('reason')}
+                                for row in checks.values()],
             'mapping_complete': not pending, 'execution': 'not evaluated',
             'non_executable': [row for row in mappings.values() if row['status'] == 'non_executable'],
             'full_corpus_complete': False, 'acceptance': 'not evaluated',
@@ -436,6 +469,18 @@ def observation(run, case):
     return value
 
 
+def execution_outcome(run, case):
+    """Compare structured outcomes without promoting invalid runs to observations."""
+    if run['status'] != 'finished':
+        return {'status': run['status'], 'matches': run.get('matches')}
+    try:
+        value = observation(run, case)
+    except CheckError:
+        return {'status': 'setup_error', 'exit': run['exit']}
+    state = 'uncovered' if not value['reached'] else 'survived' if value['passed'] else 'killed'
+    return {'status': state, 'observation': value}
+
+
 def run_case(files, case, mutant=None):
     with tempfile.TemporaryDirectory(prefix='arrokothi-evidence-') as tmp:
         directory = Path(tmp)
@@ -496,23 +541,16 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                 result = {'mutation': mutant['id'], 'status': 'invalid_baseline'}
             else:
                 run = run_case(files, case, mutant)
-                state = run['status']
-                if state == 'finished':
-                    try:
-                        seen = observation(run, case)
-                        state = 'uncovered' if not seen['reached'] else 'survived' if seen['passed'] else 'killed'
-                    except CheckError:
-                        state = 'setup_error'
+                outcome = execution_outcome(run, case)
+                state = outcome['status']
                 result = {'mutation': mutant['id'], 'status': state, 'run': run,
                           'invalid': state in ('setup_error', 'timeout', 'output_limit')}
                 if state == 'killed':
+                    seen = outcome['observation']
                     result['killed_by'] = seen.get('failures', [case['assertion']])[0]
                 if case['id'] in registry.get('determinism_sample', []):
                     repeated_run = run_case(files, case, mutant)
-                    try:
-                        stable = observation(repeated_run, case) == observation(run, case)
-                    except CheckError:
-                        stable = False
+                    stable = execution_outcome(repeated_run, case) == outcome
                     result['determinism'] = {'passed': stable, 'runs': 2, 'repeat': repeated_run}
                     if not stable:
                         result['status'] = 'nondeterministic'
@@ -527,6 +565,12 @@ def mutations(git, revision, registry_path, *, cases_only=False):
             except CheckError:
                 stable = False
             case_result['determinism'] = {'passed': stable, 'runs': 2, 'repeat': repeat}
+            if not stable:
+                case_result['control'] = 'invalid_baseline'
+                for result in case_result['mutations']:
+                    result['observed_status'] = result['status']
+                    result['status'] = 'invalid_baseline'
+                    result.pop('killed_by', None)
         results.append(case_result)
     require(bool(results), 'registry has no cases')
     counts = dict(Counter(m['status'] for c in results for m in c['mutations']))
@@ -553,6 +597,7 @@ def verify(git, revision, spec_path):
     rev = git.commit(revision)
     clean_payload(git, rev)
     spec = git.document(rev, spec_path)
+    execution_plan(spec)
     ids = unique_text([step['id'] for step in spec['checks']], 'verification checks')
     require(bool(ids), 'verification has no checks')
     results = []

@@ -30,6 +30,22 @@ The current manifest is partial, and `verify` deliberately requires `mappings_co
 its summary stays `attention_required` while P1 extraction remains open, even if all executed
 checks pass. No old result is imported as a current result.
 
+The adoption manifest now names its verification specification. A suite command must resolve to
+a declared argv command in that specification, with the same execution profile; the corpus's
+mutation registry must be scheduled as a required mutation run. The summary reports each suite's
+command, profile and required/not-run status. This checks composition, not whether a command's
+implementation actually exercises every assertion attributed to it; reviewers still inspect the
+source mappings. The current intake has 132 mapped origins and 1,417 pending origins. Fourteen
+additional artifact mappings record inspected delivery-boundary migration, exact coordinates,
+identity equality and host-member tests, plus historical command/interface evidence.
+
+Unexecuted profiles use named `checks` with argv and a written reason. Historical memory/timing
+commands name their source revision and any required environment: they require a separately
+prepared checkout of that revision (`$ROOT` is its absolute path), not invocation against missing
+archived paths in this checkout. Their maintained adapters and remaining semantic mappings are
+still pending P1. The builder-docs entry records the owner's reported base failure; it is not a
+passed check or a permanent waiver of any future packet requirement.
+
 `coverage` uses the explicit domains in coverage.json. It lists full missing combinations,
 including combinations that the current fixture cannot exercise. Stage and access form are
 separate coordinates; pre-pin declaration currently runs at pre-pin stage and the other forms
@@ -67,7 +83,7 @@ unchanged, separately from these executable identities.
 | `survived` | Applied and reached; the assertion still passes. |
 | `uncovered` | The fixture did not establish reach. |
 | `not_applicable` | Zero or multiple anchor matches; explicit stale/ambiguous result. |
-| `invalid_baseline` | The control did not produce a passing reached observation. |
+| `invalid_baseline` | The control did not produce a passing reached observation, or its sampled repeat changed. All dependent mutants lose kill credit. |
 | `setup_error` | Runtime start, import, syntax, compilation, harness or observation-protocol failure. Invalid execution, never a kill. |
 | `timeout` / `output_limit` | Declared resource bound exceeded; no kill credit. |
 | `nondeterministic` | A sampled fresh-process repeat changed the structured outcome; any earlier kill credit is removed. |
@@ -92,6 +108,10 @@ Determinism samples are declared by case ID in each registry. Both control and m
 in fresh processes; compare structured observations, including counts and first named failure.
 This detects sampled flakiness, not all nondeterminism. Clean-C verification runs every declared
 step again, checks source cleanliness around commands and records versions, argv, exits and counts.
+Repeated stale sites keep `not_applicable`; repeated setup/timeout/output failures keep their invalid
+execution categories. Agreement between two invalid runs never grants a kill. If a control changes
+on repeat, `observed_status` preserves the earlier mutant observation for diagnosis while its counted
+status becomes `invalid_baseline` and its `killed_by` field is removed.
 
 CLI exit 0 means the selected facts/checks passed; 1 means attention is required; 2 means invalid
 input or failed fact checking. Closed-by-reading/waived entries require reasons and never count as

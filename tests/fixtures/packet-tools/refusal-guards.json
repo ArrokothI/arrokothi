@@ -2617,6 +2617,209 @@
           "id": "mutation-79e081403b3c117ae88145c66e8a8fc1e77c2826ab2e9ab06c1f44d0846b85e8"
         }
       ]
+    },
+    {
+      "id": "guard.composition.832f422bed893ea2",
+      "assertion": "test_corpus_tools.CorpusTests.test_default_profile_cannot_be_unexecuted",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: execution plan / corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_default_profile_cannot_be_unexecuted"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.composition.832f422bed893ea2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require('deterministic' not in profile_ids, 'deterministic profile must execute')",
+          "after": "pass  # tools01-ablate:832f422bed893ea2",
+          "operator": "remove-refusal-check",
+          "name": "guard.composition.832f422bed893ea2",
+          "id": "mutation-4ac31deef793447c2f6e2c16e8dd074c6e53a376c47c03b0f4aa4b10cc108138"
+        }
+      ]
+    },
+    {
+      "id": "guard.composition.6c72f9f83555b077",
+      "assertion": "test_corpus_tools.CorpusTests.test_corpus_mutations_must_be_scheduled",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: execution plan / corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_corpus_mutations_must_be_scheduled"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.composition.6c72f9f83555b077"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(any(row.get('operation') == 'mutations' and row.get('spec') == spec['registry'] and\n                row.get('expected') == 'selected_cases_passed' and row['execution'] == 'required'\n                for row in plan.values()), 'corpus registry must run in verification')",
+          "after": "pass  # tools01-ablate:6c72f9f83555b077",
+          "operator": "remove-refusal-check",
+          "name": "guard.composition.6c72f9f83555b077",
+          "id": "mutation-786fff5f6a53ab0804afef4c0a6479283e3b976442aaa22d24eb9ed0b28ffe92"
+        }
+      ]
+    },
+    {
+      "id": "guard.composition.8b97340573946ddd",
+      "assertion": "test_corpus_tools.CorpusTests.test_profile_reason_required",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: execution plan / corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_profile_reason_required"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.composition.8b97340573946ddd"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(profile.get('reason'), str) and bool(profile['reason'].strip()),\n                'unexecuted profile needs a reason')",
+          "after": "pass  # tools01-ablate:8b97340573946ddd",
+          "operator": "remove-refusal-check",
+          "name": "guard.composition.8b97340573946ddd",
+          "id": "mutation-a1d9d60476a0db1a51fef73d4b0ab0346ec18a739c26d17a7801324e7dc05856"
+        }
+      ]
+    },
+    {
+      "id": "guard.composition.43967f9238dbfbdb",
+      "assertion": "test_corpus_tools.CorpusTests.test_profile_commands_required",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: execution plan / corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_profile_commands_required"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.composition.43967f9238dbfbdb"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(profile.get('checks')), 'unexecuted profile needs commands')",
+          "after": "pass  # tools01-ablate:43967f9238dbfbdb",
+          "operator": "remove-refusal-check",
+          "name": "guard.composition.43967f9238dbfbdb",
+          "id": "mutation-50615ba70a208b658f97888055d099d31be6114623c677c3d31ef6da3d0f3a28"
+        }
+      ]
+    },
+    {
+      "id": "guard.composition.39064b7b41bd4e54",
+      "assertion": "test_corpus_tools.CorpusTests.test_suite_command_must_be_scheduled",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: execution plan / corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_suite_command_must_be_scheduled"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.composition.39064b7b41bd4e54"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(suite['command'] in plan and bool(plan[suite['command']].get('argv')),\n                'suite command absent from verification')",
+          "after": "pass  # tools01-ablate:39064b7b41bd4e54",
+          "operator": "remove-refusal-check",
+          "name": "guard.composition.39064b7b41bd4e54",
+          "id": "mutation-a7e65984bd5b03dd817c8a6aa14ae0d7359caa5bb5fab9238e0addf2449abb94"
+        }
+      ]
+    },
+    {
+      "id": "guard.composition.3986864b5dc878da",
+      "assertion": "test_corpus_tools.CorpusTests.test_suite_cannot_claim_default_for_unexecuted_profile",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: execution plan / corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_suite_cannot_claim_default_for_unexecuted_profile"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.composition.3986864b5dc878da"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(suite.get('profile', 'deterministic') == plan[suite['command']]['profile'],\n                'suite execution profile disagrees with verification')",
+          "after": "pass  # tools01-ablate:3986864b5dc878da",
+          "operator": "remove-refusal-check",
+          "name": "guard.composition.3986864b5dc878da",
+          "id": "mutation-07198919751a21c2a7e0ae75ae31331dedf3dc6a011a86fb8ff6028dd782aecd"
+        }
+      ]
+    },
+    {
+      "id": "guard.composition.ff5426dd906a20c0",
+      "assertion": "test_corpus_tools.CorpusTests.test_profile_argv_required",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: execution plan / corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_profile_argv_required"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.composition.ff5426dd906a20c0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(step.get('argv'), list) and bool(step['argv']) and\n                    all(isinstance(arg, str) and bool(arg) for arg in step['argv']),\n                    'profile command needs argv')",
+          "after": "pass  # tools01-ablate:ff5426dd906a20c0",
+          "operator": "remove-refusal-check",
+          "name": "guard.composition.ff5426dd906a20c0",
+          "id": "mutation-d293987c15a292298f70bf5e7ff0bccd70c58a5e32307881aa50d29d89b2eba6"
+        }
+      ]
     }
   ],
   "determinism_sample": [

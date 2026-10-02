@@ -7,7 +7,8 @@ import sys
 import unittest
 
 sys.dont_write_bytecode = True
-spec = json.loads(Path('tests/fixtures/packet-tools/refusal-guards.json').read_text())
+spec = json.loads(Path(sys.argv[2] if len(sys.argv) > 2 else
+                       'tests/fixtures/packet-tools/refusal-guards.json').read_text())
 entry = next(row for row in spec['cases'] if row['id'] == sys.argv[1])
 mutant = entry['mutants'][0]
 source = Path(mutant['path']).read_text()

@@ -106,8 +106,8 @@ class ResultTests(RepositoryFixture):
         result, _ = self.outcome(self.fixture(before='changed site'))
         self.assertEqual(result['cases'][0]['mutations'][0]['run']['matches'], 0)
 
-    def sampled_fixture(self):
-        self.fixture()
+    def sampled_fixture(self, **kwargs):
+        self.fixture(**kwargs)
         spec = json.loads((self.root / 'registry.json').read_text())
         spec['determinism_sample'] = ['case']
         self.document('registry.json', spec)
@@ -116,6 +116,32 @@ class ResultTests(RepositoryFixture):
     def test_determinism_repeat(self):
         result, _ = self.outcome(self.sampled_fixture())
         self.assertTrue(result['cases'][0]['determinism']['passed'])
+
+    def test_determinism_stale_site_stays_not_applicable(self):
+        result, state = self.outcome(self.sampled_fixture(before='absent site'))
+        self.assertEqual(state, 'not_applicable')
+        mutant = result['cases'][0]['mutations'][0]
+        self.assertEqual(mutant['run']['matches'], 0)
+        self.assertTrue(mutant['determinism']['passed'])
+        self.assertNotIn('killed_by', mutant)
+
+    def test_determinism_syntax_failure_stays_invalid(self):
+        result, state = self.outcome(self.sampled_fixture(after='invalid !!!'))
+        self.assertEqual(state, 'setup_error')
+        mutant = result['cases'][0]['mutations'][0]
+        self.assertTrue(mutant['invalid'])
+        self.assertTrue(mutant['determinism']['passed'])
+        self.assertNotIn('killed_by', mutant)
+
+    def test_determinism_timeout_stays_invalid(self):
+        rev = self.sampled_fixture()
+        control = dict(status='finished', exit=0, output=json.dumps(dict(
+            case='case', assertion='exact-value', reached=True, passed=True)))
+        timeout = dict(status='timeout', exit=-9, output='')
+        with patch.object(tool, 'run_case', side_effect=[control, timeout, timeout, control]):
+            result, state = self.outcome(rev)
+        self.assertEqual(state, 'timeout')
+        self.assertTrue(result['cases'][0]['mutations'][0]['invalid'])
 
     def test_determinism_changed_outcome(self):
         rev = self.sampled_fixture()
@@ -126,6 +152,11 @@ class ResultTests(RepositoryFixture):
             result, _ = self.outcome(rev)
         self.assertFalse(result['cases'][0]['determinism']['passed'])
         self.assertEqual(result['result'], 'attention_required')
+        self.assertEqual(result['counts'], {'invalid_baseline': 1})
+        self.assertEqual(result['cases'][0]['control'], 'invalid_baseline')
+        mutant = result['cases'][0]['mutations'][0]
+        self.assertEqual(mutant['observed_status'], 'killed')
+        self.assertNotIn('killed_by', mutant)
 
     def test_determinism_changed_mutant_is_not_killed(self):
         rev = self.sampled_fixture()

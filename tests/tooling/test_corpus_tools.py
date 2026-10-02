@@ -19,8 +19,13 @@ class CorpusTests(RepositoryFixture):
         rev = self.commit('inventory')
         origins = tool.inventory(self.reader, rev, 'inventory.json')['origins']
         self.document('registry.json', {'version': 1, 'cases': [{'id': 'example'}]})
+        self.document('verify.json', {'version': 1, 'checks': [
+            {'id': 'unit', 'argv': ['python3', '-B', 'fixture.py']},
+            {'id': 'mutants', 'operation': 'mutations', 'spec': 'registry.json',
+             'expected': 'selected_cases_passed'}]})
         self.document('corpus.json', {'version': 1, 'inventory': 'inventory.json',
-            'registry': 'registry.json', 'suites': [{'id': 'suite', 'files': ['source.md'], 'command': 'unit'}],
+            'registry': 'registry.json', 'verification': 'verify.json',
+            'suites': [{'id': 'suite', 'files': ['source.md'], 'command': 'unit'}],
             'mappings': [{'origin': origin['id'], 'status': status, 'rationale': 'Fixture classification',
                           'reason': 'record', 'targets': ['example'] if status == 'case' else ['suite']}
                          for origin, status in zip(origins, statuses)]})
@@ -89,6 +94,75 @@ class CorpusTests(RepositoryFixture):
         rev = self.revise(lambda d: d['mappings'][0].update(reason='filename says so'))
         with self.assertRaisesRegex(tool.CheckError, 'evidence reason'):
             self.check(rev)
+
+    def change_plan(self, change):
+        self.fixture(('case', 'suite'))
+        data = json.loads((self.root / 'verify.json').read_text())
+        change(data)
+        self.document('verify.json', data)
+        return self.commit('execution plan')
+
+    def test_suite_command_must_be_scheduled(self):
+        self.fixture(('case', 'suite'))
+        rev = self.revise(lambda d: d['suites'][0].update(command='never-run'))
+        error = None
+        try:
+            self.check(rev)
+        except Exception as exc:
+            error = exc
+        self.assertIsInstance(error, tool.CheckError)
+        self.assertIn('command absent', str(error))
+
+    def test_corpus_mutations_must_be_scheduled(self):
+        rev = self.change_plan(lambda d: d['checks'].pop())
+        with self.assertRaisesRegex(tool.CheckError, 'registry must run'):
+            self.check(rev)
+
+    def test_suite_cannot_claim_default_for_unexecuted_profile(self):
+        def change(d):
+            d['profiles_not_run'] = [dict(id='live', reason='credentials required', checks=[d['checks'].pop(0)])]
+        rev = self.change_plan(change)
+        with self.assertRaisesRegex(tool.CheckError, 'profile disagrees'):
+            self.check(rev)
+
+    def test_unexecuted_profile_mapping_is_visible(self):
+        def change(d):
+            d['profiles_not_run'] = [dict(id='live', reason='credentials required', checks=[d['checks'].pop(0)])]
+        self.change_plan(change)
+        rev = self.revise(lambda d: d['suites'][0].update(profile='live'))
+        result = self.check(rev)
+        self.assertEqual(result['suite_execution'], [dict(suite='suite', command='unit',
+            profile='live', execution='not_run', reason='credentials required')])
+        self.assertEqual(result['execution'], 'not evaluated')
+
+    def test_duplicate_execution_command(self):
+        rev = self.change_plan(lambda d: d.update(profiles_not_run=[dict(
+            id='live', reason='credentials required', checks=[d['checks'][0]])]))
+        with self.assertRaisesRegex(tool.CheckError, 'execution command IDs: duplicate'):
+            self.check(rev)
+
+    def test_duplicate_profile(self):
+        with self.assertRaisesRegex(tool.CheckError, 'profile IDs: duplicate'):
+            tool.execution_plan(dict(checks=[], profiles_not_run=[dict(id='live'), dict(id='live')]))
+
+    def test_default_profile_cannot_be_unexecuted(self):
+        with self.assertRaisesRegex(tool.CheckError, 'deterministic profile must execute'):
+            tool.execution_plan(dict(checks=[], profiles_not_run=[dict(id='deterministic',
+                reason='wrong default exclusion', checks=[dict(id='unit', argv=['true'])])]))
+
+    def test_profile_reason_required(self):
+        with self.assertRaisesRegex(tool.CheckError, 'profile needs a reason'):
+            tool.execution_plan(dict(checks=[], profiles_not_run=[dict(id='live', reason='',
+                checks=[dict(id='unit', argv=['true'])])]))
+
+    def test_profile_commands_required(self):
+        with self.assertRaisesRegex(tool.CheckError, 'profile needs commands'):
+            tool.execution_plan(dict(checks=[], profiles_not_run=[dict(id='live', reason='credentials', checks=[])]))
+
+    def test_profile_argv_required(self):
+        with self.assertRaisesRegex(tool.CheckError, 'profile command needs argv'):
+            tool.execution_plan(dict(checks=[], profiles_not_run=[dict(id='live', reason='credentials',
+                checks=[dict(id='live-check', argv=None)])]))
 
 
 class DependencyTests(RepositoryFixture):

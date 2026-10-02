@@ -575,48 +575,61 @@
   "mappings": [
     {
       "origin": "artifact-b06e44e7a30c0b735cf084aa",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "suite",
+      "rationale": "Historical own-constructor rejected-Promise witness. KC1-ARCH-1 decision-01 explicitly retires Promise-return sanitation and forbids manufacturing an unhandled Promise as a passing test. dispatch.test.ts preserves the replacement obligations in Promise independence, inert hostile return misuse, and strict-subprocess Driver-internal rejection tests; it asserts pending after an ignored return and zero observations. No claim that the old unsafe API is safe.",
+      "targets": [
+        "suite.packages/kernel/tests/dispatch.test.ts"
+      ]
     },
     {
       "origin": "artifact-91a16df2b59f363129b8a582",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Historical packet validation command list: typecheck, repository/conformance/kernel/SDK and documentation checks. It specifies how that prior candidate was checked, not a separate input/counterexample. TOOLS-01 checks.json independently declares current runs and unexecuted profiles; historical pass counts earn no present credit.",
+      "reason": "historical_command"
     },
     {
       "origin": "artifact-58bd5fa05308bf7be5582ac0",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Git commands for the prior correction mental-model preservation baseline. Their literal old commit pair is a historical scope instruction, not the TOOLS-01 candidate. F1 candidate fixtures retain wrong ancestry/preserved-byte checks and verification.json pins this packet to main 8292d6f3.",
+      "reason": "historical_command"
     },
     {
       "origin": "artifact-df8b3362021d66ba85efef15",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Interface sketch in review-02 discussing the superseded Promise-return API and proposed settlement callback. KC1-ARCH-1 selects deliver(activation, settlement): undefined; this declaration alone has no executable assertion. Runtime replacement coverage is mapped separately from the two hostile-Promise snippets.",
+      "reason": "policy"
     },
     {
       "origin": "artifact-55f842727285272a53a9e5d9",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "suite",
+      "rationale": "Historical own-constructor rejected-Promise witness. KC1-ARCH-1 decision-01 explicitly retires Promise-return sanitation and forbids manufacturing an unhandled Promise as a passing test. dispatch.test.ts preserves the replacement obligations in Promise independence, inert hostile return misuse, and strict-subprocess Driver-internal rejection tests; it asserts pending after an ignored return and zero observations. No claim that the old unsafe API is safe.",
+      "targets": [
+        "suite.packages/kernel/tests/dispatch.test.ts"
+      ]
     },
     {
       "origin": "artifact-48d893e3f817a4fe4400efad",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Interface sketch in review-02 discussing the superseded Promise-return API and proposed settlement callback. KC1-ARCH-1 selects deliver(activation, settlement): undefined; this declaration alone has no executable assertion. Runtime replacement coverage is mapped separately from the two hostile-Promise snippets.",
+      "reason": "policy"
     },
     {
       "origin": "artifact-01c48e3f37efc92ef4c6e68a",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Generic prior reference-packet git diff --check invocation with an output-log exclusion. It is a historical command recipe, not a semantic test input; TOOLS-01 candidate() independently checks its own B..H diff and declared administrative files.",
+      "reason": "historical_command"
     },
     {
       "origin": "artifact-9775fd62e0ec1b4d45f26d3f",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Recorded exit codes and whitespace locations in prior validation logs. These are historical observations about frozen output bytes, not commands to rerun or a new executable counterexample. No historical PASS is reused.",
+      "reason": "record"
     },
     {
       "origin": "artifact-ad675d7ffcbba7ef72a017be",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Historical packet validation command list: typecheck, repository/conformance/kernel/SDK and documentation checks. It specifies how that prior candidate was checked, not a separate input/counterexample. TOOLS-01 checks.json independently declares current runs and unexecuted profiles; historical pass counts earn no present credit.",
+      "reason": "historical_command"
     },
     {
       "origin": "artifact-ce2e69842afb779a3e70c0f5",
@@ -1012,8 +1025,11 @@
     },
     {
       "origin": "artifact-f50368fdd8385de10113f371",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "suite",
+      "rationale": "A/B/C host-member schedules are maintained by host-members.test.ts: request-getter installation of inherited isSafeToReplace refuses unsafe_replacement without calling it; residue controlScopes gives no authority; residue mailboxCapacity does not lower the default. The suite also asserts receipts, holds, history, epoch and deliveries. Historical comparison against START remains provenance, not a current rerun.",
+      "targets": [
+        "suite.packages/kernel/tests/host-members.test.ts"
+      ]
     },
     {
       "origin": "artifact-9e7397d5f07f1bbe4b2fa2d4",
@@ -1077,8 +1093,11 @@
     },
     {
       "origin": "artifact-f83cfd8c20c9d031c00c98ba",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "suite",
+      "rationale": "E1/E2 distinct long identities that both render omitted map to aggregate-refusal.test.ts EVID-01 Outcome/takeover negative vectors; E3 distinct 129-unit Emission keys maps to its distinct long keys test. These assert stale_exchange, unchanged whole state except the refusal, later answerability and distinct stored emission IDs.",
+      "targets": [
+        "suite.packages/kernel/tests/aggregate-refusal.test.ts"
+      ]
     },
     {
       "origin": "artifact-f46f2cacc6a5b8a104a0f706",
@@ -1107,8 +1126,11 @@
     },
     {
       "origin": "artifact-b46445caeaa7feb4193b6677",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "suite",
+      "rationale": "Review-14 CE1/CE2 at-limit and exchange-9-to-10 schedules map to activation-identity.test.ts reviewer key at limit and reviewer exchange 9 to 10 tests. Namespace/key lengths differ to keep the same exact 65536/65537 identity edge. They cover holds, clear, protocol, takeover, terminal Outcome, replay/conflict and retained state; no old log is execution evidence.",
+      "targets": [
+        "suite.packages/kernel/tests/activation-identity.test.ts"
+      ]
     },
     {
       "origin": "artifact-fd518cd58bc52efef1ff1b22",
@@ -1117,8 +1139,11 @@
     },
     {
       "origin": "artifact-29571c4db7cde3206ffea143",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "suite",
+      "rationale": "Exact-coordinate oracle is maintained in exact-coordinates.test.ts (explicit Review-04 P4 port): independent length-prefixed input derivation, long keys and non-ASCII/surrogate namespaces, all receipt boundaries, two Executions at equal positions, exchange/acknowledgment/hold/history/delivery/emission/result coordinates, replay identity and both terminal forms. This covers P4 X8-X23 observations and R-P3 receipt/view/destination checks; historical mutation runners still have separate pending origins.",
+      "targets": [
+        "suite.packages/kernel/tests/exact-coordinates.test.ts"
+      ]
     },
     {
       "origin": "artifact-722edf51c5915f0d730e192b",
@@ -1162,8 +1187,11 @@
     },
     {
       "origin": "artifact-d3d0439b0de8a87606740816",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "suite",
+      "rationale": "Exact-coordinate oracle is maintained in exact-coordinates.test.ts (explicit Review-04 P4 port): independent length-prefixed input derivation, long keys and non-ASCII/surrogate namespaces, all receipt boundaries, two Executions at equal positions, exchange/acknowledgment/hold/history/delivery/emission/result coordinates, replay identity and both terminal forms. This covers P4 X8-X23 observations and R-P3 receipt/view/destination checks; historical mutation runners still have separate pending origins.",
+      "targets": [
+        "suite.packages/kernel/tests/exact-coordinates.test.ts"
+      ]
     },
     {
       "origin": "artifact-8cf4a663a90b6f4631e96879",
@@ -8732,5 +8760,6 @@
       "rationale": "DA01-R3-PROXY-02 is a policy-only clarification request. TOOLS-01 selects no Proxy refusal policy and claims no execution for it.",
       "reason": "policy"
     }
-  ]
+  ],
+  "verification": "docs/development/work/TOOLS-01/checks.json"
 }

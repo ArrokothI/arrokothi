@@ -5,7 +5,8 @@
     "identity",
     "oracle-decision-field",
     "held-realm-witness",
-    "work-charge"
+    "work-charge",
+    "tool-result"
   ],
   "families": [
     {
@@ -982,6 +983,48 @@
             "shape": "empty-array-surplus-256-repeated-4096",
             "environment": "ordinary",
             "stage": "capture"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tool-result",
+      "domains": {
+        "failure": [
+          "stale-repeat",
+          "invalid-repeat",
+          "unstable-control"
+        ],
+        "environment": [
+          "POSIX-Python"
+        ],
+        "stage": [
+          "result-classification"
+        ]
+      },
+      "cases": [
+        {
+          "case": "result.stale-repeat",
+          "values": {
+            "failure": "stale-repeat",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.invalid-repeat",
+          "values": {
+            "failure": "invalid-repeat",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.unstable-control",
+          "values": {
+            "failure": "unstable-control",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
           }
         }
       ]

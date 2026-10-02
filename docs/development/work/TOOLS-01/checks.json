@@ -20,7 +20,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 128
+        "tests": 146
       }
     },
     {
@@ -150,10 +150,31 @@
     {
       "id": "live-provider",
       "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
-      "commands": [
-        "npm run canary:gemini",
-        "npm run canary:mcp:gemini",
-        "npm run canary:workflow"
+      "checks": [
+        {
+          "id": "profile.gemini-provider-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:gemini"
+          ]
+        },
+        {
+          "id": "profile.mcp-gemini-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:mcp:gemini"
+          ]
+        },
+        {
+          "id": "profile.workflow-scenario-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:workflow"
+          ]
+        }
       ]
     },
     {
@@ -165,6 +186,68 @@
         "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
         "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
         "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ],
+      "checks": [
+        {
+          "id": "profile.probe-diagnostics-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-namespace",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.refusal-cost-probe-04",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        }
+      ]
+    },
+    {
+      "id": "known-base-failure",
+      "reason": "Owner-reported pre-existing missing DESIGN-AUDIT-01 README on main. This builder-docs check is outside the required default profile and earns no execution credit here.",
+      "checks": [
+        {
+          "id": "builder-docs",
+          "argv": [
+            "npm",
+            "run",
+            "check:builder-docs"
+          ]
+        }
       ]
     }
   ],

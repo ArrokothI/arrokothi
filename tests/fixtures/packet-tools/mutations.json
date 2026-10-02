@@ -3692,6 +3692,96 @@
           "id": "mutation-c0830d226881a684d4582d951720ea6e6aab9e3fcee213b7b081722f362014c1"
         }
       ]
+    },
+    {
+      "id": "result.stale-repeat",
+      "assertion": "test_research_tools.ResultTests.test_determinism_stale_site_stays_not_applicable",
+      "category": "tool-result",
+      "source": "TOOLS-01 continuation: sampled invalid outcomes and unreliable controls",
+      "input": {
+        "test": "test_research_tools.ResultTests.test_determinism_stale_site_stays_not_applicable"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.stale-repeat",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "return {'status': run['status'], 'matches': run.get('matches')}",
+          "after": "return {'status': 'nondeterministic'}",
+          "operator": "remove-result-classification",
+          "name": "result.stale-repeat",
+          "id": "mutation-2fcff9f536ad1267b01c3a5c6896c6ab72327a226795e9de282977ae4ee5e2c1"
+        }
+      ]
+    },
+    {
+      "id": "result.invalid-repeat",
+      "assertion": "test_research_tools.ResultTests.test_determinism_syntax_failure_stays_invalid",
+      "category": "tool-result",
+      "source": "TOOLS-01 continuation: sampled invalid outcomes and unreliable controls",
+      "input": {
+        "test": "test_research_tools.ResultTests.test_determinism_syntax_failure_stays_invalid"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.invalid-repeat",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "return {'status': 'setup_error', 'exit': run['exit']}",
+          "after": "return {'status': 'killed', 'observation': {'passed': False}}",
+          "operator": "remove-result-classification",
+          "name": "result.invalid-repeat",
+          "id": "mutation-1c5b4a66fd5a2b9e460156011613e4e5f4a06d767c9e4c3702fc5ce69a973e0b"
+        }
+      ]
+    },
+    {
+      "id": "result.unstable-control",
+      "assertion": "test_research_tools.ResultTests.test_determinism_changed_outcome",
+      "category": "tool-result",
+      "source": "TOOLS-01 continuation: sampled invalid outcomes and unreliable controls",
+      "input": {
+        "test": "test_research_tools.ResultTests.test_determinism_changed_outcome"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.unstable-control",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "if not stable:\n                case_result['control'] = 'invalid_baseline'",
+          "after": "if False:\n                case_result['control'] = 'invalid_baseline'",
+          "operator": "remove-result-classification",
+          "name": "result.unstable-control",
+          "id": "mutation-e39d60fb87235d0e22b579c405d374dace8f403bb9b64888581dc40a2d67ec95"
+        }
+      ]
     }
   ],
   "source_trees": [
@@ -3710,7 +3800,12 @@
     "tests/fixtures/packet-tools/oracle-controls.json",
     "tests/tooling/realm-probe.mjs",
     "tests/tooling/realm-global-form.mjs",
-    "tests/fixtures/packet-tools/realm-cases.json"
+    "tests/fixtures/packet-tools/realm-cases.json",
+    "scripts/packet_tools.py",
+    "tests/tooling/python-probe.py",
+    "tests/tooling/test_packet_tools.py",
+    "tests/tooling/test_corpus_tools.py",
+    "tests/tooling/test_research_tools.py"
   ],
   "dependencies": [
     {
@@ -3742,6 +3837,7 @@
     "realm.object-freeze-witness.unpinned.ordinary",
     "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
     "realm.zone.Map.assign.full.frozen-intrinsics",
-    "work-charge.array-surplus"
+    "work-charge.array-surplus",
+    "result.unstable-control"
   ]
 }
