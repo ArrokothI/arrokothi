@@ -1,0 +1,26 @@
+{
+ "control (candidate as committed)": {
+  "render-register.validate": "SURVIVES",
+  "corpus.validate": "SURVIVES"
+ },
+ "RM1 A-hard/B-hard claims, closure, cost and inventory restored to round-2 H 4c1b11e (REALM-01 text)": {
+  "render-register.validate": "SURVIVES",
+  "corpus.validate": "SURVIVES"
+ },
+ "RM2 all 51 closure-corpus responses identical generic text": {
+  "render-register.validate": "SURVIVES",
+  "corpus.validate": "SURVIVES"
+ },
+ "RM3 K11-R5-VAL-03 reach set to poison-blocked by the flag": {
+  "render-register.validate": "SURVIVES",
+  "corpus.validate": "SURVIVES"
+ },
+ "RM4 control: hostile label removed from hardening corpus": {
+  "render-register.validate": "SURVIVES",
+  "corpus.validate": "rejected: hostile label coverage"
+ },
+ "RM5 A-hard closure reduced to flag plus startup identity check": {
+  "render-register.validate": "SURVIVES",
+  "corpus.validate": "SURVIVES"
+ }
+}

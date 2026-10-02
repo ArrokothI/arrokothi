@@ -1,0 +1,4 @@
+{"reviewer":"Claude Code claude-opus-5-5 (review 03)","node":"v25.2.1","frozen":false,"pinned":false,"firstHop":"replaced","bindingHop":"replaced","liveFreezeWorks":false}
+{"reviewer":"Claude Code claude-opus-5-5 (review 03)","node":"v25.2.1","frozen":false,"pinned":true,"firstHop":"replaced","bindingHop":"TypeError","liveFreezeWorks":true}
+{"reviewer":"Claude Code claude-opus-5-5 (review 03)","node":"v25.2.1","frozen":true,"pinned":false,"firstHop":"TypeError","bindingHop":"replaced","liveFreezeWorks":false}
+{"reviewer":"Claude Code claude-opus-5-5 (review 03)","node":"v25.2.1","frozen":true,"pinned":true,"firstHop":"TypeError","bindingHop":"TypeError","liveFreezeWorks":true}

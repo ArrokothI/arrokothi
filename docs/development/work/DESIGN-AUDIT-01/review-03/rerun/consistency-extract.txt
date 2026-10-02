@@ -1,0 +1,30 @@
+A register.md:19             | Keep adversarial live-object core
+    -> -
+A register.md:20             | Cooperative live-object core (alternative)
+    -> CORE = live objects (cooperative capture inside the Kernel); bytes only for isolated hostile callers
+A register.md:21 RECOMMENDED | **Recommend bytes/text core: canonical bytes, cooperative caller-side wrapper**
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+A register.md:22             | Realm hardening with live-object core (alternative defense in depth)
+    -> -
+B register.md:36             | Keep current own-array and serializer window
+    -> -
+B register.md:37             | Simplify internal traversal in a cooperative live-object core (alternative)
+    -> CORE = live objects (cooperative capture inside the Kernel); bytes only for isolated hostile callers
+B register.md:38 RECOMMENDED | **Recommend bytes/text core; move capture and encoding to the cooperative wrapper**
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+B register.md:39             | Replace serializer window with verified hardened-realm encoding (alternative)
+    -> -
+C register.md:53             | Keep implementation with claim hold
+    -> -
+C register.md:54             | Brand-check refusal in live-object core (interim selected step)
+    -> -
+C register.md:55             | Structural projection (owner rejected alternative)
+    -> -
+C register.md:56 RECOMMENDED | **Recommend bytes/text core with wrapper brand refusal after interim correction**
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F02 register.md:130 RECOMMENDED | Recommend: inert core with canonical bytes and wrapper refusal
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F09 register.md:235 RECOMMENDED | Recommend: bytes/text core with cooperative caller-side wrapper
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F10 register.md:250 RECOMMENDED | Recommend: bytes/text core validation plus separate wrapper meter
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract

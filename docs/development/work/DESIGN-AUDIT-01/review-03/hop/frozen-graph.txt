@@ -1,0 +1,162 @@
+{
+ "node": "v25.2.1",
+ "flag": false,
+ "frozen": {
+  "Object": false,
+  "Object.prototype": false,
+  "Array": false,
+  "Array.prototype": false,
+  "ArrayIteratorPrototype": false,
+  "IteratorPrototype": false,
+  "Set": false,
+  "Set.prototype": false,
+  "JSON": false,
+  "Error": false,
+  "Error.prototype": false,
+  "Symbol": false,
+  "String.prototype": false,
+  "Function.prototype": false,
+  "Map": false,
+  "Map.prototype": false,
+  "Reflect": false,
+  "Number": false,
+  "Promise": false,
+  "Iterator": false,
+  "globalThis": false
+ },
+ "bindings": {
+  "Map": {
+   "writable": true,
+   "configurable": true
+  },
+  "WeakMap": {
+   "writable": true,
+   "configurable": true
+  },
+  "Promise": {
+   "writable": true,
+   "configurable": true
+  },
+  "Reflect": {
+   "writable": true,
+   "configurable": true
+  },
+  "Number": {
+   "writable": true,
+   "configurable": true
+  },
+  "String": {
+   "writable": true,
+   "configurable": true
+  },
+  "RangeError": {
+   "writable": true,
+   "configurable": true
+  },
+  "TypeError": {
+   "writable": true,
+   "configurable": true
+  },
+  "Math": {
+   "writable": true,
+   "configurable": true
+  },
+  "Uint8Array": {
+   "writable": true,
+   "configurable": true
+  },
+  "structuredClone": {
+   "writable": true,
+   "configurable": true
+  },
+  "queueMicrotask": {
+   "writable": true,
+   "configurable": true
+  },
+  "Iterator": {
+   "writable": true,
+   "configurable": true
+  }
+ }
+}
+{
+ "node": "v25.2.1",
+ "flag": true,
+ "frozen": {
+  "Object": true,
+  "Object.prototype": true,
+  "Array": true,
+  "Array.prototype": true,
+  "ArrayIteratorPrototype": true,
+  "IteratorPrototype": true,
+  "Set": true,
+  "Set.prototype": true,
+  "JSON": true,
+  "Error": true,
+  "Error.prototype": true,
+  "Symbol": true,
+  "String.prototype": true,
+  "Function.prototype": true,
+  "Map": true,
+  "Map.prototype": true,
+  "Reflect": true,
+  "Number": true,
+  "Promise": true,
+  "Iterator": false,
+  "globalThis": false
+ },
+ "bindings": {
+  "Map": {
+   "writable": true,
+   "configurable": true
+  },
+  "WeakMap": {
+   "writable": true,
+   "configurable": true
+  },
+  "Promise": {
+   "writable": true,
+   "configurable": true
+  },
+  "Reflect": {
+   "writable": true,
+   "configurable": true
+  },
+  "Number": {
+   "writable": true,
+   "configurable": true
+  },
+  "String": {
+   "writable": true,
+   "configurable": true
+  },
+  "RangeError": {
+   "writable": true,
+   "configurable": true
+  },
+  "TypeError": {
+   "writable": true,
+   "configurable": true
+  },
+  "Math": {
+   "writable": true,
+   "configurable": true
+  },
+  "Uint8Array": {
+   "writable": true,
+   "configurable": true
+  },
+  "structuredClone": {
+   "writable": true,
+   "configurable": true
+  },
+  "queueMicrotask": {
+   "writable": true,
+   "configurable": true
+  },
+  "Iterator": {
+   "writable": true,
+   "configurable": true
+  }
+ }
+}
