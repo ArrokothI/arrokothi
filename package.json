@@ -38,7 +38,9 @@
     "example:application-patterns": "node --experimental-strip-types examples/execution-kernel-minimal/patterns-main.ts",
     "check:builder-docs": "node --experimental-strip-types scripts/check-builder-docs.ts",
     "test:sdk": "node --test --experimental-strip-types packages/sdk/tests/*.test.ts",
-    "test:archive-evidence": "node --test --experimental-strip-types tests/archive/*.test.ts"
+    "test:archive-evidence": "node --test --experimental-strip-types tests/archive/*.test.ts",
+    "test:packet-tools": "python3 -B -m unittest discover -s tests/tooling -p 'test_*.py'",
+    "verify:packet": "python3 -B scripts/packet_tools.py"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

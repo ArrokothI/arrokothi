@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "identity.parts",
+      "source": "packages/kernel/src/identity.ts: packIdentity; K11-R3-ID-02 and boundary packing rationale",
+      "assertion": "identity.injective-parts",
+      "files": ["packages/kernel/src/identity.ts", "tests/tooling/identity-probe.mjs"],
+      "argv": ["node", "--no-warnings", "--experimental-strip-types", "tests/tooling/identity-probe.mjs"],
+      "timeout_seconds": 10,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "identity.drop-length-prefix",
+          "path": "packages/kernel/src/identity.ts",
+          "before": "out += `${part.length}:${part}`;",
+          "after": "out += part;"
+        }
+      ]
+    }
+  ]
+}
