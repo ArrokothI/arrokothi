@@ -1,7 +1,7 @@
 # Owner progress summary
 
-Snapshot: checked remote main `580bd8e7fddd94d7e50b9812c0bb9b1ea02aac0c`, which includes the merge of
-PR #40 (`c65894e7b907fd8ce6a4f8b4dd13b8646c84d955`) and its receipt (PR #41). PR #40
+Snapshot: checked remote main `8292d6f3e56223c425bd5d048299735ccc248ac4`, which adds the audit's closure
+note (PR #42) and the [prior-art research](research/README.md) (PR #43) to the merge of PR #40 (`c65894e7b907fd8ce6a4f8b4dd13b8646c84d955`) and its receipt (PR #41). PR #40
 integrates DESIGN-AUDIT-01's accepted candidate `ce0b5a7098a9f65cf16dc55ce6eb013946564508`, its
 acceptance transcription `dc03b365cbc65bdcb68333bc7ad74726cb62835d` and the owner hold record
 `3d36a05de4f4b8cdb219449c31cd17b296768402`. Earlier on main are K1.2-correction-01
@@ -12,12 +12,14 @@ exact acceptance and integration identities stay there and in its linked records
 |---|---|
 | K0 | Closed |
 | K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed; some value-capture claims are held (below) |
-| Repository cleanup and planning | DOCS-CLEANUP-01 and PLAN-01 accepted, integrated and owner-closed; archive cloud upload remains an owner action |
+| Repository cleanup and planning | DOCS-CLEANUP-01 and PLAN-01 accepted, integrated and owner-closed; the archive is kept locally only, by owner choice, and was re-verified on 2026-10-02 |
 | Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; its V-D1 cost claim is held for K1.1-correction-03 |
 | K1.2 Outcome acceptance | K1.2 and its cumulative correction K1.2-correction-01 accepted, integrated and owner-closed; the earlier H14 integration hold is lifted |
 | Held value-capture claims | V-D1 refusal cost ([invalidation-02](work/K1.2/invalidation-02.md)); re-prototyped built-in classification ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)); environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) |
-| DESIGN-AUDIT-01 | Accepted, integrated and owner-closed; its drafts are not adopted |
-| K1.1-correction-03 | Planned; not released |
+| DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
+| BINDING-01, COORD-REFACTOR-01 | Planned; not released |
+| TOOLS-01 | Released 2026-10-02 and in progress on `codex/tools-01`; its release record and ledger row are on that branch |
+| K1.1-correction-03 | Planned, with scope amended by decision-01; not released |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
 
@@ -102,8 +104,10 @@ binding, then declaring a global `let`. The second also defeated the integrated 
 invalidation-03 hold above. A corpus entry needs to vary how a binding is reached, not only which
 binding.
 
-Status: independently accepted, integrated and owner-closed. No draft is
-adopted and the PROXY-01 question is unanswered. Limits:
+Status: independently accepted, integrated and owner-closed. Owner
+[decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01:
+refuse every Proxy at capture. Adoption ships nothing; the implementing packets change the canonical pages.
+Limits:
 - The audit changes no code and no claim. Its recommendations bind nothing until the owner adopts them
   through separate records and packets.
 - Per-option reconciliation closes by reading. Its checkers catch omissions, not wrong prose.
@@ -113,8 +117,8 @@ adopted and the PROXY-01 question is unanswered. Limits:
 
 **A smaller current documentation tree.** DOCS-CLEANUP-01 answered how to preserve closed evidence
 while making current guidance easier to find. The sealed archive and relocated active fixtures now
-exist. The packet is accepted, integrated and owner-closed. Cloud upload of the archive remains the
-owner's action, as [archive](archive.md) describes. This establishes no Kernel capability or gate
+exist. The packet is accepted, integrated and owner-closed. By the owner's choice the archive is
+kept locally only. [Archive](archive.md) records its verification and the Git fallback. This establishes no Kernel capability or gate
 result.
 
 **Bounded value-capture refusal.** K1.1-correction-02 answered whether a small shared object graph or
@@ -132,23 +136,20 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-1. Before releasing anything, the owner is considering outside research into how other projects
-   handle these defect families. The audit's open decisions are listed in its
-   [cleanup record](work/DESIGN-AUDIT-01/cleanup-01.md).
-2. Decide on the audit's drafts, and answer PROXY-01: accept coherent Proxies, or refuse every
-   Proxy at capture. Adopting the CORE direction needs separate amendment records for accepted
-   decisions and pages, as [owner-decisions-02](work/DESIGN-AUDIT-01/owner-decisions-02.md) lists.
-3. Release the next packet. The recorded order is TOOLS-01, then K1.1-correction-03 (the metered V-D1
-   bound, which waits on the audit's threat-model outcome), then the binding packet, then the
-   coordinator refactor, then K1.3.
-   - Only K1.1-correction-03 and K1.3 have ledger rows.
-   - The binding packet carries the correction for the invalidation-03 hold, and that hold stays until
-     the binding packet is accepted.
-   - None of these packets is released.
-4. K1.4 owns the SDK host bridge and the full K1/E1 gate. External blocker: before K1.3 closes, the
+1. Finish TOOLS-01, then run its independent review, final cleanup and merge.
+2. The wrapper's packaging is settled: the SDK owns it, moved in three stages. Its public surface changes only
+   at K1.4 ([decision-02](work/DESIGN-AUDIT-01/decision-02.md)).
+3. Release K1.1-correction-03, starting with a brief. Its amended scope:
+   - the metered V-D1 bound;
+   - refusal of re-prototyped built-ins;
+   - refusal of every Proxy at capture.
+
+   On acceptance it releases the classification and V-D1 holds.
+4. Then BINDING-01 (bytes core, 8 MiB transport adapter, and the wrapper moved into the SDK as an internal
+   module), which carries the V-ENV hold; then COORD-REFACTOR-01; then K1.3. None of these is released.
+5. K1.4 owns the SDK host bridge and the full K1/E1 gate. External blocker: before K1.3 closes, the
    benchmark owner must confirm that the E1 fixtures drive the new supported entry; otherwise K1.4 is
    BLOCKED_EXTERNAL. Fixture preparation is not an E1 result.
-5. Upload the verified archive to owner-controlled cloud storage.
 
 Carry forward:
 - the historical Node 22.22.3 legacy Effect-test cancellation limitation;
