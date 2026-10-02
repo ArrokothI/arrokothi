@@ -1,0 +1,1 @@
+SESSION = 'Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.'

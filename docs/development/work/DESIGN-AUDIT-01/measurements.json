@@ -1,4 +1,5 @@
 {
+  "session": "Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner\u2013Claude conversation or independent acceptance authority.",
   "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
   "files": [
     {
@@ -738,8 +739,8 @@
       "end": 1056,
       "lines": 65,
       "nonblank": 63,
-      "attribution": "exclusive",
-      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
     },
     {
       "path": "packages/kernel/tests/dispatch.test.ts",
@@ -792,8 +793,8 @@
       "end": 1558,
       "lines": 34,
       "nonblank": 33,
-      "attribution": "exclusive",
-      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
     },
     {
       "path": "packages/kernel/tests/ingress.test.ts",
@@ -828,8 +829,8 @@
       "end": 193,
       "lines": 9,
       "nonblank": 9,
-      "attribution": "exclusive",
-      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
     },
     {
       "path": "packages/kernel/tests/value-refusal-cost.test.ts",
@@ -837,8 +838,8 @@
       "end": 138,
       "lines": 19,
       "nonblank": 19,
-      "attribution": "exclusive",
-      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
     },
     {
       "path": "packages/kernel/tests/harness.ts",
@@ -874,7 +875,7 @@
     "test_files": 56,
     "test_lines": 22782,
     "exclusive_identified_production_lines": 432,
-    "exclusive_identified_test_lines": 3596,
+    "exclusive_identified_test_lines": 3469,
     "mixed_evidence_infrastructure_lines": 5696,
     "hostile_only_primary_findings": [
       "K11-R16-DISP-01",

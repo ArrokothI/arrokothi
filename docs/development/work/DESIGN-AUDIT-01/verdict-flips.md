@@ -1,3 +1,5 @@
+Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.
+
 # Verdict reversals and search checklist
 
 This is a declared search of the DA-1 review, handoff, supplement and cleanup records, including explicit disclosures of unrecorded draft ACCEPTs. An earlier search dimension is inferred from the later counterexample and earlier coverage record, not from access to a reviewer’s private reasoning. Cleanup reopenings are separately labelled: they are not fabricated independent CHANGES REQUIRED verdicts. Two later reviews against the same accepted H remain separate evidence rows; unique-head totals deduplicate them.
@@ -22,7 +24,7 @@ This is a declared search of the DA-1 review, handoff, supplement and cleanup re
 
 K1.1-correction-01 H4 `d69671168c0dcf5db6a7683d631027487c7520fe` has review-06 CHANGES REQUIRED and review-07 ACCEPT, in that record order. It is a same-H disagreement, not an ACCEPT→CHANGES REQUIRED chronology; examine both when transferring evidence. Ordinary failures on later changed H are not flips. The review-08 merged record carries both verdicts internally. The disclosed draft ACCEPTs have no independently recoverable draft text; this audit certifies the disclosure, not an absent review.
 
-## For the next brief and reviewer
+## Proposed reviewer checklist (brief inclusion undecided)
 
 - State the input dimensions and cross-products to search, not only the seed cases: width × depth × invalidity × aliases × prototype shape × diagnostics. Distinguish single-root and eager multi-root work.
 - Close producers against every downstream validator: identifier length, suffix growth, unrenderable text, replay, redelivery and inspection. Check every retained coordinate and the next positions.
@@ -34,3 +36,7 @@ K1.1-correction-01 H4 `d69671168c0dcf5db6a7683d631027487c7520fe` has review-06 C
 - Check canonical owner, navigation, BASELINE, guides and ledger as different claims. A working link does not prove correct status prose.
 - Transfer every surviving mutant with its mutation site, observation scope, expected distinguishing result and profile. “Suite failed” alone is not a kill unless failure is attributable to that obligation.
 - Name how the claim finishes: bounded structural argument, specified oracle/check or explicitly delimited search. A faster timing sample never closes universal V-D1.
+
+## Reconciliation with 016 and invalidations
+
+016 lists four K1.2-era events: c36cbe0, 312f258, d5ffd35 and 9248e56; all occur here. This broader declared DA-1 search also includes K1.2 ad4a0e8 (omitted from 016), earlier K1.0/K1.1 events and separately labelled cleanup reopenings. The table has 13 evidence rows but 12 unique H because d93d7d2 occurs in two later reviews. It is not a count of independent reviewer errors. Invalidation of accepted work is a separate category excluded from those totals: K1.2 invalidation-02 holds K1.1-correction-02 H 719abbf; this audit's invalidation-01 holds K1.1 H 52b1600. They challenge an integrated claim through later evidence rather than reviewing that identical candidate again. Historical ACCEPT remains. Owner direction f assigns this checklist and explicit unvaried dimensions/closure methods to the reviewer prompt; adding it to briefs remains undecided. This packet changes no process document.
