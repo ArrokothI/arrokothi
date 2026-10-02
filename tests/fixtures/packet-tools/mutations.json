@@ -722,11 +722,860 @@
           "after": "exitReached: () => true"
         }
       ]
+    },
+    {
+      "id": "realm.kernel-lexical-shadow.1",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:1",
+      "profile": "held-binding-witness",
+      "assertion": "realm.kernel-lexical-shadow.1.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.kernel-lexical-shadow.1"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.kernel-lexical-shadow.2",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:2",
+      "profile": "held-binding-witness",
+      "assertion": "realm.kernel-lexical-shadow.2.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.kernel-lexical-shadow.2"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.kernel-lexical-shadow.3",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:3",
+      "profile": "held-binding-witness",
+      "assertion": "realm.kernel-lexical-shadow.3.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.kernel-lexical-shadow.3"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.kernel-lexical-shadow.4",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:4",
+      "profile": "held-binding-witness",
+      "assertion": "realm.kernel-lexical-shadow.4.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.kernel-lexical-shadow.4"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.kernel-lexical-creation.1",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:1",
+      "profile": "held-binding-witness",
+      "assertion": "realm.kernel-lexical-creation.1.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.kernel-lexical-creation.1"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.kernel-lexical-creation.2",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:2",
+      "profile": "held-binding-witness",
+      "assertion": "realm.kernel-lexical-creation.2.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.kernel-lexical-creation.2"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.lexical-shadow.1",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:1",
+      "profile": "held-binding-witness",
+      "assertion": "realm.lexical-shadow.1.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.lexical-shadow.1"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.lexical-shadow.2",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:2",
+      "profile": "held-binding-witness",
+      "assertion": "realm.lexical-shadow.2.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.lexical-shadow.2"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.lexical-shadow.3",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:3",
+      "profile": "held-binding-witness",
+      "assertion": "realm.lexical-shadow.3.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.lexical-shadow.3"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.object-freeze-witness.1",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:1",
+      "profile": "held-binding-witness",
+      "assertion": "realm.object-freeze-witness.1.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.object-freeze-witness.1"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.object-freeze-witness.2",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:2",
+      "profile": "held-binding-witness",
+      "assertion": "realm.object-freeze-witness.2.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.object-freeze-witness.2"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.object-freeze-witness.3",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:3",
+      "profile": "held-binding-witness",
+      "assertion": "realm.object-freeze-witness.3.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.object-freeze-witness.3"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.object-freeze-witness.4",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:4",
+      "profile": "held-binding-witness",
+      "assertion": "realm.object-freeze-witness.4.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.object-freeze-witness.4"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.1",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:1",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.1.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.1"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.2",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:2",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.2.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.2"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.3",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:3",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.3.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.3"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.4",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:4",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.4.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.4"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.5",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:5",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.5.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.5"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.6",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:6",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.6.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.6"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.7",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:7",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.7.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.7"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.8",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:8",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.8.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.8"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.9",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:9",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.9.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.9"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.10",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:10",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.10.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.10"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.11",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:11",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.11.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.11"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.12",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:12",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.12.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.12"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.13",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:13",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.13.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.13"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.14",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:14",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.14.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.14"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.15",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:15",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.15.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.15"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.16",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:16",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.16.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.16"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.17",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:17",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.17.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.17"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.18",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:18",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.18.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.18"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.19",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:19",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.19.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.19"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.20",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:20",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.20.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.20"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.21",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:21",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.21.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.21"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.22",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:22",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.22.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.22"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.23",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:23",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.23.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.23"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.pin-forms.24",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:24",
+      "profile": "held-binding-witness",
+      "assertion": "realm.pin-forms.24.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.pin-forms.24"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.assign.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.assign.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.assign.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.assign.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.assign.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.assign.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.define.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.define.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.define.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.define.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.define.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.define.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.declare.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.declare.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.declare.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.declare.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.declare.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.declare.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.preexisting.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.preexisting.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.preexisting.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Map.preexisting.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Map.preexisting.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Map.preexisting.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.assign.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.assign.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.assign.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.assign.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.assign.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.assign.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.define.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.define.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.define.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.define.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.define.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.define.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.declare.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.declare.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.declare.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.declare.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.declare.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.declare.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.preexisting.full",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.preexisting.full.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.preexisting.full"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
+    },
+    {
+      "id": "realm.zone.Reflect.preexisting.writableOnly",
+      "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
+      "profile": "realm-mechanism-witness",
+      "assertion": "realm.zone.Reflect.preexisting.writableOnly.observation",
+      "files": [],
+      "argv": [
+        "node",
+        "tests/tooling/realm-probe.mjs",
+        "realm.zone.Reflect.preexisting.writableOnly"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 16384,
+      "failure_exit": 17,
+      "mutants": []
     }
   ],
   "source_trees": [
     "packages/kernel/src",
-    "packages/kernel/tests/sweep"
+    "packages/kernel/tests/sweep",
+    "docs/development/work/DESIGN-AUDIT-01/review-03/hop"
   ],
   "files": [
     "package.json",
@@ -736,7 +1585,10 @@
     "tests/tooling/oracle-probe.mjs",
     "tests/tooling/oracle-reach.mjs",
     "tests/tooling/assertion-reporter.mjs",
-    "tests/fixtures/packet-tools/oracle-controls.json"
+    "tests/fixtures/packet-tools/oracle-controls.json",
+    "tests/tooling/realm-probe.mjs",
+    "tests/tooling/realm-global-form.mjs",
+    "tests/fixtures/packet-tools/realm-cases.json"
   ],
   "dependencies": [
     {
