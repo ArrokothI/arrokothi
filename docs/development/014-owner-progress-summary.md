@@ -1,6 +1,7 @@
 # Owner progress summary
 
-Snapshot: checked remote main `c65894e7b907fd8ce6a4f8b4dd13b8646c84d955`, the merge of PR #40. It
+Snapshot: checked remote main `580bd8e7fddd94d7e50b9812c0bb9b1ea02aac0c`, which includes the merge of
+PR #40 (`c65894e7b907fd8ce6a4f8b4dd13b8646c84d955`) and its receipt (PR #41). PR #40
 integrates DESIGN-AUDIT-01's accepted candidate `ce0b5a7098a9f65cf16dc55ce6eb013946564508`, its
 acceptance transcription `dc03b365cbc65bdcb68333bc7ad74726cb62835d` and the owner hold record
 `3d36a05de4f4b8cdb219449c31cd17b296768402`. Earlier on main are K1.2-correction-01
@@ -15,7 +16,7 @@ exact acceptance and integration identities stay there and in its linked records
 | Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; its V-D1 cost claim is held for K1.1-correction-03 |
 | K1.2 Outcome acceptance | K1.2 and its cumulative correction K1.2-correction-01 accepted, integrated and owner-closed; the earlier H14 integration hold is lifted |
 | Held value-capture claims | V-D1 refusal cost ([invalidation-02](work/K1.2/invalidation-02.md)); re-prototyped built-in classification ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)); environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) |
-| DESIGN-AUDIT-01 | Accepted and integrated; owner discussion pending; its drafts are not adopted |
+| DESIGN-AUDIT-01 | Accepted, integrated and owner-closed; its drafts are not adopted |
 | K1.1-correction-03 | Planned; not released |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
@@ -101,7 +102,7 @@ binding, then declaring a global `let`. The second also defeated the integrated 
 invalidation-03 hold above. A corpus entry needs to vary how a binding is reached, not only which
 binding.
 
-Status: independently accepted and integrated; the owner discussion is pending. No draft is
+Status: independently accepted, integrated and owner-closed. No draft is
 adopted and the PROXY-01 question is unanswered. Limits:
 - The audit changes no code and no claim. Its recommendations bind nothing until the owner adopts them
   through separate records and packets.
@@ -131,9 +132,9 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-1. Hold the owner discussion of the integrated audit
-   ([receipt](work/DESIGN-AUDIT-01/integration-01.md)). The
-   [cleanup record](work/DESIGN-AUDIT-01/cleanup-01.md) lists what that discussion has to settle.
+1. Before releasing anything, the owner is considering outside research into how other projects
+   handle these defect families. The audit's open decisions are listed in its
+   [cleanup record](work/DESIGN-AUDIT-01/cleanup-01.md).
 2. Decide on the audit's drafts, and answer PROXY-01: accept coherent Proxies, or refuse every
    Proxy at capture. Adopting the CORE direction needs separate amendment records for accepted
    decisions and pages, as [owner-decisions-02](work/DESIGN-AUDIT-01/owner-decisions-02.md) lists.
