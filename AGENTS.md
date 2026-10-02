@@ -123,6 +123,18 @@ review-ready, never self-certify acceptance. Independent acceptance is bound to 
 owner integration and discussion/release precede the next packet. Current audit-skill per-criterion
 PASS/FAIL/DEFERRED labels do not replace the process's overall independent-review verdict.
 
+## Prior-art research
+
+[docs/development/research/](docs/development/research/README.md) holds dated reports on how other
+projects handle problems this repository has met. They cover canonical encodings and live-object
+validation, realm integrity and Proxies, idempotent creation, fencing, timers and cancellation,
+plan/apply structure and evidence tooling. Before writing a brief, design note or review in one of
+those areas, read the sections its reading map names.
+
+A report is background. It is not architecture, an owner decision, acceptance evidence or licence
+clearance. Cite the primary source it names, re-check facts that move, and treat snippet-only claims
+and the report's own inferences as leads. Add new research there as a dated report.
+
 ## Third-party code and license review
 
 For every implementation change, distinguish learning from prior art, using a dependency/service,

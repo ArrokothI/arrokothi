@@ -31,6 +31,9 @@ Accepted earlier work is evidence, not an invariant. Before patching, look for t
 behind a finding and the design that allows it. Ask the owner early. Follow 006's lifecycle: brief →
 design note and check → build → independent review, with stop-and-redesign after repeated failure.
 Every criterion must be finishable ([012](../../../docs/development/012-review-methods.md#finishable-criteria)).
+When the packet's area is in [the prior-art research](../../../docs/development/research/README.md)
+reading map, read the named sections before the design note or review. Cite the primary sources a
+report names, never the report itself, as evidence.
 
 ## Procedure
 

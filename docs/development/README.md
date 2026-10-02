@@ -20,6 +20,7 @@ implementation facts, migration scope, review policy and status.
 | [Kernel ownership](kernel-ownership.md) | Live machine-checked source/export/dependency inventory |
 | [Structural evidence rules](015-structural-evidence-rules.md) | How that inventory is read and compared |
 | [Historical evidence and retention](archive.md) | Pinned history, cloud-upload archive, verification and retirement rules |
+| [Prior-art research](research/README.md) | Dated reports on how other projects handle our problem families; background for briefs, design notes and reviews, never a decision |
 
 `work/` contains active maintenance/implementation records. Closed K0/K1.0/K1.1 packet rounds and
 retired design studies are in the archive; links to them pin the pre-cleanup Git revision. The two
