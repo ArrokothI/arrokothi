@@ -3701,7 +3701,9 @@
       "input": {
         "test": "test_research_tools.ResultTests.test_determinism_stale_site_stays_not_applicable"
       },
-      "files": [],
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
       "argv": [
         "python3",
         "-B",
@@ -3731,7 +3733,9 @@
       "input": {
         "test": "test_research_tools.ResultTests.test_determinism_syntax_failure_stays_invalid"
       },
-      "files": [],
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
       "argv": [
         "python3",
         "-B",
@@ -3761,7 +3765,9 @@
       "input": {
         "test": "test_research_tools.ResultTests.test_determinism_changed_outcome"
       },
-      "files": [],
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
       "argv": [
         "python3",
         "-B",
