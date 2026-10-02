@@ -43,6 +43,12 @@ For implementation, continue from the owner to the implemented baseline, affecte
 code, conformance tests, and applicable development process. An editorial rewrite
 does not by itself require implementation work or an acceptance packet.
 
+For how other systems handle the same problem (canonical encodings, live-object
+validation, realm integrity, Proxies, idempotency, fencing, timers, plan/apply
+structure, evidence tooling), use the reading map in
+[the prior-art research](../../../docs/development/research/README.md). Prior art
+informs a design note. It does not settle an open choice or replace the canonical owner.
+
 ## Procedure
 
 1. **Classify the concept.** Decide whether Kernel correctness depends on it. If not, prefer keeping it inside the Execution Runtime or deployment/integration layer.
