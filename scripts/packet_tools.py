@@ -49,6 +49,17 @@ def case_key(case):
     return content_key('case', [case['id'], case['assertion'], case['argv'], case.get('input')])
 
 
+def claim_attribution(case):
+    claim = case.get('claim')
+    if claim is None:
+        return {'kind': 'test_assertion', 'semantic_credit': 'not evaluated'}
+    require(isinstance(claim, dict) and claim.get('kind') in ('held_witness', 'mechanism_witness'),
+            'unknown witness claim kind')
+    require(all(isinstance(claim.get(key), str) and bool(claim[key].strip())
+                for key in ('owner', 'reason', 'decision')), 'witness needs owner, reason and decision')
+    return dict(claim, semantic_credit='none')
+
+
 def path_name(value):
     require(isinstance(value, str) and bool(value), 'path must be nonempty text')
     p = PurePosixPath(value)
@@ -525,6 +536,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
         except CheckError:
             valid = False
         case_result = {'case': case['id'], 'content_key': case_key(case),
+                       'claim': claim_attribution(case),
                        'control': 'passed' if valid else 'invalid_baseline',
                        'baseline': baseline, 'mutations': []}
         local_mutants = set()
@@ -583,6 +595,9 @@ def mutations(git, revision, registry_path, *, cases_only=False):
     return {'operation': 'cases' if cases_only else 'mutations', 'revision': rev, 'registry': registry_path,
             'result': 'selected_cases_passed' if passed else 'attention_required',
             'counts': counts, 'cases': results, 'determinism_sample': sample, 'acceptance': 'not evaluated',
+            'witnesses': [{'case': c['case'], **c['claim'],
+                           'reproduced': c['control'] == 'passed'}
+                          for c in results if c['claim']['kind'] != 'test_assertion'],
             'limits': ['Only the listed cases and mutations were executed',
                        'Structured witnesses rely on reviewed independent fixtures; no universal causal proof',
                        'Trusted repository commands run without containment; temporary copies protect source files']}

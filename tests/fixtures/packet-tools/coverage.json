@@ -6,7 +6,8 @@
     "oracle-decision-field",
     "held-realm-witness",
     "work-charge",
-    "tool-result"
+    "tool-result",
+    "held-capture"
   ],
   "families": [
     {
@@ -1025,6 +1026,136 @@
             "failure": "unstable-control",
             "environment": "POSIX-Python",
             "stage": "result-classification"
+          }
+        }
+      ]
+    },
+    {
+      "id": "held-capture",
+      "domains": {
+        "type": [
+          "Map",
+          "Date",
+          "Set",
+          "Uint8Array",
+          "ArrayBuffer",
+          "RegExp",
+          "Error",
+          "String",
+          "Boolean",
+          "WeakMap",
+          "Proxy"
+        ],
+        "prototype": [
+          "null",
+          "Object.prototype",
+          "unchanged"
+        ],
+        "stage": [
+          "capture"
+        ],
+        "environment": [
+          "ordinary"
+        ]
+      },
+      "cases": [
+        {
+          "case": "capture.current.Map",
+          "values": {
+            "type": "Map",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Date",
+          "values": {
+            "type": "Date",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Set",
+          "values": {
+            "type": "Set",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Uint8Array",
+          "values": {
+            "type": "Uint8Array",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.ArrayBuffer",
+          "values": {
+            "type": "ArrayBuffer",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.RegExp",
+          "values": {
+            "type": "RegExp",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Error",
+          "values": {
+            "type": "Error",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.String",
+          "values": {
+            "type": "String",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Boolean",
+          "values": {
+            "type": "Boolean",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.WeakMap",
+          "values": {
+            "type": "WeakMap",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Proxy",
+          "values": {
+            "type": "Proxy",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
           }
         }
       ]

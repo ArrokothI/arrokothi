@@ -20,7 +20,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 146
+        "tests": 158
       }
     },
     {

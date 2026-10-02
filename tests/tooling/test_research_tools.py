@@ -89,6 +89,19 @@ class CoverageTests(unittest.TestCase):
 class ResultTests(RepositoryFixture):
     fixture = runner_fixtures.RunnerTests.fixture
     outcome = runner_fixtures.RunnerTests.outcome
+
+    def test_held_reproduction_summary_is_not_conformance(self):
+        self.fixture()
+        spec = json.loads((self.root / 'registry.json').read_text())
+        spec['cases'][0]['claim'] = dict(kind='held_witness', owner='K1.1-correction-03',
+            decision='decision-01', reason='Current accepted Proxy is superseded')
+        self.document('registry.json', spec)
+        result, state = self.outcome(self.commit('held witness'))
+        self.assertEqual(state, 'killed')  # The observation checker was killed, not the semantic defect.
+        self.assertEqual(result['witnesses'][0]['semantic_credit'], 'none')
+        self.assertTrue(result['witnesses'][0]['reproduced'])
+        self.assertEqual(result['acceptance'], 'not evaluated')
+
     def test_syntax_error_invalid(self):
         result, state = self.outcome(self.fixture(after='this is not valid python !!!'))
         self.assertEqual(state, 'setup_error')

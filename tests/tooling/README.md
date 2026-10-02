@@ -20,7 +20,8 @@ npm run verify:packet -- candidate --payload <full-C-SHA> --head <full-H-SHA> --
 `candidate` reads its specification at C and checks B→C→H, the exact C..H file set,
 preserved paths and accessible evidence digests. An administrative allowlist cannot establish
 that prose contains no semantic change. Review that content independently. The current B is
-main `8292d6f3e56223c425bd5d048299735ccc248ac4`; the research merge is base content.
+main `f62527e8d564a6e2f63b83cbb52e24053f333540`; research, owner decisions 01–02 and
+the archive-policy merge are base content. Historical catalog revisions stay pinned.
 
 `inventory` checks 208 artifact/fence origins, 1,333 prose locations and eight final-review
 additions against pinned source bytes. These are provenance records, not 1,549 tests.
@@ -35,9 +36,11 @@ a declared argv command in that specification, with the same execution profile; 
 mutation registry must be scheduled as a required mutation run. The summary reports each suite's
 command, profile and required/not-run status. This checks composition, not whether a command's
 implementation actually exercises every assertion attributed to it; reviewers still inspect the
-source mappings. The current intake has 132 mapped origins and 1,417 pending origins. Fourteen
-additional artifact mappings record inspected delivery-boundary migration, exact coordinates,
-identity equality and host-member tests, plus historical command/interface evidence.
+source mappings. The current intake has 154 mapped origins and 1,395 pending origins. This includes
+the remote session's fourteen inspected delivery-boundary, coordinate, identity and host-member
+mappings, ten re-prototyped built-in recipes from one historical script, and 21 individually
+inspected historical manifest locators. Distinct battery definitions in those manifests remain
+pending; a historical count is never imported as a current result.
 
 Unexecuted profiles use named `checks` with argv and a written reason. Historical memory/timing
 commands name their source revision and any required environment: they require a separately
@@ -67,6 +70,11 @@ Cases have semantic names and stored literal values, bytes or explicit construct
 A source-defined literal test is referenced by its file and named assertion. Realm cases store
 argv and expected observations. Inputs are not reconstructed from generator seeds. A future seed
 may be troubleshooting metadata only, accompanied by generator version and commit.
+
+Identity, work-charge and realm adapters read the registry data directly. The older realm-cases.json
+is retained as the provenance snapshot for the first extraction; it is not a second execution input.
+Regression tests change stored values, expected bytes, recipes, expected counts and realm argv to
+verify that the adapters consume them.
 
 Case content keys bind name, assertion, argv and input. Mutation keys bind file, exact source
 anchor, operator and replacement. Line numbers and enumeration order are not identities. A unique
@@ -100,9 +108,13 @@ The refusal registry pairs every `require` call in packet_tools.py with a malfor
 removal mutation. check-refusal-registry.py reconciles the whole finite set and refuses stale or
 empty registration. registry-check.mjs reconciles all 29 complete-decision comparisons with their
 negative controls. Realm observations have deliberate corrupt-observation controls; removing the
-comparison makes those tests red. Held witnesses preserve their correction owner and prove only
-reproduction. The N15 surplus-charge witness checks exactly 4,049 visits for its stored recipe;
-it establishes no general cost bound and releases no V-D1 hold.
+comparison makes those tests red. Held witnesses carry a structured claim with owner, decision and
+reason. `witnesses` reports reproduction separately with `semantic_credit: none`; assertion kills
+validate the observation checker, not the correctness of the behavior it observed. BINDING-01 owns
+V-ENV. K1.1-correction-03 owns Proxy and re-prototyped built-in refusal and V-D1. Current Proxy `{}`
+acceptance and built-in observations are superseded behavior pending that packet, never passing
+policy expectations. The N15 surplus-charge witness checks exactly 4,049 visits for its stored
+recipe; it establishes no general cost bound and releases no V-D1 hold.
 
 Determinism samples are declared by case ID in each registry. Both control and mutant are rerun
 in fresh processes; compare structured observations, including counts and first named failure.

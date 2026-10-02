@@ -2820,6 +2820,64 @@
           "id": "mutation-d293987c15a292298f70bf5e7ff0bccd70c58a5e32307881aa50d29d89b2eba6"
         }
       ]
+    },
+    {
+      "id": "guard.claim.211299a219fea9a3",
+      "assertion": "test_adapter_inputs.AttributionTests.test_unknown_claim_kind_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: claim_attribution",
+      "input": {
+        "test": "test_adapter_inputs.AttributionTests.test_unknown_claim_kind_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.claim.211299a219fea9a3"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(claim, dict) and claim.get('kind') in ('held_witness', 'mechanism_witness'),\n            'unknown witness claim kind')",
+          "after": "pass  # tools01-ablate:211299a219fea9a3",
+          "operator": "remove-refusal-check",
+          "name": "guard.claim.211299a219fea9a3",
+          "id": "mutation-ce9c5fcbdaad82447ff1eb097b82ca70f1308a630f09af690f72ccc73e87e1b8"
+        }
+      ]
+    },
+    {
+      "id": "guard.claim.7b4537ebbc738698",
+      "assertion": "test_adapter_inputs.AttributionTests.test_unattributed_witness_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: claim_attribution",
+      "input": {
+        "test": "test_adapter_inputs.AttributionTests.test_unattributed_witness_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.claim.7b4537ebbc738698"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(all(isinstance(claim.get(key), str) and bool(claim[key].strip())\n                for key in ('owner', 'reason', 'decision')), 'witness needs owner, reason and decision')",
+          "after": "pass  # tools01-ablate:7b4537ebbc738698",
+          "operator": "remove-refusal-check",
+          "name": "guard.claim.7b4537ebbc738698",
+          "id": "mutation-5d0f10a1c243c82617d1f45a0d0a0f38bdd141a6e7fc9439fe1f26688ae1309e"
+        }
+      ]
     }
   ],
   "determinism_sample": [

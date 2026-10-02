@@ -590,7 +590,7 @@
     {
       "origin": "artifact-58bd5fa05308bf7be5582ac0",
       "status": "non_executable",
-      "rationale": "Git commands for the prior correction mental-model preservation baseline. Their literal old commit pair is a historical scope instruction, not the TOOLS-01 candidate. F1 candidate fixtures retain wrong ancestry/preserved-byte checks and verification.json pins this packet to main 8292d6f3.",
+      "rationale": "Git commands for the prior correction mental-model preservation baseline. Their literal old commit pair is a historical scope instruction, not the TOOLS-01 candidate. F1 candidate fixtures retain wrong ancestry/preserved-byte checks and verification.json pins this packet to merged main f62527e8.",
       "reason": "historical_command"
     },
     {
@@ -846,7 +846,7 @@
     {
       "origin": "artifact-d2153e36d9c7464883ecea0b",
       "status": "suite",
-      "rationale": "Maintained source tests/conformance/architecture/evidence-records.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "rationale": "Historical evidence-records source is retained at tests/archive/evidence-records.test.ts and executed by archive-tests. Its old repository-tests command moved with archive extraction; historical results earn no current credit.",
       "targets": [
         "suite.tests/conformance/architecture/evidence-records.test.ts"
       ]
@@ -1223,8 +1223,20 @@
     },
     {
       "origin": "artifact-63378152d309b4564411b75b",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "case",
+      "rationale": "The ten literal re-prototyped built-in recipes are preserved as held current-behavior witnesses with comparison-removal controls. decision-01 supersedes acceptance and incidental member refusal: K1.1-correction-03 must refuse their type before own-key listing. No conformance, correction or hold-release credit.",
+      "targets": [
+        "capture.current.Map",
+        "capture.current.Date",
+        "capture.current.Set",
+        "capture.current.Uint8Array",
+        "capture.current.ArrayBuffer",
+        "capture.current.RegExp",
+        "capture.current.Error",
+        "capture.current.String",
+        "capture.current.Boolean",
+        "capture.current.WeakMap"
+      ]
     },
     {
       "origin": "artifact-8711901f9936aca43e8cb3e8",
@@ -2393,8 +2405,9 @@
     },
     {
       "origin": "mention-6dbc2e2cb5e276f525858a95",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1-correction-01/validation-01/MANIFEST.md:3 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-73eefb699295321abe34a160",
@@ -3648,8 +3661,9 @@
     },
     {
       "origin": "mention-6a4805a0c843146b17bf61e8",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-05/MANIFEST.md:27 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-c56bda673ff834ed721e9644",
@@ -3658,8 +3672,9 @@
     },
     {
       "origin": "mention-6d254abfc0140c6457376fe9",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-06/MANIFEST.md:28 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-812b8f48b13666422356c4dc",
@@ -3668,8 +3683,9 @@
     },
     {
       "origin": "mention-60774315b70015a7b7cee227",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-07/MANIFEST.md:32 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-57e0f9ebce70bc9555dfa611",
@@ -3683,8 +3699,9 @@
     },
     {
       "origin": "mention-ad9644cfe900aedf43d00e67",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-08/MANIFEST.md:42 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-1ee478b572d9ed0e3275eda3",
@@ -3698,8 +3715,9 @@
     },
     {
       "origin": "mention-b0062957544d82078ef2af96",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-09/MANIFEST.md:45 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-4cbc3b09d93939edb78631b1",
@@ -3713,8 +3731,9 @@
     },
     {
       "origin": "mention-167d41016e3bfd6e87aa3dd3",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-10/MANIFEST.md:53 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-94926086fa38445a50df91d6",
@@ -3723,8 +3742,9 @@
     },
     {
       "origin": "mention-b4c2499cdb06a89b3b7f84c3",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-11/MANIFEST.md:48 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-5fc9eebcdf51e8e724b915cf",
@@ -3733,13 +3753,15 @@
     },
     {
       "origin": "mention-123754e1ce6a38d94bac48cb",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-11/MANIFEST.md:122 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-84b823d6a693c7755df18806",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-12/MANIFEST.md:52 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-3ba74d63ec4d9890c72ac092",
@@ -3768,8 +3790,9 @@
     },
     {
       "origin": "mention-5766105aef6599ba38977249",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-12/MANIFEST.md:148 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-3015696f766247ff4c5a6222",
@@ -3778,8 +3801,9 @@
     },
     {
       "origin": "mention-83736f96199f333886eadeb1",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-13/MANIFEST.md:58 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-522feda80e9982aae1ee6fdd",
@@ -3813,18 +3837,21 @@
     },
     {
       "origin": "mention-1793cc4c6b56d9fbfe29bf4c",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-13/MANIFEST.md:130 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-8648d15cb01fcde0d3866342",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-13/MANIFEST.md:144 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-ccaca9c2ac9e438d564a6762",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-13/MANIFEST.md:145 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-5478991415a2db77c3b1b32b",
@@ -3838,8 +3865,9 @@
     },
     {
       "origin": "mention-afe1b89ed52e1140d4be4980",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-14/MANIFEST.md:59 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-994ba4f869ca734a1895c21b",
@@ -3888,8 +3916,9 @@
     },
     {
       "origin": "mention-57a288b12c45c9df10f72c83",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-15/MANIFEST.md:24 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-db780dc81588383a2ba36e77",
@@ -3908,13 +3937,15 @@
     },
     {
       "origin": "mention-c796a853d25d5335659baf83",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-16/MANIFEST.md:24 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-8453525ddccc13469b3fe72f",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-16/MANIFEST.md:27 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-0b34394de89d86a95328715b",
@@ -3933,13 +3964,15 @@
     },
     {
       "origin": "mention-91b13f72c5b91e7c2389a7f7",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-17/MANIFEST.md:27 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-62c560a517e575f2b949edd4",
-      "status": "pending",
-      "rationale": "Pending semantic extraction: provenance checked; no execution or retirement credit."
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-17/MANIFEST.md:30 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
     },
     {
       "origin": "mention-84bc00b6fc46e3ac38e19d33",
@@ -8757,7 +8790,7 @@
     {
       "origin": "additional-e0c4ff8aa1309ff5bc381c10",
       "status": "non_executable",
-      "rationale": "DA01-R3-PROXY-02 is a policy-only clarification request. TOOLS-01 selects no Proxy refusal policy and claims no execution for it.",
+      "rationale": "DA01-R3-PROXY-02 is historical policy-only evidence. Owner decision-01 now chooses refusal of every Proxy, pending K1.1-correction-03; TOOLS-01 implements no such change. Current coherent-Proxy acceptance is separately retained as a held witness, never a passing policy expectation.",
       "reason": "policy"
     }
   ],

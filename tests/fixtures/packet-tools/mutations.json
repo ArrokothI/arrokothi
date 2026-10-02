@@ -47,6 +47,12 @@
             "abc",
             ""
           ]
+        ],
+        "expected": [
+          "2:ab1:c",
+          "1:a2:bc",
+          "0:3:abc",
+          "3:abc0:"
         ]
       }
     },
@@ -1040,7 +1046,7 @@
           "$ROOT",
           "control"
         ],
-        "expected": {
+        "recorded_observation": {
           "case": "control",
           "shadow": "declared",
           "trapCalls": 1,
@@ -1052,6 +1058,12 @@
           },
           "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
       }
     },
     {
@@ -1087,7 +1099,7 @@
           "$ROOT",
           "JSON"
         ],
-        "expected": {
+        "recorded_observation": {
           "case": "JSON",
           "shadow": "declared",
           "trapCalls": 1,
@@ -1099,6 +1111,12 @@
           },
           "laterPlainCall": "{\"a\":[999,\"x\"],\"b\":999}"
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
       }
     },
     {
@@ -1134,7 +1152,7 @@
           "$ROOT",
           "Object"
         ],
-        "expected": {
+        "recorded_observation": {
           "case": "Object",
           "shadow": "declared",
           "trapCalls": 1,
@@ -1146,6 +1164,12 @@
           },
           "laterPlainCall": "{\"a\":[1,\"x\"]}"
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
       }
     },
     {
@@ -1181,7 +1205,7 @@
           "$ROOT",
           "Array"
         ],
-        "expected": {
+        "recorded_observation": {
           "case": "Array",
           "shadow": "declared",
           "trapCalls": 1,
@@ -1193,6 +1217,12 @@
           },
           "laterPlainCall": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}"
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
       }
     },
     {
@@ -1228,7 +1258,7 @@
           "$ROOT",
           "control"
         ],
-        "expected": {
+        "recorded_observation": {
           "mode": "control",
           "fired": false,
           "first": {
@@ -1243,6 +1273,12 @@
           "sameExecutionForDifferentContent": false,
           "firstRetainedPayload": "{\"b\":2,\"a\":[1,\"x\"]}"
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
       }
     },
     {
@@ -1278,7 +1314,7 @@
           "$ROOT",
           "hop"
         ],
-        "expected": {
+        "recorded_observation": {
           "mode": "hop",
           "fired": true,
           "first": {
@@ -1294,6 +1330,12 @@
           "sameExecutionForDifferentContent": true,
           "firstRetainedPayload": "{\"b\":2,\"a\":[1,\"x\"]}"
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
       }
     },
     {
@@ -1329,7 +1371,7 @@
           "$SERIALIZER",
           "unpinned"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": false,
           "pinned": false,
           "shadow": "declared",
@@ -1339,6 +1381,12 @@
           "after": "{\"a\":[999,\"x\"],\"b\":999}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1375,7 +1423,7 @@
           "$SERIALIZER",
           "unpinned"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "pinned": false,
           "shadow": "declared",
@@ -1385,6 +1433,12 @@
           "after": "{\"a\":[999,\"x\"],\"b\":999}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1421,7 +1475,7 @@
           "$SERIALIZER",
           "pinned"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "pinned": true,
           "shadow": "SyntaxError",
@@ -1431,6 +1485,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1465,13 +1525,19 @@
           "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
           "unpinned"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": false,
           "pinned": false,
           "firstHop": "replaced",
           "bindingHop": "replaced",
           "liveFreezeWorks": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1506,13 +1572,19 @@
           "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
           "pinned"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": false,
           "pinned": true,
           "firstHop": "replaced",
           "bindingHop": "TypeError",
           "liveFreezeWorks": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1548,13 +1620,19 @@
           "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
           "unpinned"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "pinned": false,
           "firstHop": "TypeError",
           "bindingHop": "replaced",
           "liveFreezeWorks": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1590,13 +1668,19 @@
           "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
           "pinned"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "pinned": true,
           "firstHop": "TypeError",
           "bindingHop": "TypeError",
           "liveFreezeWorks": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1635,7 +1719,7 @@
           "assign",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "assign",
@@ -1652,6 +1736,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1690,7 +1780,7 @@
           "assign",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "assign",
@@ -1707,6 +1797,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1745,7 +1841,7 @@
           "define",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "define",
@@ -1762,6 +1858,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1800,7 +1902,7 @@
           "define",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "define",
@@ -1817,6 +1919,12 @@
           "after": "throws: Maximum call stack size exceeded",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1855,7 +1963,7 @@
           "declare",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "declare",
@@ -1872,6 +1980,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1910,7 +2024,7 @@
           "declare",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "declare",
@@ -1927,6 +2041,12 @@
           "after": "{\"a\":[999,\"x\"],\"b\":999}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -1965,7 +2085,7 @@
           "preexisting",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "preexisting",
@@ -1982,6 +2102,12 @@
           "after": "{\"a\":[999,\"x\"],\"b\":999}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2020,7 +2146,7 @@
           "preexisting",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "JSON",
           "form": "preexisting",
@@ -2037,6 +2163,12 @@
           "after": "{\"a\":[999,\"x\"],\"b\":999}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2075,7 +2207,7 @@
           "assign",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "assign",
@@ -2092,6 +2224,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2130,7 +2268,7 @@
           "assign",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "assign",
@@ -2147,6 +2285,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2185,7 +2329,7 @@
           "define",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "define",
@@ -2202,6 +2346,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2240,7 +2390,7 @@
           "define",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "define",
@@ -2257,6 +2407,12 @@
           "after": "throws: Maximum call stack size exceeded",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2295,7 +2451,7 @@
           "declare",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "declare",
@@ -2312,6 +2468,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2350,7 +2512,7 @@
           "declare",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "declare",
@@ -2367,6 +2529,12 @@
           "after": "{\"a\":[1,\"x\"]}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2405,7 +2573,7 @@
           "preexisting",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "preexisting",
@@ -2422,6 +2590,12 @@
           "after": "{\"a\":[1,\"x\"]}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2460,7 +2634,7 @@
           "preexisting",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Object",
           "form": "preexisting",
@@ -2477,6 +2651,12 @@
           "after": "{\"a\":[1,\"x\"]}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2515,7 +2695,7 @@
           "assign",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "assign",
@@ -2532,6 +2712,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2570,7 +2756,7 @@
           "assign",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "assign",
@@ -2587,6 +2773,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2625,7 +2817,7 @@
           "define",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "define",
@@ -2642,6 +2834,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2680,7 +2878,7 @@
           "define",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "define",
@@ -2697,6 +2895,12 @@
           "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2735,7 +2939,7 @@
           "declare",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "declare",
@@ -2752,6 +2956,12 @@
           "after": "{\"a\":[1,\"x\"],\"b\":2}",
           "steered": false
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2790,7 +3000,7 @@
           "declare",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "declare",
@@ -2807,6 +3017,12 @@
           "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2845,7 +3061,7 @@
           "preexisting",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "preexisting",
@@ -2862,6 +3078,12 @@
           "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2900,7 +3122,7 @@
           "preexisting",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "frozen": true,
           "name": "Array",
           "form": "preexisting",
@@ -2917,6 +3139,12 @@
           "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
           "steered": true
         }
+      },
+      "claim": {
+        "kind": "held_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2953,7 +3181,7 @@
           "assign",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "assign",
           "pin": "full",
@@ -2963,6 +3191,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -2999,7 +3233,7 @@
           "assign",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "assign",
           "pin": "writableOnly",
@@ -3009,6 +3243,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3045,7 +3285,7 @@
           "define",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "define",
           "pin": "full",
@@ -3055,6 +3295,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3091,7 +3337,7 @@
           "define",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "define",
           "pin": "writableOnly",
@@ -3101,6 +3347,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3137,7 +3389,7 @@
           "declare",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "declare",
           "pin": "full",
@@ -3147,6 +3399,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3183,7 +3441,7 @@
           "declare",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "declare",
           "pin": "writableOnly",
@@ -3193,6 +3451,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3229,7 +3493,7 @@
           "preexisting",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "preexisting",
           "pin": "full",
@@ -3239,6 +3503,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3275,7 +3545,7 @@
           "preexisting",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Map",
           "form": "preexisting",
           "pin": "writableOnly",
@@ -3285,6 +3555,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3321,7 +3597,7 @@
           "assign",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "assign",
           "pin": "full",
@@ -3331,6 +3607,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3367,7 +3649,7 @@
           "assign",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "assign",
           "pin": "writableOnly",
@@ -3377,6 +3659,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3413,7 +3701,7 @@
           "define",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "define",
           "pin": "full",
@@ -3423,6 +3711,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3459,7 +3753,7 @@
           "define",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "define",
           "pin": "writableOnly",
@@ -3469,6 +3763,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3505,7 +3805,7 @@
           "declare",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "declare",
           "pin": "full",
@@ -3515,6 +3815,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3551,7 +3857,7 @@
           "declare",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "declare",
           "pin": "writableOnly",
@@ -3561,6 +3867,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3597,7 +3909,7 @@
           "preexisting",
           "full"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "preexisting",
           "pin": "full",
@@ -3607,6 +3919,12 @@
           "writable": false,
           "configurable": false
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3643,7 +3961,7 @@
           "preexisting",
           "writableOnly"
         ],
-        "expected": {
+        "recorded_observation": {
           "name": "Reflect",
           "form": "preexisting",
           "pin": "writableOnly",
@@ -3653,6 +3971,12 @@
           "writable": false,
           "configurable": true
         }
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
       }
     },
     {
@@ -3691,7 +4015,13 @@
           "name": "N15 array surplus names uncharged",
           "id": "mutation-c0830d226881a684d4582d951720ea6e6aab9e3fcee213b7b081722f362014c1"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Bounded existing surplus-charge observation; V-D1 remains held. The count proves no general work bound."
+      }
     },
     {
       "id": "result.stale-repeat",
@@ -3788,6 +4118,548 @@
           "id": "mutation-e39d60fb87235d0e22b579c405d374dace8f403bb9b64888581dc40a2d67ec95"
         }
       ]
+    },
+    {
+      "id": "capture.current.Map",
+      "category": "held-capture",
+      "assertion": "capture.current.Map.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "Map",
+          "arguments": [
+            [
+              [
+                "k",
+                1
+              ]
+            ]
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{}"
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.Map"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.Date",
+      "category": "held-capture",
+      "assertion": "capture.current.Date.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "Date",
+          "arguments": [
+            0
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{}"
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.Date"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.Set",
+      "category": "held-capture",
+      "assertion": "capture.current.Set.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "Set",
+          "arguments": [
+            [
+              1,
+              2
+            ]
+          ],
+          "prototype": "Object.prototype"
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{}"
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.Set"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.Uint8Array",
+      "category": "held-capture",
+      "assertion": "capture.current.Uint8Array.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "Uint8Array",
+          "arguments": [
+            [
+              7,
+              8,
+              9
+            ]
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{\"0\":7,\"1\":8,\"2\":9}"
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.Uint8Array"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.ArrayBuffer",
+      "category": "held-capture",
+      "assertion": "capture.current.ArrayBuffer.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "ArrayBuffer",
+          "arguments": [
+            8
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{}"
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.ArrayBuffer"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.RegExp",
+      "category": "held-capture",
+      "assertion": "capture.current.RegExp.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "RegExp",
+          "arguments": [
+            "abc",
+            "g"
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": false,
+          "codes": [
+            "unrepresentable_member"
+          ]
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.RegExp"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.Error",
+      "category": "held-capture",
+      "assertion": "capture.current.Error.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "Error",
+          "arguments": [
+            "m"
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": false,
+          "codes": [
+            "unrepresentable_member"
+          ]
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.Error"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.String",
+      "category": "held-capture",
+      "assertion": "capture.current.String.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "String",
+          "arguments": [
+            "ab"
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": false,
+          "codes": [
+            "unrepresentable_member"
+          ]
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.String"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.Boolean",
+      "category": "held-capture",
+      "assertion": "capture.current.Boolean.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "Boolean",
+          "arguments": [
+            true
+          ],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{}"
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.Boolean"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.WeakMap",
+      "category": "held-capture",
+      "assertion": "capture.current.WeakMap.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "WeakMap",
+          "arguments": [],
+          "prototype": "null"
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{}"
+        }
+      },
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.WeakMap"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
+    },
+    {
+      "id": "capture.current.Proxy",
+      "category": "held-capture",
+      "assertion": "capture.current.Proxy.recorded-observation",
+      "input": {
+        "recipe": {
+          "type": "Proxy",
+          "target": {}
+        },
+        "recorded_observation": {
+          "accepted": true,
+          "canonical": "{}"
+        }
+      },
+      "source": "TOOLS-01 owner continuation: coherent Proxy accepted as {}; decision-01",
+      "claim": {
+        "kind": "held_witness",
+        "owner": "K1.1-correction-03",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+      },
+      "files": [
+        "tests/tooling/capture-witness.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-witness.mjs",
+        "capture.current.Proxy"
+      ],
+      "timeout_seconds": 15,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/capture-witness.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "name": "capture.remove-observation-comparison",
+          "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
+        }
+      ]
     }
   ],
   "source_trees": [
@@ -3811,7 +4683,8 @@
     "tests/tooling/python-probe.py",
     "tests/tooling/test_packet_tools.py",
     "tests/tooling/test_corpus_tools.py",
-    "tests/tooling/test_research_tools.py"
+    "tests/tooling/test_research_tools.py",
+    "tests/fixtures/packet-tools/mutations.json"
   ],
   "dependencies": [
     {
@@ -3844,6 +4717,7 @@
     "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
     "realm.zone.Map.assign.full.frozen-intrinsics",
     "work-charge.array-surplus",
-    "result.unstable-control"
+    "result.unstable-control",
+    "capture.current.Proxy"
   ]
 }

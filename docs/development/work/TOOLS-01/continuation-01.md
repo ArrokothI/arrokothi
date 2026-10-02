@@ -15,9 +15,12 @@ The next verification specification uses main `f62527e8` (full identity in the s
 retains B→C→H and the same exact report-02/007 administrative scope. F1's closing
 mechanism and the governing process baseline are unchanged.
 
-The prior session context identifies `837ded08` as its last local commit. The external
-handover location is being reconciled with the owner; do not infer authorship from Git
-author names. Review covers every change in `ca0f2ad6`, `4f61c079` and `c64ceaf9`, including
+The external `tools-01-handover` directory under the prior chat's visualization directory
+contains the original C `3c91db1f` validation receipts, but no completed narrative handover.
+Reading this chat's preceding turn confirms that quota interruption followed its last
+completed local commit, `837ded08`; no later local commit or handover was completed.
+This continuation repairs that handover gap and does not infer authorship from Git author
+names. Review covers every change in `ca0f2ad6`, `4f61c079` and `c64ceaf9`, including
 the initial manifest's repeated pending records and all mapped records. Commit titles
 are not evidence of completeness.
 
