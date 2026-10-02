@@ -10,7 +10,7 @@ assert.deepEqual(registry.cases.filter(row => row.id.startsWith('oracle.')).map(
 for (const name of expected) {
   const entry = registry.cases.find(row => row.id === `oracle.${name}`);
   assert.equal(entry.mutants.length, 1);
-  assert.equal(entry.mutants[0].id, `oracle.disable-${name}`);
+  assert.equal(entry.mutants[0].name, `oracle.disable-${name}`);
   assert.equal(entry.mutants[0].after, `${name}: () => true`);
 }
 console.log(JSON.stringify({ oracle_comparisons: expected.length, registered_mutants: expected.length }));

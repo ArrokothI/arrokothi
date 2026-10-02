@@ -16,6 +16,8 @@ import sys
 import tempfile
 import time
 import platform
+from itertools import product
+from math import prod
 
 sys.dont_write_bytecode = True
 
@@ -31,6 +33,20 @@ def require(condition, message):
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def content_key(kind, value):
+    return kind + '-' + digest(json.dumps(value, sort_keys=True, separators=(',', ':'),
+                                        ensure_ascii=True).encode())
+
+
+def mutation_key(mutant):
+    return content_key('mutation', [mutant['path'], mutant['before'],
+                                   mutant.get('operator', 'replace'), mutant['after']])
+
+
+def case_key(case):
+    return content_key('case', [case['id'], case['assertion'], case['argv'], case.get('input')])
 
 
 def path_name(value):
@@ -264,9 +280,72 @@ def corpus(git, revision, spec_path):
             'counts': dict(Counter(row['status'] for row in mappings.values())),
             'pending_adoption': len(pending), 'pending_origins': pending,
             'mapping_complete': not pending, 'execution': 'not evaluated',
+            'non_executable': [row for row in mappings.values() if row['status'] == 'non_executable'],
             'full_corpus_complete': False, 'acceptance': 'not evaluated',
             'limits': ['Semantic equivalence and non-executable classifications require source review',
                        'A complete mapping is not a passing corpus run or release of held claims']}
+
+
+def coverage_manifest(spec, registry):
+    """A declared finite parameter model, never a domain inferred from observed tests."""
+    cases = {case['id']: case for case in registry['cases']}
+    require(len(cases) == len(registry['cases']) and bool(cases), 'coverage needs unique nonempty cases')
+    families = unique_text([row['id'] for row in spec['families']], 'coverage families')
+    require(bool(families), 'coverage has no families')
+    used, results = set(), []
+    for family in spec['families']:
+        domains = family['domains']
+        require(isinstance(domains, dict) and bool(domains), 'family needs declared domains')
+        for dimension, domain in domains.items():
+            require(bool(dimension) and bool(unique_text(domain, 'dimension domain')), 'empty dimension domain')
+        require(prod(len(domain) for domain in domains.values()) <= 10000, 'dimension product exceeds bounded profile')
+        coordinates = set()
+        for entry in family['cases']:
+            require(entry['case'] in cases and entry['case'] not in used, 'missing or repeated family case')
+            used.add(entry['case'])
+            values = entry['values']
+            require(set(values) == set(domains), 'case dimensions differ from declared dimensions')
+            require(all(values[key] in domain for key, domain in domains.items()), 'undeclared dimension value')
+            point = tuple(values[key] for key in domains)
+            require(point not in coordinates, 'duplicate family coordinates')
+            coordinates.add(point)
+        reason = family.get('empty_reason')
+        require(bool(coordinates) or (isinstance(reason, str) and bool(reason.strip())),
+                'non-vacuity: family matches no input')
+        missing = [dict(zip(domains, point)) for point in product(*domains.values()) if point not in coordinates]
+        results.append({'family': family['id'], 'domains': domains, 'cases': len(coordinates),
+                        'missing_combinations': missing, 'empty_reason': reason})
+    require(used == set(cases), 'every case needs a declared family')
+    categories = unique_text(spec['negative_categories'], 'negative categories')
+    require(bool(categories), 'negative categories must be declared')
+    counts = dict.fromkeys(categories, 0)
+    for case in cases.values():
+        category = case.get('category')
+        require(category in counts, 'case has undeclared negative category')
+        counts[category] += 1
+        data = case.get('input')
+        require(isinstance(data, dict) and bool(data) and bool(set(data) - {'seed', 'generator'}),
+                'case needs stored inputs, not only a seed')
+        if 'seed' in data:
+            require(isinstance(data.get('generator'), dict) and
+                    set(data['generator']) >= {'version', 'commit'}, 'seed metadata needs version and commit')
+    readings = spec.get('readings', [])
+    unique_text([row['id'] for row in readings], 'reading/waiver IDs')
+    for row in readings:
+        require(row.get('status') in ('closed_by_reading', 'waived') and
+                isinstance(row.get('reason'), str) and bool(row['reason'].strip()), 'reading/waiver needs reason')
+    return {'families': results, 'negative_categories': counts,
+            'missing_categories': [key for key, count in counts.items() if not count],
+            'readings': readings, 'reading_kills': 0}
+
+
+def coverage(git, revision, spec_path):
+    rev = git.commit(revision)
+    spec = git.document(rev, spec_path)
+    registry = git.document(rev, spec['registry'])
+    result = coverage_manifest(spec, registry)
+    return {'operation': 'coverage', 'revision': rev, 'result': 'coverage_reported', **result,
+            'acceptance': 'not evaluated', 'limits': ['Declared finite domains; no universal coverage claim']}
 
 
 def dependency_files(git, rev, spec):
@@ -351,6 +430,9 @@ def observation(run, case):
             type(value.get('reached')) is bool and type(value.get('passed')) is bool,
             'fixture observation has wrong case, assertion or flags')
     require(run['exit'] == (0 if value['passed'] else case['failure_exit']), 'exit disagrees with observation')
+    if 'failures' in value:
+        failures = unique_text(value['failures'], 'named failures')
+        require(bool(failures) != value['passed'], 'named failures disagree with result')
     return value
 
 
@@ -366,7 +448,9 @@ def run_case(files, case, mutant=None):
             original = target.read_bytes()
             before, after = mutant['before'].encode(), mutant['after'].encode()
             if not before or original.count(before) != 1:
-                return {'status': 'not_applicable', 'exit': None, 'output': ''}
+                return {'status': 'not_applicable', 'exit': None, 'output': '',
+                        'matches': original.count(before) if before else 0,
+                        'detail': 'stale or ambiguous mutation anchor'}
             target.write_bytes(original.replace(before, after, 1))
         return command(case['argv'], directory, case['timeout_seconds'], case['output_limit_bytes'])
 
@@ -381,7 +465,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
     for name in unique_text(registry.get('files', []), 'shared files'):
         shared[path_name(name)] = git.blob(rev, name)
     shared.update(dependency_files(git, rev, registry.get('dependencies', [])))
-    case_ids, mutant_ids, results = set(), set(), []
+    case_ids, mutant_ids, results = set(), {}, []
     for case in registry['cases']:
         print('Case ' + case['id'], file=sys.stderr, flush=True)
         require(case['id'] not in case_ids, 'duplicate case ID')
@@ -395,11 +479,16 @@ def mutations(git, revision, registry_path, *, cases_only=False):
             valid = control['reached'] and control['passed']
         except CheckError:
             valid = False
-        case_result = {'case': case['id'], 'control': 'passed' if valid else 'invalid_baseline',
+        case_result = {'case': case['id'], 'content_key': case_key(case),
+                       'control': 'passed' if valid else 'invalid_baseline',
                        'baseline': baseline, 'mutations': []}
+        local_mutants = set()
         for mutant in ([] if cases_only else case.get('mutants', [])):
-            require(mutant['id'] not in mutant_ids, 'duplicate mutant ID')
-            mutant_ids.add(mutant['id'])
+            key = mutation_key(mutant)
+            require(mutant['id'] not in local_mutants and mutant_ids.get(mutant['id'], key) == key,
+                    'duplicate or conflicting mutant ID')
+            local_mutants.add(mutant['id'])
+            mutant_ids[mutant['id']] = key
             require(mutant['path'] in files, 'mutation target absent from declared files')
             require(isinstance(mutant['before'], str) and isinstance(mutant['after'], str) and
                     mutant['before'] != mutant['after'], 'mutation must change text')
@@ -414,17 +503,32 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                         state = 'uncovered' if not seen['reached'] else 'survived' if seen['passed'] else 'killed'
                     except CheckError:
                         state = 'setup_error'
-                result = {'mutation': mutant['id'], 'status': state, 'run': run}
+                result = {'mutation': mutant['id'], 'status': state, 'run': run,
+                          'invalid': state in ('setup_error', 'timeout', 'output_limit')}
+                if state == 'killed':
+                    result['killed_by'] = seen.get('failures', [case['assertion']])[0]
+            result['content_key'] = mutation_key(mutant)
             case_result['mutations'].append(result)
+        if case['id'] in registry.get('determinism_sample', []):
+            repeat = run_case(files, case)
+            try:
+                repeated = observation(repeat, case)
+                stable = valid and repeated == control
+            except CheckError:
+                stable = False
+            case_result['determinism'] = {'passed': stable, 'runs': 2, 'repeat': repeat}
         results.append(case_result)
     require(bool(results), 'registry has no cases')
     counts = dict(Counter(m['status'] for c in results for m in c['mutations']))
     if not cases_only:
         require(bool(counts), 'registry has no mutations')
-    passed = all(c['control'] == 'passed' for c in results) and (cases_only or set(counts) == {'killed'})
+    sample = unique_text(registry.get('determinism_sample', []), 'determinism sample')
+    require(set(sample) <= case_ids, 'determinism sample names absent cases')
+    passed = all(c['control'] == 'passed' and c.get('determinism', {}).get('passed', True)
+                 for c in results) and (cases_only or set(counts) == {'killed'})
     return {'operation': 'cases' if cases_only else 'mutations', 'revision': rev, 'registry': registry_path,
             'result': 'selected_cases_passed' if passed else 'attention_required',
-            'counts': counts, 'cases': results, 'acceptance': 'not evaluated',
+            'counts': counts, 'cases': results, 'determinism_sample': sample, 'acceptance': 'not evaluated',
             'limits': ['Only the listed cases and mutations were executed',
                        'Structured witnesses rely on reviewed independent fixtures; no universal causal proof',
                        'Trusted repository commands run without containment; temporary copies protect source files']}
@@ -444,12 +548,14 @@ def verify(git, revision, spec_path):
     results = []
     for step in spec['checks']:
         print('Checking ' + step['id'], file=sys.stderr, flush=True)
-        if step.get('operation') in ('inventory', 'corpus', 'mutations', 'cases'):
+        if step.get('operation') in ('inventory', 'corpus', 'mutations', 'cases', 'coverage'):
             operation = step['operation']
             if operation == 'inventory':
                 result = inventory(git, rev, step['spec'])
             elif operation == 'corpus':
                 result = corpus(git, rev, step['spec'])
+            elif operation == 'coverage':
+                result = coverage(git, rev, step['spec'])
             else:
                 result = mutations(git, rev, step['spec'], cases_only=operation == 'cases')
             ok = result['result'] == step['expected']
@@ -472,7 +578,8 @@ def verify(git, revision, spec_path):
             'result': 'checks_passed' if all(r['passed'] for r in results) else 'attention_required',
             'environment': {'python': platform.python_version(), 'platform': platform.platform(),
                             'node': git_command_version('node', '--version'), 'git': git_command_version('git', '--version')},
-            'checks': results, 'acceptance': 'not evaluated',
+            'checks': results, 'profiles_not_run': spec.get('profiles_not_run', []),
+            'result_reuse': False, 'acceptance': 'not evaluated',
             'limits': spec['limits']}
 
 
@@ -488,7 +595,7 @@ def main():
     c.add_argument('--payload', required=True)
     c.add_argument('--head', required=True)
     c.add_argument('--spec', required=True)
-    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify'):
+    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify', 'coverage'):
         child = sub.add_parser(name)
         child.add_argument('--revision', required=True)
         child.add_argument('--spec', required=True)
@@ -501,6 +608,8 @@ def main():
             result = inventory(git, args.revision, args.spec)
         elif args.operation == 'corpus':
             result = corpus(git, args.revision, args.spec)
+        elif args.operation == 'coverage':
+            result = coverage(git, args.revision, args.spec)
         elif args.operation == 'verify':
             result = verify(git, args.revision, args.spec)
         else:

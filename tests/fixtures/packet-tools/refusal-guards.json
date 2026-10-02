@@ -1,0 +1,2625 @@
+{
+  "version": 1,
+  "source_trees": [
+    "scripts",
+    "tests/tooling"
+  ],
+  "files": [
+    "tests/fixtures/packet-tools/refusal-guards.json"
+  ],
+  "cases": [
+    {
+      "id": "guard.blob.b8dc04d19ee1d80f",
+      "assertion": "test_packet_tools.RunnerTests.test_symlink_fixture_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: blob",
+      "input": {
+        "test": "test_packet_tools.RunnerTests.test_symlink_fixture_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.blob.b8dc04d19ee1d80f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(mode in (b'100644', b'100755') and kind == b'blob', f'not a regular file: {path}')",
+          "after": "pass  # tools01-ablate:b8dc04d19ee1d80f",
+          "operator": "remove-refusal-check",
+          "name": "guard.blob.b8dc04d19ee1d80f",
+          "id": "mutation-1e3eb5e78fcceff83b580b3a7f4f0e9440907fda53e6aef4e0df4fe8b0e196bc"
+        }
+      ]
+    },
+    {
+      "id": "guard.blob.f8a0a451fee7d9d9",
+      "assertion": "test_corpus_tools.CorpusTests.test_missing_suite_source",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: blob",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_missing_suite_source"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.blob.f8a0a451fee7d9d9"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(exact) == 1, f'missing regular source: {rev}:{path}')",
+          "after": "pass  # tools01-ablate:f8a0a451fee7d9d9",
+          "operator": "remove-refusal-check",
+          "name": "guard.blob.f8a0a451fee7d9d9",
+          "id": "mutation-b90f6ab6832a45dbfbb5dcad153d9fc189cd87b47251ded1a62d022ef542d53e"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.0279f4467d46f360",
+      "assertion": "test_packet_tools.CandidateTests.test_missing_preservation_source_is_not_empty_success",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_missing_preservation_source_is_not_empty_success"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.0279f4467d46f360"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(git.run('ls-tree', old, '--', item['path']).strip()), 'preservation source is missing')",
+          "after": "pass  # tools01-ablate:0279f4467d46f360",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.0279f4467d46f360",
+          "id": "mutation-15013e151fc0cdc447ad3ede84d6e9fbcc15857d9f4e8f3b05e5097e4b2d8295"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.618261dcc3a98e13",
+      "assertion": "test_packet_tools.CandidateTests.test_executable_cannot_be_declared_output",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_executable_cannot_be_declared_output"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.618261dcc3a98e13"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(Path(path).suffix in ('.md', '.txt', '.json', '.jsonl', '.log'),\n                f'executable/configuration attachment requires payload review: {path}')",
+          "after": "pass  # tools01-ablate:618261dcc3a98e13",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.618261dcc3a98e13",
+          "id": "mutation-5b63c1d02cd15fbcc38ffc1fc756641fb624f91643458e3376a45b55a1c858e2"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.68448c5db5da6bcb",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_administrative_allowlist_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_administrative_allowlist_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.68448c5db5da6bcb"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(allowed), 'administrative_files must not be empty')",
+          "after": "pass  # tools01-ablate:68448c5db5da6bcb",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.68448c5db5da6bcb",
+          "id": "mutation-d87cf815b28abe1de29100d737f9ad4dca52caa2be0de90476fa3408c867462f"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.76d187e9127301ab",
+      "assertion": "test_packet_tools.CandidateTests.test_wrong_evidence_digest",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_wrong_evidence_digest"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.76d187e9127301ab"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(data) == item['sha256'], f'evidence digest mismatch: {item[\"path\"]}')",
+          "after": "pass  # tools01-ablate:76d187e9127301ab",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.76d187e9127301ab",
+          "id": "mutation-86ef825a27a463af5d5badfba54924bac9f92a4766808648b96749c4ef8d2439"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.78adb99f469b404c",
+      "assertion": "test_packet_tools.CandidateTests.test_non_direct_wrapper",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_non_direct_wrapper"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.78adb99f469b404c"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(git.run('rev-parse', h + '^').decode().strip() == c, 'H must directly wrap C')",
+          "after": "pass  # tools01-ablate:78adb99f469b404c",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.78adb99f469b404c",
+          "id": "mutation-1dae01fed11932c8b1268b5b023f9fd1704d5f89f644e6b78ceddd61f50b1be7"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.c9f5e5038c39a257",
+      "assertion": "test_packet_tools.CandidateTests.test_payload_cannot_certify_itself",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_payload_cannot_certify_itself"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.c9f5e5038c39a257"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(c != h, 'candidate H must wrap payload C')",
+          "after": "pass  # tools01-ablate:c9f5e5038c39a257",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.c9f5e5038c39a257",
+          "id": "mutation-5cf8ef15c71dbb13b682a4d7f4bd0a4c6f1e603a2fd94fdad000b157e091cb59"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.d4fd916a43036da3",
+      "assertion": "test_packet_tools.CandidateTests.test_extra_file",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_extra_file"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.d4fd916a43036da3"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(changed == sorted(allowed), f'C..H files differ: actual={changed}, expected={sorted(allowed)}')",
+          "after": "pass  # tools01-ablate:d4fd916a43036da3",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.d4fd916a43036da3",
+          "id": "mutation-a6a46ffc49e3b00233ef525bfafb23f74b5a68f074a5fe14f38a59a6551ab4df"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.d57a910503379153",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_evidence_owner_invalid",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_evidence_owner_invalid"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.d57a910503379153"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(item.get('at') in ('payload', 'candidate'), 'evidence.at must name payload or candidate')",
+          "after": "pass  # tools01-ablate:d57a910503379153",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.d57a910503379153",
+          "id": "mutation-710ab8cdd767df2c06730e0849d6838c96735d592aad83b173c4bb87f34b3648"
+        }
+      ]
+    },
+    {
+      "id": "guard.candidate.f46a13b95b7ee104",
+      "assertion": "test_packet_tools.CandidateTests.test_historical_evidence_preserved",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_historical_evidence_preserved"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.f46a13b95b7ee104"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not git.run('diff', '--name-only', old, h, '--', item['path']).strip(),\n                f'preserved path changed: {item[\"path\"]}')",
+          "after": "pass  # tools01-ablate:f46a13b95b7ee104",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.f46a13b95b7ee104",
+          "id": "mutation-8637ecaed9c1ad6cd3f988339ecb17597a164259a5366e16090496a026120573"
+        }
+      ]
+    },
+    {
+      "id": "guard.clean_payload.16ed5d61646d8a1a",
+      "assertion": "test_corpus_tools.VerificationTests.test_wrong_head_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: clean_payload",
+      "input": {
+        "test": "test_corpus_tools.VerificationTests.test_wrong_head_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.clean_payload.16ed5d61646d8a1a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(git.run('rev-parse', 'HEAD').decode().strip() == rev, 'HEAD must be payload C')",
+          "after": "pass  # tools01-ablate:16ed5d61646d8a1a",
+          "operator": "remove-refusal-check",
+          "name": "guard.clean_payload.16ed5d61646d8a1a",
+          "id": "mutation-61f3456788c819202762271b7eb5dbfa5ea56f2835694ff748deb1f054cd13ec"
+        }
+      ]
+    },
+    {
+      "id": "guard.clean_payload.1a5b4e741d1844f8",
+      "assertion": "test_corpus_tools.VerificationTests.test_command_source_mutation_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: clean_payload",
+      "input": {
+        "test": "test_corpus_tools.VerificationTests.test_command_source_mutation_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.clean_payload.1a5b4e741d1844f8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')",
+          "after": "pass  # tools01-ablate:1a5b4e741d1844f8",
+          "operator": "remove-refusal-check",
+          "name": "guard.clean_payload.1a5b4e741d1844f8",
+          "id": "mutation-e5c1457de48949cb0b88b268fe023e7051665b46e59edc637e95ad1827a9d652"
+        }
+      ]
+    },
+    {
+      "id": "guard.command.1a8679b208fb7fb4",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_command_argv",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: command",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_command_argv"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.command.1a8679b208fb7fb4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(argv, list) and argv and all(isinstance(x, str) for x in argv), 'command needs argv')",
+          "after": "pass  # tools01-ablate:1a8679b208fb7fb4",
+          "operator": "remove-refusal-check",
+          "name": "guard.command.1a8679b208fb7fb4",
+          "id": "mutation-b1c1df7b69c3352a889b476e8217d449493d7765663394439726d6db8894f9cb"
+        }
+      ]
+    },
+    {
+      "id": "guard.command.1df015b8ef9fdbd4",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_command_host",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: command",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_command_host"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.command.1df015b8ef9fdbd4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(os.name == 'posix', 'mutation runner supports POSIX hosts')",
+          "after": "pass  # tools01-ablate:1df015b8ef9fdbd4",
+          "operator": "remove-refusal-check",
+          "name": "guard.command.1df015b8ef9fdbd4",
+          "id": "mutation-91774fe3ce91b8ea4da21716466849ecc8d0ef1266ecb836b69a243235fe6ce9"
+        }
+      ]
+    },
+    {
+      "id": "guard.command.495f4b96b3cea181",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_command_output_bound",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: command",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_command_output_bound"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.command.495f4b96b3cea181"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(type(output_limit) is int and 0 < output_limit <= 1048576, 'output cap must be in (0, 1048576]')",
+          "after": "pass  # tools01-ablate:495f4b96b3cea181",
+          "operator": "remove-refusal-check",
+          "name": "guard.command.495f4b96b3cea181",
+          "id": "mutation-f66cd9f356d2719931cd3aa48e381791f1eda4e51f6905d658f93f0e25b359d8"
+        }
+      ]
+    },
+    {
+      "id": "guard.command.9293b53df53cca25",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_command_timeout",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: command",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_command_timeout"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.command.9293b53df53cca25"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(type(timeout) in (int, float) and 0 < timeout <= 3600, 'timeout must be in (0, 3600] seconds')",
+          "after": "pass  # tools01-ablate:9293b53df53cca25",
+          "operator": "remove-refusal-check",
+          "name": "guard.command.9293b53df53cca25",
+          "id": "mutation-c8883ba659203658c8c0a5aaab7a65aa7c1bdf378a5c8e9a9e4a19ceb9a8bc5d"
+        }
+      ]
+    },
+    {
+      "id": "guard.commit.c535cb069a686b47",
+      "assertion": "test_packet_tools.CandidateTests.test_moving_ref_is_not_identity",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: commit",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_moving_ref_is_not_identity"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.commit.c535cb069a686b47"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(value, str) and re.fullmatch('[0-9a-f]{40}', value) is not None,\n                'expected a full 40-character commit SHA')",
+          "after": "pass  # tools01-ablate:c535cb069a686b47",
+          "operator": "remove-refusal-check",
+          "name": "guard.commit.c535cb069a686b47",
+          "id": "mutation-078d5d218dcb22a6451c03e736140e7f6c733861884e9070fec6c3206ee556a7"
+        }
+      ]
+    },
+    {
+      "id": "guard.commit.cb0bb6ca397ecf76",
+      "assertion": "test_packet_tools.CandidateTests.test_blob_is_not_commit",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: commit",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_blob_is_not_commit"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.commit.cb0bb6ca397ecf76"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(self.run('cat-file', '-t', value).strip() == b'commit', 'object is not a commit')",
+          "after": "pass  # tools01-ablate:cb0bb6ca397ecf76",
+          "operator": "remove-refusal-check",
+          "name": "guard.commit.cb0bb6ca397ecf76",
+          "id": "mutation-7e7cce2948a28c9db443dec147167b30509fd575a419d8423d0590dc30a83b9c"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.05b6409ab98f7be8",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_mapping_status",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_mapping_status"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.05b6409ab98f7be8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('status') in ('pending', 'case', 'suite', 'duplicate', 'non_executable'),\n                'unknown adoption status')",
+          "after": "pass  # tools01-ablate:05b6409ab98f7be8",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.05b6409ab98f7be8",
+          "id": "mutation-42819f741ba75e76414c39262c72c79256b5d0661e4873faace788717e3b33e1"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.13cb0b76768f09e8",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_suite_command",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_suite_command"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.13cb0b76768f09e8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(suite.get('command'), str) and suite['command'], 'suite needs verification command ID')",
+          "after": "pass  # tools01-ablate:13cb0b76768f09e8",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.13cb0b76768f09e8",
+          "id": "mutation-3686966f1b2459a853fdc14f50d4ae824c3d134977635312ba48530d1584586d"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.56915939b7ffbe7d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_mapping_cases_duplicate",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_mapping_cases_duplicate"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.56915939b7ffbe7d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(cases) == len(registry['cases']), 'duplicate case ID')",
+          "after": "pass  # tools01-ablate:56915939b7ffbe7d",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.56915939b7ffbe7d",
+          "id": "mutation-433e05cbca0ea99429983c59284d8586b3169c92ad689285f85fde0bd57e069c"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.a510b03208bfc19a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_suite_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_suite_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.a510b03208bfc19a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(suite['files']), 'suite has no source')",
+          "after": "pass  # tools01-ablate:a510b03208bfc19a",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.a510b03208bfc19a",
+          "id": "mutation-3a521d6c5dad56a57c94fa7cb8691c9962a51b2ac3103babe96dfc44ce76391b"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.b7e9313cf13730fe",
+      "assertion": "test_corpus_tools.CorpusTests.test_missing_origin_cannot_shrink_obligation",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_missing_origin_cannot_shrink_obligation"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.b7e9313cf13730fe"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(mappings) == set(origins), 'adoption manifest must account for every origin, including pending')",
+          "after": "pass  # tools01-ablate:b7e9313cf13730fe",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.b7e9313cf13730fe",
+          "id": "mutation-34a6578fab2d366398aa995c617329c1562b3cf077f3ba1582ae4fa2c6f36d0f"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.ca7a43dabd5dc2bf",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_mapping_rationale",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_mapping_rationale"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.ca7a43dabd5dc2bf"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row.get('rationale'), str) and row['rationale'].strip(), 'mapping needs rationale')",
+          "after": "pass  # tools01-ablate:ca7a43dabd5dc2bf",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.ca7a43dabd5dc2bf",
+          "id": "mutation-402c86774d16d8ebb40868332440da3315068bbf33d512e81f43710aebd5a06c"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.ebe544fc055e0184",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_suite_duplicate",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_suite_duplicate"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.ebe544fc055e0184"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(checks) == len(spec['suites']), 'duplicate suite ID')",
+          "after": "pass  # tools01-ablate:ebe544fc055e0184",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.ebe544fc055e0184",
+          "id": "mutation-0df5b345163849d5411a78068e95c8bf2c926f21864b17486925e877ebe7bc67"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus.f8ff876cad94986b",
+      "assertion": "test_corpus_tools.CorpusTests.test_duplicate_origin",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_duplicate_origin"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus.f8ff876cad94986b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(key in origins and key not in mappings, f'missing or duplicate mapping origin: {key}')",
+          "after": "pass  # tools01-ablate:f8ff876cad94986b",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus.f8ff876cad94986b",
+          "id": "mutation-acf5c27e6c4846d9eaa9f9af7955f2f11a9f88605bc17342d3599d01d885dd37"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.23f8f508d7d8be6a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_duplicate_coordinates",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_duplicate_coordinates"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.23f8f508d7d8be6a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(point not in coordinates, 'duplicate family coordinates')",
+          "after": "pass  # tools01-ablate:23f8f508d7d8be6a",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.23f8f508d7d8be6a",
+          "id": "mutation-fe376ada8010271a7ad09785ea74e443e82013c177163d1fb78fcc65c92d2446"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.2814a3e8e33932b0",
+      "assertion": "test_research_tools.CoverageTests.test_dimension_value_outside_domain",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_dimension_value_outside_domain"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.2814a3e8e33932b0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(all(values[key] in domain for key, domain in domains.items()), 'undeclared dimension value')",
+          "after": "pass  # tools01-ablate:2814a3e8e33932b0",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.2814a3e8e33932b0",
+          "id": "mutation-5337676158514eecad6583d257027d696d70ba62217adca637e5b9be7b864c19"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.2dec712f6906f30e",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_categories_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_categories_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.2dec712f6906f30e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(categories), 'negative categories must be declared')",
+          "after": "pass  # tools01-ablate:2dec712f6906f30e",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.2dec712f6906f30e",
+          "id": "mutation-0b4020ceb53c8cb096326298ceb7fafcd03986f0de24af1b19aa17a00fc8bcf7"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.3b49c64ee9b9ed29",
+      "assertion": "test_research_tools.CoverageTests.test_seed_metadata_needs_version_and_commit",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_seed_metadata_needs_version_and_commit"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.3b49c64ee9b9ed29"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(data.get('generator'), dict) and\n                    set(data['generator']) >= {'version', 'commit'}, 'seed metadata needs version and commit')",
+          "after": "pass  # tools01-ablate:3b49c64ee9b9ed29",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.3b49c64ee9b9ed29",
+          "id": "mutation-58fd78f42e595c020fc1f193b51978a5b3e81a50c5fe4f811bd8a0a52c7865dd"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.4d5f43d028b19d77",
+      "assertion": "test_research_tools.CoverageTests.test_nonvacuity_rule_matching_nothing_must_fail",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_nonvacuity_rule_matching_nothing_must_fail"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.4d5f43d028b19d77"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(coordinates) or (isinstance(reason, str) and bool(reason.strip())),\n                'non-vacuity: family matches no input')",
+          "after": "pass  # tools01-ablate:4d5f43d028b19d77",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.4d5f43d028b19d77",
+          "id": "mutation-0e0e0c7ca1c60918201393d3c80c31fc1631f6103ce08fd2e251c2ecb62997fb"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.519f626a7ae27a76",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_unknown_case",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_unknown_case"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.519f626a7ae27a76"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(entry['case'] in cases and entry['case'] not in used, 'missing or repeated family case')",
+          "after": "pass  # tools01-ablate:519f626a7ae27a76",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.519f626a7ae27a76",
+          "id": "mutation-ade927cd0ba27daf07405511e760419b39c84c0dd25516ffd1b2883da2c20b84"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.595f8268cfe58cc2",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_domains_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_domains_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.595f8268cfe58cc2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(domains, dict) and bool(domains), 'family needs declared domains')",
+          "after": "pass  # tools01-ablate:595f8268cfe58cc2",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.595f8268cfe58cc2",
+          "id": "mutation-2e9c70de7815cbbca9d4da8c006f024a899f8684ea3735b33f0d84b6334e6aa8"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.65bd00c144a41ff7",
+      "assertion": "test_research_tools.CoverageTests.test_empty_domain",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_empty_domain"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.65bd00c144a41ff7"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(dimension) and bool(unique_text(domain, 'dimension domain')), 'empty dimension domain')",
+          "after": "pass  # tools01-ablate:65bd00c144a41ff7",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.65bd00c144a41ff7",
+          "id": "mutation-43956c409e1b12a04807dc1dd9ce026c4cfd3b5951ad83217d6228ad27632691"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.6fdeced362a61293",
+      "assertion": "test_research_tools.CoverageTests.test_undeclared_family_case",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_undeclared_family_case"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.6fdeced362a61293"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(used == set(cases), 'every case needs a declared family')",
+          "after": "pass  # tools01-ablate:6fdeced362a61293",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.6fdeced362a61293",
+          "id": "mutation-69cd6473d901e21921ba4f2d88fff2c7dc21f86aa7a26eb8eaa0a94763e0e6f7"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.7150407a9dc6c53e",
+      "assertion": "test_research_tools.CoverageTests.test_waiver_without_reason",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_waiver_without_reason"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.7150407a9dc6c53e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('status') in ('closed_by_reading', 'waived') and\n                isinstance(row.get('reason'), str) and bool(row['reason'].strip()), 'reading/waiver needs reason')",
+          "after": "pass  # tools01-ablate:7150407a9dc6c53e",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.7150407a9dc6c53e",
+          "id": "mutation-c78066574fba6a2bedba06079c40d8e3d7182575f4f30a1b6179c5f210f324e5"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.8bcdda90110486ea",
+      "assertion": "test_research_tools.CoverageTests.test_seed_cannot_replace_input",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_seed_cannot_replace_input"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.8bcdda90110486ea"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(data, dict) and bool(data) and bool(set(data) - {'seed', 'generator'}),\n                'case needs stored inputs, not only a seed')",
+          "after": "pass  # tools01-ablate:8bcdda90110486ea",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.8bcdda90110486ea",
+          "id": "mutation-a26de2f7ee6e1ea63d6b039bdedd412a5e71905ca0262af7313bd97b6c993f7f"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.ab6ba0307691be48",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_product_bound",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_product_bound"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.ab6ba0307691be48"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(prod(len(domain) for domain in domains.values()) <= 10000, 'dimension product exceeds bounded profile')",
+          "after": "pass  # tools01-ablate:ab6ba0307691be48",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.ab6ba0307691be48",
+          "id": "mutation-a4734632231496b93eebde061dc8c19546e024b7b24067c3c4c65defb8948e2a"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.cf10a8775ccccee2",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_families_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_families_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.cf10a8775ccccee2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(families), 'coverage has no families')",
+          "after": "pass  # tools01-ablate:cf10a8775ccccee2",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.cf10a8775ccccee2",
+          "id": "mutation-fb93d1ebc9f97bf83ef7ce5d850e6254deca9b4ab7d6ac4f238a8a621ceaa6c3"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.dd7a0e3fb955c7f4",
+      "assertion": "test_research_tools.CoverageTests.test_dimension_missing_from_case",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_research_tools.CoverageTests.test_dimension_missing_from_case"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.dd7a0e3fb955c7f4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(values) == set(domains), 'case dimensions differ from declared dimensions')",
+          "after": "pass  # tools01-ablate:dd7a0e3fb955c7f4",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.dd7a0e3fb955c7f4",
+          "id": "mutation-faf7774aee41aa24b76e6a0b9cd7bbd304cf5523eb991e9fbab89a65a71e4d60"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.fa8b0d9d611be72c",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_category_unknown",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_category_unknown"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.fa8b0d9d611be72c"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(category in counts, 'case has undeclared negative category')",
+          "after": "pass  # tools01-ablate:fa8b0d9d611be72c",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.fa8b0d9d611be72c",
+          "id": "mutation-b977c097af64750a39e755db73a2babe857e91efeb0e65300a764cb2410f304b"
+        }
+      ]
+    },
+    {
+      "id": "guard.coverage_manifest.ff324ef6bda37a26",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_coverage_cases_duplicate",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: coverage_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_coverage_cases_duplicate"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.coverage_manifest.ff324ef6bda37a26"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(cases) == len(registry['cases']) and bool(cases), 'coverage needs unique nonempty cases')",
+          "after": "pass  # tools01-ablate:ff324ef6bda37a26",
+          "operator": "remove-refusal-check",
+          "name": "guard.coverage_manifest.ff324ef6bda37a26",
+          "id": "mutation-11dbdc0870df5a3fc932ccf6557f589acb7d5659af13dc7b9c4add1584d39cb1"
+        }
+      ]
+    },
+    {
+      "id": "guard.dependency_files.78234e2124357aa6",
+      "assertion": "test_corpus_tools.DependencyTests.test_lock_version_mismatch",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: dependency_files",
+      "input": {
+        "test": "test_corpus_tools.DependencyTests.test_lock_version_mismatch"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.dependency_files.78234e2124357aa6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(lock.get('packages', {}).get(root, {}).get('version') == dep['version'],\n                f'dependency version differs from lock: {root}')",
+          "after": "pass  # tools01-ablate:78234e2124357aa6",
+          "operator": "remove-refusal-check",
+          "name": "guard.dependency_files.78234e2124357aa6",
+          "id": "mutation-ef449f344778681af6c19c3af4c8b91b30870bd1a594508dfbdbeff15ee1e103"
+        }
+      ]
+    },
+    {
+      "id": "guard.dependency_files.b3376240e830bca4",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_dependency_file_missing",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: dependency_files",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_dependency_file_missing"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.dependency_files.b3376240e830bca4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(local.is_file(), f'missing dependency file: {name}; use the existing locked install')",
+          "after": "pass  # tools01-ablate:b3376240e830bca4",
+          "operator": "remove-refusal-check",
+          "name": "guard.dependency_files.b3376240e830bca4",
+          "id": "mutation-2ea798e7a3a3e577d22c4468870fdc7c92c29773733c0c03dd5f58243558ffe8"
+        }
+      ]
+    },
+    {
+      "id": "guard.dependency_files.b75cde5209eb81ce",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_dependency_installed_version",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: dependency_files",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_dependency_installed_version"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.dependency_files.b75cde5209eb81ce"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(manifest['version'] == dep['version'], 'installed dependency version mismatch')",
+          "after": "pass  # tools01-ablate:b75cde5209eb81ce",
+          "operator": "remove-refusal-check",
+          "name": "guard.dependency_files.b75cde5209eb81ce",
+          "id": "mutation-75501dab97046d8d27e70e65263a52d2fc2f7796c1f06d38ed60e7ada987c825"
+        }
+      ]
+    },
+    {
+      "id": "guard.dependency_files.c0c1f3561259389c",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_dependency_location",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: dependency_files",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_dependency_location"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.dependency_files.c0c1f3561259389c"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(root.startswith('node_modules/'), 'dependency must be under node_modules')",
+          "after": "pass  # tools01-ablate:c0c1f3561259389c",
+          "operator": "remove-refusal-check",
+          "name": "guard.dependency_files.c0c1f3561259389c",
+          "id": "mutation-da159e3126cfc2343051f25edda8846b6a1be3d808ad431923ed33cd6612b75e"
+        }
+      ]
+    },
+    {
+      "id": "guard.dependency_files.d064bb42bab87a3d",
+      "assertion": "test_corpus_tools.DependencyTests.test_changed_bytes_same_version_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: dependency_files",
+      "input": {
+        "test": "test_corpus_tools.DependencyTests.test_changed_bytes_same_version_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.dependency_files.d064bb42bab87a3d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(data) == expected, f'dependency digest mismatch: {name}')",
+          "after": "pass  # tools01-ablate:d064bb42bab87a3d",
+          "operator": "remove-refusal-check",
+          "name": "guard.dependency_files.d064bb42bab87a3d",
+          "id": "mutation-f2d4f3dd29fc93076363d9541ab21f2a5e12dde353126edab2d57b0cf8b54e4c"
+        }
+      ]
+    },
+    {
+      "id": "guard.dependency_files.d8d474a79d911f7b",
+      "assertion": "test_corpus_tools.DependencyTests.test_symlinked_dependency_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: dependency_files",
+      "input": {
+        "test": "test_corpus_tools.DependencyTests.test_symlinked_dependency_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.dependency_files.d8d474a79d911f7b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not any(part.is_symlink() for part in [local, *local.parents[:len(PurePosixPath(name).parts) - 1]]),\n                    f'dependency symlink refused: {name}')",
+          "after": "pass  # tools01-ablate:d8d474a79d911f7b",
+          "operator": "remove-refusal-check",
+          "name": "guard.dependency_files.d8d474a79d911f7b",
+          "id": "mutation-11358df267fe3dc22e25955a4a5733bc41e82b05262efdb8692144bd910b83dd"
+        }
+      ]
+    },
+    {
+      "id": "guard.dependency_files.f8bde57c976225ad",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_dependency_manifest_missing",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: dependency_files",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_dependency_manifest_missing"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.dependency_files.f8bde57c976225ad"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(dep['files'], dict) and 'package.json' in dep['files'], 'dependency needs package.json')",
+          "after": "pass  # tools01-ablate:f8bde57c976225ad",
+          "operator": "remove-refusal-check",
+          "name": "guard.dependency_files.f8bde57c976225ad",
+          "id": "mutation-d1cbc6243e125eb20ad1e55584add0a80986af496c98f4a19ecc7109c126e788"
+        }
+      ]
+    },
+    {
+      "id": "guard.document.1f164c6ba3166ac6",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_schema_version",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: document",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_schema_version"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.document.1f164c6ba3166ac6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(value, dict) and value.get('version') == 1, f'unsupported schema: {path}')",
+          "after": "pass  # tools01-ablate:1f164c6ba3166ac6",
+          "operator": "remove-refusal-check",
+          "name": "guard.document.1f164c6ba3166ac6",
+          "id": "mutation-d89abe8c0de2da8bd8edf9c2d35b737edbe10f9bb3f3c13a317159b118e61c88"
+        }
+      ]
+    },
+    {
+      "id": "guard.fenced_bytes.0a45dca8fdb8f89a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_fence_opening",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: fenced_bytes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_fence_opening"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.fenced_bytes.0a45dca8fdb8f89a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(opening is not None, 'fence locator is not an opening fence')",
+          "after": "pass  # tools01-ablate:0a45dca8fdb8f89a",
+          "operator": "remove-refusal-check",
+          "name": "guard.fenced_bytes.0a45dca8fdb8f89a",
+          "id": "mutation-da815fefea6018302ec673d3ec057e134c2c9d9ab53480bc64a53fe7d02e7614"
+        }
+      ]
+    },
+    {
+      "id": "guard.fenced_bytes.224a61bb8b6df713",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_fence_position",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: fenced_bytes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_fence_position"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.fenced_bytes.224a61bb8b6df713"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(line, int) and 1 <= line <= len(lines), 'invalid fence line')",
+          "after": "pass  # tools01-ablate:224a61bb8b6df713",
+          "operator": "remove-refusal-check",
+          "name": "guard.fenced_bytes.224a61bb8b6df713",
+          "id": "mutation-89cafa6face19147f9d6dd87eefc69b8044237653a1270fb6040a748924932d3"
+        }
+      ]
+    },
+    {
+      "id": "guard.files.8668bc7958028ad9",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_source_tree_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: files",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_source_tree_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.files.8668bc7958028ad9"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(names), f'empty source tree: {prefix}')",
+          "after": "pass  # tools01-ablate:8668bc7958028ad9",
+          "operator": "remove-refusal-check",
+          "name": "guard.files.8668bc7958028ad9",
+          "id": "mutation-554121246bceff9f309eef7995473645a4c879412d0d95941285db756cbface2"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.0b318b5d6b352f2a",
+      "assertion": "test_packet_tools.InventoryTests.test_duplicate_origin",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_packet_tools.InventoryTests.test_duplicate_origin"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.0b318b5d6b352f2a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "            key = origin_id(kind, row)\n            require(key not in seen, f'duplicate origin: {key}')",
+          "after": "            key = origin_id(kind, row)\n            pass  # tools01-ablate:0b318b5d6b352f2a",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.0b318b5d6b352f2a",
+          "id": "mutation-411c7cf23e0072a39ec6d11edbf340aaf99d71960cc350c2af2e282b31863466"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.0c231f2ce9779716",
+      "assertion": "test_packet_tools.InventoryTests.test_wrong_mention",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_packet_tools.InventoryTests.test_wrong_mention"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.0c231f2ce9779716"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['line'] <= len(lines) and lines[row['line'] - 1] == row['text'],\n                        f'prose locator mismatch: {row[\"path\"]}:{row[\"line\"]}')",
+          "after": "pass  # tools01-ablate:0c231f2ce9779716",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.0c231f2ce9779716",
+          "id": "mutation-cc99beb6261537fe3f1ab8dff002191855d19b855745464a81590960be10ae6f"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.56a3c2a9e6d46ab3",
+      "assertion": "test_packet_tools.InventoryTests.test_wrong_fence_hash",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_packet_tools.InventoryTests.test_wrong_fence_hash"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.56a3c2a9e6d46ab3"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(body) == row['sha256'], f'origin digest mismatch: {row[\"path\"]}:{row[\"line\"]}')",
+          "after": "pass  # tools01-ablate:56a3c2a9e6d46ab3",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.56a3c2a9e6d46ab3",
+          "id": "mutation-1004e16d72daa9172e623675cc7aa53e8944f7331e38325c8fbf735da6a72a62"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.7d94cebe0c28c0af",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_additional_digest",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_additional_digest"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.7d94cebe0c28c0af"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(data) == row['sha256'], f'additional source digest mismatch: {row[\"path\"]}')",
+          "after": "pass  # tools01-ablate:7d94cebe0c28c0af",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.7d94cebe0c28c0af",
+          "id": "mutation-e635dfb2def7a779402899b3a05fccc2a7f9c36ab02db48637583b7bc71f4747"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.842cd082eea2de11",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_catalog_digest",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_catalog_digest"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.842cd082eea2de11"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(raw) == group['sha256'], 'catalog source digest mismatch')",
+          "after": "pass  # tools01-ablate:842cd082eea2de11",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.842cd082eea2de11",
+          "id": "mutation-5d5d9478742a33b5396555314917a930e4e517ee5c5312acb4509a1f2f63b617"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.8492623016e29e69",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_origin_line",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_origin_line"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.8492623016e29e69"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(type(row['line']) is int and row['line'] > 0, 'invalid origin line')",
+          "after": "pass  # tools01-ablate:8492623016e29e69",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.8492623016e29e69",
+          "id": "mutation-d5a5f2f2ec08feb92ec90c676d56491f2c1023130c8c2c1bd781e8de2fc23d9b"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.85ec0b7d935e33e5",
+      "assertion": "test_packet_tools.InventoryTests.test_dead_mapping",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_packet_tools.InventoryTests.test_dead_mapping"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.85ec0b7d935e33e5"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(key in by_id and key not in mapped, f'missing or duplicate mapping origin: {key}')",
+          "after": "pass  # tools01-ablate:85ec0b7d935e33e5",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.85ec0b7d935e33e5",
+          "id": "mutation-53ebe865f40cc933e92eb7ed4afce1981446be4d8f36e8bec5e254aa8f08951b"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.92d66896f3b37ca0",
+      "assertion": "test_packet_tools.InventoryTests.test_wrong_catalog_count",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_packet_tools.InventoryTests.test_wrong_catalog_count"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.92d66896f3b37ca0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(rows, list) and len(rows) == group['count'], 'catalog row count mismatch')",
+          "after": "pass  # tools01-ablate:92d66896f3b37ca0",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.92d66896f3b37ca0",
+          "id": "mutation-b0080b6558dc8df290c1bbb43644f1c5e2c4e29df63af53c609dd833184ab98a"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.aaf8dcbfe9f73a5a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_additional_duplicate",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_additional_duplicate"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.aaf8dcbfe9f73a5a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "        key = origin_id('additional', row)\n        require(key not in seen, f'duplicate origin: {key}')",
+          "after": "        key = origin_id('additional', row)\n        pass  # tools01-ablate:aaf8dcbfe9f73a5a",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.aaf8dcbfe9f73a5a",
+          "id": "mutation-3cde35d25a32bbb8af5b0d7ea7debc904d4d57ac08e5e2eac2b0be5d7f7aaa92"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.ba7c90aded1a9401",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_catalog_kind",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_catalog_kind"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.ba7c90aded1a9401"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(kind in ('artifact', 'mention'), 'unknown catalog kind')",
+          "after": "pass  # tools01-ablate:ba7c90aded1a9401",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.ba7c90aded1a9401",
+          "id": "mutation-6b42a5b7832c4c1ee123855d26538fa192a4d323755fc259910a95a870c8613d"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.d6b1887b9420800a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_mapping_destination",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_mapping_destination"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.d6b1887b9420800a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row.get('destination'), str) and row['destination'].strip(), 'mapping needs destination')",
+          "after": "pass  # tools01-ablate:d6b1887b9420800a",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.d6b1887b9420800a",
+          "id": "mutation-53a33c11e818ffc9c82f9ce145c47bb8a925fc457a410053366871546b54da77"
+        }
+      ]
+    },
+    {
+      "id": "guard.inventory.ff8dbd50ebef23c8",
+      "assertion": "test_packet_tools.InventoryTests.test_no_invented_adoption",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: inventory",
+      "input": {
+        "test": "test_packet_tools.InventoryTests.test_no_invented_adoption"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.inventory.ff8dbd50ebef23c8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('status') == 'proposed' and isinstance(row.get('rationale'), str) and row['rationale'].strip(),\n                'foundation mappings need proposed status and rationale')",
+          "after": "pass  # tools01-ablate:ff8dbd50ebef23c8",
+          "operator": "remove-refusal-check",
+          "name": "guard.inventory.ff8dbd50ebef23c8",
+          "id": "mutation-fca7175fb5f659a5f57aa84a17797c9e73fccc1822bc73a28abb3f4a63a8f36e"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.265276e23a1de243",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_missing_repeat_sample",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_missing_repeat_sample"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.265276e23a1de243"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(sample) <= case_ids, 'determinism sample names absent cases')",
+          "after": "pass  # tools01-ablate:265276e23a1de243",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.265276e23a1de243",
+          "id": "mutation-e1d205a91247e0e065a09b2e406aa87816d9d8f42d1d75bce14699c1a547a7d0"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.2de075783f590d7d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_empty_registry",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_empty_registry"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.2de075783f590d7d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(results), 'registry has no cases')",
+          "after": "pass  # tools01-ablate:2de075783f590d7d",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.2de075783f590d7d",
+          "id": "mutation-9e7155016ba74f32707b09661c5cf88a292757df95ed4f71d024a4282af279e1"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.423252dd38210ba0",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_mutation_target",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_mutation_target"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.423252dd38210ba0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(mutant['path'] in files, 'mutation target absent from declared files')",
+          "after": "pass  # tools01-ablate:423252dd38210ba0",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.423252dd38210ba0",
+          "id": "mutation-efa2ad1c2d9755a3f91fdf004746041f9d1161b3b00f393558b50402abf53009"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.52d7425597d3c503",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_failure_exit",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_failure_exit"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.52d7425597d3c503"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(type(case['failure_exit']) is int and 1 <= case['failure_exit'] <= 125, 'invalid failure exit')",
+          "after": "pass  # tools01-ablate:52d7425597d3c503",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.52d7425597d3c503",
+          "id": "mutation-344b29fb74e9d0e831d3d9df82c6afd060ee593533b6423bc20d70ebaa941540"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.8f42214209855bb2",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_empty_mutations",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_empty_mutations"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.8f42214209855bb2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(counts), 'registry has no mutations')",
+          "after": "pass  # tools01-ablate:8f42214209855bb2",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.8f42214209855bb2",
+          "id": "mutation-a79c5a79aa0f83f9bc0c69e84c2cb49eb6f73dd5f0204e20c5501d25e41d3d0d"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.b1e74a23be7ddefa",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_duplicate_mutation",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_duplicate_mutation"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.b1e74a23be7ddefa"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(mutant['id'] not in local_mutants and mutant_ids.get(mutant['id'], key) == key,\n                    'duplicate or conflicting mutant ID')",
+          "after": "pass  # tools01-ablate:b1e74a23be7ddefa",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.b1e74a23be7ddefa",
+          "id": "mutation-59075c2f8ffa99d1cb44d68704b4cd846958a6d9008fec5d8f4840066bbeb6c0"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.dd2fe127454ac894",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_duplicate_case",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_duplicate_case"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.dd2fe127454ac894"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(case['id'] not in case_ids, 'duplicate case ID')",
+          "after": "pass  # tools01-ablate:dd2fe127454ac894",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.dd2fe127454ac894",
+          "id": "mutation-dc6ee17af6b357cbd13860102a97a14fe61100cfe116eb4922b59d503bff0385"
+        }
+      ]
+    },
+    {
+      "id": "guard.mutations.e23f45c195a2f95f",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_runner_unchanged_mutation",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: mutations",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_runner_unchanged_mutation"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.mutations.e23f45c195a2f95f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(mutant['before'], str) and isinstance(mutant['after'], str) and\n                    mutant['before'] != mutant['after'], 'mutation must change text')",
+          "after": "pass  # tools01-ablate:e23f45c195a2f95f",
+          "operator": "remove-refusal-check",
+          "name": "guard.mutations.e23f45c195a2f95f",
+          "id": "mutation-573621e71c60560e46083fa2d19d241ca0e9e5b19ddfc452e62c6d8c39ef32ff"
+        }
+      ]
+    },
+    {
+      "id": "guard.observation.3bd482d4aaadecd8",
+      "assertion": "test_packet_tools.RunnerTests.test_zero_exit_cannot_mask_assertion_failure",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: observation",
+      "input": {
+        "test": "test_packet_tools.RunnerTests.test_zero_exit_cannot_mask_assertion_failure"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.observation.3bd482d4aaadecd8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(run['exit'] == (0 if value['passed'] else case['failure_exit']), 'exit disagrees with observation')",
+          "after": "pass  # tools01-ablate:3bd482d4aaadecd8",
+          "operator": "remove-refusal-check",
+          "name": "guard.observation.3bd482d4aaadecd8",
+          "id": "mutation-f6a015e5342d20509353d5978daa61b4d6b009f2f1a15271bf6eaa4b3eae8343"
+        }
+      ]
+    },
+    {
+      "id": "guard.observation.6504ffd7d310ebbf",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_observation_wrong_case",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: observation",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_observation_wrong_case"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.observation.6504ffd7d310ebbf"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(value, dict) and value.get('case') == case['id'] and\n            value.get('assertion') == case['assertion'] and\n            type(value.get('reached')) is bool and type(value.get('passed')) is bool,\n            'fixture observation has wrong case, assertion or flags')",
+          "after": "pass  # tools01-ablate:6504ffd7d310ebbf",
+          "operator": "remove-refusal-check",
+          "name": "guard.observation.6504ffd7d310ebbf",
+          "id": "mutation-c593bf3a6e2fe129bf2a910569aabc59e0ce90310cd6bb378e5093da7a88d639"
+        }
+      ]
+    },
+    {
+      "id": "guard.observation.b34fa4542b626e45",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_observation_false_named_failures",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: observation",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_observation_false_named_failures"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.observation.b34fa4542b626e45"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(failures) != value['passed'], 'named failures disagree with result')",
+          "after": "pass  # tools01-ablate:b34fa4542b626e45",
+          "operator": "remove-refusal-check",
+          "name": "guard.observation.b34fa4542b626e45",
+          "id": "mutation-ab02c0a031d2f52114f0967eff36791d270145e30cd8c40b1df272590b486ebf"
+        }
+      ]
+    },
+    {
+      "id": "guard.observation.e0fbea980f0b3c87",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_observation_unfinished",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: observation",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_observation_unfinished"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.observation.e0fbea980f0b3c87"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(run['status'] == 'finished', 'command did not finish')",
+          "after": "pass  # tools01-ablate:e0fbea980f0b3c87",
+          "operator": "remove-refusal-check",
+          "name": "guard.observation.e0fbea980f0b3c87",
+          "id": "mutation-50b07b8e6b1d41937d1a0ae6ab47cd55f41c9a0a633f1a828df034d1ebd3e89f"
+        }
+      ]
+    },
+    {
+      "id": "guard.path_name.702f36ec86b9603b",
+      "assertion": "test_packet_tools.RunnerTests.test_path_escape_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: path_name",
+      "input": {
+        "test": "test_packet_tools.RunnerTests.test_path_escape_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.path_name.702f36ec86b9603b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not p.is_absolute() and str(p) == value and\n            all(x not in ('.', '..', '.git') for x in p.parts) and\n            '\\\\' not in value and '\\x00' not in value, f'unsafe path: {value!r}')",
+          "after": "pass  # tools01-ablate:702f36ec86b9603b",
+          "operator": "remove-refusal-check",
+          "name": "guard.path_name.702f36ec86b9603b",
+          "id": "mutation-b0e4d1aab540b1819cf769e3a2ed4669b59ce015ecaeb88fdebeeae1da64b087"
+        }
+      ]
+    },
+    {
+      "id": "guard.path_name.8f780dc09412643f",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_path_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: path_name",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_path_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.path_name.8f780dc09412643f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(value, str) and bool(value), 'path must be nonempty text')",
+          "after": "pass  # tools01-ablate:8f780dc09412643f",
+          "operator": "remove-refusal-check",
+          "name": "guard.path_name.8f780dc09412643f",
+          "id": "mutation-98e4f077c38a0afff7f5d1998de30b01e6a71a89d94f24763552ed209dba9265"
+        }
+      ]
+    },
+    {
+      "id": "guard.resolve.0473fbdc996149bc",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_mapping_targets_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: resolve",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_mapping_targets_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.resolve.0473fbdc996149bc"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(targets), 'mapping needs targets')",
+          "after": "pass  # tools01-ablate:0473fbdc996149bc",
+          "operator": "remove-refusal-check",
+          "name": "guard.resolve.0473fbdc996149bc",
+          "id": "mutation-5d11a44b3624e2ac247f55b2d68d14e6c3107109a5ae1c558f8822140df2aedd"
+        }
+      ]
+    },
+    {
+      "id": "guard.resolve.4df9841235951ae5",
+      "assertion": "test_corpus_tools.CorpusTests.test_duplicate_cycle",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: resolve",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_duplicate_cycle"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.resolve.4df9841235951ae5"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(key not in stack, 'cyclic duplicate mapping')",
+          "after": "pass  # tools01-ablate:4df9841235951ae5",
+          "operator": "remove-refusal-check",
+          "name": "guard.resolve.4df9841235951ae5",
+          "id": "mutation-e259ff54c9768e7b6faa113c6962a2bd956a6c818d78d4ec50366a15bb61466f"
+        }
+      ]
+    },
+    {
+      "id": "guard.resolve.a2aa2248e5e1f34b",
+      "assertion": "test_corpus_tools.CorpusTests.test_unavailable_case_is_not_coverage",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: resolve",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_unavailable_case_is_not_coverage"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.resolve.a2aa2248e5e1f34b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(all(target in owner for target in targets), 'mapping target absent')",
+          "after": "pass  # tools01-ablate:a2aa2248e5e1f34b",
+          "operator": "remove-refusal-check",
+          "name": "guard.resolve.a2aa2248e5e1f34b",
+          "id": "mutation-7a9400d88ba8ba6a81edf8356d8da5cb8cec11d0dd8b3d232b9752a66f2650ca"
+        }
+      ]
+    },
+    {
+      "id": "guard.resolve.ad7af874a79ec2f8",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_duplicate_destination",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: resolve",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_duplicate_destination"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.resolve.ad7af874a79ec2f8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(target in mappings, 'duplicate target absent')",
+          "after": "pass  # tools01-ablate:ad7af874a79ec2f8",
+          "operator": "remove-refusal-check",
+          "name": "guard.resolve.ad7af874a79ec2f8",
+          "id": "mutation-459fe2fc89bdcea33a4c11bfbcc169540e878ed8e30fad8b753451208c92c59a"
+        }
+      ]
+    },
+    {
+      "id": "guard.resolve.d7833f610633e1b4",
+      "assertion": "test_corpus_tools.CorpusTests.test_non_executable_requires_reason",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: resolve",
+      "input": {
+        "test": "test_corpus_tools.CorpusTests.test_non_executable_requires_reason"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.resolve.d7833f610633e1b4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('reason') in ('policy', 'historical_command', 'record', 'unavailable_source'),\n                    'non-executable mapping needs a declared evidence reason')",
+          "after": "pass  # tools01-ablate:d7833f610633e1b4",
+          "operator": "remove-refusal-check",
+          "name": "guard.resolve.d7833f610633e1b4",
+          "id": "mutation-8406e7322ceb3ccbe500ee8dc2cfa40d232581af00c7b4f96257ae6739d50352"
+        }
+      ]
+    },
+    {
+      "id": "guard.run.ddd42c39812fa4f2",
+      "assertion": "test_packet_tools.CandidateTests.test_nonexistent_commit",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: run",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_nonexistent_commit"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.run.ddd42c39812fa4f2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(run.returncode == 0, 'git ' + args[0] + ': ' + run.stderr.decode(errors='replace').strip())",
+          "after": "pass  # tools01-ablate:ddd42c39812fa4f2",
+          "operator": "remove-refusal-check",
+          "name": "guard.run.ddd42c39812fa4f2",
+          "id": "mutation-8dbdbb37320585c7b9121929c5c7b2fc370bbc27265622d9398604d809528b4b"
+        }
+      ]
+    },
+    {
+      "id": "guard.unique_text.21fae33c91026764",
+      "assertion": "test_packet_tools.CandidateTests.test_duplicate_allowlist",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: unique_text",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_duplicate_allowlist"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.unique_text.21fae33c91026764"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(items) == len(set(items)), f'{label}: duplicate entries')",
+          "after": "pass  # tools01-ablate:21fae33c91026764",
+          "operator": "remove-refusal-check",
+          "name": "guard.unique_text.21fae33c91026764",
+          "id": "mutation-9242abc6111c4dc88c4fdce46b84d490ee8c60825ae5c865ad98beaa6cbaea92"
+        }
+      ]
+    },
+    {
+      "id": "guard.unique_text.98ff0cb9b235597d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_text_list_type",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: unique_text",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_text_list_type"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.unique_text.98ff0cb9b235597d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(items, list) and all(isinstance(x, str) and x for x in items),\n            f'{label}: expected a text list')",
+          "after": "pass  # tools01-ablate:98ff0cb9b235597d",
+          "operator": "remove-refusal-check",
+          "name": "guard.unique_text.98ff0cb9b235597d",
+          "id": "mutation-1b0c1dadca8032461717a09c28cb7ec62196a284c8772cb23ed491651739b389"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify.2795355a428e6c7b",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_verification_empty",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_verification_empty"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify.2795355a428e6c7b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(ids), 'verification has no checks')",
+          "after": "pass  # tools01-ablate:2795355a428e6c7b",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify.2795355a428e6c7b",
+          "id": "mutation-6a04fa75621a89c0099740f74c48f0d7f234aa0c34740cf79a6ade60fe8533ed"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify.fd1956d1616cdf9f",
+      "assertion": "test_corpus_tools.VerificationTests.test_duplicate_counts_are_not_one_result",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify",
+      "input": {
+        "test": "test_corpus_tools.VerificationTests.test_duplicate_counts_are_not_one_result"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify.fd1956d1616cdf9f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(matches) == 1 and isinstance(matches[0], str), f'ambiguous or missing count {step[\"id\"]}:{label}')",
+          "after": "pass  # tools01-ablate:fd1956d1616cdf9f",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify.fd1956d1616cdf9f",
+          "id": "mutation-79e081403b3c117ae88145c66e8a8fc1e77c2826ab2e9ab06c1f44d0846b85e8"
+        }
+      ]
+    }
+  ],
+  "determinism_sample": [
+    "guard.path_name.8f780dc09412643f"
+  ]
+}

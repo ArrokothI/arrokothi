@@ -2,7 +2,7 @@
   "version": 1,
   "cases": [
     {
-      "id": "realm.kernel-lexical-shadow.1",
+      "id": "realm.kernel-lexical-shadow.control",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -27,7 +27,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:1"
     },
     {
-      "id": "realm.kernel-lexical-shadow.2",
+      "id": "realm.kernel-lexical-shadow.JSON",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -52,7 +52,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:2"
     },
     {
-      "id": "realm.kernel-lexical-shadow.3",
+      "id": "realm.kernel-lexical-shadow.Object",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -77,7 +77,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:3"
     },
     {
-      "id": "realm.kernel-lexical-shadow.4",
+      "id": "realm.kernel-lexical-shadow.Array",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -102,7 +102,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:4"
     },
     {
-      "id": "realm.kernel-lexical-creation.1",
+      "id": "realm.kernel-lexical-creation.control",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -130,7 +130,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:1"
     },
     {
-      "id": "realm.kernel-lexical-creation.2",
+      "id": "realm.kernel-lexical-creation.hop",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -159,7 +159,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:2"
     },
     {
-      "id": "realm.lexical-shadow.1",
+      "id": "realm.lexical-shadow.unpinned.ordinary",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -182,7 +182,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:1"
     },
     {
-      "id": "realm.lexical-shadow.2",
+      "id": "realm.lexical-shadow.unpinned.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -206,7 +206,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:2"
     },
     {
-      "id": "realm.lexical-shadow.3",
+      "id": "realm.lexical-shadow.pinned.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -230,7 +230,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:3"
     },
     {
-      "id": "realm.object-freeze-witness.1",
+      "id": "realm.object-freeze-witness.unpinned.ordinary",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -249,7 +249,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:1"
     },
     {
-      "id": "realm.object-freeze-witness.2",
+      "id": "realm.object-freeze-witness.pinned.ordinary",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -268,7 +268,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:2"
     },
     {
-      "id": "realm.object-freeze-witness.3",
+      "id": "realm.object-freeze-witness.unpinned.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -288,7 +288,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:3"
     },
     {
-      "id": "realm.object-freeze-witness.4",
+      "id": "realm.object-freeze-witness.pinned.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -308,7 +308,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:4"
     },
     {
-      "id": "realm.pin-forms.1",
+      "id": "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -341,7 +341,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:1"
     },
     {
-      "id": "realm.pin-forms.2",
+      "id": "realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -374,7 +374,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:2"
     },
     {
-      "id": "realm.pin-forms.3",
+      "id": "realm.pin-forms.JSON.define.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -407,7 +407,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:3"
     },
     {
-      "id": "realm.pin-forms.4",
+      "id": "realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -440,7 +440,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:4"
     },
     {
-      "id": "realm.pin-forms.5",
+      "id": "realm.pin-forms.JSON.declare.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -473,7 +473,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:5"
     },
     {
-      "id": "realm.pin-forms.6",
+      "id": "realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -506,7 +506,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:6"
     },
     {
-      "id": "realm.pin-forms.7",
+      "id": "realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -539,7 +539,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:7"
     },
     {
-      "id": "realm.pin-forms.8",
+      "id": "realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -572,7 +572,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:8"
     },
     {
-      "id": "realm.pin-forms.9",
+      "id": "realm.pin-forms.Object.assign.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -605,7 +605,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:9"
     },
     {
-      "id": "realm.pin-forms.10",
+      "id": "realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -638,7 +638,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:10"
     },
     {
-      "id": "realm.pin-forms.11",
+      "id": "realm.pin-forms.Object.define.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -671,7 +671,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:11"
     },
     {
-      "id": "realm.pin-forms.12",
+      "id": "realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -704,7 +704,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:12"
     },
     {
-      "id": "realm.pin-forms.13",
+      "id": "realm.pin-forms.Object.declare.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -737,7 +737,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:13"
     },
     {
-      "id": "realm.pin-forms.14",
+      "id": "realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -770,7 +770,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:14"
     },
     {
-      "id": "realm.pin-forms.15",
+      "id": "realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -803,7 +803,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:15"
     },
     {
-      "id": "realm.pin-forms.16",
+      "id": "realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -836,7 +836,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:16"
     },
     {
-      "id": "realm.pin-forms.17",
+      "id": "realm.pin-forms.Array.assign.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -869,7 +869,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:17"
     },
     {
-      "id": "realm.pin-forms.18",
+      "id": "realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -902,7 +902,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:18"
     },
     {
-      "id": "realm.pin-forms.19",
+      "id": "realm.pin-forms.Array.define.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -935,7 +935,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:19"
     },
     {
-      "id": "realm.pin-forms.20",
+      "id": "realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -968,7 +968,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:20"
     },
     {
-      "id": "realm.pin-forms.21",
+      "id": "realm.pin-forms.Array.declare.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -1001,7 +1001,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:21"
     },
     {
-      "id": "realm.pin-forms.22",
+      "id": "realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -1034,7 +1034,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:22"
     },
     {
-      "id": "realm.pin-forms.23",
+      "id": "realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -1067,7 +1067,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:23"
     },
     {
-      "id": "realm.pin-forms.24",
+      "id": "realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics",
       "profile": "held-binding-witness",
       "correction_owner": "V-ENV binding packet; no hold release",
       "argv": [
@@ -1100,7 +1100,7 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:24"
     },
     {
-      "id": "realm.zone.Map.assign.full",
+      "id": "realm.zone.Map.assign.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1124,7 +1124,7 @@
       }
     },
     {
-      "id": "realm.zone.Map.assign.writableOnly",
+      "id": "realm.zone.Map.assign.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1148,7 +1148,7 @@
       }
     },
     {
-      "id": "realm.zone.Map.define.full",
+      "id": "realm.zone.Map.define.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1172,7 +1172,7 @@
       }
     },
     {
-      "id": "realm.zone.Map.define.writableOnly",
+      "id": "realm.zone.Map.define.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1196,7 +1196,7 @@
       }
     },
     {
-      "id": "realm.zone.Map.declare.full",
+      "id": "realm.zone.Map.declare.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1220,7 +1220,7 @@
       }
     },
     {
-      "id": "realm.zone.Map.declare.writableOnly",
+      "id": "realm.zone.Map.declare.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1244,7 +1244,7 @@
       }
     },
     {
-      "id": "realm.zone.Map.preexisting.full",
+      "id": "realm.zone.Map.preexisting.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1268,7 +1268,7 @@
       }
     },
     {
-      "id": "realm.zone.Map.preexisting.writableOnly",
+      "id": "realm.zone.Map.preexisting.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1292,7 +1292,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.assign.full",
+      "id": "realm.zone.Reflect.assign.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1316,7 +1316,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.assign.writableOnly",
+      "id": "realm.zone.Reflect.assign.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1340,7 +1340,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.define.full",
+      "id": "realm.zone.Reflect.define.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1364,7 +1364,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.define.writableOnly",
+      "id": "realm.zone.Reflect.define.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1388,7 +1388,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.declare.full",
+      "id": "realm.zone.Reflect.declare.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1412,7 +1412,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.declare.writableOnly",
+      "id": "realm.zone.Reflect.declare.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1436,7 +1436,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.preexisting.full",
+      "id": "realm.zone.Reflect.preexisting.full.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
@@ -1460,7 +1460,7 @@
       }
     },
     {
-      "id": "realm.zone.Reflect.preexisting.writableOnly",
+      "id": "realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics",
       "profile": "realm-mechanism-witness",
       "correction_owner": "DA01-R3-HOP-01 intake; no adopted realm policy",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",

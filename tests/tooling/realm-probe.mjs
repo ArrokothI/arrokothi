@@ -15,9 +15,18 @@ if (run.error || run.signal || run.status !== 0) throw new Error('Realm probe se
 const actual = JSON.parse(run.stdout);
 delete actual.reviewer;
 delete actual.node;
-let passed = true;
-try { assert.deepEqual(actual, entry.expected); }
-catch (error) { if (error.code !== 'ERR_ASSERTION') throw error; passed = false; }
+let comparisons = 0;
+function agrees(value, expected) {
+  comparisons += 1;
+  try { assert.deepEqual(value, expected); return true; }
+  catch (error) { if (error.code !== 'ERR_ASSERTION') throw error; return false; }
+}
+const failures = [];
+if (!agrees(actual, entry.expected)) failures.push(id + '.observation');
+if (agrees({ ...actual, tools01CorruptObservation: true }, entry.expected)) {
+  failures.push(id + '.reject-corrupt-observation');
+}
+const passed = failures.length === 0;
 console.log(JSON.stringify({ case: id, assertion: id + '.observation', reached: true, passed,
-  profile: entry.profile, actual, correction_owner: entry.correction_owner }));
+  comparisons, failures, profile: entry.profile, actual, correction_owner: entry.correction_owner }));
 process.exitCode = passed ? 0 : 17;

@@ -30,6 +30,6 @@ const named = failures.filter(row => expected.includes(row.name));
 if (failures.length && !named.length) throw new Error('Only unrelated controls failed: ' + failures.map(row => row.name).join('; '));
 const passed = failures.length === 0;
 console.log(JSON.stringify({ case: `oracle.${name}`, assertion: `oracle.${name}.negative-control`,
-  reached: reach.calls > 0, passed, calls: reach.calls, failures: named.map(row => row.name),
+  reached: reach.calls > 0, passed, calls: reach.calls, failures: failures.map(row => row.name),
   tests: observations.length, skipped: 0 }));
 process.exitCode = passed ? 0 : 17;

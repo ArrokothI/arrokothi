@@ -20,12 +20,35 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "identity.drop-length-prefix",
+          "id": "mutation-506cf9dc2e0a315f4ce4fc18f5dbf9964fe45dcc35ad6163e9319d1f1b810abc",
           "path": "packages/kernel/src/identity.ts",
           "before": "out += `${part.length}:${part}`;",
-          "after": "out += part;"
+          "after": "out += part;",
+          "name": "identity.drop-length-prefix",
+          "operator": "remove-length-prefix"
         }
-      ]
+      ],
+      "category": "identity",
+      "input": {
+        "values": [
+          [
+            "ab",
+            "c"
+          ],
+          [
+            "a",
+            "bc"
+          ],
+          [
+            "",
+            "abc"
+          ],
+          [
+            "abc",
+            ""
+          ]
+        ]
+      }
     },
     {
       "id": "oracle.returned",
@@ -44,12 +67,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-returned",
+          "id": "mutation-0d2297ee7a54cf7c17acdf964eecb2ee1126f5e5bbd94ec514df576f9f5bcab9",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "returned: (expected: Observation, observed: Observation): boolean => isDeepStrictEqual(expected.returned, observed.returned)",
-          "after": "returned: () => true"
+          "after": "returned: () => true",
+          "name": "oracle.disable-returned",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "report: enter a protocol hold / completed / returned value"
+        ]
+      }
     },
     {
       "id": "oracle.view",
@@ -68,12 +100,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-view",
+          "id": "mutation-3282813dc34535e372a4d39f5efb1338a98937d5434fa0469ff8782b81e889e9",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "view: (expected: Observation, observed: Observation): boolean => isDeepStrictEqual(expected.state.view, observed.state.view)",
-          "after": "view: () => true"
+          "after": "view: () => true",
+          "name": "oracle.disable-view",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "report: enter a protocol hold / completed / view"
+        ]
+      }
     },
     {
       "id": "oracle.nextRefusal",
@@ -92,12 +133,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-nextRefusal",
+          "id": "mutation-1e2099967a37069e57339a5c76bbf480e078a97c36a89744ea2b4b4d49b24ac5",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "nextRefusal: (expected: Observation, observed: Observation): boolean => expected.state.nextRefusal === observed.state.nextRefusal",
-          "after": "nextRefusal: () => true"
+          "after": "nextRefusal: () => true",
+          "name": "oracle.disable-nextRefusal",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "report: enter a protocol hold / completed / next refusal position"
+        ]
+      }
     },
     {
       "id": "oracle.nextAcceptance",
@@ -116,12 +166,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-nextAcceptance",
+          "id": "mutation-d68f4ed8430a5f3fca89ad38daae629aa744512cf000d7c147e2e5544045a80d",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "nextAcceptance: (expected: Observation, observed: Observation): boolean => expected.state.nextAcceptance === observed.state.nextAcceptance",
-          "after": "nextAcceptance: () => true"
+          "after": "nextAcceptance: () => true",
+          "name": "oracle.disable-nextAcceptance",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "report: enter a protocol hold / completed / next acceptance position"
+        ]
+      }
     },
     {
       "id": "oracle.setupGrant",
@@ -140,12 +199,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-setupGrant",
+          "id": "mutation-455193172e6fc0d75ff368a247e163b0c870dfd3c6c40f696a0c7c17891f05a3",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "setupGrant: (expected: Observation, observed: Observation): boolean => expected.state.setupGrant === observed.state.setupGrant",
-          "after": "setupGrant: () => true"
+          "after": "setupGrant: () => true",
+          "name": "oracle.disable-setupGrant",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a refusal that leaves the setup grant unauthorized is a violation"
+        ]
+      }
     },
     {
       "id": "oracle.refusalPosition",
@@ -164,12 +232,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-refusalPosition",
+          "id": "mutation-c298a5a6f62f8f55c9c6a578b0004cf6b64e72b488131a6a75ad4a4724c902bd",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "refusalPosition: (refusal: RefusalRecord, base: State): boolean => refusal.position === base.nextRefusal",
-          "after": "refusalPosition: () => true"
+          "after": "refusalPosition: () => true",
+          "name": "oracle.disable-refusalPosition",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "at another position, returned and retained alike"
+        ]
+      }
     },
     {
       "id": "oracle.refusalExecution",
@@ -188,12 +265,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-refusalExecution",
+          "id": "mutation-d3f1d96ad611a735d068757653fb2cf8e4cda66bb0a3d8e2d85aab60e02638fe",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "refusalExecution: (refusal: RefusalRecord, executionId: string): boolean => refusal.executionId === executionId",
-          "after": "refusalExecution: () => true"
+          "after": "refusalExecution: () => true",
+          "name": "oracle.disable-refusalExecution",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "naming another Execution, returned and retained alike"
+        ]
+      }
     },
     {
       "id": "oracle.acceptingExit",
@@ -212,12 +298,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-acceptingExit",
+          "id": "mutation-e19c3230a9b68cdb8a35479634f51d9f92fb0145bcd4e94a8296d3ec637c415b",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "acceptingExit: (context: Context, control: Control): boolean => context.control === control && context.expect === \"accepted\"",
-          "after": "acceptingExit: () => true"
+          "after": "acceptingExit: () => true",
+          "name": "oracle.disable-acceptingExit",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a located exception in a scenario whose uninjected call does not accept"
+        ]
+      }
     },
     {
       "id": "oracle.fired",
@@ -236,12 +331,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-fired",
+          "id": "mutation-326885384f1ec4b6738a7ab2c0bc75fd08893c0febabce42f2442ea347f695e5",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "fired: (attempt: Attempt): boolean => attempt.fired",
-          "after": "fired: () => true"
+          "after": "fired: () => true",
+          "name": "oracle.disable-fired",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a fault that did not fire, and a repeat in which one did"
+        ]
+      }
     },
     {
       "id": "oracle.sameOperation",
@@ -260,12 +364,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-sameOperation",
+          "id": "mutation-af8c61d31e7f1803d5908ce060b600483bea95ea84b7fdf104152f4b468946ee",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "sameOperation: (attempt: Attempt, label: string | undefined): boolean => attempt.fault !== null && attempt.fault.label === label",
-          "after": "sameOperation: () => true"
+          "after": "sameOperation: () => true",
+          "name": "oracle.disable-sameOperation",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a run whose faulted operation is not the reference run's"
+        ]
+      }
     },
     {
       "id": "oracle.quietRepeat",
@@ -284,12 +397,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-quietRepeat",
+          "id": "mutation-d1d7bd2aba538b969e40f22f92890f9dc4859d340fd6ca50641fcbf633f1e317",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "quietRepeat: (attempt: Attempt): boolean => !attempt.fired",
-          "after": "quietRepeat: () => true"
+          "after": "quietRepeat: () => true",
+          "name": "oracle.disable-quietRepeat",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a fault that did not fire, and a repeat in which one did"
+        ]
+      }
     },
     {
       "id": "oracle.callbackRan",
@@ -308,12 +430,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-callbackRan",
+          "id": "mutation-12c21bd12b5a32703fd6dc31475afc94dbe98eea215597aabf6db8729641eb55",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "callbackRan: (attempt: Attempt, after: boolean): boolean => attempt.callbackRan === after",
-          "after": "callbackRan: () => true"
+          "after": "callbackRan: () => true",
+          "name": "oracle.disable-callbackRan",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a fault after the safety callback, in a run where it did not run"
+        ]
+      }
     },
     {
       "id": "oracle.deliveredAt",
@@ -332,12 +463,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-deliveredAt",
+          "id": "mutation-90dd086fd5ea801cb587fb779d8de267f0e675daf7f61bcff353242ff811969b",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "deliveredAt: (model: SourceModel, fault: Fault | null, site: DeliverySite): boolean => {\n    if (fault === null) return false;\n    const call = fault.stack.findIndex((frame) => inLines(frame, model.takeoverDeliverCall));\n    const inner = call > 0 ? fault.stack[call - 1] : undefined;\n    const lines = model.deliverySites.find((entry) => entry.site === site)?.lines ?? null;\n    return inner !== undefined && inLines(inner, lines);\n  }",
-          "after": "deliveredAt: () => true"
+          "after": "deliveredAt: () => true",
+          "name": "oracle.disable-deliveredAt",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a delivery row left absent, at the capability's freeze"
+        ]
+      }
     },
     {
       "id": "oracle.takeoverWindowAt",
@@ -356,12 +496,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-takeoverWindowAt",
+          "id": "mutation-316b66788b95688d3043f93ffaef76f5c754aa4aafc9b1efb8317a649bc187f7",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "takeoverWindowAt: (model: SourceModel, fault: Fault | null): boolean =>\n    fault !== null && fault.stack.some((frame) => inLines(frame, model.takeoverClearingAppend))",
-          "after": "takeoverWindowAt: () => true"
+          "after": "takeoverWindowAt: () => true",
+          "name": "oracle.disable-takeoverWindowAt",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "the takeover window's receipt-only state, outside the clearing append"
+        ]
+      }
     },
     {
       "id": "oracle.outcomeStepAt",
@@ -380,12 +529,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-outcomeStepAt",
+          "id": "mutation-6909c8613f69b47227de91b262f091f1f3eaea9fedf0fb55c5ef7f78626f655b",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "outcomeStepAt: (model: SourceModel, fault: Fault | null, step: OutcomeStep): boolean => {\n    const lines = model.outcomeApply.find((entry) => entry.step === step)?.lines ?? null;\n    return fault !== null && fault.stack.some((frame) => inLines(frame, lines));\n  }",
-          "after": "outcomeStepAt: () => true"
+          "after": "outcomeStepAt: () => true",
+          "name": "oracle.disable-outcomeStepAt",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an Outcome prefix, outside the apply window"
+        ]
+      }
     },
     {
       "id": "oracle.outcomePrefix",
@@ -404,12 +562,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-outcomePrefix",
+          "id": "mutation-f7ac295f5725133a397321b7f15e00cab36fdb9a7aaf1e2635dca1153b5834e3",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "outcomePrefix: (prefixes: readonly Observation[], observed: Observation): boolean => prefixes.some((expected) => decided(expected, observed))",
-          "after": "outcomePrefix: () => true"
+          "after": "outcomePrefix: () => true",
+          "name": "oracle.disable-outcomePrefix",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+        ]
+      }
     },
     {
       "id": "oracle.applySequence",
@@ -428,12 +595,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-applySequence",
+          "id": "mutation-c4fc3f82fdeead78250100cc795f56fd3e3fdea1c10f84a7ef7d3664b0b2c0b5",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "applySequence: (model: SourceModel): boolean => model.problems.length === 0",
-          "after": "applySequence: () => true"
+          "after": "applySequence: () => true",
+          "name": "oracle.disable-applySequence",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a declared apply sequence that no longer matches the source"
+        ]
+      }
     },
     {
       "id": "oracle.applyModel",
@@ -452,12 +628,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-applyModel",
+          "id": "mutation-00adedd49fd28783d0bc3602e44ba64169d7ce7526bbcb8b17c2cb860bd99618",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "applyModel: (context: Context, whole: State): boolean => decided({ returned: context.reference.returned, state: whole }, context.reference)",
-          "after": "applyModel: () => true"
+          "after": "applyModel: () => true",
+          "name": "oracle.disable-applyModel",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an Outcome decision the declared apply sequence cannot reproduce"
+        ]
+      }
     },
     {
       "id": "oracle.referenceKind",
@@ -476,12 +661,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-referenceKind",
+          "id": "mutation-674ab2aca1fe3fbe5f48acc34bb778fd670339c1caf5bb75e8ba27df81e2ec2c",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "referenceKind: (context: Context): boolean => {\n    const returned = context.reference.returned;\n    const expect = context.expect;\n    if (typeof expect === \"object\") return returned.kind === \"err\" && returned.refusal.classification === expect.refused && returned.refusal.executionId !== null;\n    if (expect === \"unnamed\") return returned.kind === \"err\" && returned.refusal.executionId === null;\n    return returned.kind === \"ok\";\n  }",
-          "after": "referenceKind: () => true"
+          "after": "referenceKind: () => true",
+          "name": "oracle.disable-referenceKind",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an uninjected call that did not take its declared exit"
+        ]
+      }
     },
     {
       "id": "oracle.referenceRefusal",
@@ -500,12 +694,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-referenceRefusal",
+          "id": "mutation-3ae6bf7274e4b6afa1cc1bbe59f594d63c8030dc7c5ded4ec3dd473845190b6d",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "referenceRefusal: (context: Context): boolean => {\n    const returned = context.reference.returned;\n    if (returned.kind !== \"err\") return false;\n    const base = context.callback?.state ?? context.s0;\n    return CHECKS.refusalPosition(returned.refusal, base) && CHECKS.refusalExecution(returned.refusal, context.executionId) &&\n      decided({ returned, state: withRefusal(base, returned.refusal) }, context.reference);\n  }",
-          "after": "referenceRefusal: () => true"
+          "after": "referenceRefusal: () => true",
+          "name": "oracle.disable-referenceRefusal",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a refusal that also revokes the grant"
+        ]
+      }
     },
     {
       "id": "oracle.referenceUnnamed",
@@ -524,12 +727,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-referenceUnnamed",
+          "id": "mutation-bbf2745a3b1368295b9eb27c4355a8ffe38bed65494c455a4a8d1b200dc57376",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "referenceUnnamed: (context: Context): boolean => decided({ returned: { kind: \"err\", refusal: context.unnamedRefusal }, state: context.s0 }, context.reference)",
-          "after": "referenceUnnamed: () => true"
+          "after": "referenceUnnamed: () => true",
+          "name": "oracle.disable-referenceUnnamed",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a refusal naming no Execution that consumes a position"
+        ]
+      }
     },
     {
       "id": "oracle.referenceUnchanged",
@@ -548,12 +760,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-referenceUnchanged",
+          "id": "mutation-04730bccca50195237c39fd310f3869cac85b62ab4c2d0a642dd065c5fc7c6ad",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "referenceUnchanged: (context: Context): boolean => isDeepStrictEqual(context.reference.state, context.s0)",
-          "after": "referenceUnchanged: () => true"
+          "after": "referenceUnchanged: () => true",
+          "name": "oracle.disable-referenceUnchanged",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an idempotent answer that changed the history"
+        ]
+      }
     },
     {
       "id": "oracle.referenceReplay",
@@ -572,12 +793,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-referenceReplay",
+          "id": "mutation-56c2a8f97205ce6e137649d16fbd775834218bf20928f1c1b6971804fa8bdcae",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "referenceReplay: (context: Context): boolean =>\n    decided({ returned: { kind: \"ok\", value: { ...(context.setupAnswer as object), replayed: true } }, state: context.s0 }, context.reference)",
-          "after": "referenceReplay: () => true"
+          "after": "referenceReplay: () => true",
+          "name": "oracle.disable-referenceReplay",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an exact replay returning another decision"
+        ]
+      }
     },
     {
       "id": "oracle.recoveryAnswer",
@@ -596,12 +826,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-recoveryAnswer",
+          "id": "mutation-054657e561f5e748436c72c79957238df4ffe77299a3eba9fc1517054a2c8065",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "recoveryAnswer: (context: Context, decision: Observation, changed: boolean): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as { activationId: string; writerEpoch: number; recoveryHolds: unknown; changed: boolean };\n    const state = decision.state;\n    const before = context.s0;\n    const activation = state.view.activation;\n    if (activation === null || answer.changed !== changed) return false;\n    if (answer.activationId !== activation.activationId || answer.writerEpoch !== activation.writerEpoch) return false;\n    if (!isDeepStrictEqual(answer.recoveryHolds, state.view.recoveryHolds)) return false;\n    // An idempotent answer's state is `referenceUnchanged`'s to check.\n    if (!changed) return true;\n    // A hold decision changes the holds and appends one history record; it consumes no position and leaves the attempt's grant usable.\n    return !isDeepStrictEqual(state.view.recoveryHolds, before.view.recoveryHolds) &&\n      isDeepStrictEqual(state.view.recoveryHistory.slice(0, -1), before.view.recoveryHistory) &&\n      state.view.recoveryHistory.length === before.view.recoveryHistory.length + 1 &&\n      isDeepStrictEqual(state.view.receipts, before.view.receipts) &&\n      state.nextRefusal === before.nextRefusal && state.nextAcceptance === before.nextAcceptance && state.setupGrant === before.setupGrant;\n  }",
-          "after": "recoveryAnswer: () => true"
+          "after": "recoveryAnswer: () => true",
+          "name": "oracle.disable-recoveryAnswer",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a recovery answer that disagrees with the holds it left"
+        ]
+      }
     },
     {
       "id": "oracle.takeoverAnswer",
@@ -620,12 +859,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-takeoverAnswer",
+          "id": "mutation-0a35c83f70245140ca559ba8d91966d8471fd862eadf542da2b529de435ba42c",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "takeoverAnswer: (context: Context, decision: Observation): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as { activationId: string; supersededEpoch: number; writerEpoch: number; baseProgressRevision: number; batch: unknown; receipt: { position: number } };\n    const state = decision.state;\n    const before = context.s0.view.activation;\n    const after = state.view.activation;\n    if (before === null || after === null || typeof context.s0.nextAcceptance !== \"number\") return false;\n    return answer.activationId === before.activationId && answer.activationId === after.activationId &&\n      answer.supersededEpoch === before.writerEpoch && answer.writerEpoch === before.writerEpoch + 1 && answer.writerEpoch === after.writerEpoch &&\n      answer.baseProgressRevision === before.baseProgressRevision && answer.baseProgressRevision === after.baseProgressRevision &&\n      isDeepStrictEqual([...(answer.batch as readonly string[])], [...after.batch]) && isDeepStrictEqual([...after.batch], [...before.batch]) &&\n      state.view.receipts.length === context.s0.view.receipts.length + 1 &&\n      isDeepStrictEqual(answer.receipt, state.view.receipts.at(-1)) && isDeepStrictEqual(answer.receipt, after.receipt) &&\n      answer.receipt.position === context.s0.nextAcceptance && state.nextAcceptance === context.s0.nextAcceptance + 1 &&\n      state.nextRefusal === context.s0.nextRefusal && state.setupGrant === \"stale_exchange\";\n  }",
-          "after": "takeoverAnswer: () => true"
+          "after": "takeoverAnswer: () => true",
+          "name": "oracle.disable-takeoverAnswer",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a takeover answer with another receipt"
+        ]
+      }
     },
     {
       "id": "oracle.outcomeAnswer",
@@ -644,12 +892,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-outcomeAnswer",
+          "id": "mutation-3c61b2ffbeb9adcdcd6aab9d03c0af845a2aa1aa148dc75aaddef2591b54fd65",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "outcomeAnswer: (context: Context, decision: Observation): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as {\n      receipt: { position: number };\n      activationId: string;\n      nextState: string;\n      progressRevision: number;\n      acknowledged: readonly string[];\n      emissionIds: readonly string[];\n      resultId: string | null;\n      terminalDispositions: readonly string[];\n      replayed: boolean;\n    };\n    const before = context.s0.view;\n    const after = decision.state.view;\n    const added = (list: readonly string[], base: readonly string[]): string[] => list.filter((id) => !base.includes(id));\n    if (before.activation === null || typeof context.s0.nextAcceptance !== \"number\") return false;\n    return answer.replayed === false && answer.activationId === before.activation.activationId &&\n      after.receipts.length === before.receipts.length + 1 && isDeepStrictEqual(answer.receipt, after.receipts.at(-1)) &&\n      answer.receipt.position === context.s0.nextAcceptance &&\n      answer.nextState === after.state && answer.progressRevision === after.progressRevision && after.progressRevision === before.progressRevision + 1 &&\n      isDeepStrictEqual([...answer.acknowledged], added(after.acknowledged, before.acknowledged)) &&\n      isDeepStrictEqual([...answer.acknowledged], [...before.activation.batch]) &&\n      isDeepStrictEqual([...answer.emissionIds], after.emissions.slice(before.emissions.length).map((emission) => emission.emissionId)) &&\n      answer.resultId === (after.result === null ? null : after.result.resultId) &&\n      isDeepStrictEqual([...answer.terminalDispositions], added(after.terminalDispositions, before.terminalDispositions)) &&\n      after.activation === null && decision.state.nextRefusal === context.s0.nextRefusal &&\n      decision.state.nextAcceptance === (after.state === \"READY\" ? context.s0.nextAcceptance + 1 : \"terminal_destination\") &&\n      decision.state.setupGrant === \"duplicate_conflict\";\n  }",
-          "after": "outcomeAnswer: () => true"
+          "after": "outcomeAnswer: () => true",
+          "name": "oracle.disable-outcomeAnswer",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an Outcome answer naming other Emissions"
+        ]
+      }
     },
     {
       "id": "oracle.declaredExit",
@@ -668,12 +925,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-declaredExit",
+          "id": "mutation-3982eb56cca13484f50f1084678689ceaa14690a46833949f4cc327561aa4593",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "declaredExit: (declared: readonly Exit[], executed: (exit: Exit) => boolean): boolean => declared.length === 1 && executed(declared[0] as Exit)",
-          "after": "declaredExit: () => true"
+          "after": "declaredExit: () => true",
+          "name": "oracle.disable-declaredExit",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "a scenario that does not take its declared exit"
+        ]
+      }
     },
     {
       "id": "oracle.attributed",
@@ -692,12 +958,21 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-attributed",
+          "id": "mutation-5663784d04221e4e5d6cdaa95905b7b816f57adcd05629a0f3b7ac31f28b39f6",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "attributed: (exit: Exit, run: ReferenceExits): boolean => exit.via === run.control && run.executed(exit.offset)",
-          "after": "attributed: () => true"
+          "after": "attributed: () => true",
+          "name": "oracle.disable-attributed",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an exit no scenario takes"
+        ]
+      }
     },
     {
       "id": "oracle.exitReached",
@@ -716,860 +991,2669 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "oracle.disable-exitReached",
+          "id": "mutation-2547dab8cff55112db9ac9389ae4b368a22298071afc82318f62cc39cddfb532",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
           "before": "exitReached: (takenBy: readonly string[]): boolean => takenBy.length > 0",
-          "after": "exitReached: () => true"
+          "after": "exitReached: () => true",
+          "name": "oracle.disable-exitReached",
+          "operator": "remove-check"
         }
-      ]
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "an exit no scenario takes"
+        ]
+      }
     },
     {
-      "id": "realm.kernel-lexical-shadow.1",
+      "id": "realm.kernel-lexical-shadow.control",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:1",
       "profile": "held-binding-witness",
-      "assertion": "realm.kernel-lexical-shadow.1.observation",
+      "assertion": "realm.kernel-lexical-shadow.control.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.kernel-lexical-shadow.1"
+        "realm.kernel-lexical-shadow.control"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "control"
+        ],
+        "expected": {
+          "case": "control",
+          "shadow": "declared",
+          "trapCalls": 1,
+          "globalBindingUnchanged": true,
+          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
+          "result": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}"
+          },
+          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
+        }
+      }
     },
     {
-      "id": "realm.kernel-lexical-shadow.2",
+      "id": "realm.kernel-lexical-shadow.JSON",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:2",
       "profile": "held-binding-witness",
-      "assertion": "realm.kernel-lexical-shadow.2.observation",
+      "assertion": "realm.kernel-lexical-shadow.JSON.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.kernel-lexical-shadow.2"
+        "realm.kernel-lexical-shadow.JSON"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "JSON"
+        ],
+        "expected": {
+          "case": "JSON",
+          "shadow": "declared",
+          "trapCalls": 1,
+          "globalBindingUnchanged": true,
+          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
+          "result": {
+            "ok": true,
+            "canonical": "{\"a\":[999,\"x\"],\"b\":999}"
+          },
+          "laterPlainCall": "{\"a\":[999,\"x\"],\"b\":999}"
+        }
+      }
     },
     {
-      "id": "realm.kernel-lexical-shadow.3",
+      "id": "realm.kernel-lexical-shadow.Object",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:3",
       "profile": "held-binding-witness",
-      "assertion": "realm.kernel-lexical-shadow.3.observation",
+      "assertion": "realm.kernel-lexical-shadow.Object.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.kernel-lexical-shadow.3"
+        "realm.kernel-lexical-shadow.Object"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "Object"
+        ],
+        "expected": {
+          "case": "Object",
+          "shadow": "declared",
+          "trapCalls": 1,
+          "globalBindingUnchanged": true,
+          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
+          "result": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"]}"
+          },
+          "laterPlainCall": "{\"a\":[1,\"x\"]}"
+        }
+      }
     },
     {
-      "id": "realm.kernel-lexical-shadow.4",
+      "id": "realm.kernel-lexical-shadow.Array",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:4",
       "profile": "held-binding-witness",
-      "assertion": "realm.kernel-lexical-shadow.4.observation",
+      "assertion": "realm.kernel-lexical-shadow.Array.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.kernel-lexical-shadow.4"
+        "realm.kernel-lexical-shadow.Array"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "Array"
+        ],
+        "expected": {
+          "case": "Array",
+          "shadow": "declared",
+          "trapCalls": 1,
+          "globalBindingUnchanged": true,
+          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
+          "result": {
+            "ok": true,
+            "canonical": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}"
+          },
+          "laterPlainCall": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}"
+        }
+      }
     },
     {
-      "id": "realm.kernel-lexical-creation.1",
+      "id": "realm.kernel-lexical-creation.control",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:1",
       "profile": "held-binding-witness",
-      "assertion": "realm.kernel-lexical-creation.1.observation",
+      "assertion": "realm.kernel-lexical-creation.control.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.kernel-lexical-creation.1"
+        "realm.kernel-lexical-creation.control"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+          "$ROOT",
+          "control"
+        ],
+        "expected": {
+          "mode": "control",
+          "fired": false,
+          "first": {
+            "ok": true,
+            "executionId": "execution-5:app-a8:tenant-a5:lex-1",
+            "replayed": false
+          },
+          "second": {
+            "ok": false,
+            "reason": "creation key \"lex-1\" already names Execution execution-5:app-a8:tenant-a5:lex-1 with different content; a second intentional run needs a fresh key"
+          },
+          "sameExecutionForDifferentContent": false,
+          "firstRetainedPayload": "{\"b\":2,\"a\":[1,\"x\"]}"
+        }
+      }
     },
     {
-      "id": "realm.kernel-lexical-creation.2",
+      "id": "realm.kernel-lexical-creation.hop",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:2",
       "profile": "held-binding-witness",
-      "assertion": "realm.kernel-lexical-creation.2.observation",
+      "assertion": "realm.kernel-lexical-creation.hop.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.kernel-lexical-creation.2"
+        "realm.kernel-lexical-creation.hop"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+          "$ROOT",
+          "hop"
+        ],
+        "expected": {
+          "mode": "hop",
+          "fired": true,
+          "first": {
+            "ok": true,
+            "executionId": "execution-5:app-a8:tenant-a5:lex-1",
+            "replayed": false
+          },
+          "second": {
+            "ok": true,
+            "executionId": "execution-5:app-a8:tenant-a5:lex-1",
+            "replayed": true
+          },
+          "sameExecutionForDifferentContent": true,
+          "firstRetainedPayload": "{\"b\":2,\"a\":[1,\"x\"]}"
+        }
+      }
     },
     {
-      "id": "realm.lexical-shadow.1",
+      "id": "realm.lexical-shadow.unpinned.ordinary",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:1",
       "profile": "held-binding-witness",
-      "assertion": "realm.lexical-shadow.1.observation",
+      "assertion": "realm.lexical-shadow.unpinned.ordinary.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.lexical-shadow.1"
+        "realm.lexical-shadow.unpinned.ordinary"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+          "$SERIALIZER",
+          "unpinned"
+        ],
+        "expected": {
+          "frozen": false,
+          "pinned": false,
+          "shadow": "declared",
+          "trapCalls": 1,
+          "globalJSONUnchanged": true,
+          "before": "{\"a\":[1,\"x\"],\"b\":2}",
+          "after": "{\"a\":[999,\"x\"],\"b\":999}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.lexical-shadow.2",
+      "id": "realm.lexical-shadow.unpinned.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:2",
       "profile": "held-binding-witness",
-      "assertion": "realm.lexical-shadow.2.observation",
+      "assertion": "realm.lexical-shadow.unpinned.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.lexical-shadow.2"
+        "realm.lexical-shadow.unpinned.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+          "$SERIALIZER",
+          "unpinned"
+        ],
+        "expected": {
+          "frozen": true,
+          "pinned": false,
+          "shadow": "declared",
+          "trapCalls": 1,
+          "globalJSONUnchanged": true,
+          "before": "{\"a\":[1,\"x\"],\"b\":2}",
+          "after": "{\"a\":[999,\"x\"],\"b\":999}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.lexical-shadow.3",
+      "id": "realm.lexical-shadow.pinned.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow.jsonl:3",
       "profile": "held-binding-witness",
-      "assertion": "realm.lexical-shadow.3.observation",
+      "assertion": "realm.lexical-shadow.pinned.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.lexical-shadow.3"
+        "realm.lexical-shadow.pinned.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+          "$SERIALIZER",
+          "pinned"
+        ],
+        "expected": {
+          "frozen": true,
+          "pinned": true,
+          "shadow": "SyntaxError",
+          "trapCalls": 1,
+          "globalJSONUnchanged": true,
+          "before": "{\"a\":[1,\"x\"],\"b\":2}",
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.object-freeze-witness.1",
+      "id": "realm.object-freeze-witness.unpinned.ordinary",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:1",
       "profile": "held-binding-witness",
-      "assertion": "realm.object-freeze-witness.1.observation",
+      "assertion": "realm.object-freeze-witness.unpinned.ordinary.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.object-freeze-witness.1"
+        "realm.object-freeze-witness.unpinned.ordinary"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
+          "unpinned"
+        ],
+        "expected": {
+          "frozen": false,
+          "pinned": false,
+          "firstHop": "replaced",
+          "bindingHop": "replaced",
+          "liveFreezeWorks": false
+        }
+      }
     },
     {
-      "id": "realm.object-freeze-witness.2",
+      "id": "realm.object-freeze-witness.pinned.ordinary",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:2",
       "profile": "held-binding-witness",
-      "assertion": "realm.object-freeze-witness.2.observation",
+      "assertion": "realm.object-freeze-witness.pinned.ordinary.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.object-freeze-witness.2"
+        "realm.object-freeze-witness.pinned.ordinary"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
+          "pinned"
+        ],
+        "expected": {
+          "frozen": false,
+          "pinned": true,
+          "firstHop": "replaced",
+          "bindingHop": "TypeError",
+          "liveFreezeWorks": true
+        }
+      }
     },
     {
-      "id": "realm.object-freeze-witness.3",
+      "id": "realm.object-freeze-witness.unpinned.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:3",
       "profile": "held-binding-witness",
-      "assertion": "realm.object-freeze-witness.3.observation",
+      "assertion": "realm.object-freeze-witness.unpinned.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.object-freeze-witness.3"
+        "realm.object-freeze-witness.unpinned.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
+          "unpinned"
+        ],
+        "expected": {
+          "frozen": true,
+          "pinned": false,
+          "firstHop": "TypeError",
+          "bindingHop": "replaced",
+          "liveFreezeWorks": false
+        }
+      }
     },
     {
-      "id": "realm.object-freeze-witness.4",
+      "id": "realm.object-freeze-witness.pinned.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.jsonl:4",
       "profile": "held-binding-witness",
-      "assertion": "realm.object-freeze-witness.4.observation",
+      "assertion": "realm.object-freeze-witness.pinned.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.object-freeze-witness.4"
+        "realm.object-freeze-witness.pinned.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
+          "pinned"
+        ],
+        "expected": {
+          "frozen": true,
+          "pinned": true,
+          "firstHop": "TypeError",
+          "bindingHop": "TypeError",
+          "liveFreezeWorks": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.1",
+      "id": "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:1",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.1.observation",
+      "assertion": "realm.pin-forms.JSON.assign.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.1"
+        "realm.pin-forms.JSON.assign.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "assign",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "assign",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.2",
+      "id": "realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:2",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.2.observation",
+      "assertion": "realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.2"
+        "realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "assign",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "assign",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.3",
+      "id": "realm.pin-forms.JSON.define.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:3",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.3.observation",
+      "assertion": "realm.pin-forms.JSON.define.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.3"
+        "realm.pin-forms.JSON.define.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "define",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "define",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.4",
+      "id": "realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:4",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.4.observation",
+      "assertion": "realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.4"
+        "realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "define",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "define",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "defined",
+          "trapCalls": 1,
+          "globalThisUnchanged": false,
+          "after": "throws: Maximum call stack size exceeded",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.5",
+      "id": "realm.pin-forms.JSON.declare.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:5",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.5.observation",
+      "assertion": "realm.pin-forms.JSON.declare.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.5"
+        "realm.pin-forms.JSON.declare.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "declare",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "declare",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "SyntaxError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.6",
+      "id": "realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:6",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.6.observation",
+      "assertion": "realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.6"
+        "realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "declare",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "declare",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "declared",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[999,\"x\"],\"b\":999}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.7",
+      "id": "realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:7",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.7.observation",
+      "assertion": "realm.pin-forms.JSON.preexisting.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.7"
+        "realm.pin-forms.JSON.preexisting.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "preexisting",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "preexisting",
+          "pin": "full",
+          "bootstrap": "declared",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "none",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[999,\"x\"],\"b\":999}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.8",
+      "id": "realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:8",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.8.observation",
+      "assertion": "realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.8"
+        "realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "JSON",
+          "preexisting",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "JSON",
+          "form": "preexisting",
+          "pin": "writableOnly",
+          "bootstrap": "declared",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "none",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[999,\"x\"],\"b\":999}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.9",
+      "id": "realm.pin-forms.Object.assign.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:9",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.9.observation",
+      "assertion": "realm.pin-forms.Object.assign.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.9"
+        "realm.pin-forms.Object.assign.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "assign",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "assign",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.10",
+      "id": "realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:10",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.10.observation",
+      "assertion": "realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.10"
+        "realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "assign",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "assign",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.11",
+      "id": "realm.pin-forms.Object.define.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:11",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.11.observation",
+      "assertion": "realm.pin-forms.Object.define.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.11"
+        "realm.pin-forms.Object.define.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "define",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "define",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.12",
+      "id": "realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:12",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.12.observation",
+      "assertion": "realm.pin-forms.Object.define.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.12"
+        "realm.pin-forms.Object.define.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "define",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "define",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "defined",
+          "trapCalls": 1,
+          "globalThisUnchanged": false,
+          "after": "throws: Maximum call stack size exceeded",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.13",
+      "id": "realm.pin-forms.Object.declare.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:13",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.13.observation",
+      "assertion": "realm.pin-forms.Object.declare.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.13"
+        "realm.pin-forms.Object.declare.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "declare",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "declare",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "SyntaxError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.14",
+      "id": "realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:14",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.14.observation",
+      "assertion": "realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.14"
+        "realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "declare",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "declare",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "declared",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"]}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.15",
+      "id": "realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:15",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.15.observation",
+      "assertion": "realm.pin-forms.Object.preexisting.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.15"
+        "realm.pin-forms.Object.preexisting.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "preexisting",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "preexisting",
+          "pin": "full",
+          "bootstrap": "declared",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "none",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"]}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.16",
+      "id": "realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:16",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.16.observation",
+      "assertion": "realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.16"
+        "realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Object",
+          "preexisting",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Object",
+          "form": "preexisting",
+          "pin": "writableOnly",
+          "bootstrap": "declared",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "none",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"]}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.17",
+      "id": "realm.pin-forms.Array.assign.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:17",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.17.observation",
+      "assertion": "realm.pin-forms.Array.assign.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.17"
+        "realm.pin-forms.Array.assign.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "assign",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "assign",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.18",
+      "id": "realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:18",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.18.observation",
+      "assertion": "realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.18"
+        "realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "assign",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "assign",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.19",
+      "id": "realm.pin-forms.Array.define.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:19",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.19.observation",
+      "assertion": "realm.pin-forms.Array.define.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.19"
+        "realm.pin-forms.Array.define.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "define",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "define",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "TypeError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.20",
+      "id": "realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:20",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.20.observation",
+      "assertion": "realm.pin-forms.Array.define.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.20"
+        "realm.pin-forms.Array.define.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "define",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "define",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "defined",
+          "trapCalls": 1,
+          "globalThisUnchanged": false,
+          "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.21",
+      "id": "realm.pin-forms.Array.declare.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:21",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.21.observation",
+      "assertion": "realm.pin-forms.Array.declare.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.21"
+        "realm.pin-forms.Array.declare.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "declare",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "declare",
+          "pin": "full",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "SyntaxError",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":[1,\"x\"],\"b\":2}",
+          "steered": false
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.22",
+      "id": "realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:22",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.22.observation",
+      "assertion": "realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.22"
+        "realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "declare",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "declare",
+          "pin": "writableOnly",
+          "bootstrap": "none",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "declared",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.23",
+      "id": "realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:23",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.23.observation",
+      "assertion": "realm.pin-forms.Array.preexisting.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.23"
+        "realm.pin-forms.Array.preexisting.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "preexisting",
+          "full"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "preexisting",
+          "pin": "full",
+          "bootstrap": "declared",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": false
+          },
+          "startupCheck": true,
+          "attempt": "none",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.pin-forms.24",
+      "id": "realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics",
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms.jsonl:24",
       "profile": "held-binding-witness",
-      "assertion": "realm.pin-forms.24.observation",
+      "assertion": "realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.pin-forms.24"
+        "realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "--frozen-intrinsics",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "$SERIALIZER",
+          "Array",
+          "preexisting",
+          "writableOnly"
+        ],
+        "expected": {
+          "frozen": true,
+          "name": "Array",
+          "form": "preexisting",
+          "pin": "writableOnly",
+          "bootstrap": "declared",
+          "pinnedDescriptor": {
+            "writable": false,
+            "configurable": true
+          },
+          "startupCheck": true,
+          "attempt": "none",
+          "trapCalls": 1,
+          "globalThisUnchanged": true,
+          "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}",
+          "steered": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.assign.full",
+      "id": "realm.zone.Map.assign.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.assign.full.observation",
+      "assertion": "realm.zone.Map.assign.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.assign.full"
+        "realm.zone.Map.assign.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "assign",
+          "full"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "assign",
+          "pin": "full",
+          "attempt": "TypeError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.assign.writableOnly",
+      "id": "realm.zone.Map.assign.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.assign.writableOnly.observation",
+      "assertion": "realm.zone.Map.assign.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.assign.writableOnly"
+        "realm.zone.Map.assign.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "assign",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "assign",
+          "pin": "writableOnly",
+          "attempt": "TypeError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.define.full",
+      "id": "realm.zone.Map.define.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.define.full.observation",
+      "assertion": "realm.zone.Map.define.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.define.full"
+        "realm.zone.Map.define.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "define",
+          "full"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "define",
+          "pin": "full",
+          "attempt": "TypeError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.define.writableOnly",
+      "id": "realm.zone.Map.define.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.define.writableOnly.observation",
+      "assertion": "realm.zone.Map.define.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.define.writableOnly"
+        "realm.zone.Map.define.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "define",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "define",
+          "pin": "writableOnly",
+          "attempt": "defined",
+          "propertyUnchanged": false,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.declare.full",
+      "id": "realm.zone.Map.declare.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.declare.full.observation",
+      "assertion": "realm.zone.Map.declare.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.declare.full"
+        "realm.zone.Map.declare.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "declare",
+          "full"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "declare",
+          "pin": "full",
+          "attempt": "SyntaxError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.declare.writableOnly",
+      "id": "realm.zone.Map.declare.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.declare.writableOnly.observation",
+      "assertion": "realm.zone.Map.declare.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.declare.writableOnly"
+        "realm.zone.Map.declare.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "declare",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "declare",
+          "pin": "writableOnly",
+          "attempt": "declared",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.preexisting.full",
+      "id": "realm.zone.Map.preexisting.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.preexisting.full.observation",
+      "assertion": "realm.zone.Map.preexisting.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.preexisting.full"
+        "realm.zone.Map.preexisting.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "preexisting",
+          "full"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "preexisting",
+          "pin": "full",
+          "attempt": "none",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Map.preexisting.writableOnly",
+      "id": "realm.zone.Map.preexisting.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Map.preexisting.writableOnly.observation",
+      "assertion": "realm.zone.Map.preexisting.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Map.preexisting.writableOnly"
+        "realm.zone.Map.preexisting.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Map",
+          "preexisting",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Map",
+          "form": "preexisting",
+          "pin": "writableOnly",
+          "attempt": "none",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.assign.full",
+      "id": "realm.zone.Reflect.assign.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.assign.full.observation",
+      "assertion": "realm.zone.Reflect.assign.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.assign.full"
+        "realm.zone.Reflect.assign.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "assign",
+          "full"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "assign",
+          "pin": "full",
+          "attempt": "TypeError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.assign.writableOnly",
+      "id": "realm.zone.Reflect.assign.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.assign.writableOnly.observation",
+      "assertion": "realm.zone.Reflect.assign.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.assign.writableOnly"
+        "realm.zone.Reflect.assign.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "assign",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "assign",
+          "pin": "writableOnly",
+          "attempt": "TypeError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.define.full",
+      "id": "realm.zone.Reflect.define.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.define.full.observation",
+      "assertion": "realm.zone.Reflect.define.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.define.full"
+        "realm.zone.Reflect.define.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "define",
+          "full"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "define",
+          "pin": "full",
+          "attempt": "TypeError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.define.writableOnly",
+      "id": "realm.zone.Reflect.define.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.define.writableOnly.observation",
+      "assertion": "realm.zone.Reflect.define.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.define.writableOnly"
+        "realm.zone.Reflect.define.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "define",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "define",
+          "pin": "writableOnly",
+          "attempt": "defined",
+          "propertyUnchanged": false,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.declare.full",
+      "id": "realm.zone.Reflect.declare.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.declare.full.observation",
+      "assertion": "realm.zone.Reflect.declare.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.declare.full"
+        "realm.zone.Reflect.declare.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "declare",
+          "full"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "declare",
+          "pin": "full",
+          "attempt": "SyntaxError",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": true,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.declare.writableOnly",
+      "id": "realm.zone.Reflect.declare.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.declare.writableOnly.observation",
+      "assertion": "realm.zone.Reflect.declare.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.declare.writableOnly"
+        "realm.zone.Reflect.declare.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "declare",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "declare",
+          "pin": "writableOnly",
+          "attempt": "declared",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": true
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.preexisting.full",
+      "id": "realm.zone.Reflect.preexisting.full.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.preexisting.full.observation",
+      "assertion": "realm.zone.Reflect.preexisting.full.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.preexisting.full"
+        "realm.zone.Reflect.preexisting.full.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "preexisting",
+          "full"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "preexisting",
+          "pin": "full",
+          "attempt": "none",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": false
+        }
+      }
     },
     {
-      "id": "realm.zone.Reflect.preexisting.writableOnly",
+      "id": "realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics",
       "source": "DESIGN-AUDIT-01 review-03 DA01-R3-HOP-01; implementer extension for Map and Reflect",
       "profile": "realm-mechanism-witness",
-      "assertion": "realm.zone.Reflect.preexisting.writableOnly.observation",
+      "assertion": "realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics.observation",
       "files": [],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
-        "realm.zone.Reflect.preexisting.writableOnly"
+        "realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics"
       ],
       "timeout_seconds": 15,
       "output_limit_bytes": 16384,
       "failure_exit": 17,
-      "mutants": []
+      "mutants": [
+        {
+          "name": "realm.remove-observation-comparison",
+          "path": "tests/tooling/realm-probe.mjs",
+          "before": "assert.deepEqual(value, expected);",
+          "after": "void value;",
+          "operator": "remove-check",
+          "id": "mutation-62a70ef54a2e69425ca13105092eb677fed1786838e9f73af7e0607b96422684"
+        }
+      ],
+      "category": "held-realm-witness",
+      "input": {
+        "argv": [
+          "--no-warnings",
+          "--frozen-intrinsics",
+          "tests/tooling/realm-global-form.mjs",
+          "Reflect",
+          "preexisting",
+          "writableOnly"
+        ],
+        "expected": {
+          "name": "Reflect",
+          "form": "preexisting",
+          "pin": "writableOnly",
+          "attempt": "none",
+          "propertyUnchanged": true,
+          "nameResolutionUnchanged": false,
+          "writable": false,
+          "configurable": true
+        }
+      }
     }
   ],
   "source_trees": [
@@ -1610,5 +3694,15 @@
         "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
       }
     }
+  ],
+  "determinism_sample": [
+    "identity.parts",
+    "oracle.returned",
+    "realm.kernel-lexical-shadow.control",
+    "realm.kernel-lexical-creation.control",
+    "realm.lexical-shadow.unpinned.ordinary",
+    "realm.object-freeze-witness.unpinned.ordinary",
+    "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+    "realm.zone.Map.assign.full.frozen-intrinsics"
   ]
 }
