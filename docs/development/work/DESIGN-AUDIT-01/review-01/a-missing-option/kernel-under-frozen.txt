@@ -1,0 +1,1 @@
+{"node":"v25.2.1","execArgv":["--frozen-intrinsics","--experimental-strip-types","--no-warnings"],"ok":false,"issues":[{"path":"","code":"unstable_representation","message":"serializing the accepted snapshot failed; the serializer execution environment was disturbed while observing the caller's value"}]}

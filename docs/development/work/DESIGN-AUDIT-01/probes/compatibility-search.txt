@@ -1,0 +1,118 @@
+Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.
+
+['grep', '-n', '-i', '-E', '@arrokothi/kernel|packages/kernel|kernel/src', '66bc041175e6fc191c2e7cf88de198111e7d97c9', '--', '.', ':!packages/kernel', ':!docs', ':!mental-model']
+exit 0
+66bc041175e6fc191c2e7cf88de198111e7d97c9:README.md:53:The private `packages/kernel` implements creation, ingress, reservation and asynchronous dispatch;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package-lock.json:12:        "packages/kernel",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package-lock.json:52:    "node_modules/@arrokothi/kernel": {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package-lock.json:53:      "resolved": "packages/kernel",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package-lock.json:2157:    "packages/kernel": {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package-lock.json:2158:      "name": "@arrokothi/kernel",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:9:    "packages/kernel",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:21:    "test": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts packages/sdk/tests/*.test.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:30:    "test:kernel": "node --test --experimental-strip-types packages/kernel/tests/*.test.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:31:    "test:kernel-sweeps": "node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/fault-child.ts --summary && node --experimental-strip-types --no-warnings packages/kernel/tests/sweep/run-poison-sweep.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:package.json:37:    "test:packages": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts packages/sdk/tests/*.test.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/boundary-policy.ts:25: * `packages/kernel` was chosen over renaming `packages/core` because renaming would carry the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/boundary-policy.ts:33:  roots: ["packages/kernel/src"],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/boundary-policy.ts:65:export const TARGET_KERNEL_ENTRY_MODULES: readonly string[] = ["packages/kernel/src/index.ts"];
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:59:  "packages/kernel/package.json": JSON.stringify({
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:60:    name: "@arrokothi/kernel",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:118:    const kernel = workspace.packages.get("@arrokothi/kernel");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:120:    assert.equal(kernel.directory, "packages/kernel");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:123:    assert.equal(kernel.exports.get("."), "packages/kernel/src/index.ts");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:129:    assert.ok(rootManifest.workspaces.includes("packages/kernel"), "the zone is installed, not orphaned");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:131:      (rootManifest.scripts["test"] ?? "").includes("packages/kernel/tests/"),
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:161:      "packages/kernel/src/coordinator.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:162:      "packages/kernel/src/driver.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:163:      "packages/kernel/src/envelope.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:164:      "packages/kernel/src/identity.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:165:      "packages/kernel/src/index.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:166:      "packages/kernel/src/inspection.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:167:      "packages/kernel/src/lifecycle.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:168:      "packages/kernel/src/outcome.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:169:      "packages/kernel/src/own-array.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:170:      "packages/kernel/src/refusal.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:171:      "packages/kernel/src/result.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:172:      "packages/kernel/src/unsupported.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:173:      "packages/kernel/src/values.ts",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:185:    const kernel = await import("@arrokothi/kernel");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:189:    // `packages/kernel/tests/refusals.test.ts` holds the coordinator's own K1.3-owned surface to it.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:228:      "packages/kernel/src/index.ts": 'import { LegacyHarness } from "../../core/src/runtime/harness.ts";\nexport const use = LegacyHarness;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:236:      "packages/kernel/src/index.ts": 'import type { LegacyController } from "@arrokothi/core/ports";\nexport type Alias = LegacyController;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:245:      "packages/kernel/src/index.ts": 'import { legacyBarrel } from "@arrokothi/core";\nexport const use = legacyBarrel;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:253:      "packages/kernel/src/index.ts": 'export * from "@arrokothi/core";\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:261:      "packages/kernel/src/index.ts": 'export const load = async () => import("@arrokothi/core");\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:273:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:277:    assert.equal(violations[0]!.from, "packages/kernel/src/index.ts");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:287:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:291:    assert.equal(violations[0]!.from, "packages/kernel/src/index.ts");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:306:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:310:    assert.equal(violations[0]!.from, "packages/kernel/src/index.ts");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:317:      "packages/kernel/src/index.ts": 'export type LegacyModule = typeof import("@arrokothi/core");\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:327:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:334:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:343:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:355:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:364:      "packages/kernel/src/index.ts": '/// <reference types="@arrokothi/core" />\nexport const marker = 1;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:372:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:383:      "packages/kernel/src/index.ts":
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:385:      "packages/kernel/src/helper.ts": "export const helper = 1;\n",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:392:      "packages/kernel/src/index.ts": 'export { relay } from "./internal.ts";\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:393:      "packages/kernel/src/internal.ts": 'import { LegacyHarness } from "@arrokothi/core";\nexport const relay = LegacyHarness;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:396:    assert.equal(violations[0]!.from, "packages/kernel/src/internal.ts", "the guard is transitive, not direct-only");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:401:      "packages/kernel/src/index.ts": 'import { bootstrapApplication } from "@arrokothi/sdk";\nexport const use = bootstrapApplication;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:409:      "packages/kernel/src/index.ts": 'import { Agent } from "@strands-agents/sdk";\nexport const use = Agent;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:418:      "packages/kernel/src/index.ts": 'import evil from "canonicalize-evil";\nexport const use = evil;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:426:      "packages/kernel/src/index.ts": 'import canonicalize from "canonicalize";\nexport const use = canonicalize;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:433:      "packages/kernel/src/index.ts": 'import { hidden } from "@arrokothi/core/internals";\nexport const use = hidden;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:441:      "packages/kernel/src/index.ts": 'import { createHash } from "node:crypto";\nexport { helper } from "./helper.ts";\nexport const digest = createHash;\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:442:      "packages/kernel/src/helper.ts": "export const helper = 1;\n",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:451:      { "packages/kernel/src/index.ts": 'export { hashValue } from "../../core/src/util/hash.ts";\n' },
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:457:      { "packages/kernel/src/index.ts": 'export { unaudited } from "../../core/src/util/unaudited.ts";\n' },
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:469:      { "packages/kernel/src/index.ts": 'export { unaudited } from "../../core/src/util/composite.ts";\n' },
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:482:      "packages/kernel/src/index.ts": 'export * from "@arrokothi/core";\n',
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:486:      ["packages/kernel/src/index.ts"],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:509:      if (file.startsWith("packages/kernel/")) continue;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:513:        if (resolution.kind === "internal" && resolution.file.startsWith("packages/kernel/")) {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:642:          ["| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `PLACEHOLDER` |"],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:643:          ["| `legacy-core` | `packages/core/src` |", "| `legacy-core` | `packages/kernel/src` |"],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:650:        edits: [["| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `packages/core/src` |"]],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:670:        edits: [["| `@arrokothi/kernel` | `.` | No (private) |", "| `@arrokothi/kernel` | `.` | Yes |"]],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:690:        edits: [["| `host-sdk` | `packages/sdk/src` |", "| `host-sdk` | `packages/sdk/src` |\n| `invented-zone` | `packages/kernel/src` |"]],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:699:            "| `target-kernel` | `packages/kernel/src` |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:700:            "| `target-kernel` | `packages/core/src` | stale contradictory duplicate |\n| `target-kernel` | `packages/kernel/src` |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:710:            "| `target-kernel` | `packages/kernel/src` |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:711:            "| `target-kernel` | `packages/kernel/src` |\n| `target-kernel` | `packages/core/src` | stale contradictory duplicate |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:743:            "| `@arrokothi/kernel` | `.` | No (private) |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:744:            "| `@arrokothi/kernel` | `.` | Yes |\n| `@arrokothi/kernel` | `.` | No (private) |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:754:            "| `@arrokothi/kernel` | `.` | No (private) |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:755:            "| `@arrokothi/kernel` | `.` | No (private) |\n| `@arrokothi/kernel` | `.` | Yes |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:901:      { table: "Zones", anchor: "| `target-kernel` | `packages/kernel/src` |", short: "| `target-kernel` |" },
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:950:      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1006:    const correct = "| `@arrokothi/kernel` | `.` | No (private) |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1008:      "omitted trailing pipe": "| `@arrokothi/kernel` | `.` | Yes",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1009:      "omitted leading pipe": "`@arrokothi/kernel` | `.` | Yes |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1010:      "omitted both edge pipes": "`@arrokothi/kernel` | `.` | Yes",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1059:      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1109:      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1150:          "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:1169:        correct: "| `@arrokothi/kernel` | `.` | No (private) |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:2984:      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:2985:    const REAL_PRIVATE_PACKAGE_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3113:          REAL_ZONE_ROW.replace("`packages/kernel/src`", "`packages/kernel/src`, packages/evil/src"),
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3118:          REAL_ZONE_ROW.replace("`packages/kernel/src`", "`packages/kernel/src`, `packages/kernel/src`"),
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3201:          `| \`@arrokothi/kernel\` | \`.\` | ${cell} |`,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3218:          parseInventory(mutate(real, [[REAL_PRIVATE_PACKAGE_ROW, "| `@arrokothi/kernel` | `.` | No |"]])),
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3225:      assert.equal(parseInventory(real).packages.get("@arrokothi/kernel")?.published, false);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3228:      const wrong = await ownershipDisagreements(REAL_PRIVATE_PACKAGE_ROW, "| `@arrokothi/kernel` | `.` | Yes |");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3362:      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3365:    const EXPORT_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3444:          "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3447:            return { unreadable: parsed.unreadable, recorded: parsed.packages.has("@arrokothi/kernel"), arity: 3 };
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3495:        [EXPORT_ROW, "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |"],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3615:        [EXPORT_ROW, "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |"],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3625:      assert.ok(!exportWide.parsed.packages.has("@arrokothi/kernel"), "the excess Export row must not be recorded");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3633:      const short = await ownershipResult([[ZONES_ROW, "| `target-kernel` | `packages/kernel/src` |"]]);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/kernel-landing-zone.test.ts:3635:      assert.deepEqual(short.parsed.zones.get("target-kernel"), ["packages/kernel/src"]);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:tests/conformance/architecture/legacy-core-boundaries.test.ts:170:      "@arrokothi/kernel",

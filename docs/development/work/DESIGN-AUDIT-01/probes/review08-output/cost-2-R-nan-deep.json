@@ -1,0 +1,16 @@
+{
+  "label": "cost-2-R-nan-deep",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "R-nan-deep"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"R-nan-deep\",\"ok\":false,\"records\":10,\"issues\":1044481,\"codes\":[\"non_finite_number\",\"too_many_bytes\"],\"ms\":137,\"heapMiB\":3}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.222
+}

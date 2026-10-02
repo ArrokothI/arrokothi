@@ -1,0 +1,361 @@
+Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.
+
+['grep', '-n', '-i', '-E', 'plain[- ]object|plain data|prototyp|class instances?|byte arrays?|typed arrays?|Uint8Array|ArrayBuffer|\\bMaps?\\b|\\bDates?\\b|\\bSets?\\b|built-?in|exotic|coerc|unsupported[_ ]form|silently (drop|discard)|refus', '66bc041175e6fc191c2e7cf88de198111e7d97c9', '--', 'docs/development/002-implemented-kernel-baseline.md', 'docs/guides', 'mental-model/concepts/values.md', 'packages/kernel/src/values.ts', 'docs/development/README.md', ':(glob)packages/**/README.md']
+exit 0
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:18:inspectable recovery holds ([Outcome acceptance API](#outcome-acceptance-api)). It refuses new
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:22:shared member is refused without being expanded in full. Within one visit, a string or member name
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:25:[Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:30:K2. Those unimplemented surfaces refuse by name, and an Outcome proposing an Effect or a wait is
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:31:refused whole. No supported SDK consumer is routed through the private target package yet; K1.4 owns
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:34:## Value refusal diagnostics
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:37:observations and byte-budget stopping rules. For each refused root it retains at most eight details
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:46:message, array shape or a thrown value's properties. This removes the diagnostic prototype-chain
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:47:walk on every refused foreign object and structural-observation failure.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:59:plain data and Kernel-selected lookups is **held**. Review 08 of K1.2-correction-01
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:60:(`K12C1-R8-VALUE-DEPTH-01`) found that refusing foreign-prototype containers at nesting depth costs
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:73:cannot fit even if every scalar uses a surrogate pair; refusing there avoids an engine flattening
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:76:scan. Exact accepted values, scalar limits, read-count upper bounds and full refusal byte charges
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:115:`{ step: "complete", result }`, `{ step: "fail", error }`; `{ step: "await", wait }` is refused until
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:120:field the binding does not know is refused rather than ignored, as is any non-empty `effects`.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:124:well formed; a different string names a different exchange, not malformed content. No coercion,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:141:The field is still refused whole and its value is never read. Outcome/control identity fragments,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:144:concatenation. Identity-only refusals are at most 1,024 units and missing-code reasons at most 600.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:157:A hold's permitted actions describe operations the hold itself does not refuse. Takeover still
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:158:requires the Driver's safe-replacement declaration; an absent or denying callback can refuse it as
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:161:The K1.2-added redelivery recovery-held refusal also bounds its Activation fragment under DEC-4.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:168:refused as `duplicate_conflict` (only a well-formed Activation ID is looked up; a missing, malformed
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:172:attempt answering, and anything else is refused as `unauthorized_submission` with no accepted-state
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:173:mutation beyond the recorded refusal; then content (`malformed_envelope`, or
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:176:writer epoch or base progress revision that does not match the unresolved exchange, refuses as
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:178:unobservable coordinate alone never establishes staleness and is a content-group refusal after
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:180:eager and may compute content diagnostics, but a refusal before authority neither is decided by them
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:204:established code hold makes the outer request refuse (`stale_exchange`, `no_unresolved_exchange`,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:208:superseded native work; the Driver's exclusion or refusal is what establishes that precondition
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:219:and appends to `recoveryHistory` on entry. Redelivery is refused while
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:255:  claim (no caller code or read between them). Every refusal record is built and appended before its
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:256:  Execution's refusal index advances. Evidence (contract revision 10): a fault-injection sweep throws
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:257:  at each call of a built-in method the zone captured at load, one call per run, in the 66 scenarios
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:260:  run must equal one permitted complete decision: its returned value, whole view, next refusal and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:263:  uninjected decision is itself checked: a refusal, an idempotent answer or an exact replay against the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:266:  source (every `return` of the four methods, and every refusal `return` of the helpers they call) is
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:276:  `emissionsPerOutcome`, `isSafeToReplace`) is resolved on the host object or its own prototype
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:277:  chain and never answered by `Object.prototype` or `Function.prototype`. Evidence (contract revision
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:278:  9): a poisoned-prototype sweep installs every member name the zone uses as an accessor on
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:279:  `Object.prototype`, `Function.prototype`, `Array.prototype` and `String.prototype` during every
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:281:  accepted, idempotent and refused exits, and requires
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:284:  accessor; `in` and other built-in prototypes are outside it. `ambient-reads.test.ts` is a static
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:310:  Replay/conflict retain the ordering described above. A `controlScopes` only a built-in prototype
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:314:  not stop native work. The method comes from the Driver or its own prototype chain, never from a
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:315:  built-in prototype, so ambient state cannot establish safety a Driver did not declare (correction DEC-8).
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/002-implemented-kernel-baseline.md:319:  that refuse the controls (`declare_code_availability`/`request_takeover`/`submit_outcome`).
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/deployment/quick-start.md:54:An application can deliberately omit them and inspect refusal through the Harness.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/README.md:66:interpretation and explanation. Implement one end-to-end path, including one refusal path, before
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/current-authoring-surface.md:14:| LLM Stage | Declared `callables`; enough model phases required | No built-in reads or writes | Cannot call/spawn | Cannot send/request |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/execution/native/evaluation-and-diagnosis.md:26:Assert that **no executor ran** on refusal, and that success changed the external record. Checking
+66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/guides/kernel/capabilities-effects-and-authority.md:66:| `denied` | Policy refused; correct prerequisites or report refusal |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:5:The [reading path](README.md#reading-path) puts this page last on purpose. You can follow how an Execution is coordinated without it. It becomes necessary when a question turns exact: is this retry faithful, or a conflict? Why was an Outcome refused when nothing in it looked wrong? Could two conforming implementations disagree about whether two requests carried the same content? They cannot, and most of this page explains why.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:92:Three things are refused at this boundary, and all three are refused rather than repaired:
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:94:- **A number that is not finite.** `NaN`, `Infinity` and `-Infinity` are refused. They are not turned into `null`, and not into a string.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:95:- **A string that is not well-formed Unicode.** A lone surrogate has no UTF-8 encoding. It is refused, not replaced with U+FFFD. On the wire a malformed string can arrive in two ways, as an escape such as `\ud800` that names a lone surrogate, or as bytes that are not valid UTF-8, and both are refused. Many UTF-8 decoders substitute U+FFFD for bad bytes by default. That is the forbidden repair, and it would turn different byte sequences into one string.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:96:- **Anything outside the forms above.** Dates, byte arrays, functions and anything else a language might hand over are refused. None is coerced into something that happens to fit.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:98:The refusals come before any identity or equality is computed. The reason for refusing rather than repairing is that a repair makes a decision on the caller's behalf. If `NaN` became `null`, a request carrying `NaN` would compare equal to one carrying `null`. Two requests that meant different things would then be treated as the same request, and the caller would never find out.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:162:The same fact cuts the other way. A decimal spelling that carries more precision than binary64 can hold does not survive as written: if it decodes at all, what gets compared is the binary64 value it decodes to. `9007199254740993` and `9007199254740992` decode to the same binary64 value, so they are one value, and a request that changed one into the other would count as a faithful retry. An identifier that must survive digit for digit belongs in a string, not in a number. A spelling too large for binary64, such as `1e400`, has no finite value to decode to. It is refused like `Infinity`, not clamped to the largest finite number.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:185:Member names add no level, and the root container counts as one level. So `[[[]]]` has depth 3, and `{"a":{"b":1}}` has depth 2. An empty array wrapped in 31 more arrays has depth 32 and passes. One more wrapper makes 33, and it is refused. Mixing arrays and objects changes nothing about the count.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:189:- An object with one member whose name is 65,536 repetitions of `a`, and whose value is `null`, passes. Its canonical form is 65,545 bytes. With 65,537 repetitions, it is refused for string length.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:190:- An Event payload whose canonical form is exactly 1,048,576 bytes passes the size limit. At 1,048,577 bytes, it is refused before acceptance. The metadata of the Event carrying it is not added to the payload's size.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:191:- Two sibling roots of about 700 KiB each, in one Outcome, both pass. The Outcome is not refused merely because the whole thing exceeds 1 MiB.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:193:A value over a limit is refused in the same way as any other malformed value. It is never truncated to fit. Truncation would accept content the sender never sent.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:195:Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:205:Every lookup the Kernel itself chooses to perform remains bound, on any value. The refusal-cost
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:207:arrays with any prototype chain. Counts bound the observations and invocations selected by Kernel
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:218:refused position must not leave a separate unbounded path or message in memory for every occurrence
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:224:<!-- OPEN(implementation): diagnostic storage for bounded refusal cost. The in-process binding
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:229:BASELINE #value-refusal-diagnostics. Other bindings may choose a different representation meeting
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:235:It follows that these limits do not protect anything from an oversized message. One Outcome can carry many roots, each just under 1 MiB. A deployment that accepts messages from a party it does not fully trust, such as a Runtime in an [Isolated Execution](operations.md#isolated-execution), has to bound whole messages in its transport. A message refused there was never delivered. Its values were not judged invalid.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:246:A decoded value is plain data that nobody else holds. A live object differs in three ways:
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:252:This section gives the binding's extra obligations. Together they turn a live object into the same kind of plain value a decoder would have produced, or refuse it. They are value-acceptance rules for this binding. They fix no wire format, and they do not replace the duplicate-key rule for decoders.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:266:- **Objects** have the ordinary object prototype or a null prototype. They hold their content as own, enumerable data members with string keys.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:267:- **Arrays** have the ordinary array prototype. They hold an own data element at every position up to the length observed.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:269:A member named `__proto__` is an ordinary member, and the snapshot keeps it as data. Copying it by plain assignment would set the copy's prototype instead, and the member would silently vanish.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:271:Anything else is refused rather than silently dropped:
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:273:- forms outside those two, such as class instances, Maps, Dates and typed arrays;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:280:Each refusal answers one of the three differences above. The `undefined` case also matters for equality: quietly dropping the member would turn it into an absent one, and [rule 6](#the-rules) says absent is a different value.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:282:**One reading or none.** An object can present two different stories about itself. A member's own data descriptor can disagree with what an ordinary property read returns. An array's length can claim a position the array does not own. Merely observing the structure can throw. The binding refuses such a value. It does not pick whichever reading happened to come first, and it does not repair the disagreement. A value that has no single reading has no single content to give an identity to.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:284:**Canonical bytes that the environment cannot steer.** The binding produces canonical bytes with the approved JCS implementation, unmodified, run only on data taken from the snapshot. That library runs in the same JavaScript realm as the caller, and ordinary JavaScript consults shared state along the way, such as the prototypes of arrays and objects. Code in the same process could alter that state, and in doing so change the bytes. So the binding has three obligations:
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:287:- If the binding cannot establish the environment the call needs, it refuses the value. A refusal costs availability; wrong bytes would cost identity.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:294:- **Inherited fields.** A field the envelope carries only through inheritance reads as missing, exactly as if it had been omitted. Ambient state somewhere up a prototype chain must not be able to supply a field the caller never wrote.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:mental-model/concepts/values.md:295:- **Accessors.** An own accessor on the envelope may run. The envelope boundary observes it as the caller's own answer. A boundary value would refuse an accessor; the envelope does not. Because an accessor can answer differently each time, each envelope field is read once, and that one answer is used for everything the call does with it: validation, authorization, lookup and what is recorded.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:14: * the snapshot*: the issues that refuse it, the canonical bytes that decide its identity, the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:29: * prototype chain, so a caller-installed accessor at `Array.prototype["20"]` could swallow the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:36: * Coherence alone would still let an exotic representation be *normalized* into a plain snapshot, and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:38: * refuses any container whose own data descriptor and ordinary property read disagree, whose array
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:41: * `unsupported_form` refusals, not repairs, and they are stated structurally rather than by naming
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:42: * `Proxy`: nothing here tests for a particular exotic object kind.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:47: *    class instance is rejected at the boundary; it is never coerced to `null`, `"NaN"` or U+FFFD
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:49: * 2. **Nothing is silently dropped.** A member whose value is `undefined`, a symbol-keyed member and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:61: *    before it could be refused. The count is exact for content that is accepted, so it never refuses
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:69: *    These are read and retention bounds, not a proof that refusing a value costs no more time or
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:70: *    memory than accepting one at the limits (`values.md` V-D1). Some refusal work is not charged to
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:71: *    the byte count: review 08 of K1.2-correction-01 measured refused containers at nesting depth
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:89: * already-captured immutable snapshot's own data (null-prototype objects; arrays with own
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:91: * and never on caller-owned state, nor directly on a snapshot whose prototype chain could carry an
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:103: * A capture-time side effect can install `Object.prototype.toJSON`, overwrite a global such as
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:104: * `Object.keys`, or replace a prototype method such as `Array.prototype.join` while `capture` is
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:107: * must therefore use only these load-time references, never a live global or prototype lookup.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:109: * exact dependency call, and `accept` contains any failure as a refusal rather than leaking it.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:123:const PrimordialGetPrototypeOf = Object.getPrototypeOf;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:125: * Load-time `Object.setPrototypeOf`, for pinning the prototype-chain shape (R2-BLOCKING).
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:127: * Removing own index-named properties from `Array.prototype`/`Object.prototype` is not enough:
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:128: * `Object.setPrototypeOf(Array.prototype, hostile)` inserts a hostile object *between* the two
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:131: * therefore resets every prototype link on the dependency's paths to its load-time shape for the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:134:const PrimordialSetPrototypeOf = Object.setPrototypeOf;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:139: * The genuine `Object.prototype`, captured before any caller code runs.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:141: * `captureObject` must compare the observed prototype against this, never against a live
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:142: * `Object.prototype` read: the `getPrototypeOf` observation itself runs a caller-controlled trap
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:143: * that can replace `globalThis.Object` and return the replacement's prototype, which would then
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:144: * compare equal to the live `Object.prototype` while being neither primordial nor null
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:145: * (K11-R5-VAL-03). `Object.prototype` is non-writable/non-configurable and so cannot be swapped
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:148:const PrimordialObjectPrototype = Object.prototype;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:153:const PrimordialArrayPrototype = Array.prototype;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:154:const PrimordialSetPrototype = Set.prototype;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:155:const PrimordialArrayMap = Array.prototype.map;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:156:const PrimordialArrayJoin = Array.prototype.join;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:157:const PrimordialArraySort = Array.prototype.sort;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:158:const PrimordialArrayPush = Array.prototype.push;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:159:const PrimordialArrayIterator = Array.prototype[Symbol.iterator];
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:160:const PrimordialSetHas = Set.prototype.has;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:161:const PrimordialSetAdd = Set.prototype.add;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:162:const PrimordialSetDelete = Set.prototype.delete;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:164: * The holder of the `next` method the exact JCS call reads, and its own prototype.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:168: * `Array.prototype[Symbol.iterator]` slot — followed by `GetV(iterator, "next")` on every step,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:169: * which resolves through this prototype, and then `GetV(result, "done"/"value")` on each
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:170: * iteration result, which resolves through `Object.prototype`. Restoring the iterator-producing
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:176:const PrimordialArrayIteratorPrototype: object = PrimordialGetPrototypeOf(
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:179:const PrimordialArrayIteratorNext: unknown = (PrimordialArrayIteratorPrototype as { readonly next: unknown }).next;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:180:const PrimordialIteratorPrototype: object = PrimordialGetPrototypeOf(PrimordialArrayIteratorPrototype) as object;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:182: * The load-time prototype-chain shape on every path the exact JCS call walks (R2-BLOCKING).
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:184: * `inheritedIndexShadows` removes own index-named properties from `Array.prototype` and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:185: * `Object.prototype`, but a capture-time side effect can instead *insert* a hostile object between
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:186: * them with `Object.setPrototypeOf(Array.prototype, hostile)`: the dependency's
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:188: * chain — `parts` → `Array.prototype` (no own index, removed) → hostile (answers) — and a later
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:191: * `Object.prototype` would answer the per-result `done`/`value` reads, and insertions on the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:196: * `unstable_representation` refusal as a non-configurable slot: never wrong bytes.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:198:const PrimordialArrayPrototypeProto: object | null = PrimordialGetPrototypeOf(PrimordialArrayPrototype) as object | null;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:199:const PrimordialObjectPrototypeProto: object | null = PrimordialGetPrototypeOf(PrimordialObjectPrototype) as object | null;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:200:const PrimordialArrayIteratorPrototypeProto: object | null = PrimordialGetPrototypeOf(PrimordialArrayIteratorPrototype) as object | null;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:201:const PrimordialIteratorPrototypeProto: object | null = PrimordialGetPrototypeOf(PrimordialIteratorPrototype) as object | null;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:202:const PrimordialSetPrototypeProto: object | null = PrimordialGetPrototypeOf(PrimordialSetPrototype) as object | null;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:203:const PrimordialStringCharCodeAt = String.prototype.charCodeAt;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:205: * Own-property existence without consulting the prototype chain.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:207: * The `in` operator consults inherited members: a trap can pollute `Object.prototype` with a
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:213:const PrimordialHasOwnProperty = Object.prototype.hasOwnProperty;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:244:  /** Not one of the six boundary forms: `undefined`, a symbol, a function, a class instance, … */
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:245:  | "unsupported_form"
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:260:   * Such a value has no single content to bind identity to, so it is refused rather than normalized
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:293: * constructor/name read can walk an unbounded prototype chain, and a thrown value can be a
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:296: * The surrounding refusal identifies the failed form or observation; this label executes no caller code.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:321: * Frozen singletons for the two refusals, so a refusal allocates nothing per string.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:332: * stops as soon as the string is known to be refused (KC2-R1-01).
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:335: * 33,554,432-character string cost 67,108,864 character reads before it was refused. This pass reads
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:337: * scalar value, because a string that long is refused whatever follows. At most
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:339: * units) past the most an accepted string can need. A string refused for length is therefore
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:341: * point is not reported; either way the string is refused.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:344: * rather than taken from `String.prototype.isWellFormed`, which is newer than the `ES2023` library this
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:349: * `String.prototype.charCodeAt` is invoked through the load-time reference: a capture-time side effect
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:350: * can replace the prototype method, and an index loop (not `for...of`, whose `Symbol.iterator` lookup
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:356:  // limit, regardless of its contents. Refuse before a character read can make the engine
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:394: * own yet: an inherited `Array.prototype` indexed setter installed by an earlier trap in the same
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:396: * so the reason a value was refused would be the attacker's text (K11-R6-VAL-04). `own-array.ts`
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:401:  // collector is shared by ALL refusal sites, including pre-member structural observations.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:425: * A distinct sentinel rather than `undefined`, because `undefined` is itself one of the refused
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:426: * things this pass reports. Every path that returns `REFUSED` has already recorded at least one
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:429:const REFUSED = Symbol("refused boundary value");
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:430:type Captured = BoundaryValue | typeof REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:438:   * global `Set` binding and `has`/`add`/`delete` consult `Set.prototype`, all of which a
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:441:   * the byte count; their total over a refused value is part of the held V-D1 question (item 4 above).
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:450:   * never past it. Content that is refused for another reason is charged for the work of reading it
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:451:   * (a refused string's length, a container's surplus names), which can only add to a count on a
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:452:   * value that is refused anyway.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:465: * read, which bounds the reading this count charges. It does not bound refusal work the count does not
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:466: * charge, so it is no claim that a refusal costs no more than a value at the limit: that V-D1 claim is
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:468: * and `bytes`/`stopped` are its own data properties, so these writes consult no prototype.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:504:// truncation is an own `length` write; neither reaches a prototype. It is still routed through
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:523: * that canonical array form would silently drop, so they must be refused
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:527: * Written without `RegExp.prototype.test`, the `Number`/`String` globals or any prototype
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:561: * One member's value, or a refusal, from the one descriptor already read for that position.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:567: * rejects unsupported values rather than repairing them, so the disagreement is refused here and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:585:    // else (a prototype, a trap), so there is no own content to accept.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:589:      message: "position has no own property; a value supplied only through a prototype or a dynamic read is not accepted content",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:617: * Refusals are collected rather than thrown: eight bounded located details, followed by exact
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:618: * counts for every remaining code. A refused position stops contributing to the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:624:  if (state.stopped) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:625:  if (value === null) return charge(state, 4) ? null : REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:628:  if (type === "boolean") return charge(state, value === true ? 4 : 5) ? (value as boolean) : REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:632:      return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:636:    // consults no prototype or global on the way.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:637:    return charge(state, `${value as number}`.length) ? (value as number) : REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:645:      return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:654:      // did, so repeated occurrences of one refused string exhaust the budget quickly.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:656:      return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:658:    return charge(state, scan.bytes) ? text : REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:661:    pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:662:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:668:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:678:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:684:    // whose structure cannot be observed without throwing has no readable content; it is refused
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:685:    // like any other unsupported form rather than escaping as an exception from a Kernel boundary.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:695:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:703:  // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:704:  // canonicalize as a plain array and lose its exotic identity, so refuse it instead.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:705:  // `Array.prototype` itself is non-writable and non-configurable, so this reference cannot be
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:708:  if (PrimordialGetPrototypeOf(container) !== PrimordialArrayPrototype) {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:709:    pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:710:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:728:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:733:  // accepted, so refuse without allocating or traversing proportional to that invalid extent.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:736:  // Exactly-at-limit still proceeds below; one-over refuses here with no traversal.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:743:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:746:  let refused = false;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:753:  // uses index loops rather than `filter`/`for...of`/`push`, because `Array.prototype` methods
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:759:  // `containerEntries` here, so a listing longer than `containerEntries + 1` names is refused as one
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:777:      message: `array lists ${names.length} own names, more than an array of at most ${BOUNDARY_LIMITS.containerEntries} entries owns; canonical form would silently drop the rest`,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:779:    refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:781:    pushIssue(state.issues, { path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:782:    refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:788:  // with accepted array content or refuse. A listed index with no backing descriptor has no
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:790:  // index outside `length` is state canonical array form would silently drop
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:791:  // (`unrepresentable_member`). Both refuse; neither is normalized.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:808:          message: "array has an own index outside its length, which canonical form would silently drop",
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:811:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:818:  // punctuation; they are non-zero only on an array already refused above.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:820:  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:827:  // `Array.prototype` indexed setter installed during this value's own prototype observation
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:833:  // is captured. `defineAt` is `[[DefineOwnProperty]]`, so no prototype is consulted, and there is
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:834:  // no second reading of anything to disagree with the first. A refused position stops
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:838:    if (state.stopped) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:843:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:848:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:852:    if (item === REFUSED) {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:853:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:859:  if (refused) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:868:  // the load-time `getPrototypeOf`, and the plain prototype is the load-time object, not a live
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:870:  // returns a non-primordial, non-null prototype is refused here rather than normalized; a trap
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:871:  // that returns the primordial prototype (or null) yields a genuinely plain snapshot, whatever
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:873:  const prototype = PrimordialGetPrototypeOf(container) as object | null;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:874:  if (prototype !== PrimordialObjectPrototype && prototype !== null) {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:875:    pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:876:    return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:879:  let refused = false;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:883:    refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:890:  // dense own data and its element reads consult no prototype; `enumerable` and `captured` below
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:895:  // descriptors have been read the object is certainly refused, and a reason is already recorded:
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:913:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:920:    pushIssue(state.issues, { path, code: "unrepresentable_member", message: "object has non-enumerable own members, which canonical form would silently drop" });
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:921:    refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:932:    refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:937:  // listing, or any symbol, belongs to an object already refused above.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:938:  if (!charge(state, containerStructureBytes(names.length, true) + symbolCount)) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:942:    if (state.stopped) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:952:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:953:      if (!charge(state, key.length)) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:962:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:963:      if (!charge(state, key.length)) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:967:    if (!charge(state, keyScan.bytes)) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:970:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:979:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:983:    if (item === REFUSED) {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:984:      refused = true;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:990:  if (refused) return REFUSED;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:991:  // The snapshot preserves the validated prototype (`Object.prototype` or `null`) and installs every
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:995:  // vanish from the record, its value would silently become the snapshot's prototype, and the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:999:  // the descriptor is null-prototype (K11-R7-STATE-03).
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1000:  const snapshot = PrimordialObjectCreate(prototype) as Record<string, BoundaryValue>;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1012: * is therefore plain data the dependency serializes deterministically — `null`, boolean, finite
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1013: * number, well-formed string, or frozen arrays/plain objects thereof with own data members only, no
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1016: * validity: refusal (with located ArrokothI issue codes) happens in `capture`, and the byte limit is
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1019: * `/`/DEL/direct Unicode passthrough), including own `"__proto__"` members and null-prototype objects.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1026: * snapshot's own state, not its prototype chain, so passing the snapshot directly would let an
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1027: * ambient or capture-time-installed `Object.prototype.toJSON` / `Array.prototype.toJSON` (or a
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1028: * polluted `Array.prototype.map`) decide canonical bytes describing a different value from the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1034:  * above, never an ordinary read that could reach a prototype or trap):
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1037:  *   `Object.prototype.toJSON` hook is not on the lookup path at all;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1041:  *   `Array.prototype.map` is never called). Both shadows are non-enumerable, so `Object.keys`
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1043:  *   enumerable `toJSON`/`map` (array extras are refused), so the shadows cannot collide with
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1049:  * `Array.isArray`, `JSON.stringify`, `isNaN`/`isFinite`, `Set`, `Error`, `Symbol`) and prototype
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1050:  * methods (`Array.prototype.sort/join/push`, `Set.prototype.has/add/delete`, the array iterator)
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1058:  * `unstable_representation` refusal with a generic message rather than leaking the ambient
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1078:      // Fall back to `undefined` rather than an ordinary read so no prototype is ever consulted.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1096:      // array is `[[Set]]` — steerable by an inherited `Array.prototype` indexed accessor
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1111:  // Engine-built list: dense own data, so these element reads reach no prototype.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1138: * | `for (const key of ...)` step | `GetV(iterator, "next")` on every step, resolving through the Array iterator prototype | `next` on the Array iterator prototype, restored to primordial |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1139: * | `for (const key of ...)` result | `GetV(result, "done")` / `GetV(result, "value")` on each iteration result, resolving through `Object.prototype` | own `next`/`value`/`done` removed from the iterator prototype and `Object.prototype` for the window |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1140: * | `object.toJSON` (own or inherited) | ordinary read on the input | neutralized structurally: the input is always the safe clone (null-prototype objects; arrays with an own non-enumerable `toJSON: undefined` shadow), never caller state and never a bare snapshot |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1143: * | `seen.has/add/delete` | `Set.prototype` at call time | `Set.prototype` slots |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1144: * | `values.join(',')`, `parts.join(',')`, `parts.push(...)` | `Array.prototype` at call time (`values`/`parts` are arrays the dependency creates) | `Array.prototype.join/push` slots |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1145: * | `Object.keys(object).sort()` | `Array.prototype` at call time | `Array.prototype.sort` slot |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1147: * | `parts.push(...)` / `values`/`parts` element reads behind `join` | `[[Set]]` and `[[Get]]` on the dependency's own scratch arrays, which consult `Array.prototype` then `Object.prototype` for positions those arrays do not own | neutralized structurally: `inheritedIndexShadows` removes every own index-named property from both prototypes for the call window (K11-R6-VAL-04), **and** `chainShape` resets every prototype link on those paths to its load-time shape, so an inserted object between or above the holders answers nothing (R2-BLOCKING) |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1148: * | iterator-protocol shadows above the holders the window restores | an own `next` on the iterator prototype or on `Object.prototype` would answer if the restored holder slot were ever deleted; own `value`/`done` on `Object.prototype` would answer the result reads directly | neutralized structurally: `prototypeNamedShadows` removes those own properties for the call window (K11-R16-VAL-01) |
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1157:  /** The object holding the mutable property (`globalThis`, `Object`, `Array.prototype`, …). */
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1181:  slot(PrimordialArrayPrototype, "map", PrimordialArrayMap);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1182:  slot(PrimordialArrayPrototype, "join", PrimordialArrayJoin);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1183:  slot(PrimordialArrayPrototype, "sort", PrimordialArraySort);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1184:  slot(PrimordialArrayPrototype, "push", PrimordialArrayPush);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1185:  slot(PrimordialArrayPrototype, PrimordialSymbol.iterator, PrimordialArrayIterator);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1186:  slot(PrimordialArrayIteratorPrototype, "next", PrimordialArrayIteratorNext);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1187:  slot(PrimordialSetPrototype, "has", PrimordialSetHas);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1188:  slot(PrimordialSetPrototype, "add", PrimordialSetAdd);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1189:  slot(PrimordialSetPrototype, "delete", PrimordialSetDelete);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1200:/** One observed prototype link, with the shape that must be reinstalled after the call. */
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1203:  /** The prototype observed before the window, handed back afterwards. */
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1210: * Every prototype link the exact JCS call can walk, with its load-time shape.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1212: * The dependency's scratch arrays walk `parts` → `Array.prototype` → `Object.prototype` → null;
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1213: * its key iteration walks `iterator` → Array iterator prototype → iterator prototype →
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1214: * `Object.prototype` → null; its cycle guard walks `seen` → `Set.prototype` → …. An inserted
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1221:    appendOwn(chains, { holder, proto: PrimordialGetPrototypeOf(holder) as object | null, primordial });
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1223:  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1224:  link(PrimordialObjectPrototype, PrimordialObjectPrototypeProto);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1225:  link(PrimordialArrayIteratorPrototype, PrimordialArrayIteratorPrototypeProto);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1226:  link(PrimordialIteratorPrototype, PrimordialIteratorPrototypeProto);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1227:  link(PrimordialSetPrototype, PrimordialSetPrototypeProto);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1232: * Own index-named properties currently installed on the prototypes the dependency's own scratch
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1239: * accessor at `Array.prototype["0"]` receives the write, leaves no element, and answers the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1248: * discipline the named slots use. Both `Array.prototype` and `Object.prototype` are covered: an
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1251: * No conforming host installs an own index-named property on either prototype, so in an undisturbed
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1255: * contains it as a located `unstable_representation` refusal, with the named slots still handed back:
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1265:  const holders: object[] = [PrimordialArrayPrototype, PrimordialObjectPrototype];
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1281: * Restoring the primordial `next` on the Array iterator prototype wins every `GetV(iterator,
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1283: * iterator prototype or on `Object.prototype` would answer instead. And the per-result
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1284: * `GetV(result, "done"/"value")` reads resolve through `Object.prototype` directly. No
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1285: * conforming host installs own `next`/`value`/`done` on either of these prototypes, so in an
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1288: * An own `next` on `Array.prototype` itself needs no slot: nothing on the dependency's path
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1291:const prototypeNamedShadows = (): SavedSlot[] => {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1293:  const holders: object[] = [PrimordialIteratorPrototype, PrimordialObjectPrototype];
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1310: * call, install an indexed accessor on `Array.prototype`/`Object.prototype` that steers the
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1312: * replace the Array iterator prototype's `next` (or shadow the iterator result's `done`/`value`)
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1314: * (K11-R16-VAL-01), or *insert* a hostile object into the prototype chain itself with
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1315: * `Object.setPrototypeOf`, so the dependency's `[[Set]]`/`[[Get]]` walks land in it past the two
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1317: * primordial for every named slot, removes every own index-named property from both prototypes as
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1319: * prototype link on the dependency's paths to its load-time shape. Saving and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1322: * runs while the environment is installed: the safe clone holds only frozen plain data with no
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1323: * traps, the restored `next` is the primordial one, and the prototype shadows that could answer
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1332: * it as a refusal: degraded availability, never wrong bytes and never a leaked ambient exception.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1337:  const named = prototypeNamedShadows();
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1341:  // Chain observation is own-state reporting like the descriptor saves above: `getPrototypeOf`
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1359:  // as a located refusal.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1364:      // the same tick, so an inherited `get`/`set` on `Object.prototype` installed by that
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1366:      // non-configurable slot still throws here, which `accept` contains as a refusal.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1371:    // indexed accessor on the prototypes its own scratch arrays are built on. The chain links are
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1374:    // disturbed host is permanent — propagates to `accept` as a located refusal.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1381:      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1388:      if (PrimordialGetPrototypeOf(entry.holder) !== entry.proto) PrimordialSetPrototypeOf(entry.holder, entry.proto);
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1394:      // saved data shadow) on `Object.prototype` would otherwise throw out of the restoration and
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1415:  // rejection — propagates to `accept`, which maps it to a boundary refusal. The message is
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1426: * Both public entry points go through this, so "what was refused" and "what was accepted" can never
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1432:  if (snapshot === REFUSED || state.issues.length > 0) {
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1438:          : // Unreachable by construction — every REFUSED path records a located issue — but a
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1439:            // silent empty refusal would be worse than a generic one, so it is stated rather than
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1441:            [{ path: "", code: "unsupported_form", message: "value is not an acceptable boundary value" }],
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1447:  // here therefore becomes the same located refusal the capture pass would have produced, never
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1464:  // The running count already refused anything over the limit, and for an accepted snapshot it equals
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1466:  // count is only what lets an over-limit value be refused without producing them.
+66bc041175e6fc191c2e7cf88de198111e7d97c9:packages/kernel/src/values.ts:1483:/** Bounded details and exact suffix code counts for a refused root. Empty means valid. */

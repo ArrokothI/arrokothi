@@ -1,0 +1,116 @@
+{
+  "source_records": 145,
+  "id_labels": 278,
+  "unique_non_alias_items": 266,
+  "by_kind": {
+    "self-reference": 37,
+    "owner-supplement": 3,
+    "finding": 195,
+    "alias": 12,
+    "observation": 27,
+    "cleanup": 4
+  },
+  "by_category_non_alias": {
+    "evidence": 89,
+    "design": 87,
+    "records": 90
+  },
+  "families": {
+    "F01": {
+      "ids": 19,
+      "rounds": 10,
+      "review_findings": 19,
+      "qualifies": true
+    },
+    "F02": {
+      "ids": 8,
+      "rounds": 4,
+      "review_findings": 6,
+      "qualifies": true
+    },
+    "F03": {
+      "ids": 9,
+      "rounds": 7,
+      "review_findings": 8,
+      "qualifies": true
+    },
+    "F04": {
+      "ids": 4,
+      "rounds": 3,
+      "review_findings": 4,
+      "qualifies": true
+    },
+    "F05": {
+      "ids": 25,
+      "rounds": 15,
+      "review_findings": 25,
+      "qualifies": true
+    },
+    "F06": {
+      "ids": 39,
+      "rounds": 18,
+      "review_findings": 24,
+      "qualifies": true
+    },
+    "F07": {
+      "ids": 56,
+      "rounds": 26,
+      "review_findings": 42,
+      "qualifies": true
+    },
+    "F08": {
+      "ids": 34,
+      "rounds": 23,
+      "review_findings": 27,
+      "qualifies": true
+    },
+    "F09": {
+      "ids": 15,
+      "rounds": 7,
+      "review_findings": 9,
+      "qualifies": true
+    },
+    "F10": {
+      "ids": 17,
+      "rounds": 7,
+      "review_findings": 7,
+      "qualifies": true
+    },
+    "F11": {
+      "ids": 6,
+      "rounds": 6,
+      "review_findings": 6,
+      "qualifies": true
+    },
+    "F12": {
+      "ids": 6,
+      "rounds": 4,
+      "review_findings": 5,
+      "qualifies": true
+    },
+    "F13": {
+      "ids": 3,
+      "rounds": 3,
+      "review_findings": 3,
+      "qualifies": true
+    },
+    "F14": {
+      "ids": 16,
+      "rounds": 9,
+      "review_findings": 9,
+      "qualifies": true
+    },
+    "F15": {
+      "ids": 4,
+      "rounds": 2,
+      "review_findings": 4,
+      "qualifies": true
+    },
+    "F16": {
+      "ids": 5,
+      "rounds": 2,
+      "review_findings": 4,
+      "qualifies": true
+    }
+  }
+}

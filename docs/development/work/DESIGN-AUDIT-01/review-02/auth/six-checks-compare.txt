@@ -1,0 +1,8 @@
+{
+ "source_line": 1409,
+ "source_timestamp": "2026-10-01T03:56:50.719Z",
+ "source_role": "assistant",
+ "six_checks_chars": 2215,
+ "six_checks_verbatim": true,
+ "preapproval_sentence_in_same_prompt": true
+}

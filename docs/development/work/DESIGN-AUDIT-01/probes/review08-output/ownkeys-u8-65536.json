@@ -1,0 +1,17 @@
+{
+  "label": "ownkeys-u8-65536",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/p-exotic-ownkeys.mjs",
+    "u8",
+    "65536"
+  ],
+  "timeout_seconds": 45,
+  "exit": 0,
+  "stdout": "u8 65536 65536 3 ms rss +6 MiB\n",
+  "stderr": "",
+  "elapsed_seconds": 0.037
+}

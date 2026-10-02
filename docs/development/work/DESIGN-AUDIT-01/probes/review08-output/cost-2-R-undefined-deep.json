@@ -1,0 +1,16 @@
+{
+  "label": "cost-2-R-undefined-deep",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "R-undefined-deep"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"R-undefined-deep\",\"ok\":false,\"records\":10,\"issues\":1044481,\"codes\":[\"undefined_member\",\"too_many_bytes\"],\"ms\":133,\"heapMiB\":2.8}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.211
+}

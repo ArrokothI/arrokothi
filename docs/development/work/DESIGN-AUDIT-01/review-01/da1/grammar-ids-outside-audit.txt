@@ -1,0 +1,109 @@
+54 grammar-matching IDs absent from the audit label set
+K0.2-SELF-02  n=1  ['docs/development/work/K0.2/implementation-01.md']
+      | **K0.2-SELF-02** | The contract initially cited `k0-trace.test.ts` and `delayed-runtime.test.ts` as the evidence for C1 and C2; neither existed, and those criteria rested only on
+K0.2-SELF-03  n=1  ['docs/development/work/K0.2/implementation-01.md']
+      | **K0.2-SELF-03** | The contract linked forward to `implementation-01.md`, which exists only in H, leaving the validated payload C internally inconsistent. | **Fixed in C.** The r
+K0.2-SELF-04  n=3  ['docs/development/work/K0.2/implementation-02.md', 'docs/development/work/K0.2/implementation-03.md']
+      | **K0.2-SELF-04** | Round 1's `k0-trace.test.ts` carried a test whose stated rationale — that the stale-timer control already covered W-8 case 6 — became false the moment case 6 g
+K0.2-SELF-05  n=1  ['docs/development/work/K0.2/implementation-02.md']
+      | **K0.2-SELF-05** | Three scenarios declared `k0BoundaryRows` the rebuilt map did not attribute to them, and the field's meaning was ambiguous between "rows this scenario touches"
+K0.2-SELF-06  n=1  ['docs/development/work/K0.2/implementation-02.md']
+      | **K0.2-SELF-06** | §11 row 8's cell states two obligations; the rebuilt map initially carried one, which would have left the cancellation-loser disposition clause unattributed. |
+K0.2-SELF-07  n=3  ['docs/development/work/K0.2/implementation-03.md']
+      member, writing nothing. Recorded as K0.2-SELF-07 below.
+K0.2-SELF-08  n=1  ['docs/development/work/K0.2/implementation-03.md']
+      | **K0.2-SELF-08** | The new counterexample-citation check used a regex with `\b` immediately before `§11`, which can never match because `§` is not a word character; it failed a c
+K0.2-SELF-09  n=1  ['docs/development/work/K0.2/implementation-04.md']
+      - **K0.2-SELF-09 — my own attribution check caught two stale claims.** After moving R10-a's evidence,
+K0.2-SELF-10  n=1  ['docs/development/work/K0.2/implementation-04.md']
+      - **K0.2-SELF-10 — I wrote an unreadable resolver and a wrong novelty test.** The first version of the
+K0.2-SELF-11  n=1  ['docs/development/work/K0.2/implementation-05.md']
+      - **K0.2-SELF-11 — I swept the wrong axis in round 4.** Round 4 reported sweeping "neighbouring
+K0.2-SELF-12  n=1  ['docs/development/work/K0.2/implementation-05.md']
+      - **K0.2-SELF-12 — a lexical atomicity detector I wrote and discarded.** My first guard flagged
+K0.2-SELF-13  n=1  ['docs/development/work/K0.2/implementation-06.md']
+      - **K0.2-SELF-13 — two deadline transcripts omitted their timers.** While adding `pendingTimers` I
+K0.2-SELF-14  n=1  ['docs/development/work/K0.2/implementation-06.md']
+      - **K0.2-SELF-14 — four full-wake entries crossed the newly ungrouped readiness.** Narrowing the
+K0.2-SELF-15  n=1  ['docs/development/work/K0.2/implementation-07.md']
+      - **K0.2-SELF-15 — the new stale-regression test qualified its own generation as stale.** Its first
+K0.2-SELF-16  n=1  ['docs/development/work/K0.2/implementation-07.md']
+      - **K0.2-SELF-16 — three normative-voice "timer writer" phrases survived the first sweep pass.**
+K01-I11-01  n=5  ['docs/development/work/K0.1/contract.md', 'docs/development/work/K0.1/implementation-11.md', 'docs/development/work/K0.1/protocol-worksheet.md']
+      Revision 11's adversarial pass also found **K01-I11-01 (implementer-discovered)**: W-6 case 4 said
+K1.0-SELF-02  n=2  ['docs/development/work/K1.0/implementation-01.md', 'docs/development/work/K1.0/implementation-02.md']
+      | **K1.0-SELF-02** | The contract's stated counts drifted from the delivered tree (eleven controls versus thirteen, 1835 versus 1837, 135 versus 137). | **Fixed** in `811758ee1037c
+K1.0-SELF-05  n=1  ['docs/development/work/K1.0/implementation-03.md']
+      | **K1.0-SELF-05** | Triple-slash `/// <reference path="..." />` and `/// <reference types="..." />` directives carry a dependency that no round of this packet extracted. The revie
+K1.0-SELF-06  n=1  ['docs/development/work/K1.0/implementation-03.md']
+      | **K1.0-SELF-06** | An ambient `declare module "x" { ... }` names a module and was likewise never extracted. | **Fixed** in C, with a guard-path control and an extractor control.
+K1.0-SELF-07  n=1  ['docs/development/work/K1.0/implementation-03.md']
+      | **K1.0-SELF-07** | The first version of this round's zone-swap control replaced one root rather than swapping two, which the round-2 checks would have caught — it was weaker than
+K1.0-SELF-10  n=1  ['docs/development/work/K1.0/implementation-05.md']
+      | **K1.0-SELF-10** | While drafting `validation-05/MANIFEST.md` I wrote a forty-character value for the round-4 H that was not the real commit — the same class of defect as K10-R4-
+K1.0-SELF-11  n=376  ['docs/development/work/K1.0-correction-01/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/03-test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/04-test-conformance.log']
+      ✔ a pipe-less contradictory row inside the table block fails closed (K1.0-SELF-11) (21.601708ms)
+K1.0-SELF-14  n=187  ['docs/development/work/K1.0-correction-01/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/03-test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/04-test-conformance.log']
+      ✔ an escaped hash does not start or end a section (K1.0-SELF-14) (77.324375ms)
+K1.0-SELF-15  n=185  ['docs/development/work/K1.0-correction-01/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/03-test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/04-test-conformance.log']
+      ✔ a heading-like line without the required whitespace is not a heading (K1.0-SELF-15) (82.795959ms)
+K1.0-SELF-16  n=187  ['docs/development/work/K1.0-correction-01/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/03-test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/04-test-conformance.log']
+      ✔ an over-long hash run and indented code are not headings (K1.0-SELF-16) (13.053708ms)
+K1.0-SELF-17  n=185  ['docs/development/work/K1.0-correction-01/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/03-test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/04-test-conformance.log']
+      ✔ a mismatched fence closer does not end the fenced region (K1.0-SELF-17) (15.155666ms)
+K1.0-SELF-20  n=181  ['docs/development/work/K1.0-correction-01/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/03-test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/04-test-conformance.log']
+      ✔ CRLF line endings do not reopen the escapes (K1.0-SELF-20) (6.286333ms)
+K1.0-SELF-21  n=5  ['docs/development/work/K1.0/implementation-11.md', 'docs/development/work/K1.0/implementation-12.md', 'docs/development/work/K1.0/implementation-15.md']
+      - **K1.0-SELF-21 — observation, no change.** Fence and indented-code detection use absolute
+K1.0-SELF-22  n=1  ['docs/development/work/K1.0/implementation-11.md']
+      - **K1.0-SELF-22 — cosmetic, no change.** A stale duplicate one-paragraph summary comment sits
+K1.0-SELF-24  n=289  ['docs/development/work/K1.0-correction-01/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/03-test-full.log', 'docs/development/work/K1.0-correction-01/validation-01/04-test-conformance.log']
+      ▶ GFM table row and cell whitespace (K1.0-SELF-24)
+K1.0-SELF-25  n=7  ['docs/development/work/K1.0/implementation-15.md', 'docs/development/work/K1.0/validation-15/01-tree-and-environment.log', 'docs/development/work/K1.0/validation-15/MANIFEST.md']
+      `docs/development/007-work-packets.md` (the last for K1.0-SELF-25, below).
+K1.0-SELF-26  n=1  ['docs/development/work/K1.0/implementation-15.md']
+      **K1.0-SELF-26 — round-12 control constants were literal control bytes although their comment said
+K1.0-SELF-27  n=2  ['docs/development/work/K1.0/contract.md', 'docs/development/work/K1.0/implementation-15.md']
+      (K1.0-SELF-27), and this contract's stale C4 evidence count is corrected (K1.0-SELF-28) — rounds
+K1.0-SELF-28  n=2  ['docs/development/work/K1.0/contract.md', 'docs/development/work/K1.0/implementation-15.md']
+      (K1.0-SELF-27), and this contract's stale C4 evidence count is corrected (K1.0-SELF-28) — rounds
+K10-CORR2-01  n=260  ['docs/development/work/K1.0-correction-02/cleanup-evidence-01/test-full.log', 'docs/development/work/K1.0-correction-02/implementation-01.md', 'docs/development/work/K1.0-correction-02/validation-01/03-test-full.log']
+      ▶ collection identity in relation comparison (K10-CORR2-01)
+K11-R2-SELF-01  n=1  ['docs/development/work/K1.1/implementation-02.md']
+      - **K11-R2-SELF-01:** `isArrayIndex` initial draft contained a stray non-ASCII token from editing;
+K11-R2-SELF-02  n=1  ['docs/development/work/K1.1/implementation-02.md']
+      - **K11-R2-SELF-02:** `MISSING_SCOPE_SENTINEL` initial literal used soft-hyphen characters instead of
+K11-R2-SELF-03  n=1  ['docs/development/work/K1.1/implementation-02.md']
+      - **K11-R2-SELF-03:** new receipts ID-01 block initially contained dead scaffolding (`check` closure,
+K11-R2-SELF-04  n=1  ['docs/development/work/K1.1/implementation-02.md']
+      - **K11-R2-SELF-04:** kernel test type errors from `unknown[] & Record<string, unknown>` annotations for
+K11-R3-SELF-01  n=1  ['docs/development/work/K1.1/implementation-03.md']
+      - **K11-R3-SELF-01:** first JCS edit attempt added the dependency to the workspace root instead of
+K11-R3-SELF-02  n=1  ['docs/development/work/K1.1/implementation-03.md']
+      - **K11-R3-SELF-02:** initial guard edit used a prefix allowance (`"canonicalize"` in
+K11-R3-SELF-03  n=1  ['docs/development/work/K1.1/implementation-03.md']
+      - **K11-R3-SELF-03:** `boundary.test.ts` JCS-pin insertion initially replaced a neighboring test's header
+K11-R3-SELF-04  n=1  ['docs/development/work/K1.1/implementation-03.md']
+      - **K11-R3-SELF-04:** inventory-anchor updates initially missed the two `${count}` template-literal rows
+K11-R3-SELF-05  n=1  ['docs/development/work/K1.1/implementation-03.md']
+      - **K11-R3-SELF-05:** round-3 ablation script's first seal/array patches were too narrow (left
+SELF-01  n=1  ['docs/development/work/K1.0-correction-01/implementation-02.md']
+      superseded in place; R14/R15 and SELF-01…28 preserved; one self-found manifest transcription defect
+SELF-08  n=1  ['docs/development/work/K1.0/implementation-06.md']
+      short-row absence in Zones (SELF-08) — while leaving the earlier `tableRows` filter unexamined.
+SELF-11  n=1  ['docs/development/work/K1.0/implementation-06.md']
+      | pipe-less single-cell row before/after (SELF-11 challenger) | misses (5 Zones rows, pipeless absent) | 2 / 1 unreadable, names `target-kernel` |
+SELF-14  n=10  ['docs/development/work/K0.2/implementation-06.md', 'docs/development/work/K1.0/implementation-08.md', 'docs/development/work/K1.0/implementation-09.md']
+      the sweep found SELF-13/SELF-14 above.
+SELF-15  n=7  ['docs/development/work/K1.0/implementation-08.md', 'docs/development/work/K1.0/validation-08/08-r701-demonstration.log', 'docs/development/work/K1.0/validation-08/MANIFEST.md']
+      each verified silent under H7 (except SELF-15, which H7 happens to survive because its substring
+SELF-16  n=5  ['docs/development/work/K0.2/implementation-07.md', 'docs/development/work/K1.0/validation-08/08-r701-demonstration.log', 'docs/development/work/K1.0/validation-08/MANIFEST.md']
+      normative-voice claim, not only the review-named files; the sweep found SELF-16 above.
+SELF-17  n=6  ['docs/development/work/K1.0/implementation-08.md', 'docs/development/work/K1.0/validation-08/08-r701-demonstration.log', 'docs/development/work/K1.0/validation-08/MANIFEST.md']
+      | C4 — adjacent GFM challengers | SELF-14…SELF-17 | reported (SELF-15 under both readers) | same suite, 4 cases, pass |
+SELF-18  n=2  ['docs/development/work/K1.0/implementation-10.md', 'docs/development/work/K1.0/validation-10/MANIFEST.md']
+      `<script>`/comment/pre/div cases, SELF-18/19 exclusions, exact-title structural L2 identity,
+SELF-ID-01  n=1  ['docs/development/work/K1.2-correction-01/implementation-01.md']
+      | SELF-ID-01 — implementer, not reviewer | Integrated trusted namespace admits unbounded and surrogate strings. Found while reconstructing producers; covered without changing K1.1,
+SELF-R9-CATALOG-01  n=4  ['docs/development/work/K1.2-correction-01/implementation-09.md']
+      - the R11-READ-01 row's catalog wording (`SELF-R9-CATALOG-01`);

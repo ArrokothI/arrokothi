@@ -1,0 +1,16 @@
+{
+  "label": "cost-3-A-empty-arrays-deep",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "A-empty-arrays-deep"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"A-empty-arrays-deep\",\"ok\":true,\"bytes\":1044709,\"records\":0,\"issues\":0,\"codes\":[],\"ms\":1399,\"heapMiB\":72.9}\n",
+  "stderr": "",
+  "elapsed_seconds": 1.485
+}

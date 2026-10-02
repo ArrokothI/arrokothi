@@ -1,0 +1,162 @@
+{
+ "F01": {
+  "title": "Wait, cancellation and lifecycle ordering",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Enumerate the already accepted event/timeout/cancel/completion relations and demonstrate contradictory-transition mutants are rejected; maintain unsupported K1.3 gates until release",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "K0.1/K0.2 worksheet and conformance records; current lifecycle.ts and coordinator unsupported cancel/await gates.",
+  "why": "Reviews varied one event schedule at a time, leaving adjacent eligibility/generation/cancellation orderings implicit."
+ },
+ "F02": {
+  "title": "Boundary values and canonical domain",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Use C closure criteria, including every root consumer and replay with differing hidden content",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "values.ts captureObject/captureArray/encode; original K11-R1-JCS-01 and held O-R8-4.",
+  "why": "Domain, serializer equality and object brands were searched separately; coherent snapshots can preserve the wrong projection."
+ },
+ "F03": {
+  "title": "Identity scope and nondisclosure",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Generate accepted producer identities through each counter/length boundary and consume them on dispatch/takeover/replay/inspection; cross-scope interleaving and collection-boundary mutants must distinguish",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "identity.ts; coordinator.ts #mint/#visible/#refusal/createExecution/submitInput; envelope.ts identity-text gate.",
+  "why": "Tests varied short external identities or direct visibility but not minted suffix growth, cross-boundary reuse and interleaved hidden decisions."
+ },
+ "F04": {
+  "title": "Legacy migration disposition",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "For each retired surface, reconcile actual imports/exports/tests with disposition; mutation inserting a forbidden live edge fails; unknown external uses are stated",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "Archived K0.1/K0.2 disposition matrices; docs/development/kernel-ownership.md and current boundary tests (path inventory in catalog).",
+  "why": "Review treated a inventory row or target naming change as proof of effective retirement."
+ },
+ "F05": {
+  "title": "Protocol oracles and atomic observation",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Every legal result and forbidden partial result has an independently justified oracle case; erase each material comparison and require its dedicated negative control to fail",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "K0.1/K0.2 conformance/eval records; kernel outcome-acceptance/transaction/recovery tests.",
+  "why": "An unchanged chosen projection appeared to prove unchanged state; tests sometimes repeated implementation assumptions."
+ },
+ "F06": {
+  "title": "Dependency/inventory grammar and relational equality",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Schema rejects duplicate/unknown/malformed rows; sets compared structurally; rendered table reproduces source; scanner corpus spans supported syntax and bypass mutants",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "tests/conformance/architecture/inventory-oracle.ts, module-graph.ts and boundary-policy.ts enumerated in the evidence catalog; archived K1.0 reviews.",
+  "why": "Each correction fixed a token/context example; later stages and grammar classes were not jointly varied."
+ },
+ "F07": {
+  "title": "Candidate identity, authority and record provenance",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Deliberately wrong SHA/count/path/interval/owner attribution must be detected; exact artifact bytes accessible at H; no generated report claims its future push",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "Archived cleanup/review/report records; active validation manifests and ledger row; no product site.",
+  "why": "A passing local gate/report was trusted without varying exact candidate, cumulative interval, accessibility or source authority."
+ },
+ "F08": {
+  "title": "Current prose, canonical ownership and status",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Defined current-state sentence inventory reconciles with exact owner records; links resolve and semantic/status checks are separately recorded",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "BASELINE, Layer-3 references, package comments and front doors named by DA-1 records.",
+  "why": "Link-validity and local semantic wording were checked while neighboring current-status assertions and ownership conventions drifted."
+ },
+ "F09": {
+  "title": "Ambient same-process integrity",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Use A/B profile closure and preserve ordinary __proto__, snapshot, reentrancy and atomicity controls",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "values.ts primordials/serializer window; own-array.ts; envelope.ts; coordinator.ts held-history fields.",
+  "why": "Repairs followed individual ambient hops: getter, inherited index, descriptor descriptor, iterator.next, optional record member."
+ },
+ "F10": {
+  "title": "Refusal work and diagnostics",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Classify/charge every chosen operation; valid roots never exceed derived budget; surplus/list/stack/diagnostic meter-deletion mutants are killed; timing remains non-gating",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "values.ts issue accounting, capture, isOpen/closeContainer; outcome.ts aggregate diagnostics; held R8 findings.",
+  "why": "Search optimized the previous worst sample without closing value-dependent operations or deriving an acceptance-covering budget."
+ },
+ "F11": {
+  "title": "Authority, grants and decision precedence",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Generate table cases across visible/hidden, replay/fresh, malformed/stale, authority present/absent and callback decisions; whole-view/grant oracle rejects precedence mutants",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "coordinator.ts submitOutcome/requestTakeover/#requireControl; outcome.ts capture; submission-authority tests.",
+  "why": "Reviews varied one invalid field or permission at a time, not the cross-product or callback order."
+ },
+ "F12": {
+  "title": "Retained history, immutable evidence and inspection",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Every existing hold transition yields expected variant and no extra decision; mutate returned old views, optional fields and attributed authority; whole projection remains correct",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "coordinator.ts history builders/inspect/recoverExecution; inspection.ts; recovery-history/evidence tests.",
+  "why": "Tests observed present state, not retained transitions, mutation through old views or truthful authority attribution."
+ },
+ "F13": {
+  "title": "Delivery, asynchronous ownership and capabilities",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Maintain single dispatch-bound observation, epoch-attributed retained delivery, explicit settlement/no-Promise corpus, receiver-free calls, reentrancy and late retired reports; transport adapter cannot forge Outcome authority",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "driver.ts DeliverySettlement; coordinator.ts #deliver; dispatch.test.ts; accepted KC1-ARCH-1.",
+  "why": "Search varied one dispatch or Promise outcome at a time, missing changing bound getters, host-controlled construction/species, and retained attribution across takeover."
+ },
+ "F14": {
+  "title": "Distinguishing mutations and regression claims",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Every live mutation applies exactly once, control passes, failure is attributable to expected obligation, and surviving changes have recorded owner disposition",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "K1.2 ablations and R8 N15; exact-coordinate/outcome evidence tests; evidence catalog.",
+  "why": "Mutants targeted convenient syntax or weak fixtures; runner errors and partial assertions hid survival."
+ },
+ "F15": {
+  "title": "Static enforcement of read/commit ownership",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Restricted boundaries reject type/default/shadowing bypass controls; current runtime poison/fault obligations remain independently checked",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "tests/zone-analysis.ts, zone-inventory.ts, ambient-reads/control-commits tests.",
+  "why": "Local/default/nested assertion shapes varied after each scanner fix; semantic escape space outgrew syntax examples."
+ },
+ "F16": {
+  "title": "Runtime sweep scope and complete-decision oracle",
+  "n_options": 2,
+  "claims_identical": true,
+  "rec_closure_equals_keep_plus_suffix": true,
+  "keep_closure": "Each scenario maps to a named source exit; no-call/callback/accepted alternatives validated; inconsistent return/view/grant/position combinations and missing fields rejected",
+  "rec_closure_extra": "; if refactored, differential preservation of the accepted corpus and explicit ownership/bypass check",
+  "sites": "tests/sweep/fault-oracle.ts, fault-scenarios.ts, fault-child.ts, fault-oracle.test.ts.",
+  "why": "Review counted executions or exits before independently mutating each oracle dimension and matching each scenario to a permitted decision."
+ }
+}

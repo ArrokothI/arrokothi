@@ -1,19 +1,24 @@
 # Owner progress summary
 
-Snapshot: checked remote main `ed509e11dc39ff24e10c1ace68189776c4270919`, which integrates
-K1.2-correction-01's accepted candidate `b7191dbf630defeff7756122a6798e15d0b73dd3` and its
-review/status transcription `b0ff7052aa8993d7547fbde48123dd058d2e0107`. Current authority is the
-[status ledger](007-work-packets.md); exact acceptance and integration identities stay there and
-in its linked records.
+Snapshot: checked remote main `66bc041175e6fc191c2e7cf88de198111e7d97c9`. It integrates
+K1.2-correction-01 (`ed509e11dc39ff24e10c1ace68189776c4270919`) and the process reset (PR #39), and it is
+DESIGN-AUDIT-01's base. Also checked: the unmerged branch `codex/design-audit-01` at review-03 record
+`8447b05ab3178250d00e1d9ad12920debc4ccc31`, acceptance transcription
+`dc03b365cbc65bdcb68333bc7ad74726cb62835d` and owner hold record
+`3d36a05de4f4b8cdb219449c31cd17b296768402`. That branch carries the audit's accepted candidate
+`ce0b5a7098a9f65cf16dc55ce6eb013946564508`. Current authority is the [status ledger](007-work-packets.md);
+exact acceptance and integration identities stay there and in its linked records.
 
 | Area | Current position |
 |---|---|
 | K0 | Closed |
-| K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed |
+| K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed; some value-capture claims are held (below) |
 | Repository cleanup and planning | DOCS-CLEANUP-01 and PLAN-01 accepted, integrated and owner-closed; archive cloud upload remains an owner action |
 | Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; its V-D1 cost claim is held for K1.1-correction-03 |
 | K1.2 Outcome acceptance | K1.2 and its cumulative correction K1.2-correction-01 accepted, integrated and owner-closed; the earlier H14 integration hold is lifted |
-| DESIGN-AUDIT-01, K1.1-correction-03 | Planned; not released |
+| Held value-capture claims | V-D1 refusal cost ([invalidation-02](work/K1.2/invalidation-02.md)); re-prototyped built-in classification ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)); environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) |
+| DESIGN-AUDIT-01 | Independently accepted; cleanup complete; integration pending owner merge; its drafts are not adopted |
+| K1.1-correction-03 | Planned; not released |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
 
@@ -27,9 +32,9 @@ mediated Effects are later packets. The supported application SDK still uses
 the legacy core. [002](002-implemented-kernel-baseline.md) describes the implemented surface.
 
 **Answerable Outcome acceptance.** K1.2, completed by its cumulative correction, answered whether
-the Kernel can rule on an asynchronous Runtime's answer: accept it whole or refuse it without
-changing accepted state, with one authorized writer per exchange through takeover, recovery holds and
-late reports. The private Kernel now:
+the Kernel can rule on an asynchronous Runtime's answer. The Kernel accepts the answer whole or
+refuses it without changing accepted state, with one authorized writer per exchange through
+takeover, recovery holds and late reports. The private Kernel now:
 
 - accepts an Outcome whole or refuses it whole. An exact replay returns the original receipt and
   conflicting content is refused. A stale proposal is refused before submission authority is
@@ -67,6 +72,45 @@ released. Limits:
 - The sweeps are finite evidence for their declared scenarios, not a proof over arbitrary future
   code.
 - No V-D1 refusal-cost claim is made, and the supported SDK is unchanged.
+- Two value-capture claims inherited from K1.1 are held.
+  - A re-prototyped built-in, such as a null-prototype Map, is accepted as a plain object
+    ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)).
+  - Code that runs during capture can declare a global `let JSON` that steers the canonical bytes. A
+    conflicting creation retry is then answered as a replay
+    ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)).
+
+**A root-cause audit of accepted design.** DESIGN-AUDIT-01 answered which choices accepted in
+K0.1–K1.2 keep producing defect families, and what the owner's options are for each. It looked hardest at
+the in-process capture threat model. What now exists, under [its directory](work/DESIGN-AUDIT-01/):
+
+- A design-debt register. It covers 278 classified review-finding labels in 16 families and six items: the
+  same-process threat model, the own-array and serializer environment, exotic classification,
+  coordinator responsibilities, evidence infrastructure, and process notes. Each option has its cost,
+  the accepted claims it would keep, narrow or remove, and how its follow-up would close.
+- 23 decision drafts for the owner to adopt or reject, none of them adopted. The joint CORE draft
+  follows the owner's recorded direction: a scoped contract, a canonical-bytes Kernel core, a caller-side
+  live-object wrapper and a separate transport adapter. The proposed sequence is TOOLS-01,
+  K1.1-correction-03, a binding packet, a coordinator refactor, then K1.3.
+- A hostile-input corpus of 16 recorded labels and 8 serializer bindings, with executable
+  expectations. It shows that Node's `--frozen-intrinsics` flag alone does not stop the serializer's
+  bindings being replaced. Only bindings pinned non-writable and non-configurable before caller code
+  refuse it.
+- One verify command that regenerates the register, measurements and corpus checks.
+
+The lesson from its review history concerns the corpus. Twice, a counterexample the corpus held had a
+variant one access form further on that defeated the drafted closure: first replacing a whole global
+binding, then declaring a global `let`. The second also defeated the integrated Kernel, which is the
+invalidation-03 hold above. A corpus entry needs to vary how a binding is reached, not only which
+binding.
+
+Status: independently accepted; cleanup complete; integration pending the owner's merge. No draft is
+adopted and the PROXY-01 question is unanswered. Limits:
+- The audit changes no code and no claim. Its recommendations bind nothing until the owner adopts them
+  through separate records and packets.
+- Per-option reconciliation closes by reading. Its checkers catch omissions, not wrong prose.
+- Realm hardening is evaluated, not guaranteed. A declaration made before the binding starts remains
+  outside every check that reads only the global object.
+- Probes ran only on Node v25 and v26; no other engine was tried.
 
 **A smaller current documentation tree.** DOCS-CLEANUP-01 answered how to preserve closed evidence
 while making current guidance easier to find. The sealed archive and relocated active fixtures now
@@ -89,21 +133,31 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-1. Decide whether to release DESIGN-AUDIT-01, which settles the in-process capture threat model.
-   K1.1-correction-03, the metered V-D1 bound, waits on it. Its ledger seed names K1.2-correction-01
-   revision 6 as a prerequisite, but revision 10, which changes production code, is what was
-   accepted. Confirm that dependency when releasing it. The V-D1 claim stays held until then.
-2. K1.3 (waits, deadlines, cancellation) needs a separate owner release. K1.4 then owns the SDK host
-   bridge and the full K1/E1 gate. External blocker: before K1.3 closes, the benchmark owner must
-   confirm that the E1 fixtures drive the new supported entry; otherwise K1.4 is BLOCKED_EXTERNAL.
-   Fixture preparation is not an E1 result.
-3. Upload the verified archive to owner-controlled cloud storage.
+1. Merge `codex/design-audit-01` manually, then record the integration receipt and the owner
+   discussion. The [cleanup record](work/DESIGN-AUDIT-01/cleanup-01.md) lists what that discussion has
+   to settle.
+2. Decide on the audit's drafts, and answer PROXY-01: accept coherent Proxies, or refuse every
+   Proxy at capture. Adopting the CORE direction needs separate amendment records for accepted
+   decisions and pages, as [owner-decisions-02](work/DESIGN-AUDIT-01/owner-decisions-02.md) lists.
+3. Release the next packet. The recorded order is TOOLS-01, then K1.1-correction-03 (the metered V-D1
+   bound, which waits on the audit's threat-model outcome), then the binding packet, then the
+   coordinator refactor, then K1.3.
+   - Only K1.1-correction-03 and K1.3 have ledger rows.
+   - The binding packet carries the correction for the invalidation-03 hold, and that hold stays until
+     the binding packet is accepted.
+   - None of these packets is released.
+4. K1.4 owns the SDK host bridge and the full K1/E1 gate. External blocker: before K1.3 closes, the
+   benchmark owner must confirm that the E1 fixtures drive the new supported entry; otherwise K1.4 is
+   BLOCKED_EXTERNAL. Fixture preparation is not an E1 result.
+5. Upload the verified archive to owner-controlled cloud storage.
 
 Carry forward:
 - the historical Node 22.22.3 legacy Effect-test cancellation limitation;
 - the reference review's five non-blocking P3 observations and its authentication limit;
 - the limits stated in the K1.2-correction-01 report and review: finite sweeps, and runs on Node 25 only, with no
-  Node 22 run (the poison sweep needs Node 22.15 or later).
+  Node 22 run (the poison sweep needs Node 22.15 or later);
+- the audit review's three non-blocking P3 intake items for TOOLS-01 or the successor corpus, listed in
+  the cleanup record.
 
 Their scope remains in the ledger's pinned reviews. No new external benchmark result is claimed here.
 

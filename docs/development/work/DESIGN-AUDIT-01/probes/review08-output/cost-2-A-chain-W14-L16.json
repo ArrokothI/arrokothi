@@ -1,0 +1,16 @@
+{
+  "label": "cost-2-A-chain-W14-L16",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "A-chain-W14-L16"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"A-chain-W14-L16\",\"ok\":true,\"bytes\":946219,\"records\":0,\"issues\":0,\"codes\":[],\"ms\":1594,\"heapMiB\":133.3}\n",
+  "stderr": "",
+  "elapsed_seconds": 1.681
+}

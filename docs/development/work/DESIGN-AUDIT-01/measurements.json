@@ -1,0 +1,1189 @@
+{
+  "session": "Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner\u2013Claude conversation or independent acceptance authority.",
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "files": [
+    {
+      "path": "packages/kernel/src/coordinator.ts",
+      "lines": 2471,
+      "nonblank": 2349,
+      "sha256": "25dda8afc539c7bc6528b13b828317c4ac6ec14c8f17d33c420008e59234e6cc"
+    },
+    {
+      "path": "packages/kernel/src/driver.ts",
+      "lines": 146,
+      "nonblank": 140,
+      "sha256": "fd8b54159d4b2a4a39988c6f7d3275bcb805075f66e73c7e53be6596f6729c1e"
+    },
+    {
+      "path": "packages/kernel/src/envelope.ts",
+      "lines": 327,
+      "nonblank": 307,
+      "sha256": "d2a7f351af189940392d6fa6b9814c7bbca90ee0db1cf680fd088ae27ef37a7b"
+    },
+    {
+      "path": "packages/kernel/src/identity.ts",
+      "lines": 220,
+      "nonblank": 207,
+      "sha256": "7eaaea71f3969c01dda510eba0cef8458b2c17739859d81e958f32e041a9a9e4"
+    },
+    {
+      "path": "packages/kernel/src/index.ts",
+      "lines": 83,
+      "nonblank": 73,
+      "sha256": "f986a595961c1d53a2eefd4a9e43fb463771fd2345e0de30c099751ee87a4db0"
+    },
+    {
+      "path": "packages/kernel/src/inspection.ts",
+      "lines": 256,
+      "nonblank": 245,
+      "sha256": "29deb441fb6747ecbabdf7cfe90d426dc2269d238d64865fae081543ff9a4181"
+    },
+    {
+      "path": "packages/kernel/src/lifecycle.ts",
+      "lines": 53,
+      "nonblank": 49,
+      "sha256": "8af22753387e128ba5c7177f006bda2d7a602682f2dac520f51cb8fca967d884"
+    },
+    {
+      "path": "packages/kernel/src/outcome.ts",
+      "lines": 575,
+      "nonblank": 526,
+      "sha256": "6296afd0da57aa8e1f3120a006f74fd4ec00480bf14bca023e51aacc28ffae5e"
+    },
+    {
+      "path": "packages/kernel/src/own-array.ts",
+      "lines": 282,
+      "nonblank": 265,
+      "sha256": "fcd114e76ddec2087a8fbd84029a357673bb29fe7acf55ff7a6db19aa73e7438"
+    },
+    {
+      "path": "packages/kernel/src/refusal.ts",
+      "lines": 144,
+      "nonblank": 139,
+      "sha256": "c3659727a2e749091ddc870f27985cd63148087b17913bf42af481aa99615bf5"
+    },
+    {
+      "path": "packages/kernel/src/result.ts",
+      "lines": 22,
+      "nonblank": 19,
+      "sha256": "692985947aa35fb599cf597d12e875b5fc8225f66f4d87ef9c196202d249134d"
+    },
+    {
+      "path": "packages/kernel/src/unsupported.ts",
+      "lines": 39,
+      "nonblank": 36,
+      "sha256": "c3d3a8cf937a3da68000952285a0471cc2e23d191fc0cec60b23e3793ce3df13"
+    },
+    {
+      "path": "packages/kernel/src/values.ts",
+      "lines": 1516,
+      "nonblank": 1456,
+      "sha256": "eb1f5c3b5705ade2d90427cbac598518430aaf68085d0c62f7d8e6bf47d97cae"
+    },
+    {
+      "path": "packages/kernel/tests/activation-identity.test.ts",
+      "lines": 288,
+      "nonblank": 279,
+      "sha256": "d0ef80fd3183f1192507ede04e4ba0ed7594a623722e0e35d71448ff03b05ebf"
+    },
+    {
+      "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+      "lines": 193,
+      "nonblank": 189,
+      "sha256": "c5ea96a2790e8a4c9de7beef060cbecff9de50a3e0830113de51d0056928e51b"
+    },
+    {
+      "path": "packages/kernel/tests/ambient-reads.test.ts",
+      "lines": 327,
+      "nonblank": 308,
+      "sha256": "277c4a15897dfda67c54e4b1c844a452213fdd06241d2526361ad46eabaeb70b"
+    },
+    {
+      "path": "packages/kernel/tests/boundary.test.ts",
+      "lines": 207,
+      "nonblank": 191,
+      "sha256": "742f22072f175bc900852f0ba3eb7001d4d99c9e0212252338ceb6d66c6f4d9b"
+    },
+    {
+      "path": "packages/kernel/tests/control-authority.test.ts",
+      "lines": 396,
+      "nonblank": 352,
+      "sha256": "ed7ca86d44a0f24b14ed3c15f05f6992e1b5b030bac98a75c3b6c389c90612c3"
+    },
+    {
+      "path": "packages/kernel/tests/control-commits.test.ts",
+      "lines": 243,
+      "nonblank": 225,
+      "sha256": "50458e4239c8d4b82218c882cbb3b5c2dc95e5fd440dee8d817a9e951096e672"
+    },
+    {
+      "path": "packages/kernel/tests/creation.test.ts",
+      "lines": 1067,
+      "nonblank": 969,
+      "sha256": "8497173f0bf2acfa303ac559471fa2de67c01986c8ca82fafa90278b77251e2e"
+    },
+    {
+      "path": "packages/kernel/tests/delivery-attribution.test.ts",
+      "lines": 224,
+      "nonblank": 203,
+      "sha256": "da155431d00681c1f8496bf66c577eb2e9f200dfde323705e02e3fe8c312ac55"
+    },
+    {
+      "path": "packages/kernel/tests/dispatch.test.ts",
+      "lines": 1566,
+      "nonblank": 1447,
+      "sha256": "84b2b74f2690617604c9bdae64da0340e32aafbee05b64f27970551364f802b6"
+    },
+    {
+      "path": "packages/kernel/tests/evidence.test.ts",
+      "lines": 351,
+      "nonblank": 304,
+      "sha256": "27d6a44f371e208562f71a2c1b5d967b8a5fa585cf5e3b5a0df9c450491490b3"
+    },
+    {
+      "path": "packages/kernel/tests/exact-coordinates.test.ts",
+      "lines": 211,
+      "nonblank": 211,
+      "sha256": "babd9d88818b330d573684273810c0112619ef03cacadf00d56487845e067c86"
+    },
+    {
+      "path": "packages/kernel/tests/fault-oracle.test.ts",
+      "lines": 424,
+      "nonblank": 403,
+      "sha256": "81ab0896d471b0360388974b2dc66ad1e0827abab32cf961b4ad6c6c7f9856dd"
+    },
+    {
+      "path": "packages/kernel/tests/fault-sweep.test.ts",
+      "lines": 91,
+      "nonblank": 85,
+      "sha256": "93bb53c240a2c66a199338920571aadcdd3fb33e67867e6a1b622be53e77b7c5"
+    },
+    {
+      "path": "packages/kernel/tests/harness.ts",
+      "lines": 584,
+      "nonblank": 548,
+      "sha256": "b52d53a8e3f28922680eb0e07cdfa84173126795bfa9009e3515274c12abc980"
+    },
+    {
+      "path": "packages/kernel/tests/history-attribution.test.ts",
+      "lines": 197,
+      "nonblank": 179,
+      "sha256": "760ed5218c7d1f6a970f61affa82496e65661ab7f1a9d3345a7b5097abf3d762"
+    },
+    {
+      "path": "packages/kernel/tests/hold-permitted.test.ts",
+      "lines": 273,
+      "nonblank": 241,
+      "sha256": "c5b1a9f028b8ce27ec3ab4aa0c158428bdc83d316e82e9c6f278d2870c5c53b7"
+    },
+    {
+      "path": "packages/kernel/tests/host-members.test.ts",
+      "lines": 275,
+      "nonblank": 260,
+      "sha256": "164480a9552af241e0613f9cb47363324a76793c9865b2417484eef9c74b1a57"
+    },
+    {
+      "path": "packages/kernel/tests/ingress.test.ts",
+      "lines": 864,
+      "nonblank": 757,
+      "sha256": "365ff0e7a8919b175fb238da7354faa5fd7891dbeecb66636517f8804df12a9d"
+    },
+    {
+      "path": "packages/kernel/tests/inspection.test.ts",
+      "lines": 273,
+      "nonblank": 240,
+      "sha256": "84f9d42bfbc98538336f621fd9cb0888b0e597725853f13cba0fe79a2fcd85cf"
+    },
+    {
+      "path": "packages/kernel/tests/late-reports.test.ts",
+      "lines": 133,
+      "nonblank": 115,
+      "sha256": "94da7345779ee37f51c35bad7fabea29889bcefc7000c3b4e825b1382f2b75dc"
+    },
+    {
+      "path": "packages/kernel/tests/nondisclosure.test.ts",
+      "lines": 593,
+      "nonblank": 550,
+      "sha256": "8faceb4d925ac35df853135fccfb8acea4d2f5dde6077f23f9e588d9e0b4fc7c"
+    },
+    {
+      "path": "packages/kernel/tests/outcome-acceptance.test.ts",
+      "lines": 672,
+      "nonblank": 614,
+      "sha256": "56c24bf44a91286c89dbc6321bb6c7347d3b3ac73f79e81b597361099c661f8d"
+    },
+    {
+      "path": "packages/kernel/tests/outcome-evidence.test.ts",
+      "lines": 120,
+      "nonblank": 108,
+      "sha256": "74d34c9f8f11e4fcf9fe196e5bf324956b6c881a33948c7fa60441fa0c613c10"
+    },
+    {
+      "path": "packages/kernel/tests/outcome-hostile.test.ts",
+      "lines": 383,
+      "nonblank": 367,
+      "sha256": "b0def326ebedaf242ae691568d80ba5d545183d4b782eeaa5a5129285c663caa"
+    },
+    {
+      "path": "packages/kernel/tests/outcome-limits.test.ts",
+      "lines": 113,
+      "nonblank": 101,
+      "sha256": "1e314f4dd5925de8850f41b77db5537e190f8d4a97f5aaa1d71dc58ac87bab6f"
+    },
+    {
+      "path": "packages/kernel/tests/outcome-partial-claim.test.ts",
+      "lines": 754,
+      "nonblank": 712,
+      "sha256": "69957b689ab4d68118bca5d4634476518cbca63aa53b350ceb98fe1520821a72"
+    },
+    {
+      "path": "packages/kernel/tests/poison-catalog.test.ts",
+      "lines": 296,
+      "nonblank": 282,
+      "sha256": "06e0713761314a8bd746931c606d9835e0d70c764d44a4a2c9184849ac02fbac"
+    },
+    {
+      "path": "packages/kernel/tests/receipts.test.ts",
+      "lines": 311,
+      "nonblank": 265,
+      "sha256": "30baed0d10e0e27ef7c3444a46d2c3192c2cd28b3a8af316cf0802a070f07996"
+    },
+    {
+      "path": "packages/kernel/tests/recovery-ambient.test.ts",
+      "lines": 366,
+      "nonblank": 348,
+      "sha256": "cb572dff4f443a4974bfc366f261072ae5f539669d4b3ad421add5b49f4ea896"
+    },
+    {
+      "path": "packages/kernel/tests/recovery-evidence.test.ts",
+      "lines": 843,
+      "nonblank": 775,
+      "sha256": "e232fe9aad648b2137aa481c33889c81d68fe2fef603d56c0e105d6677e15da1"
+    },
+    {
+      "path": "packages/kernel/tests/recovery-history.test.ts",
+      "lines": 306,
+      "nonblank": 273,
+      "sha256": "abf7663a3702b6b65e70f45f97abd8ba64077b9d32166d4ac1b120b84cb91426"
+    },
+    {
+      "path": "packages/kernel/tests/recovery.test.ts",
+      "lines": 306,
+      "nonblank": 276,
+      "sha256": "5e0b3919a564db49cc695bdf9be2d7358cab3481bd0791fae6d30439feadb8ea"
+    },
+    {
+      "path": "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+      "lines": 84,
+      "nonblank": 80,
+      "sha256": "cf976677822ff8d5a4ccb6e4f85e0da5d3464b2cc7d84b346731a2c8cb2b8231"
+    },
+    {
+      "path": "packages/kernel/tests/refusal-diagnostics.test.ts",
+      "lines": 293,
+      "nonblank": 279,
+      "sha256": "a002ca196216f2fe35cb0004129f64ff8a765e2ca0c9f4d95e39eca1e7a83817"
+    },
+    {
+      "path": "packages/kernel/tests/refusals.test.ts",
+      "lines": 75,
+      "nonblank": 66,
+      "sha256": "1fd1fa2e3d881b4ae59def807f82456c6a36b7e5f57161fa750eee341ac28b19"
+    },
+    {
+      "path": "packages/kernel/tests/review-11-probes.test.ts",
+      "lines": 80,
+      "nonblank": 78,
+      "sha256": "da3b6dae80a06f5470bc8bf4daf4201dd23d6e321aa9024a6ff3fd65dd6d99bf"
+    },
+    {
+      "path": "packages/kernel/tests/submission-authority.test.ts",
+      "lines": 533,
+      "nonblank": 495,
+      "sha256": "9e0614a2ef467a46b51e35115538526df78aa661bf6d7b4c3d07c6ba6c9fd02f"
+    },
+    {
+      "path": "packages/kernel/tests/submission-lifetime.test.ts",
+      "lines": 155,
+      "nonblank": 147,
+      "sha256": "f3630194f2fe456583156314fa8bbf9148396afa6cc12cbfbbc810f375d39401"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/fault-child.ts",
+      "lines": 475,
+      "nonblank": 445,
+      "sha256": "6d9b91118daf2e5333b1c2e744593cd593c77caaec20aa41f8d09af55d852836"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+      "lines": 790,
+      "nonblank": 739,
+      "sha256": "4adcc9b9387929ab8bd2baba3a163978b62330b9b2090b0a75db820963dfdd36"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/fault-scenarios.ts",
+      "lines": 306,
+      "nonblank": 284,
+      "sha256": "a0f2dc8f198dc7085b902a7ff1792168e995aa723bcd066e57484c810251ef78"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/poison.ts",
+      "lines": 536,
+      "nonblank": 501,
+      "sha256": "1cfbef9450fd83eba2e464fbfd2801cef45c132ae0df571e7a521adb97fb7953"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/preload.ts",
+      "lines": 172,
+      "nonblank": 159,
+      "sha256": "4ea7d5d17d1cc2dd9a76152ff526f2d6a004f9558b952bbeabfbd4a13766b93f"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/run-poison-sweep.ts",
+      "lines": 162,
+      "nonblank": 151,
+      "sha256": "e1d27d598173bc939d1fc2fff5b25b9888a06dc9686b5420a2ca4f0e38f53779"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/zone-names.ts",
+      "lines": 130,
+      "nonblank": 119,
+      "sha256": "735b842d8c74029c30935b074af701df8af38dcaede5ce991a41def789277cd0"
+    },
+    {
+      "path": "packages/kernel/tests/takeover-reentrancy.test.ts",
+      "lines": 273,
+      "nonblank": 255,
+      "sha256": "a720897219a6eaf891cd11140f79d7a9edbf2bbf03daf4e6d068e4ef39dda868"
+    },
+    {
+      "path": "packages/kernel/tests/takeover.test.ts",
+      "lines": 226,
+      "nonblank": 203,
+      "sha256": "10df29da4e0be434830e89567d260471c30a4222f12fba95931503a63f24788a"
+    },
+    {
+      "path": "packages/kernel/tests/terminal.test.ts",
+      "lines": 211,
+      "nonblank": 189,
+      "sha256": "959ed5e53b4f1c62c3b5ebf87ce54bbda58f49db552184423d66fd9e6cf04be5"
+    },
+    {
+      "path": "packages/kernel/tests/transaction.test.ts",
+      "lines": 365,
+      "nonblank": 331,
+      "sha256": "ba20292cce42070bdb3b9eab41b04fc2783621c014693951e3f4b31af205baf4"
+    },
+    {
+      "path": "packages/kernel/tests/unsupported.test.ts",
+      "lines": 74,
+      "nonblank": 68,
+      "sha256": "047e73c78b8a94a0035becfcf27916bf8faa2a04ecea8315696dfc41abaa30d1"
+    },
+    {
+      "path": "packages/kernel/tests/value-diagnostic-work.test.ts",
+      "lines": 618,
+      "nonblank": 588,
+      "sha256": "9082ea98c62fef5b912550cc85b6a8a0078f64aca56cd5b2b6cc57ec29d87091"
+    },
+    {
+      "path": "packages/kernel/tests/value-refusal-cost.test.ts",
+      "lines": 202,
+      "nonblank": 189,
+      "sha256": "5ce3bea807645322193d13f8c1d0e2b3453f5f89c5e2f7bb550278f996d760cb"
+    },
+    {
+      "path": "packages/kernel/tests/values.test.ts",
+      "lines": 1874,
+      "nonblank": 1744,
+      "sha256": "96c78364c04f26883357729f4d22f27bc0508a1aa074ea1feff162eaeddde680"
+    },
+    {
+      "path": "packages/kernel/tests/whole-view-ambient.test.ts",
+      "lines": 133,
+      "nonblank": 127,
+      "sha256": "fb11d86fcf8d638d0f7b33d155540764a74d458f953be58368fe002336499998"
+    },
+    {
+      "path": "packages/kernel/tests/zone-analysis.ts",
+      "lines": 1638,
+      "nonblank": 1529,
+      "sha256": "05767ecdbb23e7c9f1b39a0fcc7ea620e22cbe65a380729a955bfa9b69483083"
+    },
+    {
+      "path": "packages/kernel/tests/zone-inventory.ts",
+      "lines": 127,
+      "nonblank": 118,
+      "sha256": "2c06727a3f2a873108d131b6cf58cb42122de53c9132f8d95e5e09651ed818e0"
+    }
+  ],
+  "spans": [
+    {
+      "path": "packages/kernel/src/values.ts",
+      "start": 1008,
+      "end": 1409,
+      "lines": 402,
+      "nonblank": 394,
+      "attribution": "exclusive",
+      "rationale": "Serializer-safe clone and save/swap/restore window; replaceable as a unit only after binding change"
+    },
+    {
+      "path": "packages/kernel/src/own-array.ts",
+      "start": 169,
+      "end": 193,
+      "lines": 25,
+      "nonblank": 25,
+      "attribution": "exclusive",
+      "rationale": "Restore engine descriptors without polluted descriptor-field conversion"
+    },
+    {
+      "path": "packages/kernel/src/own-array.ts",
+      "start": 241,
+      "end": 245,
+      "lines": 5,
+      "nonblank": 5,
+      "attribution": "exclusive",
+      "rationale": "Descriptor lookup for internal own-list reads"
+    },
+    {
+      "path": "packages/kernel/src/values.ts",
+      "start": 111,
+      "end": 217,
+      "lines": 107,
+      "nonblank": 107,
+      "attribution": "mixed",
+      "rationale": "Captured primitives include operations needed even without hostile callers"
+    },
+    {
+      "path": "packages/kernel/src/values.ts",
+      "start": 220,
+      "end": 1006,
+      "lines": 787,
+      "nonblank": 747,
+      "attribution": "mixed",
+      "rationale": "Snapshot, limits, diagnostics and cycle checks protect accidents too"
+    },
+    {
+      "path": "packages/kernel/src/coordinator.ts",
+      "start": 143,
+      "end": 213,
+      "lines": 71,
+      "nonblank": 69,
+      "attribution": "mixed",
+      "rationale": "Ambient-safe methods and their documentation intertwined with ordinary map operations"
+    },
+    {
+      "path": "packages/kernel/src/own-array.ts",
+      "start": 1,
+      "end": 168,
+      "lines": 168,
+      "nonblank": 159,
+      "attribution": "mixed",
+      "rationale": "Module discipline plus own-data definitions preserve __proto__ and envelope semantics too"
+    },
+    {
+      "path": "packages/kernel/src/own-array.ts",
+      "start": 194,
+      "end": 240,
+      "lines": 47,
+      "nonblank": 43,
+      "attribution": "mixed",
+      "rationale": "Owned list construction and append logic; replacement still needs ordinary append behavior"
+    },
+    {
+      "path": "packages/kernel/src/own-array.ts",
+      "start": 246,
+      "end": 282,
+      "lines": 37,
+      "nonblank": 33,
+      "attribution": "mixed",
+      "rationale": "Copies, truncation and mappings are still required"
+    },
+    {
+      "path": "packages/kernel/tests/outcome-hostile.test.ts",
+      "start": 1,
+      "end": 383,
+      "lines": 383,
+      "nonblank": 367,
+      "attribution": "exclusive",
+      "rationale": "Dedicated same-process pollution/hostile observation corpus; shared setup included"
+    },
+    {
+      "path": "packages/kernel/tests/poison-catalog.test.ts",
+      "start": 1,
+      "end": 296,
+      "lines": 296,
+      "nonblank": 282,
+      "attribution": "exclusive",
+      "rationale": "Dedicated same-process pollution/hostile observation corpus; shared setup included"
+    },
+    {
+      "path": "packages/kernel/tests/recovery-ambient.test.ts",
+      "start": 1,
+      "end": 366,
+      "lines": 366,
+      "nonblank": 348,
+      "attribution": "exclusive",
+      "rationale": "Dedicated same-process pollution/hostile observation corpus; shared setup included"
+    },
+    {
+      "path": "packages/kernel/tests/review-11-probes.test.ts",
+      "start": 1,
+      "end": 80,
+      "lines": 80,
+      "nonblank": 78,
+      "attribution": "exclusive",
+      "rationale": "Dedicated same-process pollution/hostile observation corpus; shared setup included"
+    },
+    {
+      "path": "packages/kernel/tests/whole-view-ambient.test.ts",
+      "start": 1,
+      "end": 133,
+      "lines": 133,
+      "nonblank": 127,
+      "attribution": "exclusive",
+      "rationale": "Dedicated same-process pollution/hostile observation corpus; shared setup included"
+    },
+    {
+      "path": "packages/kernel/tests/zone-analysis.ts",
+      "start": 1,
+      "end": 1638,
+      "lines": 1638,
+      "nonblank": 1529,
+      "attribution": "infrastructure-mixed",
+      "rationale": "DEC-8/9 evidence/regression machinery; ordinary atomicity/host-policy checks still useful"
+    },
+    {
+      "path": "packages/kernel/tests/zone-inventory.ts",
+      "start": 1,
+      "end": 127,
+      "lines": 127,
+      "nonblank": 118,
+      "attribution": "infrastructure-mixed",
+      "rationale": "DEC-8/9 evidence/regression machinery; ordinary atomicity/host-policy checks still useful"
+    },
+    {
+      "path": "packages/kernel/tests/ambient-reads.test.ts",
+      "start": 1,
+      "end": 327,
+      "lines": 327,
+      "nonblank": 308,
+      "attribution": "infrastructure-mixed",
+      "rationale": "DEC-8/9 evidence/regression machinery; ordinary atomicity/host-policy checks still useful"
+    },
+    {
+      "path": "packages/kernel/tests/control-commits.test.ts",
+      "start": 1,
+      "end": 243,
+      "lines": 243,
+      "nonblank": 225,
+      "attribution": "infrastructure-mixed",
+      "rationale": "DEC-8/9 evidence/regression machinery; ordinary atomicity/host-policy checks still useful"
+    },
+    {
+      "path": "packages/kernel/tests/fault-oracle.test.ts",
+      "start": 1,
+      "end": 424,
+      "lines": 424,
+      "nonblank": 403,
+      "attribution": "infrastructure-mixed",
+      "rationale": "DEC-8/9 evidence/regression machinery; ordinary atomicity/host-policy checks still useful"
+    },
+    {
+      "path": "packages/kernel/tests/fault-sweep.test.ts",
+      "start": 1,
+      "end": 91,
+      "lines": 91,
+      "nonblank": 85,
+      "attribution": "infrastructure-mixed",
+      "rationale": "DEC-8/9 evidence/regression machinery; ordinary atomicity/host-policy checks still useful"
+    },
+    {
+      "path": "packages/kernel/tests/host-members.test.ts",
+      "start": 1,
+      "end": 275,
+      "lines": 275,
+      "nonblank": 260,
+      "attribution": "infrastructure-mixed",
+      "rationale": "DEC-8/9 evidence/regression machinery; ordinary atomicity/host-policy checks still useful"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/fault-child.ts",
+      "start": 1,
+      "end": 475,
+      "lines": 475,
+      "nonblank": 445,
+      "attribution": "infrastructure-mixed",
+      "rationale": "Poison profile and/or ordinary complete-decision fault evidence"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+      "start": 1,
+      "end": 790,
+      "lines": 790,
+      "nonblank": 739,
+      "attribution": "infrastructure-mixed",
+      "rationale": "Poison profile and/or ordinary complete-decision fault evidence"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/fault-scenarios.ts",
+      "start": 1,
+      "end": 306,
+      "lines": 306,
+      "nonblank": 284,
+      "attribution": "infrastructure-mixed",
+      "rationale": "Poison profile and/or ordinary complete-decision fault evidence"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/poison.ts",
+      "start": 1,
+      "end": 536,
+      "lines": 536,
+      "nonblank": 501,
+      "attribution": "infrastructure-mixed",
+      "rationale": "Poison profile and/or ordinary complete-decision fault evidence"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/preload.ts",
+      "start": 1,
+      "end": 172,
+      "lines": 172,
+      "nonblank": 159,
+      "attribution": "infrastructure-mixed",
+      "rationale": "Poison profile and/or ordinary complete-decision fault evidence"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/run-poison-sweep.ts",
+      "start": 1,
+      "end": 162,
+      "lines": 162,
+      "nonblank": 151,
+      "attribution": "infrastructure-mixed",
+      "rationale": "Poison profile and/or ordinary complete-decision fault evidence"
+    },
+    {
+      "path": "packages/kernel/tests/sweep/zone-names.ts",
+      "start": 1,
+      "end": 130,
+      "lines": 130,
+      "nonblank": 119,
+      "attribution": "infrastructure-mixed",
+      "rationale": "Poison profile and/or ordinary complete-decision fault evidence"
+    },
+    {
+      "path": "packages/kernel/tests/values.test.ts",
+      "start": 893,
+      "end": 953,
+      "lines": 61,
+      "nonblank": 59,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/values.test.ts",
+      "start": 1065,
+      "end": 1178,
+      "lines": 114,
+      "nonblank": 111,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/values.test.ts",
+      "start": 1282,
+      "end": 1711,
+      "lines": 430,
+      "nonblank": 413,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/values.test.ts",
+      "start": 1772,
+      "end": 1874,
+      "lines": 103,
+      "nonblank": 99,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/creation.test.ts",
+      "start": 362,
+      "end": 485,
+      "lines": 124,
+      "nonblank": 121,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/creation.test.ts",
+      "start": 630,
+      "end": 690,
+      "lines": 61,
+      "nonblank": 54,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/creation.test.ts",
+      "start": 693,
+      "end": 916,
+      "lines": 224,
+      "nonblank": 205,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/creation.test.ts",
+      "start": 992,
+      "end": 1056,
+      "lines": 65,
+      "nonblank": 63,
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
+    },
+    {
+      "path": "packages/kernel/tests/dispatch.test.ts",
+      "start": 178,
+      "end": 197,
+      "lines": 20,
+      "nonblank": 20,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/dispatch.test.ts",
+      "start": 567,
+      "end": 643,
+      "lines": 77,
+      "nonblank": 76,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/dispatch.test.ts",
+      "start": 676,
+      "end": 726,
+      "lines": 51,
+      "nonblank": 47,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/dispatch.test.ts",
+      "start": 774,
+      "end": 1043,
+      "lines": 270,
+      "nonblank": 250,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/dispatch.test.ts",
+      "start": 1390,
+      "end": 1426,
+      "lines": 37,
+      "nonblank": 37,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/dispatch.test.ts",
+      "start": 1525,
+      "end": 1558,
+      "lines": 34,
+      "nonblank": 33,
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
+    },
+    {
+      "path": "packages/kernel/tests/ingress.test.ts",
+      "start": 535,
+      "end": 561,
+      "lines": 27,
+      "nonblank": 27,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/ingress.test.ts",
+      "start": 576,
+      "end": 816,
+      "lines": 241,
+      "nonblank": 219,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/transaction.test.ts",
+      "start": 149,
+      "end": 234,
+      "lines": 86,
+      "nonblank": 80,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+      "start": 185,
+      "end": 193,
+      "lines": 9,
+      "nonblank": 9,
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
+    },
+    {
+      "path": "packages/kernel/tests/value-refusal-cost.test.ts",
+      "start": 120,
+      "end": 138,
+      "lines": 19,
+      "nonblank": 19,
+      "attribution": "mixed",
+      "rationale": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile."
+    },
+    {
+      "path": "packages/kernel/tests/harness.ts",
+      "start": 23,
+      "end": 119,
+      "lines": 97,
+      "nonblank": 93,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/harness.ts",
+      "start": 148,
+      "end": 278,
+      "lines": 131,
+      "nonblank": 123,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    },
+    {
+      "path": "packages/kernel/tests/harness.ts",
+      "start": 489,
+      "end": 545,
+      "lines": 57,
+      "nonblank": 52,
+      "attribution": "exclusive",
+      "rationale": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+    }
+  ],
+  "totals": {
+    "production_files": 13,
+    "production_lines": 6134,
+    "test_files": 56,
+    "test_lines": 22782,
+    "exclusive_identified_production_lines": 432,
+    "exclusive_identified_test_lines": 3469,
+    "mixed_evidence_infrastructure_lines": 5696,
+    "hostile_only_primary_findings": [
+      "K11-R16-DISP-01",
+      "K11-R16-VAL-01",
+      "K11-R2-VAL-02",
+      "K11-R5-STATE-01",
+      "K11-R5-VAL-03",
+      "K11-R6-STATE-02",
+      "K11-R6-VAL-04",
+      "K11-R7-STATE-03",
+      "K12C1-R10-READ-01",
+      "K12C1-R11-READ-01",
+      "K12C1-R9-HISTORY-01"
+    ],
+    "hostile_only_all_nonalias_labels": [
+      "K1.2-correction-01::SELF-R6-HOST-01",
+      "K1.2-correction-01::SELF-R6-HOST-02",
+      "K1.2-correction-01::SELF-R6-HOST-03",
+      "K1.2-correction-01::SELF-R7-UNSUPPORTED-01",
+      "K11-R16-DISP-01",
+      "K11-R16-VAL-01",
+      "K11-R2-VAL-02",
+      "K11-R5-STATE-01",
+      "K11-R5-VAL-03",
+      "K11-R6-STATE-02",
+      "K11-R6-VAL-04",
+      "K11-R6-VAL-05",
+      "K11-R7-STATE-03",
+      "K12C1-R10-READ-01",
+      "K12C1-R11-READ-01",
+      "K12C1-R9-HISTORY-01"
+    ],
+    "R_foreign_deep_to_slowest_sampled_acceptance_median_ratio": 1.5339539978094194,
+    "slowest_sampled_acceptance": "A-chain-W22-L8"
+  },
+  "costs": [
+    {
+      "shape": "A-chain-W0-L30",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 1496,
+      "ms_median": 1530,
+      "ms_max": 1535,
+      "heapMiB": [
+        146.6,
+        145.8,
+        146
+      ]
+    },
+    {
+      "shape": "A-chain-W14-L16",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 1572,
+      "ms_median": 1594,
+      "ms_max": 1630,
+      "heapMiB": [
+        133.7,
+        133.3,
+        145.2
+      ]
+    },
+    {
+      "shape": "A-chain-W22-L8",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 1802,
+      "ms_median": 1826,
+      "ms_max": 1843,
+      "heapMiB": [
+        116.7,
+        128.8,
+        116.6
+      ]
+    },
+    {
+      "shape": "A-chain-W26-L4",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 1749,
+      "ms_median": 1771,
+      "ms_max": 1783,
+      "heapMiB": [
+        104.7,
+        105.1,
+        107.7
+      ]
+    },
+    {
+      "shape": "A-chain-W28-L2",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 1628,
+      "ms_median": 1643,
+      "ms_max": 1663,
+      "heapMiB": [
+        97.1,
+        93.2,
+        93
+      ]
+    },
+    {
+      "shape": "A-empty-arrays",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 743,
+      "ms_median": 749,
+      "ms_max": 755,
+      "heapMiB": [
+        81.4,
+        94.4,
+        84.7
+      ]
+    },
+    {
+      "shape": "A-empty-arrays-deep",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 1366,
+      "ms_median": 1382,
+      "ms_max": 1399,
+      "heapMiB": [
+        81.8,
+        73.2,
+        72.9
+      ]
+    },
+    {
+      "shape": "A-empty-objects-deep",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 1219,
+      "ms_median": 1253,
+      "ms_max": 1259,
+      "heapMiB": [
+        91.6,
+        95.5,
+        119.3
+      ]
+    },
+    {
+      "shape": "A-members-null",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 118,
+      "ms_median": 119,
+      "ms_max": 124,
+      "heapMiB": [
+        27.4,
+        25.5,
+        13.2
+      ]
+    },
+    {
+      "shape": "A-zeros",
+      "runs": 3,
+      "accepted": true,
+      "ms_min": 384,
+      "ms_median": 387,
+      "ms_max": 397,
+      "heapMiB": [
+        17.6,
+        13.2,
+        13.2
+      ]
+    },
+    {
+      "shape": "R-accessor",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 54,
+      "ms_median": 56,
+      "ms_max": 57,
+      "heapMiB": [
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "shape": "R-cycle-deep",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 1132,
+      "ms_median": 1135,
+      "ms_max": 1141,
+      "heapMiB": [
+        9.1,
+        9.1,
+        7.9
+      ]
+    },
+    {
+      "shape": "R-foreign",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 824,
+      "ms_median": 837,
+      "ms_max": 840,
+      "heapMiB": [
+        7.4,
+        5.4,
+        10.7
+      ]
+    },
+    {
+      "shape": "R-foreign-arrays",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 833,
+      "ms_median": 837,
+      "ms_max": 846,
+      "heapMiB": [
+        4.7,
+        10.8,
+        8.7
+      ]
+    },
+    {
+      "shape": "R-foreign-deep",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 2791,
+      "ms_median": 2801,
+      "ms_max": 2803,
+      "heapMiB": [
+        22.4,
+        22.4,
+        18.4
+      ]
+    },
+    {
+      "shape": "R-foreign-depth16",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 1775,
+      "ms_median": 1809,
+      "ms_max": 1816,
+      "heapMiB": [
+        22.8,
+        19.2,
+        15
+      ]
+    },
+    {
+      "shape": "R-nan-deep",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 137,
+      "ms_median": 137,
+      "ms_max": 139,
+      "heapMiB": [
+        2.9,
+        3,
+        3.2
+      ]
+    },
+    {
+      "shape": "R-nonenumerable",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 34,
+      "ms_median": 36,
+      "ms_max": 37,
+      "heapMiB": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "shape": "R-too-deep",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 1205,
+      "ms_median": 1208,
+      "ms_max": 1210,
+      "heapMiB": [
+        20.3,
+        10.3,
+        12.4
+      ]
+    },
+    {
+      "shape": "R-undefined-deep",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 130,
+      "ms_median": 132,
+      "ms_max": 133,
+      "heapMiB": [
+        3,
+        2.8,
+        5.1
+      ]
+    },
+    {
+      "shape": "R-undefined-members",
+      "runs": 3,
+      "accepted": false,
+      "ms_min": 58,
+      "ms_median": 59,
+      "ms_max": 59,
+      "heapMiB": [
+        7.4,
+        3.8,
+        7.4
+      ]
+    }
+  ]
+}

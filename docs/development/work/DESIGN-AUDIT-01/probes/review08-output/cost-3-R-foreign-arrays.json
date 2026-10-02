@@ -1,0 +1,16 @@
+{
+  "label": "cost-3-R-foreign-arrays",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "R-foreign-arrays"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"R-foreign-arrays\",\"ok\":false,\"records\":10,\"issues\":1044481,\"codes\":[\"unsupported_form\",\"too_many_bytes\"],\"ms\":846,\"heapMiB\":8.7}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.93
+}

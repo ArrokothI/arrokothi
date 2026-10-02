@@ -1,0 +1,16 @@
+{
+  "label": "cost-1-A-chain-W26-L4",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "A-chain-W26-L4"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"A-chain-W26-L4\",\"ok\":true,\"bytes\":1032301,\"records\":0,\"issues\":0,\"codes\":[],\"ms\":1749,\"heapMiB\":104.7}\n",
+  "stderr": "",
+  "elapsed_seconds": 1.836
+}

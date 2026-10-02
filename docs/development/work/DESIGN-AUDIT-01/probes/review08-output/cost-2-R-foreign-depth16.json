@@ -1,0 +1,16 @@
+{
+  "label": "cost-2-R-foreign-depth16",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "R-foreign-depth16"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"R-foreign-depth16\",\"ok\":false,\"records\":10,\"issues\":1044481,\"codes\":[\"unsupported_form\",\"too_many_bytes\"],\"ms\":1809,\"heapMiB\":19.2}\n",
+  "stderr": "",
+  "elapsed_seconds": 1.894
+}

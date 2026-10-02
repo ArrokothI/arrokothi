@@ -1,0 +1,16 @@
+{
+  "label": "n15-suite",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/mutants.mjs",
+    "N15"
+  ],
+  "timeout_seconds": 300,
+  "exit": 0,
+  "stdout": "TREE /Users/linzhenglin/Desktop/ArrokothAI/design-audit-01; node v26.8.1; 45 test files\nCONTROL OK CONTROL \u2014 tests 1720 pass 1720 fail 0 cancelled 0 (7885 ms)\nSURVIVED   N15 array surplus names uncharged \u2014 tests 1720 pass 1720 fail 0 cancelled 0 (7867 ms)\n",
+  "stderr": "",
+  "elapsed_seconds": 15.818
+}

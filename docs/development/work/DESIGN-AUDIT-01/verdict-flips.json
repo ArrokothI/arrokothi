@@ -1,0 +1,119 @@
+[
+  {
+    "packet": "K1.0",
+    "earlier": "docs/development/work/K1.0/review-14.md",
+    "later": "docs/development/work/K1.0/review-15.md",
+    "H": "0a9333faa7ea9cdf742f01b16af1069357b88bad",
+    "kind": "recorded",
+    "missed_dimension": "Unicode structural whitespace versus JavaScript trim/\\s: a nonbreaking space changes whether a heading is a delimiter.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.0",
+    "earlier": "docs/development/work/K1.0/review-17.md",
+    "later": "docs/development/work/K1.0/cleanup-01.md",
+    "H": "f3aa29d7ecba2a23aa85788b7efdebdd383cab24",
+    "kind": "cleanup reopening",
+    "missed_dimension": "Whole-cell meaning after Markdown decoding: valid prefixes plus trailing junk, rather than only token extraction.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.0-correction-01",
+    "earlier": "docs/development/work/K1.0-correction-01/review-02.md",
+    "later": "docs/development/work/K1.0-correction-01/cleanup-01.md",
+    "H": "1295c68b03ae5d8eb0bbb86e974353402ff9a518",
+    "kind": "cleanup reopening",
+    "missed_dimension": "Final collection comparator: distinct element partitions with the same comma-joined string, not merely schema and scalar comparisons.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.1",
+    "earlier": "docs/development/work/K1.1/review-10.md",
+    "later": "docs/development/work/K1.1/review-11.md",
+    "H": "a047283523f7487cc025f4cf58d17028caad6389",
+    "kind": "recorded",
+    "missed_dimension": "Interleave hidden-scope decisions with visible decisions; compare receipt/refusal positions as well as lookup and error text.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.1",
+    "earlier": "docs/development/work/K1.1/review-14.md",
+    "later": "docs/development/work/K1.1/review-15.md",
+    "H": "d93d7d2a0a59b31b3d74ceebfb036837150f729e",
+    "kind": "recorded",
+    "missed_dimension": "Cross-boundary creation/input key collision; cumulative Layer-1/2 changes and H-to-record payload, rather than only the last correction delta.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.1",
+    "earlier": "docs/development/work/K1.1/review-14.md",
+    "later": "docs/development/work/K1.1/review-16.md",
+    "H": "d93d7d2a0a59b31b3d74ceebfb036837150f729e",
+    "kind": "recorded, same accepted H as preceding row",
+    "missed_dimension": "Ambient second-hop lookups: iterator.next, Promise species during rejection handling, and revoked-Proxy non-text diagnostics; distinguish in-memory atomicity from durability prose.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.1-correction-01",
+    "earlier": "docs/development/work/K1.1-correction-01/review-04.md",
+    "later": "docs/development/work/K1.1-correction-01/review-05.md",
+    "H": "b883f291d83060b360b419e2a58b771f9abbc74b",
+    "kind": "recorded",
+    "missed_dimension": "Evaluate the candidate contract against governing B: disabling its mandatory scope guard is not authorized by a green candidate-local check or retained owner prose.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.1-reference-01",
+    "earlier": "docs/development/work/K1.1-reference-01/review-01.md",
+    "later": "docs/development/work/K1.1-reference-01/review-02.md",
+    "H": "d4bd49fd49fb6d70a992635cf2b6bf8317c3af89",
+    "kind": "recorded",
+    "missed_dimension": "Cross-page ownership conventions and ledger truth: target concept pages versus shipped claims, single-owner navigation, and already recorded acceptance versus outstanding-status text.",
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+  },
+  {
+    "packet": "K1.2",
+    "earlier": "docs/development/work/K1.2/review-08-merged.md",
+    "later": "docs/development/work/K1.2/review-08-merged.md",
+    "H": "ad4a0e8b4bcfa5e3064a53024fe49ae3d63f38c7",
+    "kind": "disclosed in merged record",
+    "missed_dimension": "Run the documentation gate at exact H, including its administrative additions; a passing C log does not certify H.",
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+  },
+  {
+    "packet": "K1.2",
+    "earlier": "docs/development/work/K1.2/review-13.md",
+    "later": "docs/development/work/K1.2/review-14.md",
+    "H": "c36cbe04f7c97f198794bfede972d4861247cca0",
+    "kind": "recorded",
+    "missed_dimension": "Producer-consumer closure: maximum valid namespace plus minted suffix and advancing exchange counters, not only short externally malformed identifiers.",
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+  },
+  {
+    "packet": "K1.2-correction-01",
+    "earlier": "docs/development/work/K1.2-correction-01/review-03.md",
+    "later": "docs/development/work/K1.2-correction-01/review-04.md",
+    "H": "312f2584d14b0c168c2152c373a4f07d4a292d74",
+    "kind": "recorded",
+    "missed_dimension": "Refused shared graphs with repeated invalid occurrences: allocation per issue rather than accepted bytes; whole returned/retained coordinates rather than a few identifiers.",
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+  },
+  {
+    "packet": "K1.2-correction-01",
+    "earlier": null,
+    "later": "docs/development/work/K1.2-correction-01/review-06.md",
+    "H": "d5ffd35f4d659ed685449119b8372c2efbde6204",
+    "kind": "disclosed unrecorded draft",
+    "missed_dimension": "No-Proxy foreign-prototype chain length per diagnostic, and exact minted/redelivery/inspection coordinates. No review-05 or independent ACCEPT text is invented.",
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+  },
+  {
+    "packet": "K1.2-correction-01",
+    "earlier": null,
+    "later": "docs/development/work/K1.2-correction-01/review-08.md",
+    "H": "9248e56705b962bfbce4699536c200fe007be942",
+    "kind": "disclosed unrecorded draft",
+    "missed_dimension": "Depth multiplied by refused-container width, accepted shapes varying depth/width, and array-surplus charge deletion. No review-07 or independent ACCEPT text is invented.",
+    "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+  }
+]

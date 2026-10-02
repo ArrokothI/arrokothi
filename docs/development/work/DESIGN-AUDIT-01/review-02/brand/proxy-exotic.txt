@@ -1,0 +1,65 @@
+{
+ "node": "v25.2.1",
+ "Map (control)": {
+  "kernel": {
+   "ok": false,
+   "codes": [
+    "unsupported_form"
+   ]
+  },
+  "util.types.isMap": true,
+  "util.types.isDate": false,
+  "util.types.isTypedArray": false,
+  "util.types.isProxy": false
+ },
+ "re-prototyped Map": {
+  "kernel": {
+   "ok": true,
+   "canonical": "{}"
+  },
+  "util.types.isMap": true,
+  "util.types.isDate": false,
+  "util.types.isTypedArray": false,
+  "util.types.isProxy": false
+ },
+ "Proxy(re-prototyped Map), empty handler": {
+  "kernel": {
+   "ok": true,
+   "canonical": "{}"
+  },
+  "util.types.isMap": false,
+  "util.types.isDate": false,
+  "util.types.isTypedArray": false,
+  "util.types.isProxy": true
+ },
+ "Proxy(re-prototyped Map) other contents": {
+  "kernel": {
+   "ok": true,
+   "canonical": "{}"
+  },
+  "util.types.isMap": false,
+  "util.types.isDate": false,
+  "util.types.isTypedArray": false,
+  "util.types.isProxy": true
+ },
+ "Proxy(re-prototyped Date)": {
+  "kernel": {
+   "ok": true,
+   "canonical": "{}"
+  },
+  "util.types.isMap": false,
+  "util.types.isDate": false,
+  "util.types.isTypedArray": false,
+  "util.types.isProxy": true
+ },
+ "Proxy(re-prototyped Uint8Array)": {
+  "kernel": {
+   "ok": true,
+   "canonical": "{\"0\":1,\"1\":2}"
+  },
+  "util.types.isMap": false,
+  "util.types.isDate": false,
+  "util.types.isTypedArray": false,
+  "util.types.isProxy": true
+ }
+}

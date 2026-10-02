@@ -1,0 +1,16 @@
+{
+  "label": "cost-3-R-cycle-deep",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "R-cycle-deep"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"R-cycle-deep\",\"ok\":false,\"records\":10,\"issues\":1044481,\"codes\":[\"cycle\",\"too_many_bytes\"],\"ms\":1141,\"heapMiB\":7.9}\n",
+  "stderr": "",
+  "elapsed_seconds": 1.228
+}

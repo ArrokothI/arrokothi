@@ -1,0 +1,542 @@
+{
+  "session": "Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.",
+  "provenance": "review-02 REALM-01, brief-03 R3-CORPUS; historical IDs from classifications.json at reviewed H",
+  "scope": "Mutation prevention mechanisms, not historical product replay or a supported hardened Kernel. Current Kernel positive controls remain in round2-checks.py. Each invocation is a fresh process.",
+  "findings": {
+    "K11-R2-VAL-02": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-02.md:73",
+      "probes": [
+        "proxyCoherence"
+      ],
+      "reach": "not-addressed",
+      "reason": "Descriptor/read disagreement is caller-defined behavior, unaffected by intrinsic freezing."
+    },
+    "K11-R5-STATE-01": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-05.md:50",
+      "probes": [
+        "mapSet"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Frozen Map.prototype rejects replacement of set; atomic whole-decision behavior is a separate obligation."
+    },
+    "K11-R5-VAL-03": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-05.md:77",
+      "probes": [
+        "prototype-comparison"
+      ],
+      "reach": "binding-gap",
+      "reason": "Flag alone leaves global Object replaceable in getPrototypeOf; durable binding pinning closes this hop."
+    },
+    "K11-R6-STATE-02": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-06-supplement-01.md:59",
+      "probes": [
+        "arrayIndex",
+        "objectIndex",
+        "ownGetter"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Frozen intrinsic chains reject numeric setters; own envelope getters still execute."
+    },
+    "K11-R6-VAL-04": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-06-supplement-01.md:82",
+      "probes": [
+        "arrayIndex"
+      ],
+      "reach": "poison-blocked",
+      "reason": "The holey scratch-array attack needs a mutable inherited numeric accessor; observation coherence remains separately checked."
+    },
+    "K11-R6-VAL-05": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-07.md:103",
+      "probes": [
+        "arrayIndex",
+        "objectIndex"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Clean frozen array/object chains prevent the recorded inherited-index serializer channel."
+    },
+    "K11-R7-STATE-03": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-07.md:62",
+      "probes": [
+        "descriptorGet"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Object.prototype cannot acquire the inherited descriptor get field; future descriptors must still own their fields."
+    },
+    "K11-R16-VAL-01": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-16.md:47",
+      "probes": [
+        "iteratorNext",
+        "iteratorResult"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Frozen iterator holder and Object.prototype block both next replacement and inherited result-field pollution."
+    },
+    "K11-R16-DISP-01": {
+      "source": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/review-16.md:63",
+      "probes": [
+        "promiseSpecies"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Intrinsic species replacement throws; own promise constructors/hooks and operational delivery errors still need explicit settlement evidence."
+    },
+    "K1.2-correction-01::SELF-R6-HOST-01": {
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-10.md:268",
+      "probes": [
+        "hostObject",
+        "hostFunction",
+        "ownGetter"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Clean frozen Object/Function prototypes block inherited isSafeToReplace injection; own trusted callbacks still run."
+    },
+    "K1.2-correction-01::SELF-R6-HOST-02": {
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-10.md:268",
+      "probes": [
+        "controlScopes"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Frozen Object.prototype blocks inherited controlScopes, not an authorization-planner error."
+    },
+    "K1.2-correction-01::SELF-R6-HOST-03": {
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-10.md:268",
+      "probes": [
+        "mailboxCapacity",
+        "emissionsPerOutcome"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Clean frozen Object.prototype blocks later inherited host-policy values; pre-freeze residue requires startup validation."
+    },
+    "K1.2-correction-01::SELF-R7-UNSUPPORTED-01": {
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-11.md:98",
+      "probes": [
+        "errorName"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Frozen Error.prototype blocks the interceptor; ordinary assignment can also fail under freezing, so keep own-name construction and positive controls."
+    },
+    "K12C1-R9-HISTORY-01": {
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-09.md:141",
+      "probes": [
+        "historyGetter",
+        "ownGetter"
+      ],
+      "reach": "poison-blocked",
+      "reason": "Frozen Object.prototype blocks resultingEpoch pollution; own activationId getter execution and commit/history ordering remain."
+    },
+    "K12C1-R10-READ-01": {
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-10.md:164",
+      "probes": [
+        "historyGetter"
+      ],
+      "reach": "evidence-gap",
+      "reason": "Freezing stops the reproduced inherited resultingEpoch poison, not missing quoted/computed/assignment destructuring in the inventory. Keep its evidence correction."
+    },
+    "K12C1-R11-READ-01": {
+      "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-11.md:154",
+      "probes": [
+        "historyGetter"
+      ],
+      "reach": "evidence-gap",
+      "reason": "Freezing stops this pollution channel, not partial/nested type and predicate bypasses of a static guard. Keep runtime and guard limits."
+    }
+  },
+  "channels": {
+    "arrayIndex": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "arrayIndex",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "controlScopes": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "controlScopes",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "descriptorGet": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "descriptorGet",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "emissionsPerOutcome": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "emissionsPerOutcome",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "errorName": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "errorName",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "historyGetter": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "historyGetter",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "hostFunction": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "hostFunction",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "hostObject": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "hostObject",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "iteratorNext": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "iteratorNext",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "iteratorResult": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "iteratorResult",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "mailboxCapacity": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "mailboxCapacity",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "mapSet": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "mapSet",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "objectIndex": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "objectIndex",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "promiseSpecies": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "promiseSpecies",
+      "expected_frozen": {
+        "mutation": "TypeError",
+        "frozenHolder": true
+      },
+      "expected_unfrozen": {
+        "mutation": "installed",
+        "frozenHolder": false
+      }
+    },
+    "proxyCoherence": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "proxyCoherence",
+      "expected_frozen": {
+        "descriptor": 1,
+        "read": 2,
+        "mismatch": true
+      },
+      "expected_unfrozen": {
+        "descriptor": 1,
+        "read": 2,
+        "mismatch": true
+      }
+    },
+    "ownGetter": {
+      "probe": "probes/hardening-channels.mjs",
+      "argument": "ownGetter",
+      "expected_frozen": {
+        "value": 1,
+        "calls": 1
+      },
+      "expected_unfrozen": {
+        "value": 1,
+        "calls": 1
+      }
+    },
+    "prototype-comparison": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "prototype-comparison",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "liveAccepted": true,
+        "primordialAccepted": false
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "liveAccepted": true,
+        "primordialAccepted": false
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "liveAccepted": false,
+        "primordialAccepted": false
+      }
+    }
+  },
+  "bindings": {
+    "isNaN": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "isNaN",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "throws: NaN is not allowed"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "throws: NaN is not allowed"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      }
+    },
+    "isFinite": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "isFinite",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "throws: Infinity is not allowed"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "throws: Infinity is not allowed"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      }
+    },
+    "Object": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "Object",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"]}"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"]}"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      }
+    },
+    "Array": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "Array",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      }
+    },
+    "JSON": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "JSON",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[999,\"x\"],\"b\":999}"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[999,\"x\"],\"b\":999}"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      }
+    },
+    "Set": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "Set",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "throws: Circular reference detected"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "throws: Circular reference detected"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      }
+    },
+    "Error": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "Error",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}",
+        "errorPath": "replacement: NaN is not allowed"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}",
+        "errorPath": "replacement: NaN is not allowed"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}",
+        "errorPath": "NaN is not allowed"
+      }
+    },
+    "Symbol": {
+      "probe": "probes/binding-capture.mjs",
+      "argument": "Symbol",
+      "expected_frozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      },
+      "expected_unfrozen": {
+        "replacement": "replaced",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      },
+      "expected_pinned": {
+        "replacement": "TypeError",
+        "trapCalls": 1,
+        "before": "{\"a\":[1,\"x\"],\"b\":2}",
+        "after": "{\"a\":[1,\"x\"],\"b\":2}"
+      }
+    }
+  }
+}

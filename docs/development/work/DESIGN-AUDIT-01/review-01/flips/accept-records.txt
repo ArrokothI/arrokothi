@@ -1,0 +1,57 @@
+== K0.1-process-review K0.1-process-review/review-04.md
+    - Reviewed candidate H4: `3736e580f435e0b9eb91ff49ebb75f6d7750dcaa`.
+    - Prior reviewed H3: `f7fddcc661e2e2f579d2da5259a274fae9124693` (`CHANGES REQUIRED`).
+    Acceptance is bound only to H4 `3736e580f435e0b9eb91ff49ebb75f6d7750dcaa`. It does not certify this transcription commit, any later merge/integration commit, or any successor implementation/release.
+== K0.2 K0.2/review-17.md
+    - submitted handoff H16: `90a6f37eaeb61009025449a1abc7e6d31dc1dbb2`.
+== K1.0-correction-01 K1.0-correction-01/review-02.md
+    - historically accepted K1.0 H: `f3aa29d7ecba2a23aa85788b7efdebdd383cab24` over C `d693d59aefe5335c8950d57cec6d6b57e375cadc`;
+    - cleanup/reopening head: `b8e394dd2a58b839b131943f4ca9b250abff94af`;
+    - round-1 correction C/H: `76ce938074ffa910fbd74374e388ba8d226af4c6` / `61133e9c8fd6fc80c6995fd26495e11e9f7f2e57`;
+    - submitted round-2 H: `1295c68b03ae5d8eb0bbb86e974353402ff9a518`;
+== K1.0-correction-02 K1.0-correction-02/review-01.md
+    - historical K1.0 accepted H: `f3aa29d7ecba2a23aa85788b7efdebdd383cab24` over C `d693d59aefe5335c8950d57cec6d6b57e375cadc`, acceptance record `36595f57d1f8cec8c4bf8a6293e888ca27750fab`;
+    - historical K1.0-correction-01 accepted H: `1295c68b03ae5d8eb0bbb86e974353402ff9a518` over C `36460438e95e968beec0b354b07a616b53981256`, acceptance record `41728edfc3cfc5c745e4293c511a740942f7b631`;
+    - owner-delegated correction-01 cleanup/invalidation head: `968d74605cd34b30541bfd868b30bb1d0868cc41`;
+    - submitted correction-02 H: `def91fb9f34ade40a65cbde999c0ffe192d18239`;
+== K1.0 K1.0/review-14.md
+    - previous reviewed H13: `d299e4215634b496e3ae8c54708b45b0c14231bf`;
+    - submitted round-14 H: `0a9333faa7ea9cdf742f01b16af1069357b88bad`;
+    Benchmark E1 preparation remains at H2 `8de04779d279dba82cf834d419e465d2b677ef46`, parent C2 `d8f17549c31f9ee5d995e773c2f211faed2785fb`; benchmark `main` remains `5a3f1ba525f68244701b1f73a1d29c4902ffe
+== K1.0 K1.0/review-17.md
+    - previous reviewed H15: `d3d614f6cee4393d4ac63ecc2f29045b205505ff`;
+    - submitted round-16 H: `f3aa29d7ecba2a23aa85788b7efdebdd383cab24`;
+    - benchmark E1 preparation remains branch H2 `8de04779d279dba82cf834d419e465d2b677ef46`, benchmark `main` `5a3f1ba525f68244701b1f73a1d29c4902ffe589`, accepted by nobody and carrying no E1 result.
+== K1.1-correction-01 K1.1-correction-01/review-07.md
+    **Candidate:** exact H4 `d69671168c0dcf5db6a7683d631027487c7520fe` over C4 `56164092d128c6767f501962174ac81c6363af9e`
+    The governing process baseline and original K1.1 review base are both **B = `777b9955fb3a443f700b4f3d1f4f2aef1869345b`**. I applied the 006/008/012 rules at that baseline; correction-contract revision
+    The exact submitted payload is **C4 = `56164092d128c6767f501962174ac81c6363af9e`**. The exact candidate is **H4 = `d69671168c0dcf5db6a7683d631027487c7520fe`**. Immediately before verdict I re-read the
+== K1.1-reference-01 K1.1-reference-01/review-01.md
+    - review head H: `d4bd49fd49fb6d70a992635cf2b6bf8317c3af89`;
+    - accepted implementation H5: `52b1600f3b42e3a360fdc3395178f1d147edf304`;
+    The branch had advanced beyond H by the time this review record was pushed. I inspected H to the then-current remote tip `8e5832520644a183e4ee428f8abfae88761fb8a8`: the three intervening commits are a
+== K1.1-reference-01 K1.1-reference-01/review-08.md
+    Base `519ba002378707a4deccff1ea0a243d21eb694b7`; reviewed H `644dfffc7904176ee3a4f9943310cf926408a113`
+    for the candidate branch and `07f7502c4a7d75aa37ab7694c5e62522e0e8c9ec` for `main`. The head I
+    | A — supplement base | `519ba002378707a4deccff1ea0a243d21eb694b7` | ancestor of H9 |
+    | B — governing policy baseline | `777b9955fb3a443f700b4f3d1f4f2aef1869345b` | 006/008/012 byte-identical at H9 |
+== K1.1 K1.1/review-10.md
+    - **rejected H11:** `ccc0140ffca7fe2196cb80e57d6eb2d767666793`
+    - **submitted H12:** `a047283523f7487cc025f4cf58d17028caad6389`
+== K1.1 K1.1/review-14.md
+    - **Candidate H17:** `d93d7d2a0a59b31b3d74ceebfb036837150f729e`
+    At review time the shared packet branch had advanced **one commit after H17**, to `9893376143395c0345b8d931e3a65ecfc3db2fe8` (`branch-cleanup`), changing only `mental-model/driver.md`. That post-H17 c
+    - Its merge parents are H16 records `41dd2fb14e4744eb71070cab0997225b96a86afc` and owner documentation commit `e94ee6b1e087309eea1a825d33b9293275ec5490`.
+== K1.1-correction-02 K1.1-correction-02/review-03.md
+    - Previous H: `806bae282b542be101e54a3a3d1ca0c681de63cb`; [review-02](review-02.md), transcribed at `61f858d3a7b33fddfe1c2f135ce77731cc616f14`.
+    - Reviewed H: **`719abbf9e55e7489b6255a08cbb9e97a1e960a5e`**.
+    - Contract at H: Git blob `8111d428984ba4922bb7a7a23b662afc5832faea`, unchanged since round 2.
+    Reviewed the correction and its relationship to the cumulative code/contract. `61f858d..1d5a3e1` adds only `measure-probe.mjs`; its body after the nine-line header exactly matches the previous attempt
+== K1.2-correction-01 K1.2-correction-01/review-revision-10-independent-2026-09-30/review.md
+    - Reviewed candidate **H: `b7191dbf630defeff7756122a6798e15d0b73dd3`**, containing `implementation-09.md`.
+    - Owner correction release: `6ed7d3a6e3d7190aae5bbdfcf10dd515a6b45abb`, including K1.2 invalidation-01. Its exception permits correction of the cumulative unintegrated candidate.
+    - Prerequisites: K1.1 correction accepted H `52b1600f3b42e3a360fdc3395178f1d147edf304` and reference accepted H `644dfffc7904176ee3a4f9943310cf926408a113`, integrated at `b53ccb48a8fd4b9d0b0028fc11e92
+    - Previous reviewed H: `4a917f8caac04e7d9861e0ec3638662d52f9d3ae`. Both review-12 and the supplied same-H independent review concern that older candidate. The latter is recorded at `4156646dbbc3aeac1f
+== K1.2 K1.2/review-13.md
+    - Reviewed candidate H14: `c36cbe04f7c97f198794bfede972d4861247cca0`.
+    Acceptance in this record binds only to exact H14 `c36cbe04f7c97f198794bfede972d4861247cca0`. It is not an integration receipt and

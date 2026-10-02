@@ -1,0 +1,30 @@
+[
+  {
+    "id": "CONTROL",
+    "exit": 0,
+    "signal": null,
+    "tests": 1720,
+    "pass": 1720,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7885,
+    "failed": [],
+    "verdict": "CONTROL OK"
+  },
+  {
+    "id": "N15 array surplus names uncharged",
+    "exit": 0,
+    "signal": null,
+    "tests": 1720,
+    "pass": 1720,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "ms": 7867,
+    "failed": [],
+    "verdict": "SURVIVED"
+  }
+]

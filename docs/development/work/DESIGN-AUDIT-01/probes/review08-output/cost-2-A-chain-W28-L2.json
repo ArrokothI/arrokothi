@@ -1,0 +1,16 @@
+{
+  "label": "cost-2-A-chain-W28-L2",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "A-chain-W28-L2"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"A-chain-W28-L2\",\"ok\":true,\"bytes\":1044639,\"records\":0,\"issues\":0,\"codes\":[],\"ms\":1663,\"heapMiB\":93.2}\n",
+  "stderr": "",
+  "elapsed_seconds": 1.752
+}

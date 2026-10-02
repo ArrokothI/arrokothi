@@ -1,0 +1,24 @@
+Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.
+
+# Owner checks and provenance — round 2
+
+The complete six checks are preserved verbatim in [owner-decisions-02 section 1](owner-decisions-02.md#1-the-six-extra-checks-with-provenance). The owner explicitly supplied that file in this session to replace the missing placeholder. Its recorder identifies Claude Code, `claude-sonnet-5-5`, and sources the forwarded original prompt to Opus session `9d3c2edb-f457-407e-b79c-f2b32b5cb4fd`, 2026-09-30, with owner walkthrough on 2026-10-01. I can verify the supplied file and this instruction; I cannot independently inspect that earlier conversation. The file's initial untracked state is recorded in design-02; its bytes are committed unchanged in this payload.
+
+These are **extra checks a–f**, separate from brief-01's starting items a–f. Decisions in section 2 are selected directions for drafts only. This map records evidence and limits, not a new owner quotation.
+
+| Extra | Verbatim source locator | Evidence and round-2 interpretation |
+|---|---|---|
+| a | owner-decisions-02.md section 1 fenced item a | [Measurements](measurements.md), [span manifest](hostile-test-spans.json), [DA-1](da-1-table.md), [register A/B/F09/F10](register.md), [option claims](option-claims.md). Corrected four mixed spans; line counts are attribution, not predicted deletion. Cooperative/live, adversarial/live, canonical core/wrapper and optional hardening are explicit. Supported SDK baseline and whole-repository import search retained. |
+| b | owner-decisions-02.md section 1 fenced item b | [Original reruns](review08-results.md), [sealed raw runs](probes/review08-output/manifest-all.json), [consumer probe](probes/exotic-consumers.json), [register C/F02/F10](register.md). Original runs pin B, which was main for that audit, not an unrecorded moving main. No R8 timing rerun this round; unchanged derivations verified. Current ordinary/frozen availability reruns are distinct review-01 corpus. |
+| c | owner-decisions-02.md section 1 fenced item c | [CORE meter/transport split](decision-drafts/CORE.md), [F10 options](decision-drafts/F10.md), [inventory D05](claim-inventory.md). Wrapper retains abstract-operation meter; core byte-length bound also needs a validator-work argument; transport cap is separate refusal, never semantic invalidity. |
+| d | owner-decisions-02.md section 1 fenced item d | [Responsibility map](coordinator-map.md), [D](decision-drafts/D.md), [F03](decision-drafts/F03.md), [F11](decision-drafts/F11.md), [F12](decision-drafts/F12.md), [F15](decision-drafts/F15.md). Distinct sole-writer/plan/constructor/history checks, bypass mutants and unchanged full decisions; waits/Effects/durability dependencies described without designing K1.3. |
+| e | owner-decisions-02.md section 1 fenced item e | [Catalog](evidence-inventory.md), [prose evidence locators](evidence-mentions.json), [E](decision-drafts/E.md), [F14](decision-drafts/F14.md), [F16](decision-drafts/F16.md). Each existing catalog row has corpus/current-suite/retirement disposition. TOOLS-01 first; hostile gates only retire after binding and analyzer only after refactor mapping; complete-decision fault/transition evidence stays. |
+| f | owner-decisions-02.md section 1 fenced item f | [Verdict flips/checklist](verdict-flips.md), [F](decision-drafts/F.md). Each recorded/disclosed same-H row identifies missed dimension; 016 reconciliation and invalidation exclusions now explicit. Reviewer prompt gets checklist through owner's separate process action; brief inclusion undecided. |
+
+## Correction to historical authority wording
+
+The “design-check pre-approved” assertion in design-01, implementation-01 and the old ledger row is sourced to the forwarded prompt's step 2, as owner-decisions-02 section 1 now explains. It is **not a verbatim owner approval**. Historical records remain untouched; this note supersedes their provenance description and the active ledger wording is corrected. The current user instruction authorizes this correction round to proceed from design-02 under the named stop conditions. The older implementation-01 statement that extras were evaluated now has this explicit source/evidence map; the source was unavailable to review-01, whose finding remains historically accurate.
+
+## Selected directions and remaining open choices
+
+[CORE](decision-drafts/CORE.md) maps section 2 a–f, the required amendments and successor sequence. Wrapper package placement and transport cap are proposals with alternatives and finishable tests, not silently selected policy. Both holds remain. No process or architecture owner is amended here.

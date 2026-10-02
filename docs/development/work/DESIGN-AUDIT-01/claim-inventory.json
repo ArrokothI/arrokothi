@@ -1,0 +1,86 @@
+{
+  "session": "Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner\u2013Claude conversation or independent acceptance authority.",
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "claims": {
+    "V-DOMAIN": {
+      "source": "../../../../mental-model/concepts/values.md#boundary-value-and-root",
+      "claim": "Logical JSON domain; unsupported forms refused, never silently repaired; duplicate decoded keys refused."
+    },
+    "V-LIMITS": {
+      "source": "../../../../mental-model/concepts/values.md#fixed-semantic-limits",
+      "claim": "Four per-root limits, no aggregate semantic cap; equal/one-over edges; decision-05 governs held work meaning."
+    },
+    "V-SNAPSHOT": {
+      "source": "../../../../mental-model/concepts/values.md#in-process-value-capture",
+      "claim": "One snapshot: validation, bytes, retained content, inspection and Activation all use the same immutable snapshot."
+    },
+    "V-READING": {
+      "source": "../../../../mental-model/concepts/values.md#in-process-value-capture",
+      "claim": "One reading or none: coherent-Proxy observation; no reuse of later caller observations."
+    },
+    "V-ENV": {
+      "source": "../../../../mental-model/concepts/values.md#in-process-value-capture",
+      "claim": "Canonical bytes that the environment cannot steer: output independence, refusal when setup fails, restoration of temporary environment."
+    },
+    "V-ENVELOPE": {
+      "source": "../../../../mental-model/concepts/values.md#in-process-value-capture",
+      "claim": "Own-envelope fields; inherited fields absent, own accessors may run once; payload accessors refused."
+    },
+    "V-WIRE": {
+      "source": "../../../../mental-model/concepts/values.md#codec",
+      "claim": "Transport may carry non-canonical text; canonical equality independent of wire spelling; no required canonical wire codec."
+    },
+    "D03": {
+      "source": "../K1.2/decision-03.md",
+      "claim": "decision-03 items 2\u20135: bounded chosen work/single observation/ambient safety; item 5 forbids Proxy rejection, acceptance change or capture relocation without authority."
+    },
+    "D04": {
+      "source": "../K1.2/decision-04.md",
+      "claim": "decision-04 supersedes D03 item 1 only; excludes Proxy engine work, retains chosen-count limits and item 5 prohibitions."
+    },
+    "D05": {
+      "source": "../K1.2/decision-05.md",
+      "claim": "decision-05: per-root metered chosen work, budget derived from four limits, helpers, allocation, listing charges; no timing gate; correction-03 owns work."
+    },
+    "DEC8": {
+      "source": "../K1.2-correction-01/contract.md",
+      "claim": "DEC-8: zone reads no member its object may not own; ambient absence cannot supply a value or execute code."
+    },
+    "DEC9": {
+      "source": "../K1.2-correction-01/contract.md",
+      "claim": "DEC-9: recovery controls prebuild retained and returned values before first mutation; complete decision and receipt positions."
+    },
+    "AM02": {
+      "source": "../K1.2-correction-01/amendment-02.md",
+      "claim": "Amendment 02 reopened ambient history/optional-member reconstruction with original acceptance/single-observation obligations unchanged."
+    },
+    "AM03-EVIDENCE": {
+      "source": "../K1.2-correction-01/amendment-03.md",
+      "claim": "Amendment 03 items 1\u20133: DEC-8/9 binding, bounded poison/fault sweeps are acceptance evidence; static analyzer is a guard with known gaps."
+    },
+    "AM03-4": {
+      "source": "../K1.2-correction-01/amendment-03.md",
+      "claim": "Amendment 03 item 4 defers structural enforcement by construction (null-prototype records, sole writer) to audit decisions, no sound-analyzer obligation."
+    },
+    "TRUST": {
+      "source": "../../../../AGENTS.md#security-and-trust",
+      "claim": "Trusted Execution may use ambient capabilities; Kernel guarantees apply to Kernel-mediated paths."
+    },
+    "ISOLATION": {
+      "source": "../../../../AGENTS.md#security-and-trust",
+      "claim": "Isolated Execution is physically contained according to the deployment claim; Kernel authority alone does not prevent ambient native actions. Prevention requires Kernel mediation or isolation; telemetry/observation is not enforcement."
+    },
+    "BASELINE": {
+      "source": "../../002-implemented-kernel-baseline.md#value-refusal-diagnostics",
+      "claim": "Current value section: exact capture, limits, single observations, coherent-Proxy acceptance, ambient safety and DEC-7 weights unchanged; V-D1 held."
+    },
+    "K11C03": {
+      "source": "../../007-work-packets.md",
+      "claim": "K1.1-correction-03 row/seed: metered V-D1, audit threat-model dependency, transferred depth/N15; O-R8-4 currently needs scope amendment."
+    },
+    "K14": {
+      "source": "../../007-work-packets.md",
+      "claim": "K1.4 row and BASELINE bridge assignment: no supported SDK consumer uses target Kernel yet; bridge remains unreleased."
+    }
+  }
+}

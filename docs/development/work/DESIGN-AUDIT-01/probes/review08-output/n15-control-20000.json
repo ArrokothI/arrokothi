@@ -1,0 +1,17 @@
+{
+  "label": "n15-control-20000",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs",
+    "<repo>",
+    "20000"
+  ],
+  "timeout_seconds": 45,
+  "exit": 0,
+  "stdout": "{\"tree\":\"design-audit-01\",\"extra\":20000,\"ok\":false,\"issues\":54,\"codes\":[\"unrepresentable_member\",\"too_many_bytes\"],\"ms\":90}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.176
+}

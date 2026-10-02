@@ -1,0 +1,16 @@
+{
+  "label": "cost-1-R-undefined-members",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "R-undefined-members"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"R-undefined-members\",\"ok\":false,\"records\":10,\"issues\":118785,\"codes\":[\"undefined_member\",\"too_many_bytes\"],\"ms\":58,\"heapMiB\":7.4}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.132
+}

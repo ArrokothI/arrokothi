@@ -1,0 +1,9 @@
+{
+ "M1 rec closure = keep closure + review-01 fixed suffix (all F-families)": "SURVIVES validate()",
+ "M2 rec closure = keep closure + per-family reworded suffix": "SURVIVES validate()",
+ "M3 reference-only closure phrased without a leading see/use/same": "SURVIVES validate()",
+ "M4 rec claims = keep claims (reordered / trailing space)": "rejected: ('F03', 'identical or empty', 'claims')",
+ "M5 A-bytes marks every inventory entry keep": "SURVIVES validate()",
+ "M6 Recommend tagged canonical-bytes, closure describes live core capture": "SURVIVES validate()",
+ "M7 E recommendation tagged core-independent (true for TOOLS-01)": "rejected: ('E', 'contradictory selected core')"
+}

@@ -1,0 +1,21 @@
+base 66bc041175e6fc191c2e7cf88de198111e7d97c9 path packages/kernel/src/coordinator.ts
+620 const holdHistoryRecord = (
+632 const takeoverHistoryRecord = (
+678 const applyControlCommit = (record: ExecutionRecord, exchange: ActivationRecord, commit: ControlCommit): void => {
+881 createExecution(caller: AuthenticatedCaller, request: CreateExecutionRequest): Result<CreationAccepted, RefusalRecord> {
+1055 submitInput(caller: AuthenticatedCaller, request: SubmitInputRequest): Result<InputAccepted, RefusalRecord> {
+1181 dispatch(caller: AuthenticatedCaller, executionId: string, options: DispatchOptions): Result<DispatchAccepted, RefusalRecord> {
+1313 redeliver(caller: AuthenticatedCaller, executionId: string): Result<DispatchAccepted, RefusalRecord> {
+1358 inspect(caller: AuthenticatedCaller, executionId: string): Result<ExecutionView, RefusalRecord> {
+1375 visibleExecutions(caller: AuthenticatedCaller): readonly string[] {
+1425 submitOutcome(
+1664 requestTakeover(caller: AuthenticatedCaller, executionId: string, request: TakeoverRequest): Result<TakeoverAccepted, RefusalRecord> {
+1846 recoverExecution(caller: AuthenticatedCaller, executionId: string, request: RecoveryRequest): Result<RecoveryDecision, RefusalRecord> {
+1931 reportProtocolFailure(caller: AuthenticatedCaller, executionId: string, report: ProtocolFailureReport): Result<RecoveryDecision, RefusalRecord> {
+2045 #accept(record: ExecutionRecord, intent: ActivationRecord, outcome: CapturedOutcome, caller: AuthenticatedCaller): OutcomeAccepted {
+2195 #mint(boundary: ReceiptBoundary, record: ExecutionRecord): Receipt {
+2219 #visible(caller: AuthenticatedCaller, executionId: string): ExecutionRecord | null {
+2237 #requireControl(caller: AuthenticatedCaller, record: ExecutionRecord): RefusalRecord | null {
+2253 #refusal(classification: RefusalClassification, reason: string, record: ExecutionRecord | null): RefusalRecord {
+2282 #deliver(intent: ActivationRecord): void {
+2420 function viewOf(record: ExecutionRecord): ExecutionView {

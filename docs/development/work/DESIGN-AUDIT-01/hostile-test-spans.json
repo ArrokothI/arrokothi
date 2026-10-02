@@ -1,0 +1,138 @@
+[
+  {
+    "path": "packages/kernel/tests/values.test.ts",
+    "start": 893,
+    "end": 953,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/values.test.ts",
+    "start": 1065,
+    "end": 1178,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/values.test.ts",
+    "start": 1282,
+    "end": 1711,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/values.test.ts",
+    "start": 1772,
+    "end": 1874,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/creation.test.ts",
+    "start": 362,
+    "end": 485,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/creation.test.ts",
+    "start": 630,
+    "end": 690,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/creation.test.ts",
+    "start": 693,
+    "end": 916,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/creation.test.ts",
+    "start": 992,
+    "end": 1056,
+    "reason": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile.",
+    "attribution": "mixed"
+  },
+  {
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "start": 178,
+    "end": 197,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "start": 567,
+    "end": 643,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "start": 676,
+    "end": 726,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "start": 774,
+    "end": 1043,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "start": 1390,
+    "end": 1426,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "start": 1525,
+    "end": 1558,
+    "reason": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile.",
+    "attribution": "mixed"
+  },
+  {
+    "path": "packages/kernel/tests/ingress.test.ts",
+    "start": 535,
+    "end": 561,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/ingress.test.ts",
+    "start": 576,
+    "end": 816,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/transaction.test.ts",
+    "start": 149,
+    "end": 234,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+    "start": 185,
+    "end": 193,
+    "reason": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile.",
+    "attribution": "mixed"
+  },
+  {
+    "path": "packages/kernel/tests/value-refusal-cost.test.ts",
+    "start": 120,
+    "end": 138,
+    "reason": "DA01-R1-SPAN-01: own-envelope/own-metadata absence and observation checks retained under cooperative profile; not exclusively hostile.",
+    "attribution": "mixed"
+  },
+  {
+    "path": "packages/kernel/tests/harness.ts",
+    "start": 23,
+    "end": 119,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/harness.ts",
+    "start": 148,
+    "end": 278,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  },
+  {
+    "path": "packages/kernel/tests/harness.ts",
+    "start": 489,
+    "end": 545,
+    "reason": "Manually attributed dedicated hostile same-process scenario/helper; includes its local setup/comments, not the surrounding mixed suite"
+  }
+]

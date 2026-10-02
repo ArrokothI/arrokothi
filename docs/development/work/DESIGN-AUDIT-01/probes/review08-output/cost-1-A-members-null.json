@@ -1,0 +1,16 @@
+{
+  "label": "cost-1-A-members-null",
+  "args": [
+    "node",
+    "--expose-gc",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "<repo>/docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs",
+    "A-members-null"
+  ],
+  "timeout_seconds": 60,
+  "exit": 0,
+  "stdout": "{\"shape\":\"A-members-null\",\"ok\":true,\"bytes\":1042801,\"records\":0,\"issues\":0,\"codes\":[],\"ms\":119,\"heapMiB\":27.4}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.2
+}
