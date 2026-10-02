@@ -1,0 +1,18 @@
+{
+ "node": "v25.2.1",
+ "Proxy({})": {
+  "threw": "DataCloneError"
+ },
+ "Proxy(re-prototyped Map)": {
+  "threw": "DataCloneError"
+ },
+ "re-prototyped Map": {
+  "cloned": "[object Map]",
+  "entries": [
+   [
+    "k",
+    1
+   ]
+  ]
+ }
+}

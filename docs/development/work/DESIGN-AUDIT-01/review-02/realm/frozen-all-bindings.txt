@@ -1,0 +1,54 @@
+{
+ "node": "v25.2.1",
+ "frozenIntrinsics": true,
+ "bindings": {
+  "isNaN": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  },
+  "isFinite": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  },
+  "Object": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  },
+  "Array": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  },
+  "JSON": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  },
+  "Set": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  },
+  "Error": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  },
+  "Symbol": {
+   "writable": true,
+   "configurable": true,
+   "intrinsicFrozen": true,
+   "assignment": "replaced"
+  }
+ }
+}

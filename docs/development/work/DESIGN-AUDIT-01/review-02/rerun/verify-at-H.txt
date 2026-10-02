@@ -1,0 +1,103 @@
+Session: Codex desktop coding agent; GPT-6 per session instructions, exact serving variant unavailable. Access: local repository/history and supplied reference checkouts; sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority.
+Python 3.13.5 Node v25.2.1
+enumerate.py exit 0 PASS
+catalog.py exit 0 PASS
+records.py exit 0 PASS
+measure.py exit 0 PASS
+render-register.py exit 0 PASS
+{"result": "PASS", "items": 22, "options": 51, "inventory_entries": 20, "negative_controls": 7, "rendered_files": 25}
+searches.py exit 0 PASS
+round2-checks.py exit 0 PASS
+family | options | claims identical | rec closure == keep closure + fixed suffix
+F01 2 False False
+F02 2 False False
+F03 2 False False
+F04 2 False False
+F05 2 False False
+F06 2 False False
+F07 2 False False
+F08 2 False False
+F09 2 False False
+F10 2 False False
+F11 2 False False
+F12 2 False False
+F13 2 False False
+F14 2 False False
+F15 2 False False
+F16 2 False False
+all identical claims: False
+all suffix-only closures: False
+A register.md:19             | Keep adversarial live-object core
+    -> -
+A register.md:20             | Cooperative live-object core (alternative)
+    -> CORE = live objects (cooperative capture inside the Kernel); bytes only for isolated hostile callers
+A register.md:21 RECOMMENDED | **Recommend bytes/text core: canonical bytes, cooperative caller-side wrapper**
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+A register.md:22             | Realm hardening with live-object core (alternative defense in depth)
+    -> -
+B register.md:36             | Keep current own-array and serializer window
+    -> -
+B register.md:37             | Simplify internal traversal in a cooperative live-object core (alternative)
+    -> CORE = live objects (cooperative capture inside the Kernel); bytes only for isolated hostile callers
+B register.md:38 RECOMMENDED | **Recommend bytes/text core; move capture and encoding to the cooperative wrapper**
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+B register.md:39             | Replace serializer window with verified hardened-realm encoding (alternative)
+    -> -
+C register.md:53             | Keep implementation with claim hold
+    -> -
+C register.md:54             | Brand-check refusal in live-object core (interim selected step)
+    -> -
+C register.md:55             | Structural projection (owner rejected alternative)
+    -> -
+C register.md:56 RECOMMENDED | **Recommend bytes/text core with wrapper brand refusal after interim correction**
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F02 register.md:128 RECOMMENDED | Recommend: inert core with canonical bytes and wrapper refusal
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F09 register.md:233 RECOMMENDED | Recommend: bytes/text core with cooperative caller-side wrapper
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+F10 register.md:248 RECOMMENDED | Recommend: bytes/text core validation plus separate wrapper meter
+    -> CORE = bytes/text; objects only in a wrapper outside the Kernel contract
+decision-03        register:1 drafts:1 other:0
+decision-04        register:1 drafts:1 other:0
+decision-05        register:5 drafts:7 other:4
+K1.4               register:1 drafts:5 other:0
+cannot steer       register:1 drafts:1 other:0
+One reading        register:1 drafts:1 other:0
+Kernel-mediated    register:4 drafts:4 other:0
+coherent-Proxy     register:3 drafts:5 other:0
+ambient safety     register:1 drafts:1 other:0
+DEC-8              register:9 drafts:10 other:8
+DEC-9              register:4 drafts:5 other:0
+single observation register:2 drafts:3 other:0
+stable-realm       register:2 drafts:4 other:0
+Trusted            register:5 drafts:7 other:1
+frozen-intrinsics  register:2 drafts:2 other:0
+lockdown           register:1 drafts:1 other:0
+ShadowRealm        register:0 drafts:0 other:0
+--- values.md anchor cited by register A root choice (register.md:11):
+7:**Meaning.** Canonical equality is sameness of the value, not of what it means. `37` and `"37"` are different values, even if an application reads them identically. Two strings that render as the sa
+--- where values.md actually says it:
+202:No time bound is claimed for values containing live Proxies. Protection against hostile
+290:These are guarantees about accepting a value. They do not contain code that shares the process. Anything running in that process can still do whatever the process can do, and preventing that belongs to [physical enforcement](../mechanisms/resources.md#containment-claims), which has its own owner and its own evidence.
+--- whole-word SES (Hardened JavaScript) mentions:
+register:3 drafts:3
+Corrected citation PASS; historical coverage script prints its hard-coded obsolete anchor for comparison
+realm corpus ordinary PASS 8 cases v25.2.1
+realm corpus frozen PASS 8 cases v25.2.1
+proposed transport cap arithmetic PASS 8388608 bytes per uncompressed encoded root; parser not implemented
+owner checks / CORE mapping / corrected span attribution PASS; no R8 timing rerun
+{
+  "base": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "head": "4c1b11e115ad61fbcfeebf83f50bb6a35478ea8e",
+  "changed_tracked_files": 216,
+  "finding_labels": 278,
+  "qualifying_families": 16,
+  "decision_drafts": 23,
+  "local_file_links": 745,
+  "scope": "packet plus audit row and single adopted-hold sentence in K1.1 row",
+  "skips": [
+    "sealed R8 timings: unchanged derivation; no rerun",
+    "historical reviewer scratchpad links: mapped by review README"
+  ],
+  "result": "PASS"
+}

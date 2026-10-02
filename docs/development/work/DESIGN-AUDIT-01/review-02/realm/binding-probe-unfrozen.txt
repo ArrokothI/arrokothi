@@ -1,0 +1,22 @@
+{
+ "node": "v25.2.1",
+ "frozenIntrinsics": false,
+ "objectPrototypeFrozen": false,
+ "JSONObjectFrozen": false,
+ "globalThisFrozen": false,
+ "globalJSONDescriptor": {
+  "writable": true,
+  "configurable": true
+ },
+ "globalObjectDescriptor": {
+  "writable": true,
+  "configurable": true
+ },
+ "before": "{\"a\":[1,\"x\"],\"b\":2}",
+ "objectPrototypeToJSON": "assigned",
+ "replaceGlobalJSON": "assigned",
+ "replaceGlobalObject": "assigned",
+ "after": "{\"a\":[999,\"x\"]}",
+ "restored": "{\"a\":[1,\"x\"],\"b\":2}",
+ "steered": true
+}

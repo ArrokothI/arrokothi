@@ -1,0 +1,162 @@
+{
+ "F01": {
+  "title": "Wait, cancellation and lifecycle ordering",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Walk the accepted waits/lifecycle relation table against event-before-wait, wait-before-event, deadline, cancellation and completion examples in the pinned K0 corpus; record every unexamined relation; K1.3 gates remain unsupported.",
+  "rec_closure_extra": "structural mechanism: Maintain a transition/relation schema covering those accepted relations; generate schedule examples from it and reject a mutant allowing cancellation and completion to commit the same lifetime. Every canonical relation maps to a model edge and an expected example; no new K1.3 behavior is inferred.",
+  "sites": "packages/kernel/src/lifecycle.ts; packages/kernel/src/coordinator.ts unsupported await/cancel gates; tests/fixtures/k0.",
+  "why": "Reviews varied one event schedule at a time, leaving adjacent eligibility/generation/cancellation orderings implicit."
+ },
+ "F02": {
+  "title": "Boundary values and canonical domain",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Declare the supported built-in brand matrix; on current object capture reject internal-slot Map/Set/Date/ArrayBuffer/typed-array and String-wrapper witnesses before own-key listing, including null/replaced prototypes. Preserve coherent-Proxy rules or obtain a named amendment; all general root consumers refuse with no accepted-state change.",
+  "rec_closure_extra": "structural mechanism: Strict canonical-byte validation refuses live objects at the core; the cooperative wrapper rejects the O-R8-4 brands before listing. Test ordinary/exotic, cross-realm and spoofed-tag inputs across creation, authorityContext, ingress and Outcome roots; hidden-content variants cannot collapse into an accepted replay. Interim brand and meter correction must already be accepted.",
+  "sites": "values.ts captureObject/captureArray/encode; original K11-R1-JCS-01 and held O-R8-4.",
+  "why": "Domain, serializer equality and object brands were searched separately; coherent snapshots can preserve the wrong projection."
+ },
+ "F03": {
+  "title": "Identity scope and nondisclosure",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Trace every existing creation/input/Activation/receipt producer to its consuming validators at maximum identity lengths and suffix growth; run hidden/visible interleavings and cross-boundary collisions using current constructors.",
+  "rec_closure_extra": "structural mechanism: Permit scope-local identity and sequence creation only through private typed constructors; export no raw constructor/state counter. Module checks reject a direct-construction or global-counter bypass; generated boundary-length values round-trip through dispatch, takeover, replay and inspection with unchanged nondisclosure. Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation.",
+  "sites": "identity.ts; coordinator.ts #mint/#visible/#refusal/createExecution/submitInput; envelope.ts identity-text gate.",
+  "why": "Tests varied short external identities or direct visibility but not minted suffix growth, cross-boundary reuse and interleaved hidden decisions."
+ },
+ "F04": {
+  "title": "Legacy migration disposition",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: For the declared legacy disposition rows, manually reconcile entry-point imports, exports and current tests at the candidate SHA; record unknown external consumers and reject an unsupported retirement statement.",
+  "rec_closure_extra": "structural mechanism: Generate a reachability graph from declared package entry points and compare it to owner-authored disposition IDs; a newly inserted forbidden edge must fail, and orphan/stale rows must fail. Rendered facts reproduce exactly; external uses remain explicitly outside this graph.",
+  "sites": "docs/development/kernel-ownership.md; tests/conformance/architecture/module-graph.ts; tests/conformance/architecture/boundary-policy.ts.",
+  "why": "Review treated a inventory row or target naming change as proof of effective retirement."
+ },
+ "F05": {
+  "title": "Protocol oracles and atomic observation",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Audit each maintained case-specific oracle against return, entire view, grants, history, positions and delivery effects; inject a mismatched material field into each oracle and require rejection, including valid no-call outcomes.",
+  "rec_closure_extra": "structural mechanism: Create a shared complete-decision result schema with independently derived legal relations; all cases consume that schema. Omitted return/view/grant/position/history comparisons fail dedicated negative controls; a schema field addition without oracle coverage fails the inventory.",
+  "sites": "packages/kernel/tests/outcome-acceptance.test.ts; packages/kernel/tests/transaction.test.ts; packages/kernel/tests/recovery-history.test.ts; archived K0 protocol records in da-1-table.md.",
+  "why": "An unchanged chosen projection appeared to prove unchanged state; tests sometimes repeated implementation assumptions."
+ },
+ "F06": {
+  "title": "Dependency/inventory grammar and relational equality",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Run the pinned Markdown grammar corpus through the existing parser and exact relation comparator: duplicate rows, enclosing code/HTML context, Unicode whitespace and full-cell consumption must have declared outcomes; do not require a renderer.",
+  "rec_closure_extra": "structural mechanism: Make validated structured relation data authoritative; schema rejects unknown/duplicate/malformed rows and renderer round-trips it byte-for-byte. Remove dependence on parsing human Markdown for governance; dependency-scanner supported syntax and forbidden-edge mutants remain separately tested.",
+  "sites": "tests/conformance/architecture/inventory-oracle.ts, module-graph.ts and boundary-policy.ts enumerated in the evidence catalog; archived K1.0 reviews.",
+  "why": "Each correction fixed a token/context example; later stages and grammar classes were not jointly varied."
+ },
+ "F07": {
+  "title": "Candidate identity, authority and record provenance",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Recompute the declared candidate B/C/H, counts, file allowlist and accessible attachment digests independently from Git; compare manual statements and flag invented owner quotations or future-push assertions.",
+  "rec_closure_extra": "structural mechanism: Generate immutable identity facts from explicit Git revisions; the manifest replays exactly and altered SHA/count/interval/allowlist fixtures fail. Human authority statements carry a source locator outside generated facts; neither H nor its future push is self-certified.",
+  "sites": "Archived cleanup/review/report records; active validation manifests and ledger row; no product site.",
+  "why": "A passing local gate/report was trusted without varying exact candidate, cumulative interval, accessibility or source authority."
+ },
+ "F08": {
+  "title": "Current prose, canonical ownership and status",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Bound the review to an enumerated set of current status sentences in baseline/front doors/guides; compare each against ledger and canonical owners, including accepted-but-unintegrated and held states.",
+  "rec_closure_extra": "structural mechanism: Replace current-status duplicates in the enumerated surfaces with links to one ledger/baseline owner; require every canonical rule to have one normative home. A stale status sentence inserted in an enumerated consumer fails the declared review check; link existence and semantic agreement are separate results.",
+  "sites": "BASELINE, Layer-3 references, package comments and front doors named by DA-1 records.",
+  "why": "Link-validity and local semantic wording were checked while neighboring current-status assertions and ownership conventions drifted."
+ },
+ "F09": {
+  "title": "Ambient same-process integrity",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Maintain finite poison, descriptor, iterator, host-member and complete-decision fault cases under the live-object contract; check canonical bytes against independently derived expected data, preserved caller state, and refused environmental setup. The current frozen realm must refuse safely.",
+  "rec_closure_extra": "structural mechanism: Core reads only owned canonical bytes; cooperative wrapper captures once, preserves own __proto__, rejects accessors/cycles/undefined and verifies retained snapshots survive caller mutation. Construction checks reject unsupported realms; real isolated transport tests show hostile native code cannot mutate the Kernel realm. No same-process containment promise.",
+  "sites": "values.ts primordials/serializer window; own-array.ts; envelope.ts; coordinator.ts held-history fields.",
+  "why": "Repairs followed individual ambient hops: getter, inherited index, descriptor descriptor, iterator.next, optional record member."
+ },
+ "F10": {
+  "title": "Refusal work and diagnostics",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: List every current traversal operation and charge it through metered helpers; derive B from the four limits and test exactly-at/over limits, aliases, depth and diagnostic work. Surplus/list/stack/diagnostic bypass mutants fail; N15 needs its own distinguishing test.",
+  "rec_closure_extra": "structural mechanism: Keep a wrapper meter over visits, listing length, diagnostic construction and string work with a valid-root budget proof. Core validates canonical byte length before bounded decoding and verifies canonical spelling; transport caps non-canonical input separately. Parser scan/allocation counters and cap-bypass controls close core/adapter cost; wrapper N15/stack/list mutants close wrapper cost, never parser evidence.",
+  "sites": "values.ts issue accounting, capture, isOpen/closeContainer; outcome.ts aggregate diagnostics; held R8 findings.",
+  "why": "Search optimized the previous worst sample without closing value-dependent operations or deriving an acceptance-covering budget."
+ },
+ "F11": {
+  "title": "Authority, grants and decision precedence",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Enumerate current visibility/control/attempt, replay/fresh, malformed/stale and callback-order combinations; compare full decisions, history and next positions against accepted precedence, including reentrant takeover.",
+  "rec_closure_extra": "structural mechanism: Only a private authority/precedence planner creates a validated plan consumed by apply; apply rejects unvalidated raw requests and carries a current-state/version precondition. Authority-skipping and stale-after-callback mutants fail; the existing full decision table remains identical. Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation.",
+  "sites": "coordinator.ts submitOutcome/requestTakeover/#requireControl; outcome.ts capture; submission-authority tests.",
+  "why": "Reviews varied one invalid field or permission at a time, not the cross-product or callback order."
+ },
+ "F12": {
+  "title": "Retained history, immutable evidence and inspection",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: For every current hold/recovery/Outcome transition, compare history and projection before/after, including absent fields, returned-view mutation and truthful authority attribution; retain individual builder checks.",
+  "rec_closure_extra": "structural mechanism: Require immutable tagged history variants in each state-changing plan, with required own fields and null-prototype optional records; projection exports no state writer. Omitted-history and writable-view bypass mutants fail; old views remain immutable and all existing transition results are identical. Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation.",
+  "sites": "coordinator.ts history builders/inspect/recoverExecution; inspection.ts; recovery-history/evidence tests.",
+  "why": "Tests observed present state, not retained transitions, mutation through old views or truthful authority attribution."
+ },
+ "F13": {
+  "title": "Delivery, asynchronous ownership and capabilities",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Run explicit settlement without reading a returned Promise: first/duplicate/late/retired reports, retry with fresh delivery capability, retained writer epoch and single host-bound observation; assert report cannot accept Outcome.",
+  "rec_closure_extra": "structural mechanism: At a proposed authenticated transport boundary, altered attempt/delivery capability, wrong peer, replayed settlement and stale epoch messages are rejected without progress commit; compare local-versus-transport whole decisions and retained delivery attribution. Remote authentication and deployment evidence are additional gates, not implied by bytes. Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation.",
+  "sites": "driver.ts DeliverySettlement; coordinator.ts #deliver; dispatch.test.ts; accepted KC1-ARCH-1.",
+  "why": "Search varied one dispatch or Promise outcome at a time, missing changing bound getters, host-controlled construction/species, and retained attribution across takeover."
+ },
+ "F14": {
+  "title": "Distinguishing mutations and regression claims",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: For every declared packet-local mutant, prove exactly one patch application, a passing control and failure in its named obligation; separately report runner failure and survival, preserving N15 as a survivor until its correction.",
+  "rec_closure_extra": "structural mechanism: One maintained registry maps each live mutant to source revision/site, control, oracle and expected kill; missing/dead/duplicate mappings fail. Removing the surplus charge must fail the new correction test; surviving non-equivalent mutants require explicit disposition and cannot be counted as kills.",
+  "sites": "packages/kernel/tests/exact-coordinates.test.ts; packages/kernel/tests/outcome-acceptance.test.ts; probes/review08.py N15 wrapper; evidence-inventory.md.",
+  "why": "Mutants targeted convenient syntax or weak fixtures; runner errors and partial assertions hid survival."
+ },
+ "F15": {
+  "title": "Static enforcement of read/commit ownership",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: Keep the analyzer only as a plausible-regression guard with declared syntax and known cast/default/shadowing gaps; independently run the bounded runtime poison and complete-decision fault obligations, without a soundness claim.",
+  "rec_closure_extra": "structural mechanism: After binding then coordinator refactor, dependency checks reject raw-state exports and unauthorized writers; null-prototype own-data records prevent absent-field inheritance. Deliberate owner-boundary bypass mutants fail. Map each analyzer obligation to structural or retained runtime evidence before retirement; arbitrary future TypeScript soundness is excluded. Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation.",
+  "sites": "packages/kernel/tests/zone-analysis.ts; packages/kernel/tests/zone-inventory.ts; packages/kernel/tests/ambient-reads.test.ts; packages/kernel/tests/control-commits.test.ts.",
+  "why": "Local/default/nested assertion shapes varied after each scanner fix; semantic escape space outgrew syntax examples."
+ },
+ "F16": {
+  "title": "Runtime sweep scope and complete-decision oracle",
+  "n_options": 2,
+  "claims_identical": false,
+  "rec_closure_equals_keep_plus_suffix": false,
+  "keep_closure": "declared bounded search: For the maintained sweep scenarios, reconcile each reached source exit with legal whole decisions; reject mismatched return/view/grant/history/next-position results and missing fields; enumerate unobserved operations and exits.",
+  "rec_closure_extra": "structural mechanism: TOOLS-01 registry separates scenario, profile, injection adapter and complete-decision oracle; every migrated source exit maps to a live case and omission fails. Disable each oracle comparison and require its negative control to reject inconsistent decisions; binding retirement removes only hostile-profile gates and preserves all fault/transition obligations. Conditional on CORE selected canonical-bytes direction and the owner sequence; no independent live-object-core recommendation.",
+  "sites": "packages/kernel/tests/sweep/fault-oracle.ts; packages/kernel/tests/sweep/fault-scenarios.ts; packages/kernel/tests/sweep/fault-child.ts; packages/kernel/tests/fault-oracle.test.ts.",
+  "why": "Review counted executions or exits before independently mutating each oracle dimension and matching each scenario to a permitted decision."
+ }
+}
