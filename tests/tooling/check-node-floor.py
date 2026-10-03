@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TOOLS-01 exact Node v22.15.0 prerequisites; stop at the first failed assumption."""
+"""TOOLS-01 exact Node v26.10.0 prerequisites; stop at the first failed assumption."""
 import argparse
 import copy
 import hashlib
@@ -119,7 +119,7 @@ def pairs_from_events(events, registrations):
     for key in order:
         data = results[key]
         details = data.get('details', {})
-        # Design 05 §6 floor amendment: absent (v22.9.0) or 'test' (v22.15.0) marks a test.
+        # Design 05 §6 floor amendment, owner choice 03: absent (v22.9.0) or 'test' (later releases) marks a test.
         if details.get('type', 'test') == 'test':
             kind = 'test'
         elif details['type'] == 'suite':
@@ -575,8 +575,8 @@ def main():
     args = parser.parse_args()
     floor = Floor(args.node.resolve())
     version = floor.run(['--version'])['stdout'].strip()
-    if version != 'v22.15.0':
-        parser.error('This floor check requires exactly v22.15.0, got ' + version)
+    if version != 'v26.10.0':
+        parser.error('This floor check requires exactly v26.10.0, got ' + version)
     results = []
     for index in range(1, args.through + 1):
         check = getattr(floor, 'a' + str(index), None)

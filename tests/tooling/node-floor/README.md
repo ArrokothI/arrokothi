@@ -1,17 +1,17 @@
-# Node v22.15.0 prerequisite probes
+# Node v26.10.0 prerequisite probes
 
 From the repository root:
 
 ```sh
-python3 -B tests/tooling/check-node-floor.py --node /absolute/path/to/node-v22.15.0/bin/node
+python3 -B tests/tooling/check-node-floor.py --node /absolute/path/to/node-v26.10.0/bin/node
 ```
 
 This runs checks **A1–A11 in order** and stops on the first failed prerequisite. `--through N`
 supports focused partial runs; only a successful eleven-assumption run is `complete`. The floor is
-exactly v22.15.0 under the owner's decision recorded in design 05 §6 ("raise the floor to 22.15").
-The v22.9.0 results stay as history in
+exactly v26.10.0 under [owner choice 03](../../../docs/development/work/TOOLS-01/owner-choice-03.md),
+which supersedes the v22.15.0 floor of design 05 §6. The v22.9.0 results stay as history in
 [node-floor-01](../../../docs/development/work/TOOLS-01/node-floor-01.md) to
-[node-floor-05](../../../docs/development/work/TOOLS-01/node-floor-05.md); the v22.15.0 run is
+[node-floor-05](../../../docs/development/work/TOOLS-01/node-floor-05.md), and the v22.15.0 run in
 [node-floor-06](../../../docs/development/work/TOOLS-01/node-floor-06.md).
 
 - A1 checks start/result pairing, source kind, definition order and leaves. It includes passing

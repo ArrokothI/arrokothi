@@ -15,7 +15,7 @@
     "examples/execution-kernel-minimal"
   ],
   "engines": {
-    "node": ">=22.15.0"
+    "node": ">=26.10.0"
   },
   "scripts": {
     "test": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts packages/sdk/tests/*.test.ts",
