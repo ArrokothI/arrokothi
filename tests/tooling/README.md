@@ -92,8 +92,8 @@ A `checks.json` step may declare a `catalog` instead of `argv` (design 05 §4, D
 script name, its exact text, its flags and its globs. `verify` refuses the step unless the text
 equals both the rendering `node <flags> <globs>` and the package script at C, expands the globs over
 the tree at C (a `*` stays inside one path segment, a dotfile needs a literal dot, `**` and braces
-are refused, a glob matching nothing fails), and runs that argv once with two reporters: TAP on
-stdout for the step's counts, and `tests/tooling/catalog-reporter.mjs` into a temporary file for the
+are refused, a glob matching nothing fails), and runs that argv once with two reporters: `spec` (the package script's own default) on stdout for
+the step's counts, and `tests/tooling/catalog-reporter.mjs` into a temporary file for the
 catalog. The repository and archive test steps are catalogs.
 
 The catalog applies design 05 A1 per file: order and nesting come from `test:start`, kind from the

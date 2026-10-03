@@ -885,7 +885,7 @@ def catalog_run(git, rev, step, environment):
     git.blob(rev, CATALOG_REPORTER)
     with tempfile.TemporaryDirectory(prefix='arrokothi-catalog-') as temporary:
         events = Path(temporary) / 'events.jsonl'
-        argv = ['node', *facts['flags'], '--test-reporter=tap', '--test-reporter-destination=stdout',
+        argv = ['node', *facts['flags'], '--test-reporter=spec', '--test-reporter-destination=stdout',
                 '--test-reporter=' + str(reporter), '--test-reporter-destination=' + str(events), *facts['files']]
         run = command(argv, git.repo, step['timeout_seconds'], step['output_limit_bytes'], environment)
         rows = []
