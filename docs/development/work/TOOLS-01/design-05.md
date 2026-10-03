@@ -513,16 +513,24 @@ Confidence is low for E3's probe rows and E4 under A.
 **Assumptions to verify before code:**
 
 - A1. On 22.9, `test:start`, `test:pass` and `test:fail` carry name, nesting, file, line and column,
-  and `test:start` follows definition order. *Amended after [node-floor-01](node-floor-01.md):*
-  22.9 sets `details.type` to `suite` on suite events and omits it on test events (its
-  documentation only says the field denotes a suite), so revision 3's "pass and fail carry
-  `details.type`" was wrong. The catalog classifies an event as a suite when `details.type` is
-  `suite` and as a test when the field is absent; any other value refuses the file. Each
-  classification is cross-checked against the source registration at the event's file, line and
-  column (`describe` or `suite` against `test`, `it` or `t.test`); a mismatch, or an event without
-  a location, refuses the file. A leaf is a test event with no child `test:start`. Fixtures:
-  passing and failing tests and suites, a nested test, an unknown `details.type`, and a kind
-  mismatch.
+  and `test:start` follows definition order. *Amended after [node-floor-01](node-floor-01.md) and
+  [node-floor-02](node-floor-02.md) (D05-A1-REV-01):* `test:start` carries no `details`, and 22.9
+  sets `details.type` to `suite` on a suite's pass or fail event and omits it on a test's. So:
+  - *Structure from starts.* Start events give order and nesting only. A start's parent is the
+    nearest earlier start whose nesting is one less.
+  - *Pairing.* Each start pairs with exactly one pass or fail event with the same file, line,
+    column, nesting and name. A start without its result, a result without its start (other than
+    the synthetic file-level event of D05-CHK-02), or a key that occurs more than once among starts
+    or among results refuses the file. Results carry no parent; the pair takes its start's parent.
+  - *Kind from results.* A pair is a suite when its result's `details.type` is `suite` and a test
+    when the field is absent; any other value refuses the file. The kind is cross-checked against
+    the source registration at that location (`describe` or `suite` for a suite; `test`, `it` or
+    `t.test` for a test); a mismatch refuses the file.
+  - *Leaf.* A test pair with no child start. An empty suite is not a leaf, and neither is a test
+    with subtests.
+  - *Fixtures:* a suite start without `details` (must pass); passing and failing tests and suites; a
+    nested test; an empty suite; a test with a subtest; an unknown `details.type`; a kind mismatch;
+    a start without a result; a result without a start; a duplicated key.
 - A2. `--experimental-strip-types` keeps offsets: V8 ranges index the original `.ts` text.
 - A3. `NODE_V8_COVERAGE` writes block ranges with counts for the `--test` child; the same-line
   `throw` of probe 3 counts 0 and the caught-throw case counts 1 (so D05-CHK-01's rule is needed).
