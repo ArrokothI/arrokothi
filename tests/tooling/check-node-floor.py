@@ -1,49 +1,401 @@
 #!/usr/bin/env python3
-"""TOOLS-01 Node v22.9.0 A1 prerequisite probe; later checks are not implemented here."""
+"""TOOLS-01 exact Node v22.9.0 prerequisites; stop at the first failed assumption."""
 import argparse
+import copy
+import hashlib
 import json
 import os
 from pathlib import Path
+import re
+import shutil
 import subprocess
 import sys
+import tempfile
+
+
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURES = ROOT / 'tests/tooling/node-floor'
+EVENT_TYPES = ('test:start', 'test:pass', 'test:fail')
+TEST_FLAGS = ['--test', '--experimental-strip-types']
+TEST_GLOBS = [
+    'packages/core/tests/*.test.ts', 'packages/kernel/tests/*.test.ts',
+    'packages/models/gemini/tests/*.test.ts', 'packages/retrieval/local/tests/*.test.ts',
+    'packages/agents/strands/tests/*.test.ts', 'packages/interoperability/mcp/tests/*.test.ts',
+    'tests/conformance/*/*.test.ts', 'packages/sdk/tests/*.test.ts',
+]
+
+
+def fixture_registrations(path):
+    """Source oracle for these literal, one-registration-per-line fixtures only.
+
+    This is not step 5's general TypeScript registration parser. The fixture imports
+    exactly these node:test bindings; its only receiver is the test context t.
+    """
+    registrations = {}
+    for line, text in enumerate(path.read_text().splitlines(), 1):
+        match = re.match(r"(\s*)(test|it|describe|suite|t\.test)\('([^']+)'", text)
+        if match is None:
+            match = re.match(r"(\s*)await (t\.test)\('([^']+)'", text)
+            if match is None:
+                continue
+            column = len(match[1]) + len('await ') + 1
+        else:
+            column = len(match[1]) + 1
+        # A method-call frame points to its property name within the registration.
+        if match[2] == 't.test':
+            column += len('t.')
+        registrations[(str(path), line, column)] = {
+            'kind': 'suite' if match[2] in ('describe', 'suite') else 'test',
+            'name': match[3],
+        }
+    return registrations
+
+
+def pairs_from_events(events, registrations):
+    """A1's start/result join, source-kind check and leaf rule, without synthetic events."""
+    starts, results, order = {}, {}, []
+    for event in events:
+        if event['type'] not in EVENT_TYPES:
+            continue
+        data = event['data']
+        for field in ('file', 'name'):
+            if not isinstance(data.get(field), str) or not data[field]:
+                raise ValueError('missing location/name: ' + field)
+        for field in ('line', 'column', 'nesting'):
+            minimum = 0 if field == 'nesting' else 1
+            if type(data.get(field)) is not int or data[field] < minimum:
+                raise ValueError('missing location/nesting: ' + field)
+        key = tuple(data[field] for field in ('file', 'line', 'column', 'nesting', 'name'))
+        table = starts if event['type'] == 'test:start' else results
+        if key in table:
+            raise ValueError('duplicated key among ' + ('starts' if table is starts else 'results'))
+        table[key] = data
+        if table is starts:
+            order.append(key)
+    if set(starts) != set(results):
+        raise ValueError('start/result keys differ')
+    pairs = []
+    for key in order:
+        data = results[key]
+        details = data.get('details', {})
+        if 'type' not in details:
+            kind = 'test'
+        elif details['type'] == 'suite':
+            kind = 'suite'
+        else:
+            raise ValueError('unknown details.type')
+        source = registrations.get(key[:3])
+        if source is None or source['kind'] != kind or source['name'] != key[4]:
+            raise ValueError('source registration mismatch')
+        parent = next((i for i in range(len(pairs) - 1, -1, -1)
+                       if pairs[i]['nesting'] == key[3] - 1), None)
+        if key[3] and parent is None:
+            raise ValueError('missing parent start')
+        pairs.append({'name': key[4], 'nesting': key[3], 'kind': kind,
+                      'parent': parent, 'location': list(key[:3])})
+    parents = {pair['parent'] for pair in pairs}
+    for index, pair in enumerate(pairs):
+        pair['leaf'] = pair['kind'] == 'test' and index not in parents
+    return pairs
+
+
+def range_count(scripts, offset):
+    candidates = [block for script in scripts for function in script['functions']
+                  for block in function['ranges'] if block['startOffset'] <= offset < block['endOffset']]
+    assert candidates, 'no range covers anchor'
+    return min(candidates, key=lambda block: block['endOffset'] - block['startOffset'])['count']
+
+
+def source_offset(file, anchor):
+    source = file.read_text()
+    assert source.count(anchor) == 1, 'ambiguous fixture anchor: ' + anchor
+    return len(source[:source.index(anchor)].encode('utf-16-le')) // 2
+
+
+def summary_counts(events):
+    counts = {}
+    for event in events:
+        if event['type'] == 'test:diagnostic' and event['data']['nesting'] == 0:
+            match = re.fullmatch(r'(tests|suites|pass|fail|cancelled|skipped|todo) (\d+)',
+                                 event['data']['message'])
+            if match:
+                assert match[1] not in counts, 'duplicate summary count'
+                counts[match[1]] = int(match[2])
+    assert set(counts) == {'tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo'}, counts
+    return counts
+
+
+def full_paths(pairs):
+    paths = []
+    for pair in pairs:
+        parent = pair['parent']
+        paths.append((paths[parent] if parent is not None else []) + [pair['name']])
+    return paths
+
+
+def valid_reach(events, registrations, target):
+    def synthetic(event):
+        data = event['data']
+        return (event['type'] in EVENT_TYPES and data.get('name') == data.get('file')
+                and data.get('nesting') == 0 and data.get('line') == 1 and data.get('column') == 1
+                and (data.get('file'), 1, 1) not in registrations)
+    pairs = pairs_from_events([event for event in events if not synthetic(event)], registrations)
+    leaves = [path for pair, path in zip(pairs, full_paths(pairs)) if pair['leaf']]
+    counts = summary_counts(events)
+    return (leaves == [target] and not any(event['type'] == 'test:fail' for event in events)
+            and counts == {'tests': 1, 'suites': sum(p['kind'] == 'suite' for p in pairs),
+                           'pass': 1, 'fail': 0, 'cancelled': 0, 'skipped': 0, 'todo': 0})
+
+
+class Floor:
+    def __init__(self, node):
+        self.node = node
+        self.environment = {name: os.environ[name] for name in ('PATH', 'HOME', 'TMPDIR')
+                            if name in os.environ}
+        self.environment['LANG'] = 'C.UTF-8'
+        self.environment['PATH'] = str(node.parent) + os.pathsep + self.environment.get('PATH', '')
+        self.runs = []
+
+    def run(self, arguments, extra_env=None, timeout=30, cwd=ROOT):
+        argv = [str(self.node), *map(str, arguments)]
+        env = dict(self.environment, **(extra_env or {}))
+        run = subprocess.run(argv, cwd=cwd, env=env, text=True, capture_output=True, timeout=timeout)
+        record = {'argv': argv, 'exit': run.returncode, 'stdout': run.stdout, 'stderr': run.stderr,
+                  'extra_environment': extra_env or {}}
+        self.runs.append(record)
+        return record
+
+    def events(self, file, flags=(), extra_env=None):
+        run = self.run(['--test', *flags, '--test-reporter=' + str(FIXTURES / 'events-reporter.mjs'),
+                        file], extra_env)
+        events = [json.loads(line) for line in run['stdout'].splitlines()]
+        return run, events
+
+    def a1(self):
+        file = FIXTURES / 'events.test.mjs'
+        run, events = self.events(file)
+        assert run['exit'] == 1, 'intentional failure fixture must exit 1'
+        registrations = fixture_registrations(file)
+        pairs = pairs_from_events(events, registrations)
+        expected = ['first pass', 'second intentional failure', 'outer suite', 'nested pass',
+                    'failing suite', 'nested intentional failure', 'empty suite', 'parent test', 'subtest']
+        assert [pair['name'] for pair in pairs] == expected, 'definition order differs'
+        assert [pair['name'] for pair in pairs if pair['leaf']] == [
+            'first pass', 'second intentional failure', 'nested pass', 'nested intentional failure', 'subtest']
+        assert [pair['parent'] for pair in pairs] == [None, None, None, 2, None, 4, None, None, 7]
+        relevant = [event for event in events if event['type'] in EVENT_TYPES]
+        starts = [event for event in relevant if event['type'] == 'test:start']
+        assert all('details' not in event['data'] for event in starts), 'start gained details'
+        verdicts = {(event['data']['name'], event['type']) for event in relevant if event['type'] != 'test:start'}
+        assert ('outer suite', 'test:pass') in verdicts and ('failing suite', 'test:fail') in verdicts
+        negatives = {}
+        for name in ('unknown_type', 'kind_mismatch', 'start_without_result', 'result_without_start',
+                     'duplicate_start', 'duplicate_result', 'missing_start_location', 'missing_result_location'):
+            altered = copy.deepcopy(relevant)
+            start = next(e for e in altered if e['type'] == 'test:start')
+            result = next(e for e in altered if e['type'] == 'test:pass')
+            if name == 'unknown_type':
+                result['data'].setdefault('details', {})['type'] = 'unknown'
+            elif name == 'kind_mismatch':
+                result['data'].setdefault('details', {})['type'] = 'suite'
+            elif name == 'start_without_result':
+                altered.remove(result)
+            elif name == 'result_without_start':
+                altered.remove(start)
+            elif name == 'duplicate_start':
+                altered.append(copy.deepcopy(start))
+            elif name == 'duplicate_result':
+                altered.append(copy.deepcopy(result))
+            elif name == 'missing_start_location':
+                del start['data']['line']
+            else:
+                del result['data']['column']
+            try:
+                pairs_from_events(altered, registrations)
+            except ValueError as exc:
+                negatives[name] = str(exc)
+            else:
+                raise AssertionError('negative fixture accepted: ' + name)
+        return {'pairs': pairs, 'refusals': negatives}
+
+    def coverage(self, file, flags=()):
+        with tempfile.TemporaryDirectory(prefix='tools-01-floor-coverage-') as temporary:
+            run, events = self.events(file, ['--experimental-strip-types', *flags],
+                                      {'NODE_V8_COVERAGE': temporary})
+            scripts = []
+            for path in sorted(Path(temporary).glob('coverage-*.json')):
+                for script in json.loads(path.read_text())['result']:
+                    if script['url'] == file.as_uri():
+                        scripts.append(script)
+            assert scripts, 'no child coverage for ' + str(file)
+            run['fixture_coverage'] = scripts
+            return run, events, scripts
+
+    def a2(self):
+        file = FIXTURES / 'offsets.ts'
+        run, events, scripts = self.coverage(file)
+        assert run['exit'] == 0, 'typed fixture failed'
+        source = file.read_text()
+        start = source.index('function typedProbe')
+        end = source.index('\n}', start) + 2
+        # V8 offsets are UTF-16 code units, not UTF-8 bytes or Python characters.
+        expected = [len(source[:index].encode('utf-16-le')) // 2 for index in (start, end)]
+        functions = [function for script in scripts for function in script['functions']
+                     if function['functionName'] == 'typedProbe']
+        assert len(functions) == 1, 'typed function coverage ambiguous'
+        outer = functions[0]['ranges'][0]
+        assert [outer['startOffset'], outer['endOffset']] == expected, (outer, expected)
+        assert outer['count'] == 1, outer
+        return {'original_utf16_function_span': expected, 'observed_range': outer,
+                'type_syntax_and_astral_character': True}
+
+    def a3(self):
+        file = FIXTURES / 'reach.ts'
+        run, events, scripts = self.coverage(file)
+        assert run['exit'] == 0, 'reach fixture failed'
+        assert any(function['isBlockCoverage'] for script in scripts for function in script['functions'])
+        expected = {
+            'assert.equal(result.ok, true)': 2,
+            "throw Error('untaken same-line throw')": 0,
+            'assert.equal(r.charge, 33554432)': 1,
+            'assert.equal(1, 999)': 0,
+            "result.ok || assert.fail('untaken assertion')": 1,
+            "assert.fail('untaken assertion')": 0,
+            "assert.equal('template', 'not executed')": 1,
+        }
+        observed = {anchor: range_count(scripts, source_offset(file, anchor)) for anchor in expected}
+        assert observed == expected, (observed, expected)
+        return {'counts': observed, 'caught_and_literal_anchors_require_source_guards': True}
+
+    def a4(self):
+        file = FIXTURES / 'reach.ts'
+        registrations = fixture_registrations(file)
+        target = ['reach suite', 'same-line throw']
+        selected, events, scripts = self.coverage(file, ['--test-name-pattern=^reach suite same-line throw$'])
+        assert selected['exit'] == 0 and valid_reach(events, registrations, target), 'full-path selection invalid'
+        baseline, no_events, no_scripts = self.coverage(file, ['--test-skip-pattern=.'])
+        assert baseline['exit'] == 0
+        relevant = [event for event in no_events if event['type'] in EVENT_TYPES]
+        # Keep the exact observed synthetic shape; it has no source registration.
+        assert len(relevant) == 2 and [e['type'] for e in relevant] == ['test:start', 'test:pass'], relevant
+        for event in relevant:
+            data = event['data']
+            assert Path(data['name']).resolve() == file and Path(data['file']).resolve() == file
+            assert data['nesting'] == 0 and data.get('line') == 1 and data.get('column') == 1, data
+        assert not valid_reach(no_events, registrations, target), 'synthetic file pass earned reach'
+        counts = summary_counts(no_events)
+        assert counts == {'tests': 1, 'suites': 0, 'pass': 1, 'fail': 0, 'cancelled': 0, 'skipped': 0, 'todo': 0}, counts
+        anchors = ['assert.equal(result.ok, true)', 'assert.equal(r.charge, 33554432)',
+                   "assert.equal('template', 'not executed')"]
+        observations = {anchor: {'selected': range_count(scripts, source_offset(file, anchor)),
+                                  'baseline': range_count(no_scripts, source_offset(file, anchor))}
+                        for anchor in anchors}
+        assert observations[anchors[0]] == {'selected': 2, 'baseline': 0}
+        assert all(observations[a] == {'selected': 0, 'baseline': 0} for a in anchors[1:])
+        multiple, multiple_events = self.events(file, ['--experimental-strip-types'])
+        assert multiple['exit'] == 0 and not valid_reach(multiple_events, registrations, target)
+        parent_file = FIXTURES / 'parent.test.mjs'
+        parent, parent_events = self.events(parent_file, ['--test-name-pattern=^parent$'])
+        assert parent['exit'] == 1
+        assert not valid_reach(parent_events, fixture_registrations(parent_file), ['parent', 'child'])
+        parent_pairs = pairs_from_events(parent_events, fixture_registrations(parent_file))
+        assert [p['name'] for p in parent_pairs if p['leaf']] == ['child']
+        return {'selected_counts': summary_counts(events), 'baseline_counts': counts,
+                'synthetic_events': relevant, 'anchor_counts': observations,
+                'multiple_leaves_refused': True, 'passing_child_of_failing_parent_refused': True}
+
+    def a5(self):
+        file = FIXTURES / 'reach.ts'
+        with tempfile.TemporaryDirectory(prefix='tools-01-floor-reporters-') as temporary:
+            tap = Path(temporary) / 'tap.txt'
+            catalog = Path(temporary) / 'events.jsonl'
+            run = self.run(['--test', '--experimental-strip-types', '--test-reporter=tap',
+                            '--test-reporter-destination=' + str(tap),
+                            '--test-reporter=' + str(FIXTURES / 'events-reporter.mjs'),
+                            '--test-reporter-destination=' + str(catalog), file])
+            assert run['exit'] == 0
+            tap_text = tap.read_text()
+            catalog_text = catalog.read_text()
+            events = [json.loads(line) for line in catalog_text.splitlines()]
+            counts = summary_counts(events)
+            for label, count in counts.items():
+                assert re.findall(r'^# ' + label + r' (\d+)$', tap_text, re.M) == [str(count)]
+            run['tap'] = tap_text
+            run['catalog'] = catalog_text
+            return {'matching_counts': counts, 'separate_destinations': True}
+
+    def a6(self):
+        registry = json.loads((ROOT / 'tests/fixtures/packet-tools/mutations.json').read_text())
+        dependency, = [d for d in registry['dependencies'] if d['path'] == 'node_modules/typescript']
+        lock = json.loads((ROOT / 'package-lock.json').read_text())
+        assert dependency['version'] == lock['packages'][dependency['path']]['version'] == '5.9.3'
+        with tempfile.TemporaryDirectory(prefix='tools-01-floor-typescript-') as temporary:
+            dest = Path(temporary)
+            for relative, expected in dependency['files'].items():
+                path = Path(dependency['path']) / relative
+                data = (ROOT / path).read_bytes()
+                assert hashlib.sha256(data).hexdigest() == expected, 'pinned TypeScript digest: ' + relative
+                (dest / path).parent.mkdir(parents=True, exist_ok=True)
+                (dest / path).write_bytes(data)
+            shutil.copyfile(FIXTURES / 'parser.mjs', dest / 'parser.mjs')
+            run = self.run([dest / 'parser.mjs'], cwd=dest)
+            assert run['exit'] == 0, 'TypeScript subset probe failed'
+            facts = json.loads(run['stdout'])
+            assert facts['version'] == '5.9.3'
+            return {'pinned_files': dependency['files'], 'parser': facts, 'subset_extended': False}
+
+    def a7(self):
+        package = json.loads((ROOT / 'package.json').read_text())
+        rendering = ' '.join(['node', *TEST_FLAGS, *TEST_GLOBS])
+        assert package['scripts']['test'] == rendering, 'test script drift'
+        files = [path for pattern in TEST_GLOBS for path in sorted(ROOT.glob(pattern))]
+        assert files and len(files) == len(set(files)), 'empty or duplicate file selection'
+        run = self.run([*TEST_FLAGS, '--test-reporter=' + str(FIXTURES / 'events-reporter.mjs'), *files], timeout=900)
+        events = [json.loads(line) for line in run['stdout'].splitlines()]
+        reported = {str(Path(e['data']['file']).resolve()) for e in events
+                    if e['type'] in EVENT_TYPES and 'file' in e['data']}
+        expected = {str(path) for path in files}
+        run['selected_files'] = sorted(expected)
+        run['reported_files'] = sorted(reported)
+        assert reported == expected, {'missing': sorted(expected - reported), 'extra': sorted(reported - expected)}
+        counts = summary_counts(events)
+        run['counts'] = counts
+        assert run['exit'] == 0, 'repository test run failed; see raw events'
+        assert counts['tests'] >= 3774 and all(counts[k] == 0 for k in ('fail', 'cancelled', 'skipped', 'todo')), counts
+        self.repository_counts = counts
+        return {'script': rendering, 'files': len(files), 'selection_matches_events': True, 'counts': counts}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--node', type=Path, required=True)
     args = parser.parse_args()
-    node = args.node.resolve()
-    root = Path(__file__).resolve().parents[2]
-    fixture = root / 'tests/tooling/node-floor'
-    environment = {name: os.environ[name] for name in ('PATH', 'HOME', 'TMPDIR') if name in os.environ}
-    environment['LANG'] = 'C.UTF-8'
-    environment['PATH'] = str(node.parent) + os.pathsep + environment.get('PATH', '')
-    version = subprocess.check_output([str(node), '--version'], env=environment, text=True).strip()
+    floor = Floor(args.node.resolve())
+    version = floor.run(['--version'])['stdout'].strip()
     if version != 'v22.9.0':
         parser.error('This floor check requires exactly v22.9.0, got ' + version)
-    argv = [str(node), '--test', '--test-reporter=' + str(fixture / 'events-reporter.mjs'),
-            str(fixture / 'events.test.mjs')]
-    run = subprocess.run(argv, cwd=root, env=environment, text=True, capture_output=True, timeout=30)
-    events = [json.loads(line) for line in run.stdout.splitlines()]
-    relevant = [event for event in events if event['type'] in ('test:start', 'test:pass', 'test:fail')]
-    problems = []
-    if run.returncode != 1:
-        problems.append('The intentional assertion-failure fixture must exit 1')
-    for event in relevant:
-        data = event['data']
-        for field in ('name', 'nesting', 'file', 'line', 'column'):
-            if field not in data:
-                problems.append(event['type'] + ': missing ' + field + ' for ' + data.get('name', '?'))
-        if event['type'] != 'test:start' and 'type' not in data.get('details', {}):
-            problems.append(event['type'] + ': missing details.type for ' + data.get('name', '?'))
-    starts = [event['data'].get('name') for event in relevant if event['type'] == 'test:start']
-    if starts != ['first pass', 'second intentional failure', 'outer suite', 'nested pass']:
-        problems.append('test:start order differs from definition order: ' + repr(starts))
-    result = {'node': version, 'assumption': 'A1', 'passed': not problems, 'problems': problems,
-              'argv': argv, 'exit': run.returncode, 'events': relevant, 'stderr': run.stderr,
-              'remaining': ['A' + str(i) for i in range(2, 12)]}
-    print(json.dumps(result, indent=2))
-    return 1 if problems else 0
+    results = []
+    for index in range(1, 12):
+        check = getattr(floor, 'a' + str(index), None)
+        if check is None:
+            break
+        first_run = len(floor.runs)
+        try:
+            facts = check()
+            result = {'assumption': 'A' + str(index), 'passed': True, 'facts': facts}
+        except (AssertionError, ValueError, OSError, subprocess.SubprocessError) as exc:
+            result = {'assumption': 'A' + str(index), 'passed': False,
+                      'error': type(exc).__name__ + ': ' + str(exc)}
+        result['runs'] = floor.runs[first_run:]
+        results.append(result)
+        print(result['assumption'] + ': ' + ('PASS' if result['passed'] else 'FAIL'), file=sys.stderr, flush=True)
+        if not result['passed']:
+            break
+    passed = all(result['passed'] for result in results)
+    print(json.dumps({'node': version, 'environment': floor.environment, 'passed': passed,
+                      'complete': len(results) == 11 and passed, 'results': results,
+                      'remaining': ['A' + str(i) for i in range(len(results) + 1, 12)]}, indent=2))
+    return 0 if passed else 1
 
 
 if __name__ == '__main__':

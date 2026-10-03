@@ -1,0 +1,39 @@
+{
+  "base_commit": "4fda151f9d34d21c7eeb80f1cf57f79f2ce5e421",
+  "subject": "base plus the prerequisite probe files named below; incremental working-tree observation, not clean-C validation",
+  "artifacts": {
+    "floor-results.json.gz": {
+      "sha256": "271a085299d40ab31e9fd674585f22285c227e99fb1675f158289a32130a4096",
+      "uncompressed_sha256": "6ce2ffbfbee51852ead4258c17dc91cb0eeea1ad6145c3fae99d5f31c3f3da6e",
+      "uncompressed_bytes": 6694669
+    },
+    "isolated-failure.json": {
+      "sha256": "3c5910bd16777e8051442f2a1bc2c24aa4277d68b8369ce00cb1388f6488e4af",
+      "bytes": 47005
+    },
+    "minimal-failure.json": {
+      "sha256": "7ae3132fb53f5d8f2189bc513c979ba2377c027e6e9bf9c413343e1c2d56dea1",
+      "bytes": 15663
+    }
+  },
+  "probe_files": {
+    "tests/tooling/check-node-floor.py": "032ddd473e1aef4ada1b15b878ef0c876e990095ed5c0266625d72e891899232",
+    "tests/tooling/node-floor/events-reporter.mjs": "1613e001c5db146ded6a9944fd5d6ee0ed9bbfadaf629d6f00e7d5de18247214",
+    "tests/tooling/node-floor/events.test.mjs": "d086634abfe1029d584eec9acb987408a0b28c7d087e17dcc1a6a36a66e22525",
+    "tests/tooling/node-floor/offsets.ts": "5144aa6c422ee0663e5f420aeadbc2ef53bd61583bab277796818b6d36969124",
+    "tests/tooling/node-floor/parent.test.mjs": "b615c4da84ea573b7023469f72f1e5370b7e760e011919beafb3a0e0803df113",
+    "tests/tooling/node-floor/parser.mjs": "345099439f3e3eca2a83a8277ff1ebc6acde0f25b3cf0f0c988399b487829acc",
+    "tests/tooling/node-floor/reach.ts": "13415da91ee35ed9a8c46a21c53079dc1fc863620729630331cf6d8f64b94443",
+    "tests/tooling/node-floor/unref-budget.ts": "831c42697736270eee56e0073ebd7d59c0790e3e59b44d98f76283539eb17695"
+  },
+  "diagnostic_added_after_floor_run": "tests/tooling/node-floor/unref-budget.ts",
+  "install": {
+    "node": "v22.9.0",
+    "path": "/Users/rex-shih/.local/share/arrokothi/node-v22.9.0-darwin-arm64",
+    "archive_url": "https://nodejs.org/dist/v22.9.0/node-v22.9.0-darwin-arm64.tar.gz",
+    "manifest_url": "https://nodejs.org/dist/v22.9.0/SHASUMS256.txt",
+    "archive_sha256": "7d62217f64491524db6bcfb059049d64fd6a9adcae52565ed54aaad365a55afd",
+    "manifest_sha256": "9667e91309fb995b37be7650ca3a1819ee8a93ace0891334f6eec8fa1daa0452",
+    "license_sha256": "f0cb1ad806ba5d681f378a8cc2e539fe4b54839290eda3c814ec8994af2b8422"
+  }
+}

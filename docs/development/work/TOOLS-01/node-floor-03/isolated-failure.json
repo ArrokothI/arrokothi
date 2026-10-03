@@ -1,0 +1,1335 @@
+[
+  {
+    "node": "v22.9.0",
+    "argv": [
+      "/Users/rex-shih/.local/share/arrokothi/node-v22.9.0-darwin-arm64/bin/node",
+      "--test",
+      "--experimental-strip-types",
+      "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+      "tests/conformance/effects/fast-slow-equivalence.test.ts"
+    ],
+    "environment": {
+      "PATH": "/Users/rex-shih/.local/share/arrokothi/node-v22.9.0-darwin-arm64/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/Library/Caches/fnm_multishells/2513_1791000615767/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/rex-shih/.codex/tmp/arg0/codex-arg0AF9uug:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/anaconda3/bin:/Users/rex-shih/anaconda3/condabin:/Users/rex-shih/Library/Caches/fnm_multishells/6942_1790987258704/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/Users/rex-shih/.cargo/bin:/Users/rex-shih/dev/tool/flutter/bin:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/rex-shih/dev/tool/flutter/bin",
+      "HOME": "/Users/rex-shih",
+      "TMPDIR": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/",
+      "LANG": "C.UTF-8"
+    },
+    "exit": 1,
+    "events": [
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:stderr",
+        "data": {
+          "file": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "message": "(node:14273) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n"
+        }
+      },
+      {
+        "type": "test:stderr",
+        "data": {
+          "file": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "message": "(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "fast and slow Effect completion are semantically identical",
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "fast and slow Effect completion are semantically identical",
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the fast path settles inline and never suspends the Execution",
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the fast path settles inline and never suspends the Execution",
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the same request through both paths produces identical semantics",
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "both paths journal the same phases in the same order",
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the fast path settles inline and never suspends the Execution",
+          "nesting": 1,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 14.693083,
+            "passed": true
+          },
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 0,
+          "name": "fast and slow Effect completion are semantically identical",
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the fast path settles inline and never suspends the Execution",
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the fast path settles inline and never suspends the Execution",
+          "nesting": 1,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 14.693083
+          },
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "nesting": 1,
+          "testNumber": 2,
+          "details": {
+            "duration_ms": 2.427375,
+            "passed": true
+          },
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "nesting": 1,
+          "testNumber": 2,
+          "details": {
+            "duration_ms": 2.427375
+          },
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the same request through both paths produces identical semantics",
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the same request through both paths produces identical semantics",
+          "nesting": 1,
+          "testNumber": 3,
+          "details": {
+            "duration_ms": 4.388708,
+            "passed": true
+          },
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the same request through both paths produces identical semantics",
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the same request through both paths produces identical semantics",
+          "nesting": 1,
+          "testNumber": 3,
+          "details": {
+            "duration_ms": 4.388708
+          },
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "nesting": 1,
+          "testNumber": 4,
+          "details": {
+            "duration_ms": 3.697791,
+            "passed": true
+          },
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "nesting": 1,
+          "testNumber": 4,
+          "details": {
+            "duration_ms": 3.697791
+          },
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "nesting": 1,
+          "testNumber": 5,
+          "details": {
+            "duration_ms": 4.189458,
+            "passed": true
+          },
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "nesting": 1,
+          "testNumber": 5,
+          "details": {
+            "duration_ms": 4.189458
+          },
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "nesting": 1,
+          "testNumber": 6,
+          "details": {
+            "duration_ms": 4.805041,
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            },
+            "passed": false
+          },
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:fail",
+        "data": {
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "nesting": 1,
+          "testNumber": 6,
+          "details": {
+            "duration_ms": 4.805041,
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            }
+          },
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "both paths journal the same phases in the same order",
+          "nesting": 1,
+          "testNumber": 7,
+          "details": {
+            "duration_ms": 0,
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            },
+            "passed": false
+          },
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "both paths journal the same phases in the same order",
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:fail",
+        "data": {
+          "name": "both paths journal the same phases in the same order",
+          "nesting": 1,
+          "testNumber": 7,
+          "details": {
+            "duration_ms": 0,
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            }
+          },
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "fast and slow Effect completion are semantically identical",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 35.046125,
+            "type": "suite",
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            },
+            "passed": false
+          },
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:plan",
+        "data": {
+          "nesting": 1,
+          "count": 7,
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:fail",
+        "data": {
+          "name": "fast and slow Effect completion are semantically identical",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 35.046125,
+            "type": "suite",
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            }
+          },
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 275.503833,
+            "error": {
+              "name": "Error",
+              "message": "test failed",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "subtestsFailed",
+              "cause": "test failed"
+            },
+            "passed": false
+          },
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:plan",
+        "data": {
+          "nesting": 0,
+          "count": 1
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "tests 7"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "suites 1"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "pass 5"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "fail 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "cancelled 2"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "skipped 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "todo 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "duration_ms 290.093916"
+        }
+      }
+    ],
+    "stderr": "(node:14272) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+  },
+  {
+    "node": "v25.2.1",
+    "argv": [
+      "/opt/homebrew/bin/node",
+      "--test",
+      "--experimental-strip-types",
+      "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+      "tests/conformance/effects/fast-slow-equivalence.test.ts"
+    ],
+    "environment": {
+      "PATH": "/opt/homebrew/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/Library/Caches/fnm_multishells/2513_1791000615767/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/rex-shih/.codex/tmp/arg0/codex-arg0AF9uug:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/anaconda3/bin:/Users/rex-shih/anaconda3/condabin:/Users/rex-shih/Library/Caches/fnm_multishells/6942_1790987258704/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/Users/rex-shih/.cargo/bin:/Users/rex-shih/dev/tool/flutter/bin:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/rex-shih/dev/tool/flutter/bin",
+      "HOME": "/Users/rex-shih",
+      "TMPDIR": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/",
+      "LANG": "C.UTF-8"
+    },
+    "exit": 0,
+    "events": [
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "type": "test",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "type": "test",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "fast and slow Effect completion are semantically identical",
+          "type": "suite",
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "fast and slow Effect completion are semantically identical",
+          "type": "suite",
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the fast path settles inline and never suspends the Execution",
+          "type": "test",
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the fast path settles inline and never suspends the Execution",
+          "type": "test",
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "type": "test",
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the same request through both paths produces identical semantics",
+          "type": "test",
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "type": "test",
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "type": "test",
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "type": "test",
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 1,
+          "name": "both paths journal the same phases in the same order",
+          "type": "test",
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the fast path settles inline and never suspends the Execution",
+          "nesting": 1,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 15.340042,
+            "type": "test",
+            "passed": true
+          },
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 0,
+          "name": "fast and slow Effect completion are semantically identical",
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the fast path settles inline and never suspends the Execution",
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the fast path settles inline and never suspends the Execution",
+          "nesting": 1,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 15.340042,
+            "type": "test"
+          },
+          "line": 195,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "type": "suite",
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "nesting": 1,
+          "testNumber": 2,
+          "details": {
+            "duration_ms": 3.817042,
+            "type": "test",
+            "passed": true
+          },
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the slow path suspends, is woken by the result, and reaches the same outcome",
+          "nesting": 1,
+          "testNumber": 2,
+          "details": {
+            "duration_ms": 3.817042,
+            "type": "test"
+          },
+          "line": 202,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the same request through both paths produces identical semantics",
+          "type": "suite",
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the same request through both paths produces identical semantics",
+          "nesting": 1,
+          "testNumber": 3,
+          "details": {
+            "duration_ms": 3.313375,
+            "type": "test",
+            "passed": true
+          },
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the same request through both paths produces identical semantics",
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the same request through both paths produces identical semantics",
+          "nesting": 1,
+          "testNumber": 3,
+          "details": {
+            "duration_ms": 3.313375,
+            "type": "test"
+          },
+          "line": 215,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "type": "suite",
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "nesting": 1,
+          "testNumber": 4,
+          "details": {
+            "duration_ms": 3.16025,
+            "type": "test",
+            "passed": true
+          },
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "an Effect that could have completed inline is unchanged by being denied the budget",
+          "nesting": 1,
+          "testNumber": 4,
+          "details": {
+            "duration_ms": 3.16025,
+            "type": "test"
+          },
+          "line": 228,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "type": "suite",
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "nesting": 1,
+          "testNumber": 5,
+          "details": {
+            "duration_ms": 2.693458,
+            "type": "test",
+            "passed": true
+          },
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "the result Event body carries no trace of how long the Effect took",
+          "nesting": 1,
+          "testNumber": 5,
+          "details": {
+            "duration_ms": 2.693458,
+            "type": "test"
+          },
+          "line": 236,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "type": "suite",
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "nesting": 1,
+          "testNumber": 6,
+          "details": {
+            "duration_ms": 51.879,
+            "type": "test",
+            "passed": true
+          },
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "every inline wait budget answers the same two questions and disturbs nothing",
+          "nesting": 1,
+          "testNumber": 6,
+          "details": {
+            "duration_ms": 51.879,
+            "type": "test"
+          },
+          "line": 252,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 1,
+          "name": "both paths journal the same phases in the same order",
+          "type": "suite",
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "both paths journal the same phases in the same order",
+          "nesting": 1,
+          "testNumber": 7,
+          "details": {
+            "duration_ms": 5.318333,
+            "type": "test",
+            "passed": true
+          },
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 1,
+          "name": "both paths journal the same phases in the same order",
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "both paths journal the same phases in the same order",
+          "nesting": 1,
+          "testNumber": 7,
+          "details": {
+            "duration_ms": 5.318333,
+            "type": "test"
+          },
+          "line": 283,
+          "column": 3,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "fast and slow Effect completion are semantically identical",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 86.434875,
+            "type": "suite",
+            "passed": true
+          },
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:plan",
+        "data": {
+          "nesting": 1,
+          "count": 7,
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "fast and slow Effect completion are semantically identical",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 86.434875,
+            "type": "suite"
+          },
+          "line": 194,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:summary",
+        "data": {
+          "success": true,
+          "counts": {
+            "tests": 7,
+            "failed": 0,
+            "passed": 7,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0,
+            "topLevel": 1,
+            "suites": 1
+          },
+          "duration_ms": 88.475875,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 260.366708,
+            "type": "test",
+            "passed": true
+          },
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/effects/fast-slow-equivalence.test.ts"
+        }
+      },
+      {
+        "type": "test:plan",
+        "data": {
+          "nesting": 0,
+          "count": 1
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "tests 7",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "suites 1",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "pass 7",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "fail 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "cancelled 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "skipped 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "todo 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "duration_ms 271.785416",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:summary",
+        "data": {
+          "success": true,
+          "counts": {
+            "tests": 7,
+            "failed": 0,
+            "passed": 7,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0,
+            "topLevel": 1,
+            "suites": 1
+          },
+          "duration_ms": 271.785416
+        }
+      }
+    ],
+    "stderr": ""
+  }
+]
