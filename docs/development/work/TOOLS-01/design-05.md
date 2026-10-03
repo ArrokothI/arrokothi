@@ -464,7 +464,7 @@ Rates: triage 1–1.5 minutes per mention; structured target with reach 15–20 
 
 | Phase | Work | A | C |
 |---|---|---:|---:|
-| E0 | Install Node v22.9.0; floor checks A1–A11 | 0.5 | 0.5 |
+| E0 | Install Node v22.15.0; floor checks A1–A11 | 0.5 | 0.5 |
 | E1 | Tooling: design 04's 3–5 days plus §2.1's increments (7.5 A, 8.25 C, less about 1 of overlap) plus the check's changes (1.5–2.25) plus D05-REV-01 (1) | 12–15 | 13–15.5 |
 | E2 | Revalidation of 154: preserved runs, prefix and read classes (0.5); register classification (1.5–2.5); 346 structured targets for 43 changed, 282 prefix-refused and 21 read-refused members (14.5–19); 14 fences and 5 probes (2); 31 other whole-file origins (0.5); 77 case pairs (1); 30 non-executable (0.5) | 20.5–26 | 20.5–26 |
 | E3 | 83 artifact origins: families with sealed-output cross-checks (4–6), survivor routes (1), probes (4–8), mixed and records (1), held and profiled witnesses (0.5–1) | 10.5–17 | 10.5–17 |
@@ -480,13 +480,44 @@ excludes the sealed-log extraction the owner chose. Strict reads (owner question
 and its rounds; E0 incompatibilities; successor adoption under C beyond the first-order figure.
 Confidence is low for E3's probe rows and E4 under A.
 
-## 6. Implementation order for GPT-6
+## 6. Implementation order
+
+**Floor amendment (owner decision after [node-floor-05](node-floor-05.md)).** The mandatory Kernel
+sweep's preload imports `module.registerHooks`, which Node added in v22.15.0, so it cannot load on
+v22.9.0. With the cancelled timer test of [node-floor-03](node-floor-03.md), this shows the repository
+never ran on its declared 22.9 floor. The owner's decision, verbatim: "raise the floor to 22.15".
+- **The verification floor is exactly Node v22.15.0** (darwin-arm64 on the current hosts), installed
+  at user level from nodejs.org after checking its `SHASUMS256.txt` entry, beside the existing Node;
+  the owner's decision authorizes that install. Wherever this note's step 1, E0, D05-03, §5.5 and
+  A1–A11 say 22.9 or v22.9.0, read v22.15.0. The node-floor-01 to -05 results on v22.9.0 stay as
+  history; A1–A11 are rerun on v22.15.0, and none of the earlier passes carries over.
+- **A1 on newer releases.** Node v25.2.1 sets `details.type` to `test` on test results. So a result
+  is a test when `details.type` is `test` or absent, and a suite when it is `suite`; any other value
+  refuses the file. The floor record states which form v22.15.0 emits.
+- **Files the implementer changes** (no other wording changes): the contract's F4 row, by the diff
+  below; `AGENTS.md` ("Node 22.15+."); the root `README.md` ("with Node 22.15+"); the root
+  `package.json` `engines.node` (`>=22.15.0`) and the matching root entry of `package-lock.json`;
+  `tests/tooling/README.md`; and `check-node-floor.py`'s exact-version check. The 89b49e53 test fix
+  stays.
+- **Not changed:** `packages/sdk/package.json` keeps `>=22.9.0`. That is the published package's
+  runtime claim, not the repository's verification floor; the A7 run on v22.9.0 passed every SDK
+  test. Changing it is a separate owner question.
+
+```diff
+--- a/docs/development/work/TOOLS-01/contract.md
++++ b/docs/development/work/TOOLS-01/contract.md
+@@ -17,3 +17,3 @@
+ | F3 | Provide a versioned case/mutation registry and isolated runner with a passing control, uniquely applicable single- or multi-edit mutations, reached witness and a named qualifying assertion from the member's declared target set. | Existing controls plus multi-edit, wrong-kill and target-set controls. Survived, uncovered, invalid baseline, not applicable, setup error, timeout, output-limit and malformed-result categories stay. No process exit, reading argument, census or family count earns a kill. |
+-| F4 | Keep runner changes in temporary source copies; preserve candidate files; run each process under a declared environment. Bound execution duration and retained output. | Candidate hash checks; deliberate hanging, noisy, failed and contaminating-environment fixtures; every `process.env` name that selected tests read is declared; interrupted or failed mutation cannot patch the shared checkout. Supported host: POSIX with Python 3 and Node 22.9+; the floor's test-event, coverage and type-stripping assumptions are checked before use. |
++| F4 | Keep runner changes in temporary source copies; preserve candidate files; run each process under a declared environment. Bound execution duration and retained output. | Candidate hash checks; deliberate hanging, noisy, failed and contaminating-environment fixtures; every `process.env` name that selected tests read is declared; interrupted or failed mutation cannot patch the shared checkout. Supported host: POSIX with Python 3 and Node 22.15+ (owner choice 02, floor amendment); the floor's test-event, coverage and type-stripping assumptions are checked before use. |
+ | F5 | Keep provenance, triage, mappings, target facts, execution, held claims and acceptance distinct; report facts, limits and unresolved work. | JSON summaries count origins, counterexamples, families, members, targets and kills separately, and suite credit by kind. No count or check releases a hold or establishes acceptance. Tests assert the distinctions. |
+```
 
 0. Review this design's revision-3 delta (`60eadf39` to this note: §2.3 and the edits it causes)
    against the step-0 review; revision 2 was reviewed there. If accepted, add the owner's answer to
    §7's reopened questions ("Confirm 1 and 3, label for Q8") to `owner-choice-02.md` verbatim with
    provenance, apply the option-C diff, commit.
-1. Install Node v22.9.0 at user level from nodejs.org, verifying its `SHASUMS256.txt` checksum;
+1. Install Node v22.15.0 (floor amendment above) at user level from nodejs.org, verifying its `SHASUMS256.txt` checksum;
    keep the existing Node. Verify A1–A11, turning §5.5's probes into fixtures. On any failure stop
    and report; never adapt a mechanism silently.
 2. Declared environment and environment census in `command()`; rerun the 158 tooling tests and the
@@ -571,7 +602,7 @@ revision: "Confirm 1 and 3, label for Q8".
 | 4 | Staging | C | C is now 53–73 days plus about 8–18 in successors; A is 56–90. |
 | 5 | Area map and gate | Approved; design author authorized to edit 007 | Unchanged. I add the 007 entry check once the gate exists, worded to match what was built. |
 | 6 | Sealed logs | Extract in TOOLS-01; confirmed | Unchanged. |
-| 7 | Node 22.9 | Install authorized | Unchanged; A10 and A11 join the floor checks. |
+| 7 | Node floor | Install of v22.9.0 authorized | Raised: "raise the floor to 22.15" (§6 floor amendment); v22.15.0 install authorized; A10 and A11 join the floor checks. |
 | 8 (new) | Changed repository reads that are not fixtures | — | **Label** (`repository_read_changed`, counted; 251 members stay preserved), as recommended. The rejected alternative refused them: 251 more structured targets, 10.5–14 days. Changed fixtures are refused either way. |
 
 **Why label** (the recommendation the owner took). The 251 members are architecture tests whose subject is the repository: they walk it,
