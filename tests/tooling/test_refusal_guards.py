@@ -11,6 +11,7 @@ import test_packet_tools as base
 import test_corpus_tools as corpus_tests
 import test_research_tools as research_tests
 import test_adoption_format as format_tests
+import test_target_tools as target_tests
 
 tool = base.tool
 
@@ -503,7 +504,7 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.refuses('closure is not implemented', self.format_two(lambda d: d['origins'][1].update(state='complete')))
 
     def test_format_two_empty_tables(self):
-        self.refuses('are not implemented', self.format_two(lambda d: d.update(counterexamples=[{'id': 'x'}])))
+        self.refuses('are not implemented', self.format_two(lambda d: d.update(families=[{'id': 'x'}])))
 
     def test_format_two_unmapped_revalidation(self):
         self.refuses('only a revision-2 mapping', self.format_two(lambda d: d['origins'][1].update(state='pending_revalidation')))
@@ -513,3 +514,102 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     def test_format_two_no_regression(self):
         self.refuses('cannot return to pending', self.format_two(lambda d: d['origins'][0].update(state='pending')))
+
+    # Design 05 step 5: source facts, reach and suite targets.
+    TARGET = {'id': 't', 'counterexample': 'cx', 'command': 'repository-tests', 'file': 'tests/a.test.mjs',
+              'test_path': ['s', 'a'], 'declaration': {'line': 1, 'column': 1},
+              'input_anchors': [{'anchor': 'x', 'sha256': tool.digest(b'x'), 'computed': True}],
+              'assertion_anchors': [{'anchor': 'y', 'sha256': tool.digest(b'y')}],
+              'relation': {'kind': 'exact_input'}, 'discrimination': {'reading': 'trace'}}
+
+    def target_refuses(self, fragment, change):
+        target = copy.deepcopy(self.TARGET)
+        change(target)
+        self.refuses(fragment, lambda: tool.target_record(target, {'cx': {'kind': 'behavior'}}))
+
+    def test_target_fields(self):
+        self.target_refuses('suite target needs', lambda t: t.pop('relation'))
+
+    def test_target_counterexample(self):
+        self.target_refuses('unknown counterexample', lambda t: t.update(counterexample='other'))
+
+    def test_target_path(self):
+        self.target_refuses('full test path', lambda t: t.update(test_path=[]))
+
+    def test_target_declaration(self):
+        self.target_refuses('declaration line and column', lambda t: t.update(declaration={'line': 1}))
+
+    def test_target_relation(self):
+        self.target_refuses('authorized_replacement with its decision', lambda t: t.update(relation={'kind': 'authorized_replacement'}))
+
+    def test_target_anchor_counts(self):
+        self.target_refuses('one input anchor', lambda t: t.update(input_anchors=[]))
+
+    def test_target_discrimination(self):
+        self.target_refuses('one registered mutation or one reading', lambda t: t.update(discrimination={}))
+
+    def test_target_anchor_digest(self):
+        self.target_refuses('its text and SHA-256', lambda t: t['assertion_anchors'][0].update(sha256='0' * 64))
+
+    def test_counterexample_kind(self):
+        self.refuses('unknown counterexample kind', lambda: tool.counterexample_table(
+            [{'id': 'c', 'kind': 'other', 'origins': ['o'], 'required_result': 'r'}], ['o']))
+
+    def test_counterexample_origins(self):
+        self.refuses('needs known origins', lambda: tool.counterexample_table(
+            [{'id': 'c', 'kind': 'behavior', 'origins': ['unknown'], 'required_result': 'r'}], ['o']))
+
+    def test_counterexample_result(self):
+        self.refuses('needs its required result', lambda: tool.counterexample_table(
+            [{'id': 'c', 'kind': 'behavior', 'origins': ['o'], 'required_result': ' '}], ['o']))
+
+    def test_typescript_pin(self):
+        self.document('tests/fixtures/packet-tools/mutations.json', {'version': 1, 'cases': [], 'dependencies': []})
+        rev = self.commit('no TypeScript pin')
+        self.refuses('pin exactly one TypeScript subset', lambda: tool.typescript_toolchain(self.reader, rev))
+
+    def broken_tool(self, path, text):
+        self.write(path, text)
+        rev = self.commit('broken tool')
+        environment = tool.child_environment(tool.environment_declaration(None))[0]
+        return rev, environment
+
+    def test_source_facts_failure(self):
+        rev, environment = self.broken_tool('tests/tooling/source-facts.mjs', 'process.exit(3);\n')
+        self.refuses('source facts failed', lambda: tool.source_facts(self.reader, rev, [{'op': 'x'}], environment, {}))
+
+    def test_source_facts_result(self):
+        script = "import { writeFileSync } from 'node:fs';\nwriteFileSync(process.argv[3], JSON.stringify({typescript: '0', results: []}));\n"
+        rev, environment = self.broken_tool('tests/tooling/source-facts.mjs', script)
+        self.refuses('unexpected result', lambda: tool.source_facts(self.reader, rev, [{'op': 'x'}], environment, {}))
+
+    def test_reach_coverage_failure(self):
+        rev, environment = self.broken_tool('tests/tooling/reach-coverage.mjs', 'process.exit(3);\n')
+        observation = {'coverage': str(self.root)}
+        self.refuses('reach coverage failed', lambda: tool.coverage_counts(self.reader, rev, observation, [], environment))
+
+    def target_corpus(self, change_reporter=None, **build):
+        self.toolchain = target_tests.pinned_toolchain()
+        fixture = target_tests.TargetTests
+        row = fixture.target(self, 'exact', target_tests.anchor('const r = op(5);', computed=True), ['assert.equal(r.charge, 5);'])
+        rev = fixture.build(self, [row], **build)
+        if change_reporter:
+            self.write('tests/tooling/catalog-reporter.mjs', change_reporter)
+            rev = self.commit('silent reporter')
+        return lambda: tool.corpus(self.reader, rev, 'corpus.json', toolchain=self.toolchain)
+
+    def test_target_held_counterexample(self):
+        self.refuses('never earn suite credit', self.target_corpus(counterexample_kind='held_witness'))
+
+    def test_target_catalog_events(self):
+        self.refuses('catalog run produced no events',
+                     self.target_corpus('export default async function* reporter(events) { for await (const _ of events); }\n'))
+
+    def test_target_literals(self):
+        self.toolchain = target_tests.pinned_toolchain()
+        fixture = target_tests.TargetTests
+        row = fixture.target(self, 'exact', target_tests.anchor('const r = op(5);', literals=[{'ordinal': '5'}]),
+                             ['assert.equal(r.charge, 5);'])
+        rev = fixture.build(self, [row])
+        self.refuses('literals (ordinal, value) or computed',
+                     lambda: tool.corpus(self.reader, rev, 'corpus.json', toolchain=self.toolchain))

@@ -120,13 +120,13 @@
         "-p",
         "test_*.py"
       ],
-      "timeout_seconds": 180,
+      "timeout_seconds": 600,
       "output_limit_bytes": 1048576,
       "counts": {
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 254
+        "tests": 293
       }
     },
     {

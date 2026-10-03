@@ -1,12 +1,14 @@
 """Title catalog: declared command binding, glob selection, leaf tree and run validity (design 05 step 3)."""
 import json
-import sys
 import unittest
 from pathlib import Path
 
 from test_packet_tools import RepositoryFixture, tool
+from test_target_tools import pinned_toolchain
 
+ROOT = Path(__file__).resolve().parents[2]
 REPORTER = Path(__file__).resolve().parent / 'catalog-reporter.mjs'
+SOURCE_FACTS = Path(__file__).resolve().parent / 'source-facts.mjs'
 FLAGS = ['--test']
 GLOBS = ['tests/*.test.mjs']
 SCRIPT = ' '.join(['node', *FLAGS, *GLOBS])
@@ -24,8 +26,18 @@ def row(kind, name, line, column, nesting=0, file='/x.test.mjs', **extra):
 
 
 class CatalogFixture(RepositoryFixture):
+    toolchain = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.toolchain = pinned_toolchain()
+
+    def verify(self, rev):
+        return tool.verify(self.reader, rev, 'verify.json', self.toolchain)
+
     def catalog(self, files=None, script=SCRIPT, step_script=SCRIPT, globs=GLOBS):
         self.write('tests/tooling/catalog-reporter.mjs', REPORTER.read_text())
+        self.write('tests/tooling/source-facts.mjs', SOURCE_FACTS.read_text())
         for name, text in (files or {'tests/a.test.mjs': PASSING}).items():
             self.write(name, text)
         self.document('package.json', {'type': 'module', 'scripts': {'test': script}})
@@ -43,24 +55,25 @@ class CatalogFixture(RepositoryFixture):
 class CatalogDeclarationTests(CatalogFixture):
     def test_declared_script_selects_and_runs_with_both_reporters(self):
         rev = self.catalog()
-        result = tool.verify(self.reader, rev, 'verify.json')
+        result = self.verify(rev)
         check = result['checks'][0]
         self.assertEqual(result['result'], 'checks_passed', check)
         self.assertEqual(check['counts'], {'tests': 3, 'fail': 0})
         catalog = check['catalog']
         self.assertTrue(catalog['valid'])
+        self.assertTrue(catalog['source_kind_checked'])
         self.assertEqual((catalog['files'], catalog['leaves']), (1, 3))
         self.assertEqual(catalog['leaf_verdicts'], {'passed': 2, 'skipped': 1})
 
     def test_script_drift_refused(self):
         rev = self.catalog(script=SCRIPT + ' tests/extra.test.mjs')
         with self.assertRaisesRegex(tool.CheckError, 'catalog script drift'):
-            tool.verify(self.reader, rev, 'verify.json')
+            self.verify(rev)
 
     def test_declared_text_must_equal_the_rendering(self):
         rev = self.catalog(step_script='node --test tests/a.test.mjs')
         with self.assertRaisesRegex(tool.CheckError, 'catalog script drift'):
-            tool.verify(self.reader, rev, 'verify.json')
+            self.verify(rev)
 
     def test_glob_selects_one_segment_and_never_helpers_or_other_directories(self):
         self.catalog({'tests/a.test.mjs': PASSING, 'tests/harness.mjs': 'export const x = 1;\n',
@@ -72,7 +85,7 @@ class CatalogDeclarationTests(CatalogFixture):
         rev = self.catalog(globs=['tests/*.spec.mjs'], script='node --test tests/*.spec.mjs',
                            step_script='node --test tests/*.spec.mjs')
         with self.assertRaisesRegex(tool.CheckError, 'matches no file'):
-            tool.verify(self.reader, rev, 'verify.json')
+            self.verify(rev)
 
     def test_selection_flag_in_catalog_refused(self):
         flags = ['--test', '--test-name-pattern=first']
@@ -83,13 +96,27 @@ class CatalogDeclarationTests(CatalogFixture):
         self.document('verify.json', spec)
         rev = self.commit('selection flag')
         with self.assertRaisesRegex(tool.CheckError, 'without their own reporter or selection'):
-            tool.verify(self.reader, rev, 'verify.json')
+            self.verify(rev)
 
     def test_failing_leaf_fails_the_step_and_stays_in_the_catalog(self):
         rev = self.catalog({'tests/a.test.mjs': PASSING + "test('broken', () => { throw new Error('x'); });\n"})
-        result = tool.verify(self.reader, rev, 'verify.json')
+        result = self.verify(rev)
         self.assertEqual(result['result'], 'attention_required')
         self.assertEqual(result['checks'][0]['catalog']['leaf_verdicts']['failed'], 1)
+
+
+    def test_registration_through_an_alias_refuses_its_file(self):
+        aliased = "import { test } from 'node:test';\nconst register = test;\nregister('aliased', () => {});\n"
+        rev = self.catalog({'tests/a.test.mjs': PASSING, 'tests/b.test.mjs': aliased})
+        catalog = self.verify(rev)['checks'][0]['catalog']
+        self.assertFalse(catalog['valid'])
+        self.assertEqual(catalog['refused_files'], {'tests/b.test.mjs': 'source registration mismatch at 3:1'})
+
+    def test_suite_reported_where_source_registers_a_test_refuses_the_file(self):
+        tree = {'files': {'t.mjs': {'pairs': [{'kind': 'suite', 'line': 1, 'column': 1}], 'synthetic': 0}},
+                'refused': {}, 'valid': True}
+        kinds = {'t.mjs': {(1, 1): {'kind': 'leaf'}}}
+        self.assertEqual(tool.catalog_source_check(tree, kinds)['refused'], {'t.mjs': 'source registration mismatch at 1:1'})
 
 
 class LeafTreeTests(unittest.TestCase):

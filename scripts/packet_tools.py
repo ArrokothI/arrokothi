@@ -11,6 +11,7 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import selectors
+import shutil
 import signal
 import subprocess
 import sys
@@ -33,10 +34,16 @@ ENVIRONMENT_OTHER = re.compile(r'\bprocess\s*\[\s*[\'"]env[\'"]\s*\]|'
                                r'from\s+[\'"](?:node:)?process[\'"]|require\(\s*[\'"](?:node:)?process[\'"]\s*\)')
 # Design 05 §4 title catalog: the second reporter of a catalog step and the summary it reports.
 CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
+# Design 05 §4 source facts and reach: parsed with the pinned TypeScript subset, counted from raw V8 coverage.
+SOURCE_FACTS = 'tests/tooling/source-facts.mjs'
+REACH_COVERAGE = 'tests/tooling/reach-coverage.mjs'
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
 FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', 'families', 'holds', 'areas')
+COUNTEREXAMPLE_KINDS = ('behavior', 'mutation', 'held_witness', 'superseded_witness', 'prose_pending')
+TARGET_FIELDS = ('id', 'counterexample', 'command', 'file', 'test_path', 'declaration', 'input_anchors',
+                 'assertion_anchors', 'relation', 'discrimination')
 
 
 class CheckError(Exception):
@@ -323,7 +330,7 @@ def scheduled_registry(git, rev, spec):
     return registry, plan
 
 
-def corpus(git, revision, spec_path):
+def corpus(git, revision, spec_path, toolchain=None):
     """Resolve explicit semantic mappings; execution remains a separate observation.
 
     Format 2 is the revision-3 manifest (design 04 and 05). Format 1 stays readable for historical
@@ -332,7 +339,7 @@ def corpus(git, revision, spec_path):
     spec = git.document(rev, spec_path, versions=(1, 2))
     intake = inventory(git, rev, spec['inventory'])
     if spec['version'] == 2:
-        return corpus_format_2(git, rev, spec, intake)
+        return corpus_format_2(git, rev, spec, intake, toolchain)
     origins = {row['id']: row for row in intake['origins']}
     mappings = {}
     for row in spec['mappings']:
@@ -426,7 +433,7 @@ def holds_table(git, rev, holds):
     return claims
 
 
-def corpus_format_2(git, rev, spec, intake):
+def corpus_format_2(git, rev, spec, intake, toolchain=None):
     origins = {row['id']: row for row in intake['origins']}
     require(all(table in spec for table in FORMAT_2_TABLES), 'format 2 needs every adoption table')
     rows = unique_records(spec['origins'], 'origins')
@@ -446,10 +453,19 @@ def corpus_format_2(git, rev, spec, intake):
         # Later steps define closure links; until then no origin may claim them.
         require(row['state'] not in ('triaged', 'complete'),
                 'origin closure is not implemented in this format revision: ' + key)
-    for table in ('counterexamples', 'suite_targets', 'preserved', 'families', 'areas'):
+    for table in ('preserved', 'families', 'areas'):
         require(spec[table] == [], table + ' are not implemented in this format revision')
     claims = holds_table(git, rev, spec['holds'])
-    scheduled_registry(git, rev, spec)
+    registry, _ = scheduled_registry(git, rev, spec)
+    counterexamples = counterexample_table(spec['counterexamples'], origins)
+    targets = unique_records(spec['suite_targets'], 'suite targets')
+    for target in targets.values():
+        require(counterexamples.get(target.get('counterexample'), {}).get('kind') == 'behavior',
+                'held or superseded counterexamples never earn suite credit')
+    results = []
+    if targets:
+        context = target_context(git, rev, spec, toolchain)
+        results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
     states = Counter(row['state'] for row in rows.values())
     revalidation = Counter(row['legacy']['status'] for row in rows.values() if row['state'] == 'pending_revalidation')
     pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
@@ -457,9 +473,10 @@ def corpus_format_2(git, rev, spec, intake):
             'result': 'mappings_complete' if not pending else 'extraction_pending',
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
             'pending_adoption': len(pending), 'pending_origins': pending,
-            'counts': {'origins': len(rows), 'counterexamples': 0, 'families': 0, 'members': 0,
-                       'suite_targets': 0, 'preserved': 0, 'kills': 0},
-            'suite_credit': {}, 'holds': sorted(claims),
+            'counts': {'origins': len(rows), 'counterexamples': len(counterexamples), 'families': 0, 'members': 0,
+                       'suite_targets': len(targets), 'preserved': 0, 'kills': 0},
+            'targets': {'counts': target_counts(results), 'results': results},
+            'suite_credit': target_counts(results)['credit'], 'holds': sorted(claims),
             'mapping_complete': not pending, 'execution': 'not evaluated',
             'full_corpus_complete': False, 'acceptance': 'not evaluated',
             'limits': ['Semantic equivalence and non-executable classifications require source review',
@@ -966,7 +983,7 @@ def catalog_tree(rows, root, selected):
             'valid': consistent and not refused and set(by_file) == set(selected)}
 
 
-def catalog_run(git, rev, step, environment):
+def catalog_run(git, rev, step, environment, toolchain=None):
     """One run of a catalog command at C feeds verify (first reporter) and the catalog (second)."""
     facts = catalog_declaration(git, rev, step)
     reporter = git.repo / CATALOG_REPORTER
@@ -990,6 +1007,8 @@ def catalog_run(git, rev, step, environment):
             tree = catalog_tree(rows, Path(os.path.realpath(git.repo)), facts['files'])
         except CheckError as exc:
             tree = {'valid': False, 'error': str(exc)}
+    if tree is not None and 'files' in tree:
+        tree = catalog_source_check(tree, source_kinds(git, rev, facts['files'], environment, toolchain))
     return facts, run, tree
 
 
@@ -1003,7 +1022,308 @@ def catalog_summary(facts, tree):
             'summary_consistent': tree['summary_consistent'], 'refused_files': tree['refused'],
             'unselected_files': tree['unselected'], 'leaves': len(leaves),
             'leaf_verdicts': dict(Counter(pair['verdict'] for pair in leaves)),
-            'source_kind_checked': False}
+            'source_kind_checked': True}
+
+
+def typescript_toolchain(git, rev):
+    """The digest-pinned TypeScript 5.9.3 subset the mutation registry already declares (design 05 A6)."""
+    registry = git.document(rev, 'tests/fixtures/packet-tools/mutations.json')
+    pinned = [row for row in registry.get('dependencies', []) if row.get('path') == 'node_modules/typescript']
+    require(len(pinned) == 1, 'the mutation registry must pin exactly one TypeScript subset')
+    return dependency_files(git, rev, pinned)
+
+
+def source_facts(git, rev, requests, environment, toolchain=None):
+    """Parse sources in a temporary copy with the pinned TypeScript subset; nothing parsed is executed."""
+    files = dict(typescript_toolchain(git, rev) if toolchain is None else toolchain)
+    files['source-facts.mjs'] = git.blob(rev, SOURCE_FACTS)
+    with tempfile.TemporaryDirectory(prefix='arrokothi-source-facts-') as temporary:
+        directory = Path(temporary)
+        for name, data in files.items():
+            (directory / name).parent.mkdir(parents=True, exist_ok=True)
+            (directory / name).write_bytes(data)
+        (directory / 'request.json').write_text(json.dumps(requests))
+        run = command(['node', 'source-facts.mjs', 'request.json', 'result.json'], directory, 600, 65536, environment)
+        require(run['status'] == 'finished' and run['exit'] == 0 and (directory / 'result.json').exists(),
+                'source facts failed: ' + run['output'][-2000:])
+        result = json.loads((directory / 'result.json').read_text())
+    require(result.get('typescript') == '5.9.3' and len(result.get('results', [])) == len(requests),
+            'source facts returned an unexpected result')
+    return result['results']
+
+
+def name_pattern(path):
+    """A --test-name-pattern matching exactly one full test path (ancestors joined by spaces)."""
+    return '^' + ' '.join(re.sub(r'[\\^$.*+?()[\]{}|/]', lambda match: '\\' + match[0], name) for name in path) + '$'
+
+
+def reach_run(git, rev, flags, file, environment, selection):
+    """One coverage run of one file: a full-path name pattern, or the no-test baseline."""
+    events_rows, directory = None, tempfile.mkdtemp(prefix='arrokothi-reach-')
+    coverage = Path(directory) / 'coverage'
+    coverage.mkdir()
+    events = Path(directory) / 'events.jsonl'
+    argv = ['node', *flags, '--test-reporter=' + str(git.repo / CATALOG_REPORTER),
+            '--test-reporter-destination=' + str(events), selection, file]
+    run = command(argv, git.repo, 300, 1048576, dict(environment, NODE_V8_COVERAGE=str(coverage)))
+    if events.exists():
+        try:
+            events_rows = [json.loads(line) for line in events.read_text().splitlines()]
+        except ValueError:
+            events_rows = None
+    return {'run': run, 'rows': events_rows, 'directory': directory, 'coverage': str(coverage)}
+
+
+def reach_valid(observation, path):
+    """D05-CHK-02: exactly one leaf equal to the target path, no failure anywhere, matching summary."""
+    rows = observation['rows']
+    if observation['run']['status'] != 'finished' or observation['run']['exit'] != 0 or rows is None:
+        return False, 'reach run did not finish cleanly'
+    if any(row.get('type') == 'test:fail' for row in rows):
+        return False, 'a test failed in the reach run'
+    tree, reason = file_tree([row for row in rows if row.get('type') in ('test:start', 'test:pass', 'test:fail')])
+    if tree is None:
+        return False, reason
+    leaves = [pair['path'] for pair in tree['pairs'] if pair['leaf']]
+    if leaves != [path]:
+        return False, f'{len(leaves)} leaves matched, not exactly the target'
+    summary = {row['label']: row['count'] for row in rows if row.get('type') == 'summary'}
+    tests = sum(pair['kind'] == 'test' for pair in tree['pairs'])
+    expected = {'tests': tests, 'suites': sum(pair['kind'] == 'suite' for pair in tree['pairs']), 'pass': tests,
+                'fail': 0, 'cancelled': 0, 'skipped': 0, 'todo': 0}
+    if tests != 1 or summary != expected:
+        return False, 'summary counts do not match one passing leaf'
+    return True, None
+
+
+def coverage_counts(git, rev, observation, requests, environment):
+    with tempfile.TemporaryDirectory(prefix='arrokothi-reach-request-') as temporary:
+        request = Path(temporary) / 'request.json'
+        request.write_text(json.dumps(requests))
+        run = command(['node', str(git.repo / REACH_COVERAGE), observation['coverage'], str(request)],
+                      git.repo, 120, 1048576, environment)
+    require(run['status'] == 'finished' and run['exit'] == 0, 'reach coverage failed: ' + run['output'][-2000:])
+    return json.loads(run['output'])
+
+
+def target_record(target, counterexamples):
+    require(isinstance(target, dict) and all(field in target for field in TARGET_FIELDS),
+            'suite target needs ' + ', '.join(TARGET_FIELDS))
+    require(target['counterexample'] in counterexamples, 'suite target names an unknown counterexample')
+    require(isinstance(target['test_path'], list) and bool(target['test_path']) and
+            all(isinstance(name, str) for name in target['test_path']), 'suite target needs a full test path')
+    declaration = target['declaration']
+    require(isinstance(declaration, dict) and type(declaration.get('line')) is int and
+            type(declaration.get('column')) is int, 'suite target needs a declaration line and column')
+    relation = target['relation']
+    require(isinstance(relation, dict) and (relation.get('kind') == 'exact_input' or
+            (relation.get('kind') == 'authorized_replacement' and isinstance(relation.get('decision'), str) and
+             bool(relation['decision']))), 'relation is exact_input or authorized_replacement with its decision')
+    require(bool(target['input_anchors']) and len(target['input_anchors']) == 1 and
+            bool(target['assertion_anchors']), 'a suite target names one input anchor and its assertion anchors')
+    discrimination = target['discrimination']
+    require(isinstance(discrimination, dict) and len(discrimination) == 1 and
+            (isinstance(discrimination.get('mutation'), str) or isinstance(discrimination.get('reading'), str)),
+            'discrimination is one registered mutation or one reading trace')
+    anchors = [*target['input_anchors'], *target['assertion_anchors'], *target.get('operation_anchors', [])]
+    for anchor in anchors:
+        require(isinstance(anchor, dict) and isinstance(anchor.get('anchor'), str) and bool(anchor['anchor']) and
+                anchor.get('sha256') == digest(anchor['anchor'].encode()), 'anchor needs its text and SHA-256')
+    return target
+
+
+def source_kinds(git, rev, files, environment, toolchain=None):
+    """Registrations per file at C, keyed by the location Node reports (the callee's last name)."""
+    requests = [{'op': 'registrations', 'path': name, 'text': git.blob(rev, name).decode()} for name in files]
+    kinds = {}
+    for name, result in zip(files, source_facts(git, rev, requests, environment, toolchain)):
+        kinds[name] = {(row['location']['line'], row['location']['column']): row for row in result['registrations']}
+    return kinds
+
+
+def catalog_source_check(tree, kinds):
+    """A1: each pair's kind agrees with the source registration at its location, or the file is refused."""
+    for name, file in list(tree['files'].items()):
+        for pair in file['pairs']:
+            registration = kinds.get(name, {}).get((pair['line'], pair['column']))
+            expected = {'suite': ('suite',), 'test': ('leaf', 'subtest')}[pair['kind']]
+            if registration is None or registration['kind'] not in expected:
+                tree['refused'][name] = 'source registration mismatch at ' + str(pair['line']) + ':' + str(pair['column'])
+                del tree['files'][name]
+                break
+    tree['valid'] = tree['valid'] and not tree['refused']
+    return tree
+
+
+def check_target(git, rev, target, counterexamples, registry, context):
+    """P1-T facts for one suite target at C. A failed check is a reported refusal, never credit."""
+    target_record(target, counterexamples)
+    facts = {'id': target['id'], 'counterexample': target['counterexample'], 'refused': [], 'anchors': []}
+    refuse = facts['refused'].append
+    step = context['catalogs'].get(target['command'])
+    if step is None:
+        refuse('command is not a catalog command')
+        return facts
+    catalog = context['catalog'](target['command'])
+    file = target['file']
+    if file not in catalog['selection']:
+        refuse("file is not in the command's own selection")
+        return facts
+    location = (target['declaration']['line'], target['declaration']['column'])
+    registration = context['kinds'](file).get(location)
+    if registration is None or registration['kind'] not in ('leaf', 'subtest'):
+        refuse('no test registration at the declaration')
+        return facts
+    if registration['kind'] == 'subtest':
+        refuse('a t.test subtest cannot be selected by its full path (A9)')
+        return facts
+    title = registration['title']
+    if title['kind'] == 'literal' and title['value'] != target['test_path'][-1]:
+        refuse('the declaration registers another title')
+    leaf = [pair for pair in catalog['tree']['files'].get(file, {'pairs': []})['pairs']
+            if (pair['line'], pair['column']) == location and pair['path'] == target['test_path']]
+    if len(leaf) != 1 or not leaf[0]['leaf'] or leaf[0]['verdict'] != 'passed':
+        refuse('the catalog has no single passing leaf with this path at the declaration')
+    anchors = [('input', row) for row in target['input_anchors']] + \
+              [('assertion', row) for row in target['assertion_anchors']] + \
+              [('operation', row) for row in target.get('operation_anchors', [])]
+    by_file = {}
+    for role, row in anchors:
+        by_file.setdefault(row.get('file', file), []).append((role, row))
+    located = {}
+    for name, rows in by_file.items():
+        span = registration['span'] if name == file else None
+        result = source_facts(git, rev, [{'op': 'anchors', 'path': name, 'text': git.blob(rev, name).decode(), 'span': span,
+                                          'anchors': [{'role': role, 'anchor': row['anchor']} for role, row in rows]}],
+                              context['environment'], context.get('toolchain'))[0]['anchors']
+        for (role, row), fact in zip(rows, result):
+            located.setdefault(name, []).append((role, row, fact))
+    for name, rows in located.items():
+        for role, row, fact in rows:
+            entry = {'file': name, 'role': role, 'anchor': row['anchor'][:120], 'bound': 'error' not in fact}
+            if fact.get('not_observable'):
+                entry['not_observable'] = fact['not_observable'] if isinstance(fact['not_observable'], str) else fact['error']
+            elif 'error' in fact:
+                refuse(role + ' anchor: ' + fact['error'])
+            if role == 'input' and 'error' not in fact:
+                entry['scope'] = fact['scope']
+                if fact['scope'] == 'other_test':
+                    refuse('input anchor lies in another test')
+                if row.get('computed') is True:
+                    entry['input'] = 'computed'
+                else:
+                    tokens = {token['ordinal']: token for token in fact['tokens']}
+                    literals = row.get('literals')
+                    require(isinstance(literals, list) and bool(literals) and all(
+                        isinstance(item, dict) and type(item.get('ordinal')) is int and isinstance(item.get('value'), str)
+                        for item in literals), 'input anchor needs literals (ordinal, value) or computed')
+                    matched = all(tokens.get(item['ordinal'], {}).get('value') == item['value'] for item in literals)
+                    entry['input'] = 'tokens_matched' if matched else 'tokens_differ'
+                    if not matched:
+                        refuse('input literal tokens differ at their recorded positions')
+            entry['offset'] = fact.get('offset')
+            facts['anchors'].append(entry)
+    if facts['refused']:
+        return facts
+    flags = step['catalog']['flags']
+    selected = reach_run(git, rev, flags, file, context['environment'], '--test-name-pattern=' + name_pattern(target['test_path']))
+    baseline = reach_run(git, rev, flags, file, context['environment'], '--test-skip-pattern=.')
+    try:
+        valid, reason = reach_valid(selected, target['test_path'])
+        facts['reach_run'] = 'valid' if valid else reason
+        if not valid:
+            refuse('invalid reach run: ' + reason)
+            return facts
+        if baseline['run']['status'] != 'finished' or baseline['run']['exit'] != 0:
+            refuse('the no-test baseline did not finish cleanly')
+            return facts
+        requests = {}
+        for entry in facts['anchors']:
+            if entry.get('offset') is not None:
+                requests.setdefault(entry['file'], []).append(entry['offset'])
+        request = [{'file': str(Path(os.path.realpath(git.repo)) / name), 'offsets': offsets} for name, offsets in requests.items()]
+        chosen = {row['file']: row['counts'] for row in coverage_counts(git, rev, selected, request, context['environment'])}
+        base = {row['file']: row['counts'] for row in coverage_counts(git, rev, baseline, request, context['environment'])}
+        cursor = Counter()
+        for entry in facts['anchors']:
+            if entry.get('offset') is None:
+                continue
+            key = str(Path(os.path.realpath(git.repo)) / entry['file'])
+            index = cursor[key]
+            cursor[key] += 1
+            count, before = chosen[key][index], base[key][index] or 0
+            entry['count'], entry['baseline'] = count, before
+            entry['reached'] = count is not None and count > before
+            if entry.get('not_observable'):
+                continue
+            if entry['role'] == 'assertion' and not entry['reached']:
+                refuse('assertion anchor not reached: ' + entry['anchor'])
+            if entry['role'] == 'input' and entry.get('scope') == 'span' and not entry['reached']:
+                refuse('input anchor not reached: ' + entry['anchor'])
+    finally:
+        shutil.rmtree(selected['directory'], True)
+        shutil.rmtree(baseline['directory'], True)
+    discrimination = target['discrimination']
+    if 'reading' in discrimination:
+        facts['credit'] = 'target_reading'
+    else:
+        mutation = next((row for case in registry['cases'] for row in case.get('mutants', [])
+                         if row.get('id') == discrimination['mutation']), None)
+        operation_files = {entry['file'] for entry in facts['anchors'] if entry['role'] == 'operation'}
+        if mutation is None or mutation.get('obligation') != target['counterexample']:
+            refuse('the mutation is not registered to this counterexample')
+        elif mutation['path'] not in operation_files:
+            refuse('the mutated file holds no cited operation anchor')
+        else:
+            # A qualifying named failure of this leaf is executed with the target-set mutants (step 7).
+            facts['credit'] = 'target_mutation_pending_execution'
+    return facts
+
+
+def counterexample_table(rows, origins):
+    table = unique_records(rows, 'counterexamples')
+    for row in table.values():
+        require(row.get('kind') in COUNTEREXAMPLE_KINDS, 'unknown counterexample kind')
+        require(bool(unique_text(row.get('origins', []), 'counterexample origins')) and set(row['origins']) <= set(origins),
+                'counterexample needs known origins')
+        require(isinstance(row.get('required_result'), str) and bool(row['required_result'].strip()),
+                'counterexample needs its required result')
+    return table
+
+
+def target_context(git, rev, spec, toolchain=None):
+    """Catalog runs and source facts for suite targets, computed once per corpus invocation at a clean C."""
+    clean_payload(git, rev)
+    verification = git.document(rev, spec['verification'])
+    declaration = environment_declaration(verification.get('environment'))
+    environment, _ = child_environment(declaration)
+    catalogs = {step['id']: step for step in verification['checks'] if 'catalog' in step}
+    cache = {}
+
+    def catalog(command_id):
+        if ('catalog', command_id) not in cache:
+            facts, run, tree = catalog_run(git, rev, catalogs[command_id], environment, toolchain)
+            require(tree is not None and 'files' in tree, 'catalog run produced no events: ' + command_id)
+            cache[('catalog', command_id)] = {'selection': facts['files'], 'tree': tree}
+        return cache[('catalog', command_id)]
+
+    def kinds(name):
+        if ('kinds', name) not in cache:
+            cache[('kinds', name)] = source_kinds(git, rev, [name], environment, toolchain)[name]
+        return cache[('kinds', name)]
+    return {'catalogs': catalogs, 'catalog': catalog, 'kinds': kinds, 'environment': environment, 'toolchain': toolchain}
+
+
+def target_counts(results):
+    anchors = [entry for row in results for entry in row['anchors']]
+    return {'targets': len(results), 'targets_refused': sum(bool(row['refused']) for row in results),
+            'anchors_bound': sum(entry['bound'] for entry in anchors),
+            'anchors_reached': sum(entry.get('reached') is True for entry in anchors),
+            'anchors_not_observable': sum('not_observable' in entry for entry in anchors),
+            'input_tokens_matched': sum(entry.get('input') == 'tokens_matched' for entry in anchors),
+            'input_computed': sum(entry.get('input') == 'computed' for entry in anchors),
+            'input_module_scope': sum(entry.get('scope') == 'module' for entry in anchors if entry['role'] == 'input'),
+            'credit': dict(Counter(row['credit'] for row in results if not row['refused'] and 'credit' in row))}
 
 
 def clean_payload(git, rev):
@@ -1011,7 +1331,7 @@ def clean_payload(git, rev):
     require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')
 
 
-def verify(git, revision, spec_path):
+def verify(git, revision, spec_path, toolchain=None):
     rev = git.commit(revision)
     clean_payload(git, rev)
     spec = git.document(rev, spec_path)
@@ -1031,7 +1351,7 @@ def verify(git, revision, spec_path):
             if operation == 'inventory':
                 result = inventory(git, rev, step['spec'])
             elif operation == 'corpus':
-                result = corpus(git, rev, step['spec'])
+                result = corpus(git, rev, step['spec'], toolchain)
             elif operation == 'coverage':
                 result = coverage(git, rev, step['spec'])
             else:
@@ -1050,7 +1370,7 @@ def verify(git, revision, spec_path):
                     provided[inputs[name]['environment']] = str(directory)
                 environment, record = child_environment(declaration, provided)
                 if 'catalog' in step:
-                    catalog_facts, run, tree = catalog_run(git, rev, step, environment)
+                    catalog_facts, run, tree = catalog_run(git, rev, step, environment, toolchain)
                 else:
                     catalog_facts, tree = None, None
                     run = command(step['argv'], git.repo, step['timeout_seconds'], step['output_limit_bytes'], environment)

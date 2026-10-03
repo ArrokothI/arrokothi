@@ -110,10 +110,55 @@ result's `details.type` (`test` or absent is a test, `suite` a suite, anything e
 file), and each start pairs with exactly one result by file, line, column, nesting and name. A
 missing pair, a duplicate key or a missing location refuses that file, not the run. A leaf is a
 test pair with no child start; an empty suite and a test with subtests are not leaves. The
-zero-match file-level pair is counted but never a leaf. The step passes only when every selected
-file reports, no file is refused and the summary counts equal the pairs. Cross-checking each pair's
-kind against its source registration needs the source facts of step 5 and is not yet applied
-(`source_kind_checked: false`).
+zero-match file-level pair is counted but never a leaf. Each pair's kind must also match the source
+registration at its location (next section), or the file is refused. The step passes only when
+every selected file reports, no file is refused and the summary counts equal the pairs.
+
+## Source facts, reach and suite targets
+
+`tests/tooling/source-facts.mjs` parses files with the digest-pinned TypeScript 5.9.3 subset in a
+temporary copy (the same subset `mutations.json` pins); it never executes what it reads. It
+recognises `node:test` registrations only through bindings imported from `node:test` (`test`,
+`it`, `describe`, `suite`, hooks, their `.skip`/`.only`/`.todo`, a namespace import) and `<p>.test`
+where `<p>` is a test callback's first parameter (D05-CHK-12); `pattern.test(line)` is not a
+registration, and an alias such as `const register = test` is not recognised. It reports each
+registration's kind, title (literal, template or computed), span, callback, parent and the location
+Node reports (the callee's last name). Every catalog run now cross-checks each pair's kind against
+the registration at its location; a mismatch refuses that file (A1).
+
+A suite target in format 2 (P1-T) names its catalog command, file, full test path, declaration
+line and column, one input anchor, its assertion anchors, optional operation anchors (in any file),
+its relation (`exact_input`, or `authorized_replacement` with a decision) and its discrimination
+(one registered mutation, or one reading trace). Each anchor is one statement, stored as text with
+its SHA-256, and must occur exactly once in its file at C. `corpus` then checks, at a clean C:
+
+- the file is in the command's own expanded selection, the declaration is a test registration (a
+  `t.test` subtest is refused, A9), a literal title equals the path's last name, and the catalog
+  has exactly one passing leaf with that path there;
+- the input token at each recorded ordinal has the recorded value (`input_tokens_matched` means
+  the token at that position, never input flow), or the input is declared `computed`; an input
+  outside every test span is `module` scope, counted separately; one inside another test refuses;
+- an anchor starting inside a string, template, regular expression or comment, an assertion inside a
+  `try` block within the span, or one inside a function passed to `assert.throws`, `rejects`,
+  `doesNotThrow`, `doesNotReject` or `.catch`, is `not_observable` (reading, counted), including
+  through a same-file helper called there;
+- reach: one run with the full path as `--test-name-pattern` and one no-test baseline
+  (`--test-skip-pattern=.`), both under `NODE_V8_COVERAGE`. The reach run is valid only with exactly
+  one leaf equal to the target, no failure event and matching summary counts (D05-CHK-02).
+  `tests/tooling/reach-coverage.mjs` takes the innermost block range's count at each anchor's
+  offset (an assertion at its assertion call's start, a throw guard at its condition), the rule of
+  `coverageExecuted`; an anchor is reached when the run's count exceeds the baseline's. Every
+  observable assertion anchor and every in-span input anchor must be reached;
+- discrimination: a reading trace gives `target_reading`; a mutation must be registered with this
+  counterexample as its `obligation` and mutate a file holding a cited operation anchor, and its
+  qualifying kill of the target leaf runs with the target-set mutants (step 7) — until then it is
+  `target_mutation_pending_execution`, never credit.
+
+A target whose counterexample is held or superseded is refused outright (P1-H). A failed check is
+reported with its reason and counted; it never becomes credit. Summaries count anchors bound,
+reached and not observable, input tokens matched, computed and module-scoped inputs, and credit by
+kind. Reach shows that a statement started, not that it compares the required value; a catch
+outside the span or in a deeper helper can still mask a skipped assertion.
 
 ## Isolation, inputs and identities
 
