@@ -160,6 +160,47 @@ reached and not observable, input tokens matched, computed and module-scoped inp
 kind. Reach shows that a statement started, not that it compares the required value; a catch
 outside the span or in a deeper helper can still mask a skipped assertion.
 
+## Preserved closure and hold register
+
+Format 2 now checks P1-P and P1-H at a clean C, from scratch, on every `corpus` run, over every
+whole-file test origin (71 at the pinned inventory). `adoption.json` stores the results and `corpus`
+requires them to equal the recomputation exactly. A stale record fails; it never stands in for one.
+
+- **Hold register (P1-H).** `holds.register.recipes` gives each held claim a title, body and file
+  recipe. Each recipe may widen design 05's minimum (an added `|` alternative, more files), never
+  narrow it, and every P1-H claim stays in `holds.claims`. A body is the leaf registration's text plus
+  the same-file and test-side helpers it references, followed transitively (a namespace import widens
+  to every exported helper). The recipes are matched against every leaf registration in the preserved
+  and target files, and the matches must equal `holds.register.entries`, each classified `held`,
+  `superseded` or `not_held` with a reason. A held or superseded entry names its claim and turns a
+  member into a witness record, never credit. A suite target on such a leaf is refused.
+- **Run model.** `floor` names the floor record and its SHA-256. Its A10 result decides the run model.
+  On v26.10.0 the order model does not hold, so every leaf counts as earlier, and so does every leaf in
+  a file with a `concurrency` option. A command that does not run each file in its own process
+  preserves nothing.
+- **Prefix.** For a changed file, `source-facts.mjs` (`prefix`) aligns the pinned and current files
+  as token sequences of load-time statements, registration heads, hooks and leaf callbacks. A
+  span-identical member stays preservable only if every difference in its prefix is inert and
+  unreferenced by live prefix code (design 05 §2.3 rule 4). Refused members record each blocking kind
+  once per side, with its first line and how many more share it.
+- **Reads.** One traced run per file, through `NODE_OPTIONS=--import=tests/tooling/read-trace.mjs`,
+  must give the catalog run's leaf verdicts. Reads inside the repository, outside `node_modules` and
+  outside the static import closure are compared at the pin and at C (bytes, listing or existence). A
+  changed fixture (a non-module file under a test directory, or a listing of a `fixtures` directory
+  under one) refuses the file. Any other changed read is labelled `repository_read_changed`. The
+  record keeps a digest of the compared reads.
+- **Helper closure.** Every test-side module the file imports statically, transitively, must be
+  byte-identical, or covered by a counted `helper_reviews` record. A record is bound to its origin,
+  its module and both blob IDs, covers the whole module, and applies only to literal titles. Changed
+  production modules in the closure are labelled `production_changed`. `moves` records a file's
+  current path, with its reason.
+
+A preserved member claims the same test-side code, fixtures and assertion at C, not discrimination.
+Members are keyed by pinned path, line, column and blob, and origins that share one are merged. The
+summary counts members by status, the preserved labels and refusals by reason. Reads outside `fs`, by
+native code, or in processes that drop `NODE_OPTIONS` are unseen. Registry cases are not yet in the
+register.
+
 ## Isolation, inputs and identities
 
 `mutations` copies registered ordinary files into a new temporary directory for every control,

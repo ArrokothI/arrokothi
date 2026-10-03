@@ -16,7 +16,6 @@ class FormatTwoTests(RepositoryFixture):
             'sha256': tool.digest((self.root / 'origins.json').read_bytes())}],
             'additional_sources': [{'revision': self.b, 'path': 'sealed.txt', 'line': 1,
                 'sha256': tool.digest((self.root / 'sealed.txt').read_bytes()), 'disposition': 'record'}]})
-        self.write('decision.md', 'Held claim decision.\n')
         self.document('registry.json', {'version': 1, 'cases': [{'id': 'example'}]})
         self.document('verify.json', {'version': 1, 'checks': [
             {'id': 'unit', 'argv': ['python3', '-B', 'fixture.py']},
@@ -37,9 +36,8 @@ class FormatTwoTests(RepositoryFixture):
                 'origins': [{'id': origins[0], 'state': 'pending_revalidation',
                              'legacy': {'status': 'suite', 'rationale': 'Old mapping', 'targets': ['suite']}},
                             {'id': origins[1], 'state': 'pending'}],
-                'counterexamples': [], 'suite_targets': [], 'preserved': [], 'families': [],
-                'holds': {'claims': [{'id': 'V-D1', 'owner': 'K1.1-correction-03', 'decisions': ['decision.md']}]},
-                'areas': []}
+                'counterexamples': [], 'suite_targets': [], 'preserved': [], 'families': [], 'areas': [],
+                **self.format_two_tables()}
         if change:
             change(data)
         self.document('corpus.json', data)

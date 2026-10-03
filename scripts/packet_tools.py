@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+import contextlib
 import fnmatch
+import gzip
 import hashlib
 import json
 import os
@@ -37,10 +39,30 @@ CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
 # Design 05 §4 source facts and reach: parsed with the pinned TypeScript subset, counted from raw V8 coverage.
 SOURCE_FACTS = 'tests/tooling/source-facts.mjs'
 REACH_COVERAGE = 'tests/tooling/reach-coverage.mjs'
+# Design 05 §2.3 rule 5: the reads-phase preload, and how each fs operation is compared at pin and C.
+READ_TRACE = 'tests/tooling/read-trace.mjs'
+READ_KIND = {'readFile': 'bytes', 'open': 'bytes', 'createReadStream': 'bytes', 'openAsBlob': 'bytes',
+             'readdir': 'listing', 'opendir': 'listing', 'glob': 'listing',
+             'stat': 'exists', 'lstat': 'exists', 'statfs': 'exists', 'exists': 'exists', 'access': 'exists',
+             'realpath': 'exists', 'readlink': 'exists'}
+NODE_BUILTINS = {'assert', 'async_hooks', 'buffer', 'child_process', 'crypto', 'events', 'fs', 'http', 'https', 'module',
+                 'net', 'os', 'path', 'perf_hooks', 'process', 'readline', 'stream', 'string_decoder', 'test', 'timers',
+                 'url', 'util', 'vm', 'worker_threads', 'zlib'}
+REGISTER_CLASSES = ('held', 'superseded', 'not_held')
+# D05-CHK-05: the minimum hold-register recipes; a manifest may widen them, never narrow them.
+REGISTER_MINIMUM = {
+    'Proxy': {'body': r'new Proxy|Proxy\.revocable'},
+    're-prototyped-built-in': {'body': r'setPrototypeOf|__proto__|Object\.create\('},
+    'V-ENV': {'body': r'\bvm\b|createContext|runInContext|frozen-intrinsics|globalThis'},
+    'V-D1': {'title': r'V-D1', 'files': ['packages/kernel/tests/value-diagnostic-work.test.ts',
+                                         'packages/kernel/tests/value-refusal-cost.test.ts']},
+}
+TEST_SUFFIXES = ('.test.ts', '.test.mjs', '.test.js')
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
-FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', 'families', 'holds', 'areas')
+FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', 'families', 'holds', 'areas',
+                   'moves', 'floor', 'helper_reviews')
 COUNTEREXAMPLE_KINDS = ('behavior', 'mutation', 'held_witness', 'superseded_witness', 'prose_pending')
 TARGET_FIELDS = ('id', 'counterexample', 'command', 'file', 'test_path', 'declaration', 'input_anchors',
                  'assertion_anchors', 'relation', 'discrimination')
@@ -175,6 +197,19 @@ class Git:
 
     def ancestor(self, old, new):
         self.run('merge-base', '--is-ancestor', old, new)
+
+    def tree(self, rev):
+        """Every path at a revision, directories included, mapped to (mode, object ID); cached."""
+        key = ('tree', rev)
+        if key not in self.cache:
+            entries = {}
+            for row in self.run('ls-tree', '-r', '-t', '-z', rev).split(b'\0'):
+                if row:
+                    metadata, name = row.split(b'\t', 1)
+                    mode, _, oid = metadata.decode().split()
+                    entries[name.decode()] = (mode, oid)
+            self.cache[key] = entries
+        return self.cache[key]
 
     def files(self, rev, prefix):
         path_name(prefix)
@@ -453,19 +488,44 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
         # Later steps define closure links; until then no origin may claim them.
         require(row['state'] not in ('triaged', 'complete'),
                 'origin closure is not implemented in this format revision: ' + key)
-    for table in ('preserved', 'families', 'areas'):
+    for table in ('families', 'areas'):
         require(spec[table] == [], table + ' are not implemented in this format revision')
     claims = holds_table(git, rev, spec['holds'])
+    require(set(REGISTER_MINIMUM) <= set(claims), 'P1-H claims cannot leave the holds table')
     registry, _ = scheduled_registry(git, rev, spec)
     counterexamples = counterexample_table(spec['counterexamples'], origins)
     targets = unique_records(spec['suite_targets'], 'suite targets')
     for target in targets.values():
         require(counterexamples.get(target.get('counterexample'), {}).get('kind') == 'behavior',
                 'held or superseded counterexamples never earn suite credit')
-    results = []
-    if targets:
-        context = target_context(git, rev, spec, toolchain)
+    tested = test_file_origins(intake)
+    moves = moves_table(git, rev, spec['moves'])
+    floor_order_model(git, rev, spec['floor'])
+    helper_review_table(git, rev, spec['helper_reviews'], origins)
+    scope = sorted({moves.get(row['path'], row['path']) for row in tested if blob_id(git, rev, moves.get(row['path'], row['path']))} |
+                   {target['file'] for target in targets.values() if isinstance(target.get('file'), str) and
+                    blob_id(git, rev, target['file'])})
+    with contextlib.ExitStack() as stack:
+        context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
+        environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
+        register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain)
         results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
+        evaluations, all_earlier = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
+    for target, result in zip(targets.values(), results):
+        declaration = target.get('declaration') or {}
+        entry = register.get(f"{target['file']}:{declaration.get('line')}:{declaration.get('column')}")
+        if entry is not None and entry['classification'] != 'not_held':
+            result['refused'].append('the target leaf is a registered ' + entry['classification'] + ' test (P1-H)')
+            result.pop('credit', None)
+    table = preserved_table(evaluations)
+    if spec['preserved'] != table:
+        stored = {row.get('member'): row for row in spec['preserved'] if isinstance(row, dict)}
+        differing = sorted(row['member'] for row in table if stored.get(row['member']) != row)
+        missing = sorted(set(stored) - {row['member'] for row in table})
+        raise CheckError(f'preserved table differs from the census at C: {len(differing)} members differ, '
+                         f'{len(missing)} not recomputed (first: {(differing + missing)[:3]})')
+    figures = census_figures(evaluations, table, all_earlier)
+    register_counts = Counter((row['classification'], row.get('claim')) for row in register.values())
     states = Counter(row['state'] for row in rows.values())
     revalidation = Counter(row['legacy']['status'] for row in rows.values() if row['state'] == 'pending_revalidation')
     pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
@@ -474,14 +534,21 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
             'pending_adoption': len(pending), 'pending_origins': pending,
             'counts': {'origins': len(rows), 'counterexamples': len(counterexamples), 'families': 0, 'members': 0,
-                       'suite_targets': len(targets), 'preserved': 0, 'kills': 0},
+                       'suite_targets': len(targets), 'preserved': figures['by_status'].get('preserved', 0), 'kills': 0},
             'targets': {'counts': target_counts(results), 'results': results},
             'suite_credit': target_counts(results)['credit'], 'holds': sorted(claims),
+            'preserved': figures,
+            'register': {'scope_files': len(scope), 'entries': len(register),
+                         'by_classification': {f'{kind}:{claim or "-"}': count for (kind, claim), count in sorted(register_counts.items(), key=str)}},
             'mapping_complete': not pending, 'execution': 'not evaluated',
             'full_corpus_complete': False, 'acceptance': 'not evaluated',
             'limits': ['Semantic equivalence and non-executable classifications require source review',
                        'A complete mapping is not a passing corpus run or release of held claims',
-                       'Revision-2 mappings carry no credit until revalidated (P1-R)']}
+                       'Revision-2 mappings carry no credit until revalidated (P1-R)',
+                       'Preserved means the same test-side code, fixtures and assertion at C, not discrimination; '
+                       'reads outside fs, by native code or in processes that drop NODE_OPTIONS are unseen',
+                       'The hold register covers leaf registrations in preserved and target files; '
+                       'registry cases are not yet registered']}
 
 
 def coverage_manifest(spec, registry):
@@ -855,6 +922,26 @@ def declared_inputs(spec, declaration):
         *declaration['pass'], *declaration['set'], *(row['name'] for row in declaration['absent'])},
         'input environment name already declared')
     return inputs
+
+
+@contextlib.contextmanager
+def step_inputs(git, inputs, step):
+    """Extract a step's declared snapshot inputs for its run, then check they were not changed by it."""
+    names = unique_text(step.get('inputs', []), 'step inputs')
+    require(all(name in inputs for name in names), 'step names an undeclared input')
+    with tempfile.TemporaryDirectory(prefix='arrokothi-input-') as temporary:
+        provided, facts = {}, []
+        for name in names:
+            directory = Path(temporary) / name
+            directory.mkdir()
+            facts.append(dict(snapshot_input(git, inputs[name], directory), id=name))
+            provided[inputs[name]['environment']] = str(directory)
+        yield provided, facts
+        for fact in facts:
+            try:
+                verify_snapshot(git, fact['revision'], Path(temporary) / fact['id'])
+            except CheckError as exc:
+                raise CheckError('snapshot input changed during ' + step['id'] + ': ' + str(exc)) from exc
 
 
 def node_version(environment, cwd):
@@ -1291,18 +1378,27 @@ def counterexample_table(rows, origins):
     return table
 
 
-def target_context(git, rev, spec, toolchain=None):
-    """Catalog runs and source facts for suite targets, computed once per corpus invocation at a clean C."""
+def target_context(git, rev, spec, stack, toolchain=None):
+    """Catalog runs and source facts for suite targets and the preserved census, computed once per
+    corpus invocation at a clean C. Snapshot inputs live until `stack` closes, then are checked."""
     clean_payload(git, rev)
     verification = git.document(rev, spec['verification'])
     declaration = environment_declaration(verification.get('environment'))
+    inputs = declared_inputs(verification, declaration)
     environment, _ = child_environment(declaration)
     catalogs = {step['id']: step for step in verification['checks'] if 'catalog' in step}
     cache = {}
 
+    def environment_for(step):
+        if ('environment', step['id']) not in cache:
+            provided, _ = stack.enter_context(step_inputs(git, inputs, step))
+            cache[('environment', step['id'])] = child_environment(declaration, provided)[0]
+        return cache[('environment', step['id'])]
+
     def catalog(command_id):
         if ('catalog', command_id) not in cache:
-            facts, run, tree = catalog_run(git, rev, catalogs[command_id], environment, toolchain)
+            step = catalogs[command_id]
+            facts, run, tree = catalog_run(git, rev, step, environment_for(step), toolchain)
             require(tree is not None and 'files' in tree, 'catalog run produced no events: ' + command_id)
             cache[('catalog', command_id)] = {'selection': facts['files'], 'tree': tree}
         return cache[('catalog', command_id)]
@@ -1311,7 +1407,8 @@ def target_context(git, rev, spec, toolchain=None):
         if ('kinds', name) not in cache:
             cache[('kinds', name)] = source_kinds(git, rev, [name], environment, toolchain)[name]
         return cache[('kinds', name)]
-    return {'catalogs': catalogs, 'catalog': catalog, 'kinds': kinds, 'environment': environment, 'toolchain': toolchain}
+    return {'catalogs': catalogs, 'catalog': catalog, 'kinds': kinds, 'environment': environment,
+            'environment_for': environment_for, 'toolchain': toolchain}
 
 
 def target_counts(results):
@@ -1324,6 +1421,522 @@ def target_counts(results):
             'input_computed': sum(entry.get('input') == 'computed' for entry in anchors),
             'input_module_scope': sum(entry.get('scope') == 'module' for entry in anchors if entry['role'] == 'input'),
             'credit': dict(Counter(row['credit'] for row in results if not row['refused'] and 'credit' in row))}
+
+
+def test_side(path):
+    """A test-side module lives under a `tests` directory; everything else it imports is production."""
+    return 'tests' in PurePosixPath(path).parts
+
+
+def blob_id(git, rev, path):
+    """The object ID of a path at a revision (file, symlink or directory), or None when absent."""
+    entry = git.tree(rev).get(path)
+    return None if entry is None else entry[1]
+
+
+def listing(git, rev, path):
+    """Entry names of a directory at a revision; None when the path is absent or not a directory."""
+    entry = git.tree(rev).get(path) if path else ('040000', None)
+    if entry is None or entry[0] != '040000':
+        return None
+    prefix = path + '/' if path else ''
+    return sorted(name[len(prefix):] for name in git.tree(rev)
+                  if name.startswith(prefix) and '/' not in name[len(prefix):])
+
+
+def workspace_packages(git, rev):
+    root = json.loads(git.blob(rev, 'package.json'))
+    packages = {}
+    for directory in root.get('workspaces', []):
+        manifest = json.loads(git.blob(rev, directory + '/package.json'))
+        packages[manifest['name']] = (directory, manifest.get('exports'))
+    return packages
+
+
+def resolve_specifier(git, rev, importer, specifier, packages):
+    """One static import at a revision: a repository file, a builtin, an external package or missing."""
+    if specifier.startswith('node:') or specifier.split('/')[0] in NODE_BUILTINS:
+        return 'builtin', specifier
+    if specifier.startswith('.'):
+        path = os.path.normpath(os.path.join(os.path.dirname(importer), specifier))
+        return ('file', path) if blob_id(git, rev, path) is not None else ('missing', path)
+    parts = specifier.split('/')
+    name = '/'.join(parts[:2]) if specifier.startswith('@') else parts[0]
+    if name not in packages:
+        return 'external', specifier
+    directory, exports = packages[name]
+    subpath = '.' + specifier[len(name):]
+    target = exports.get(subpath) if isinstance(exports, dict) else (exports if subpath == '.' else None)
+    if isinstance(target, dict):
+        target = target.get('import', target.get('default'))
+    if not isinstance(target, str):
+        return 'missing', specifier
+    path = os.path.normpath(os.path.join(directory, target))
+    return ('file', path) if blob_id(git, rev, path) is not None else ('missing', path)
+
+
+def import_closures(git, rev, files, environment, toolchain=None, tools=None):
+    """Static value-import closures at one revision (design 05 §2.3 rule 6), followed through test-side
+    and production modules alike. Type-only imports load nothing; dynamic imports are listed, not followed.
+    Sources are read at `rev` and parsed with the tooling at `tools` (C; default `rev`)."""
+    packages = workspace_packages(git, rev) if files else {}
+    facts, pending = {}, sorted(set(files))
+    while pending:
+        results = source_facts(git, tools or rev, [{'op': 'imports', 'path': name, 'text': git.blob(rev, name).decode()}
+                                                   for name in pending], environment, toolchain)
+        found = set()
+        for name, result in zip(pending, results):
+            edges = [resolve_specifier(git, rev, name, specifier, packages) for specifier in result['requests']]
+            facts[name] = {'edges': edges, 'dynamic': result['dynamic']}
+            found.update(target for kind, target in edges if kind == 'file' and target.endswith(SOURCE_SUFFIXES))
+        pending = sorted(found - set(facts))
+    closures = {}
+    for name in files:
+        seen, queue = set(), [name]
+        other = {'external': set(), 'missing': set(), 'dynamic': set()}
+        while queue:
+            current = queue.pop()
+            for kind, target in facts[current]['edges']:
+                if kind == 'file' and target not in seen and target != name:
+                    seen.add(target)
+                    if target in facts:
+                        queue.append(target)
+                elif kind in other:
+                    other[kind].add(target)
+            other['dynamic'].update(str(item) for item in facts[current]['dynamic'])
+        closures[name] = {'test_side': sorted(path for path in seen if test_side(path)),
+                          'production': sorted(path for path in seen if not test_side(path)),
+                          **{key: sorted(value) for key, value in other.items()}}
+    return closures
+
+
+def traced_reads(git, flags, file, environment):
+    """Design 05 §2.3 rule 5: one run of one test file with the read-trace preload; leaf verdicts and reads."""
+    with tempfile.TemporaryDirectory(prefix='arrokothi-reads-') as temporary:
+        trace = Path(temporary) / 'trace.jsonl'
+        events = Path(temporary) / 'events.jsonl'
+        traced = dict(environment, NODE_OPTIONS='--import=' + str(git.repo / READ_TRACE), ARROKOTHI_READ_TRACE=str(trace))
+        argv = ['node', *flags, '--test-reporter=' + str(git.repo / CATALOG_REPORTER),
+                '--test-reporter-destination=' + str(events), file]
+        run = command(argv, git.repo, 600, 1048576, traced)
+        try:
+            rows = [json.loads(line) for line in events.read_text().splitlines()] if events.exists() else []
+            reads = [json.loads(line) for line in trace.read_text().splitlines()] if trace.exists() else []
+        except ValueError:
+            rows, reads = [], []
+    try:
+        tree, _ = file_tree([row for row in rows if row.get('type') in ('test:start', 'test:pass', 'test:fail')])
+    except CheckError:
+        tree = None
+    verdicts = None if tree is None else sorted([pair['line'], pair['column'], pair['path'], pair['verdict']]
+                                                for pair in tree['pairs'] if pair['leaf'])
+    return {'status': run['status'], 'exit': run['exit'], 'verdicts': verdicts,
+            'child_preloads': sum(row.get('operation') == 'preload' and row.get('test_child') is True for row in reads),
+            'reads': [row for row in reads if row.get('operation') != 'preload']}
+
+
+def read_kind(operation):
+    return READ_KIND.get(operation.removeprefix('promises.').removesuffix('.native').removesuffix('Sync'))
+
+
+def fixture_read(path, kind):
+    """A changed fixture refuses the file: a non-module file under a test directory, or a listing of a
+    `fixtures` directory under one (design 05 §2.3 rule 5)."""
+    parts = PurePosixPath(path).parts
+    if 'tests' not in parts:
+        return False
+    if kind == 'listing':
+        return 'fixtures' in parts[parts.index('tests'):]
+    return not path.endswith(SOURCE_SUFFIXES)
+
+
+def compared_reads(root, reads, aside):
+    """Traced reads inside the repository, outside node_modules and the static import closure."""
+    compared = set()
+    for row in reads:
+        kind = read_kind(row.get('operation') or '')
+        if kind is None or not isinstance(row.get('path'), str):
+            continue
+        absolute = Path(os.path.realpath(row['path']))
+        if not absolute.is_relative_to(root):
+            continue
+        relative = absolute.relative_to(root).as_posix()
+        if relative != '.' and 'node_modules' not in PurePosixPath(relative).parts and relative not in aside:
+            compared.add((relative, kind))
+    return sorted(compared)
+
+
+def changed_reads(git, pin, rev, compared):
+    """Each remaining read compared at the pin and at C: bytes, directory entries or existence."""
+    changed = []
+    for relative, kind in compared:
+        if kind == 'bytes':
+            same = blob_id(git, pin, relative) == blob_id(git, rev, relative)
+        elif kind == 'listing':
+            same = listing(git, pin, relative) == listing(git, rev, relative)
+        else:
+            same = (blob_id(git, pin, relative) is None) == (blob_id(git, rev, relative) is None)
+        if not same:
+            changed.append({'path': relative, 'kind': kind, 'fixture': fixture_read(relative, kind)})
+    return changed
+
+
+def register_recipes(claims, register):
+    """P1-H: recipes per held claim; each may widen design 05's minimum (D05-CHK-05), never narrow it."""
+    require(isinstance(register, dict) and isinstance(register.get('recipes'), dict),
+            'holds need a register with recipes')
+    recipes = register['recipes']
+    require(set(recipes) == set(claims), 'register recipes must cover exactly the held claims')
+    for claim, recipe in recipes.items():
+        require(isinstance(recipe, dict) and set(recipe) <= {'title', 'body', 'files'},
+                'register recipe fields are title, body and files: ' + claim)
+        for field in ('title', 'body'):
+            require(field not in recipe or isinstance(recipe[field], str) and bool(recipe[field]),
+                    'register recipe pattern must be text: ' + claim)
+            if field in recipe:
+                try:
+                    re.compile(recipe[field])
+                except re.error as exc:
+                    raise CheckError('register recipe pattern does not compile: ' + claim) from exc
+        unique_text(recipe.get('files', []), 'register recipe files')
+        minimum = REGISTER_MINIMUM.get(claim, {})
+        for field in ('title', 'body'):
+            if field in minimum:
+                require(recipe.get(field) == minimum[field] or str(recipe.get(field, '')).startswith(minimum[field] + '|'),
+                        'register recipe narrows the minimum ' + field + ': ' + claim)
+        require(set(minimum.get('files', [])) <= set(recipe.get('files', [])),
+                'register recipe narrows the minimum files: ' + claim)
+    return recipes
+
+
+def register_matches(git, rev, files, recipes, environment, toolchain=None):
+    """D05-CHK-05: match each claim's title, body and file recipes against every leaf registration in
+    `files`. A body is the registration's text plus, transitively, the text of the same-file and
+    test-side helpers whose names it references; a namespace import widens to every exported helper."""
+    if not files:
+        return []
+    closures = import_closures(git, rev, files, environment, toolchain)
+    modules = sorted({*files, *(path for closure in closures.values() for path in closure['test_side'])})
+    requests = [{'op': op, 'path': name, 'text': git.blob(rev, name).decode()} for name in modules for op in ('helpers', 'imports')]
+    results = source_facts(git, rev, requests, environment, toolchain)
+    helper_facts = {name: results[2 * index] for index, name in enumerate(modules)}
+    import_facts = {name: results[2 * index + 1] for index, name in enumerate(modules)}
+    packages = workspace_packages(git, rev)
+    compiled = {claim: {field: re.compile(recipe[field]) for field in ('title', 'body') if field in recipe}
+                for claim, recipe in recipes.items()}
+
+    def expand(module, names, seen, texts):
+        functions = helper_facts[module]['functions']
+        bindings = {row['local']: row for row in import_facts[module]['bindings'] if not row['type_only']}
+        for name in names:
+            if (module, name) in seen:
+                continue
+            seen.add((module, name))
+            for declaration in functions.get(name, []):
+                texts.append(declaration['text'])
+                expand(module, declaration['references'], seen, texts)
+            binding = bindings.get(name)
+            if binding is None:
+                continue
+            kind, target = resolve_specifier(git, rev, module, binding['module'], packages)
+            if kind != 'file' or target not in helper_facts:
+                continue
+            exported = {row['exported']: row['local'] for row in helper_facts[target]['exports']}
+            if binding['imported'] == '*':
+                targets = [key for key, rows in helper_facts[target]['functions'].items() if any(row['exported'] for row in rows)]
+                targets += list(exported.values())
+            else:
+                targets = [exported.get(binding['imported'], binding['imported'])]
+            expand(target, targets, seen, texts)
+
+    matches = []
+    for name in files:
+        for registration in helper_facts[name]['registrations']:
+            if registration['kind'] != 'leaf':
+                continue
+            texts = [registration['text']]
+            expand(name, registration['references'], set(), texts)
+            body = '\n'.join(texts)
+            title = registration['title'].get('value', registration['title'].get('text', ''))
+            claims = sorted(claim for claim, recipe in recipes.items()
+                            if name in recipe.get('files', []) or
+                            ('title' in compiled[claim] and compiled[claim]['title'].search(title)) or
+                            ('body' in compiled[claim] and compiled[claim]['body'].search(body)))
+            if claims:
+                location = registration['location']
+                matches.append({'key': f"{name}:{location['line']}:{location['column']}", 'claims': claims})
+    return matches
+
+
+def hold_register(git, rev, register, claims, files, environment, toolchain=None):
+    """P1-H: the register's recipes, recomputed at C over `files`, must equal its classified entries."""
+    recipes = register_recipes(claims, register)
+    entries = {}
+    for row in register.get('entries', []):
+        require(isinstance(row, dict) and isinstance(row.get('key'), str) and row['key'] not in entries,
+                'register entry needs a unique key')
+        require(row.get('classification') in REGISTER_CLASSES and isinstance(row.get('reason'), str) and
+                bool(row['reason'].strip()), 'register entry needs a classification and its reason')
+        require(row['classification'] == 'not_held' or row.get('claim') in claims,
+                'a held or superseded entry names its held claim')
+        entries[row['key']] = row
+    matches = register_matches(git, rev, files, recipes, environment, toolchain)
+    require({row['key'] for row in matches} == set(entries), 'register entries differ from the recomputed matches')
+    for row in matches:
+        require(entries[row['key']].get('matched') == row['claims'], 'register entry records other matched claims: ' + row['key'])
+    return entries
+
+
+def floor_order_model(git, rev, floor):
+    """Design 05 §2.3 rule 1: the A10 result of the recorded floor run decides the run model."""
+    require(isinstance(floor, dict) and isinstance(floor.get('record'), str) and isinstance(floor.get('sha256'), str) and
+            isinstance(floor.get('order_model_holds'), bool), 'format 2 needs the floor record and its A10 result')
+    data = git.blob(rev, floor['record'])
+    require(digest(data) == floor['sha256'], 'floor record digest mismatch')
+    try:
+        results = json.loads(gzip.decompress(data))['results']
+        a10 = [row for row in results if row.get('assumption') == 'A10']
+        facts = a10[0]['facts'] if len(a10) == 1 and a10[0].get('passed') is True else None
+        isolated = facts['process_isolation']['distinct_processes'] is True
+        holds = facts['order_model_holds']
+    except (OSError, ValueError, KeyError, TypeError, IndexError) as exc:
+        raise CheckError('floor record has no passing A10 result') from exc
+    require(isolated, 'floor record shows no process isolation')
+    require(holds is floor['order_model_holds'], 'floor A10 order model differs from the record')
+    return holds
+
+
+def helper_review_table(git, rev, rows, origins):
+    """Counted helper reviews: each covers one changed test-side module, top-level code included, for one origin."""
+    reviews = {}
+    for row in unique_records(rows, 'helper reviews').values():
+        require(row.get('origin') in origins and isinstance(row.get('module'), str) and test_side(row['module']),
+                'helper review needs its origin and a test-side module')
+        origin = origins[row['origin']]
+        require(row.get('pin_blob') == blob_id(git, origin['revision'], row['module']) and
+                row.get('current_blob') == blob_id(git, rev, row['module']) and row['pin_blob'] != row['current_blob'],
+                'helper review is not bound to the changed module: ' + row['id'])
+        require(row.get('covers') == 'module' and isinstance(row.get('reason'), str) and bool(row['reason'].strip()),
+                'helper review covers the whole module and states its reason: ' + row['id'])
+        require((row['origin'], row['module']) not in reviews, 'helper review duplicated: ' + row['id'])
+        reviews[(row['origin'], row['module'])] = row['id']
+    return reviews
+
+
+def moves_table(git, rev, rows):
+    moves = {}
+    for row in rows:
+        require(isinstance(row, dict) and isinstance(row.get('from'), str) and isinstance(row.get('to'), str) and
+                row['from'] not in moves and isinstance(row.get('reason'), str) and bool(row['reason'].strip()),
+                'a move names its source, destination and reason')
+        require(blob_id(git, rev, row['from']) is None and blob_id(git, rev, row['to']) is not None,
+                'a move needs its source gone and its destination present at C')
+        moves[row['from']] = row['to']
+    return moves
+
+
+def test_file_origins(intake):
+    """Whole-file test origins: the members P1-P can preserve (design 05 §5.1: 71 at the pinned inventory)."""
+    return [row for row in intake['origins'] if row['kind'] == 'artifact' and row['line'] == 1 and
+            row['path'].endswith(TEST_SUFFIXES)]
+
+
+def blocking_reasons(blocking):
+    """One reason per blocking kind and side: its first line and how many more share it."""
+    grouped = {}
+    for entry in blocking:
+        grouped.setdefault((entry['reason'], entry.get('side')), []).append(entry.get('line'))
+    reasons = []
+    for (reason, side), lines in grouped.items():
+        lines = sorted(line for line in lines if line is not None)
+        if side is None or not lines:
+            reasons.append(reason)
+        else:
+            reasons.append(f'{reason} ({side} line {lines[0]}' + (f', {len(lines) - 1} more)' if len(lines) > 1 else ')'))
+    return reasons
+
+
+def origin_census(git, rev, origin, path, leaves, run, closures, prefixes, reviews, register):
+    """P1-P for one origin's leaves at its pin; one evaluation per pinned leaf."""
+    pin, pin_path = origin['revision'], origin['path']
+    evaluations = []
+    for leaf in leaves:
+        location = leaf['location']
+        row = {'origin': origin['id'], 'pin': (pin_path, blob_id(git, pin, pin_path), location['line'], location['column']),
+               'file': path, 'title': leaf['title'].get('value', leaf['title'].get('text')), 'title_kind': leaf['title']['kind']}
+        if run['refused'] is not None:
+            evaluations.append(dict(row, reasons=[run['refused']]))
+            continue
+        reasons, current = [], (location['line'], location['column'])
+        if run['whole']:
+            row['scope'] = 'whole_file'
+        else:
+            facts = prefixes[location['line'], location['column']]
+            row.update(scope='span', span_identical=facts['span_identical'], prefix_blocked=bool(facts['blocking']))
+            row['prefix_differences'] = sorted({entry['kind'] + ': ' + entry['reason'] for entry in facts.get('inert', [])})
+            current = (facts['current']['line'], facts['current']['column']) if facts.get('current') else None
+            reasons += blocking_reasons(facts['blocking'])
+        if current is not None:
+            found = [pair for pair in run['pairs'] if pair['leaf'] and (pair['line'], pair['column']) == current and
+                     (leaf['title']['kind'] != 'literal' or pair['path'][-1] == leaf['title']['value'])]
+            if not found:
+                reasons.append('no leaf at C for this title or declaration site')
+            elif any(pair['verdict'] != 'passed' for pair in found):
+                reasons.append('a leaf at C does not pass')
+        changed = run['changed_helpers']
+        reviewed = [reviews[origin['id'], module] for module in changed if (origin['id'], module) in reviews]
+        reasons += ['test-side module changed without a helper review: ' + module for module in changed
+                    if (origin['id'], module) not in reviews or leaf['title']['kind'] != 'literal']
+        changed_reads_now = changed_reads(git, pin, rev, run['compared'])
+        fixtures = [entry['path'] for entry in changed_reads_now if entry['fixture']]
+        if fixtures:
+            reasons.append('changed test fixture read: ' + ', '.join(fixtures))
+        entry = register.get(f'{path}:{current[0]}:{current[1]}') if current is not None else None
+        evaluations.append(dict(row, reasons=reasons, current=None if current is None else list(current),
+                                helper_closure='unchanged' if not changed else {'reviewed': sorted(reviewed)},
+                                reads=run['reads_digest'], register=None if entry is None else entry['classification'],
+                                production_changed=[module for module in closures['production']
+                                                    if blob_id(git, pin, module) != blob_id(git, rev, module)],
+                                repository_read_changed=[entry['path'] for entry in changed_reads_now if not entry['fixture']]))
+    return evaluations
+
+
+def preserved_census(git, rev, spec, intake, context, register):
+    """P1-P for every member of every whole-file test origin, fresh at C (design 05 §2.3, D05-CHK-07, -11)."""
+    origins = {row['id']: row for row in intake['origins']}
+    moves = moves_table(git, rev, spec['moves'])
+    all_earlier = not floor_order_model(git, rev, spec['floor'])
+    reviews = helper_review_table(git, rev, spec['helper_reviews'], origins)
+    environment, toolchain = context['environment'], context['toolchain']
+    tested = test_file_origins(intake)
+    paths = {row['id']: moves.get(row['path'], row['path']) for row in tested}
+    present = sorted({path for path in paths.values() if blob_id(git, rev, path) is not None})
+    closures_now = import_closures(git, rev, present, environment, toolchain)
+    by_pin = {}
+    for row in tested:
+        by_pin.setdefault(row['revision'], set()).add(row['path'])
+    closures_then, pinned = {}, {}
+    for pin, names in by_pin.items():
+        names = sorted(names)
+        closures_then[pin] = import_closures(git, pin, names, environment, toolchain, tools=rev)
+        facts = source_facts(git, rev, [{'op': 'registrations', 'path': name, 'text': git.blob(pin, name).decode()}
+                                        for name in names], environment, toolchain)
+        for name, result in zip(names, facts):
+            pinned[pin, name] = [row for row in result['registrations'] if row['kind'] == 'leaf']
+    # Selection is the command's own expanded globs; a catalog runs only for a command that selects a file.
+    selection = {}
+    for command_id in sorted(context['catalogs']):
+        for path in catalog_declaration(git, rev, context['catalogs'][command_id])['files']:
+            selection.setdefault(path, command_id)
+    changed = sorted({(row['revision'], row['path'], paths[row['id']]) for row in tested if paths[row['id']] in present and
+                      blob_id(git, row['revision'], row['path']) != blob_id(git, rev, paths[row['id']])})
+    facts = source_facts(git, rev, [{'op': 'prefix', 'path': path, 'pin': git.blob(pin, pin_path).decode(),
+                                     'current': git.blob(rev, path).decode(), 'all_earlier': all_earlier}
+                                    for pin, pin_path, path in changed], environment, toolchain)
+    prefixes = {}
+    for key, result in zip(changed, facts):
+        inert = [entry for entry in result['differences'] if entry['inert']]
+        prefixes[key] = {(row['pin']['line'], row['pin']['column']): dict(row, inert=inert) for row in result['members']}
+    root = Path(os.path.realpath(git.repo))
+    traces, evaluations = {}, []
+    for origin in tested:
+        pin, pin_path, path = origin['revision'], origin['path'], paths[origin['id']]
+        run = {'refused': None}
+        if path not in present:
+            run['refused'] = 'file absent at C'
+        elif path not in selection:
+            run['refused'] = 'no catalog command selects the file at C'
+        else:
+            step = context['catalogs'][selection[path]]
+            if any(flag.split('=')[0] in ('--test-isolation', '--experimental-test-isolation') and
+                   not flag.endswith('=process') for flag in step['catalog']['flags']):
+                run['refused'] = 'the command does not run each file in its own process'
+            else:
+                tree = context['catalog'](selection[path])['tree']
+                if path not in tree['files']:
+                    run['refused'] = 'the catalog refused the file: ' + str(tree['refused'].get(path, 'not reported'))
+        if run['refused'] is None:
+            if path not in traces:
+                traced = traced_reads(git, step['catalog']['flags'], path, context['environment_for'](step))
+                expected = sorted([pair['line'], pair['column'], pair['path'], pair['verdict']]
+                                  for pair in tree['files'][path]['pairs'] if pair['leaf'])
+                compared = compared_reads(root, traced['reads'], {path, *closures_now[path]['test_side'],
+                                                                  *closures_now[path]['production']})
+                traces[path] = {'compared': compared, 'digest': digest(json.dumps(compared).encode()),
+                                'refused': None if traced['verdicts'] == expected and traced['child_preloads'] >= 1 else
+                                'the traced run differs from the catalog run, or did not load the trace'}
+            run['refused'] = traces[path]['refused']
+        if run['refused'] is None:
+            now, then = closures_now[path], closures_then[pin][pin_path]
+            run.update(pairs=tree['files'][path]['pairs'], compared=traces[path]['compared'],
+                       reads_digest=traces[path]['digest'], whole=(pin, pin_path, path) not in prefixes,
+                       changed_helpers=sorted(set(now['test_side']) ^ set(then['test_side']) |
+                                              {module for module in now['test_side']
+                                               if blob_id(git, pin, module) != blob_id(git, rev, module)}))
+        evaluations += origin_census(git, rev, origin, path, pinned[pin, pin_path], run, closures_now.get(path),
+                                     prefixes.get((pin, pin_path, path), {}), reviews, register)
+    return evaluations, all_earlier
+
+
+def preserved_table(evaluations):
+    """Merge per-origin evaluations into one record per distinct pinned registration (path, blob, site).
+    Origins sharing a member share its file at C, so scope, counterpart, trace and register entry agree by
+    construction; reasons, labels and reviews are unions. A member refused for any origin is refused;
+    held and superseded register entries make witness records, never credit."""
+    members = {}
+    for row in evaluations:
+        members.setdefault(row['pin'], []).append(row)
+    table = []
+    for (pin_path, pin_blob, line, column), rows in sorted(members.items()):
+        first = rows[0]
+        reasons = sorted({reason for row in rows for reason in row['reasons']})
+        register = first.get('register')
+        status = register if register in ('held', 'superseded') else 'refused' if reasons else 'preserved'
+        record = {'member': f'{pin_path}:{line}:{column}@{pin_blob[:12]}', 'origins': sorted(row['origin'] for row in rows),
+                  'file': first['file'], 'pin_blob': pin_blob, 'title': first['title'], 'title_kind': first['title_kind'],
+                  'status': status, 'reasons': reasons}
+        if 'scope' in first:
+            reviewed = sorted({review for row in rows if isinstance(row['helper_closure'], dict)
+                               for review in row['helper_closure']['reviewed']})
+            record.update(scope=first['scope'], current=first['current'], reads=first['reads'], register=register,
+                          helper_closure={'reviewed': reviewed} if reviewed else 'unchanged',
+                          production_changed=sorted({module for row in rows for module in row['production_changed']}),
+                          repository_read_changed=sorted({path for row in rows for path in row['repository_read_changed']}))
+            if first['scope'] == 'span':
+                record['prefix_differences'] = first['prefix_differences']
+        table.append(record)
+    return table
+
+
+def census_figures(evaluations, table, all_earlier):
+    """The design 05 §5.1 and §2.3 figures, recomputed for the step-6 record (counts, never credit)."""
+    whole = [row for row in evaluations if row.get('scope') == 'whole_file']
+    changed = [row for row in evaluations if row.get('scope') == 'span']
+    span_identical = [row for row in changed if row['span_identical']]
+    distinct = lambda rows: len({row['pin'] for row in rows})
+    preserved = [row for row in table if row['status'] == 'preserved']
+    return {
+        'all_leaves_earlier': all_earlier,
+        'test_file_origins': len({row['origin'] for row in evaluations}),
+        'registrations': len(evaluations),
+        'by_title_kind': dict(Counter(row['title_kind'] for row in evaluations)),
+        'identical_origins': len({row['origin'] for row in whole}), 'identical_distinct': distinct(whole),
+        'changed_origins': len({row['origin'] for row in changed}), 'changed_registrations': len(changed),
+        'changed_span_identical': len(span_identical),
+        'changed_kept_by_prefix': sum(not row['prefix_blocked'] for row in span_identical),
+        'changed_refused_by_prefix': sum(row['prefix_blocked'] for row in span_identical),
+        'identical_fixture_refused': distinct([row for row in whole if any(reason.startswith('changed test fixture')
+                                                                          for reason in row['reasons'])]),
+        'identical_read_labelled': distinct([row for row in whole if row['repository_read_changed']]),
+        'members': len(table), 'by_status': dict(Counter(row['status'] for row in table)),
+        'preserved_whole_file': sum(row['scope'] == 'whole_file' for row in preserved),
+        'preserved_prefix_inert': sum(row['scope'] == 'span' for row in preserved),
+        'preserved_helper_reviewed': sum(isinstance(row['helper_closure'], dict) for row in preserved),
+        'preserved_production_changed': sum(bool(row['production_changed']) for row in preserved),
+        'preserved_repository_read_changed': sum(bool(row['repository_read_changed']) for row in preserved),
+        'preserved_register_not_held': sum(row['register'] == 'not_held' for row in preserved),
+        'preserved_refused': dict(Counter(category for row in table if row['status'] == 'refused'
+                                          for category in {reason.split(':')[0].split(' (')[0] for reason in row['reasons']}))}
 
 
 def clean_payload(git, rev):
@@ -1359,26 +1972,13 @@ def verify(git, revision, spec_path, toolchain=None):
             ok = result['result'] == step['expected']
             results.append({'id': step['id'], 'operation': operation, 'passed': ok, 'result': result})
         else:
-            names = unique_text(step.get('inputs', []), 'step inputs')
-            require(all(name in inputs for name in names), 'step names an undeclared input')
-            with tempfile.TemporaryDirectory(prefix='arrokothi-input-') as temporary:
-                provided, facts = {}, []
-                for name in names:
-                    directory = Path(temporary) / name
-                    directory.mkdir()
-                    facts.append(dict(snapshot_input(git, inputs[name], directory), id=name))
-                    provided[inputs[name]['environment']] = str(directory)
+            with step_inputs(git, inputs, step) as (provided, facts):
                 environment, record = child_environment(declaration, provided)
                 if 'catalog' in step:
                     catalog_facts, run, tree = catalog_run(git, rev, step, environment, toolchain)
                 else:
                     catalog_facts, tree = None, None
                     run = command(step['argv'], git.repo, step['timeout_seconds'], step['output_limit_bytes'], environment)
-                for fact in facts:
-                    try:
-                        verify_snapshot(git, fact['revision'], Path(temporary) / fact['id'])
-                    except CheckError as exc:
-                        raise CheckError('snapshot input changed during ' + step['id'] + ': ' + str(exc)) from exc
             counts = {}
             for label, expression in step.get('counts', {}).items():
                 matches = re.findall(expression, run['output'], re.MULTILINE)

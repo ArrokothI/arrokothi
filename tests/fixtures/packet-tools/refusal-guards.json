@@ -4822,6 +4822,644 @@
           "id": "mutation-e2492856e35cf9922f67a0ddc560c003779d128d3bbbd6d89a5641907894bf7f"
         }
       ]
+    },
+    {
+      "id": "guard.corpus_format_2.6ea44aea36a680be",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_claims_stay",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_claims_stay"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.6ea44aea36a680be"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(REGISTER_MINIMUM) <= set(claims), 'P1-H claims cannot leave the holds table')",
+          "after": "pass  # tools01-ablate:6ea44aea36a680be",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.6ea44aea36a680be",
+          "id": "mutation-882f6ba9ba1e98c3e6805189fd31ed16edfe4871e2e66911ec9ae988f52fd908"
+        }
+      ]
+    },
+    {
+      "id": "guard.register_recipes.e28b11bdb9b6c43b",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_present",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: register_recipes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_present"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.register_recipes.e28b11bdb9b6c43b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(register, dict) and isinstance(register.get('recipes'), dict),\n            'holds need a register with recipes')",
+          "after": "pass  # tools01-ablate:e28b11bdb9b6c43b",
+          "operator": "remove-refusal-check",
+          "name": "guard.register_recipes.e28b11bdb9b6c43b",
+          "id": "mutation-1c3ed3e0be56407b48cab204f25283ccb082fd1321d104faca305b7de7bfac2a"
+        }
+      ]
+    },
+    {
+      "id": "guard.register_recipes.6245cfa2de390635",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_recipes_cover_claims",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: register_recipes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_recipes_cover_claims"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.register_recipes.6245cfa2de390635"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(recipes) == set(claims), 'register recipes must cover exactly the held claims')",
+          "after": "pass  # tools01-ablate:6245cfa2de390635",
+          "operator": "remove-refusal-check",
+          "name": "guard.register_recipes.6245cfa2de390635",
+          "id": "mutation-7d00b0038f9a171d15009d21486469dbc0341a828c2e512d29de288643f40171"
+        }
+      ]
+    },
+    {
+      "id": "guard.register_recipes.733521c199702e91",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_recipe_fields",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: register_recipes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_recipe_fields"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.register_recipes.733521c199702e91"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(recipe, dict) and set(recipe) <= {'title', 'body', 'files'},\n                'register recipe fields are title, body and files: ' + claim)",
+          "after": "pass  # tools01-ablate:733521c199702e91",
+          "operator": "remove-refusal-check",
+          "name": "guard.register_recipes.733521c199702e91",
+          "id": "mutation-6e0ae0b033099ecfd3d8518892653e4208d3e882eaff3deb6c85f8f1c111e012"
+        }
+      ]
+    },
+    {
+      "id": "guard.register_recipes.a12bea967731be32",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_recipe_narrows_files",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: register_recipes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_recipe_narrows_files"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.register_recipes.a12bea967731be32"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(minimum.get('files', [])) <= set(recipe.get('files', [])),\n                'register recipe narrows the minimum files: ' + claim)",
+          "after": "pass  # tools01-ablate:a12bea967731be32",
+          "operator": "remove-refusal-check",
+          "name": "guard.register_recipes.a12bea967731be32",
+          "id": "mutation-9a4b014ed0f23aaaee67483f80e3507695f7162e1cb71a2e4a8c3710ffd1eb64"
+        }
+      ]
+    },
+    {
+      "id": "guard.register_recipes.46b190748476405a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_recipe_text",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: register_recipes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_recipe_text"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.register_recipes.46b190748476405a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(field not in recipe or isinstance(recipe[field], str) and bool(recipe[field]),\n                    'register recipe pattern must be text: ' + claim)",
+          "after": "pass  # tools01-ablate:46b190748476405a",
+          "operator": "remove-refusal-check",
+          "name": "guard.register_recipes.46b190748476405a",
+          "id": "mutation-13f8e64a5751b28460b07129c9b8f283ad45b9bcdbc4fc575cca7b116ac7f495"
+        }
+      ]
+    },
+    {
+      "id": "guard.register_recipes.f20bdab11fdfe1fc",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_recipe_narrows_pattern",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: register_recipes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_recipe_narrows_pattern"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.register_recipes.f20bdab11fdfe1fc"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(recipe.get(field) == minimum[field] or str(recipe.get(field, '')).startswith(minimum[field] + '|'),\n                        'register recipe narrows the minimum ' + field + ': ' + claim)",
+          "after": "pass  # tools01-ablate:f20bdab11fdfe1fc",
+          "operator": "remove-refusal-check",
+          "name": "guard.register_recipes.f20bdab11fdfe1fc",
+          "id": "mutation-0f8bf1aea03a4fe7238a77f92034f56bd298178dd2092200fa2ee5838a6f774f"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.17e807499c5cf647",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_entries_recomputed",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_entries_recomputed"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.17e807499c5cf647"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require({row['key'] for row in matches} == set(entries), 'register entries differ from the recomputed matches')",
+          "after": "pass  # tools01-ablate:17e807499c5cf647",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.17e807499c5cf647",
+          "id": "mutation-4979cf2f872886a14fb280ab4ab65d46afbe6708dd291a787331d5fc932c27ca"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.f57b831035d460a0",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_entry_key",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_entry_key"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.f57b831035d460a0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row, dict) and isinstance(row.get('key'), str) and row['key'] not in entries,\n                'register entry needs a unique key')",
+          "after": "pass  # tools01-ablate:f57b831035d460a0",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.f57b831035d460a0",
+          "id": "mutation-58b111f73ce15ed34e4a3a0090ebc13aea700a75636353ebe28b5e57e366ba6f"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.4bed734c999d95f8",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_entry_classification",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_entry_classification"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.4bed734c999d95f8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('classification') in REGISTER_CLASSES and isinstance(row.get('reason'), str) and\n                bool(row['reason'].strip()), 'register entry needs a classification and its reason')",
+          "after": "pass  # tools01-ablate:4bed734c999d95f8",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.4bed734c999d95f8",
+          "id": "mutation-94b7a549bb6eda5483fc8f7e6486beea600b65b1f10f0ab8a8049a26ec33f9ee"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.a85830963510e3d4",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_entry_claim",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_entry_claim"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.a85830963510e3d4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['classification'] == 'not_held' or row.get('claim') in claims,\n                'a held or superseded entry names its held claim')",
+          "after": "pass  # tools01-ablate:a85830963510e3d4",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.a85830963510e3d4",
+          "id": "mutation-b298aea4d7bd8d4bab9a12e7496b8a1548c9dcfb01bd7b629cbe18a23d5feea4"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.473b3eec126e0e62",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_register_entry_matched_claims",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_register_entry_matched_claims"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.473b3eec126e0e62"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(entries[row['key']].get('matched') == row['claims'], 'register entry records other matched claims: ' + row['key'])",
+          "after": "pass  # tools01-ablate:473b3eec126e0e62",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.473b3eec126e0e62",
+          "id": "mutation-054e8243e732a2bb8b98e4a640a26a8b79487e7acac577182ee740ef46886a45"
+        }
+      ]
+    },
+    {
+      "id": "guard.floor_order_model.8fe02fa0a091db98",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_floor_record_shape",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: floor_order_model",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_floor_record_shape"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.floor_order_model.8fe02fa0a091db98"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(floor, dict) and isinstance(floor.get('record'), str) and isinstance(floor.get('sha256'), str) and\n            isinstance(floor.get('order_model_holds'), bool), 'format 2 needs the floor record and its A10 result')",
+          "after": "pass  # tools01-ablate:8fe02fa0a091db98",
+          "operator": "remove-refusal-check",
+          "name": "guard.floor_order_model.8fe02fa0a091db98",
+          "id": "mutation-01e28534ac35e779ace0848ca783e25aa982dd0e48711dba64384312fd551b57"
+        }
+      ]
+    },
+    {
+      "id": "guard.floor_order_model.d9e3197edecee8db",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_floor_record_digest",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: floor_order_model",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_floor_record_digest"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.floor_order_model.d9e3197edecee8db"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(data) == floor['sha256'], 'floor record digest mismatch')",
+          "after": "pass  # tools01-ablate:d9e3197edecee8db",
+          "operator": "remove-refusal-check",
+          "name": "guard.floor_order_model.d9e3197edecee8db",
+          "id": "mutation-2b7a96f6cc07ee93caecca377c2cc5f6e7f5b47ce798dab1a9c5729bfd38f68b"
+        }
+      ]
+    },
+    {
+      "id": "guard.floor_order_model.9839526c6f112f59",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_floor_isolation",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: floor_order_model",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_floor_isolation"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.floor_order_model.9839526c6f112f59"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isolated, 'floor record shows no process isolation')",
+          "after": "pass  # tools01-ablate:9839526c6f112f59",
+          "operator": "remove-refusal-check",
+          "name": "guard.floor_order_model.9839526c6f112f59",
+          "id": "mutation-2beb6441ac82ef303120b1d12ff49e47084220296cbf702b1974e38008928682"
+        }
+      ]
+    },
+    {
+      "id": "guard.floor_order_model.0e6f4a73ea78004d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_floor_order_model",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: floor_order_model",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_floor_order_model"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.floor_order_model.0e6f4a73ea78004d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(holds is floor['order_model_holds'], 'floor A10 order model differs from the record')",
+          "after": "pass  # tools01-ablate:0e6f4a73ea78004d",
+          "operator": "remove-refusal-check",
+          "name": "guard.floor_order_model.0e6f4a73ea78004d",
+          "id": "mutation-11e36a13f83f6fb478cb117a89e2a89a4715869d08fff9d3f14b9e2420e54ff6"
+        }
+      ]
+    },
+    {
+      "id": "guard.helper_review_table.b915bf07acead344",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_helper_review_origin",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: helper_review_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_helper_review_origin"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.helper_review_table.b915bf07acead344"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('origin') in origins and isinstance(row.get('module'), str) and test_side(row['module']),\n                'helper review needs its origin and a test-side module')",
+          "after": "pass  # tools01-ablate:b915bf07acead344",
+          "operator": "remove-refusal-check",
+          "name": "guard.helper_review_table.b915bf07acead344",
+          "id": "mutation-6d93f0008e8a6de9d5fd8ee76f204f1d3a95badbf066aaecb92eb48ca0a20dcf"
+        }
+      ]
+    },
+    {
+      "id": "guard.helper_review_table.e949d8c768d5bd82",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_helper_review_binding",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: helper_review_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_helper_review_binding"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.helper_review_table.e949d8c768d5bd82"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('pin_blob') == blob_id(git, origin['revision'], row['module']) and\n                row.get('current_blob') == blob_id(git, rev, row['module']) and row['pin_blob'] != row['current_blob'],\n                'helper review is not bound to the changed module: ' + row['id'])",
+          "after": "pass  # tools01-ablate:e949d8c768d5bd82",
+          "operator": "remove-refusal-check",
+          "name": "guard.helper_review_table.e949d8c768d5bd82",
+          "id": "mutation-f2360451b1bc41afab85e4571e95576fe11f7f28aca83b7a607879affc7db89a"
+        }
+      ]
+    },
+    {
+      "id": "guard.helper_review_table.38ace969e68d161d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_helper_review_scope",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: helper_review_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_helper_review_scope"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.helper_review_table.38ace969e68d161d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('covers') == 'module' and isinstance(row.get('reason'), str) and bool(row['reason'].strip()),\n                'helper review covers the whole module and states its reason: ' + row['id'])",
+          "after": "pass  # tools01-ablate:38ace969e68d161d",
+          "operator": "remove-refusal-check",
+          "name": "guard.helper_review_table.38ace969e68d161d",
+          "id": "mutation-c6fd36e63e8e126dca53ecc8a22f0eed3509ee36ce786977f7030047456e21d5"
+        }
+      ]
+    },
+    {
+      "id": "guard.helper_review_table.2f8557b3b64e4e1a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_helper_review_duplicate",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: helper_review_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_helper_review_duplicate"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.helper_review_table.2f8557b3b64e4e1a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require((row['origin'], row['module']) not in reviews, 'helper review duplicated: ' + row['id'])",
+          "after": "pass  # tools01-ablate:2f8557b3b64e4e1a",
+          "operator": "remove-refusal-check",
+          "name": "guard.helper_review_table.2f8557b3b64e4e1a",
+          "id": "mutation-128de1c4963be7734683e846f5ca15284d1a41cf1dd8611080eb41e5546714ca"
+        }
+      ]
+    },
+    {
+      "id": "guard.moves_table.01db89d9fc809489",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_move_shape",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: moves_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_move_shape"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.moves_table.01db89d9fc809489"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row, dict) and isinstance(row.get('from'), str) and isinstance(row.get('to'), str) and\n                row['from'] not in moves and isinstance(row.get('reason'), str) and bool(row['reason'].strip()),\n                'a move names its source, destination and reason')",
+          "after": "pass  # tools01-ablate:01db89d9fc809489",
+          "operator": "remove-refusal-check",
+          "name": "guard.moves_table.01db89d9fc809489",
+          "id": "mutation-7a5ca75e658f2cfd941749b205f65eb0ae80dfc781c3d99f75bb34f92da7bc17"
+        }
+      ]
+    },
+    {
+      "id": "guard.moves_table.821f613a7dab7a33",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_move_presence",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: moves_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_move_presence"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.moves_table.821f613a7dab7a33"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(blob_id(git, rev, row['from']) is None and blob_id(git, rev, row['to']) is not None,\n                'a move needs its source gone and its destination present at C')",
+          "after": "pass  # tools01-ablate:821f613a7dab7a33",
+          "operator": "remove-refusal-check",
+          "name": "guard.moves_table.821f613a7dab7a33",
+          "id": "mutation-94f0266fae723e11693c93792bc1d3e53411e215e94491c784b01381efd0c22e"
+        }
+      ]
     }
   ],
   "determinism_sample": [

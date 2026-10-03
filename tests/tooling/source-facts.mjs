@@ -234,6 +234,424 @@ export function anchorStatement(source, anchor) {
 }
 
 // ---------------------------------------------------------------------------------------------
+// Design 05 §2.3: items, alignment, inert classification and the lexical reference closure.
+
+function tokenText(source, node, holes = new Map()) {
+  const out = [];
+  const visit = (current) => {
+    if (holes.has(current)) { out.push(holes.get(current)); return; }
+    if (current.kind >= ts.SyntaxKind.FirstJSDocNode && current.kind <= ts.SyntaxKind.LastJSDocNode) return;
+    const children = current.getChildren(source);
+    if (children.length === 0) {
+      const text = current.getText(source);
+      if (text) out.push(text);
+      return;
+    }
+    children.forEach(visit);
+  };
+  visit(node);
+  return out.join(' ');
+}
+
+// Identifiers in reference positions: binding names (declarations, parameters, imports) and
+// property names are not references. Type positions count: matching is lexical (design 05 §2.3).
+function identifiers(node, skip = new Set()) {
+  const names = new Set();
+  const named = (current) => current.name && (ts.isComputedPropertyName(current.name) ? visit(current.name) : undefined);
+  const visit = (current) => {
+    if (!current || skip.has(current)) return;
+    if (ts.isIdentifier(current)) { names.add(current.text); return; }
+    if (ts.isPropertyAccessExpression(current)) { visit(current.expression); return; }
+    if (ts.isQualifiedName(current)) { visit(current.left); return; }
+    if (ts.isImportDeclaration(current)) return;
+    if (ts.isVariableDeclaration(current) || ts.isParameter(current)) {
+      bindingDefaults(current.name, visit);
+      visit(current.type); visit(current.initializer);
+      return;
+    }
+    if (ts.isFunctionDeclaration(current) || ts.isFunctionExpression(current) || ts.isClassDeclaration(current) ||
+        ts.isClassExpression(current)) {
+      ts.forEachChild(current, child => { if (child !== current.name) visit(child); });
+      return;
+    }
+    if (ts.isPropertyAssignment(current)) { named(current); visit(current.initializer); return; }
+    if (ts.isMethodDeclaration(current) || ts.isPropertyDeclaration(current) || ts.isGetAccessorDeclaration(current) ||
+        ts.isSetAccessorDeclaration(current) || ts.isPropertySignature(current) || ts.isMethodSignature(current) ||
+        ts.isEnumMember(current)) {
+      named(current);
+      ts.forEachChild(current, child => { if (child !== current.name) visit(child); });
+      return;
+    }
+    ts.forEachChild(current, visit);
+  };
+  visit(node);
+  return names;
+}
+
+function bindingDefaults(name, visit) {
+  if (ts.isIdentifier(name)) return;
+  for (const element of name.elements) {
+    if (ts.isOmittedExpression(element)) continue;
+    if (element.propertyName && ts.isComputedPropertyName(element.propertyName)) visit(element.propertyName);
+    visit(element.initializer);
+    bindingDefaults(element.name, visit);
+  }
+}
+
+function bindingNames(name, out = []) {
+  if (ts.isIdentifier(name)) out.push(name.text);
+  else for (const element of name.elements) if (!ts.isOmittedExpression(element)) bindingNames(element.name, out);
+  return out;
+}
+
+function exported(node) {
+  return !!(ts.canHaveModifiers(node) && ts.getModifiers(node)?.some(m => m.kind === ts.SyntaxKind.ExportKeyword));
+}
+
+function typeOnly(statement) {
+  if (ts.isTypeAliasDeclaration(statement) || ts.isInterfaceDeclaration(statement)) return true;
+  if (ts.canHaveModifiers(statement) && ts.getModifiers(statement)?.some(m => m.kind === ts.SyntaxKind.DeclareKeyword)) return true;
+  if (ts.isImportDeclaration(statement)) return !!statement.importClause?.isTypeOnly;
+  if (ts.isExportDeclaration(statement)) return statement.isTypeOnly;
+  return false;
+}
+
+// Names every same-file declaration binds, for the lexical closure. Scope is ignored on purpose.
+function declarations(source) {
+  const byName = new Map();
+  const add = (name, node) => { if (!byName.has(name)) byName.set(name, []); byName.get(name).push(node); };
+  const visit = (node) => {
+    if (ts.isVariableDeclaration(node)) bindingNames(node.name).forEach(name => add(name, node));
+    else if ((ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node) || ts.isEnumDeclaration(node)) && node.name) add(node.name.text, node);
+    else if (ts.isImportClause(node) && node.name) add(node.name.text, node.parent);
+    else if (ts.isNamespaceImport(node) || ts.isImportSpecifier(node)) add(node.name.text, node);
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return byName;
+}
+
+function inertExpression(node, known) {
+  node = node && unwrapTypes(node);
+  if (!node) return true;
+  switch (node.kind) {
+    case ts.SyntaxKind.StringLiteral: case ts.SyntaxKind.NumericLiteral: case ts.SyntaxKind.BigIntLiteral:
+    case ts.SyntaxKind.NoSubstitutionTemplateLiteral: case ts.SyntaxKind.RegularExpressionLiteral:
+    case ts.SyntaxKind.TrueKeyword: case ts.SyntaxKind.FalseKeyword: case ts.SyntaxKind.NullKeyword:
+    case ts.SyntaxKind.ArrowFunction: case ts.SyntaxKind.FunctionExpression:
+      return true;
+    case ts.SyntaxKind.PrefixUnaryExpression:
+      return (node.operator === ts.SyntaxKind.MinusToken || node.operator === ts.SyntaxKind.PlusToken) &&
+        (ts.isNumericLiteral(node.operand) || ts.isBigIntLiteral(node.operand));
+    case ts.SyntaxKind.Identifier:
+      return node.text === 'undefined' || known.has(node.text);
+    case ts.SyntaxKind.ArrayLiteralExpression:
+      return node.elements.every(element => ts.isOmittedExpression(element) ||
+        (!ts.isSpreadElement(element) && inertExpression(element, known)));
+    case ts.SyntaxKind.ObjectLiteralExpression:
+      return node.properties.every(property => {
+        if (property.name && ts.isComputedPropertyName(property.name)) return false;
+        if (ts.isPropertyAssignment(property)) return inertExpression(property.initializer, known);
+        if (ts.isShorthandPropertyAssignment(property)) return !property.objectAssignmentInitializer && known.has(property.name.text);
+        return ts.isMethodDeclaration(property) || ts.isGetAccessorDeclaration(property) || ts.isSetAccessorDeclaration(property);
+      });
+    default:
+      return false;
+  }
+}
+
+// Value-module requests in order: the import edges that evaluate modules.
+function moduleRequests(source) {
+  const requests = [];
+  for (const statement of source.statements) {
+    // Type stripping erases `import type` only; an import of type-only specifiers still loads its module.
+    if (ts.isImportDeclaration(statement) && !statement.importClause?.isTypeOnly) {
+      requests.push(statement.moduleSpecifier.text);
+    } else if (ts.isExportDeclaration(statement) && statement.moduleSpecifier && !statement.isTypeOnly) {
+      requests.push(statement.moduleSpecifier.text);
+    }
+  }
+  return requests;
+}
+
+// Items of one revision: load-time statements (top level and directly in suite callbacks, leaf
+// callbacks cut out), registration heads, hooks, and leaf callbacks (design 05 §2.3 rule 3).
+function itemize(source) {
+  const { found } = collect(source);
+  const owner = new Map(found.filter(entry => entry.callback).map(entry => [entry.callback, entry]));
+  const byCall = new Map(found.map(entry => [entry.call, entry]));
+  const items = [];
+  const scopeKey = (scope) => scope.map(index => tokenText(source, found[index].call, new Map([[found[index].callback, '<suite>']]))).join(' / ');
+  const unit = (statement, scope) => {
+    const holes = new Map();
+    let hook = false;
+    let head = null;
+    const leaves = [];
+    const suites = [];
+    const visit = (node) => {
+      if (ts.isCallExpression(node) && byCall.get(node)?.record.kind === 'hook') hook = true;
+      if (owner.has(node)) {
+        const entry = owner.get(node);
+        if (entry.record.kind === 'suite') { holes.set(node, '<suite>'); suites.push(entry); return; }
+        if (entry.record.kind === 'leaf' || entry.record.kind === 'subtest') {
+          holes.set(node, '<callback>');
+          leaves.push(entry);
+          return;
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(statement);
+    const expression = ts.isExpressionStatement(statement) ? unwrap(statement.expression) : null;
+    if (expression && ts.isCallExpression(expression)) head = byCall.get(expression) ?? null;
+    const kind = hook ? 'hook' : head && head.record.kind !== 'hook' ? 'head' : 'load';
+    items.push({ kind, scope, scope_key: scopeKey(scope), node: statement, start: statement.getStart(source),
+      text: tokenText(source, statement, hook ? new Map([...holes].filter(([node]) => owner.get(node).record.kind === 'suite')) : holes),
+      registration: head ? head.record.index : null, leaves: leaves.map(entry => entry.record.index) });
+    for (const entry of leaves) {
+      items.push({ kind: 'leaf-callback', scope, scope_key: scopeKey(scope), node: entry.callback,
+        start: entry.callback.getStart(source), text: tokenText(source, entry.callback), registration: entry.record.index,
+        leaves: [entry.record.index] });
+    }
+    for (const entry of suites) {
+      const body = entry.callback.body;
+      const inner = [...scope, entry.record.index];
+      if (ts.isBlock(body)) body.statements.forEach(child => unit(child, inner));
+      else items.push({ kind: 'load', scope: inner, scope_key: scopeKey(inner), node: body, start: body.getStart(source),
+        text: tokenText(source, body), registration: null, leaves: [] });
+    }
+  };
+  source.statements.forEach(statement => unit(statement, []));
+  items.sort((a, b) => a.start - b.start);
+  return { found, items };
+}
+
+function align(left, right) {
+  const key = item => item.kind + '\u0000' + item.scope_key + '\u0000' + item.text;
+  const a = left.map(key), b = right.map(key);
+  const table = Array.from({ length: a.length + 1 }, () => new Uint32Array(b.length + 1));
+  for (let i = a.length - 1; i >= 0; i--) {
+    for (let j = b.length - 1; j >= 0; j--) {
+      table[i][j] = a[i] === b[j] ? table[i + 1][j + 1] + 1 : Math.max(table[i + 1][j], table[i][j + 1]);
+    }
+  }
+  const matched = new Map();
+  for (let i = 0, j = 0; i < a.length && j < b.length;) {
+    if (a[i] === b[j]) { matched.set(i, j); i++; j++; }
+    else if (table[i + 1][j] >= table[i][j + 1]) i++;
+    else j++;
+  }
+  return matched;
+}
+
+function readsOwnName(entry) {
+  const parameter = entry.callback?.parameters[0];
+  if (!parameter || !ts.isIdentifier(parameter.name)) return false;
+  let reads = false;
+  const visit = (node) => {
+    if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === parameter.name.text &&
+        (node.name.text === 'name' || node.name.text === 'fullName')) reads = true;
+    ts.forEachChild(node, visit);
+  };
+  visit(entry.callback.body);
+  return reads;
+}
+
+// Classify one differing item; names are those it binds (imports: those the other revision lacks).
+function classify(source, item, found, otherImportNames, requestsEqual, callbackChanged) {
+  const node = item.node;
+  if (item.kind === 'leaf-callback') return { inert: false, reason: 'changed leaf callback', names: [] };
+  if (item.kind === 'hook') return { inert: false, reason: 'hook', names: [] };
+  if (item.kind === 'head') {
+    const entry = found[item.registration];
+    const call = unwrap(node.expression);
+    const known = knownNames(source);
+    const inert = call.arguments.every(argument => argument === entry.callback || inertExpression(argument, known));
+    if (!inert) return { inert: false, reason: 'registration head with an effectful argument', names: [] };
+    if (!callbackChanged(entry) && readsOwnName(entry)) return { inert: false, reason: 'callback reads its name', names: [] };
+    return { inert: true, reason: 'registration head', names: [] };
+  }
+  if (typeOnly(node)) return { inert: true, reason: 'type-only declaration', names: [] };
+  if (ts.isFunctionDeclaration(node)) {
+    return { inert: true, reason: 'function declaration', names: node.name ? [node.name.text] : [], exported: exported(node) };
+  }
+  if (ts.isVariableStatement(node)) {
+    const scoped = node.declarationList.flags & ts.NodeFlags.BlockScoped;
+    if (scoped === ts.NodeFlags.Using || scoped === ts.NodeFlags.AwaitUsing) return { inert: false, reason: 'using declaration', names: [] };
+    const known = knownNames(source);
+    const names = [];
+    for (const declaration of node.declarationList.declarations) {
+      if (!ts.isIdentifier(declaration.name)) return { inert: false, reason: 'destructuring declaration', names: [] };
+      if (!inertExpression(declaration.initializer, known)) return { inert: false, reason: 'effectful initializer', names: [] };
+      names.push(declaration.name.text);
+    }
+    return { inert: true, reason: 'declaration', names, exported: exported(node) };
+  }
+  if (ts.isImportDeclaration(node)) {
+    if (!requestsEqual) return { inert: false, reason: 'import changes module requests', names: [] };
+    const names = [];
+    const clause = node.importClause;
+    if (clause?.name) names.push(clause.name.text);
+    if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) names.push(clause.namedBindings.name.text);
+    // A type-only specifier binds no value: it is erased like a type-only declaration.
+    if (clause?.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+      clause.namedBindings.elements.filter(e => !e.isTypeOnly).forEach(e => names.push(e.name.text));
+    }
+    return { inert: true, reason: 'import keeping module requests', names: names.filter(name => !otherImportNames.has(name)) };
+  }
+  return { inert: false, reason: 'effectful statement', names: [] };
+}
+
+const knownCache = new WeakMap();
+function knownNames(source) {
+  if (!knownCache.has(source)) knownCache.set(source, new Set(declarations(source).keys()));
+  return knownCache.get(source);
+}
+
+function importNames(source) {
+  const names = new Set();
+  for (const statement of source.statements) {
+    const clause = ts.isImportDeclaration(statement) ? statement.importClause : null;
+    if (!clause) continue;
+    if (clause.name) names.add(clause.name.text);
+    if (clause.namedBindings && ts.isNamespaceImport(clause.namedBindings)) names.add(clause.namedBindings.name.text);
+    if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+      clause.namedBindings.elements.filter(e => !e.isTypeOnly).forEach(e => names.add(e.name.text));
+    }
+  }
+  return names;
+}
+
+// Live code of a prefix: load-time code outside function bodies, plus prefix leaf and hook callbacks,
+// closed under the full text of every same-file declaration whose name it contains (lexical).
+function referenced(source, roots) {
+  const byName = declarations(source);
+  const names = new Set();
+  const pending = [];
+  const add = (set) => { for (const name of set) if (!names.has(name)) { names.add(name); pending.push(name); } };
+  for (const root of roots) add(root);
+  while (pending.length) {
+    const name = pending.pop();
+    for (const declaration of byName.get(name) ?? []) add(identifiers(declaration));
+  }
+  return names;
+}
+
+function functionBodies(node) {
+  const skip = new Set();
+  const visit = (current) => {
+    if ((ts.isFunctionDeclaration(current) || ts.isFunctionExpression(current) || ts.isArrowFunction(current) ||
+         ts.isMethodDeclaration(current) || ts.isGetAccessorDeclaration(current) || ts.isSetAccessorDeclaration(current)) && current.body) {
+      skip.add(current.body);
+      return;
+    }
+    ts.forEachChild(current, visit);
+  };
+  visit(node);
+  return skip;
+}
+
+function dynamicEvaluation(source) {
+  let found = false;
+  const visit = (node) => {
+    if (ts.isWithStatement(node) || (ts.isIdentifier(node) && (node.text === 'eval' || node.text === 'Function'))) found = true;
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return found;
+}
+
+function isPrefixItem(item, member, memberScope, earlier, found, allEarlier) {
+  if (item.kind === 'load' || item.kind === 'head') return true;
+  const leafEarlier = (index) => allEarlier || earlier(index);
+  if (item.kind === 'leaf-callback') return item.registration === member || leafEarlier(item.registration);
+  // A hook runs for its scope: in the prefix when that scope encloses the member or holds an earlier leaf.
+  const encloses = (scope, chain) => scope.every((index, depth) => chain[depth] === index);
+  if (encloses(item.scope, memberScope)) return true;
+  return found.some(entry => (entry.record.kind === 'leaf' || entry.record.kind === 'subtest') &&
+    entry.record.index !== member && leafEarlier(entry.record.index) && encloses(item.scope, scopeOf(found, entry.record.index)));
+}
+
+function scopeOf(found, index) {
+  const chain = [];
+  for (let parent = found[index].record.parent; parent !== null; parent = found[parent].record.parent) {
+    if (found[parent].record.kind === 'suite') chain.unshift(parent);
+  }
+  return chain;
+}
+
+// Design 05 §2.3: for each leaf at the pin whose span text is unchanged at C, the blocking prefix
+// differences. allEarlier is the A10 fallback (and a concurrency option): every leaf is earlier.
+export function prefix(pinText, currentText, path, allEarlierByFloor) {
+  const sides = [pinText, currentText].map(text => ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, scriptKind(path)));
+  const [pin, current] = sides;
+  const views = sides.map(itemize);
+  const matched = align(views[0].items, views[1].items);
+  const reverse = new Map([...matched].map(([left, right]) => [right, left]));
+  const concurrency = views.some(view => view.found.some(entry => entry.record.concurrency));
+  const allEarlier = allEarlierByFloor || concurrency;
+  const requestsEqual = JSON.stringify(moduleRequests(pin)) === JSON.stringify(moduleRequests(current));
+  const dynamic = sides.map(dynamicEvaluation);
+  const imports = sides.map(importNames);
+  const differences = [
+    ...views[0].items.map((item, index) => ({ side: 0, item, index })).filter(entry => !matched.has(entry.index)),
+    ...views[1].items.map((item, index) => ({ side: 1, item, index })).filter(entry => !reverse.has(entry.index)),
+  ];
+  const callbackChanged = (side) => (entry) => differences.some(difference => difference.side === side &&
+    difference.item.kind === 'leaf-callback' && difference.item.registration === entry.record.index);
+  for (const difference of differences) {
+    const side = difference.side;
+    difference.facts = classify(sides[side], difference.item, views[side].found, imports[1 - side], requestsEqual, callbackChanged(side));
+  }
+  const spanText = (source, entry) => source.text.slice(entry.call.getStart(source), entry.call.end);
+  const members = [];
+  for (const entry of views[0].found) {
+    if (entry.record.kind !== 'leaf') continue;
+    const text = spanText(pin, entry);
+    const candidates = views[1].found.filter(other => other.record.kind === 'leaf' && spanText(current, other) === text);
+    const member = { pin: entry.record.location, title: entry.record.title, span_identical: candidates.length === 1 };
+    if (candidates.length !== 1) {
+      member.blocking = [{ reason: candidates.length ? 'span text occurs more than once at C' : 'span changed or removed' }];
+      members.push(member);
+      continue;
+    }
+    const counterpart = candidates[0];
+    member.current = counterpart.record.location;
+    const indices = [entry.record.index, counterpart.record.index];
+    const blocking = [];
+    for (const side of [0, 1]) {
+      const view = views[side];
+      const source = sides[side];
+      const index = indices[side];
+      const chain = scopeOf(view.found, index);
+      const earlier = (other) => view.found[other].call.getStart(source) < view.found[index].call.getStart(source);
+      const inPrefix = view.items.filter(item => isPrefixItem(item, index, chain, earlier, view.found, allEarlier));
+      const roots = [];
+      for (const item of inPrefix) {
+        if (item.kind === 'load' || item.kind === 'head') roots.push(identifiers(item.node, functionBodies(item.node)));
+        else roots.push(identifiers(item.node));
+      }
+      const live = referenced(source, roots);
+      for (const difference of differences.filter(d => d.side === side && inPrefix.includes(d.item))) {
+        const facts = difference.facts;
+        const hit = facts.names.filter(name => live.has(name));
+        if (!facts.inert || facts.exported || dynamic[side] && facts.names.length || hit.length) {
+          blocking.push({ side: side ? 'current' : 'pin', kind: difference.item.kind, reason: !facts.inert ? facts.reason :
+            facts.exported ? 'exported declaration' : dynamic[side] ? 'dynamic evaluation in file' : 'referenced: ' + hit.join(', '),
+            line: lineColumn(source, difference.item.start).line, excerpt: difference.item.text.slice(0, 160) });
+        }
+      }
+    }
+    member.blocking = blocking;
+    members.push(member);
+  }
+  return { path, concurrency, all_earlier: allEarlier, module_requests_equal: requestsEqual,
+    differences: differences.map(d => ({ side: d.side ? 'current' : 'pin', kind: d.item.kind, inert: d.facts.inert,
+      reason: d.facts.reason, names: d.facts.names, line: lineColumn(sides[d.side], d.item.start).line })),
+    members };
+}
+
+// ---------------------------------------------------------------------------------------------
 // Design 05 P1-T anchors (D05-02, D05-CHK-01 to -03).
 
 function assertBindings(source) {
@@ -356,7 +774,71 @@ function parse(path, text) {
   return ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, scriptKind(path));
 }
 
+// Import bindings and value-module requests (design 05 §2.3 rule 6; the static import closure).
+function imports(source) {
+  const bindings = [];
+  for (const statement of source.statements) {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
+    const module = statement.moduleSpecifier.text;
+    const clause = statement.importClause;
+    const typeOnly = !!clause?.isTypeOnly;
+    if (clause?.name) bindings.push({ local: clause.name.text, imported: 'default', module, type_only: typeOnly });
+    if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) {
+      bindings.push({ local: clause.namedBindings.name.text, imported: '*', module, type_only: typeOnly });
+    }
+    if (clause?.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+      for (const element of clause.namedBindings.elements) {
+        bindings.push({ local: element.name.text, imported: (element.propertyName ?? element.name).text, module,
+          type_only: typeOnly || element.isTypeOnly });
+      }
+    }
+  }
+  const dynamic = [];
+  const visit = (node) => {
+    if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const argument = node.arguments[0];
+      dynamic.push(argument && ts.isStringLiteralLike(argument) ? argument.text : null);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return { requests: moduleRequests(source), bindings, dynamic };
+}
+
+// For the hold register (design 05 D05-CHK-05): each registration's text and the names it references,
+// and every same-file function-like declaration's text and references, so helpers are followed.
+function helpers(source) {
+  const { found } = collect(source);
+  const functions = {};
+  const add = (name, node) => {
+    functions[name] ??= [];
+    functions[name].push({ text: node.getText(source), references: [...identifiers(node)], exported: exported(node.parent?.parent ?? node) || exported(node) });
+  };
+  const visit = (node) => {
+    if (ts.isFunctionDeclaration(node) && node.name) add(node.name.text, node);
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer &&
+        (isFunction(unwrapTypes(node.initializer)) || ts.isClassExpression(unwrapTypes(node.initializer)))) add(node.name.text, node);
+    if (ts.isClassDeclaration(node) && node.name) add(node.name.text, node);
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  const exportedNames = [];
+  for (const statement of source.statements) {
+    if (ts.isExportDeclaration(statement) && statement.exportClause && ts.isNamedExports(statement.exportClause) && !statement.moduleSpecifier) {
+      for (const element of statement.exportClause.elements) exportedNames.push({ exported: element.name.text, local: (element.propertyName ?? element.name).text });
+    }
+  }
+  return {
+    registrations: found.map(({ record, call }) => ({ index: record.index, kind: record.kind, location: record.location,
+      title: record.title, parent: record.parent, text: call.getText(source), references: [...identifiers(call)] })),
+    functions, exports: exportedNames,
+  };
+}
+
 const operations = {
+  imports: (request) => imports(parse(request.path, request.text)),
+  helpers: (request) => helpers(parse(request.path, request.text)),
+  prefix: (request) => prefix(request.pin, request.current, request.path, request.all_earlier === true),
   registrations: (request) => {
     const source = parse(request.path, request.text);
     return { diagnostics: source.parseDiagnostics.length, ...registrations(source) };

@@ -1,6 +1,7 @@
 """Distinguishing tool fixtures; every Git mutation uses this test's own temporary repository."""
 from pathlib import Path
 import importlib.util
+import gzip
 import json
 import os
 import subprocess
@@ -42,6 +43,19 @@ class RepositoryFixture(unittest.TestCase):
         self.git('add', '.')
         self.git('commit', '-qm', message)
         return self.git('rev-parse', 'HEAD')
+
+    def format_two_tables(self):
+        """Format-2 holds with the minimum register recipes, a passing A10 floor record, no moves or reviews."""
+        self.write('decision.md', 'Held claim decision.\n')
+        record = gzip.compress(json.dumps({'results': [{'assumption': 'A10', 'passed': True, 'facts': {
+            'process_isolation': {'distinct_processes': True}, 'order_model_holds': False}}]}).encode(), mtime=0)
+        (self.root / 'floor.json.gz').write_bytes(record)
+        claims = [{'id': claim, 'owner': 'BINDING-01' if claim == 'V-ENV' else 'K1.1-correction-03',
+                   'decisions': ['decision.md']} for claim in ('V-D1', 'Proxy', 're-prototyped-built-in', 'V-ENV')]
+        return {'holds': {'claims': claims, 'register': {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),
+                                                         'entries': []}},
+                'moves': [], 'floor': {'record': 'floor.json.gz', 'sha256': tool.digest(record), 'order_model_holds': False},
+                'helper_reviews': []}
 
     def candidate_pair(self, **changes):
         data = {'version': 1, 'base': self.b, 'require_direct_parent': True,

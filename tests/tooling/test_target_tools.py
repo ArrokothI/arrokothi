@@ -122,7 +122,7 @@ class TargetFixture(RepositoryFixture):
             'origins': [{'id': origin, 'state': 'pending'}],
             'counterexamples': [{'id': 'cx', 'kind': counterexample_kind, 'origins': [origin],
                                  'required_result': 'charge equals the input'}],
-            'suite_targets': targets, 'preserved': [], 'families': [], 'holds': {'claims': []}, 'areas': []})
+            'suite_targets': targets, 'preserved': [], 'families': [], 'areas': [], **self.format_two_tables()})
         return self.commit('targets')
 
     def target(self, name, input_anchor, assertions, **extra):

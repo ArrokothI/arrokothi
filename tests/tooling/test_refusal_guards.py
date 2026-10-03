@@ -613,3 +613,107 @@ class RefusalGuardTests(base.RepositoryFixture):
         rev = fixture.build(self, [row])
         self.refuses('literals (ordinal, value) or computed',
                      lambda: tool.corpus(self.reader, rev, 'corpus.json', toolchain=self.toolchain))
+
+    # Design 05 step 6: hold register, floor record, helper reviews and moves (P1-H, P1-P).
+    def recipes(self, change):
+        return self.format_two(lambda d: change(d['holds']['register']['recipes']))
+
+    def entries(self, rows):
+        return self.format_two(lambda d: d['holds']['register'].update(entries=rows))
+
+    def test_register_claims_stay(self):
+        self.refuses('P1-H claims cannot leave', self.format_two(lambda d: d['holds']['claims'].pop()))
+
+    def test_register_present(self):
+        self.refuses('holds need a register', self.format_two(lambda d: d['holds'].pop('register')))
+
+    def test_register_recipes_cover_claims(self):
+        self.refuses('cover exactly the held claims', self.recipes(lambda r: r.pop('V-ENV')))
+
+    def test_register_recipe_fields(self):
+        self.refuses('fields are title, body and files', self.recipes(lambda r: r['Proxy'].update(span='x')))
+
+    def test_register_recipe_text(self):
+        self.refuses('pattern must be text', self.recipes(lambda r: r['Proxy'].update(body='')))
+
+    def test_register_recipe_narrows_pattern(self):
+        self.refuses('narrows the minimum body', self.recipes(lambda r: r['Proxy'].update(body='new Proxy')))
+
+    def test_register_recipe_narrows_files(self):
+        self.refuses('narrows the minimum files', self.recipes(lambda r: r['V-D1'].update(files=[])))
+
+    def test_register_entry_key(self):
+        self.refuses('unique key', self.entries([{'key': 1}]))
+
+    def test_register_entry_classification(self):
+        self.refuses('classification and its reason', self.entries([{'key': 'k', 'classification': 'maybe'}]))
+
+    def test_register_entry_claim(self):
+        self.refuses('names its held claim', self.entries([{'key': 'k', 'classification': 'held', 'reason': 'r'}]))
+
+    def test_register_entries_recomputed(self):
+        self.refuses('differ from the recomputed matches',
+                     self.entries([{'key': 'k', 'classification': 'not_held', 'reason': 'r', 'matched': []}]))
+
+    def test_register_entry_matched_claims(self):
+        self.write('tests/tooling/source-facts.mjs', (target_tests.ROOT / 'tests/tooling/source-facts.mjs').read_text())
+        self.write('tests/p.test.mjs', "import { test } from 'node:test';\ntest('p', () => new Proxy({}, {}));\n")
+        self.document('package.json', {'type': 'module'})
+        rev = self.commit('register subject')
+        claims = {claim: {} for claim in tool.REGISTER_MINIMUM}
+        register = {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),
+                    'entries': [{'key': 'tests/p.test.mjs:2:1', 'matched': ['V-ENV'], 'classification': 'not_held', 'reason': 'r'}]}
+        environment = tool.child_environment(tool.environment_declaration(None))[0]
+        self.refuses('records other matched claims', lambda: tool.hold_register(
+            self.reader, rev, register, claims, ['tests/p.test.mjs'], environment, target_tests.pinned_toolchain()))
+
+    def floor(self, distinct=True, holds=False):
+        def change(data):
+            record = base.gzip.compress(json.dumps({'results': [{'assumption': 'A10', 'passed': True, 'facts': {
+                'process_isolation': {'distinct_processes': distinct}, 'order_model_holds': holds}}]}).encode(), mtime=0)
+            (self.root / 'floor.json.gz').write_bytes(record)
+            data['floor'].update(sha256=tool.digest(record), order_model_holds=holds)
+        return self.format_two(change)
+
+    def test_floor_record_shape(self):
+        self.refuses('floor record and its A10 result', self.format_two(lambda d: d.update(floor={})))
+
+    def test_floor_record_digest(self):
+        self.refuses('floor record digest mismatch', self.format_two(lambda d: d['floor'].update(sha256='0' * 64)))
+
+    def test_floor_isolation(self):
+        self.refuses('shows no process isolation', self.floor(distinct=False))
+
+    def test_floor_order_model(self):
+        self.refuses('order model differs from the record',
+                     self.format_two(lambda d: d['floor'].update(order_model_holds=True)))
+
+    def review(self, **changes):
+        twice = changes.pop('twice', False)
+
+        def change(data):
+            self.write('tests/h.mjs', 'export {};\n')
+            row = {'id': 'review', 'origin': data['origins'][0]['id'], 'module': 'tests/h.mjs', 'pin_blob': None,
+                   'current_blob': self.git('hash-object', 'tests/h.mjs'), 'covers': 'module', 'reason': 'r'}
+            row.update(changes)
+            data['helper_reviews'] = [row, dict(row, id='again')] if twice else [row]
+        return self.format_two(change)
+
+    def test_helper_review_origin(self):
+        self.refuses('its origin and a test-side module', self.review(origin='unknown'))
+
+    def test_helper_review_binding(self):
+        self.refuses('not bound to the changed module', self.review(current_blob='0' * 40))
+
+    def test_helper_review_scope(self):
+        self.refuses('covers the whole module', self.review(covers='functions'))
+
+    def test_helper_review_duplicate(self):
+        self.refuses('helper review duplicated', self.review(twice=True))
+
+    def test_move_shape(self):
+        self.refuses('a move names its source', self.format_two(lambda d: d.update(moves=[{'from': 'a'}])))
+
+    def test_move_presence(self):
+        self.refuses('source gone and its destination present',
+                     self.format_two(lambda d: d.update(moves=[{'from': 'source.md', 'to': 'sealed.txt', 'reason': 'r'}])))
