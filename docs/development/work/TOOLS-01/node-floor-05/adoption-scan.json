@@ -1,0 +1,8 @@
+{
+  "origin_count": 1549,
+  "matching_origins": [],
+  "target": "tests/conformance/effects/fast-slow-equivalence.test.ts",
+  "matching_adoption_references": 0,
+  "adoption_sha256": "02eb41f626c915cbaaec5ee1926dfe51a43fdb87915abf2b1216244b26ebd6f8",
+  "inventory_sha256": "f97dd37bd01a714f9bc1714e5cecdf9e4df2c017e1a4e1b7b13bf3ee2a2ceb60"
+}

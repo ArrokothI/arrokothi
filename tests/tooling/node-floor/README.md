@@ -8,9 +8,10 @@ python3 -B tests/tooling/check-node-floor.py --node /absolute/path/to/node-v22.9
 
 This runs the implemented checks **A1–A8 in order** and stops on the first failed prerequisite.
 `--through N` supports focused partial runs; only a successful eleven-assumption run could be
-`complete`. A9–A11 remain pending after A8's archive-input stop, recorded in
-[node-floor-04](../../../docs/development/work/TOOLS-01/node-floor-04.md). Earlier observations,
-including the original A7 cancellation, remain in
+`complete`. A9–A11 remain pending after A8's Kernel sweep runtime failure, recorded in
+[node-floor-05](../../../docs/development/work/TOOLS-01/node-floor-05.md). The archive setup
+resolves the earlier [node-floor-04](../../../docs/development/work/TOOLS-01/node-floor-04.md)
+input failure. Earlier observations, including the original A7 cancellation, remain in
 [node-floor-03](../../../docs/development/work/TOOLS-01/node-floor-03.md).
 
 - A1 checks start/result pairing, source kind, definition order and leaves. It includes passing
@@ -35,6 +36,13 @@ including the original A7 cancellation, remain in
   No inherited environment values or arbitrary A8 child output are serialized. The helper's
   selected facts, command status and exit remain available. Run its negative controls with
   `python3 -B tests/tooling/node-floor/check-step-controls.py`.
+  The archive input uses [archive.md](../../../docs/development/archive.md)'s pinned Git fallback
+  (`9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49`). A8 extracts it outside the checkout, verifies
+  every regular file and symlink against the pinned Git blobs, and explicitly sets
+  `ARROKOTHI_EVIDENCE_ROOT` to that temporary snapshot in both profiles. The record identifies
+  its revision, file counts and aggregate SHA-256; inherited root values are not used or logged.
+  The snapshot is verified again before cleanup. Run corruption controls with
+  `python3 -B tests/tooling/node-floor/archive-input-controls.py`.
 
 After A8 is resolved, implement A9's full-path subtest selection/refusal, A10's per-file process
 isolation and ordering/fallback, and A11's preloaded read-wrapper checks in that order. These
@@ -43,10 +51,13 @@ capabilities have not been verified. No later-check draft is included in this st
 The declared environment passes PATH, HOME and TMPDIR when present, prepends the selected Node's
 bin directory and sets LANG to C.UTF-8. Coverage probes add only their named temporary
 paths. A8 alone also runs the inherited comparison profile. Records describe names and declared
-settings, not inherited values. No keepalive is added to the runner.
+settings, not inherited values. A8 adds the verified archive binding described above. No keepalive
+is added to the runner.
 
 The A1 and parent fixtures intentionally fail assertions; expected child exits are distinct from
 a probe failure. The source-registration oracle handles only these literal fixtures and is not
 the general parser planned for step 5. `unref-budget.ts` is a separate minimal reproduction of
-the A7 cancellation, not a subsequent floor check. All fixtures are outside the repository's
-selected test globs. No floor result earns mutation, conformance, acceptance or hold-release credit.
+the A7 cancellation. `register-hooks.mjs` diagnoses the existing poison sweep's missing Node
+22.9 export; it supplies no replacement hooks and is not an A9–A11 check. All fixtures are outside
+the repository's selected test globs. No floor result earns mutation, conformance, acceptance or
+hold-release credit.

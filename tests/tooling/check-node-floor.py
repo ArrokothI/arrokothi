@@ -15,6 +15,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / 'tests/tooling/node-floor'
+ARCHIVE_REVISION = '9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49'
 EVENT_TYPES = ('test:start', 'test:pass', 'test:fail')
 TEST_FLAGS = ['--test', '--experimental-strip-types']
 TEST_GLOBS = [
@@ -23,6 +24,46 @@ TEST_GLOBS = [
     'packages/agents/strands/tests/*.test.ts', 'packages/interoperability/mcp/tests/*.test.ts',
     'tests/conformance/*/*.test.ts', 'packages/sdk/tests/*.test.ts',
 ]
+
+
+def verify_archive_snapshot(directory):
+    """Verify every extracted file and symlink against archive.md's pinned Git tree."""
+    tree = subprocess.check_output(['git', 'ls-tree', '-r', '-z', ARCHIVE_REVISION], cwd=ROOT)
+    entries = {}
+    for row in tree.split(b'\0'):
+        if not row:
+            continue
+        metadata, name = row.split(b'\t', 1)
+        mode, kind, oid = metadata.decode().split()
+        assert kind == 'blob' and mode in ('100644', '100755', '120000')
+        entries[name.decode()] = (mode, oid)
+    actual = {str(path.relative_to(directory)) for path in directory.rglob('*')
+              if path.is_symlink() or not path.is_dir()}
+    assert actual == set(entries), 'archive snapshot paths differ'
+    manifest = []
+    for name, (mode, oid) in sorted(entries.items()):
+        path = directory / name
+        assert path.is_symlink() == (mode == '120000'), 'archive entry kind differs: ' + name
+        data = os.readlink(path).encode() if mode == '120000' else path.read_bytes()
+        blob = b'blob ' + str(len(data)).encode() + b'\0' + data
+        assert hashlib.sha1(blob).hexdigest() == oid, 'archive bytes differ: ' + name
+        manifest.append([name, mode, hashlib.sha256(data).hexdigest()])
+    return {'revision': ARCHIVE_REVISION,
+            'regular_files': sum(mode != '120000' for mode, _ in entries.values()),
+            'symlinks': sum(mode == '120000' for mode, _ in entries.values()),
+            'content_manifest_sha256': hashlib.sha256(json.dumps(manifest).encode()).hexdigest(),
+            'environment_set': {'ARROKOTHI_EVIDENCE_ROOT': 'verified temporary Git snapshot'},
+            'source': 'docs/development/archive.md pinned Git fallback'}
+
+
+def prepare_archive_snapshot(directory):
+    archive = directory.parent / 'snapshot.tar'
+    subprocess.run(['git', 'archive', '--format=tar', '--output=' + str(archive), ARCHIVE_REVISION],
+                   cwd=ROOT, check=True, timeout=30)
+    # This is the fixed repository-owned snapshot, never a caller-supplied archive.
+    subprocess.run(['tar', '-xf', str(archive), '-C', str(directory)], check=True, timeout=30)
+    archive.unlink()
+    return verify_archive_snapshot(directory)
 
 
 def fixture_registrations(path):
@@ -370,14 +411,26 @@ class Floor:
         return {'script': rendering, 'files': len(files), 'selection_matches_events': True, 'counts': counts}
 
     def a8(self):
+        with tempfile.TemporaryDirectory(prefix='tools-01-archive-') as temporary:
+            snapshot = Path(temporary) / 'snapshot'
+            snapshot.mkdir()
+            self.archive_input = prepare_archive_snapshot(snapshot)
+            try:
+                return self.a8_checks(snapshot)
+            finally:
+                assert verify_archive_snapshot(snapshot) == self.archive_input, 'archive input changed during A8'
+
+    def a8_checks(self, snapshot):
         revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
         spec = json.loads((ROOT / 'docs/development/work/TOOLS-01/checks.json').read_text())
+        declared = dict(self.environment, ARROKOTHI_EVIDENCE_ROOT=str(snapshot))
         inherited = dict(os.environ)
         inherited['PATH'] = self.environment['PATH']
+        inherited['ARROKOTHI_EVIDENCE_ROOT'] = str(snapshot)
         comparisons = []
         for step in spec['checks']:
             pair = {}
-            for label, env in [('declared', self.environment), ('inherited', inherited)]:
+            for label, env in [('declared', declared), ('inherited', inherited)]:
                 print('A8 ' + step['id'] + ' (' + label + ')', file=sys.stderr, flush=True)
                 run = self.run_command([sys.executable, '-B', str(FIXTURES / 'check-step.py'),
                                         '--revision', revision, '--step', step['id']], env,
@@ -432,6 +485,7 @@ def main():
                           'pass_names': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'},
                           'path_prepend': str(floor.node.parent), 'inherited_values_recorded': False}, 'passed': passed,
                       'complete': len(results) == 11 and passed, 'results': results,
+                      'archive_input': getattr(floor, 'archive_input', None),
                       'remaining': ['A' + str(i) for i in range(len(results) + 1, 12)]}, indent=2))
     return 0 if passed else 1
 
