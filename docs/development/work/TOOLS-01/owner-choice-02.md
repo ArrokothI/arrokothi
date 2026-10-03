@@ -25,3 +25,19 @@ remain recorded authority for their stated choices; they do not resolve the newl
 counterexample. The option-C patch was apply-checked but not applied. The live contract remains
 revision 2, no Node installation was attempted, and no implementation or hold release follows from
 this record. TOOLS-01 remains IN_PROGRESS.
+
+## Revision 3 confirmation (2026-10-03)
+
+Provenance: the owner's resume instruction in this Codex implementer conversation identifies
+design 05 revision 3 at `4dea56638303162b10494e82990d9a54816ca57e` and forwards the owner's
+answer recorded in that design author's §7. Verbatim:
+
+> Confirm 1 and 3, label for Q8
+
+This confirms the revised option-C contract diff and the prefix/read rules with E2 at 20.5–26
+days, and selects the `repository_read_changed` label for changed non-fixture repository reads.
+Changed fixtures remain refused. This supersedes the earlier residue-rule/budget choice only
+where revision 3 says so; the other recorded choices remain in force. The implementer's
+[resumed step-0 review](design-05-review-02.md) accepts this design for implementation, not the
+packet for independent acceptance. The earlier stop above remains the historical record of
+revision 2. The Node floor checks must pass before dependent implementation.
