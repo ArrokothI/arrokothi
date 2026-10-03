@@ -1,6 +1,10 @@
 """Malformed independent inputs for TOOLS-01's public evidence boundaries."""
 import copy
 import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
 import sys
 from unittest.mock import patch
 import test_packet_tools as base
@@ -187,17 +191,17 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.dependency_change(change,'installed dependency version mismatch')
 
     def test_command_argv(self):
-        self.refuses('needs argv',lambda:tool.command([],self.root,1,100))
+        self.refuses('needs argv',lambda:tool.command([],self.root,1,100,{}))
 
     def test_command_timeout(self):
-        self.refuses('timeout must',lambda:tool.command(['true'],self.root,0,100))
+        self.refuses('timeout must',lambda:tool.command(['true'],self.root,0,100,{}))
 
     def test_command_output_bound(self):
-        self.refuses('output cap',lambda:tool.command(['true'],self.root,1,0))
+        self.refuses('output cap',lambda:tool.command(['true'],self.root,1,0,{}))
 
     def test_command_host(self):
         with patch.object(tool.os,'name','nt'):
-            self.refuses('POSIX',lambda:tool.command(['true'],self.root,1,100))
+            self.refuses('POSIX',lambda:tool.command(['true'],self.root,1,100,{}))
 
     def observation_change(self,change,message):
         value=dict(case='case',assertion='a',passed=True,reached=True)
@@ -247,3 +251,153 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.document('verify.json',dict(version=1,checks=[]))
         rev=self.commit('empty verifier')
         self.refuses('verification has no checks',lambda:tool.verify(self.reader,rev,'verify.json'))
+
+    # Design 05 step 2: declared environments, the environment census and pinned snapshot inputs.
+    def test_environment_unknown_field(self):
+        self.refuses('unknown fields', lambda: tool.environment_declaration({'inherit': True}))
+
+    def test_environment_set_text(self):
+        self.refuses('set values must be text', lambda: tool.environment_declaration({'set': {'LANG': 1}}))
+
+    def test_environment_absent_effect(self):
+        self.refuses('need an effect', lambda: tool.environment_declaration({'absent': [{'name': 'NODE_OPTIONS'}]}))
+
+    def test_environment_name_twice(self):
+        self.refuses('declared twice', lambda: tool.environment_declaration({'pass': ['PATH'], 'set': {'PATH': '/bin'}}))
+
+    def test_environment_input_collision(self):
+        declaration = tool.environment_declaration(None)
+        self.refuses('input environment name already declared',
+                     lambda: tool.child_environment(declaration, {'PATH': '/tmp'}))
+
+    def test_command_environment(self):
+        self.refuses('declared environment', lambda: tool.command(['true'], self.root, 1, 100, None))
+
+    def census_spec(self, census, source='const x = 1;\n', inputs=None):
+        self.write('tests/read.mjs', source)
+        spec = {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [{'id': 'unit', 'argv': ['true'],
+                'timeout_seconds': 5, 'output_limit_bytes': 100}],
+                'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}, 'census': census}}
+        if inputs is not None:
+            spec['inputs'] = inputs
+        self.document('verify.json', spec)
+        return self.commit('census spec')
+
+    def test_census_roots(self):
+        rev = self.census_spec({'roots': []})
+        self.refuses('needs declared roots', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_census_computed_fields(self):
+        rev = self.census_spec({'roots': ['tests'], 'computed': [{'path': 'tests/read.mjs'}]})
+        self.refuses('needs path, text and reason', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_census_computed_twice(self):
+        row = {'path': 'tests/read.mjs', 'text': 'const all = { ...process.env };', 'reason': 'fixture'}
+        rev = self.census_spec({'roots': ['tests'], 'computed': [row, row]}, 'const all = { ...process.env };\n')
+        self.refuses('declared twice', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_census_undeclared_name(self):
+        rev = self.census_spec({'roots': ['tests']}, 'const gate = process.env.TOOLS01_GATE;\n')
+        self.refuses('undeclared environment read', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_census_undeclared_computed(self):
+        rev = self.census_spec({'roots': ['tests']}, 'const all = { ...process.env };\n')
+        self.refuses('needs a declaration', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_census_stale_computed(self):
+        rev = self.census_spec({'roots': ['tests'], 'computed': [
+            {'path': 'tests/read.mjs', 'text': 'const all = { ...process.env };', 'reason': 'fixture'}]})
+        self.refuses('stale computed', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def snapshot(self):
+        directory = Path(self.tmp.name + '-snapshot')
+        directory.mkdir()
+        self.addCleanup(shutil.rmtree, directory, True)
+        tool.snapshot_input(self.reader, {'id': 'x', 'revision': self.b}, directory)
+        return directory
+
+    def test_snapshot_unsupported_entry(self):
+        self.git('update-index', '--add', '--cacheinfo', '160000,' + self.b + ',submodule')
+        self.git('commit', '-qm', 'gitlink')
+        rev = self.git('rev-parse', 'HEAD')
+        directory = Path(self.tmp.name + '-gitlink')
+        directory.mkdir()
+        self.addCleanup(shutil.rmtree, directory, True)
+        self.refuses('unsupported entry', lambda: tool.verify_snapshot(self.reader, rev, directory))
+
+    def test_snapshot_paths(self):
+        directory = self.snapshot()
+        (directory / 'extra').write_text('extra')
+        self.refuses('paths differ', lambda: tool.verify_snapshot(self.reader, self.b, directory))
+
+    def test_snapshot_entry_kind(self):
+        directory = self.snapshot()
+        (directory / 'sealed.txt').unlink()
+        (directory / 'sealed.txt').symlink_to('source.md')
+        self.refuses('entry kind differs', lambda: tool.verify_snapshot(self.reader, self.b, directory))
+
+    def test_snapshot_bytes(self):
+        directory = self.snapshot()
+        (directory / 'sealed.txt').write_text('changed\n')
+        self.refuses('bytes differ', lambda: tool.verify_snapshot(self.reader, self.b, directory))
+
+    def test_snapshot_extraction(self):
+        real = subprocess.run
+
+        def failing_tar(argv, *args, **kwargs):
+            return subprocess.CompletedProcess(argv, 1, b'', b'') if argv[0] == 'tar' else real(argv, *args, **kwargs)
+        directory = Path(self.tmp.name + '-extraction')
+        directory.mkdir()
+        self.addCleanup(shutil.rmtree, directory, True)
+        with patch.object(tool.subprocess, 'run', side_effect=failing_tar):
+            self.refuses('extraction failed', lambda: tool.snapshot_input(self.reader, {'id': 'x', 'revision': self.b}, directory))
+
+    def test_input_shape(self):
+        rev = self.census_spec({'roots': ['tests']}, inputs=[{'id': 'x', 'kind': 'tarball', 'environment': 'X'}])
+        self.refuses('git_snapshot kind', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_input_twice(self):
+        row = {'id': 'x', 'kind': 'git_snapshot', 'revision': self.b, 'environment': 'X'}
+        rev = self.census_spec({'roots': ['tests']}, inputs=[row, dict(row, environment='Y')])
+        self.refuses('input declared twice', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_input_environment_collision(self):
+        rev = self.census_spec({'roots': ['tests']}, inputs=[
+            {'id': 'x', 'kind': 'git_snapshot', 'revision': self.b, 'environment': 'PATH'}])
+        self.refuses('input environment name already declared', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def fake_node(self, output):
+        directory = Path(self.tmp.name + '-node')
+        directory.mkdir(exist_ok=True)
+        self.addCleanup(shutil.rmtree, directory, True)
+        node = directory / 'node'
+        node.write_text('#!/bin/sh\necho ' + output + '\n')
+        node.chmod(0o755)
+        return {'PATH': str(directory) + os.pathsep + os.environ.get('PATH', '')}
+
+    def test_node_version_unreadable(self):
+        environment = self.fake_node('unreadable')
+        self.refuses('node --version failed', lambda: tool.node_version(environment, self.root))
+
+    def test_node_below_floor(self):
+        environment = self.fake_node('v22.9.0')
+        self.refuses('below the v26.10.0 floor', lambda: tool.node_version(environment, self.root))
+
+    def test_step_input_undeclared(self):
+        self.write('tests/read.mjs', 'const x = 1;\n')
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [
+            {'id': 'unit', 'argv': ['true'], 'inputs': ['absent'], 'timeout_seconds': 5, 'output_limit_bytes': 100}],
+            'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}, 'census': {'roots': ['tests']}}})
+        rev = self.commit('undeclared input')
+        self.refuses('undeclared input', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    def test_step_input_changed(self):
+        self.write('tests/read.mjs', 'const x = 1;\n')
+        self.write('change.py', 'import os\nopen(os.path.join(os.environ["X"], "sealed.txt"), "w").write("changed")\n')
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [
+            {'id': 'unit', 'argv': [sys.executable, '-B', 'change.py'], 'inputs': ['x'], 'timeout_seconds': 10,
+             'output_limit_bytes': 100}],
+            'inputs': [{'id': 'x', 'kind': 'git_snapshot', 'revision': self.b, 'environment': 'X'}],
+            'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}, 'census': {'roots': ['tests']}}})
+        rev = self.commit('changing input')
+        self.refuses('snapshot input changed during unit', lambda: tool.verify(self.reader, rev, 'verify.json'))

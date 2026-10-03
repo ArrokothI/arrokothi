@@ -27,7 +27,7 @@ class AdapterInputTests(unittest.TestCase):
             # A literal process emits a known value; this isolates registry consumption from realm policy.
             case['input']['argv'] = ['--eval', 'process.stdout.write(JSON.stringify({marker: 7}))']
             files[REGISTRY] = json.dumps(registry).encode()
-        run = tool.run_case(files, case)
+        run = tool.run_case(files, case, tool.child_environment(tool.environment_declaration(None))[0])
         return tool.observation(run, case)
 
     def test_identity_values_consumed(self):

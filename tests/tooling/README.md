@@ -57,6 +57,35 @@ Ordinary pinned lexical shadowing is also an untried combination. Fixed dimensio
 This manifest is a bounded model of the adopted families, not universal coverage of realm behavior.
 Negative categories, closed-by-reading entries and reasons appear separately from kill counts.
 
+## Declared environments and inputs
+
+Every child process the tool starts gets a declared environment, never the caller's
+(design 05 §4, contract F4). `checks.json` declares it once under `environment`: names passed
+through when the caller has them (`pass`, default PATH, HOME and TMPDIR), values the tool sets
+(`set`, default LANG=C.UTF-8; the tool also sets PYTHONDONTWRITEBYTECODE), and names that are
+deliberately absent, each with its effect (`absent`). A registry may declare its own; the default
+applies otherwise. Records list names and declared values only; inherited values are never
+written. Inherited NODE_OPTIONS, NODE_TEST_CONTEXT, NODE_V8_COVERAGE, KERNEL_POISON_MODE,
+PACKET_ORACLE_CHECK and ARROKOTHI_EVIDENCE_ROOT are contamination fixtures in
+`test_environment_tools.py`.
+
+`verify` refuses a Node below v26.10.0 under the declared environment and records the version.
+Put the floor's `bin` first in PATH to verify on the floor itself.
+
+The environment census (D05-CHK-10) scans every JavaScript or TypeScript file under
+`environment.census.roots` at C, a superset of the selected tests and their test-side closures.
+Each `process.env.NAME` or `process.env['NAME']` read must be passed, set, provided by an input
+or declared absent. Any other `process.env` occurrence (a spread, a default argument, an
+`env` import from `node:process`) must match a `computed` entry with its exact line text and a
+reason; a stale entry fails. The scan is lexical: an alias of `process.env` that never spells it
+is a stated gap.
+
+`inputs` declares pinned inputs. The only kind is `git_snapshot`: `verify` extracts the named
+revision outside the checkout with `git archive`, checks every path, entry kind and byte against
+the Git tree, provides its directory under the declared environment name only to the steps that
+list the input, verifies it again after the step and removes it. The archive tests' evidence root
+uses archive.md's pinned fallback `9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49` this way.
+
 ## Isolation, inputs and identities
 
 `mutations` copies registered ordinary files into a new temporary directory for every control,

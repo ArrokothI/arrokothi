@@ -204,7 +204,9 @@ class DependencyTests(RepositoryFixture):
 class VerificationTests(RepositoryFixture):
     def fixture(self, script='print("tests 3; skips 0")'):
         self.write('check.py', script + '\n')
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [{
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'],
+            'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'},
+                            'census': {'roots': ['check.py']}}, 'checks': [{
             'id': 'unit', 'argv': [sys.executable, '-B', 'check.py'], 'timeout_seconds': 2,
             'output_limit_bytes': 1024, 'counts': {'tests': r'tests (\d+)', 'skips': r'skips (\d+)'},
             'minimum_counts': {'tests': 1}, 'exact_counts': {'skips': 0}}]})

@@ -3,6 +3,7 @@
 import argparse
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import sys
@@ -43,7 +44,8 @@ def run_step(revision, step_id):
                    and result['counts'] == {'suite': 116, 'case': 8, 'non_executable': 30, 'pending': 1395})
         return {'id': step_id, 'observation_valid': meets_spec or pending, 'meets_final_spec': meets_spec,
                 'known_pending_adoption': pending, 'facts': operation_facts(result)}
-    run = tool.command(step['argv'], ROOT, step['timeout_seconds'], step['output_limit_bytes'])
+    # A8 compares the environment its caller sets, so this runner passes that environment through.
+    run = tool.command(step['argv'], ROOT, step['timeout_seconds'], step['output_limit_bytes'], dict(os.environ))
     counts = {}
     for label, pattern in step.get('counts', {}).items():
         matches = re.findall(pattern, run['output'], re.M)

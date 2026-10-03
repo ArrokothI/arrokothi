@@ -2878,6 +2878,673 @@
           "id": "mutation-5d0f10a1c243c82617d1f45a0d0a0f38bdd141a6e7fc9439fe1f26688ae1309e"
         }
       ]
+    },
+    {
+      "id": "guard.environment_declaration.3d1f1951c6a04690",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_environment_unknown_field",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_declaration",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_environment_unknown_field"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_declaration.3d1f1951c6a04690"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(value, dict) and set(value) <= {'pass', 'set', 'absent', 'census'},\n            'environment declaration has unknown fields')",
+          "after": "pass  # tools01-ablate:3d1f1951c6a04690",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_declaration.3d1f1951c6a04690",
+          "id": "mutation-7da2699fbd82c88e56c120dcab3e6cb42a740640dbff704626e23c27799591dc"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_declaration.6ca7de6fbbecc5b5",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_environment_set_text",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_declaration",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_environment_set_text"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_declaration.6ca7de6fbbecc5b5"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(assigned, dict) and all(isinstance(name, str) and name and isinstance(text, str)\n                                               for name, text in assigned.items()),\n            'environment set values must be text')",
+          "after": "pass  # tools01-ablate:6ca7de6fbbecc5b5",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_declaration.6ca7de6fbbecc5b5",
+          "id": "mutation-8434677e8caf6cf8c1559293f9874dfeaf9b9ae7033f85ccb76622fc7cef50b8"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_declaration.434258fd8fb73631",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_environment_absent_effect",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_declaration",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_environment_absent_effect"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_declaration.434258fd8fb73631"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(absent, list) and all(isinstance(row, dict) and isinstance(row.get('name'), str) and\n                                             row['name'] and isinstance(row.get('effect'), str) and\n                                             bool(row['effect'].strip()) for row in absent),\n            'deliberately absent environment names need an effect')",
+          "after": "pass  # tools01-ablate:434258fd8fb73631",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_declaration.434258fd8fb73631",
+          "id": "mutation-0df69ef1ad083590459fa5833be81d77b918283f086eb02baefc1446b2c36810"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_declaration.d9d809f709e972ed",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_environment_name_twice",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_declaration",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_environment_name_twice"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_declaration.d9d809f709e972ed"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(names) == len(set(names)), 'environment name declared twice')",
+          "after": "pass  # tools01-ablate:d9d809f709e972ed",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_declaration.d9d809f709e972ed",
+          "id": "mutation-a34d2f0e93a53a220be39f8c5a939e589b66191189b74e47672baea0aa34b57a"
+        }
+      ]
+    },
+    {
+      "id": "guard.child_environment.0d77269c6e63d0b0",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_environment_input_collision",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: child_environment",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_environment_input_collision"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.child_environment.0d77269c6e63d0b0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not set(provided) & {*declaration['pass'], *declaration['set']}, 'input environment name already declared')",
+          "after": "pass  # tools01-ablate:0d77269c6e63d0b0",
+          "operator": "remove-refusal-check",
+          "name": "guard.child_environment.0d77269c6e63d0b0",
+          "id": "mutation-e9a571a9a2025f44c1b709ed178fe2082e7c1502c794720a8779fee9f34ce73f"
+        }
+      ]
+    },
+    {
+      "id": "guard.command.e6bd9dd0044a9192",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_command_environment",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: command",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_command_environment"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.command.e6bd9dd0044a9192"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(environment, dict) and all(isinstance(name, str) and isinstance(text, str)\n                                                  for name, text in environment.items()),\n            'command needs a declared environment')",
+          "after": "pass  # tools01-ablate:e6bd9dd0044a9192",
+          "operator": "remove-refusal-check",
+          "name": "guard.command.e6bd9dd0044a9192",
+          "id": "mutation-b04705a1715d1226fecbbb42897432a7f8920ef32c93599dfb885aa9c0470caa"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_census.1c7b26207024a558",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_census_roots",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_census",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_census_roots"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_census.1c7b26207024a558"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(census, dict) and bool(unique_text(census.get('roots', []), 'census roots')),\n            'environment census needs declared roots')",
+          "after": "pass  # tools01-ablate:1c7b26207024a558",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_census.1c7b26207024a558",
+          "id": "mutation-6c1fea459463dc41340d94d33f62ad688c2776c454908a42b8940df4aea33c7f"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_census.44c8aa8bf2c47333",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_census_undeclared_name",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_census",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_census_undeclared_name"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_census.44c8aa8bf2c47333"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not missing, 'undeclared environment read: ' + ', '.join(missing))",
+          "after": "pass  # tools01-ablate:44c8aa8bf2c47333",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_census.44c8aa8bf2c47333",
+          "id": "mutation-11a5401404834a1fffd08fed288fe60fa7861026668462f13b2e332f141f7b91"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_census.6f61e212419ffffd",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_census_undeclared_computed",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_census",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_census_undeclared_computed"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_census.6f61e212419ffffd"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not undeclared, 'computed environment read needs a declaration: ' + '; '.join(undeclared))",
+          "after": "pass  # tools01-ablate:6f61e212419ffffd",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_census.6f61e212419ffffd",
+          "id": "mutation-6ad88c7992c18d3fcd3263f3eeed231a2e98fddc5202571d9ff73a9ddeb35772"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_census.d6934a535b07299d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_census_stale_computed",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_census",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_census_stale_computed"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_census.d6934a535b07299d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(found == set(expected), 'stale computed environment read declaration')",
+          "after": "pass  # tools01-ablate:d6934a535b07299d",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_census.d6934a535b07299d",
+          "id": "mutation-1c2913e70d8ae684b3a82d5e80c623e75e50eeb1563f2a7066296966dd1c28aa"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_census.f9c07d3493913c60",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_census_computed_fields",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_census",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_census_computed_fields"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_census.f9c07d3493913c60"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row, dict) and all(isinstance(row.get(key), str) and bool(row[key].strip())\n                                              for key in ('path', 'text', 'reason')),\n                'computed environment read needs path, text and reason')",
+          "after": "pass  # tools01-ablate:f9c07d3493913c60",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_census.f9c07d3493913c60",
+          "id": "mutation-a7adfe7ff4e54bfedf5c55f5b960905527cc44b2fb865b470b8d2b590f169c22"
+        }
+      ]
+    },
+    {
+      "id": "guard.environment_census.25003640b552a3c6",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_census_computed_twice",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: environment_census",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_census_computed_twice"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.environment_census.25003640b552a3c6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require((row['path'], row['text']) not in expected, 'computed environment read declared twice')",
+          "after": "pass  # tools01-ablate:25003640b552a3c6",
+          "operator": "remove-refusal-check",
+          "name": "guard.environment_census.25003640b552a3c6",
+          "id": "mutation-854ebbec7890e859974e98c386627c2d1ac91036597dd4f903c86918cf9dbc56"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify_snapshot.52d67717340e0ee1",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_snapshot_paths",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify_snapshot",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_snapshot_paths"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify_snapshot.52d67717340e0ee1"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(actual == set(entries), 'snapshot input paths differ from the pinned tree')",
+          "after": "pass  # tools01-ablate:52d67717340e0ee1",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify_snapshot.52d67717340e0ee1",
+          "id": "mutation-c6001aedc77edeae879abe0579360a1077f38c0a5321b67a21a997883c4e4a56"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify_snapshot.230c5ca5f2e46c15",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_snapshot_unsupported_entry",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify_snapshot",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_snapshot_unsupported_entry"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify_snapshot.230c5ca5f2e46c15"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(kind == 'blob' and mode in ('100644', '100755', '120000'), 'snapshot input holds an unsupported entry')",
+          "after": "pass  # tools01-ablate:230c5ca5f2e46c15",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify_snapshot.230c5ca5f2e46c15",
+          "id": "mutation-c236430daeb045a5f587ded0361cec59f51a68d228a7b3d5045820bf2e1e9e89"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify_snapshot.157a1c431dfa1d24",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_snapshot_entry_kind",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify_snapshot",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_snapshot_entry_kind"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify_snapshot.157a1c431dfa1d24"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(path.is_symlink() == (mode == '120000'), 'snapshot input entry kind differs: ' + name)",
+          "after": "pass  # tools01-ablate:157a1c431dfa1d24",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify_snapshot.157a1c431dfa1d24",
+          "id": "mutation-f8b0c7e4bfb8f41864499ada8776661d6615cca06bfadc2114ee71cb810fd55f"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify_snapshot.634a797f85a0c78e",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_snapshot_bytes",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify_snapshot",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_snapshot_bytes"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify_snapshot.634a797f85a0c78e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\\0' + data).hexdigest() == oid,\n                'snapshot input bytes differ: ' + name)",
+          "after": "pass  # tools01-ablate:634a797f85a0c78e",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify_snapshot.634a797f85a0c78e",
+          "id": "mutation-179598f6a5991c17863e2bbe6a857e3dcd0748431d4550ee08d3d479afabd45f"
+        }
+      ]
+    },
+    {
+      "id": "guard.snapshot_input.d50d9fa4138e2e8a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_snapshot_extraction",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: snapshot_input",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_snapshot_extraction"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.snapshot_input.d50d9fa4138e2e8a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(extracted.returncode == 0, 'snapshot input extraction failed: ' + row['id'])",
+          "after": "pass  # tools01-ablate:d50d9fa4138e2e8a",
+          "operator": "remove-refusal-check",
+          "name": "guard.snapshot_input.d50d9fa4138e2e8a",
+          "id": "mutation-298d9bb52fba6b696c42f198c0b64340a6e35383f179636cefbf9666bf5c51a9"
+        }
+      ]
+    },
+    {
+      "id": "guard.declared_inputs.3258831485dd7c83",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_input_environment_collision",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: declared_inputs",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_input_environment_collision"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.declared_inputs.3258831485dd7c83"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(names) == len(set(names)) and not set(names) & {\n        *declaration['pass'], *declaration['set'], *(row['name'] for row in declaration['absent'])},\n        'input environment name already declared')",
+          "after": "pass  # tools01-ablate:3258831485dd7c83",
+          "operator": "remove-refusal-check",
+          "name": "guard.declared_inputs.3258831485dd7c83",
+          "id": "mutation-415dd29aec6c3446b17ce9e765e64c5327adaad4176c939fe288f2ecdfc0f6a7"
+        }
+      ]
+    },
+    {
+      "id": "guard.declared_inputs.b458e5a8e7925211",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_input_shape",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: declared_inputs",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_input_shape"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.declared_inputs.b458e5a8e7925211"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row, dict) and row.get('kind') == 'git_snapshot' and isinstance(row.get('id'), str) and\n                bool(row['id']) and isinstance(row.get('environment'), str) and bool(row['environment']),\n                'input needs id, git_snapshot kind and environment name')",
+          "after": "pass  # tools01-ablate:b458e5a8e7925211",
+          "operator": "remove-refusal-check",
+          "name": "guard.declared_inputs.b458e5a8e7925211",
+          "id": "mutation-f71f07b98b594b79e7fcc73fbd88bc762a6843feebaa89ab6e992cd8a774584f"
+        }
+      ]
+    },
+    {
+      "id": "guard.declared_inputs.9de9964ea2f45506",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_input_twice",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: declared_inputs",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_input_twice"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.declared_inputs.9de9964ea2f45506"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['id'] not in inputs, 'input declared twice')",
+          "after": "pass  # tools01-ablate:9de9964ea2f45506",
+          "operator": "remove-refusal-check",
+          "name": "guard.declared_inputs.9de9964ea2f45506",
+          "id": "mutation-2094ad4ba41c6a0736d783da164d00d9ba5ce2f368c4ad9befbd8864d2e40395"
+        }
+      ]
+    },
+    {
+      "id": "guard.node_version.2640198085049dc6",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_node_version_unreadable",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: node_version",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_node_version_unreadable"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.node_version.2640198085049dc6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(run['status'] == 'finished' and run['exit'] == 0 and match is not None,\n            'node --version failed under the declared environment')",
+          "after": "pass  # tools01-ablate:2640198085049dc6",
+          "operator": "remove-refusal-check",
+          "name": "guard.node_version.2640198085049dc6",
+          "id": "mutation-931ecd036e838310b3e4565925120ab8c96c4e59a0d8954bea16a8dfc9bf5b45"
+        }
+      ]
+    },
+    {
+      "id": "guard.node_version.3433794f6f0c576d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_node_below_floor",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: node_version",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_node_below_floor"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.node_version.3433794f6f0c576d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(tuple(int(part) for part in match.groups()) >= NODE_FLOOR,\n            f'Node {version} is below the v26.10.0 floor')",
+          "after": "pass  # tools01-ablate:3433794f6f0c576d",
+          "operator": "remove-refusal-check",
+          "name": "guard.node_version.3433794f6f0c576d",
+          "id": "mutation-d04f5c6a1bd2872b79fd8fcf20b4b316225fbfe94f3b6d64dc382a34e009220d"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify.1bdd91f595450fea",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_step_input_undeclared",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_step_input_undeclared"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify.1bdd91f595450fea"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(all(name in inputs for name in names), 'step names an undeclared input')",
+          "after": "pass  # tools01-ablate:1bdd91f595450fea",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify.1bdd91f595450fea",
+          "id": "mutation-61c970bff4c5c6a0bda84038ee01628d37f7ee19b1eba405e6c78756c30f782b"
+        }
+      ]
     }
   ],
   "determinism_sample": [

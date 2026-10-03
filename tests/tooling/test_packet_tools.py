@@ -284,14 +284,14 @@ class RunnerTests(RepositoryFixture):
             tool.observation(run, {'id': 'c', 'assertion': 'a', 'failure_exit': 17})
 
     def test_missing_runtime_is_setup_error(self):
-        run = tool.command(['nonexistent-runtime-tool-fixture'], self.root, 1, 1000)
+        run = tool.command(['nonexistent-runtime-tool-fixture'], self.root, 1, 1000, tool.child_environment(tool.environment_declaration(None))[0])
         self.assertEqual(run['status'], 'setup_error')
 
     def test_global_state_is_process_local(self):
         files = {'p.py': b'import builtins; print(hasattr(builtins,"polluted")); builtins.polluted=True\n'}
         case = {'argv': [sys.executable, '-B', 'p.py'], 'timeout_seconds': 2, 'output_limit_bytes': 1000}
-        self.assertEqual(tool.run_case(files, case)['output'], 'False\n')
-        self.assertEqual(tool.run_case(files, case)['output'], 'False\n')
+        self.assertEqual(tool.run_case(files, case, tool.child_environment(tool.environment_declaration(None))[0])['output'], 'False\n')
+        self.assertEqual(tool.run_case(files, case, tool.child_environment(tool.environment_declaration(None))[0])['output'], 'False\n')
 
     def test_symlink_fixture_refused(self):
         rev = self.fixture()

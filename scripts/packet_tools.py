@@ -21,6 +21,16 @@ from math import prod
 
 sys.dont_write_bytecode = True
 
+# Design 05 §4: every child process gets a declared environment. Inherited names outside the
+# declaration never reach it; records hold names and declared settings, never inherited values.
+DEFAULT_ENVIRONMENT = {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}}
+NODE_FLOOR = (26, 10, 0)  # contract F4, owner choice 03
+SOURCE_SUFFIXES = ('.ts', '.mts', '.cts', '.js', '.mjs', '.cjs')
+ENVIRONMENT_READ = re.compile(r'process\.env\b')
+ENVIRONMENT_NAME = re.compile(r'process\.env(?:\.([A-Za-z_$][\w$]*)|\[\s*([\'"])([^\'"\\]+)\2\s*\])')
+ENVIRONMENT_OTHER = re.compile(r'\bprocess\s*\[\s*[\'"]env[\'"]\s*\]|'
+                               r'from\s+[\'"](?:node:)?process[\'"]|require\(\s*[\'"](?:node:)?process[\'"]\s*\)')
+
 
 class CheckError(Exception):
     """A declared input or checked fact is invalid."""
@@ -74,6 +84,42 @@ def unique_text(items, label):
             f'{label}: expected a text list')
     require(len(items) == len(set(items)), f'{label}: duplicate entries')
     return items
+
+
+def environment_declaration(value):
+    """Validate a declared child environment; the default passes PATH, HOME and TMPDIR."""
+    value = DEFAULT_ENVIRONMENT if value is None else value
+    require(isinstance(value, dict) and set(value) <= {'pass', 'set', 'absent', 'census'},
+            'environment declaration has unknown fields')
+    passed = unique_text(value.get('pass', []), 'environment pass names')
+    assigned = value.get('set', {})
+    require(isinstance(assigned, dict) and all(isinstance(name, str) and name and isinstance(text, str)
+                                               for name, text in assigned.items()),
+            'environment set values must be text')
+    absent = value.get('absent', [])
+    require(isinstance(absent, list) and all(isinstance(row, dict) and isinstance(row.get('name'), str) and
+                                             row['name'] and isinstance(row.get('effect'), str) and
+                                             bool(row['effect'].strip()) for row in absent),
+            'deliberately absent environment names need an effect')
+    names = [*passed, *assigned, *(row['name'] for row in absent)]
+    require(len(names) == len(set(names)), 'environment name declared twice')
+    return {'pass': passed, 'set': dict(assigned), 'absent': absent, 'census': value.get('census')}
+
+
+def child_environment(declaration, provided=None):
+    """The only environment a child receives, and a record holding names, never inherited values."""
+    provided = provided or {}
+    require(not set(provided) & {*declaration['pass'], *declaration['set']}, 'input environment name already declared')
+    environment = {name: os.environ[name] for name in declaration['pass'] if name in os.environ}
+    environment.update(declaration['set'])
+    environment.update(provided)
+    environment['PYTHONDONTWRITEBYTECODE'] = '1'
+    return environment, {'passed': [name for name in declaration['pass'] if name in os.environ],
+                         'unset_in_parent': [name for name in declaration['pass'] if name not in os.environ],
+                         'set': dict(declaration['set'], PYTHONDONTWRITEBYTECODE='1'),
+                         'inputs': sorted(provided),
+                         'absent': [row['name'] for row in declaration['absent']],
+                         'inherited_values_recorded': False}
 
 
 class Git:
@@ -416,16 +462,18 @@ def dependency_files(git, rev, spec):
     return files
 
 
-def command(argv, cwd, timeout, output_limit):
+def command(argv, cwd, timeout, output_limit, environment):
     """POSIX process-group termination; cap captured output while the child is running."""
     require(isinstance(argv, list) and argv and all(isinstance(x, str) for x in argv), 'command needs argv')
+    require(isinstance(environment, dict) and all(isinstance(name, str) and isinstance(text, str)
+                                                  for name, text in environment.items()),
+            'command needs a declared environment')
     require(type(timeout) in (int, float) and 0 < timeout <= 3600, 'timeout must be in (0, 3600] seconds')
     require(type(output_limit) is int and 0 < output_limit <= 1048576, 'output cap must be in (0, 1048576]')
     require(os.name == 'posix', 'mutation runner supports POSIX hosts')
     try:
         proc = subprocess.Popen(argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                stdin=subprocess.DEVNULL, start_new_session=True,
-                                env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1'))
+                                stdin=subprocess.DEVNULL, start_new_session=True, env=environment)
     except OSError as exc:
         return {'status': 'setup_error', 'detail': str(exc), 'output': '', 'exit': None}
     selector = selectors.DefaultSelector()
@@ -492,7 +540,7 @@ def execution_outcome(run, case):
     return {'status': state, 'observation': value}
 
 
-def run_case(files, case, mutant=None):
+def run_case(files, case, environment, mutant=None):
     with tempfile.TemporaryDirectory(prefix='arrokothi-evidence-') as tmp:
         directory = Path(tmp)
         for name, data in files.items():
@@ -508,7 +556,7 @@ def run_case(files, case, mutant=None):
                         'matches': original.count(before) if before else 0,
                         'detail': 'stale or ambiguous mutation anchor'}
             target.write_bytes(original.replace(before, after, 1))
-        return command(case['argv'], directory, case['timeout_seconds'], case['output_limit_bytes'])
+        return command(case['argv'], directory, case['timeout_seconds'], case['output_limit_bytes'], environment)
 
 
 def mutations(git, revision, registry_path, *, cases_only=False):
@@ -521,6 +569,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
     for name in unique_text(registry.get('files', []), 'shared files'):
         shared[path_name(name)] = git.blob(rev, name)
     shared.update(dependency_files(git, rev, registry.get('dependencies', [])))
+    environment, environment_record = child_environment(environment_declaration(registry.get('environment')))
     case_ids, mutant_ids, results = set(), {}, []
     for case in registry['cases']:
         print('Case ' + case['id'], file=sys.stderr, flush=True)
@@ -529,7 +578,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
         require(type(case['failure_exit']) is int and 1 <= case['failure_exit'] <= 125, 'invalid failure exit')
         names = unique_text(case['files'], 'case files')
         files = {**shared, **{path_name(name): git.blob(rev, name) for name in names}}
-        baseline = run_case(files, case)
+        baseline = run_case(files, case, environment)
         try:
             control = observation(baseline, case)
             valid = control['reached'] and control['passed']
@@ -552,7 +601,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
             if not valid:
                 result = {'mutation': mutant['id'], 'status': 'invalid_baseline'}
             else:
-                run = run_case(files, case, mutant)
+                run = run_case(files, case, environment, mutant)
                 outcome = execution_outcome(run, case)
                 state = outcome['status']
                 result = {'mutation': mutant['id'], 'status': state, 'run': run,
@@ -561,7 +610,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                     seen = outcome['observation']
                     result['killed_by'] = seen.get('failures', [case['assertion']])[0]
                 if case['id'] in registry.get('determinism_sample', []):
-                    repeated_run = run_case(files, case, mutant)
+                    repeated_run = run_case(files, case, environment, mutant)
                     stable = execution_outcome(repeated_run, case) == outcome
                     result['determinism'] = {'passed': stable, 'runs': 2, 'repeat': repeated_run}
                     if not stable:
@@ -570,7 +619,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
             result['content_key'] = mutation_key(mutant)
             case_result['mutations'].append(result)
         if case['id'] in registry.get('determinism_sample', []):
-            repeat = run_case(files, case)
+            repeat = run_case(files, case, environment)
             try:
                 repeated = observation(repeat, case)
                 stable = valid and repeated == control
@@ -594,13 +643,121 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                  for c in results) and (cases_only or set(counts) == {'killed'})
     return {'operation': 'cases' if cases_only else 'mutations', 'revision': rev, 'registry': registry_path,
             'result': 'selected_cases_passed' if passed else 'attention_required',
-            'counts': counts, 'cases': results, 'determinism_sample': sample, 'acceptance': 'not evaluated',
+            'counts': counts, 'cases': results, 'determinism_sample': sample, 'environment': environment_record,
+            'acceptance': 'not evaluated',
             'witnesses': [{'case': c['case'], **c['claim'],
                            'reproduced': c['control'] == 'passed'}
                           for c in results if c['claim']['kind'] != 'test_assertion'],
             'limits': ['Only the listed cases and mutations were executed',
                        'Structured witnesses rely on reviewed independent fixtures; no universal causal proof',
                        'Trusted repository commands run without containment; temporary copies protect source files']}
+
+
+def environment_census(git, rev, declaration, provided):
+    """D05-CHK-10: every process.env read in the declared roots is passed, set, provided or absent.
+
+    A lexical regression guard over a superset of the selected test files and their closures.
+    Aliases of process.env that never spell it are a stated gap."""
+    census = declaration['census']
+    require(isinstance(census, dict) and bool(unique_text(census.get('roots', []), 'census roots')),
+            'environment census needs declared roots')
+    declared = {*declaration['pass'], *declaration['set'], *(row['name'] for row in declaration['absent']), *provided}
+    expected = {}
+    for row in census.get('computed', []):
+        require(isinstance(row, dict) and all(isinstance(row.get(key), str) and bool(row[key].strip())
+                                              for key in ('path', 'text', 'reason')),
+                'computed environment read needs path, text and reason')
+        require((row['path'], row['text']) not in expected, 'computed environment read declared twice')
+        expected[(row['path'], row['text'])] = row
+    reads, found, undeclared, files = {}, set(), [], 0
+    for root in census['roots']:
+        for path in git.files(rev, root):
+            if not path.endswith(SOURCE_SUFFIXES) or 'node_modules' in PurePosixPath(path).parts:
+                continue
+            files += 1
+            for text in git.blob(rev, path).decode(errors='replace').splitlines():
+                names = [match[1] or match[3] for match in ENVIRONMENT_NAME.finditer(text)]
+                for name in names:
+                    reads.setdefault(name, set()).add(path)
+                if len(ENVIRONMENT_READ.findall(text)) + len(ENVIRONMENT_OTHER.findall(text)) > len(names):
+                    key = (path, text.strip())
+                    if key in expected:
+                        found.add(key)
+                    else:
+                        undeclared.append(path + ': ' + text.strip())
+    missing = sorted(set(reads) - declared)
+    require(not missing, 'undeclared environment read: ' + ', '.join(missing))
+    require(not undeclared, 'computed environment read needs a declaration: ' + '; '.join(undeclared))
+    require(found == set(expected), 'stale computed environment read declaration')
+    return {'roots': census['roots'], 'files': files,
+            'names': {name: sorted(paths) for name, paths in sorted(reads.items())},
+            'computed': [{'path': path, 'text': text} for path, text in sorted(expected)],
+            'declared_not_read': sorted(declared - set(reads)),
+            'limits': ['Lexical: an alias of process.env that never spells it is not seen',
+                       'Python tool code builds child environments only through command()']}
+
+
+def verify_snapshot(git, rev, directory):
+    """Every extracted path, entry kind and byte equals the pinned Git tree."""
+    entries = {}
+    for row in git.run('ls-tree', '-r', '-z', rev).split(b'\0'):
+        if not row:
+            continue
+        metadata, name = row.split(b'\t', 1)
+        mode, kind, oid = metadata.decode().split()
+        require(kind == 'blob' and mode in ('100644', '100755', '120000'), 'snapshot input holds an unsupported entry')
+        entries[name.decode()] = (mode, oid)
+    actual = {str(path.relative_to(directory)) for path in directory.rglob('*')
+              if path.is_symlink() or not path.is_dir()}
+    require(actual == set(entries), 'snapshot input paths differ from the pinned tree')
+    manifest = []
+    for name, (mode, oid) in sorted(entries.items()):
+        path = directory / name
+        require(path.is_symlink() == (mode == '120000'), 'snapshot input entry kind differs: ' + name)
+        data = os.readlink(path).encode() if mode == '120000' else path.read_bytes()
+        require(hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == oid,
+                'snapshot input bytes differ: ' + name)
+        manifest.append([name, mode, digest(data)])
+    return {'revision': rev, 'regular_files': sum(mode != '120000' for mode, _ in entries.values()),
+            'symlinks': sum(mode == '120000' for mode, _ in entries.values()),
+            'content_manifest_sha256': digest(json.dumps(manifest).encode())}
+
+
+def snapshot_input(git, row, directory):
+    """Extract a pinned Git tree outside the checkout; the bytes are verified, never trusted."""
+    rev = git.commit(row['revision'])
+    archive = directory.parent / (directory.name + '.tar')
+    git.run('archive', '--format=tar', '--output=' + str(archive), rev)
+    extracted = subprocess.run(['tar', '-xf', str(archive), '-C', str(directory)], capture_output=True)
+    archive.unlink()
+    require(extracted.returncode == 0, 'snapshot input extraction failed: ' + row['id'])
+    return verify_snapshot(git, rev, directory)
+
+
+def declared_inputs(spec, declaration):
+    inputs = {}
+    for row in spec.get('inputs', []):
+        require(isinstance(row, dict) and row.get('kind') == 'git_snapshot' and isinstance(row.get('id'), str) and
+                bool(row['id']) and isinstance(row.get('environment'), str) and bool(row['environment']),
+                'input needs id, git_snapshot kind and environment name')
+        require(row['id'] not in inputs, 'input declared twice')
+        inputs[row['id']] = row
+    names = [row['environment'] for row in inputs.values()]
+    require(len(names) == len(set(names)) and not set(names) & {
+        *declaration['pass'], *declaration['set'], *(row['name'] for row in declaration['absent'])},
+        'input environment name already declared')
+    return inputs
+
+
+def node_version(environment, cwd):
+    run = command(['node', '--version'], cwd, 30, 4096, environment)
+    version = run['output'].strip()
+    match = re.fullmatch(r'v(\d+)\.(\d+)\.(\d+)', version)
+    require(run['status'] == 'finished' and run['exit'] == 0 and match is not None,
+            'node --version failed under the declared environment')
+    require(tuple(int(part) for part in match.groups()) >= NODE_FLOOR,
+            f'Node {version} is below the v26.10.0 floor')
+    return version
 
 
 def clean_payload(git, rev):
@@ -615,6 +772,11 @@ def verify(git, revision, spec_path):
     execution_plan(spec)
     ids = unique_text([step['id'] for step in spec['checks']], 'verification checks')
     require(bool(ids), 'verification has no checks')
+    declaration = environment_declaration(spec.get('environment'))
+    inputs = declared_inputs(spec, declaration)
+    census = environment_census(git, rev, declaration, [row['environment'] for row in inputs.values()])
+    base_environment, _ = child_environment(declaration)
+    node = node_version(base_environment, git.repo)
     results = []
     for step in spec['checks']:
         print('Checking ' + step['id'], file=sys.stderr, flush=True)
@@ -631,7 +793,22 @@ def verify(git, revision, spec_path):
             ok = result['result'] == step['expected']
             results.append({'id': step['id'], 'operation': operation, 'passed': ok, 'result': result})
         else:
-            run = command(step['argv'], git.repo, step['timeout_seconds'], step['output_limit_bytes'])
+            names = unique_text(step.get('inputs', []), 'step inputs')
+            require(all(name in inputs for name in names), 'step names an undeclared input')
+            with tempfile.TemporaryDirectory(prefix='arrokothi-input-') as temporary:
+                provided, facts = {}, []
+                for name in names:
+                    directory = Path(temporary) / name
+                    directory.mkdir()
+                    facts.append(dict(snapshot_input(git, inputs[name], directory), id=name))
+                    provided[inputs[name]['environment']] = str(directory)
+                environment, record = child_environment(declaration, provided)
+                run = command(step['argv'], git.repo, step['timeout_seconds'], step['output_limit_bytes'], environment)
+                for fact in facts:
+                    try:
+                        verify_snapshot(git, fact['revision'], Path(temporary) / fact['id'])
+                    except CheckError as exc:
+                        raise CheckError('snapshot input changed during ' + step['id'] + ': ' + str(exc)) from exc
             counts = {}
             for label, expression in step.get('counts', {}).items():
                 matches = re.findall(expression, run['output'], re.MULTILINE)
@@ -642,12 +819,14 @@ def verify(git, revision, spec_path):
                 ok = ok and counts.get(label, -1) >= minimum
             for label, exact in step.get('exact_counts', {}).items():
                 ok = ok and counts.get(label) == exact
-            results.append({'id': step['id'], 'argv': step['argv'], 'passed': ok, 'counts': counts, **run})
+            results.append({'id': step['id'], 'argv': step['argv'], 'passed': ok, 'counts': counts,
+                            'environment': record, 'inputs': facts, **run})
         clean_payload(git, rev)
     return {'operation': 'verify', 'revision': rev, 'specification': spec_path,
             'result': 'checks_passed' if all(r['passed'] for r in results) else 'attention_required',
             'environment': {'python': platform.python_version(), 'platform': platform.platform(),
-                            'node': git_command_version('node', '--version'), 'git': git_command_version('git', '--version')},
+                            'node': node, 'git': git_command_version('git', '--version'),
+                            'declared': child_environment(declaration)[1], 'census': census},
             'checks': results, 'profiles_not_run': spec.get('profiles_not_run', []),
             'result_reuse': False, 'acceptance': 'not evaluated',
             'limits': spec['limits']}
