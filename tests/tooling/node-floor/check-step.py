@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Run one existing checks.json step for A8; never change its verdict or specification."""
+import argparse
+import importlib.util
+import json
+from pathlib import Path
+import re
+import sys
+
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.dont_write_bytecode = True
+module_spec = importlib.util.spec_from_file_location('packet_tools', ROOT / 'scripts/packet_tools.py')
+tool = importlib.util.module_from_spec(module_spec)
+module_spec.loader.exec_module(tool)
+
+
+def operation_facts(result):
+    if result['operation'] == 'mutations':
+        return {'result': result['result'], 'counts': result['counts'],
+                'cases': [{'case': case['case'], 'control': case['control'],
+                           'repeat_passed': case.get('determinism', {}).get('passed'),
+                           'mutations': [{key: mutant[key] for key in
+                                          ('mutation', 'status', 'killed_by') if key in mutant}
+                                         for mutant in case['mutations']]}
+                          for case in result['cases']], 'witnesses': result['witnesses']}
+    return result
+
+
+def run_step(revision, step_id):
+    git = tool.Git(ROOT)
+    specification = 'docs/development/work/TOOLS-01/checks.json'
+    spec = git.document(revision, specification)
+    assert spec == json.loads((ROOT / specification).read_text()), 'uncommitted checks drift'
+    step, = [row for row in spec['checks'] if row['id'] == step_id]
+    if 'operation' in step:
+        result = getattr(tool, step['operation'])(git, revision, step['spec'])
+        meets_spec = result['result'] == step['expected']
+        # Existing corpus incompleteness is preserved as a failed final-packet gate.
+        # A8 tests environment equivalence; it cannot complete the pending migration.
+        pending = (step_id == 'adoption' and result['result'] == 'extraction_pending'
+                   and result['origins'] == 1549 and result['pending_adoption'] == 1395
+                   and result['counts'] == {'suite': 116, 'case': 8, 'non_executable': 30, 'pending': 1395})
+        return {'id': step_id, 'passed': meets_spec or pending, 'meets_final_spec': meets_spec,
+                'known_pending_adoption': pending, 'facts': operation_facts(result), 'raw': result}
+    run = tool.command(step['argv'], ROOT, step['timeout_seconds'], step['output_limit_bytes'])
+    counts = {}
+    for label, pattern in step.get('counts', {}).items():
+        matches = re.findall(pattern, run['output'], re.M)
+        assert len(matches) == 1 and isinstance(matches[0], str), (step_id, label, matches)
+        counts[label] = int(matches[0])
+    facts = {'counts': counts}
+    if step_id in ('refusal-census', 'oracle-census') and run['exit'] == 0:
+        # Node's experimental warning follows the single JSON record.
+        lines = [line for line in run['output'].splitlines() if line.startswith('{')]
+        assert len(lines) == 1, lines
+        facts['census'] = json.loads(lines[0])
+    if step_id == 'kernel-sweeps':
+        facts['summaries'] = [line for line in run['output'].splitlines()
+                              if line.startswith(('FAULT SWEEP ', 'EXIT INVENTORY:', 'BOUNDARY ', 'POISON SWEEP '))]
+        facts['modes'] = {}
+        for line in run['output'].splitlines():
+            match = re.match(r'(RUN|MODE) (\w+): (\{.*\})$', line)
+            if match:
+                value = json.loads(match[3])
+                value.pop('seconds', None)
+                facts['modes'][match[1] + ' ' + match[2]] = value
+    passed = run['status'] == 'finished' and run['exit'] == 0
+    passed = passed and all(counts.get(k, -1) >= v for k, v in step.get('minimum_counts', {}).items())
+    passed = passed and all(counts.get(k) == v for k, v in step.get('exact_counts', {}).items())
+    return {'id': step_id, 'passed': passed, 'meets_final_spec': passed, 'facts': facts,
+            'argv': step['argv'], 'raw': run}
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--revision', required=True)
+    parser.add_argument('--step', required=True)
+    args = parser.parse_args()
+    result = run_step(args.revision, args.step)
+    print(json.dumps(result))
+    sys.exit(0 if result['passed'] else 1)

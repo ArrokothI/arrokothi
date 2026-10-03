@@ -159,6 +159,9 @@ class Floor:
     def run(self, arguments, extra_env=None, timeout=30, cwd=ROOT):
         argv = [str(self.node), *map(str, arguments)]
         env = dict(self.environment, **(extra_env or {}))
+        return self.run_command(argv, env, timeout, cwd, extra_env)
+
+    def run_command(self, argv, env, timeout=30, cwd=ROOT, extra_env=None):
         run = subprocess.run(argv, cwd=cwd, env=env, text=True, capture_output=True, timeout=timeout)
         record = {'argv': argv, 'exit': run.returncode, 'stdout': run.stdout, 'stderr': run.stderr,
                   'extra_environment': extra_env or {}}
@@ -364,6 +367,30 @@ class Floor:
         assert counts['tests'] >= 3774 and all(counts[k] == 0 for k in ('fail', 'cancelled', 'skipped', 'todo')), counts
         self.repository_counts = counts
         return {'script': rendering, 'files': len(files), 'selection_matches_events': True, 'counts': counts}
+
+    def a8(self):
+        revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+        spec = json.loads((ROOT / 'docs/development/work/TOOLS-01/checks.json').read_text())
+        inherited = dict(os.environ)
+        inherited['PATH'] = self.environment['PATH']
+        comparisons = []
+        for step in spec['checks']:
+            pair = {}
+            for label, env in [('declared', self.environment), ('inherited', inherited)]:
+                print('A8 ' + step['id'] + ' (' + label + ')', file=sys.stderr, flush=True)
+                run = self.run_command([sys.executable, '-B', str(FIXTURES / 'check-step.py'),
+                                        '--revision', revision, '--step', step['id']], env, timeout=3600)
+                run['environment_profile'] = label
+                # Do not serialize potentially sensitive inherited environment values.
+                result = json.loads(run['stdout'])
+                assert run['exit'] == 0 and result['passed'], 'A8 check failed: ' + step['id'] + ' (' + label + ')'
+                pair[label] = result
+            assert pair['declared']['facts'] == pair['inherited']['facts'], 'environment facts/counts differ: ' + step['id']
+            comparisons.append({'id': step['id'], 'facts_equal': True,
+                                'meets_final_spec': pair['declared']['meets_final_spec'],
+                                'facts': pair['declared']['facts']})
+        return {'comparisons': comparisons, 'revision_for_pinned_operations': revision,
+                'profiles_not_run': spec['profiles_not_run']}
 
 
 def main():
