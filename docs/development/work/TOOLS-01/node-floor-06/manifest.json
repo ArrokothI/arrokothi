@@ -1,0 +1,87 @@
+{
+  "subject_revision": "77922d98783d6d51eab50d158133534bd7879b20",
+  "base_revision": "e35cdd1c",
+  "node": "v22.15.0",
+  "node_install": {
+    "path": "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64",
+    "shasums256_txt_sha256": "42c7a78f52b6ae792d01252af908a8febc461ed6fb98be80571d303cd43ea067",
+    "archive": "node-v22.15.0-darwin-arm64.tar.gz",
+    "archive_sha256": "92eb58f54d172ed9dee320b8450f1390db629d4262c936d5c074b25a110fed02",
+    "checked_before_extraction": true,
+    "signature_checked": false
+  },
+  "comparison_node": "v25.2.1 (/opt/homebrew/bin/node), diagnostics only",
+  "host": "macOS 26.6.2 (25G83) arm64",
+  "python": "3.13.5",
+  "result": "stopped_at_A8_kernel_sweeps_step_bound",
+  "remaining": [
+    "owner decision on the kernel-sweeps step bound (FLOOR-06-01)",
+    "A8 rerun",
+    "A9",
+    "A10",
+    "A11",
+    "design-05 steps 2-12"
+  ],
+  "environment": {
+    "pass_names": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "set": {
+      "LANG": "C.UTF-8"
+    },
+    "path_prepend": "selected Node bin directory",
+    "A8_set": {
+      "ARROKOTHI_EVIDENCE_ROOT": "verified temporary snapshot at 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+    },
+    "inherited_values_recorded": false
+  },
+  "executed_floor_source_sha256": {
+    "tests/tooling/check-node-floor.py": "ee7fce52a7362a4f6f3bffff1e94317fd30b950d838aecc8eeeeab998c45a391",
+    "tests/tooling/read-trace.mjs": "25c0b05aaa3be3d61563badad91b18eca9dfdea0665d5fec7843ceea13088774",
+    "tests/tooling/node-floor/README.md": "71e4ccbe2211f0342370881c2417bfc30106e2831dceab126daf6a977e030f6a",
+    "tests/tooling/node-floor/archive-input-controls.py": "157c9442f111dc2ad2c5021e0f539e6e4b8d304dcc4ff8e123c37ce0152a7614",
+    "tests/tooling/node-floor/check-step-controls.py": "6ceb54f11954552a2d036a580d2b771fa7775fe01c3e956b77ceae0c54103c51",
+    "tests/tooling/node-floor/check-step.py": "c34494a6f1729a15fda24710013d55d377ba2696e0a153c7bd1dfea068be4c6a",
+    "tests/tooling/node-floor/events-reporter.mjs": "1613e001c5db146ded6a9944fd5d6ee0ed9bbfadaf629d6f00e7d5de18247214",
+    "tests/tooling/node-floor/events.test.mjs": "d086634abfe1029d584eec9acb987408a0b28c7d087e17dcc1a6a36a66e22525",
+    "tests/tooling/node-floor/isolation-a.test.mjs": "b575ab5d7ba7d8156c2c079bd6bea8d229380b894992b584a9cca98136e96fbd",
+    "tests/tooling/node-floor/isolation-b.test.mjs": "5db53791eed47d867e7f3d06e001e2516e279173606acac18fd5ec1f4543cd16",
+    "tests/tooling/node-floor/offsets.ts": "5144aa6c422ee0663e5f420aeadbc2ef53bd61583bab277796818b6d36969124",
+    "tests/tooling/node-floor/order-await.test.ts": "3b8b96b54c032a748d310b88e341761bf9823f74438adf3d26b678fcbb43f6d3",
+    "tests/tooling/node-floor/order-deferred.test.ts": "60ce31975bd7711a759e1ce93497bd2aaed9ddb1042e433a740a244c0fc63648",
+    "tests/tooling/node-floor/order.test.ts": "6e3ad2c9004f9c516da8a8d04fc2efaf7f4bcd9fb94eb4fc880247f42d74db49",
+    "tests/tooling/node-floor/parent.test.mjs": "b615c4da84ea573b7023469f72f1e5370b7e760e011919beafb3a0e0803df113",
+    "tests/tooling/node-floor/parser.mjs": "345099439f3e3eca2a83a8277ff1ebc6acde0f25b3cf0f0c988399b487829acc",
+    "tests/tooling/node-floor/reach.ts": "13415da91ee35ed9a8c46a21c53079dc1fc863620729630331cf6d8f64b94443",
+    "tests/tooling/node-floor/read-trace.test.ts": "55a09f6ee3b604a3e6b00dafeed298cb60f35d22ce04b4945405ce81b6d429cf",
+    "tests/tooling/node-floor/register-hooks.mjs": "b822522b8224cf8bf7571a8d313c6eb15557dc6b0a4e744215edf62c85d094d5",
+    "tests/tooling/node-floor/subtest.test.mjs": "58b98b06f907ca1ec07f332297dcdd06c4951d24befe7d003cf50df215ae9d4a",
+    "tests/tooling/node-floor/unref-budget.ts": "831c42697736270eee56e0073ebd7d59c0790e3e59b44d98f76283539eb17695"
+  },
+  "attachments": {
+    "a9-a11-diagnostic.json": {
+      "sha256": "1cbaac29dbc3200e760c9a62fa3b835ba455a01f7ef07c228098f13977c50619",
+      "bytes": 8703
+    },
+    "archive-controls.json": {
+      "sha256": "796381655f9c07c9d90212dbe300b148814f9fcf7a7e25a21f9a7e0040af02bb",
+      "bytes": 436
+    },
+    "floor-a1-a8.json.gz": {
+      "sha256": "88460497d620c6b7b93e5996d0b571f641ca0fa55a8ea10e50c0e26fac1a1391",
+      "bytes": 504814,
+      "uncompressed_sha256": "a8357dd16ab1a83a0ed6d1e7de5ff210ae3d01314b2f6257ea8be86c59c780b6"
+    },
+    "step-controls.json": {
+      "sha256": "0a88301803b35c8eabdbe0dc247feaae8bc6e8b6c4abe4168b5e0dd3613448ab",
+      "bytes": 186
+    },
+    "sweep-diagnostics.json": {
+      "sha256": "020e411deb6f0049210a29b48d39c067745d9d6b408574618dfe23b0b3fdb4e0",
+      "bytes": 10829
+    }
+  },
+  "run_scope": "Ordered A1-A11 run stopped at A8 kernel-sweeps (declared); inherited sweep comparison and A9-A11 not reached. Diagnostic attachments ran afterwards on the same subject and are not floor results."
+}
