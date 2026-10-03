@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TOOLS-01 exact Node v22.9.0 prerequisites; stop at the first failed assumption."""
+"""TOOLS-01 exact Node v22.15.0 prerequisites; stop at the first failed assumption."""
 import argparse
 import copy
 import hashlib
@@ -119,7 +119,8 @@ def pairs_from_events(events, registrations):
     for key in order:
         data = results[key]
         details = data.get('details', {})
-        if 'type' not in details:
+        # Design 05 §6 floor amendment: absent (v22.9.0) or 'test' (v22.15.0) marks a test.
+        if details.get('type', 'test') == 'test':
             kind = 'test'
         elif details['type'] == 'suite':
             kind = 'suite'
@@ -233,6 +234,15 @@ class Floor:
         assert all('details' not in event['data'] for event in starts), 'start gained details'
         verdicts = {(event['data']['name'], event['type']) for event in relevant if event['type'] != 'test:start'}
         assert ('outer suite', 'test:pass') in verdicts and ('failing suite', 'test:fail') in verdicts
+        kinds = {pair['location'][1]: pair['kind'] for pair in pairs}
+        forms = sorted({(kinds[event['data']['line']], event['data'].get('details', {}).get('type', 'absent'))
+                        for event in relevant if event['type'] != 'test:start'})
+        # The other accepted test form (v22.9.0 omits the field) must give the same pairs.
+        absent = copy.deepcopy(relevant)
+        for event in absent:
+            if event['data'].get('details', {}).get('type') == 'test':
+                del event['data']['details']['type']
+        assert pairs_from_events(absent, registrations) == pairs, 'absent test type changed the pairs'
         negatives = {}
         for name in ('unknown_type', 'kind_mismatch', 'start_without_result', 'result_without_start',
                      'duplicate_start', 'duplicate_result', 'missing_start_location', 'missing_result_location'):
@@ -261,7 +271,8 @@ class Floor:
                 negatives[name] = str(exc)
             else:
                 raise AssertionError('negative fixture accepted: ' + name)
-        return {'pairs': pairs, 'refusals': negatives}
+        return {'pairs': pairs, 'result_type_forms': forms, 'absent_test_type_accepted': True,
+                'refusals': negatives}
 
     def coverage(self, file, flags=()):
         with tempfile.TemporaryDirectory(prefix='tools-01-floor-coverage-') as temporary:
@@ -452,6 +463,109 @@ class Floor:
                 'claim': 'environment equivalence only; pending adoption remains a failed final gate',
                 'all_final_gates_passed': all(row['meets_final_spec'] for row in comparisons)}
 
+    def catalog_run(self, files, extra_env):
+        run = self.run([*TEST_FLAGS, '--test-reporter=' + str(FIXTURES / 'events-reporter.mjs'), *files],
+                       extra_env)
+        return run, [json.loads(line) for line in run['stdout'].splitlines()]
+
+    def a9(self):
+        # A9's stated outcome is a capability, not a stop: an unselectable subtest is refused.
+        file = FIXTURES / 'subtest.test.mjs'
+        registrations = fixture_registrations(file)
+        target = ['parent', 'child']
+        selected, events = self.events(file, ['--test-name-pattern=^parent child$'])
+        assert selected['exit'] == 0, 'full-path subtest run failed'
+        selectable = valid_reach(events, registrations, target)
+        parent, parent_events = self.events(file, ['--test-name-pattern=^parent$'])
+        assert parent['exit'] == 0, 'parent run failed'
+        parent_pairs = pairs_from_events(parent_events, registrations)
+        leaves = [path for pair, path in zip(parent_pairs, full_paths(parent_pairs)) if pair['leaf']]
+        assert leaves == [['parent', 'child'], ['parent', 'sibling']], leaves
+        assert not valid_reach(parent_events, registrations, target), 'parent selection earned subtest reach'
+        return {'subtest_full_path_selectable': selectable,
+                'full_path_pattern_counts': summary_counts(events),
+                'parent_pattern_leaves': leaves,
+                'consequence': ('t.test subtest targets may use full-path selection' if selectable else
+                                'a t.test subtest target is refused (design 05 A9)')}
+
+    def a10(self):
+        with tempfile.TemporaryDirectory(prefix='tools-01-floor-order-') as temporary:
+            log = Path(temporary) / 'order.log'
+
+            def ordered(*files):
+                log.write_text('')
+                run, events = self.catalog_run(files, {'FLOOR_ORDER_LOG': str(log)})
+                assert run['exit'] == 0, 'order fixture failed: ' + ', '.join(f.name for f in files)
+                return events, log.read_text().splitlines()
+
+            # Process isolation under the catalog command's own flags; a failure stops (A10).
+            _, rows = ordered(FIXTURES / 'isolation-a.test.mjs', FIXTURES / 'isolation-b.test.mjs')
+            records = [json.loads(row) for row in rows]
+            assert sorted(record['file'] for record in records) == ['a', 'b'], records
+            pids = {record['pid'] for record in records}
+            runners = {record['ppid'] for record in records}
+            assert len(pids) == 2, 'two test files shared a process'
+            assert len(runners) == 1 and not pids & runners, 'a test file ran in the runner process'
+            assert all(record['other'] == 'undefined' for record in records), 'global state crossed files'
+            _, synchronous = ordered(FIXTURES / 'order.test.ts')
+            _, awaited = ordered(FIXTURES / 'order-await.test.ts')
+            _, deferred = ordered(FIXTURES / 'order-deferred.test.ts')
+        expected = ['load:top', 'load:after-a', 'load:suite', 'load:suite-end', 'load:bottom',
+                    'a:start', 'a:end', 'suite:beforeEach', 'b:start', 'b:end', 'suite:afterEach',
+                    'suite:beforeEach', 'c', 'suite:afterEach', 'd']
+
+        def loads_first(order):
+            first = next(index for index, step in enumerate(order) if not step.startswith('load:'))
+            return not any(step.startswith('load:') for step in order[first:])
+        model = {'synchronous_file_matches': synchronous == expected,
+                 'load_after_await_completes_first': loads_first(awaited),
+                 'deferred_registration_runs_in_source_order': deferred == ['x', 'y']}
+        holds = all(model.values())
+        return {'process_isolation': {'files': 2, 'distinct_processes': True, 'runner_process_excluded': True,
+                                      'globals_shared': False},
+                'orders': {'synchronous': synchronous, 'awaited': awaited, 'deferred': deferred},
+                'order_model': model, 'order_model_holds': holds,
+                'fallback': None if holds else 'every leaf counts as earlier (design 05 §2.3 rule 1)'}
+
+    def a11(self):
+        preload = ROOT / 'tests/tooling/read-trace.mjs'
+        file = FIXTURES / 'read-trace.test.ts'
+        forms = {'default-sync': 'readFileSync', 'named-sync': 'readFileSync', 'missing': 'existsSync',
+                 'named-stat': 'statSync', 'listing': 'readdirSync',
+                 'fs-promises-property': 'promises.readFile', 'promises-named': 'promises.readFile',
+                 'promises-namespace': 'promises.stat', 'callback': 'readFile',
+                 'require-sync': 'readFileSync', 'stream': 'createReadStream'}
+        with tempfile.TemporaryDirectory(prefix='tools-01-floor-reads-') as temporary:
+            data = Path(temporary) / 'data'
+            (data / 'listing').mkdir(parents=True)
+            for name in forms:
+                if name not in ('missing', 'listing'):
+                    (data / name).write_text(name)
+            (data / 'listing' / 'entry').write_text('x')
+            trace = Path(temporary) / 'trace.jsonl'
+            base = {'FLOOR_READ_DIR': str(data)}
+            plain, plain_events = self.catalog_run([file], base)
+            assert plain['exit'] == 0 and not trace.exists(), 'untraced control failed or traced'
+            options = {'NODE_OPTIONS': '--import=' + str(preload)}
+            refused, _ = self.catalog_run([file], dict(base, **options))
+            assert refused['exit'] != 0 and not trace.exists(), 'preload ran without a declared trace file'
+            traced, traced_events = self.catalog_run([file], dict(base, **options, ARROKOTHI_READ_TRACE=str(trace)))
+            assert traced['exit'] == 0, 'traced run failed'
+            rows = [json.loads(line) for line in trace.read_text().splitlines()]
+        assert summary_counts(traced_events) == summary_counts(plain_events), 'trace changed verdicts'
+        preloads = [row for row in rows if row['operation'] == 'preload']
+        children = {row['pid'] for row in preloads if row['test_child']}
+        assert len(children) == 1, 'preload not loaded in exactly one test child'
+        child, = children
+        observed = {(row['operation'], row['path']) for row in rows if row['pid'] == child}
+        missing = [name for name, operation in forms.items() if (operation, str(data / name)) not in observed]
+        assert not missing, 'unrecorded access forms: ' + ', '.join(missing)
+        return {'forms_recorded': forms, 'child_preloads': 1,
+                'runner_preloads': sum(not row['test_child'] for row in preloads),
+                'other_rows': sorted({row['operation'] for row in rows if row['pid'] == child
+                                      and (row['path'] or '').startswith(str(ROOT))}),
+                'verdicts_equal_untraced': True, 'missing_destination_refused': True}
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -461,8 +575,8 @@ def main():
     args = parser.parse_args()
     floor = Floor(args.node.resolve())
     version = floor.run(['--version'])['stdout'].strip()
-    if version != 'v22.9.0':
-        parser.error('This floor check requires exactly v22.9.0, got ' + version)
+    if version != 'v22.15.0':
+        parser.error('This floor check requires exactly v22.15.0, got ' + version)
     results = []
     for index in range(1, args.through + 1):
         check = getattr(floor, 'a' + str(index), None)

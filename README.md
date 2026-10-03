@@ -24,7 +24,7 @@ The repository is migrating from the previous 0.8.x architecture. Current code s
 
 The implemented [`@arrokothi/sdk`](packages/sdk/README.md), examples, and conformance tests remain useful while migration proceeds. The [active roadmap](docs/development/001-current-status-and-roadmap.md) begins with deterministic protocol fixtures; no foreign Runtime Driver or production recovery is implied by the target diagram.
 
-From this checkout, with Node 22.9+:
+From this checkout, with Node 22.15+:
 
 ```sh
 npm install
