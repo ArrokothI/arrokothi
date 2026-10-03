@@ -86,6 +86,26 @@ the Git tree, provides its directory under the declared environment name only to
 list the input, verifies it again after the step and removes it. The archive tests' evidence root
 uses archive.md's pinned fallback `9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49` this way.
 
+## Title catalog
+
+A `checks.json` step may declare a `catalog` instead of `argv` (design 05 §4, D04-CHK-02): the package
+script name, its exact text, its flags and its globs. `verify` refuses the step unless the text
+equals both the rendering `node <flags> <globs>` and the package script at C, expands the globs over
+the tree at C (a `*` stays inside one path segment, a dotfile needs a literal dot, `**` and braces
+are refused, a glob matching nothing fails), and runs that argv once with two reporters: TAP on
+stdout for the step's counts, and `tests/tooling/catalog-reporter.mjs` into a temporary file for the
+catalog. The repository and archive test steps are catalogs.
+
+The catalog applies design 05 A1 per file: order and nesting come from `test:start`, kind from the
+result's `details.type` (`test` or absent is a test, `suite` a suite, anything else refuses the
+file), and each start pairs with exactly one result by file, line, column, nesting and name. A
+missing pair, a duplicate key or a missing location refuses that file, not the run. A leaf is a
+test pair with no child start; an empty suite and a test with subtests are not leaves. The
+zero-match file-level pair is counted but never a leaf. The step passes only when every selected
+file reports, no file is refused and the summary counts equal the pairs. Cross-checking each pair's
+kind against its source registration needs the source facts of step 5 and is not yet applied
+(`source_kind_checked: false`).
+
 ## Isolation, inputs and identities
 
 `mutations` copies registered ordinary files into a new temporary directory for every control,

@@ -126,7 +126,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 201
+        "tests": 224
       }
     },
     {
@@ -192,10 +192,24 @@
     },
     {
       "id": "repository-tests",
-      "argv": [
-        "npm",
-        "test"
-      ],
+      "catalog": {
+        "script": "test",
+        "script_text": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts packages/sdk/tests/*.test.ts",
+        "flags": [
+          "--test",
+          "--experimental-strip-types"
+        ],
+        "globs": [
+          "packages/core/tests/*.test.ts",
+          "packages/kernel/tests/*.test.ts",
+          "packages/models/gemini/tests/*.test.ts",
+          "packages/retrieval/local/tests/*.test.ts",
+          "packages/agents/strands/tests/*.test.ts",
+          "packages/interoperability/mcp/tests/*.test.ts",
+          "tests/conformance/*/*.test.ts",
+          "packages/sdk/tests/*.test.ts"
+        ]
+      },
       "timeout_seconds": 900,
       "output_limit_bytes": 1048576,
       "counts": {
@@ -217,11 +231,17 @@
     },
     {
       "id": "archive-tests",
-      "argv": [
-        "npm",
-        "run",
-        "test:archive-evidence"
-      ],
+      "catalog": {
+        "script": "test:archive-evidence",
+        "script_text": "node --test --experimental-strip-types tests/archive/*.test.ts",
+        "flags": [
+          "--test",
+          "--experimental-strip-types"
+        ],
+        "globs": [
+          "tests/archive/*.test.ts"
+        ]
+      },
       "timeout_seconds": 900,
       "output_limit_bytes": 1048576,
       "counts": {

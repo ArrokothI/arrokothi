@@ -45,7 +45,10 @@ def run_step(revision, step_id):
         return {'id': step_id, 'observation_valid': meets_spec or pending, 'meets_final_spec': meets_spec,
                 'known_pending_adoption': pending, 'facts': operation_facts(result)}
     # A8 compares the environment its caller sets, so this runner passes that environment through.
-    run = tool.command(step['argv'], ROOT, step['timeout_seconds'], step['output_limit_bytes'], dict(os.environ))
+    if 'catalog' in step:
+        _, run, _ = tool.catalog_run(git, revision, step, dict(os.environ))
+    else:
+        run = tool.command(step['argv'], ROOT, step['timeout_seconds'], step['output_limit_bytes'], dict(os.environ))
     counts = {}
     for label, pattern in step.get('counts', {}).items():
         matches = re.findall(pattern, run['output'], re.M)
@@ -83,7 +86,7 @@ def run_step(revision, step_id):
     passed = passed and all(counts.get(k, -1) >= v for k, v in step.get('minimum_counts', {}).items())
     passed = passed and all(counts.get(k) == v for k, v in step.get('exact_counts', {}).items())
     return {'id': step_id, 'observation_valid': passed, 'meets_final_spec': passed, 'facts': facts,
-            'argv': step['argv'], 'status': run['status'], 'exit': run['exit']}
+            'argv': step.get('argv') or step['catalog']['script_text'], 'status': run['status'], 'exit': run['exit']}
 
 
 if __name__ == '__main__':

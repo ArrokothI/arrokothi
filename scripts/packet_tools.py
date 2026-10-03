@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+import fnmatch
 import hashlib
 import json
 import os
@@ -28,6 +29,8 @@ NODE_FLOOR = (26, 10, 0)  # contract F4, owner choice 03
 SOURCE_SUFFIXES = ('.ts', '.mts', '.cts', '.js', '.mjs', '.cjs')
 ENVIRONMENT_READ = re.compile(r'process\.env\b')
 ENVIRONMENT_NAME = re.compile(r'process\.env(?:\.([A-Za-z_$][\w$]*)|\[\s*([\'"])([^\'"\\]+)\2\s*\])')
+CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
+SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 ENVIRONMENT_OTHER = re.compile(r'\bprocess\s*\[\s*[\'"]env[\'"]\s*\]|'
                                r'from\s+[\'"](?:node:)?process[\'"]|require\(\s*[\'"](?:node:)?process[\'"]\s*\)')
 
@@ -336,7 +339,7 @@ def corpus(git, revision, spec_path):
         for path in suite['files']:
             git.blob(rev, path)
         require(isinstance(suite.get('command'), str) and suite['command'], 'suite needs verification command ID')
-        require(suite['command'] in plan and bool(plan[suite['command']].get('argv')),
+        require(suite['command'] in plan and bool(plan[suite['command']].get('argv') or plan[suite['command']].get('catalog')),
                 'suite command absent from verification')
         require(suite.get('profile', 'deterministic') == plan[suite['command']]['profile'],
                 'suite execution profile disagrees with verification')
@@ -760,6 +763,161 @@ def node_version(environment, cwd):
     return version
 
 
+def glob_match(pattern, parts):
+    # A shell glob: each segment matches one path segment; a leading dot needs a literal dot.
+    return len(pattern) == len(parts) and all(
+        fnmatch.fnmatchcase(part, segment) and (not part.startswith('.') or segment.startswith('.'))
+        for segment, part in zip(pattern, parts))
+
+
+def expand_globs(git, rev, globs):
+    """Expand a catalog command's globs over the tree at C, as the package script's shell would."""
+    tree = [path for path in git.run('ls-tree', '-r', '-z', '--name-only', rev).decode().split('\0') if path]
+    files = []
+    for pattern in globs:
+        require(not pattern.startswith('/') and '**' not in pattern and '{' not in pattern,
+                'catalog glob must be a relative single-segment pattern: ' + pattern)
+        matched = sorted(path for path in tree if glob_match(pattern.split('/'), path.split('/')))
+        require(bool(matched), 'catalog glob matches no file: ' + pattern)
+        files.extend(matched)
+    require(len(files) == len(set(files)), 'catalog globs select a file twice')
+    return files
+
+
+def catalog_declaration(git, rev, step):
+    """D04-CHK-02: the declared script text, flags and globs must equal the package script at C."""
+    catalog = step.get('catalog')
+    require(isinstance(catalog, dict) and isinstance(catalog.get('script'), str) and bool(catalog['script']) and
+            isinstance(catalog.get('script_text'), str), 'catalog needs a package script and its text')
+    flags = unique_text(catalog.get('flags', []), 'catalog flags')
+    globs = unique_text(catalog.get('globs', []), 'catalog globs')
+    require('--test' in flags and not any(flag.startswith(('--test-reporter', '--test-name-pattern',
+                                                             '--test-skip-pattern', '--test-only'))
+                                          for flag in flags),
+            'catalog flags must run tests without their own reporter or selection')
+    rendering = ' '.join(['node', *flags, *globs])
+    scripts = json.loads(git.blob(rev, 'package.json')).get('scripts', {})
+    require(catalog['script_text'] == rendering == scripts.get(catalog['script']),
+            'catalog script drift: ' + catalog['script'])
+    return {'script': catalog['script'], 'script_text': rendering, 'flags': flags, 'globs': globs,
+            'files': expand_globs(git, rev, globs)}
+
+
+def file_tree(rows):
+    """A1 for one file: order and nesting from starts, kind from results, one result per start."""
+    starts, results, order, synthetic = {}, {}, [], 0
+    for row in rows:
+        if row.get('synthetic') is True:
+            synthetic += row['type'] != 'test:start'
+            continue
+        key = tuple(row.get(field) for field in ('line', 'column', 'nesting', 'name'))
+        if not (type(key[0]) is int and key[0] > 0 and type(key[1]) is int and key[1] > 0 and
+                type(key[2]) is int and key[2] >= 0 and isinstance(key[3], str)):
+            return None, 'missing location, nesting or name'
+        table = starts if row['type'] == 'test:start' else results
+        if key in table:
+            return None, 'duplicated key among ' + ('starts' if table is starts else 'results')
+        table[key] = row
+        if table is starts:
+            order.append(key)
+    if set(starts) != set(results):
+        return None, 'start/result keys differ'
+    pairs = []
+    for key in order:
+        result = results[key]
+        kind = result.get('details_type', 'test')  # absent (v22.9.0) or 'test' (v22.15.0)
+        if kind not in ('test', 'suite'):
+            return None, 'unknown details.type'
+        parent = next((index for index in range(len(pairs) - 1, -1, -1) if pairs[index]['nesting'] == key[2] - 1), None)
+        if key[2] and parent is None:
+            return None, 'missing parent start'
+        verdict = ('todo' if result.get('todo') else 'skipped' if result.get('skip') else
+                   'failed' if result['type'] == 'test:fail' else 'passed')
+        path = (pairs[parent]['path'] if parent is not None else []) + [key[3]]
+        pairs.append({'path': path, 'line': key[0], 'column': key[1], 'nesting': key[2], 'kind': kind,
+                      'parent': parent, 'verdict': verdict})
+    parents = {pair['parent'] for pair in pairs}
+    for index, pair in enumerate(pairs):
+        pair['leaf'] = pair['kind'] == 'test' and index not in parents
+    return {'pairs': pairs, 'synthetic': synthetic}, None
+
+
+def catalog_tree(rows, root, selected):
+    """Group catalog rows by file; refuse a malformed file, never the run's other files."""
+    summary, by_file = {}, {}
+    for row in rows:
+        if row.get('type') == 'summary':
+            require(row.get('label') in SUMMARY_LABELS and row['label'] not in summary and type(row.get('count')) is int,
+                    'malformed or duplicate catalog summary')
+            summary[row['label']] = row['count']
+            continue
+        require(row.get('type') in ('test:start', 'test:pass', 'test:fail') and isinstance(row.get('file'), str),
+                'malformed catalog event')
+        path = Path(os.path.realpath(row['file']))
+        require(path.is_relative_to(root), 'catalog event outside the checkout')
+        by_file.setdefault(path.relative_to(root).as_posix(), []).append(row)
+    require(set(summary) == set(SUMMARY_LABELS), 'catalog summary incomplete')
+    files, refused = {}, {}
+    for name in selected:
+        tree, reason = file_tree(by_file.get(name, []))
+        if tree is None:
+            refused[name] = reason
+        elif not tree['pairs'] and not tree['synthetic']:
+            refused[name] = 'no result reported'
+        else:
+            files[name] = tree
+    tests = sum(pair['kind'] == 'test' for tree in files.values() for pair in tree['pairs'])
+    verdicts = Counter(pair['verdict'] for tree in files.values() for pair in tree['pairs'] if pair['kind'] == 'test')
+    synthetic = sum(tree['synthetic'] for tree in files.values())
+    consistent = not refused and summary == {
+        'tests': tests + synthetic, 'suites': sum(pair['kind'] == 'suite' for tree in files.values() for pair in tree['pairs']),
+        'pass': verdicts['passed'] + synthetic, 'fail': summary['fail'], 'cancelled': summary['cancelled'],
+        'skipped': verdicts['skipped'], 'todo': verdicts['todo']} and summary['fail'] + summary['cancelled'] == verdicts['failed']
+    return {'files': files, 'refused': refused, 'unselected': sorted(set(by_file) - set(selected)),
+            'summary': summary, 'summary_consistent': consistent,
+            'valid': consistent and not refused and set(by_file) == set(selected)}
+
+
+def catalog_run(git, rev, step, environment):
+    """One run of a catalog command at C feeds verify (first reporter) and the catalog (second)."""
+    facts = catalog_declaration(git, rev, step)
+    reporter = git.repo / CATALOG_REPORTER
+    git.blob(rev, CATALOG_REPORTER)
+    with tempfile.TemporaryDirectory(prefix='arrokothi-catalog-') as temporary:
+        events = Path(temporary) / 'events.jsonl'
+        argv = ['node', *facts['flags'], '--test-reporter=tap', '--test-reporter-destination=stdout',
+                '--test-reporter=' + str(reporter), '--test-reporter-destination=' + str(events), *facts['files']]
+        run = command(argv, git.repo, step['timeout_seconds'], step['output_limit_bytes'], environment)
+        rows = []
+        if events.exists():
+            for line in events.read_text().splitlines():
+                try:
+                    rows.append(json.loads(line))
+                except ValueError:
+                    rows = None
+                    break
+    tree = None
+    if run['status'] == 'finished' and rows is not None:
+        try:
+            tree = catalog_tree(rows, Path(os.path.realpath(git.repo)), facts['files'])
+        except CheckError as exc:
+            tree = {'valid': False, 'error': str(exc)}
+    return facts, run, tree
+
+
+def catalog_summary(facts, tree):
+    if tree is None:
+        return {'script': facts['script'], 'files': len(facts['files']), 'valid': False, 'error': 'no catalog events'}
+    if 'files' not in tree:
+        return {'script': facts['script'], 'files': len(facts['files']), **tree}
+    leaves = [pair for file in tree['files'].values() for pair in file['pairs'] if pair['leaf']]
+    return {'script': facts['script'], 'files': len(facts['files']), 'valid': tree['valid'],
+            'summary_consistent': tree['summary_consistent'], 'refused_files': tree['refused'],
+            'unselected_files': tree['unselected'], 'leaves': len(leaves),
+            'leaf_verdicts': dict(Counter(pair['verdict'] for pair in leaves)),
+            'source_kind_checked': False}
+
+
 def clean_payload(git, rev):
     require(git.run('rev-parse', 'HEAD').decode().strip() == rev, 'HEAD must be payload C')
     require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')
@@ -803,7 +961,11 @@ def verify(git, revision, spec_path):
                     facts.append(dict(snapshot_input(git, inputs[name], directory), id=name))
                     provided[inputs[name]['environment']] = str(directory)
                 environment, record = child_environment(declaration, provided)
-                run = command(step['argv'], git.repo, step['timeout_seconds'], step['output_limit_bytes'], environment)
+                if 'catalog' in step:
+                    catalog_facts, run, tree = catalog_run(git, rev, step, environment)
+                else:
+                    catalog_facts, tree = None, None
+                    run = command(step['argv'], git.repo, step['timeout_seconds'], step['output_limit_bytes'], environment)
                 for fact in facts:
                     try:
                         verify_snapshot(git, fact['revision'], Path(temporary) / fact['id'])
@@ -819,8 +981,11 @@ def verify(git, revision, spec_path):
                 ok = ok and counts.get(label, -1) >= minimum
             for label, exact in step.get('exact_counts', {}).items():
                 ok = ok and counts.get(label) == exact
-            results.append({'id': step['id'], 'argv': step['argv'], 'passed': ok, 'counts': counts,
-                            'environment': record, 'inputs': facts, **run})
+            catalog = None if catalog_facts is None else catalog_summary(catalog_facts, tree)
+            ok = ok and (catalog is None or catalog['valid'])
+            results.append({'id': step['id'], 'argv': step.get('argv') or catalog_facts['script_text'], 'passed': ok,
+                            'counts': counts, 'environment': record, 'inputs': facts,
+                            **({'catalog': catalog} if catalog is not None else {}), **run})
         clean_payload(git, rev)
     return {'operation': 'verify', 'revision': rev, 'specification': spec_path,
             'result': 'checks_passed' if all(r['passed'] for r in results) else 'attention_required',

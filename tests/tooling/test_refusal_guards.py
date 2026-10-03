@@ -401,3 +401,61 @@ class RefusalGuardTests(base.RepositoryFixture):
             'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}, 'census': {'roots': ['tests']}}})
         rev = self.commit('changing input')
         self.refuses('snapshot input changed during unit', lambda: tool.verify(self.reader, rev, 'verify.json'))
+
+    # Design 05 step 3: catalog declarations, glob selection and catalog events.
+    def catalog_spec(self, catalog, script='node --test tests/*.test.mjs', files=('tests/a.test.mjs',)):
+        for name in files:
+            self.write(name, "import { test } from 'node:test';\ntest('a', () => {});\n")
+        self.document('package.json', {'type': 'module', 'scripts': {'test': script}})
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [
+            {'id': 'repository-tests', 'catalog': catalog, 'timeout_seconds': 30, 'output_limit_bytes': 65536}],
+            'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}, 'census': {'roots': ['tests']}}})
+        return self.commit('catalog spec')
+
+    CATALOG = {'script': 'test', 'script_text': 'node --test tests/*.test.mjs', 'flags': ['--test'],
+               'globs': ['tests/*.test.mjs']}
+
+    def test_catalog_declaration_shape(self):
+        rev = self.catalog_spec({'flags': ['--test'], 'globs': ['tests/*.test.mjs']})
+        self.refuses('package script and its text', lambda: tool.catalog_declaration(
+            self.reader, rev, {'catalog': {'flags': ['--test'], 'globs': ['tests/*.test.mjs']}}))
+
+    def test_catalog_flags(self):
+        rev = self.catalog_spec(self.CATALOG)
+        catalog = dict(self.CATALOG, flags=['--test', '--test-reporter=tap'])
+        self.refuses('without their own reporter or selection',
+                     lambda: tool.catalog_declaration(self.reader, rev, {'catalog': catalog}))
+
+    def test_catalog_script_drift(self):
+        rev = self.catalog_spec(self.CATALOG, script='node --test tests/*.test.mjs tests/b.test.mjs')
+        self.refuses('catalog script drift', lambda: tool.catalog_declaration(self.reader, rev, {'catalog': self.CATALOG}))
+
+    def test_catalog_glob_shape(self):
+        rev = self.catalog_spec(self.CATALOG)
+        self.refuses('relative single-segment pattern', lambda: tool.expand_globs(self.reader, rev, ['tests/**/*.mjs']))
+
+    def test_catalog_glob_empty(self):
+        rev = self.catalog_spec(self.CATALOG)
+        self.refuses('matches no file', lambda: tool.expand_globs(self.reader, rev, ['tests/*.spec.mjs']))
+
+    def test_catalog_glob_twice(self):
+        rev = self.catalog_spec(self.CATALOG)
+        self.refuses('select a file twice', lambda: tool.expand_globs(self.reader, rev, ['tests/*.test.mjs', 'tests/a.*']))
+
+    SUMMARY = [{'type': 'summary', 'label': label, 'count': 0} for label in
+               ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')]
+
+    def test_catalog_summary_duplicate(self):
+        self.refuses('malformed or duplicate catalog summary',
+                     lambda: tool.catalog_tree(self.SUMMARY + self.SUMMARY[:1], Path('/repo'), []))
+
+    def test_catalog_event_shape(self):
+        self.refuses('malformed catalog event',
+                     lambda: tool.catalog_tree(self.SUMMARY + [{'type': 'test:pass', 'file': None}], Path('/repo'), []))
+
+    def test_catalog_event_outside(self):
+        row = {'type': 'test:pass', 'file': '/elsewhere/a.test.mjs', 'name': 'a', 'line': 1, 'column': 1, 'nesting': 0}
+        self.refuses('outside the checkout', lambda: tool.catalog_tree(self.SUMMARY + [row], Path('/repo'), []))
+
+    def test_catalog_summary_incomplete(self):
+        self.refuses('catalog summary incomplete', lambda: tool.catalog_tree(self.SUMMARY[1:], Path('/repo'), []))
