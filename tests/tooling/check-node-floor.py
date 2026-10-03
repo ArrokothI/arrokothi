@@ -161,11 +161,12 @@ class Floor:
         env = dict(self.environment, **(extra_env or {}))
         return self.run_command(argv, env, timeout, cwd, extra_env)
 
-    def run_command(self, argv, env, timeout=30, cwd=ROOT, extra_env=None):
+    def run_command(self, argv, env, timeout=30, cwd=ROOT, extra_env=None, record_output=True):
         run = subprocess.run(argv, cwd=cwd, env=env, text=True, capture_output=True, timeout=timeout)
         record = {'argv': argv, 'exit': run.returncode, 'stdout': run.stdout, 'stderr': run.stderr,
                   'extra_environment': extra_env or {}}
-        self.runs.append(record)
+        self.runs.append(record if record_output else {
+            'argv': argv, 'exit': run.returncode, 'output_recorded': False})
         return record
 
     def events(self, file, flags=(), extra_env=None):
@@ -379,30 +380,38 @@ class Floor:
             for label, env in [('declared', self.environment), ('inherited', inherited)]:
                 print('A8 ' + step['id'] + ' (' + label + ')', file=sys.stderr, flush=True)
                 run = self.run_command([sys.executable, '-B', str(FIXTURES / 'check-step.py'),
-                                        '--revision', revision, '--step', step['id']], env, timeout=3600)
-                run['environment_profile'] = label
-                # Do not serialize potentially sensitive inherited environment values.
+                                        '--revision', revision, '--step', step['id']], env,
+                                       timeout=3600, record_output=False)
+                self.runs[-1]['environment_profile'] = label
+                # Only the helper's selected facts are retained. Never retain inherited
+                # environment values or arbitrary child output, including error output.
                 result = json.loads(run['stdout'])
-                assert run['exit'] == 0 and result['passed'], 'A8 check failed: ' + step['id'] + ' (' + label + ')'
+                self.runs[-1]['observation'] = result
+                assert run['exit'] == 0 and result['observation_valid'], 'A8 check failed: ' + step['id'] + ' (' + label + ')'
                 pair[label] = result
+            assert pair['declared']['meets_final_spec'] == pair['inherited']['meets_final_spec']
             assert pair['declared']['facts'] == pair['inherited']['facts'], 'environment facts/counts differ: ' + step['id']
             comparisons.append({'id': step['id'], 'facts_equal': True,
                                 'meets_final_spec': pair['declared']['meets_final_spec'],
                                 'facts': pair['declared']['facts']})
         return {'comparisons': comparisons, 'revision_for_pinned_operations': revision,
-                'profiles_not_run': spec['profiles_not_run']}
+                'profiles_not_run': spec['profiles_not_run'],
+                'claim': 'environment equivalence only; pending adoption remains a failed final gate',
+                'all_final_gates_passed': all(row['meets_final_spec'] for row in comparisons)}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--node', type=Path, required=True)
+    parser.add_argument('--through', type=int, choices=range(1, 12), default=11,
+                        help='stop after this assumption; a partial run is never complete')
     args = parser.parse_args()
     floor = Floor(args.node.resolve())
     version = floor.run(['--version'])['stdout'].strip()
     if version != 'v22.9.0':
         parser.error('This floor check requires exactly v22.9.0, got ' + version)
     results = []
-    for index in range(1, 12):
+    for index in range(1, args.through + 1):
         check = getattr(floor, 'a' + str(index), None)
         if check is None:
             break
@@ -419,7 +428,9 @@ def main():
         if not result['passed']:
             break
     passed = all(result['passed'] for result in results)
-    print(json.dumps({'node': version, 'environment': floor.environment, 'passed': passed,
+    print(json.dumps({'node': version, 'environment': {
+                          'pass_names': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'},
+                          'path_prepend': str(floor.node.parent), 'inherited_values_recorded': False}, 'passed': passed,
                       'complete': len(results) == 11 and passed, 'results': results,
                       'remaining': ['A' + str(i) for i in range(len(results) + 1, 12)]}, indent=2))
     return 0 if passed else 1
