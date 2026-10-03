@@ -3,9 +3,9 @@
 **Date:** 2026-10-02. **Role:** design author by owner assignment: Claude Code, `claude-opus-5-5`,
 session `5eb143d3-0a5f-4f89-adae-02be27f55403`. Not the implementer and not a reviewer.
 **Status:** note revision 3, answering the implementer's [step-0 review](design-05-review.md)
-(commit `60eadf39`, CHANGES REQUIRED, D05-REV-01) in §2.3. Revision 2 (`b48e05fe`) answered the
-[design-05 check](design-05-check.md) (`03ad191a`, APPROVED WITH REQUIRED CHANGES), whose line
-references point to revision 1 (`08e0890e`, blob `623a7e11`). **Nothing here is implemented**; no
+(commit `60eadf39`, CHANGES REQUIRED, D05-REV-01) in §2.3, with the owner's answers in §7.
+Revision 2 (`b48e05fe`) answered the [design-05 check](design-05-check.md) (`03ad191a`, APPROVED
+WITH REQUIRED CHANGES), whose line references point to revision 1 (`08e0890e`, blob `623a7e11`). **Nothing here is implemented**; no
 contract, mapping, check, script, fixture or hold changed; nothing is review-ready or accepted.
 
 ## 1. Identity, authority, scope and owner direction
@@ -483,9 +483,9 @@ Confidence is low for E3's probe rows and E4 under A.
 ## 6. Implementation order for GPT-6
 
 0. Review this design's revision-3 delta (`60eadf39` to this note: §2.3 and the edits it causes)
-   against the step-0 review; revision 2 was reviewed there. If accepted, add the owner's answers to
-   §7's open questions to `owner-choice-02.md` verbatim with provenance, apply the option-C diff,
-   commit.
+   against the step-0 review; revision 2 was reviewed there. If accepted, add the owner's answer to
+   §7's reopened questions ("Confirm 1 and 3, label for Q8") to `owner-choice-02.md` verbatim with
+   provenance, apply the option-C diff, commit.
 1. Install Node v22.9.0 at user level from nodejs.org, verifying its `SHASUMS256.txt` checksum;
    keep the existing Node. Verify A1–A11, turning §5.5's probes into fixtures. On any failure stop
    and report; never adapt a mechanism silently.
@@ -543,20 +543,21 @@ to modified 007 for me."; earlier, "3. Approve", "6. Yes, unless you've other re
 D05-CHK-07's residue rule with E2 at 8.5–10 days, and extracting the sealed logs). After the step-0
 review, the owner wrote: “GPT6 said "design change required.", check and fix it.”
 
-D05-REV-01 changes two confirmed answers, so they go back to the owner.
+D05-REV-01 changed two confirmed answers, so they went back to the owner, who answered this
+revision: "Confirm 1 and 3, label for Q8".
 
-| # | Question | Answer so far | Open after D05-REV-01 |
+| # | Question | Answer before D05-REV-01 | After D05-REV-01 |
 |---|---|---|---|
-| 1 | Revision-3 diff | Option C; amended diff confirmed | **Confirm** the C diff with the new P1-P row (§3). |
+| 1 | Revision-3 diff | Option C; amended diff confirmed | **Confirmed:** the C diff with the new P1-P row (§3). |
 | 2 | Title catalog | Approved | Unchanged. |
-| 3 | Revalidation scope and budget | Approved; residue rule and E2 at 8.5–10 days confirmed | **Confirm** the prefix and read rules (§2.3), which replace the residue rule, and E2 at 20.5–26 days. Most of the rise is members that revision 2 never counted. |
+| 3 | Revalidation scope and budget | Approved; residue rule and E2 at 8.5–10 days confirmed | **Confirmed:** the prefix and read rules (§2.3), which replace the residue rule, and E2 at 20.5–26 days. Most of the rise is members that revision 2 never counted. |
 | 4 | Staging | C | C is now 53–73 days plus about 8–18 in successors; A is 56–90. |
 | 5 | Area map and gate | Approved; design author authorized to edit 007 | Unchanged. I add the 007 entry check once the gate exists, worded to match what was built. |
 | 6 | Sealed logs | Extract in TOOLS-01; confirmed | Unchanged. |
 | 7 | Node 22.9 | Install authorized | Unchanged; A10 and A11 join the floor checks. |
-| 8 (new) | Changed repository reads that are not fixtures | — | **Recommend labelling** (`repository_read_changed`, counted; 251 members stay preserved). Alternative: refuse them, adding 251 structured targets and 10.5–14 days. Changed fixtures are refused either way. |
+| 8 (new) | Changed repository reads that are not fixtures | — | **Label** (`repository_read_changed`, counted; 251 members stay preserved), as recommended. The rejected alternative refused them: 251 more structured targets, 10.5–14 days. Changed fixtures are refused either way. |
 
-**Why label.** The 251 members are architecture tests whose subject is the repository: they walk it,
+**Why label** (the recommendation the owner took). The 251 members are architecture tests whose subject is the repository: they walk it,
 read the root `package.json`, or scan source and test files. Their own code and fixtures are
 unchanged, and no changed fixture file was read. The label keeps each change visible per member,
 the treatment D05-CHK-11 already gives changed production modules.
