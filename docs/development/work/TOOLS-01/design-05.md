@@ -353,7 +353,7 @@ lists reading-only relations.
 | Path | Change |
 |---|---|
 | `scripts/packet_tools.py` | `command()` builds every environment from a declared allowlist (default `PATH`, `HOME`, `TMPDIR`, `LANG=C.UTF-8`) and records it. Corpus phases: catalog, env census, reach, reads, preserved, census (Python through stdlib `ast`), register, gate (C; in `verify`, unconditional). Mutants run against target files. |
-| `tests/tooling/catalog-reporter.mjs` (new) | Emits `test:start`, `test:pass`, `test:fail` with name, nesting, file, line, column, `details.type`, skip, todo, `testNumber`; flags the synthetic file-level event. `assertion-reporter.mjs` gains location fields for kills. |
+| `tests/tooling/catalog-reporter.mjs` (new) | Emits `test:start`, `test:pass`, `test:fail` with name, nesting, file, line, column, `details.type` when present (A1), skip, todo, `testNumber`; flags the synthetic file-level event. `assertion-reporter.mjs` gains location fields for kills. |
 | `tests/tooling/source-facts.mjs` (new) | Parses or scans bytes with the pinned TypeScript 5.9.3 subset: `node:test` registrations, spans, token kinds and ordinals, `try`/`assert.throws` containment, load-time statements, registration heads, hook scopes, prefix alignment and differences, inert classification, the reference closure, static import closures, container elements, helper calls. Never executes what it reads. |
 | `tests/tooling/read-trace.mjs` (new) | Preload loaded through `NODE_OPTIONS=--import` only for the reads phase: wraps `fs` read, list, stat and existence functions (callback, sync and promises; `syncBuiltinESMExports`) and appends each path to a declared file. Observation only, never in verdict runs. |
 | `tests/tooling/reach-coverage.mjs` (new) | Reads raw coverage files; innermost-range **counts** for target and baseline per anchor. |
@@ -513,7 +513,16 @@ Confidence is low for E3's probe rows and E4 under A.
 **Assumptions to verify before code:**
 
 - A1. On 22.9, `test:start`, `test:pass` and `test:fail` carry name, nesting, file, line and column,
-  pass and fail carry `details.type`, and `test:start` follows definition order.
+  and `test:start` follows definition order. *Amended after [node-floor-01](node-floor-01.md):*
+  22.9 sets `details.type` to `suite` on suite events and omits it on test events (its
+  documentation only says the field denotes a suite), so revision 3's "pass and fail carry
+  `details.type`" was wrong. The catalog classifies an event as a suite when `details.type` is
+  `suite` and as a test when the field is absent; any other value refuses the file. Each
+  classification is cross-checked against the source registration at the event's file, line and
+  column (`describe` or `suite` against `test`, `it` or `t.test`); a mismatch, or an event without
+  a location, refuses the file. A leaf is a test event with no child `test:start`. Fixtures:
+  passing and failing tests and suites, a nested test, an unknown `details.type`, and a kind
+  mismatch.
 - A2. `--experimental-strip-types` keeps offsets: V8 ranges index the original `.ts` text.
 - A3. `NODE_V8_COVERAGE` writes block ranges with counts for the `--test` child; the same-line
   `throw` of probe 3 counts 0 and the caught-throw case counts 1 (so D05-CHK-01's rule is needed).
