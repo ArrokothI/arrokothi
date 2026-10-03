@@ -1,0 +1,140 @@
+{
+  "node": "v22.9.0",
+  "assumption": "A1",
+  "passed": false,
+  "problems": [
+    "test:pass: missing details.type for first pass",
+    "test:fail: missing details.type for second intentional failure",
+    "test:pass: missing details.type for nested pass"
+  ],
+  "argv": [
+    "/Users/linzhenglin/.local/share/arrokothi/node-v22.9.0-darwin-arm64/bin/node",
+    "--test",
+    "--test-reporter=/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events-reporter.mjs",
+    "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+  ],
+  "exit": 1,
+  "events": [
+    {
+      "type": "test:start",
+      "data": {
+        "nesting": 0,
+        "name": "first pass",
+        "line": 5,
+        "column": 1,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    },
+    {
+      "type": "test:pass",
+      "data": {
+        "name": "first pass",
+        "nesting": 0,
+        "testNumber": 1,
+        "details": {
+          "duration_ms": 2.136667
+        },
+        "line": 5,
+        "column": 1,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    },
+    {
+      "type": "test:start",
+      "data": {
+        "nesting": 0,
+        "name": "second intentional failure",
+        "line": 9,
+        "column": 1,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    },
+    {
+      "type": "test:fail",
+      "data": {
+        "name": "second intentional failure",
+        "nesting": 0,
+        "testNumber": 2,
+        "details": {
+          "duration_ms": 0.930084,
+          "error": {
+            "name": "Error",
+            "message": "Expected values to be strictly equal:\n\n1 !== 2\n",
+            "code": "ERR_TEST_FAILURE",
+            "failureType": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "message": "Expected values to be strictly equal:\n\n1 !== 2\n",
+              "code": "ERR_ASSERTION"
+            }
+          }
+        },
+        "line": 9,
+        "column": 1,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    },
+    {
+      "type": "test:start",
+      "data": {
+        "nesting": 0,
+        "name": "outer suite",
+        "line": 12,
+        "column": 1,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    },
+    {
+      "type": "test:start",
+      "data": {
+        "nesting": 1,
+        "name": "nested pass",
+        "line": 13,
+        "column": 3,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    },
+    {
+      "type": "test:pass",
+      "data": {
+        "name": "nested pass",
+        "nesting": 1,
+        "testNumber": 1,
+        "details": {
+          "duration_ms": 0.055667
+        },
+        "line": 13,
+        "column": 3,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    },
+    {
+      "type": "test:pass",
+      "data": {
+        "name": "outer suite",
+        "nesting": 0,
+        "testNumber": 3,
+        "details": {
+          "duration_ms": 0.149333,
+          "type": "suite"
+        },
+        "line": 12,
+        "column": 1,
+        "file": "/Users/linzhenglin/Desktop/ArrokothAI/agent-kernel/tests/tooling/node-floor/events.test.mjs"
+      }
+    }
+  ],
+  "stderr": "",
+  "remaining": [
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7",
+    "A8",
+    "A9",
+    "A10",
+    "A11"
+  ]
+}
