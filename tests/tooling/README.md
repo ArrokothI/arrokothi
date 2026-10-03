@@ -25,22 +25,31 @@ the archive-policy merge are base content. Historical catalog revisions stay pin
 
 `inventory` checks 208 artifact/fence origins, 1,333 prose locations and eight final-review
 additions against pinned source bytes. These are provenance records, not 1,549 tests.
-`corpus` checks the separate adoption manifest. Every origin has a disposition and reason;
-unresolved entries stay pending. A complete mapping alone would still establish no execution.
-The current manifest is partial, and `verify` deliberately requires `mappings_complete`:
-its summary stays `attention_required` while P1 extraction remains open, even if all executed
-checks pass. No old result is imported as a current result.
+`corpus` checks the separate adoption manifest. Since design 05 step 4 it is **format 2**
+(contract revision 3; design 04's data model with design 05 §4's deltas). Every inventory origin
+has one row with a state: `pending`, `pending_revalidation`, `triaged` or `complete`. The tables
+`counterexamples`, `suite_targets`, `preserved`, `families`, `holds` and `areas` are present; each
+later step defines its own and, until then, must stay empty, and no origin may claim closure. The
+migration names the revision-2 (format 1) manifest by revision, path and SHA-256
+(`0c1d57dd…`, blob `673b68ec…`). The 154 rows that manifest mapped (116 suite, 8 case,
+30 non-executable) keep their old record verbatim under `legacy`, must equal it exactly, are
+`pending_revalidation` (P1-R: no grandfathering) and cannot return to `pending`; the other 1,395
+stay `pending`. `holds.claims` seeds the held claims with their owners and decision records
+(V-D1, Proxy and re-prototyped built-ins with K1.1-correction-03; V-ENV with BINDING-01); a missing
+decision file fails. The summary counts origins by state, revalidation by legacy status, and keeps
+counterexamples, families, members, targets, preserved members and kills as separate counts.
+A format-1 manifest stays readable for history with `target_verification: legacy_unverified`; it
+reports `legacy_unverified`, never `mappings_complete`. `verify` requires `mappings_complete`, so
+its summary stays `attention_required` while P1 remains open, even if every executed check passes.
+No old result is imported as a current result.
 
-The adoption manifest now names its verification specification. A suite command must resolve to
-a declared argv command in that specification, with the same execution profile; the corpus's
-mutation registry must be scheduled as a required mutation run. The summary reports each suite's
-command, profile and required/not-run status. This checks composition, not whether a command's
-implementation actually exercises every assertion attributed to it; reviewers still inspect the
-source mappings. The current intake has 154 mapped origins and 1,395 pending origins. This includes
-the remote session's fourteen inspected delivery-boundary, coordinate, identity and host-member
-mappings, ten re-prototyped built-in recipes from one historical script, and 21 individually
-inspected historical manifest locators. Distinct battery definitions in those manifests remain
-pending; a historical count is never imported as a current result.
+The adoption manifest names its verification specification; in both formats its mutation registry
+must be scheduled there as a required mutation run. In format 1, a suite command had to resolve to
+a declared command with the same execution profile; that checked composition, not whether a command
+exercised the assertions attributed to it. Those 154 revision-2 mappings (including the fourteen
+delivery-boundary, coordinate, identity and host-member mappings, ten re-prototyped built-in recipes
+and 21 historical manifest locators) are now pending revalidation, and a historical count is never
+imported as a current result.
 
 Unexecuted profiles use named `checks` with argv and a written reason. Historical memory/timing
 commands name their source revision and any required environment: they require a separately

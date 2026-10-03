@@ -37,6 +37,21 @@ for field, value in [('result', 'attention_required'), ('origins', 1548),
     assert not result['observation_valid'] and not result['meets_final_spec']
     refusals.append(field)
 
+migrated = {'operation': 'corpus', 'format': 2, 'result': 'extraction_pending', 'origins': 1549,
+            'pending_adoption': 1549, 'states': {'pending': 1395, 'pending_revalidation': 154},
+            'pending_revalidation': {'suite': 116, 'case': 8, 'non_executable': 30}}
+helper.tool.corpus = lambda *_args: migrated
+result = helper.run_step('fixture', 'adoption')
+assert result['observation_valid'] and result['known_pending_adoption'] and not result['meets_final_spec']
+for field, value in [('pending_adoption', 1548), ('states', {'pending': 1394, 'pending_revalidation': 155}),
+                     ('pending_revalidation', {'suite': 115, 'case': 9, 'non_executable': 30})]:
+    changed = copy.deepcopy(migrated)
+    changed[field] = value
+    helper.tool.corpus = lambda *_args: changed
+    result = helper.run_step('fixture', 'adoption')
+    assert not result['observation_valid'] and not result['meets_final_spec']
+    refusals.append('format-2 ' + field)
+
 # Arbitrary command output must never be forwarded into the floor record, even
 # if it could include inherited secrets. The marker is synthetic, not a secret.
 marker = 'FLOOR_SYNTHETIC_ENV_VALUE_DO_NOT_SERIALIZE'

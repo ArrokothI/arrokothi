@@ -1479,11 +1479,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(isinstance(value, dict) and value.get('version') == 1, f'unsupported schema: {path}')",
+          "before": "require(isinstance(value, dict) and value.get('version') in versions, f'unsupported schema: {path}')",
           "after": "pass  # tools01-ablate:1f164c6ba3166ac6",
           "operator": "remove-refusal-check",
           "name": "guard.document.1f164c6ba3166ac6",
-          "id": "mutation-d89abe8c0de2da8bd8edf9c2d35b737edbe10f9bb3f3c13a317159b118e61c88"
+          "id": "mutation-98cae16656066490707643141361c645c20e9585ddc034d5e9fffd55accf8d11"
         }
       ]
     },
@@ -3833,6 +3833,470 @@
           "operator": "remove-refusal-check",
           "name": "guard.catalog_tree.e07edc108038ac5a",
           "id": "mutation-3caceeb76792fa9bf5af42e60ed164ad6fc79146fa99af291de4d3f6b9df2d15"
+        }
+      ]
+    },
+    {
+      "id": "guard.legacy_manifest.f8fdf67b6a60187d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_source_shape",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: legacy_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_source_shape"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.legacy_manifest.f8fdf67b6a60187d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(source, dict) and source.get('format') == 1 and isinstance(source.get('path'), str) and\n            isinstance(source.get('sha256'), str), 'migration needs its pinned format-1 source')",
+          "after": "pass  # tools01-ablate:f8fdf67b6a60187d",
+          "operator": "remove-refusal-check",
+          "name": "guard.legacy_manifest.f8fdf67b6a60187d",
+          "id": "mutation-abf96e575a92bcd5fb0fefbdf7ef67f8fc1005669cdb0811f4663c4db020f9e9"
+        }
+      ]
+    },
+    {
+      "id": "guard.legacy_manifest.1cb3ad10c397ecca",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_source_digest",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: legacy_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_source_digest"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.legacy_manifest.1cb3ad10c397ecca"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(data) == source['sha256'], 'format-1 source digest mismatch')",
+          "after": "pass  # tools01-ablate:1cb3ad10c397ecca",
+          "operator": "remove-refusal-check",
+          "name": "guard.legacy_manifest.1cb3ad10c397ecca",
+          "id": "mutation-9a4da5551afe2e2198556a7678498460ac9993cabb27c990a4c2b3e7e359c36d"
+        }
+      ]
+    },
+    {
+      "id": "guard.legacy_manifest.70a58096796a253d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_source_version",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: legacy_manifest",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_source_version"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.legacy_manifest.70a58096796a253d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(old, dict) and old.get('version') == 1, 'migration source is not format 1')",
+          "after": "pass  # tools01-ablate:70a58096796a253d",
+          "operator": "remove-refusal-check",
+          "name": "guard.legacy_manifest.70a58096796a253d",
+          "id": "mutation-cc3189bdd79c6249b107cae89b4bf0c586dd1d6adaaf27d011c0358d4629b864"
+        }
+      ]
+    },
+    {
+      "id": "guard.unique_records.53af87c8a8545da1",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_record_ids",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: unique_records",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_record_ids"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.unique_records.53af87c8a8545da1"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(rows, list) and all(isinstance(row, dict) and isinstance(row.get('id'), str) and row['id']\n                                           for row in rows), label + ': records need text IDs')",
+          "after": "pass  # tools01-ablate:53af87c8a8545da1",
+          "operator": "remove-refusal-check",
+          "name": "guard.unique_records.53af87c8a8545da1",
+          "id": "mutation-1d4f75e7eae960b82ac66e440507859b5687790e449764b01a2ed1c727f79bfd"
+        }
+      ]
+    },
+    {
+      "id": "guard.unique_records.6a0de10807a84341",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_duplicate_record",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: unique_records",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_duplicate_record"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.unique_records.6a0de10807a84341"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(ids) == len(set(ids)), label + ': duplicate record ID')",
+          "after": "pass  # tools01-ablate:6a0de10807a84341",
+          "operator": "remove-refusal-check",
+          "name": "guard.unique_records.6a0de10807a84341",
+          "id": "mutation-ff0b03cdff786deaa06476093c6592d9308942c8361c963c255fa90bc9ad0269"
+        }
+      ]
+    },
+    {
+      "id": "guard.holds_table.3eaada69e06c88a1",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_holds_object",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: holds_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_holds_object"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.holds_table.3eaada69e06c88a1"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(holds, dict), 'holds table must be an object')",
+          "after": "pass  # tools01-ablate:3eaada69e06c88a1",
+          "operator": "remove-refusal-check",
+          "name": "guard.holds_table.3eaada69e06c88a1",
+          "id": "mutation-88e16b0bef407f9a381d695875aa609439701710a5784d51504cf0b1bac11a32"
+        }
+      ]
+    },
+    {
+      "id": "guard.holds_table.b994dc7084efb7f6",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_hold_owner",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: holds_table",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_hold_owner"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.holds_table.b994dc7084efb7f6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(claim.get('owner'), str) and bool(claim['owner']) and\n                bool(unique_text(claim.get('decisions', []), 'hold decisions')), 'hold claim needs owner and decisions')",
+          "after": "pass  # tools01-ablate:b994dc7084efb7f6",
+          "operator": "remove-refusal-check",
+          "name": "guard.holds_table.b994dc7084efb7f6",
+          "id": "mutation-756bb51aaa5aacd18aa1a7b6efcec46b4b9d0e86516b4da1580788d02caa204f"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.8a9b7ab1e2f29840",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_tables",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_tables"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.8a9b7ab1e2f29840"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(all(table in spec for table in FORMAT_2_TABLES), 'format 2 needs every adoption table')",
+          "after": "pass  # tools01-ablate:8a9b7ab1e2f29840",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.8a9b7ab1e2f29840",
+          "id": "mutation-b8f874c8315e9725c6e8f9d61166721170438d11125686272413bc7f1daf933f"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.1a5ddc758b181d81",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_every_origin",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_every_origin"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.1a5ddc758b181d81"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(rows) == set(origins), 'adoption manifest must account for every origin, including pending')",
+          "after": "pass  # tools01-ablate:1a5ddc758b181d81",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.1a5ddc758b181d81",
+          "id": "mutation-8fa89e6e12847520bdb2487afc7c5720c2d4abbbd331b26de5bae442d28349b3"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.66485a56bb6377d6",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_legacy_cover",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_legacy_cover"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.66485a56bb6377d6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(legacy) == set(origins), 'format-1 source does not cover the inventory')",
+          "after": "pass  # tools01-ablate:66485a56bb6377d6",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.66485a56bb6377d6",
+          "id": "mutation-c1a5d57b99fc69d46483556269f079c4100bae49b8c9dfe4a0ba1f83d7fcd20b"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.81fc466f72dc1880",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_state",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_state"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.81fc466f72dc1880"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('state') in ORIGIN_STATES, 'unknown origin state')",
+          "after": "pass  # tools01-ablate:81fc466f72dc1880",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.81fc466f72dc1880",
+          "id": "mutation-b19f9cb63d8475dad1e35a50e7c0a102281e98f80022d0f0257a57548592cfb6"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.87a6fedd1dbddc3d",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_closure",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_closure"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.87a6fedd1dbddc3d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['state'] not in ('triaged', 'complete'),\n                'origin closure is not implemented in this format revision: ' + key)",
+          "after": "pass  # tools01-ablate:87a6fedd1dbddc3d",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.87a6fedd1dbddc3d",
+          "id": "mutation-2316bb4ebb3c98c2c3e1932c07439f7d7e2825304b25cf7737c9c803a1f4c496"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.790bcb52cd12de0f",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_empty_tables",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_empty_tables"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.790bcb52cd12de0f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(spec[table] == [], table + ' are not implemented in this format revision')",
+          "after": "pass  # tools01-ablate:790bcb52cd12de0f",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.790bcb52cd12de0f",
+          "id": "mutation-a6d84b06233ad7cbeb5533eebd1cb09e4d143816bff8e570d7ebe8593fa8b2e6"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.c3a9aefdc427a5a2",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_unmapped_revalidation",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_unmapped_revalidation"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.c3a9aefdc427a5a2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require('legacy' not in row and row['state'] != 'pending_revalidation',\n                    'only a revision-2 mapping can await revalidation')",
+          "after": "pass  # tools01-ablate:c3a9aefdc427a5a2",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.c3a9aefdc427a5a2",
+          "id": "mutation-f860c2b963d30263add09f68688f0bcb71345e635b1a33a5c6a406869099431f"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.d3b19fac6f02fc2c",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_legacy_equal",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_legacy_equal"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.d3b19fac6f02fc2c"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('legacy') == expected, 'migrated row differs from the format-1 source: ' + key)",
+          "after": "pass  # tools01-ablate:d3b19fac6f02fc2c",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.d3b19fac6f02fc2c",
+          "id": "mutation-20930e1a20772e751349b81999c7df996db3ca281c55f6aab7760d32f220548e"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.71c809d1a4532b37",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_no_regression",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_no_regression"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.71c809d1a4532b37"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['state'] != 'pending', 'a revision-2 mapping cannot return to pending')",
+          "after": "pass  # tools01-ablate:71c809d1a4532b37",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.71c809d1a4532b37",
+          "id": "mutation-e6e9636092e21b33d9601531d4115e4f480d3ab7776c4e802b3cb51157ee2b9d"
         }
       ]
     }

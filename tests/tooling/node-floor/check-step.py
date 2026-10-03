@@ -39,9 +39,14 @@ def run_step(revision, step_id):
         meets_spec = result['result'] == step['expected']
         # Existing corpus incompleteness is preserved as a failed final-packet gate.
         # A8 tests environment equivalence; it cannot complete the pending migration.
+        format_one = result.get('format') in (None, 1) and result.get('pending_adoption') == 1395 and \
+            result.get('counts') == {'suite': 116, 'case': 8, 'non_executable': 30, 'pending': 1395}
+        # Design 05 step 4 migrated the same 1,549 origins to format 2: 154 await revalidation.
+        format_two = result.get('format') == 2 and result.get('pending_adoption') == 1549 and \
+            result.get('states') == {'pending': 1395, 'pending_revalidation': 154} and \
+            result.get('pending_revalidation') == {'suite': 116, 'case': 8, 'non_executable': 30}
         pending = (step_id == 'adoption' and result['result'] == 'extraction_pending'
-                   and result['origins'] == 1549 and result['pending_adoption'] == 1395
-                   and result['counts'] == {'suite': 116, 'case': 8, 'non_executable': 30, 'pending': 1395})
+                   and result['origins'] == 1549 and (format_one or format_two))
         return {'id': step_id, 'observation_valid': meets_spec or pending, 'meets_final_spec': meets_spec,
                 'known_pending_adoption': pending, 'facts': operation_facts(result)}
     # A8 compares the environment its caller sets, so this runner passes that environment through.

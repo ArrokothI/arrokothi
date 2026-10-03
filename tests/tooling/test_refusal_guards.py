@@ -10,6 +10,7 @@ from unittest.mock import patch
 import test_packet_tools as base
 import test_corpus_tools as corpus_tests
 import test_research_tools as research_tests
+import test_adoption_format as format_tests
 
 tool = base.tool
 
@@ -459,3 +460,56 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     def test_catalog_summary_incomplete(self):
         self.refuses('catalog summary incomplete', lambda: tool.catalog_tree(self.SUMMARY[1:], Path('/repo'), []))
+
+    # Design 05 step 4: adoption format 2 and its reconciliation with the pinned format-1 manifest.
+    def format_two(self, change=None, legacy_change=None):
+        rev = format_tests.FormatTwoTests.fixture(self, change, legacy_change)
+        return lambda: tool.corpus(self.reader, rev, 'corpus.json')
+
+    def test_format_two_source_shape(self):
+        self.refuses('pinned format-1 source', self.format_two(lambda d: d['migration']['source'].update(format=2)))
+
+    def test_format_two_source_digest(self):
+        self.refuses('format-1 source digest', self.format_two(lambda d: d['migration']['source'].update(sha256='0' * 64)))
+
+    def test_format_two_source_version(self):
+        self.refuses('not format 1', self.format_two(legacy_change=lambda legacy: legacy.update(version=3)))
+
+    def test_format_two_record_ids(self):
+        self.refuses('records need text IDs', self.format_two(lambda d: d['origins'][0].pop('id')))
+
+    def test_format_two_duplicate_record(self):
+        self.refuses('duplicate record ID', self.format_two(lambda d: d['origins'].append(dict(d['origins'][1]))))
+
+    def test_format_two_holds_object(self):
+        self.refuses('holds table must be an object', self.format_two(lambda d: d.update(holds=[])))
+
+    def test_format_two_hold_owner(self):
+        self.refuses('owner and decisions', self.format_two(lambda d: d['holds']['claims'][0].update(owner='')))
+
+    def test_format_two_tables(self):
+        self.refuses('every adoption table', self.format_two(lambda d: d.pop('areas')))
+
+    def test_format_two_every_origin(self):
+        self.refuses('every origin', self.format_two(lambda d: d['origins'].pop()))
+
+    def test_format_two_legacy_cover(self):
+        self.refuses('does not cover the inventory', self.format_two(legacy_change=lambda legacy: legacy['mappings'].pop()))
+
+    def test_format_two_state(self):
+        self.refuses('unknown origin state', self.format_two(lambda d: d['origins'][1].update(state='accepted')))
+
+    def test_format_two_closure(self):
+        self.refuses('closure is not implemented', self.format_two(lambda d: d['origins'][1].update(state='complete')))
+
+    def test_format_two_empty_tables(self):
+        self.refuses('are not implemented', self.format_two(lambda d: d.update(counterexamples=[{'id': 'x'}])))
+
+    def test_format_two_unmapped_revalidation(self):
+        self.refuses('only a revision-2 mapping', self.format_two(lambda d: d['origins'][1].update(state='pending_revalidation')))
+
+    def test_format_two_legacy_equal(self):
+        self.refuses('differs from the format-1 source', self.format_two(lambda d: d['origins'][0]['legacy'].update(rationale='x')))
+
+    def test_format_two_no_regression(self):
+        self.refuses('cannot return to pending', self.format_two(lambda d: d['origins'][0].update(state='pending')))

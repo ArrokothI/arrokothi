@@ -29,10 +29,14 @@ NODE_FLOOR = (26, 10, 0)  # contract F4, owner choice 03
 SOURCE_SUFFIXES = ('.ts', '.mts', '.cts', '.js', '.mjs', '.cjs')
 ENVIRONMENT_READ = re.compile(r'process\.env\b')
 ENVIRONMENT_NAME = re.compile(r'process\.env(?:\.([A-Za-z_$][\w$]*)|\[\s*([\'"])([^\'"\\]+)\2\s*\])')
-CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
-SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 ENVIRONMENT_OTHER = re.compile(r'\bprocess\s*\[\s*[\'"]env[\'"]\s*\]|'
                                r'from\s+[\'"](?:node:)?process[\'"]|require\(\s*[\'"](?:node:)?process[\'"]\s*\)')
+# Design 05 §4 title catalog: the second reporter of a catalog step and the summary it reports.
+CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
+SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
+# Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
+ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
+FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', 'families', 'holds', 'areas')
 
 
 class CheckError(Exception):
@@ -154,12 +158,12 @@ class Git:
             self.cache[key] = self.run('show', rev + ':' + path)
         return self.cache[key]
 
-    def document(self, rev, path):
+    def document(self, rev, path, versions=(1,)):
         try:
             value = json.loads(self.blob(rev, path))
         except (ValueError, UnicodeError) as exc:
             raise CheckError(f'invalid JSON: {path}') from exc
-        require(isinstance(value, dict) and value.get('version') == 1, f'unsupported schema: {path}')
+        require(isinstance(value, dict) and value.get('version') in versions, f'unsupported schema: {path}')
         return value
 
     def ancestor(self, old, new):
@@ -309,11 +313,26 @@ def execution_plan(spec):
     return {row['id']: row for row in entries}
 
 
+def scheduled_registry(git, rev, spec):
+    """The adoption manifest's registry must run as a required mutation step in its verification."""
+    registry = git.document(rev, spec['registry'])
+    plan = execution_plan(git.document(rev, spec['verification']))
+    require(any(row.get('operation') == 'mutations' and row.get('spec') == spec['registry'] and
+                row.get('expected') == 'selected_cases_passed' and row['execution'] == 'required'
+                for row in plan.values()), 'corpus registry must run in verification')
+    return registry, plan
+
+
 def corpus(git, revision, spec_path):
-    """Resolve explicit semantic mappings; execution remains a separate observation."""
+    """Resolve explicit semantic mappings; execution remains a separate observation.
+
+    Format 2 is the revision-3 manifest (design 04 and 05). Format 1 stays readable for historical
+    inspection with `target_verification: legacy_unverified`; it cannot report mappings_complete."""
     rev = git.commit(revision)
-    spec = git.document(rev, spec_path)
+    spec = git.document(rev, spec_path, versions=(1, 2))
     intake = inventory(git, rev, spec['inventory'])
+    if spec['version'] == 2:
+        return corpus_format_2(git, rev, spec, intake)
     origins = {row['id']: row for row in intake['origins']}
     mappings = {}
     for row in spec['mappings']:
@@ -324,11 +343,7 @@ def corpus(git, revision, spec_path):
                 'unknown adoption status')
         mappings[key] = row
     require(set(mappings) == set(origins), 'adoption manifest must account for every origin, including pending')
-    registry = git.document(rev, spec['registry'])
-    plan = execution_plan(git.document(rev, spec['verification']))
-    require(any(row.get('operation') == 'mutations' and row.get('spec') == spec['registry'] and
-                row.get('expected') == 'selected_cases_passed' and row['execution'] == 'required'
-                for row in plan.values()), 'corpus registry must run in verification')
+    registry, plan = scheduled_registry(git, rev, spec)
     cases = {row['id']: row for row in registry['cases']}
     require(len(cases) == len(registry['cases']), 'duplicate case ID')
     checks = {row['id']: row for row in spec['suites']}
@@ -363,7 +378,8 @@ def corpus(git, revision, spec_path):
         return status
     resolved = {key: resolve(key, set()) for key in mappings}
     pending = [key for key, status in resolved.items() if status == 'pending']
-    return {'operation': 'corpus', 'result': 'mappings_complete' if not pending else 'extraction_pending',
+    return {'operation': 'corpus', 'format': 1, 'target_verification': 'legacy_unverified',
+            'result': 'legacy_unverified' if not pending else 'extraction_pending',
             'revision': rev, 'origins': len(origins),
             'counts': dict(Counter(row['status'] for row in mappings.values())),
             'pending_adoption': len(pending), 'pending_origins': pending,
@@ -377,6 +393,78 @@ def corpus(git, revision, spec_path):
             'full_corpus_complete': False, 'acceptance': 'not evaluated',
             'limits': ['Semantic equivalence and non-executable classifications require source review',
                        'A complete mapping is not a passing corpus run or release of held claims']}
+
+
+def legacy_manifest(git, migration):
+    """P1-R: the revision-2 (format-1) manifest, read at its pinned revision and digest."""
+    source = migration.get('source') if isinstance(migration, dict) else None
+    require(isinstance(source, dict) and source.get('format') == 1 and isinstance(source.get('path'), str) and
+            isinstance(source.get('sha256'), str), 'migration needs its pinned format-1 source')
+    data = git.blob(git.commit(source['revision']), source['path'])
+    require(digest(data) == source['sha256'], 'format-1 source digest mismatch')
+    old = json.loads(data)
+    require(isinstance(old, dict) and old.get('version') == 1, 'migration source is not format 1')
+    return {row['origin']: row for row in old['mappings']}
+
+
+def unique_records(rows, label):
+    require(isinstance(rows, list) and all(isinstance(row, dict) and isinstance(row.get('id'), str) and row['id']
+                                           for row in rows), label + ': records need text IDs')
+    ids = [row['id'] for row in rows]
+    require(len(ids) == len(set(ids)), label + ': duplicate record ID')
+    return {row['id']: row for row in rows}
+
+
+def holds_table(git, rev, holds):
+    require(isinstance(holds, dict), 'holds table must be an object')
+    claims = unique_records(holds.get('claims', []), 'hold claims')
+    for claim in claims.values():
+        require(isinstance(claim.get('owner'), str) and bool(claim['owner']) and
+                bool(unique_text(claim.get('decisions', []), 'hold decisions')), 'hold claim needs owner and decisions')
+        for path in claim['decisions']:
+            git.blob(rev, path)
+    return claims
+
+
+def corpus_format_2(git, rev, spec, intake):
+    origins = {row['id']: row for row in intake['origins']}
+    require(all(table in spec for table in FORMAT_2_TABLES), 'format 2 needs every adoption table')
+    rows = unique_records(spec['origins'], 'origins')
+    require(set(rows) == set(origins), 'adoption manifest must account for every origin, including pending')
+    legacy = legacy_manifest(git, spec.get('migration'))
+    require(set(legacy) == set(origins), 'format-1 source does not cover the inventory')
+    for key, row in rows.items():
+        require(row.get('state') in ORIGIN_STATES, 'unknown origin state')
+        old = legacy[key]
+        if old['status'] == 'pending':
+            require('legacy' not in row and row['state'] != 'pending_revalidation',
+                    'only a revision-2 mapping can await revalidation')
+        else:
+            expected = {name: value for name, value in old.items() if name != 'origin'}
+            require(row.get('legacy') == expected, 'migrated row differs from the format-1 source: ' + key)
+            require(row['state'] != 'pending', 'a revision-2 mapping cannot return to pending')
+        # Later steps define closure links; until then no origin may claim them.
+        require(row['state'] not in ('triaged', 'complete'),
+                'origin closure is not implemented in this format revision: ' + key)
+    for table in ('counterexamples', 'suite_targets', 'preserved', 'families', 'areas'):
+        require(spec[table] == [], table + ' are not implemented in this format revision')
+    claims = holds_table(git, rev, spec['holds'])
+    scheduled_registry(git, rev, spec)
+    states = Counter(row['state'] for row in rows.values())
+    revalidation = Counter(row['legacy']['status'] for row in rows.values() if row['state'] == 'pending_revalidation')
+    pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
+    return {'operation': 'corpus', 'format': 2, 'revision': rev,
+            'result': 'mappings_complete' if not pending else 'extraction_pending',
+            'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
+            'pending_adoption': len(pending), 'pending_origins': pending,
+            'counts': {'origins': len(rows), 'counterexamples': 0, 'families': 0, 'members': 0,
+                       'suite_targets': 0, 'preserved': 0, 'kills': 0},
+            'suite_credit': {}, 'holds': sorted(claims),
+            'mapping_complete': not pending, 'execution': 'not evaluated',
+            'full_corpus_complete': False, 'acceptance': 'not evaluated',
+            'limits': ['Semantic equivalence and non-executable classifications require source review',
+                       'A complete mapping is not a passing corpus run or release of held claims',
+                       'Revision-2 mappings carry no credit until revalidated (P1-R)']}
 
 
 def coverage_manifest(spec, registry):
