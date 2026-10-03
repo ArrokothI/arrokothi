@@ -1,0 +1,34 @@
+{
+  "scope": "Diagnostic before the ordered run: the unchanged `npm run test:kernel-sweeps` on v26.10.0 under the declared environment, no step bound; not a floor result.",
+  "subject": "working tree of 5b196bd0 plus the uncommitted owner-choice-03 floor edits (no sweep, preload or Kernel test differs from 3a5d78dd)",
+  "environment": {
+    "pass_names": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "path_prepend": "v26.10.0 bin",
+    "inherited_values_recorded": false
+  },
+  "exit": 0,
+  "wall_seconds": 413,
+  "summary_lines": [
+    "EXIT INVENTORY: 57 exits, 57 taken, 0 violations",
+    "FAULT SWEEP PASSED: 66 scenarios, 54288 runs, 0 violations; 35 intercepted operations",
+    "ENV node=v26.10.0 platform=darwin arch=arm64",
+    "RUN off: {\"exit\":0,\"tests\":1712,\"pass\":1712,\"fail\":0,\"cancelled\":0,\"skipped\":0,\"todo\":0,\"seconds\":16}",
+    "RUN count: {\"exit\":0,\"tests\":1712,\"pass\":1712,\"fail\":0,\"cancelled\":0,\"skipped\":0,\"todo\":0,\"seconds\":105}",
+    "RUN throw: {\"exit\":0,\"tests\":1712,\"pass\":1712,\"fail\":0,\"cancelled\":0,\"skipped\":0,\"todo\":0,\"seconds\":112}",
+    "RUN reenter: {\"exit\":0,\"tests\":1712,\"pass\":1712,\"fail\":0,\"cancelled\":0,\"skipped\":0,\"todo\":0,\"seconds\":113}",
+    "MODE off: {\"windows\":11532,\"calls\":11578,\"liveProbes\":0,\"callerFirings\":0,\"handlerFirings\":0,\"reentries\":0,\"zoneFirings\":0,\"skippedSlots\":0}",
+    "MODE count: {\"windows\":11532,\"calls\":11578,\"liveProbes\":11532,\"callerFirings\":3252437,\"handlerFirings\":18056,\"reentries\":0,\"zoneFirings\":0,\"skippedSlots\":34596}",
+    "MODE throw: {\"windows\":11532,\"calls\":11578,\"liveProbes\":11532,\"callerFirings\":3252437,\"handlerFirings\":18056,\"reentries\":0,\"zoneFirings\":0,\"skippedSlots\":34596}",
+    "MODE reenter: {\"windows\":11532,\"calls\":11578,\"liveProbes\":11532,\"callerFirings\":3252437,\"handlerFirings\":18056,\"reentries\":0,\"zoneFirings\":0,\"skippedSlots\":34596}",
+    "BOUNDARY 11532 outermost windows; 11578 traced calls per run",
+    "POISON SWEEP PASSED"
+  ]
+}
