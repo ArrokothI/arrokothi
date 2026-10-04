@@ -530,11 +530,12 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     for target in targets.values():
         if 'member' in target:
             member = stored.get(target['member'])
-            require(member is not None and member['status'] == 'refused' and member['file'] == target.get('file'),
+            replacement = (target.get('relation') or {}).get('kind') == 'authorized_replacement'
+            require(member is not None and member['status'] == 'refused' and (member['file'] == target.get('file') or replacement),
                     'a target member is a refused member in its file: ' + target['id'])
             declaration = target.get('declaration') or {}
             require(member.get('current') is None or [declaration.get('line'), declaration.get('column')] == member['current']
-                    or (target.get('relation') or {}).get('kind') == 'authorized_replacement',
+                    or replacement,
                     'a target sits at its member\'s declaration unless it is an authorized replacement: ' + target['id'])
     tested = test_file_origins(intake)
     moves = moves_table(git, rev, spec['moves'])

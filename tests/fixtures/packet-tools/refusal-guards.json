@@ -7173,7 +7173,7 @@
       ]
     },
     {
-      "id": "guard.corpus_format_2.dddcb3c8fd33f176",
+      "id": "guard.corpus_format_2.7e44c11298859561",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_target_member_status",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: corpus_format_2",
@@ -7185,7 +7185,7 @@
         "python3",
         "-B",
         "tests/tooling/python-probe.py",
-        "guard.corpus_format_2.dddcb3c8fd33f176"
+        "guard.corpus_format_2.7e44c11298859561"
       ],
       "timeout_seconds": 20,
       "output_limit_bytes": 32768,
@@ -7193,16 +7193,16 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(member is not None and member['status'] == 'refused' and member['file'] == target.get('file'),\n                    'a target member is a refused member in its file: ' + target['id'])",
-          "after": "pass  # tools01-ablate:dddcb3c8fd33f176",
+          "before": "require(member is not None and member['status'] == 'refused' and (member['file'] == target.get('file') or replacement),\n                    'a target member is a refused member in its file: ' + target['id'])",
+          "after": "pass  # tools01-ablate:7e44c11298859561",
           "operator": "remove-refusal-check",
-          "name": "guard.corpus_format_2.dddcb3c8fd33f176",
-          "id": "mutation-bcf06e3486cbcd51412bf2b7df59c01295bb17d3ada5456308c00f2bf49c8bc3"
+          "name": "guard.corpus_format_2.7e44c11298859561",
+          "id": "mutation-234ccf77cbfaa44380b58edd2a507c1d5d95b694a5e5e35bab792ec61ca73a54"
         }
       ]
     },
     {
-      "id": "guard.corpus_format_2.157f0d0695712064",
+      "id": "guard.corpus_format_2.b6afe70936509f6b",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_target_member_declaration",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: corpus_format_2",
@@ -7214,7 +7214,7 @@
         "python3",
         "-B",
         "tests/tooling/python-probe.py",
-        "guard.corpus_format_2.157f0d0695712064"
+        "guard.corpus_format_2.b6afe70936509f6b"
       ],
       "timeout_seconds": 20,
       "output_limit_bytes": 32768,
@@ -7222,11 +7222,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(member.get('current') is None or [declaration.get('line'), declaration.get('column')] == member['current']\n                    or (target.get('relation') or {}).get('kind') == 'authorized_replacement',\n                    'a target sits at its member\\'s declaration unless it is an authorized replacement: ' + target['id'])",
-          "after": "pass  # tools01-ablate:157f0d0695712064",
+          "before": "require(member.get('current') is None or [declaration.get('line'), declaration.get('column')] == member['current']\n                    or replacement,\n                    'a target sits at its member\\'s declaration unless it is an authorized replacement: ' + target['id'])",
+          "after": "pass  # tools01-ablate:b6afe70936509f6b",
           "operator": "remove-refusal-check",
-          "name": "guard.corpus_format_2.157f0d0695712064",
-          "id": "mutation-15bdb3cce6bbbd6f3053f8d5f15601478ed5144e714a286d8e4cba8afee70b06"
+          "name": "guard.corpus_format_2.b6afe70936509f6b",
+          "id": "mutation-cce66329bc56a8b8b166b5729c1ebcce07341e58e03d8a126692186b072cb1b7"
         }
       ]
     },
