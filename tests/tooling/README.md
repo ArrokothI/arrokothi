@@ -201,6 +201,59 @@ summary counts members by status, the preserved labels and refusals by reason. R
 native code, or in processes that drop `NODE_OPTIONS` are unseen. Registry cases are not yet in the
 register.
 
+## Families and target-set mutants
+
+**Runner (F3, D05-04).** A mutant may list `edits` (two or more, applied atomically): every anchor
+must occur exactly once in its file's original bytes and edits in one file must not overlap; otherwise
+nothing is written and the mutant is `not_applicable`. A multi-edit key binds the ordered edits, and
+single-edit keys are unchanged. A target-set case declares `targets` (node:test flags and files)
+instead of `argv`, and runs under the catalog reporter in a temporary copy.
+- Its control must pass every leaf, and each mutant's `expected_targets` (file and full test path)
+  must be passing leaves there.
+- The control also records V8 coverage, and a mutant whose edit sites the control never executed is
+  `uncovered`.
+- A mutant `killed` only when a leaf in its declared target set fails; `killed_by` names it. Any other
+  failure is a `wrong_kill`, never a kill.
+- A mutant's `discovery` field (one full-suite run's first failures) is reported as metadata with
+  `credit: none`, and never decides a status.
+
+**Families (P1-M, D04-CHK-03, D05-06, D05-CHK-06, D05-CHK-09).** `families` in `adoption.json` lists
+each mutation runner and mixed origin (`role`). `corpus` recomputes each member list from the
+runner's pinned bytes, never executing it. `source-facts.mjs` reads JS containers (`container`, `loop`)
+with the pinned TypeScript subset, and Python's `ast` reads Python ones. The census kinds:
+- `structural`: an array-literal container, plus top-level literal pushes, each element labelled by
+  its first string or `id`. Every other top-level statement that mentions the container is classified
+  `reads`, `modifies` or `adds`. An `adds` statement that is not a literal push must be claimed by a
+  `generator`, or the census is refused.
+- `generator`: the runner's own regex, carried verbatim in its text, applied to each input file at the
+  recorded input revision. Its counts must equal the runner's count literal, and each generated
+  member's label must name its site.
+- `filter`: the runner's own regex over another family's container or lines. `inherits` takes another
+  family's members. Both bind the source by the SHA-256 the runner itself checks.
+- `python_ast`, `loop` (an inline `for…of` list) and `bindings` (named constants; the label must occur
+  in the runner).
+- `census: reading`, with its reason, counted separately.
+
+Each count assertion the runner makes about a container (`.length` compared with a number) must be
+declared and must equal the census.
+
+Where the pinned tree holds a complete run output, `observed` names it by revision, path, SHA-256 and
+the tree it ran at:
+- the runner's bytes at that tree must equal the pinned origin;
+- the output must name its command and tree;
+- after a declared trailer, it must end with the runner's own summary, whose total must equal the
+  census;
+- the members named on its verdict lines must equal the census.
+
+A partial output fails.
+
+Members carry a key, an optional `reuses` link to the same member of another family, and a route.
+The route is `pending`, `mutation` (a registered mutant whose `obligation` is `family#key`),
+`witness`, `no_longer_applicable`, `equivalence`, `survivor` or `limit`. Only a mutation route can
+later earn a kill, and that kill comes from the registry run, not from the corpus. The summary
+counts, per role, families, census readings, occurrences, inherited, reused and distinct members,
+and routes.
+
 ## Isolation, inputs and identities
 
 `mutations` copies registered ordinary files into a new temporary directory for every control,

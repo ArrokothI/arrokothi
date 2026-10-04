@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 from collections import Counter
 import contextlib
 import fnmatch
@@ -58,6 +59,10 @@ REGISTER_MINIMUM = {
                                          'packages/kernel/tests/value-refusal-cost.test.ts']},
 }
 TEST_SUFFIXES = ('.test.ts', '.test.mjs', '.test.js')
+# P1-M (design 05 D04-CHK-03, D05-CHK-06): census kinds over pinned runner bytes, and member routes.
+CENSUS_KINDS = ('structural', 'python_ast', 'loop', 'filter', 'inherits', 'bindings')
+MEMBER_ROUTES = ('pending', 'mutation', 'witness', 'no_longer_applicable', 'equivalence', 'survivor', 'limit')
+FAMILY_ROLES = ('runner', 'mixed')
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
@@ -86,13 +91,32 @@ def content_key(kind, value):
                                         ensure_ascii=True).encode())
 
 
+def mutation_edits(mutant):
+    """A mutant's ordered edits: one (path, before, after), or `edits` applied atomically (F3 multi-edit)."""
+    if 'edits' in mutant:
+        edits = mutant['edits']
+        require(not {'path', 'before', 'after'} & set(mutant) and isinstance(edits, list) and len(edits) >= 2 and
+                all(isinstance(edit, dict) and set(edit) == {'path', 'before', 'after'} for edit in edits),
+                'a multi-edit mutant lists two or more edits, each a path, before and after')
+        rows = [(edit['path'], edit['before'], edit['after']) for edit in edits]
+    else:
+        rows = [(mutant.get('path'), mutant.get('before'), mutant.get('after'))]
+    for path, before, after in rows:
+        require(isinstance(path, str) and isinstance(before, str) and isinstance(after, str) and before != after,
+                'mutation must change text')
+    return rows
+
+
 def mutation_key(mutant):
+    if 'edits' in mutant:
+        return content_key('mutation', ['edits', [list(edit) for edit in mutation_edits(mutant)],
+                                        mutant.get('operator', 'replace')])
     return content_key('mutation', [mutant['path'], mutant['before'],
                                    mutant.get('operator', 'replace'), mutant['after']])
 
 
 def case_key(case):
-    return content_key('case', [case['id'], case['assertion'], case['argv'], case.get('input')])
+    return content_key('case', [case['id'], case.get('assertion'), case.get('argv') or case.get('targets'), case.get('input')])
 
 
 def claim_attribution(case):
@@ -488,8 +512,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
         # Later steps define closure links; until then no origin may claim them.
         require(row['state'] not in ('triaged', 'complete'),
                 'origin closure is not implemented in this format revision: ' + key)
-    for table in ('families', 'areas'):
-        require(spec[table] == [], table + ' are not implemented in this format revision')
+    require(spec['areas'] == [], 'areas are not implemented in this format revision')
     claims = holds_table(git, rev, spec['holds'])
     require(set(REGISTER_MINIMUM) <= set(claims), 'P1-H claims cannot leave the holds table')
     registry, _ = scheduled_registry(git, rev, spec)
@@ -511,6 +534,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain)
         results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
         evaluations, all_earlier = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
+        _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain)
     for target, result in zip(targets.values(), results):
         declaration = target.get('declaration') or {}
         entry = register.get(f"{target['file']}:{declaration.get('line')}:{declaration.get('column')}")
@@ -533,11 +557,13 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'result': 'mappings_complete' if not pending else 'extraction_pending',
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
             'pending_adoption': len(pending), 'pending_origins': pending,
-            'counts': {'origins': len(rows), 'counterexamples': len(counterexamples), 'families': 0, 'members': 0,
+            'counts': {'origins': len(rows), 'counterexamples': len(counterexamples),
+                       'families': sum(row.get('families', 0) for row in family_counts.values()),
+                       'members': sum(row.get('occurrences', 0) for row in family_counts.values()),
                        'suite_targets': len(targets), 'preserved': figures['by_status'].get('preserved', 0), 'kills': 0},
             'targets': {'counts': target_counts(results), 'results': results},
             'suite_credit': target_counts(results)['credit'], 'holds': sorted(claims),
-            'preserved': figures,
+            'preserved': figures, 'families': family_counts,
             'register': {'scope_files': len(scope), 'entries': len(register),
                          'by_classification': {f'{kind}:{claim or "-"}': count for (kind, claim), count in sorted(register_counts.items(), key=str)}},
             'mapping_complete': not pending, 'execution': 'not evaluated',
@@ -715,6 +741,43 @@ def execution_outcome(run, case):
     return {'status': state, 'observation': value}
 
 
+def apply_edits(directory, edits):
+    """Apply a mutant's edits atomically. Every anchor must occur exactly once in its file's original
+    bytes and edits in one file must not overlap; otherwise nothing is written and the reason returns."""
+    planned = {}
+    for path, before, after in edits:
+        target = directory / path
+        if not target.is_file():
+            return {'detail': 'mutation target absent', 'matches': 0}
+        plan = planned.setdefault(path, {'data': target.read_bytes(), 'ranges': []})
+        anchor = before.encode()
+        count = plan['data'].count(anchor) if anchor else 0
+        if count != 1:
+            return {'detail': 'stale or ambiguous mutation anchor', 'matches': count}
+        start = plan['data'].index(anchor)
+        plan['ranges'].append((start, start + len(anchor), after.encode()))
+    for plan in planned.values():
+        ranges = sorted(plan['ranges'])
+        if any(left[1] > right[0] for left, right in zip(ranges, ranges[1:])):
+            return {'detail': 'overlapping mutation edits', 'matches': 1}
+    for path, plan in planned.items():
+        data = plan['data']
+        for start, end, text in sorted(plan['ranges'], reverse=True):
+            data = data[:start] + text + data[end:]
+        (directory / path).write_bytes(data)
+    return None
+
+
+def edit_offsets(files, edits):
+    """UTF-16 offsets of each edit's anchor in the original files, as V8 coverage counts them."""
+    offsets = []
+    for path, before, _ in edits:
+        data = files.get(path, b'')
+        index = data.find(before.encode())
+        offsets.append((path, None if index < 0 else len(data[:index].decode('utf-8', 'replace').encode('utf-16-le')) // 2))
+    return offsets
+
+
 def run_case(files, case, environment, mutant=None):
     with tempfile.TemporaryDirectory(prefix='arrokothi-evidence-') as tmp:
         directory = Path(tmp)
@@ -723,15 +786,114 @@ def run_case(files, case, environment, mutant=None):
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(data)
         if mutant is not None:
-            target = directory / mutant['path']
-            original = target.read_bytes()
-            before, after = mutant['before'].encode(), mutant['after'].encode()
-            if not before or original.count(before) != 1:
-                return {'status': 'not_applicable', 'exit': None, 'output': '',
-                        'matches': original.count(before) if before else 0,
-                        'detail': 'stale or ambiguous mutation anchor'}
-            target.write_bytes(original.replace(before, after, 1))
+            refused = apply_edits(directory, mutation_edits(mutant))
+            if refused is not None:
+                return {'status': 'not_applicable', 'exit': None, 'output': '', **refused}
         return command(case['argv'], directory, case['timeout_seconds'], case['output_limit_bytes'], environment)
+
+
+def target_declaration(case):
+    """A target-set case runs its declared test files under node:test and names failing leaves."""
+    targets = case.get('targets')
+    require(isinstance(targets, dict) and 'argv' not in case, 'a target-set case declares targets instead of argv')
+    flags = unique_text(targets.get('flags', []), 'target flags')
+    require('--test' in flags and not any(flag.startswith(('--test-reporter', '--test-name-pattern', '--test-skip-pattern',
+                                                             '--test-only', '--test-isolation=none'))
+                                          for flag in flags),
+            'target flags run each file under node:test without their own reporter or selection')
+    files = [path_name(name) for name in unique_text(targets.get('files', []), 'target files')]
+    require(bool(files), 'a target-set case names its test files')
+    return flags, files
+
+
+def run_targets(files, case, environment, mutant=None, offsets=None):
+    """One run of a target-set case in a temporary copy; with offsets, also the coverage counts there."""
+    flags, selected = target_declaration(case)
+    with tempfile.TemporaryDirectory(prefix='arrokothi-evidence-') as tmp, \
+            tempfile.TemporaryDirectory(prefix='arrokothi-evidence-events-') as side:
+        directory = Path(os.path.realpath(tmp))
+        for name, data in files.items():
+            dest = directory / path_name(name)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(data)
+        if mutant is not None:
+            refused = apply_edits(directory, mutation_edits(mutant))
+            if refused is not None:
+                return {'status': 'not_applicable', 'exit': None, 'output': '', **refused}
+        events = Path(side) / 'events.jsonl'
+        coverage = Path(side) / 'coverage'
+        coverage.mkdir()
+        argv = ['node', *flags, '--test-reporter=' + str(directory / CATALOG_REPORTER),
+                '--test-reporter-destination=' + str(events), *selected]
+        run_environment = environment if offsets is None else dict(environment, NODE_V8_COVERAGE=str(coverage))
+        run = command(argv, directory, case['timeout_seconds'], case['output_limit_bytes'], run_environment)
+        try:
+            rows = [json.loads(line) for line in events.read_text().splitlines()] if events.exists() else None
+            tree = None if rows is None else catalog_tree(rows, directory, selected)
+        except (ValueError, CheckError):
+            tree = None
+        if offsets is not None and run['status'] == 'finished':
+            sites = [(path, offset) for path, offset in offsets if offset is not None]
+            request = Path(side) / 'request.json'
+            request.write_text(json.dumps([{'file': str(directory / path), 'offsets': [offset], 'processes': 'any'}
+                                           for path, offset in sites]))
+            counted = command(['node', str(directory / REACH_COVERAGE), str(coverage), str(request)],
+                              directory, 120, 1048576, environment)
+            if counted['status'] == 'finished' and counted['exit'] == 0:
+                rows = json.loads(counted['output'])
+                run['reach'] = {f'{path}:{offset}': row['counts'][0] for (path, offset), row in zip(sites, rows)}
+    run['tree'] = tree
+    return run
+
+
+def target_leaves(run):
+    """Leaf verdicts of a valid target-set run, keyed by (file, full path); None when the run is invalid."""
+    tree = run.get('tree')
+    if run['status'] != 'finished' or tree is None or not tree.get('valid') or tree.get('refused'):
+        return None
+    return {(name, tuple(pair['path'])): pair['verdict'] for name, facts in tree['files'].items()
+            for pair in facts['pairs'] if pair['leaf']}
+
+
+def expected_targets(mutant):
+    rows = mutant.get('expected_targets')
+    require(isinstance(rows, list) and bool(rows) and all(
+        isinstance(row, dict) and set(row) == {'file', 'path'} and isinstance(row['file'], str) and
+        isinstance(row['path'], list) and bool(row['path']) and all(isinstance(name, str) for name in row['path'])
+        for row in rows), 'a target-set mutant names its expected target leaves')
+    return {(row['file'], tuple(row['path'])) for row in rows}
+
+
+def target_outcome(run, mutant, reached):
+    """F3: a kill is a failing leaf in the mutant's declared target set; any other failure is a wrong kill."""
+    if run['status'] != 'finished':
+        return dict(status=run['status'], matches=run.get('matches'))
+    leaves = target_leaves(run)
+    if leaves is None:
+        return dict(status='setup_error', exit=run['exit'])
+    failed = sorted(key for key, verdict in leaves.items() if verdict != 'passed')
+    expected = expected_targets(mutant)
+    qualifying = [key for key in failed if key in expected]
+    if not reached:
+        return {'status': 'uncovered', 'failures': len(failed)}
+    if qualifying:
+        return {'status': 'killed', 'killed_by': qualifying[0][0] + ' > ' + ' > '.join(qualifying[0][1]),
+                'failures': len(failed)}
+    if failed:
+        return {'status': 'wrong_kill', 'first_failure': failed[0][0] + ' > ' + ' > '.join(failed[0][1]),
+                'failures': len(failed)}
+    return {'status': 'survived' if run['exit'] == 0 else 'setup_error', 'failures': 0}
+
+
+def target_control(files, case, environment, mutants):
+    """The passing control of a target-set case, with the coverage counts at every mutant's edit sites."""
+    offsets = sorted({offset for mutant in mutants for offset in edit_offsets(files, mutation_edits(mutant))},
+                     key=lambda item: (item[0], -1 if item[1] is None else item[1]))
+    run = run_targets(files, case, environment, offsets=offsets)
+    leaves = target_leaves(run)
+    valid = run['status'] == 'finished' and run['exit'] == 0 and leaves is not None and \
+        all(verdict == 'passed' for verdict in leaves.values()) and run.get('reach') is not None
+    return run, leaves, valid, run.get('reach') or {}
 
 
 def mutations(git, revision, registry_path, *, cases_only=False):
@@ -744,62 +906,88 @@ def mutations(git, revision, registry_path, *, cases_only=False):
     for name in unique_text(registry.get('files', []), 'shared files'):
         shared[path_name(name)] = git.blob(rev, name)
     shared.update(dependency_files(git, rev, registry.get('dependencies', [])))
+    if any('targets' in case for case in registry['cases']):
+        shared.update({name: git.blob(rev, name) for name in (CATALOG_REPORTER, REACH_COVERAGE)})
     environment, environment_record = child_environment(environment_declaration(registry.get('environment')))
     case_ids, mutant_ids, results = set(), {}, []
     for case in registry['cases']:
         print('Case ' + case['id'], file=sys.stderr, flush=True)
         require(case['id'] not in case_ids, 'duplicate case ID')
         case_ids.add(case['id'])
-        require(type(case['failure_exit']) is int and 1 <= case['failure_exit'] <= 125, 'invalid failure exit')
+        targeted = 'targets' in case
+        if not targeted:
+            require(type(case['failure_exit']) is int and 1 <= case['failure_exit'] <= 125, 'invalid failure exit')
         names = unique_text(case['files'], 'case files')
         files = {**shared, **{path_name(name): git.blob(rev, name) for name in names}}
-        baseline = run_case(files, case, environment)
-        try:
-            control = observation(baseline, case)
-            valid = control['reached'] and control['passed']
-        except CheckError:
-            valid = False
+        mutants = [] if cases_only else case.get('mutants', [])
+        if targeted:
+            baseline, leaves, valid, counts = target_control(files, case, environment, mutants)
+            for mutant in mutants:
+                require(expected_targets(mutant) <= {key for key, verdict in (leaves or {}).items() if verdict == 'passed'}
+                        or not valid, 'expected target leaves absent from the passing control: ' + str(mutant.get('id')))
+        else:
+            baseline = run_case(files, case, environment)
+            try:
+                control = observation(baseline, case)
+                valid = control['reached'] and control['passed']
+            except CheckError:
+                valid = False
         case_result = {'case': case['id'], 'content_key': case_key(case),
-                       'claim': claim_attribution(case),
+                       'claim': claim_attribution(case), 'kind': 'target_set' if targeted else 'probe',
                        'control': 'passed' if valid else 'invalid_baseline',
                        'baseline': baseline, 'mutations': []}
         local_mutants = set()
-        for mutant in ([] if cases_only else case.get('mutants', [])):
+        for mutant in mutants:
             key = mutation_key(mutant)
             require(mutant['id'] not in local_mutants and mutant_ids.get(mutant['id'], key) == key,
                     'duplicate or conflicting mutant ID')
             local_mutants.add(mutant['id'])
             mutant_ids[mutant['id']] = key
-            require(mutant['path'] in files, 'mutation target absent from declared files')
-            require(isinstance(mutant['before'], str) and isinstance(mutant['after'], str) and
-                    mutant['before'] != mutant['after'], 'mutation must change text')
+            edits = mutation_edits(mutant)
+            require(all(path in files for path, _, _ in edits), 'mutation target absent from declared files')
             if not valid:
                 result = {'mutation': mutant['id'], 'status': 'invalid_baseline'}
             else:
-                run = run_case(files, case, environment, mutant)
-                outcome = execution_outcome(run, case)
+                if targeted:
+                    reached = any((counts.get(f'{path}:{offset}') or 0) > 0 for path, offset in edit_offsets(files, edits))
+                    run = run_targets(files, case, environment, mutant)
+                    outcome = target_outcome(run, mutant, reached)
+                else:
+                    run = run_case(files, case, environment, mutant)
+                    outcome = execution_outcome(run, case)
                 state = outcome['status']
                 result = {'mutation': mutant['id'], 'status': state, 'run': run,
                           'invalid': state in ('setup_error', 'timeout', 'output_limit')}
                 if state == 'killed':
-                    seen = outcome['observation']
-                    result['killed_by'] = seen.get('failures', [case['assertion']])[0]
+                    result['killed_by'] = outcome['killed_by'] if targeted else \
+                        outcome['observation'].get('failures', [case['assertion']])[0]
+                if state == 'wrong_kill':
+                    result['first_failure'] = outcome['first_failure']
                 if case['id'] in registry.get('determinism_sample', []):
-                    repeated_run = run_case(files, case, environment, mutant)
-                    stable = execution_outcome(repeated_run, case) == outcome
+                    repeated_run = run_targets(files, case, environment, mutant) if targeted else \
+                        run_case(files, case, environment, mutant)
+                    repeated = target_outcome(repeated_run, mutant, reached) if targeted else \
+                        execution_outcome(repeated_run, case)
+                    stable = repeated == outcome
                     result['determinism'] = {'passed': stable, 'runs': 2, 'repeat': repeated_run}
                     if not stable:
                         result['status'] = 'nondeterministic'
                         result.pop('killed_by', None)
-            result['content_key'] = mutation_key(mutant)
+            if 'discovery' in mutant:
+                result['discovery'] = {'metadata': mutant['discovery'], 'credit': 'none'}
+            result['content_key'] = key
             case_result['mutations'].append(result)
         if case['id'] in registry.get('determinism_sample', []):
-            repeat = run_case(files, case, environment)
-            try:
-                repeated = observation(repeat, case)
-                stable = valid and repeated == control
-            except CheckError:
-                stable = False
+            if targeted:
+                repeat, repeated_leaves, repeated_valid, _ = target_control(files, case, environment, [])
+                stable = valid and repeated_valid and repeated_leaves == leaves
+            else:
+                repeat = run_case(files, case, environment)
+                try:
+                    repeated = observation(repeat, case)
+                    stable = valid and repeated == control
+                except CheckError:
+                    stable = False
             case_result['determinism'] = {'passed': stable, 'runs': 2, 'repeat': repeat}
             if not stable:
                 case_result['control'] = 'invalid_baseline'
@@ -1937,6 +2125,321 @@ def census_figures(evaluations, table, all_earlier):
         'preserved_register_not_held': sum(row['register'] == 'not_held' for row in preserved),
         'preserved_refused': dict(Counter(category for row in table if row['status'] == 'refused'
                                           for category in {reason.split(':')[0].split(' (')[0] for reason in row['reasons']}))}
+
+
+def python_container(text, name):
+    """The Python counterpart of source-facts' `container` operation, by the standard `ast` module."""
+    tree = ast.parse(text)
+    declaration, statements = None, []
+
+    def label(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
+        if isinstance(node, (ast.Tuple, ast.List)) and node.elts:
+            return label(node.elts[0])
+        return None
+    for statement in tree.body:
+        targets = statement.targets if isinstance(statement, ast.Assign) else []
+        if declaration is None and any(isinstance(target, ast.Name) and target.id == name for target in targets):
+            value = statement.value
+            if isinstance(value, ast.Dict):
+                elements = [{'label': label(key), 'line': key.lineno} for key in value.keys]
+            elif isinstance(value, (ast.List, ast.Tuple)):
+                elements = [{'label': label(item), 'line': item.lineno} for item in value.elts]
+            else:
+                elements = []
+            declaration = {'line': statement.lineno, 'kind': 'computed' if not elements and not isinstance(
+                value, (ast.Dict, ast.List, ast.Tuple)) else 'array', 'elements': elements}
+            continue
+        if declaration is None or not any(isinstance(node, ast.Name) and node.id == name for node in ast.walk(statement)):
+            continue
+        adds = any(isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and
+                   isinstance(node.func.value, ast.Name) and node.func.value.id == name and
+                   node.func.attr in ('append', 'extend', 'insert', 'update', 'setdefault', 'pop', 'popitem', 'clear')
+                   for node in ast.walk(statement)) or any(
+            isinstance(node, (ast.Assign, ast.AugAssign, ast.Delete)) and any(
+                isinstance(target, ast.Subscript) and isinstance(target.value, ast.Name) and target.value.id == name or
+                isinstance(target, ast.Name) and target.id == name
+                for target in (node.targets if isinstance(node, (ast.Assign, ast.Delete)) else [node.target]))
+            for node in ast.walk(statement))
+        statements.append({'line': statement.lineno, 'class': 'adds' if adds else 'reads', 'literal': False})
+    return {'name': name, 'declaration': declaration, 'statements': statements, 'constants': []}
+
+
+def runner_container(git, tools, path, text, name, environment, toolchain):
+    if path.endswith('.py'):
+        return python_container(text, name)
+    result, = source_facts(git, tools, [{'op': 'container', 'path': path, 'text': text, 'name': name}],
+                           environment, toolchain)
+    return result
+
+
+def carries_pattern(text, pattern):
+    """A filter or generator regex counts only if the runner carries it verbatim, as a JS literal or a Python string."""
+    return any(form in text for form in ('/' + pattern + '/', "r'" + pattern + "'", 'r"' + pattern + '"'))
+
+
+def labelled(elements, where):
+    require(all(isinstance(row['label'], str) and row['label'] for row in elements),
+            'census element without a label: ' + where)
+    return [{'label': row['label']} for row in elements]
+
+
+class Census:
+    """Recompute one family's member census over pinned bytes (design 05 D04-CHK-03, D05-06, D05-CHK-09)."""
+
+    def __init__(self, git, tools, families, origins, environment, toolchain):
+        self.git, self.tools, self.families, self.origins = git, tools, families, origins
+        self.environment, self.toolchain, self.done = environment, toolchain, {}
+
+    def runner(self, family_id):
+        family = self.families[family_id]
+        origin = self.origins.get(family.get('origin'))
+        require(origin is not None and origin['kind'] in ('artifact', 'additional') and origin['line'] == 1,
+                'a family names a whole-file artifact origin: ' + family_id)
+        return origin['revision'], origin['path'], self.git.blob(origin['revision'], origin['path'])
+
+    def source(self, spec, text, where):
+        """A filter or inheritance source: another family's runner, or a pinned file, bound by the digest the runner checks."""
+        require(isinstance(spec, dict) and (('family' in spec) != ('path' in spec)), 'census source names a family or a path: ' + where)
+        if 'family' in spec:
+            require(spec['family'] in self.families, 'census source family absent: ' + where)
+            _, path, data = self.runner(spec['family'])
+        else:
+            path, data = spec['path'], self.git.blob(self.git.commit(spec['revision']), spec['path'])
+        if 'digest' in spec:
+            require(spec['digest'] == digest(data) and spec['digest'] in text,
+                    'census source digest differs from the bytes or is absent from the runner: ' + where)
+        return path, data
+
+    def part(self, family_id, index, part, text, path):
+        where = f'{family_id} part {index}'
+        kind = part.get('kind')
+        require(kind in CENSUS_KINDS, 'unknown census kind: ' + where)
+        if kind == 'inherits':
+            require(part.get('family') in self.families and part['family'] != family_id, 'inherited family absent: ' + where)
+            self.source(part, text, where)
+            return [{'label': row['label'], 'from': part['family']} for row in self.members(part['family'])]
+        if kind == 'filter':
+            source_path, data = self.source(part.get('source'), text, where)
+            pattern = part.get('pattern')
+            require(isinstance(pattern, str) and carries_pattern(text, pattern), 'filter regex absent from the runner: ' + where)
+            compiled = re.compile(pattern)
+            if part.get('over') == 'lines':
+                labeller = re.compile(part.get('label', ''))
+                labels = [labeller.search(line) for line in data.decode().splitlines() if compiled.search(line)]
+                require(all(match and match.groups() for match in labels), 'filtered line without a label: ' + where)
+                rows = [{'label': match.group(1)} for match in labels]
+            else:
+                facts = runner_container(self.git, self.tools, source_path, data.decode(), part.get('container'),
+                                         self.environment, self.toolchain)
+                require(facts['declaration'] is not None and facts['declaration']['kind'] == 'array',
+                        'filter source container absent: ' + where)
+                rows = [row for row in labelled(facts['declaration']['elements'], where) if compiled.search(row['label'])]
+            origin = part['source'].get('family')
+            return [dict(row, **({'from': origin} if origin else {})) for row in rows]
+        if kind == 'loop':
+            require(type(part.get('line')) is int and not path.endswith('.py'), 'a loop part names its line in a JS runner: ' + where)
+            result, = source_facts(self.git, self.tools, [{'op': 'loop', 'path': path, 'text': text, 'line': part['line']}],
+                                   self.environment, self.toolchain)
+            require(result['elements'] is not None, 'no top-level for-of over an array literal at that line: ' + where)
+            return labelled(result['elements'], where)
+        if kind == 'bindings':
+            facts = runner_container(self.git, self.tools, path, text, '', self.environment, self.toolchain)
+            names = unique_text(part.get('names', []), 'binding names')
+            require(bool(names) and set(names) <= {row['name'] for row in facts['constants']},
+                    'bindings absent from the runner: ' + where)
+            require(isinstance(part.get('label'), str) and bool(part['label']) and part['label'] in text,
+                    'a bindings member needs a label the runner carries: ' + where)
+            return [{'label': part['label']}]
+        # structural and python_ast: a container declaration and every top-level statement mentioning it
+        facts = runner_container(self.git, self.tools, path, text, part.get('container'), self.environment, self.toolchain)
+        require(facts['declaration'] is not None, 'census container absent: ' + where)
+        require((kind == 'python_ast') == path.endswith('.py'), 'python_ast censuses Python runners only: ' + where)
+        rows = []
+        if facts['declaration']['kind'] == 'array':
+            require('initializer' not in part, 'an array container needs no initializer part: ' + where)
+            rows += labelled(facts['declaration']['elements'], where)
+        else:
+            require(isinstance(part.get('initializer'), dict), 'a computed container needs its initializer part: ' + where)
+            rows += [dict(row, initializer=True) for row in
+                     self.part(family_id, f'{index}.initializer', part['initializer'], text, path)]
+        generators = {row.get('statement'): row for row in part.get('generators', [])}
+        require(len(generators) == len(part.get('generators', [])), 'one generator per statement: ' + where)
+        claimed = set()
+        for statement in facts['statements']:
+            if statement['class'] != 'adds':
+                continue
+            if statement['literal']:
+                rows += labelled(statement['elements'], where)
+            elif statement['line'] in generators:
+                claimed.add(statement['line'])
+                rows += self.generated(generators[statement['line']], text, where)
+            else:
+                raise CheckError(f"unclassified addition to the container at line {statement['line']}: {where}")
+        require(claimed == set(generators), 'a generator claims no adding statement: ' + where)
+        return rows
+
+    def generated(self, generator, text, where):
+        """D05-06: the runner's own regex over its inputs at the recorded input revision, counted by the runner's literal."""
+        pattern = generator.get('pattern')
+        require(isinstance(pattern, str) and carries_pattern(text, pattern), 'generator regex absent from the runner: ' + where)
+        anchor = generator.get('count_anchor')
+        require(isinstance(anchor, str) and text.count(anchor) == 1, 'generator count anchor absent from the runner: ' + where)
+        inputs = generator.get('inputs', [])
+        require([int(value) for value in re.findall(r'\b\d+\b', anchor)] == [row.get('count') for row in inputs],
+                'generator counts differ from the runner literal: ' + where)
+        revision = self.git.commit(generator.get('input_revision'))
+        compiled, rows = re.compile(pattern), []
+        for row in inputs:
+            source = self.git.blob(revision, row['path']).decode()
+            matches = list(compiled.finditer(source))
+            require(len(matches) == row['count'], 'generator count mismatch at the input revision: ' + where)
+            for match in matches:
+                site = {'file': PurePosixPath(row['path']).name, 'line': source.count('\n', 0, match.start()) + 1,
+                        'group': match.group(1) if match.groups() else match.group(0)}
+                rows.append({'generated': generator.get('label_contains', '{file}:{line}').format(**site)})
+        return rows
+
+    def members(self, family_id):
+        """The census rows of a family (labels, or generated sites matched to member labels), memoised."""
+        if family_id in self.done:
+            require(self.done[family_id] is not None, 'cyclic family inheritance: ' + family_id)
+            return self.done[family_id]
+        self.done[family_id] = None
+        family = self.families[family_id]
+        census = family.get('census')
+        members = family.get('members')
+        require(isinstance(members, list) and all(isinstance(row, dict) and isinstance(row.get('label'), str) and
+                                                  row['label'] for row in members), 'family members need labels: ' + family_id)
+        if isinstance(census, dict) and 'reading' in census:
+            require(isinstance(census['reading'], str) and bool(census['reading'].strip()) and set(census) == {'reading'},
+                    'census: reading needs its reason: ' + family_id)
+            rows = [{'label': row['label'], 'reading': True} for row in members]
+        else:
+            require(isinstance(census, dict) and isinstance(census.get('parts'), list) and bool(census['parts']),
+                    'a family needs census parts or census: reading: ' + family_id)
+            _, path, data = self.runner(family_id)
+            text = data.decode()
+            parts = [self.part(family_id, index, part, text, path) for index, part in enumerate(census['parts'])]
+            self.count_assertions(family_id, census, parts, text)
+            rows = [row for part in parts for row in part]
+            require(len(rows) == len(members), f'census has {len(rows)} members, the family lists {len(members)}: {family_id}')
+            for row, member in zip(rows, members):
+                if 'generated' in row:
+                    require(row['generated'] in member['label'], 'generated member label lacks its site: ' + member['label'])
+                    row['label'] = member['label']
+                require(row['label'] == member['label'], f"census member differs: {row['label']!r} != {member['label']!r}")
+            if 'observed' in family:
+                self.observed(family_id, family['observed'], rows, data)
+        self.done[family_id] = rows
+        return rows
+
+    def count_assertions(self, family_id, census, parts, text):
+        """Cross-check the runner's own count assertions; every count assertion it makes must be declared."""
+        names = [part.get('container') for part in census['parts'] if part.get('container')]
+        declared = census.get('count_assertions', [])
+        for row in declared:
+            require(isinstance(row, dict) and isinstance(row.get('anchor'), str) and text.count(row['anchor']) == 1,
+                    'count assertion anchor absent from the runner: ' + family_id)
+            numbers = [int(value) for value in re.findall(r'\.length\s*(?:[!=]==?|[<>]=?|,)\s*(\d+)', row['anchor'])]
+            covered = row.get('parts', list(range(len(parts))))
+            require(isinstance(covered, list) and all(isinstance(index, int) and 0 <= index < len(parts) for index in covered),
+                    'count assertion names unknown parts: ' + family_id)
+            size = sum(sum(row.get('scope') != 'initializer' or entry.get('initializer', False) for entry in parts[index])
+                       for index in covered)
+            require(numbers == [size], f'the runner asserts {numbers}, the census counts {size}: {family_id}')
+        for name in names:
+            for line in text.splitlines():
+                if re.search(r'\b' + re.escape(name) + r'\.length\b\s*(?:[!=]==?|[<>]=?|,)\s*\d', line):
+                    require(any(row['anchor'] in line or line.strip() in row['anchor'] for row in declared),
+                            'an undeclared count assertion in the runner: ' + line.strip())
+
+    def observed(self, family_id, spec, rows, runner_bytes):
+        """D05-CHK-09: a complete sealed run output of this runner must name exactly the census members."""
+        require(isinstance(spec, dict) and all(isinstance(spec.get(key), str) for key in
+                                               ('revision', 'path', 'sha256', 'tree', 'runner_path', 'line', 'summary')),
+                'observed output needs revision, path, digest, tree, runner path, line and summary: ' + family_id)
+        output = self.git.blob(self.git.commit(spec['revision']), spec['path'])
+        require(digest(output) == spec['sha256'], 'observed output digest mismatch: ' + family_id)
+        require(self.git.blob(self.git.commit(spec['tree']), spec['runner_path']) == runner_bytes,
+                'the runner at the observed tree differs from the pinned origin: ' + family_id)
+        text = output.decode()
+        lines = [line for line in text.splitlines() if line.strip()]
+        trailer = spec.get('trailer')
+        while lines and isinstance(trailer, str) and re.fullmatch(trailer, lines[-1].strip()):
+            lines.pop()
+        summary = re.fullmatch(spec['summary'], lines[-1].strip()) if lines else None
+        require(summary is not None, 'observed output does not end with the runner summary (partial output): ' + family_id)
+        require(summary.groupdict().get('total') in (None, str(len(rows))),
+                'the runner summary counts another member total: ' + family_id)
+        for name in spec.get('names', []):
+            require(isinstance(name, str) and name in text, 'observed output does not name its command or tree: ' + family_id)
+        seen = [match.group('label') for match in re.finditer(spec['line'], text, re.MULTILINE)]
+        require(sorted(seen) == sorted(row['label'] for row in rows),
+                f'observed members differ from the census ({len(seen)} observed, {len(rows)} counted): {family_id}')
+
+
+def member_key(member):
+    return member.get('key', member['label'].split()[0])
+
+
+def member_route(git, rev, family_id, member, counterexamples, mutants):
+    """P1-M routes. Only a registered mutation can later earn a kill; every other route is counted, never a kill."""
+    route = member.get('route')
+    require(isinstance(route, dict) and route.get('kind') in MEMBER_ROUTES, 'member needs a known route: ' + member['label'])
+    kind = route['kind']
+    text = lambda name: isinstance(route.get(name), str) and bool(route[name].strip())
+    if kind == 'mutation':
+        mutant = mutants.get((route.get('case'), route.get('mutant')))
+        require(mutant is not None and mutant.get('obligation') == f'{family_id}#{member_key(member)}',
+                'a mutation route needs a registered mutant whose obligation is this member: ' + member['label'])
+    elif kind == 'witness':
+        require(counterexamples.get(route.get('counterexample'), {}).get('kind') in ('held_witness', 'superseded_witness'),
+                'a witness route names a held or superseded counterexample: ' + member['label'])
+    elif kind == 'no_longer_applicable':
+        require(text('reason') and text('authority'), 'no-longer-applicable needs its reason and authority: ' + member['label'])
+        git.blob(rev, route['authority'])
+    elif kind == 'equivalence':
+        require(text('argument'), 'an equivalence route needs its argument: ' + member['label'])
+    elif kind == 'survivor':
+        require(text('finding') and text('owner'), 'a survivor needs its finding and owner: ' + member['label'])
+    elif kind == 'limit':
+        require(text('owner_record'), 'an owner limit names its record: ' + member['label'])
+        git.blob(rev, route['owner_record'])
+    return kind
+
+
+def family_table(git, rev, rows, origins, counterexamples, registry, environment, toolchain):
+    """P1-M: recompute every family's census over pinned bytes and check each member's links and route."""
+    families = unique_records(rows, 'families')
+    census = Census(git, rev, families, origins, environment, toolchain)
+    mutants = {(case['id'], mutant.get('id')): mutant for case in registry['cases'] for mutant in case.get('mutants', [])}
+    counts = {role: Counter() for role in FAMILY_ROLES}
+    for family_id, family in families.items():
+        require(family.get('role') in FAMILY_ROLES, 'a family is a mutation runner or a mixed origin: ' + family_id)
+        entries = census.members(family_id)
+        keys = [member_key(member) for member in family['members']]
+        require(len(keys) == len(set(keys)), 'member keys repeat within a family (declare `key`): ' + family_id)
+        count = counts[family['role']]
+        count['families'] += 1
+        count['census_reading'] += 'reading' in family['census']
+        for entry, member in zip(entries, family['members']):
+            count['occurrences'] += 1
+            if 'from' in entry:
+                require('reuses' not in member, 'an inherited member needs no reuse link: ' + member['label'])
+                count['inherited'] += 1
+            elif 'reuses' in member:
+                link = member['reuses']
+                require(isinstance(link, dict) and link.get('family') in families and link['family'] != family_id and
+                        any(other['label'] == link.get('label') and member_key(other) == member_key(member)
+                            for other in families[link['family']]['members']),
+                        'a reuse link names an existing member with the same key: ' + member['label'])
+                count['reused'] += 1
+            count['route:' + member_route(git, rev, family_id, member, counterexamples, mutants)] += 1
+    for count in counts.values():
+        count['distinct'] = count['occurrences'] - count['inherited'] - count['reused']
+    return families, {role: dict(count) for role, count in counts.items()}
 
 
 def clean_payload(git, rev):

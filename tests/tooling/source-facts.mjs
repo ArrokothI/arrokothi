@@ -835,8 +835,105 @@ function helpers(source) {
   };
 }
 
+// ---------------------------------------------------------------------------------------------
+// Design 05 D04-CHK-03 structural census: a runner's member container, never executed. Elements of
+// its array-literal declaration and of top-level literal pushes are members, each labelled by its
+// first string (an array element) or its `id` (an object element). Every other top-level statement
+// that mentions the container is classified `reads`, `modifies` (an element's contents) or `adds`.
+
+function elementLabel(node) {
+  node = unwrapTypes(node);
+  const text = (value) => value && (ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value)) ? value.text : null;
+  if (ts.isArrayLiteralExpression(node)) return text(node.elements[0] && unwrapTypes(node.elements[0]));
+  if (ts.isObjectLiteralExpression(node)) {
+    for (const property of node.properties) {
+      if (ts.isPropertyAssignment(property) && !ts.isComputedPropertyName(property.name) &&
+          (property.name.text === 'id' || property.name.text === 'name')) return text(unwrapTypes(property.initializer));
+    }
+  }
+  return null;
+}
+
+function rootName(node) {
+  while (ts.isElementAccessExpression(node) || ts.isPropertyAccessExpression(node) || ts.isParenthesizedExpression(node)) {
+    node = node.expression;
+  }
+  return ts.isIdentifier(node) ? node.text : null;
+}
+
+function depth(node) {
+  let count = 0;
+  while (ts.isElementAccessExpression(node) || ts.isPropertyAccessExpression(node)) { count += 1; node = node.expression; }
+  return count;
+}
+
+function container(source, name) {
+  const element = (node) => ({ label: elementLabel(node), line: lineColumn(source, node.getStart(source)).line });
+  let declaration = null;
+  const statements = [];
+  const constants = [];
+  for (const statement of source.statements) {
+    if (ts.isVariableStatement(statement)) {
+      for (const declared of statement.declarationList.declarations) {
+        if (!ts.isIdentifier(declared.name)) continue;
+        const initializer = declared.initializer && unwrapTypes(declared.initializer);
+        if (initializer && (ts.isStringLiteral(initializer) || ts.isNoSubstitutionTemplateLiteral(initializer))) {
+          constants.push({ name: declared.name.text, line: lineColumn(source, declared.getStart(source)).line });
+        }
+        if (declared.name.text === name && declaration === null) {
+          declaration = { line: lineColumn(source, declared.getStart(source)).line,
+            kind: initializer && ts.isArrayLiteralExpression(initializer) ? 'array' : 'computed',
+            elements: initializer && ts.isArrayLiteralExpression(initializer) ?
+              initializer.elements.filter(item => !ts.isOmittedExpression(item)).map(element) : [] };
+          if (declaration.kind === 'array' && initializer.elements.some(item => ts.isSpreadElement(item))) declaration.kind = 'computed';
+          continue;
+        }
+      }
+    }
+    if (declaration === null || !identifiers(statement).has(name)) continue;
+    let adds = false, modifies = false;
+    const visit = (node) => {
+      if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) &&
+          ts.isIdentifier(node.expression.expression) && node.expression.expression.text === name &&
+          ['push', 'unshift', 'splice', 'fill', 'copyWithin', 'pop', 'shift', 'reverse', 'sort'].includes(node.expression.name.text)) adds = true;
+      if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+          node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+        const targets = ts.isArrayLiteralExpression(node.left) ? node.left.elements : [node.left];
+        for (const target of targets) {
+          if (rootName(target) !== name) continue;
+          if (ts.isIdentifier(target) || depth(target) === 1) adds = true;
+          else modifies = true;
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(statement);
+    const line = lineColumn(source, statement.getStart(source)).line;
+    const call = ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) ? statement.expression : null;
+    const literalPush = adds && call && ts.isPropertyAccessExpression(call.expression) &&
+      ts.isIdentifier(call.expression.expression) && call.expression.expression.text === name &&
+      call.expression.name.text === 'push' && call.arguments.every(argument => !ts.isSpreadElement(argument));
+    if (literalPush) statements.push({ line, class: 'adds', literal: true, elements: call.arguments.map(element) });
+    else statements.push({ line, class: adds ? 'adds' : modifies ? 'modifies' : 'reads', literal: false });
+  }
+  return { name, declaration, statements, constants };
+}
+
+// A top-level `for (... of [ ... ])` whose iterable is an array literal: its elements are members too.
+function loopElements(source, line) {
+  for (const statement of source.statements) {
+    if (!ts.isForOfStatement(statement) || lineColumn(source, statement.getStart(source)).line !== line) continue;
+    const iterable = unwrapTypes(statement.expression);
+    if (!ts.isArrayLiteralExpression(iterable)) return { loop: line, elements: null };
+    return { loop: line, elements: iterable.elements.map(node => ({ label: elementLabel(node), line: lineColumn(source, node.getStart(source)).line })) };
+  }
+  return { loop: line, elements: null };
+}
+
 const operations = {
   imports: (request) => imports(parse(request.path, request.text)),
+  container: (request) => container(parse(request.path, request.text), request.name),
+  loop: (request) => loopElements(parse(request.path, request.text), request.line),
   helpers: (request) => helpers(parse(request.path, request.text)),
   prefix: (request) => prefix(request.pin, request.current, request.path, request.all_earlier === true),
   registrations: (request) => {

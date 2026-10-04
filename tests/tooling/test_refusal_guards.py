@@ -12,6 +12,8 @@ import test_corpus_tools as corpus_tests
 import test_research_tools as research_tests
 import test_adoption_format as format_tests
 import test_target_tools as target_tests
+import test_runner_targets as runner_tests
+import test_family_tools as family_tests
 
 tool = base.tool
 
@@ -504,7 +506,7 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.refuses('closure is not implemented', self.format_two(lambda d: d['origins'][1].update(state='complete')))
 
     def test_format_two_empty_tables(self):
-        self.refuses('are not implemented', self.format_two(lambda d: d.update(families=[{'id': 'x'}])))
+        self.refuses('areas are not implemented', self.format_two(lambda d: d.update(areas=[{'id': 'x'}])))
 
     def test_format_two_unmapped_revalidation(self):
         self.refuses('only a revision-2 mapping', self.format_two(lambda d: d['origins'][1].update(state='pending_revalidation')))
@@ -717,3 +719,302 @@ class RefusalGuardTests(base.RepositoryFixture):
     def test_move_presence(self):
         self.refuses('source gone and its destination present',
                      self.format_two(lambda d: d.update(moves=[{'from': 'source.md', 'to': 'sealed.txt', 'reason': 'r'}])))
+
+    # Design 05 step 7: target-set and multi-edit mutants (F3).
+    def target_registry(self, case_change=None, mutant=None):
+        for path in (tool.CATALOG_REPORTER, tool.REACH_COVERAGE):
+            self.write(path, (target_tests.ROOT / path).read_text())
+        self.write('src/value.mjs', runner_tests.SOURCE)
+        self.write('tests/a.test.mjs', runner_tests.TESTS)
+        case = {'id': 'targets', 'targets': {'flags': ['--test'], 'files': ['tests/a.test.mjs']},
+                'files': ['src/value.mjs', 'tests/a.test.mjs'], 'timeout_seconds': 60, 'output_limit_bytes': 1048576,
+                'mutants': [mutant or runner_tests.mutant('kill', 'return n + 1;', 'return n + 2;')]}
+        if case_change:
+            case_change(case)
+        self.document('registry.json', {'version': 1, 'cases': [case]})
+        rev = self.commit('target registry')
+        return lambda: tool.mutations(self.reader, rev, 'registry.json')
+
+    def test_multi_edit_shape(self):
+        self.refuses('two or more edits', self.target_registry(mutant=runner_tests.mutant('m', edits=[('return n + 1;', 'x')])))
+
+    def test_target_case_without_argv(self):
+        self.refuses('declares targets instead of argv', self.target_registry(lambda case: case.update(argv=['node'])))
+
+    def test_target_flags(self):
+        self.refuses('without their own reporter', self.target_registry(
+            lambda case: case['targets'].update(flags=['--test', '--test-reporter=spec'])))
+
+    def test_target_files(self):
+        self.refuses('names its test files', self.target_registry(lambda case: case['targets'].update(files=[])))
+
+    def test_target_expected_leaves(self):
+        self.refuses('names its expected target leaves', self.target_registry(
+            mutant=runner_tests.mutant('m', 'return n + 1;', 'return n + 2;', expected=[])))
+
+    def test_target_expected_in_control(self):
+        self.refuses('expected target leaves absent', self.target_registry(
+            mutant=runner_tests.mutant('m', 'return n + 1;', 'return n + 2;', expected=[('tests/a.test.mjs', ['absent'])])))
+
+    # Design 05 step 7: the family census and member routes (P1-M).
+    def census(self, change=None, files=None, observed=None, extra=(), **table):
+        fixture = family_tests.FamilyCensusTests
+        self.toolchain = target_tests.pinned_toolchain()
+        fixture.build(self, files or {'runner.mjs': family_tests.RUNNER}, observed)
+        family = fixture.family(self)
+        if change:
+            change(family)
+        return lambda: fixture.table(self, family, *[row(self) if callable(row) else row for row in extra], **table)
+
+    def route(self, route):
+        return self.census(lambda family: family['members'][0].update(route=route))
+
+    def part(self, part, files=None, **census):
+        return self.census(lambda family: family['census'].update(parts=[part], **census), files)
+
+    def test_census_unlabelled_element(self):
+        self.refuses('census element without a label', self.census(files={'runner.mjs': family_tests.RUNNER.replace('["M2 second",', '[label,')}))
+
+    def test_route_kind(self):
+        self.refuses('needs a known route', self.route({'kind': 'credit'}))
+
+    def test_route_mutation(self):
+        self.refuses('obligation is this member', self.route({'kind': 'mutation', 'case': 'c', 'mutant': 'm'}))
+
+    def test_route_witness(self):
+        self.refuses('names a held or superseded counterexample', self.route({'kind': 'witness', 'counterexample': 'cx'}))
+
+    def test_route_no_longer_applicable(self):
+        self.refuses('its reason and authority', self.route({'kind': 'no_longer_applicable', 'reason': 'gone'}))
+
+    def test_route_equivalence(self):
+        self.refuses('needs its argument', self.route({'kind': 'equivalence'}))
+
+    def test_route_survivor(self):
+        self.refuses('its finding and owner', self.route({'kind': 'survivor', 'finding': 'missed'}))
+
+    def test_route_limit(self):
+        self.refuses('names its record', self.route({'kind': 'limit'}))
+
+    def test_family_role(self):
+        self.refuses('mutation runner or a mixed origin', self.census(lambda family: family.update(role='probe')))
+
+    def test_family_member_keys(self):
+        self.refuses('member keys repeat', self.census(
+            lambda family: family['members'][1].update(label='M1 second'),
+            files={'runner.mjs': family_tests.RUNNER.replace('M2 second', 'M1 second')}))
+
+    def child(self, part_change=None, member_change=None):
+        def build(test):
+            part = {'kind': 'inherits', 'family': 'family.runner'}
+            if part_change:
+                part_change(part)
+            row = family_tests.FamilyCensusTests.family(test, 'runner.mjs', [part], id='family.child',
+                                                        census={'count_assertions': []})
+            if member_change:
+                member_change(row['members'][0])
+            return row
+        return build
+
+    def test_family_inherited_reuse(self):
+        self.refuses('needs no reuse link', self.census(extra=[self.child(member_change=lambda member: member.update(
+            reuses={'family': 'family.runner', 'label': 'M1 first'}))]))
+
+    def test_family_reuse_target(self):
+        self.refuses('names an existing member', self.census(lambda family: family['members'][0].update(
+            reuses={'family': 'family.runner', 'label': 'M1 first'})))
+
+    def test_family_origin(self):
+        self.refuses('whole-file artifact origin', self.census(lambda family: family.update(origin='absent')))
+
+    COMPUTED = family_tests.RUNNER.replace('const mutations = [', 'const mutations = base.concat([').replace(
+        '];\nmutations.push', ']);\nmutations.push')
+
+    def filter_part(self, source, **extra):
+        return {'kind': 'structural', 'container': 'mutations',
+                'initializer': {'kind': 'filter', 'source': source, 'container': 'mutations', 'pattern': '^M[12] ', **extra}}
+
+    def test_census_source_shape(self):
+        self.refuses('names a family or a path', self.part(self.filter_part({}), {'runner.mjs': self.COMPUTED}))
+
+    def test_census_source_family(self):
+        self.refuses('census source family absent', self.part(self.filter_part({'family': 'absent'}), {'runner.mjs': self.COMPUTED}))
+
+    def test_census_source_digest(self):
+        self.refuses('census source digest differs', self.part(self.filter_part({'family': 'family.runner', 'digest': '0' * 64}), {'runner.mjs': self.COMPUTED}))
+
+    def test_census_kind(self):
+        self.refuses('unknown census kind', self.part({'kind': 'guess'}))
+
+    def test_census_container(self):
+        self.refuses('census container absent', self.part({'kind': 'structural', 'container': 'mutants'}))
+
+    def test_census_python_only(self):
+        self.refuses('censuses Python runners only', self.part({'kind': 'python_ast', 'container': 'mutations'}))
+
+    def generator(self, **changes):
+        row = {'statement': 6, 'pattern': 'M3', 'count_anchor': 'assert.equal(mutations.length, 3);',
+               'inputs': [{'path': 'runner.mjs', 'count': 3}], 'input_revision': 'x'}
+        row.update(changes)
+        return row
+
+    def test_census_generator_statement_once(self):
+        part = {'kind': 'structural', 'container': 'mutations', 'generators': [self.generator(), self.generator()]}
+        self.refuses('one generator per statement', self.part(part))
+
+    def test_census_generator_claims_a_statement(self):
+        part = {'kind': 'structural', 'container': 'mutations', 'generators': [self.generator(statement=99)]}
+        self.refuses('claims no adding statement', self.part(part))
+
+    def test_census_inherited_family(self):
+        self.refuses('inherited family absent', self.part({'kind': 'inherits', 'family': 'absent'}))
+
+    def test_census_filter_pattern(self):
+        self.refuses('filter regex absent from the runner', self.part(self.filter_part({'family': 'family.runner'}), {'runner.mjs': self.COMPUTED}))
+
+    def test_census_loop_line(self):
+        self.refuses('names its line in a JS runner', self.part({'kind': 'loop'}))
+
+    def test_census_loop_statement(self):
+        self.refuses('no top-level for-of over an array literal', self.part({'kind': 'loop', 'line': 1}))
+
+    def test_census_bindings(self):
+        self.refuses('bindings absent from the runner', self.part({'kind': 'bindings', 'names': ['anchor'], 'label': 'M1'}))
+
+    def test_census_binding_label(self):
+        files = {'runner.mjs': family_tests.RUNNER + family_tests.BINDINGS}
+        self.refuses('a label the runner carries', self.part({'kind': 'bindings', 'names': ['anchor'], 'label': 'absent'}, files))
+
+    def test_census_array_initializer(self):
+        part = {'kind': 'structural', 'container': 'mutations', 'initializer': {'kind': 'inherits', 'family': 'family.runner'}}
+        self.refuses('needs no initializer part', self.part(part))
+
+    def test_census_computed_initializer(self):
+        self.refuses('needs its initializer part', self.part({'kind': 'structural', 'container': 'mutations'},
+                                                             {'runner.mjs': self.COMPUTED}))
+
+    def test_census_filtered_line_label(self):
+        part = self.filter_part({'family': 'family.runner'}, over='lines', pattern='M1', label='^(?:nothing)$')
+        self.refuses('filtered line without a label', self.part(part, {'runner.mjs': self.COMPUTED + '// /M1/\n'}))
+
+    def test_census_filter_container(self):
+        part = self.filter_part({'family': 'family.runner'}, container='absent', pattern='M1')
+        self.refuses('filter source container absent', self.part(part, {'runner.mjs': self.COMPUTED + '// /M1/\n'}))
+
+    def generated_part(self, **changes):
+        return {'kind': 'structural', 'container': 'mutations', 'generators': [dict({
+            'statement': 3, 'pattern': r'site\((\w+)\)', 'count_anchor': 'const inventory = { "subject.ts": 2 };',
+            'inputs': [{'path': 'subject.ts', 'count': 2}], 'input_revision': None}, **changes)]}
+
+    def generator_census(self, **changes):
+        files = {'runner-gen.mjs': family_tests.GENERATOR, 'subject.ts': 'site(alpha); site(beta);\n'}
+
+        def change(family):
+            family['census'] = {'parts': [self.generated_part(input_revision=self.pin, **changes)]}
+            family['origin'] = self.origins['runner-gen.mjs']
+            family['members'] = [{'label': label, 'route': {'kind': 'pending'}} for label in
+                                 ('G0 fixed', 'G1 site at subject.ts:alpha', 'G2 site at subject.ts:beta')]
+        fixture = family_tests.FamilyCensusTests
+        self.toolchain = target_tests.pinned_toolchain()
+        fixture.build(self, files)
+        family = fixture.family(self, 'runner-gen.mjs')
+        change(family)
+        return lambda: fixture.table(self, family)
+
+    def test_census_generator_pattern(self):
+        self.refuses('generator regex absent from the runner', self.generator_census(pattern='absent'))
+
+    def test_census_generator_anchor(self):
+        self.refuses('generator count anchor absent', self.generator_census(count_anchor='absent'))
+
+    def test_census_generator_literal(self):
+        self.refuses('generator counts differ from the runner literal',
+                     self.generator_census(inputs=[{'path': 'subject.ts', 'count': 3}]))
+
+    def test_census_generator_input(self):
+        self.refuses('generator count mismatch at the input revision',
+                     self.generator_census(inputs=[{'path': 'runner-gen.mjs', 'count': 2}]))
+
+    def test_census_member_labels(self):
+        self.refuses('family members need labels', self.census(lambda family: family['members'][0].update(label='')))
+
+    def test_census_cycle(self):
+        self.refuses('cyclic family inheritance', self.census(
+            lambda family: family['census'].update(parts=[{'kind': 'inherits', 'family': 'family.child'}], count_assertions=[]),
+            extra=[self.child()]))
+
+    def test_census_reading_reason(self):
+        self.refuses('census: reading needs its reason', self.census(lambda family: family.update(census={'reading': ''})))
+
+    def test_census_parts(self):
+        self.refuses('needs census parts or census: reading', self.census(lambda family: family.update(census={})))
+
+    def test_census_member_count(self):
+        self.refuses('census has 3 members, the family lists 2', self.census(lambda family: family['members'].pop()))
+
+    def test_census_member_label(self):
+        self.refuses('census member differs', self.census(lambda family: family['members'][0].update(label='M1 renamed')))
+
+    def test_census_generated_site(self):
+        def change(family):
+            family['members'][1]['label'], family['members'][2]['label'] = 'G1 site at subject.ts:beta', 'G2 site at subject.ts:alpha'
+        files = {'runner-gen.mjs': family_tests.GENERATOR, 'subject.ts': 'site(alpha); site(beta);\n'}
+        fixture = family_tests.FamilyCensusTests
+        self.toolchain = target_tests.pinned_toolchain()
+        fixture.build(self, files)
+        family = fixture.family(self, 'runner-gen.mjs', [self.generated_part(input_revision=self.pin, label_contains='at {file}:{group}')],
+                                ('G0 fixed', 'G1 site at subject.ts:alpha', 'G2 site at subject.ts:beta'), census={'count_assertions': []})
+        change(family)
+        self.refuses('generated member label lacks its site', lambda: fixture.table(self, family))
+
+    def test_count_assertion_anchor(self):
+        self.refuses('count assertion anchor absent', self.census(
+            lambda family: family['census'].update(count_assertions=[{'anchor': 'absent', 'parts': [0]}])))
+
+    def test_count_assertion_parts(self):
+        self.refuses('count assertion names unknown parts', self.census(
+            lambda family: family['census']['count_assertions'][0].update(parts=[4])))
+
+    def test_count_assertion_size(self):
+        self.refuses('the runner asserts', self.census(files={'runner.mjs': family_tests.RUNNER.replace('length, 3', 'length, 4')},
+                     change=lambda family: family['census'].update(
+                         count_assertions=[{'anchor': 'assert.equal(mutations.length, 4);', 'parts': [0]}])))
+
+    def test_count_assertion_declared(self):
+        self.refuses('undeclared count assertion', self.census(lambda family: family['census'].update(count_assertions=[])))
+
+    def observed_census(self, labels=('M1 first', 'M2 second', 'M3 third'), summary='3/3 rejected', **changes):
+        fixture = family_tests.FamilyCensusTests
+        self.toolchain = target_tests.pinned_toolchain()
+        fixture.build(self, {'runner.mjs': family_tests.RUNNER}, lambda tree: family_tests.output(tree, list(labels), summary))
+        spec = fixture.observed(self, **changes)
+        return lambda: fixture.table(self, fixture.family(self, observed=spec))
+
+    def test_observed_shape(self):
+        self.refuses('observed output needs revision', self.observed_census(line=None))
+
+    def test_observed_digest(self):
+        self.refuses('observed output digest mismatch', self.observed_census(sha256='0' * 64))
+
+    def test_observed_runner_at_tree(self):
+        def tree():
+            self.write('runner.mjs', family_tests.RUNNER + '// later\n')
+            return self.commit('later runner')
+        fixture = family_tests.FamilyCensusTests
+        self.toolchain = target_tests.pinned_toolchain()
+        fixture.build(self, {'runner.mjs': family_tests.RUNNER},
+                      lambda pin: family_tests.output(pin, ['M1 first', 'M2 second', 'M3 third']))
+        spec = fixture.observed(self, tree=tree())
+        self.refuses('runner at the observed tree differs', lambda: fixture.table(self, fixture.family(self, observed=spec)))
+
+    def test_observed_partial(self):
+        self.refuses('partial output', self.observed_census(summary='crashed'))
+
+    def test_observed_total(self):
+        self.refuses('another member total', self.observed_census(summary='4/4 rejected'))
+
+    def test_observed_members(self):
+        self.refuses('observed members differ', self.observed_census(labels=('M1 first', 'M2 second', 'M4 other')))
+
+    def test_observed_names(self):
+        self.refuses('does not name its command or tree', self.observed_census(names=['command: node other.mjs']))

@@ -8576,7 +8576,3269 @@
     {"member": "tests/conformance/architecture/workflow-boundaries.test.ts:224:3@3ebe893d8b44", "origins": ["artifact-2851ce39da9cf13d84c1e0cb", "artifact-893f58b7b13bd47ccf7f8f30"], "file": "tests/conformance/architecture/workflow-boundaries.test.ts", "pin_blob": "3ebe893d8b447b68556d347f2c47cb77d62210a7", "title": "a WorkflowDefinition can only contain serializable data", "title_kind": "literal", "status": "preserved", "reasons": [], "scope": "whole_file", "current": [224, 3], "reads": "a82ec0a8ae735a1f81202d9e1233710ff63741b8b1a23353379161fd9d568edb", "register": null, "helper_closure": "unchanged", "production_changed": [], "repository_read_changed": []},
     {"member": "tests/conformance/architecture/workflow-boundaries.test.ts:242:3@3ebe893d8b44", "origins": ["artifact-2851ce39da9cf13d84c1e0cb", "artifact-893f58b7b13bd47ccf7f8f30"], "file": "tests/conformance/architecture/workflow-boundaries.test.ts", "pin_blob": "3ebe893d8b447b68556d347f2c47cb77d62210a7", "title": "Agent and Workflow Stage handling never creates a child Execution", "title_kind": "literal", "status": "preserved", "reasons": [], "scope": "whole_file", "current": [242, 3], "reads": "a82ec0a8ae735a1f81202d9e1233710ff63741b8b1a23353379161fd9d568edb", "register": null, "helper_closure": "unchanged", "production_changed": [], "repository_read_changed": []}
   ],
-  "families": [],
+  "families": [
+    {
+      "id": "family.k12c1.ablations",
+      "origin": "artifact-defc1c19533790036d5d14f3",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations",
+            "generators": [
+              {
+                "statement": 21,
+                "pattern": "\\$\\{diagnosticIdentity\\(([^)]*)\\)\\}",
+                "count_anchor": "const rendererInventory = { \"coordinator.ts\": 30, \"outcome.ts\": 1 };",
+                "inputs": [
+                  {
+                    "path": "packages/kernel/src/coordinator.ts",
+                    "count": 30
+                  },
+                  {
+                    "path": "packages/kernel/src/outcome.ts",
+                    "count": 1
+                  }
+                ],
+                "input_revision": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+                "label_contains": "{file}:{line} ({group})"
+              }
+            ]
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/08-correction-ablations.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/ablations.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+?): exit=",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) correction ablations rejected\\.",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/ablations.mjs"
+        ],
+        "sha256": "7234e824586d48f0062b07c5afc3d9890f85c4bafc5ea3da012519ff55a7d4c8"
+      },
+      "members": [
+        {
+          "label": "I1 restore old value validator for every Activation consumer",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "I2 inverse X24: refuse lone surrogates but permit long strings",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "I3 Outcome-only old validator",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "I4 takeover/protocol-only old validator",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "I5 recovery-only old validator",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "I6 boxed strings treated as usable identities",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "I7 unbounded unknown-field diagnostics",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D35 unbounded identity at coordinator.ts:1335 (intent.activation.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D1 unbounded identity at coordinator.ts:1462 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D2 unbounded identity at coordinator.ts:1473 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D3 unbounded identity at coordinator.ts:1486 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D4 unbounded identity at coordinator.ts:1486 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D5 unbounded identity at coordinator.ts:1494 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D6 unbounded identity at coordinator.ts:1503 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D7 unbounded identity at coordinator.ts:1503 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D8 unbounded identity at coordinator.ts:1528 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D9 unbounded identity at coordinator.ts:1529 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D10 unbounded identity at coordinator.ts:1550 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D11 unbounded identity at coordinator.ts:1574 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D12 unbounded identity at coordinator.ts:1592 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D13 unbounded identity at coordinator.ts:1615 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D14 unbounded identity at coordinator.ts:1683 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D15 unbounded identity at coordinator.ts:1692 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D16 unbounded identity at coordinator.ts:1712 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D17 unbounded identity at coordinator.ts:1727 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D18 unbounded identity at coordinator.ts:1737 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D19 unbounded identity at coordinator.ts:1745 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D20 unbounded identity at coordinator.ts:1745 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D21 unbounded identity at coordinator.ts:1754 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D22 unbounded identity at coordinator.ts:1768 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D23 unbounded identity at coordinator.ts:1864 (value)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D24 unbounded identity at coordinator.ts:1952 (named.activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D25 unbounded identity at coordinator.ts:1996 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D26 unbounded identity at coordinator.ts:2001 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D27 unbounded identity at coordinator.ts:2007 (activationId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D28 unbounded identity at coordinator.ts:2007 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D29 unbounded identity at coordinator.ts:2241 (record.executionId)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D30 unbounded identity at outcome.ts:327 (emissionKey)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D31 raw captured member path before root prefix",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D32 raw captured constructor message",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D33 identity length limit removed",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "D34 diagnostic ASCII guard removed",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R1 structured refusal executionId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R2 code availability compared through diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R6 replay keyed by diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R8 identity limit 127",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R10 message limit removed",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R11 hold update lost",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R12 explicit protocol diagnostic made lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R4 Outcome compares diagnostic spellings",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R5 controls compare diagnostic spellings",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R7 Emission keys compare diagnostic spellings",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R9 path limit 129",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G1 restore unbounded detail list",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G2 drop omitted code evidence",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G3 fail to count repeated omitted code",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G4 details 7",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G5 details 9",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G6 path limit 127",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G7 message limit 1023",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G8 message limit 1025",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G9 lose captured suffix multiplicity",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G10 reverse detail order",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G11 reverse summary code order",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G12 lose root label on detail",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G13 project after root prefix",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "G14 inherited root metadata",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.ablations-07",
+      "origin": "artifact-d3c77a74ad17db7c908e8b60",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/47-round7-ablations.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/ablations-07.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+?): exit=",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) round-7 mutants rejected by the full Kernel suite, each by an enforcement rule test",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/ablations-07.mjs"
+        ],
+        "sha256": "7ada4fed5afc2b592234413c103034c73ddf9bf0d7b0ec8cea16088cd3bb7051"
+      },
+      "members": [
+        {
+          "label": "R1 quoted binding name reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R2 computed binding name reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R3 assignment destructuring reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R4 bare binding reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R5 a cast makes the optional controlScopes required",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R6 a rest copy then an optional read",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R7 an in-operator guard consults the prototype chain",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R8 a String.prototype method replaces an index read",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R9 the occurrences suffix access respelled as an ordinary optional access",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R11 a lib global read after load",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R12 a caller envelope read directly",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C1 review 10: takeover receipt minted through this.#mint",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C2 review 10: takeover index advanced by a postfix increment",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C3 compound assignment in an initializer",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C4 early append through a const alias",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C5 early append through a fresh container holding a Kernel list",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C6 early write inside a local closure",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C15 an early write through a binding set by logical assignment",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C16 an early truncation through an object whose constructor keeps a Kernel list",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C7 a Kernel list widened, disguised as a string and appended to through a helper",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C8 foreign code after the decision is being built",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C9 a refusal recorded without exiting",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C10 a builder that also changes module state",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C11 the Driver handed the attempt before it is recorded",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C12 a protocol hold written before its record is built",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C13 the recovery answer projected after the commit (round 6 H7)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "C14 holds written before their history append (round 6 H3)",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.ablations-06",
+      "origin": "artifact-89a6c743f27e1e2697eab84d",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/37-round6-ablations.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/ablations-06.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+?): exit=",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) round-6 mutants rejected by the full Kernel suite",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/ablations-06.mjs"
+        ],
+        "sha256": "201fe36c57db4a70926daf6439a67546130f592e8a257bde99ad720f65160852"
+      },
+      "members": [
+        {
+          "label": "H1 hold history built from an entry whose resultingEpoch is optional (review 09's read)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H2 the apply step reads an optional member of the planned commit",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H3 apply step writes the holds before appending their history",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H4 protocol report mutates the hold, then builds its history and answer (review 09's order)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H5 code hold mutated, then its history record built",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H6 takeover replaces the attempt, then builds its clearing record",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H7 recovery answer projected after the decision is applied",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H8 prebuilt recovery answer describes the holds before the decision",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H9 takeover clearing record not retained",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H10 takeover record loses its resulting epoch",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H11 declaration records claim attempt-submission authority",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H12 takeover receipt token through the diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H13 takeover receipt not retained",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H14 takeover acceptance index not advanced",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H15 ordinary optional controlScopes read restored",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H16 ordinary optional isSafeToReplace call restored",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H17 ordinary optional mailboxCapacity read restored",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H18 ordinary optional emissionsPerOutcome read restored",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H19 hostMember answers from Object.prototype",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H20 hostMember answers from Function.prototype",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H21 hostMember ignores members the host's own prototype supplies",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "H22 descriptor field read without its own-value check",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.diagnostic-ablations-04",
+      "origin": "artifact-877aada38cc20e894783c9d4",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/31-diagnostic-work-ablations.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/diagnostic-ablations-04.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+?): exit=",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) diagnostic/string-work mutations rejected; whole-packet review remains separate",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/diagnostic-ablations-04.mjs"
+        ],
+        "sha256": "32c52fbba25118d8a306b3ad665f921a318a6e4acf5e536446559613f8fc3d45"
+      },
+      "members": [
+        {
+          "label": "T1 restore all diagnostic constructor/name lookups",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "T2 reintroduce one diagnostic constructor read",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "T3 array inspection of thrown/revoked values",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "T4 remove the pre-read oversized-string guard",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-04",
+      "origin": "artifact-81e241a96919041de351b11f",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "all"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "X1 Activation identity capped at 2^20 code units",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X2 empty Activation identity treated as malformed",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X3 replay lookup skipped above the old 65,536 limit",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X8 Emission ID derived from diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X9 result ID derived from diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X10 acknowledged disposition names diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X11 code hold stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X12 recovery history stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X13 delivery row stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X14 resolved exchange stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X15 Outcome receipt token uses diagnostic Execution spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X16 history actor namespace rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X17 decision answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X18 takeover answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X19 recovery answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X20 protocol answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X21 protocol hold stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X22 Emission record activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X23 result record activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-06",
+      "origin": "artifact-9f0622023057578b9b1210b6",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "python_ast",
+            "container": "MUTANTS"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "Z1-mint-receipt-token",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z2-creation-receipt-token",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z3-activation-executionId",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z4-activation-activationId",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z5-takeover-activation-copy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z6-replay-map-key",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z7-event-destination",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z8-redeliver-answer",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z9-dispatch-grant-exec",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z10-acknowledged-ids",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z11-takeover-answer-batch-receipt",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z12-view-activation-id",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z13-view-execution-id",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z14-view-queued-ids",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z15-view-mailbox-destination",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z16-view-hold-activation",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W1-located-drops-weight",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W2-rootissues-drops-weight",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W3-explain-drops-weight",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W4-suffix-first-code-only",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W5-details-unbounded-path",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W6-render-counts-suffix-as-one",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W7-suffix-steals-detail-slot",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "W8-order-last-occurrence",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.ablations-03",
+      "origin": "artifact-5354ca6e028547cc6e88a7e4",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations",
+            "initializer": {
+              "kind": "filter",
+              "source": {
+                "family": "family.k12c1.review-04",
+                "digest": "98a6ac4c3c6e520bedffe8b2ff25e089c93c10ec4ca2c9de3766a5aa34909c71"
+              },
+              "container": "all",
+              "pattern": "^X(?:[89]|1\\d|2[0-3]) "
+            }
+          }
+        ],
+        "count_assertions": [
+          {
+            "anchor": "assert.equal(mutations.length, 16);",
+            "parts": [
+              0
+            ],
+            "scope": "initializer"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-05/27-revision4-ablations.txt",
+        "tree": "2613f2b8dee37c934743d9b730e925705086c4c9",
+        "runner_path": "docs/development/work/K1.2-correction-01/ablations-03.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+?): exit=",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) revision-4 ablations rejected",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: 2613f2b8dee37c934743d9b730e925705086c4c9",
+          "command: node docs/development/work/K1.2-correction-01/ablations-03.mjs"
+        ],
+        "sha256": "ed0de8cd0804231b3eaece7d45f20dea87a46d797b9444916d809fc7db82bae5"
+      },
+      "members": [
+        {
+          "label": "X8 Emission ID derived from diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X9 result ID derived from diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X10 acknowledged disposition names diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X11 code hold stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X12 recovery history stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X13 delivery row stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X14 resolved exchange stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X15 Outcome receipt token uses diagnostic Execution spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X16 history actor namespace rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X17 decision answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X18 takeover answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X19 recovery answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X20 protocol answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X21 protocol hold stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X22 Emission record activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X23 result record activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V1 restore unbounded per-position issues",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V2 skip siblings after eight diagnostics",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V3 count each summarized suffix as one issue",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V4 inherited multiplicity affects diagnostics",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V5 retain unbounded first-detail messages",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.ablations-03-rebound-06",
+      "origin": "artifact-580251cfb343edeaf49a8661",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "inherits",
+            "family": "family.k12c1.ablations-03",
+            "container": "mutations",
+            "digest": "fef23a334dd15f427bed658f915f8a48914b08253ca918b53b879ee5e83b1dc2"
+          }
+        ],
+        "count_assertions": [
+          {
+            "anchor": "if (count !== 4 || mutations.length !== 21) throw Error(\"revision-4 mutation inventory changed\");",
+            "parts": [
+              0
+            ]
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/38-revision4-ablations-rebound.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/ablations-03-rebound-06.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+?): exit=",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) revision-4 ablations rejected",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/ablations-03-rebound-06.mjs"
+        ],
+        "sha256": "9a650f11c79bfa3ae688288ba53b0d67a715d13e0d9168f53871deae7ec9c77f"
+      },
+      "members": [
+        {
+          "label": "X8 Emission ID derived from diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X9 result ID derived from diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X10 acknowledged disposition names diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X11 code hold stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X12 recovery history stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X13 delivery row stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X14 resolved exchange stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X15 Outcome receipt token uses diagnostic Execution spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X16 history actor namespace rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X17 decision answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X18 takeover answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X19 recovery answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X20 protocol answer activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X21 protocol hold stores diagnostic Activation spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X22 Emission record activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X23 result record activationId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V1 restore unbounded per-position issues",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V2 skip siblings after eight diagnostics",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V3 count each summarized suffix as one issue",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V4 inherited multiplicity affects diagnostics",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "V5 retain unbounded first-detail messages",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.ablations-04",
+      "origin": "artifact-ca6184769b762384a49e1d67",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations",
+            "initializer": {
+              "kind": "filter",
+              "over": "lines",
+              "source": {
+                "family": "family.k12c1.review-06",
+                "digest": "b2906ec25130ddd22073cf6bd47694f9fb78ef2b96b6698b7b617a5926550a0e"
+              },
+              "pattern": "^\\s*\"Z\\d+-.*\": \\(C,.*\\),$",
+              "label": "^\\s*\"([^\"]+)\""
+            }
+          }
+        ],
+        "count_assertions": [
+          {
+            "anchor": "assert.equal(mutations.length, 16);",
+            "parts": [
+              0
+            ],
+            "scope": "initializer"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/30-review6-exact-ablations.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/ablations-04.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+?): exit=",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) review-06 coordinate ablations rejected by the maintained exact-coordinate oracle within the full Kernel suite",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/ablations-04.mjs"
+        ],
+        "sha256": "d720e2a6f1937973532c9a3c83214a968bc0efb7615a87d694d38e16bba0fb28"
+      },
+      "members": [
+        {
+          "label": "Z1-mint-receipt-token",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z2-creation-receipt-token",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z3-activation-executionId",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z4-activation-activationId",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z5-takeover-activation-copy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z6-replay-map-key",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z7-event-destination",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z8-redeliver-answer",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z9-dispatch-grant-exec",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z10-acknowledged-ids",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z11-takeover-answer-batch-receipt",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z12-view-activation-id",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z13-view-execution-id",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z14-view-queued-ids",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z15-view-mailbox-destination",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "Z16-view-hold-activation",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12.ablations",
+      "origin": "artifact-fb7a16748e389543ef6bf980",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "ablations"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-01/07-original-ablations.txt",
+        "tree": "360538522be8c1b17d23948f632fd4f568a76ed0",
+        "runner_path": "docs/development/work/K1.2/ablations.mjs",
+        "line": "^(?:REJECTED|SURVIVED|NOT APPLICABLE) +(?P<label>\\S.*)$",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) ablations rejected by the kernel suite\\.",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: 360538522be8c1b17d23948f632fd4f568a76ed0",
+          "command: node docs/development/work/K1.2/ablations.mjs"
+        ],
+        "sha256": "269e96317f229e591366e9ce2c356ba5b58ab05245f666e5f163fc15484a59de"
+      },
+      "members": [
+        {
+          "label": "A1 acknowledge every queued Event, cursor-style",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A2 replay only while no exchange is open and the Execution is live (validation effectively first)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A3 no writer-epoch fence",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A4 takeover mints a new Activation ID",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A5 takeover leaves the epoch where it was",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A6 Effects silently stripped instead of refusing the Outcome",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A7 no B-5 terminal disposition at complete/fail",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A8 terminal disposition recorded as acknowledgment",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A9 redelivery ignores recovery holds",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A10 takeover allowed while pinned code is unavailable",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A11 unknown envelope fields ignored",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A12 Emission identity from a coordinator-wide counter",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A13 progress observed twice (validation and retention read separately)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A14 Emission capacity checked only after every element is read",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A15 await accepted as continue",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A16 an accepted Outcome keeps the exchange open (a second writer can commit)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B1 control falls back to visibility (inspect-only may take over, declare and report)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B2 recovery history dropped (holds leave no History)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B4 delivery attribution lost (every delivery pinned to epoch 1)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B5 acceptance index gaps (every Outcome consumes two positions)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B6 no post-callback revalidation (outer takeover commits on stale pre-callback state)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B8 ordinary visibility authorizes Outcome submission (no attempt grant required)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B9 hold-ending History claims control power for a Runtime submission",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B10 ordinary redelivery rotates the Runtime attempt grant",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B11 redelivery rotates only a takeover attempt grant",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B16 epoch-only partial fix, base-half currency dropped (K12-R11-ORDER-01 incomplete repair)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B17 malformed Activation identity refused before replay and terminal (decision-02 early return)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B18 malformed Activation identity treated as naming another exchange (decision-02 stale instead of authority/content)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B19 malformed-identity diagnostic returned or retained before submission authority (decision-02 identity check after currency)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.original-ablations-02",
+      "origin": "artifact-3305fd79471e685d75314668",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "inherits",
+            "family": "family.k12.ablations",
+            "container": "ablations",
+            "digest": "9ea4cecb45f440fe8d6c972bc1ecbeacbf926ef1cd91c3daa683c4909b501f55"
+          }
+        ],
+        "count_assertions": [
+          {
+            "anchor": "if (adaptedCount !== 4 || ablations.length !== 36) throw Error(\"original mutation inventory changed\");",
+            "parts": [
+              0
+            ]
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/14-original-ablations-adapted.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/original-ablations-02.mjs",
+        "line": "^(?:REJECTED|SURVIVED|NOT APPLICABLE) +(?P<label>\\S.*)$",
+        "summary": "(?P<passed>\\d+)/(?P<total>\\d+) ablations rejected by the kernel suite\\.",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/original-ablations-02.mjs"
+        ],
+        "sha256": "dd700ec7e8a38c7572f98436d3b2c3bbc1abcdbff0d686590bf604600caa1f82"
+      },
+      "members": [
+        {
+          "label": "A1 acknowledge every queued Event, cursor-style",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A2 replay only while no exchange is open and the Execution is live (validation effectively first)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A3 no writer-epoch fence",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A4 takeover mints a new Activation ID",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A5 takeover leaves the epoch where it was",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A6 Effects silently stripped instead of refusing the Outcome",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A7 no B-5 terminal disposition at complete/fail",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A8 terminal disposition recorded as acknowledgment",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A9 redelivery ignores recovery holds",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A10 takeover allowed while pinned code is unavailable",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A11 unknown envelope fields ignored",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A12 Emission identity from a coordinator-wide counter",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A13 progress observed twice (validation and retention read separately)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A14 Emission capacity checked only after every element is read",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A15 await accepted as continue",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "A16 an accepted Outcome keeps the exchange open (a second writer can commit)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B1 control falls back to visibility (inspect-only may take over, declare and report)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B2 recovery history dropped (holds leave no History)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B4 delivery attribution lost (every delivery pinned to epoch 1)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B5 acceptance index gaps (every Outcome consumes two positions)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B6 no post-callback revalidation (outer takeover commits on stale pre-callback state)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B8 ordinary visibility authorizes Outcome submission (no attempt grant required)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B9 hold-ending History claims control power for a Runtime submission",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B10 ordinary redelivery rotates the Runtime attempt grant",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B11 redelivery rotates only a takeover attempt grant",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B16 epoch-only partial fix, base-half currency dropped (K12-R11-ORDER-01 incomplete repair)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B17 malformed Activation identity refused before replay and terminal (decision-02 early return)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B18 malformed Activation identity treated as naming another exchange (decision-02 stale instead of authority/content)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B19 malformed-identity diagnostic returned or retained before submission authority (decision-02 identity check after currency)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.sweeps-08",
+      "origin": "artifact-38627d8cff9585853ff81a51",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "faults"
+          },
+          {
+            "kind": "structural",
+            "container": "reads"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/56-sweep-negative-controls.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/sweeps-08.mjs",
+        "line": "^(?:REJECTED|SURVIVED|OUTSIDE \\(expected\\)) (?:fault|read): (?P<label>.+?): (?:sweep \"|catalog sweep exit=)",
+        "summary": "ALL SWEEP NEGATIVE CONTROLS REJECTED; CLEAN CONTROLS PASSED",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/sweeps-08.mjs"
+        ],
+        "sha256": "3b5b7d566e6118919b2e7616415d93cfac7985e53fee5196050fb9aecb557082"
+      },
+      "members": [
+        {
+          "label": "review 11 default parameter: a helper whose default argument is the record mints early",
+          "route": {
+            "kind": "pending"
+          },
+          "key": "review-11-default"
+        },
+        {
+          "label": "review 11 shadowed undefined: a local named undefined advances the acceptance index",
+          "route": {
+            "kind": "pending"
+          },
+          "key": "review-11-shadowed"
+        },
+        {
+          "label": "C1 review 10: takeover receipt minted through this.#mint",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C1 review 10: takeover receipt minted through this.#mint"
+          }
+        },
+        {
+          "label": "C2 review 10: takeover index advanced by a postfix increment",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C2 review 10: takeover index advanced by a postfix increment"
+          }
+        },
+        {
+          "label": "C3 compound assignment in an initializer",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C3 compound assignment in an initializer"
+          }
+        },
+        {
+          "label": "C4 early append through a const alias",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C4 early append through a const alias"
+          }
+        },
+        {
+          "label": "C5 early append through a fresh container holding a Kernel list",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C5 early append through a fresh container holding a Kernel list"
+          }
+        },
+        {
+          "label": "C6 early write inside a local closure",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C6 early write inside a local closure"
+          }
+        },
+        {
+          "label": "C7 a Kernel list widened, disguised as a string and appended to through a helper",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C7 a Kernel list widened, disguised as a string and appended to through a helper"
+          }
+        },
+        {
+          "label": "C9 a refusal recorded without exiting",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C9 a refusal recorded without exiting"
+          }
+        },
+        {
+          "label": "C11 the Driver handed the attempt before it is recorded",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C11 the Driver handed the attempt before it is recorded"
+          }
+        },
+        {
+          "label": "C13 the recovery answer projected after the commit (round 6 H7)",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C13 the recovery answer projected after the commit (round 6 H7)"
+          }
+        },
+        {
+          "label": "C14 holds written before their history append (round 6 H3)",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C14 holds written before their history append (round 6 H3)"
+          }
+        },
+        {
+          "label": "C15 an early write through a binding set by logical assignment",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C15 an early write through a binding set by logical assignment"
+          }
+        },
+        {
+          "label": "C16 an early truncation through an object whose constructor keeps a Kernel list",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C16 an early truncation through an object whose constructor keeps a Kernel list"
+          }
+        },
+        {
+          "label": "C8 foreign code after the decision is being built",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C8 foreign code after the decision is being built"
+          }
+        },
+        {
+          "label": "C10 a builder that also changes module state",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C10 a builder that also changes module state"
+          }
+        },
+        {
+          "label": "C12 a protocol hold written before its record is built",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "C12 a protocol hold written before its record is built"
+          }
+        },
+        {
+          "label": "review 11 READ-01: inspection reads a member introduced through a Pick cast",
+          "route": {
+            "kind": "pending"
+          },
+          "key": "review-11-READ-01"
+        },
+        {
+          "label": "R1 quoted binding name reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R1 quoted binding name reads the optional controlScopes"
+          }
+        },
+        {
+          "label": "R2 computed binding name reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R2 computed binding name reads the optional controlScopes"
+          }
+        },
+        {
+          "label": "R3 assignment destructuring reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R3 assignment destructuring reads the optional controlScopes"
+          }
+        },
+        {
+          "label": "R4 bare binding reads the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R4 bare binding reads the optional controlScopes"
+          }
+        },
+        {
+          "label": "R5 a cast makes the optional controlScopes required",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R5 a cast makes the optional controlScopes required"
+          }
+        },
+        {
+          "label": "R6 a rest copy then an optional read",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R6 a rest copy then an optional read"
+          }
+        },
+        {
+          "label": "R8 a String.prototype method replaces an index read",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R8 a String.prototype method replaces an index read"
+          }
+        },
+        {
+          "label": "R11 a lib global read after load",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R11 a lib global read after load"
+          }
+        },
+        {
+          "label": "R12 a caller envelope read directly",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R12 a caller envelope read directly"
+          }
+        },
+        {
+          "label": "K1 hostMember walks on to the built-in prototypes",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "K2 an ordinary descriptor literal in defineData",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "K3 an ordinary read of the optional controlScopes",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R7 an in-operator guard consults the prototype chain",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R7 an in-operator guard consults the prototype chain"
+          }
+        },
+        {
+          "label": "R9 the occurrences suffix access respelled as an ordinary optional access",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R9 the occurrences suffix access respelled as an ordinary optional access"
+          }
+        },
+        {
+          "label": "R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]",
+          "route": {
+            "kind": "pending"
+          },
+          "reuses": {
+            "family": "family.k12c1.ablations-07",
+            "label": "R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.sweeps-09",
+      "origin": "artifact-a244b971c7f1c400284a09bf",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutants"
+          }
+        ]
+      },
+      "observed": {
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "docs/development/work/K1.2-correction-01/validation-09/63-round9-production-controls.txt",
+        "tree": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+        "runner_path": "docs/development/work/K1.2-correction-01/sweeps-09.mjs",
+        "line": "^(?:REJECTED|SURVIVED) (?P<label>.+)$",
+        "summary": "ALL ROUND-9 PRODUCTION CONTROLS REJECTED HERE AND ACCEPTED BY REVIEWED H'S SWEEP; CLEAN CONTROLS PASSED",
+        "trailer": "exit: \\d+; signal: \\S+; error: .*",
+        "names": [
+          "payload C: e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+          "command: node docs/development/work/K1.2-correction-01/sweeps-09.mjs"
+        ],
+        "sha256": "114adbe104105aa3c832596ffda63e7612df3888e11546c51811f51f7c839897"
+      },
+      "members": [
+        {
+          "label": "M1 a contained takeover refusal also revokes the setup attempt's grant (ORACLE-01 item 1)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "M2 a report whose diagnostic could not be read answers with no holds (ORACLE-01 item 2)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "M3 Outcome acceptance appends its receipt out of the declared apply order (ORACLE-01 item 3)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "M4 a hidden caller's recovery refusal consumes the Execution's refusal position (SCOPE-01)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "M5 the post-callback terminal exit advances the refusal index before its record exists (SCOPE-01)",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-02",
+      "origin": "artifact-f46f2cacc6a5b8a104a0f706",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "R1 structured refusal executionId rendered lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R2 code availability compared through the diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R3 projection after the root label (inverse of DEC-5 order)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R4 wrong-Activation comparison through the diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R5 control exchange lookup through the diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R6 replay lookup keyed by diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R7 duplicate Emission comparison through diagnostic spelling",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R8 identity limit 127 (one-under edge)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R9 path limit 129 (one-over edge)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R10 message limit removed",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R11 code-hold 'updated' detection compares rendered reasons of equal kind only",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R12 protocol diagnostic sanitized like an identity (DEC-6 inverse)",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-03",
+      "origin": "artifact-49458504964b90d677c180d8",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "mutations"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "N1 summary only when two or more issues remain",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N2 additional count reports distinct codes, not issues",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N3 recovery control renders messages (DEC-5 says Outcomes only)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N4 all remaining codes merged into the first",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N5 bracketed value path loses its root adjacency",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N6 Outcome renders without messages",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N7 capture keeps only eight issues per root",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N8 detailed issues also counted in the summary",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N9 redelivery hold reason renders raw minted ID",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N10 control malformed takeover renders raw issue paths via old explain",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-08",
+      "origin": "artifact-9730c5d55db69b66d093534d",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "all"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "N1 catch path reads thrown constructor",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N2 foreign array reads constructor",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N3 foreign object reads constructor",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N4 primitive label reads function name",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N5 preflight refuses at exactly 131072 units",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N6 preflight admits 131073 units",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N7 index read before preflight flattens",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N8 second ordinary length read",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N9 object half lists symbols twice",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N10 object half observes prototype twice",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N11 object member descriptor read twice",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N12 member ordinary read twice",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N13 array half lists names twice",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N14 seven details instead of eight",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N15 array surplus names uncharged",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "N16 object half charges only enumerable names",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "F1 refusal record executionId lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "F2 visibleExecutions lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "F3 view creationKey lossy",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "F4 creation answer initialEventId lossy",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-11.run-mutants",
+      "origin": "artifact-3eb9629042a621ad563fb657",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "variants"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "default-parameter",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "shadowed-undefined",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-11.run-read-mutant",
+      "origin": "artifact-783beb792ce98eaed9702962",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "bindings",
+            "names": [
+              "anchor",
+              "insert"
+            ],
+            "label": "read-mutant"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "read-mutant",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12.review-09",
+      "origin": "artifact-3e0e417da3928120db360908",
+      "role": "runner",
+      "census": {
+        "parts": [
+          {
+            "kind": "structural",
+            "container": "ablations"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "R1 content validated before submission authority (grant check moved after content)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R2 submission authority checked before exchange currency (stale attempt told unauthorized)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R3 exact replay requires the current grant",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R4 grant compared by fields, not reference",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R5 takeover keeps the superseded attempt's grant",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R6 base-revision currency not checked",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R7 accepted-Outcome identity ignores the writer epoch (changed-epoch resubmission replays)",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R8 a code hold fences Outcome acceptance",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R9 unauthorized_submission refusal not recorded on the Execution",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R10 B-5 terminal disposition also given at continue",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R11 protocol-failure report accepted for a superseded epoch",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "R12 dispatch mints the grant only on first Execution dispatch (next exchange reuses previous grant object)",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-10.probe-enforcement",
+      "origin": "artifact-220ad77c85f99945ea0da3ed",
+      "role": "mixed",
+      "census": {
+        "parts": [
+          {
+            "kind": "loop",
+            "line": 30
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "early-mint",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "early-increment",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.probe-enforcement-rebound-07",
+      "origin": "artifact-b4c10e4ecf81929f09fe147e",
+      "role": "mixed",
+      "census": {
+        "parts": [
+          {
+            "kind": "inherits",
+            "family": "family.k12c1.review-10.probe-enforcement",
+            "digest": "5695f73c581e01241af82b8a658c4d70c82a8aa6b70a13846b0d4fa641d6273b"
+          }
+        ]
+      },
+      "members": [
+        {
+          "label": "early-mint",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "early-increment",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-04.oracle-vs-mutants",
+      "origin": "artifact-793a993ed2290db00aa7b9d7",
+      "role": "runner",
+      "census": {
+        "reading": "The runner selects review-04 reviewer-ablations members by argv; the pinned bytes do not hold the selection. Its sealed output review-04/probe-p4-vs-mutants.txt names eleven members."
+      },
+      "members": [
+        {
+          "label": "X8 Emission ID derived from diagnostic Activation spelling",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X8 Emission ID derived from diagnostic Activation spelling"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X9 result ID derived from diagnostic Activation spelling",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X9 result ID derived from diagnostic Activation spelling"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X10 acknowledged disposition names diagnostic Activation spelling",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X10 acknowledged disposition names diagnostic Activation spelling"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X11 code hold stores diagnostic Activation spelling",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X11 code hold stores diagnostic Activation spelling"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X13 delivery row stores diagnostic Activation spelling",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X13 delivery row stores diagnostic Activation spelling"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X15 Outcome receipt token uses diagnostic Execution spelling",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X15 Outcome receipt token uses diagnostic Execution spelling"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X17 decision answer activationId rendered lossy",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X17 decision answer activationId rendered lossy"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X20 protocol answer activationId rendered lossy",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X20 protocol answer activationId rendered lossy"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X21 protocol hold stores diagnostic Activation spelling",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X21 protocol hold stores diagnostic Activation spelling"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X22 Emission record activationId rendered lossy",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X22 Emission record activationId rendered lossy"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "X23 result record activationId rendered lossy",
+          "reuses": {
+            "family": "family.k12c1.review-04",
+            "label": "X23 result record activationId rendered lossy"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-11.run-faults",
+      "origin": "artifact-eae297591ad36f0ad9b494d1",
+      "role": "mixed",
+      "census": {
+        "reading": "The runner reads its variants at run time from run-mutants.mjs output (mutant-results.json) beside a clean control; the pinned bytes name neither variant."
+      },
+      "members": [
+        {
+          "label": "default-parameter",
+          "reuses": {
+            "family": "family.k12c1.review-11.run-mutants",
+            "label": "default-parameter"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "shadowed-undefined",
+          "reuses": {
+            "family": "family.k12c1.review-11.run-mutants",
+            "label": "shadowed-undefined"
+          },
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.probe-reviewed-h-07",
+      "origin": "artifact-4821cb047b2a86e5f24f93ef",
+      "role": "mixed",
+      "census": {
+        "reading": "Two observations at review 10's H 35c6ba02, written as assertions rather than a member list."
+      },
+      "members": [
+        {
+          "label": "NEW ORACLES AT H",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "UNSUPPORTED-NAME PROBE",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.probe-reviewed-h-08",
+      "origin": "artifact-7fcd24fd4de8e2db87f8ec5f",
+      "role": "mixed",
+      "census": {
+        "reading": "Three observations at review 11's H dcac779b, written as assertions rather than a member list."
+      },
+      "members": [
+        {
+          "label": "MAINTAINED PROBES AND CATALOG SWEEP AT H",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "FAULT SWEEP AT H",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "WHOLE-SUITE POISON AT H",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    },
+    {
+      "id": "family.k12c1.review-12.build-oracle-probe",
+      "origin": "artifact-f42eca5e311c78031c27cfe2",
+      "role": "mixed",
+      "census": {
+        "reading": "Three altered observations inside a generated TypeScript string; no container the census can parse."
+      },
+      "members": [
+        {
+          "label": "refusal revokes the setup grant",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "accepted report returns the opposite hold answer",
+          "route": {
+            "kind": "pending"
+          }
+        },
+        {
+          "label": "arbitrary progress corruption is labeled an Outcome apply prefix solely by method name",
+          "route": {
+            "kind": "pending"
+          }
+        }
+      ]
+    }
+  ],
   "holds": {
     "claims": [
       {

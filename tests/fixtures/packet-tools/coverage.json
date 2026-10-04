@@ -994,7 +994,9 @@
         "failure": [
           "stale-repeat",
           "invalid-repeat",
-          "unstable-control"
+          "unstable-control",
+          "target-wrong-kill",
+          "target-uncovered"
         ],
         "environment": [
           "POSIX-Python"
@@ -1024,6 +1026,22 @@
           "case": "result.unstable-control",
           "values": {
             "failure": "unstable-control",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-wrong-kill",
+          "values": {
+            "failure": "target-wrong-kill",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-uncovered",
+          "values": {
+            "failure": "target-uncovered",
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }

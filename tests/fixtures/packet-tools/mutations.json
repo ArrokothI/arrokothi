@@ -4660,6 +4660,70 @@
           "id": "mutation-f6da27bee615d622fce6d686471f1540cfbecc4676e9ca817b9263e7570c1936"
         }
       ]
+    },
+    {
+      "id": "result.target-wrong-kill",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes",
+      "category": "tool-result",
+      "source": "TOOLS-01 step 7: target-set kills name a leaf of the declared target set at a reached site (F3, D05-04)",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-wrong-kill",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "    qualifying = [key for key in failed if key in expected]",
+          "after": "    qualifying = list(failed)",
+          "operator": "remove-result-classification",
+          "name": "result.target-wrong-kill",
+          "id": "mutation-904768e6a8b2b74dc01b31c6e6429625943afd023602e075b448d82eddf98c8d"
+        }
+      ]
+    },
+    {
+      "id": "result.target-uncovered",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes",
+      "category": "tool-result",
+      "source": "TOOLS-01 step 7: target-set kills name a leaf of the declared target set at a reached site (F3, D05-04)",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-uncovered",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "    if not reached:\n        return {'status': 'uncovered'",
+          "after": "    if False:\n        return {'status': 'uncovered'",
+          "operator": "remove-result-classification",
+          "name": "result.target-uncovered",
+          "id": "mutation-cf432fd26dab61e859b4072480214323ff2dfdfedcb92baf2886387682961e03"
+        }
+      ]
     }
   ],
   "source_trees": [
@@ -4684,7 +4748,11 @@
     "tests/tooling/test_packet_tools.py",
     "tests/tooling/test_corpus_tools.py",
     "tests/tooling/test_research_tools.py",
-    "tests/fixtures/packet-tools/mutations.json"
+    "tests/fixtures/packet-tools/mutations.json",
+    "tests/tooling/test_runner_targets.py",
+    "tests/tooling/test_target_tools.py",
+    "tests/tooling/catalog-reporter.mjs",
+    "tests/tooling/reach-coverage.mjs"
   ],
   "dependencies": [
     {
