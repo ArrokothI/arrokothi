@@ -1,0 +1,45 @@
+{
+  "subject": "3e4566ef7a775b53cfbdb54bb3d2d25feaadce1e",
+  "probes": [
+    {
+      "id": "TOOLS-CONT-01",
+      "required_refusal": true,
+      "observed": "accepted",
+      "states": {
+        "pending_revalidation": 1,
+        "complete": 1
+      },
+      "closures": {
+        "complete": 1,
+        "context_ranges": 1,
+        "context_candidates": 1,
+        "context_reasoned": 1
+      },
+      "omitted": [
+        "docs/records/note.md",
+        "docs/records/deeper.md"
+      ]
+    },
+    {
+      "id": "TOOLS-CONT-02",
+      "required_refusal": true,
+      "observed": "accepted",
+      "states": {
+        "pending": 31,
+        "complete": 1
+      },
+      "closures": {
+        "complete": 1,
+        "context_ranges": 1,
+        "context_candidates": 0,
+        "context_reasoned": 0
+      },
+      "held_member": "tests/fx/registered.test.mjs:5:1@bdda52f74a43",
+      "record_kind": "behavior",
+      "record_has_claim": false,
+      "held_count": 1
+    }
+  ],
+  "elapsed_seconds": 14.022,
+  "acceptance": "not evaluated"
+}
