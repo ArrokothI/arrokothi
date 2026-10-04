@@ -63,6 +63,12 @@ TEST_SUFFIXES = ('.test.ts', '.test.mjs', '.test.js')
 CENSUS_KINDS = ('structural', 'python_ast', 'loop', 'filter', 'inherits', 'bindings')
 MEMBER_ROUTES = ('pending', 'mutation', 'witness', 'no_longer_applicable', 'equivalence', 'survivor', 'limit')
 FAMILY_ROLES = ('runner', 'mixed')
+# P1-R and the P1 preamble (design 05 §4, D04-CHK-06): origin closure links and minimum contexts.
+CLOSURE_LINKS = ('target', 'counterexample', 'family', 'case', 'member')
+NON_EXECUTABLE_REASONS = ('policy', 'historical_command', 'record', 'unavailable_source')
+CONTEXT_PATH = re.compile(r'(?<![\w/.-])((?:docs|packages|tests|scripts|examples|mental-model)/[\w./@-]*\w)')
+CONTEXT_SHA = re.compile(r'(?<![0-9A-Za-z])([0-9a-f]{7,40})(?![0-9A-Za-z])')
+SEALED_PREFIXES = ('docs/',)
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
@@ -509,9 +515,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             expected = {name: value for name, value in old.items() if name != 'origin'}
             require(row.get('legacy') == expected, 'migrated row differs from the format-1 source: ' + key)
             require(row['state'] != 'pending', 'a revision-2 mapping cannot return to pending')
-        # Later steps define closure links; until then no origin may claim them.
-        require(row['state'] not in ('triaged', 'complete'),
-                'origin closure is not implemented in this format revision: ' + key)
+        # Prose triage arrives with the mentions (design 05 §6 step 11); a complete origin is checked below.
+        require(row['state'] != 'triaged', 'prose triage is not implemented in this format revision: ' + key)
     require(spec['areas'] == [], 'areas are not implemented in this format revision')
     claims = holds_table(git, rev, spec['holds'])
     require(set(REGISTER_MINIMUM) <= set(claims), 'P1-H claims cannot leave the holds table')
@@ -521,6 +526,16 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     for target in targets.values():
         require(counterexamples.get(target.get('counterexample'), {}).get('kind') == 'behavior',
                 'held or superseded counterexamples never earn suite credit')
+    stored = {row.get('member'): row for row in spec['preserved'] if isinstance(row, dict)}
+    for target in targets.values():
+        if 'member' in target:
+            member = stored.get(target['member'])
+            require(member is not None and member['status'] == 'refused' and member['file'] == target.get('file'),
+                    'a target member is a refused member in its file: ' + target['id'])
+            declaration = target.get('declaration') or {}
+            require(member.get('current') is None or [declaration.get('line'), declaration.get('column')] == member['current']
+                    or (target.get('relation') or {}).get('kind') == 'authorized_replacement',
+                    'a target sits at its member\'s declaration unless it is an authorized replacement: ' + target['id'])
     tested = test_file_origins(intake)
     moves = moves_table(git, rev, spec['moves'])
     floor_order_model(git, rev, spec['floor'])
@@ -550,12 +565,24 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                          f'{len(missing)} not recomputed (first: {(differing + missing)[:3]})')
     figures = census_figures(evaluations, table, all_earlier)
     register_counts = Counter((row['classification'], row.get('claim')) for row in register.values())
+    members = {row['member']: row for row in table}
+    witness_records(counterexamples, members, claims, register)
+    facts = {'target': {key: {'refused': bool(result['refused']), 'member': targets[key].get('member')}
+                        for key, result in zip(targets, results)},
+             'counterexample': counterexamples, 'member': members,
+             'family': unique_records(spec['families'], 'families'),
+             'case': {case['id']: case for case in registry['cases']}}
+    closures = {key: origin_closure(git, rev, key, row, origins[key], facts)
+                for key, row in rows.items() if row['state'] == 'complete'}
     states = Counter(row['state'] for row in rows.values())
     revalidation = Counter(row['legacy']['status'] for row in rows.values() if row['state'] == 'pending_revalidation')
     pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
     return {'operation': 'corpus', 'format': 2, 'revision': rev,
             'result': 'mappings_complete' if not pending else 'extraction_pending',
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
+            'closures': {'complete': len(closures), 'context_ranges': sum(row['ranges'] for row in closures.values()),
+                         'context_candidates': sum(row['candidates'] for row in closures.values()),
+                         'context_reasoned': sum(row['reasoned'] for row in closures.values())},
             'pending_adoption': len(pending), 'pending_origins': pending,
             'counts': {'origins': len(rows), 'counterexamples': len(counterexamples),
                        'families': sum(row.get('families', 0) for row in family_counts.values()),
@@ -1501,8 +1528,8 @@ def check_target(git, rev, target, counterexamples, registry, context):
     if facts['refused']:
         return facts
     flags = step['catalog']['flags']
-    selected = reach_run(git, rev, flags, file, context['environment'], '--test-name-pattern=' + name_pattern(target['test_path']))
-    baseline = reach_run(git, rev, flags, file, context['environment'], '--test-skip-pattern=.')
+    selected = reach_run(git, rev, flags, file, context['environment_for'](step), '--test-name-pattern=' + name_pattern(target['test_path']))
+    baseline = context['baseline'](step, file)
     try:
         valid, reason = reach_valid(selected, target['test_path'])
         facts['reach_run'] = 'valid' if valid else reason
@@ -1537,7 +1564,6 @@ def check_target(git, rev, target, counterexamples, registry, context):
                 refuse('input anchor not reached: ' + entry['anchor'])
     finally:
         shutil.rmtree(selected['directory'], True)
-        shutil.rmtree(baseline['directory'], True)
     discrimination = target['discrimination']
     if 'reading' in discrimination:
         facts['credit'] = 'target_reading'
@@ -1547,7 +1573,7 @@ def check_target(git, rev, target, counterexamples, registry, context):
         operation_files = {entry['file'] for entry in facts['anchors'] if entry['role'] == 'operation'}
         if mutation is None or mutation.get('obligation') != target['counterexample']:
             refuse('the mutation is not registered to this counterexample')
-        elif mutation['path'] not in operation_files:
+        elif not {path for path, _, _ in mutation_edits(mutation)} & operation_files:
             refuse('the mutated file holds no cited operation anchor')
         else:
             # A qualifying named failure of this leaf is executed with the target-set mutants (step 7).
@@ -1595,8 +1621,16 @@ def target_context(git, rev, spec, stack, toolchain=None):
         if ('kinds', name) not in cache:
             cache[('kinds', name)] = source_kinds(git, rev, [name], environment, toolchain)[name]
         return cache[('kinds', name)]
+
+    def baseline(step, name):
+        # One no-test baseline per command and file; its coverage lives until the corpus run ends.
+        if ('baseline', step['id'], name) not in cache:
+            observation = reach_run(git, rev, step['catalog']['flags'], name, environment_for(step), '--test-skip-pattern=.')
+            stack.callback(shutil.rmtree, observation['directory'], True)
+            cache[('baseline', step['id'], name)] = observation
+        return cache[('baseline', step['id'], name)]
     return {'catalogs': catalogs, 'catalog': catalog, 'kinds': kinds, 'environment': environment,
-            'environment_for': environment_for, 'toolchain': toolchain}
+            'environment_for': environment_for, 'baseline': baseline, 'toolchain': toolchain}
 
 
 def target_counts(results):
@@ -2440,6 +2474,134 @@ def family_table(git, rev, rows, origins, counterexamples, registry, environment
     for count in counts.values():
         count['distinct'] = count['occurrences'] - count['inherited'] - count['reused']
     return families, {role: dict(count) for role, count in counts.items()}
+
+
+def markdown_section(lines, line):
+    """The heading section enclosing a fence line: from its nearest heading to the next of equal or higher level."""
+    level = lambda text: len(text) - len(text.lstrip('#')) if re.match(r'#{1,6} ', text) else 0
+    fenced, start = False, 1
+    heading = 0
+    for index, text in enumerate(lines[:line - 1], 1):
+        if text.lstrip().startswith('```'):
+            fenced = not fenced
+        elif not fenced and level(text):
+            start, heading = index, level(text)
+    end = len(lines)
+    fenced = False
+    for index in range(line, len(lines) + 1):
+        text = lines[index - 1]
+        if text.lstrip().startswith('```'):
+            fenced = not fenced
+        elif not fenced and level(text) and (heading == 0 or level(text) <= heading) and index > line:
+            end = index - 1
+            break
+    return start, end
+
+
+def context_minimum(git, origin):
+    """D04-CHK-06 as design 05 adapts it: an artifact's whole file, or a fence's heading section."""
+    data = git.blob(origin['revision'], origin['path']).decode('utf-8', 'replace')
+    lines = data.splitlines()
+    if origin['line'] == 1:
+        return 1, max(len(lines), 1), data
+    start, end = markdown_section(lines, origin['line'])
+    return start, end, '\n'.join(lines[start - 1:end])
+
+
+def context_check(git, origin, closure):
+    """Recorded ranges cover the minimum context and every sealed record it names, transitively;
+    every other path or revision candidate in that text is covered or reasoned."""
+    ranges = closure.get('context')
+    require(isinstance(ranges, list) and bool(ranges) and all(
+        isinstance(row, dict) and isinstance(row.get('path'), str) and type(row.get('start')) is int and
+        type(row.get('end')) is int and 1 <= row['start'] <= row['end'] and isinstance(row.get('revision'), str)
+        for row in ranges), 'a closed origin records its context ranges')
+    reasons = closure.get('context_reasons', {})
+    require(isinstance(reasons, dict) and all(isinstance(value, str) and value.strip() for value in reasons.values()),
+            'context reasons need text')
+
+    def covers(revision, path, start, end):
+        return any(row['revision'] == revision and row['path'] == path and row['start'] <= start and end <= row['end']
+                   for row in ranges)
+    start, end, text = context_minimum(git, origin)
+    require(covers(origin['revision'], origin['path'], start, end), 'the context does not cover the minimum: ' + origin['id'])
+    seen, queue, used = set(), [text], set()
+    while queue:
+        current = queue.pop()
+        for candidate in sorted(set(CONTEXT_PATH.findall(current)) | {sha for sha in CONTEXT_SHA.findall(current)
+                                                                      if re.search('[a-f]', sha) and re.search('[0-9]', sha)}):
+            if candidate in seen:
+                continue
+            seen.add(candidate)
+            entry = git.tree(origin['revision']).get(candidate)
+            if entry is not None and entry[0] == '100644' and candidate.startswith(SEALED_PREFIXES) and candidate not in reasons:
+                record = git.blob(origin['revision'], candidate).decode('utf-8', 'replace')
+                require(covers(origin['revision'], candidate, 1, max(len(record.splitlines()), 1)),
+                        'a named sealed record is outside the context: ' + candidate)
+                queue.append(record)
+            elif candidate in reasons:
+                used.add(candidate)
+            else:
+                require(any(row['path'] == candidate or row['revision'].startswith(candidate) for row in ranges),
+                        'an unreasoned path or revision candidate in the context: ' + candidate)
+    require(set(reasons) <= used, 'context reasons name candidates that do not occur: ' + origin['id'])
+    return {'ranges': len(ranges), 'candidates': len(seen), 'reasoned': len(used)}
+
+
+def origin_closure(git, rev, key, row, origin, facts):
+    """P1-R/P1-G: a complete origin links everything it needs; each kind of origin closes by its own rule."""
+    closure = row.get('closure')
+    require(isinstance(closure, dict), 'a complete origin records its closure: ' + key)
+    links = closure.get('links', [])
+    require(isinstance(links, list) and all(isinstance(link, dict) and link.get('kind') in CLOSURE_LINKS and
+                                            isinstance(link.get('id'), str) for link in links),
+            'closure links name a kind and an ID: ' + key)
+    linked = {kind: {link['id'] for link in links if link['kind'] == kind} for kind in CLOSURE_LINKS}
+    for kind, ids in linked.items():
+        require(ids <= set(facts[kind]), f'a closure links an absent {kind}: {key}')
+    for target in linked['target']:
+        require(not facts['target'][target]['refused'], 'a closure links a refused target: ' + target)
+    for member in linked['member']:
+        require(facts['member'][member]['status'] == 'preserved' and key in facts['member'][member]['origins'],
+                'a member link names a preserved member of this origin: ' + member)
+    non_executable = closure.get('non_executable')
+    if non_executable is not None:
+        require(isinstance(non_executable, dict) and non_executable.get('reason') in NON_EXECUTABLE_REASONS and
+                isinstance(non_executable.get('rationale'), str) and bool(non_executable['rationale'].strip()),
+                'a non-executable closure states its reason and rationale: ' + key)
+    members = [member for member in facts['member'].values() if key in member['origins']]
+    for member in members:
+        if member['status'] == 'refused':
+            require(any(facts['target'][target]['member'] == member['member'] for target in linked['target']),
+                    'a refused member of this origin has no linked target: ' + member['member'])
+        elif member['status'] in ('held', 'superseded'):
+            require(any(member['member'] in facts['counterexample'][cx].get('members', []) for cx in linked['counterexample']),
+                    'a held or superseded member of this origin has no linked witness: ' + member['member'])
+    for family in (row for row in facts['family'].values() if row['origin'] == key):
+        require(family['id'] in linked['family'], 'an origin with a family links it: ' + key)
+        require(all(member['route']['kind'] != 'pending' for member in family['members']),
+                'a linked family still has pending members: ' + family['id'])
+    require(bool(members) or non_executable is not None or any(linked.values()),
+            'a closure without members, links or a non-executable reason: ' + key)
+    return context_check(git, origin, closure)
+
+
+def witness_records(counterexamples, members, claims, register):
+    """P1-H: a held or superseded witness names its claim and the members the register classifies so."""
+    for key, row in counterexamples.items():
+        if row['kind'] not in ('held_witness', 'superseded_witness'):
+            continue
+        require(row.get('claim') in claims, 'a witness names a held claim: ' + key)
+        expected = 'held' if row['kind'] == 'held_witness' else 'superseded'
+        linked = unique_text(row.get('members', []), 'witness members')
+        for member in linked:
+            record = members.get(member)
+            require(record is not None and record['status'] == expected,
+                    'a witness member has another status: ' + member)
+            entry = register.get(f"{record['file']}:{record['current'][0]}:{record['current'][1]}")
+            require(entry is not None and entry.get('claim') == row['claim'],
+                    'a witness member is registered under another claim: ' + member)
+        require(bool(linked), 'a witness lists its members: ' + key)
 
 
 def clean_payload(git, rev):

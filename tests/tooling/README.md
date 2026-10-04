@@ -254,6 +254,28 @@ later earn a kill, and that kill comes from the registry run, not from the corpu
 counts, per role, families, census readings, occurrences, inherited, reused and distinct members,
 and routes.
 
+## Origin closure
+
+A format-2 origin moves from `pending` or `pending_revalidation` to `complete` only with a `closure`
+that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives with the mentions.
+
+- **Links.** A link names a `target`, `counterexample`, `family`, `case` or preserved `member`, and
+  each must exist. A linked target must hold at C, and a linked member must be preserved for this
+  origin.
+- **Completeness.** Every preserved-table member of the origin is either preserved, covered by a
+  linked target bound to it (`member`, at its declaration unless the relation is an authorized
+  replacement), or listed in a linked `held_witness` or `superseded_witness`. A witness names its
+  hold claim and its members, and the register must classify each member the same way under that
+  claim. An origin with a family links it, and no family member may still be pending.
+- **Non-executable.** `non_executable` gives one of the four reasons (`policy`,
+  `historical_command`, `record`, `unavailable_source`) and a rationale.
+- **Context (D04-CHK-06 as design 05 adapts it).** `context` ranges (revision, path, first and last
+  line) must cover an artifact's whole file, or a fence's heading section, at its pinned revision.
+  Every sealed record under `docs/` that this text names, followed transitively, must be covered as a
+  whole file. Every other path or revision candidate in it must be covered, or reasoned in
+  `context_reasons`, and no reason may name a candidate that does not occur. Production files a test
+  reads are targets, not context; they are reasoned.
+
 ## Isolation, inputs and identities
 
 `mutations` copies registered ordinary files into a new temporary directory for every control,

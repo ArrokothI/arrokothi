@@ -4157,7 +4157,7 @@
       ]
     },
     {
-      "id": "guard.corpus_format_2.87a6fedd1dbddc3d",
+      "id": "guard.corpus_format_2.07b8756e3caeb4b0",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_closure",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: corpus_format_2",
@@ -4169,7 +4169,7 @@
         "python3",
         "-B",
         "tests/tooling/python-probe.py",
-        "guard.corpus_format_2.87a6fedd1dbddc3d"
+        "guard.corpus_format_2.07b8756e3caeb4b0"
       ],
       "timeout_seconds": 20,
       "output_limit_bytes": 32768,
@@ -4177,11 +4177,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(row['state'] not in ('triaged', 'complete'),\n                'origin closure is not implemented in this format revision: ' + key)",
-          "after": "pass  # tools01-ablate:87a6fedd1dbddc3d",
+          "before": "require(row['state'] != 'triaged', 'prose triage is not implemented in this format revision: ' + key)",
+          "after": "pass  # tools01-ablate:07b8756e3caeb4b0",
           "operator": "remove-refusal-check",
-          "name": "guard.corpus_format_2.87a6fedd1dbddc3d",
-          "id": "mutation-2316bb4ebb3c98c2c3e1932c07439f7d7e2825304b25cf7737c9c803a1f4c496"
+          "name": "guard.corpus_format_2.07b8756e3caeb4b0",
+          "id": "mutation-e123401477678d844e4c0927068b34ce53712bd674bcb2ec04a979490d014b7d"
         }
       ]
     },
@@ -7169,6 +7169,673 @@
           "operator": "remove-refusal-check",
           "name": "guard.observed.e606085947b337ff",
           "id": "mutation-3eeac8c48042ca04ec41ee33779b007378ab6576ceedf55fdb5ea3ea4541a0e7"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.dddcb3c8fd33f176",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_target_member_status",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_target_member_status"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.dddcb3c8fd33f176"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(member is not None and member['status'] == 'refused' and member['file'] == target.get('file'),\n                    'a target member is a refused member in its file: ' + target['id'])",
+          "after": "pass  # tools01-ablate:dddcb3c8fd33f176",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.dddcb3c8fd33f176",
+          "id": "mutation-bcf06e3486cbcd51412bf2b7df59c01295bb17d3ada5456308c00f2bf49c8bc3"
+        }
+      ]
+    },
+    {
+      "id": "guard.corpus_format_2.157f0d0695712064",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_target_member_declaration",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_target_member_declaration"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.157f0d0695712064"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(member.get('current') is None or [declaration.get('line'), declaration.get('column')] == member['current']\n                    or (target.get('relation') or {}).get('kind') == 'authorized_replacement',\n                    'a target sits at its member\\'s declaration unless it is an authorized replacement: ' + target['id'])",
+          "after": "pass  # tools01-ablate:157f0d0695712064",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.157f0d0695712064",
+          "id": "mutation-15bdb3cce6bbbd6f3053f8d5f15601478ed5144e714a286d8e4cba8afee70b06"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_check.9292411f72dd4388",
+      "assertion": "test_closure_tools.ClosureTests.test_closure_shapes_are_checked",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_check",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_closure_shapes_are_checked"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_check.9292411f72dd4388"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(ranges, list) and bool(ranges) and all(\n        isinstance(row, dict) and isinstance(row.get('path'), str) and type(row.get('start')) is int and\n        type(row.get('end')) is int and 1 <= row['start'] <= row['end'] and isinstance(row.get('revision'), str)\n        for row in ranges), 'a closed origin records its context ranges')",
+          "after": "pass  # tools01-ablate:9292411f72dd4388",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_check.9292411f72dd4388",
+          "id": "mutation-e406f5fb60607b8b1c35d5d98d20ec4966a52f01eb588e62936a09215a9aeabc"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_check.630e2efe1871e63d",
+      "assertion": "test_closure_tools.ClosureTests.test_closure_shapes_are_checked",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_check",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_closure_shapes_are_checked"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_check.630e2efe1871e63d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(reasons, dict) and all(isinstance(value, str) and value.strip() for value in reasons.values()),\n            'context reasons need text')",
+          "after": "pass  # tools01-ablate:630e2efe1871e63d",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_check.630e2efe1871e63d",
+          "id": "mutation-a6256b927e6ce5eab784bc316e594c06ff723c2e87c035ef08eae8e15136bba2"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_check.9e05e3fb1388b552",
+      "assertion": "test_closure_tools.ClosureTests.test_the_context_covers_the_whole_artifact",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_check",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_the_context_covers_the_whole_artifact"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_check.9e05e3fb1388b552"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(covers(origin['revision'], origin['path'], start, end), 'the context does not cover the minimum: ' + origin['id'])",
+          "after": "pass  # tools01-ablate:9e05e3fb1388b552",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_check.9e05e3fb1388b552",
+          "id": "mutation-b9b66025116223e24d0c67439f6681a465043fdcdde510329810458fb66c5e83"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_check.65d96bd4eda9ea71",
+      "assertion": "test_closure_tools.ClosureTests.test_other_candidates_are_covered_or_reasoned",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_check",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_other_candidates_are_covered_or_reasoned"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_check.65d96bd4eda9ea71"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(reasons) <= used, 'context reasons name candidates that do not occur: ' + origin['id'])",
+          "after": "pass  # tools01-ablate:65d96bd4eda9ea71",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_check.65d96bd4eda9ea71",
+          "id": "mutation-8d17b7975017f2f27f642187f6792c72d4d4e8be9b6b0623cd39c6a51e2c0432"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_check.557d3f1c1daa356e",
+      "assertion": "test_closure_tools.ClosureTests.test_named_sealed_records_are_context_transitively",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_check",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_named_sealed_records_are_context_transitively"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_check.557d3f1c1daa356e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(covers(origin['revision'], candidate, 1, max(len(record.splitlines()), 1)),\n                        'a named sealed record is outside the context: ' + candidate)",
+          "after": "pass  # tools01-ablate:557d3f1c1daa356e",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_check.557d3f1c1daa356e",
+          "id": "mutation-7b9b5b690cc77161c3285c1f8792ae33f5fe8a6b75e8813f8af0e208beee9242"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_check.2cf13e6029674f22",
+      "assertion": "test_closure_tools.ClosureTests.test_other_candidates_are_covered_or_reasoned",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_check",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_other_candidates_are_covered_or_reasoned"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_check.2cf13e6029674f22"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(any(row['path'] == candidate or row['revision'].startswith(candidate) for row in ranges),\n                        'an unreasoned path or revision candidate in the context: ' + candidate)",
+          "after": "pass  # tools01-ablate:2cf13e6029674f22",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_check.2cf13e6029674f22",
+          "id": "mutation-767cb6f2a30be7ab338c477ad688fa0f333c09c2598e7f33637d41b88ce0fab8"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.b75c2a4982fa49d6",
+      "assertion": "test_adoption_format.FormatTwoTests.test_a_complete_origin_needs_its_closure",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_adoption_format.FormatTwoTests.test_a_complete_origin_needs_its_closure"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.b75c2a4982fa49d6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(closure, dict), 'a complete origin records its closure: ' + key)",
+          "after": "pass  # tools01-ablate:b75c2a4982fa49d6",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.b75c2a4982fa49d6",
+          "id": "mutation-43e93aab31cc5f8334f5b9c032e906605ffd332b0dc1d937d2675a91bf8f4aec"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.ee3069eb2b98d56d",
+      "assertion": "test_closure_tools.ClosureTests.test_closure_shapes_are_checked",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_closure_shapes_are_checked"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.ee3069eb2b98d56d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(links, list) and all(isinstance(link, dict) and link.get('kind') in CLOSURE_LINKS and\n                                            isinstance(link.get('id'), str) for link in links),\n            'closure links name a kind and an ID: ' + key)",
+          "after": "pass  # tools01-ablate:ee3069eb2b98d56d",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.ee3069eb2b98d56d",
+          "id": "mutation-6c6d50110d9d9002c3e55e7c717af7f14eb7727df1b358ae803ddfbf9d21ae68"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.4038aadf1f63b61a",
+      "assertion": "test_closure_tools.ClosureTests.test_an_empty_closure_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_an_empty_closure_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.4038aadf1f63b61a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(members) or non_executable is not None or any(linked.values()),\n            'a closure without members, links or a non-executable reason: ' + key)",
+          "after": "pass  # tools01-ablate:4038aadf1f63b61a",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.4038aadf1f63b61a",
+          "id": "mutation-c9da264d232eb697e3520865f2065ddfb8335aae4117b058a03819ba488a7242"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.c04eb1aa36aa4c28",
+      "assertion": "test_closure_tools.ClosureTests.test_links_must_exist",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_links_must_exist"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.c04eb1aa36aa4c28"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(ids <= set(facts[kind]), f'a closure links an absent {kind}: {key}')",
+          "after": "pass  # tools01-ablate:c04eb1aa36aa4c28",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.c04eb1aa36aa4c28",
+          "id": "mutation-329813e318b0e14e21570260875f4353955590924e87d6174dd4a5aaa4c8509f"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.3437d9e7a198ee2e",
+      "assertion": "test_closure_tools.ClosureTests.test_a_linked_target_must_hold_at_c",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_a_linked_target_must_hold_at_c"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.3437d9e7a198ee2e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not facts['target'][target]['refused'], 'a closure links a refused target: ' + target)",
+          "after": "pass  # tools01-ablate:3437d9e7a198ee2e",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.3437d9e7a198ee2e",
+          "id": "mutation-2630fca95704577f60fc2852a3c0d76a97376270c75fbd0b0f172435b4175443"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.cfab63ca8082b69e",
+      "assertion": "test_closure_tools.ClosureTests.test_a_member_link_names_a_preserved_member",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_a_member_link_names_a_preserved_member"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.cfab63ca8082b69e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(facts['member'][member]['status'] == 'preserved' and key in facts['member'][member]['origins'],\n                'a member link names a preserved member of this origin: ' + member)",
+          "after": "pass  # tools01-ablate:cfab63ca8082b69e",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.cfab63ca8082b69e",
+          "id": "mutation-1c00a482050d78079d685701eae9df1c5ae5ef9ad14003f5a9cf29f3b3f75ce4"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.8bcd966e6b78e43e",
+      "assertion": "test_closure_tools.ClosureTests.test_a_non_executable_closure_states_its_reason",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_a_non_executable_closure_states_its_reason"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.8bcd966e6b78e43e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(non_executable, dict) and non_executable.get('reason') in NON_EXECUTABLE_REASONS and\n                isinstance(non_executable.get('rationale'), str) and bool(non_executable['rationale'].strip()),\n                'a non-executable closure states its reason and rationale: ' + key)",
+          "after": "pass  # tools01-ablate:8bcd966e6b78e43e",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.8bcd966e6b78e43e",
+          "id": "mutation-ed4bd25a7e19b8b5de8157b562bed94edc05e6f21589371d04f396bc025ee564"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.b60895879cffc5ae",
+      "assertion": "test_closure_tools.ClosureTests.test_a_family_origin_needs_every_member_routed",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_a_family_origin_needs_every_member_routed"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.b60895879cffc5ae"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(family['id'] in linked['family'], 'an origin with a family links it: ' + key)",
+          "after": "pass  # tools01-ablate:b60895879cffc5ae",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.b60895879cffc5ae",
+          "id": "mutation-d5c8e46b834af9593c0008d805f3c7e3f3f39d39ac0f7bd28cfb45ff69828091"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.e7e95905ca6497ea",
+      "assertion": "test_closure_tools.ClosureTests.test_a_family_origin_needs_every_member_routed",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_a_family_origin_needs_every_member_routed"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.e7e95905ca6497ea"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(all(member['route']['kind'] != 'pending' for member in family['members']),\n                'a linked family still has pending members: ' + family['id'])",
+          "after": "pass  # tools01-ablate:e7e95905ca6497ea",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.e7e95905ca6497ea",
+          "id": "mutation-08241c5852aa5631dffa4413c590679bad4c2e9c2c5d9847f74816179a1a3ccf"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.f6ca226e44ab5452",
+      "assertion": "test_closure_tools.ClosureTests.test_a_refused_member_needs_a_linked_target",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_a_refused_member_needs_a_linked_target"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.f6ca226e44ab5452"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(any(facts['target'][target]['member'] == member['member'] for target in linked['target']),\n                    'a refused member of this origin has no linked target: ' + member['member'])",
+          "after": "pass  # tools01-ablate:f6ca226e44ab5452",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.f6ca226e44ab5452",
+          "id": "mutation-ad21f888171966f6919678cf5586c1f29663669990862e077354ee0d87d714f5"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.223651272b5992b9",
+      "assertion": "test_closure_tools.ClosureTests.test_a_held_member_needs_a_linked_witness",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_a_held_member_needs_a_linked_witness"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.223651272b5992b9"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(any(member['member'] in facts['counterexample'][cx].get('members', []) for cx in linked['counterexample']),\n                    'a held or superseded member of this origin has no linked witness: ' + member['member'])",
+          "after": "pass  # tools01-ablate:223651272b5992b9",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.223651272b5992b9",
+          "id": "mutation-27adf03db5f80474b9ea2c92dc536bb8d01dd5a9fcc242c889e6d74ba78a566e"
+        }
+      ]
+    },
+    {
+      "id": "guard.witness_records.9605b55db4c5fbf1",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_witness_claim",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: witness_records",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_witness_claim"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.witness_records.9605b55db4c5fbf1"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('claim') in claims, 'a witness names a held claim: ' + key)",
+          "after": "pass  # tools01-ablate:9605b55db4c5fbf1",
+          "operator": "remove-refusal-check",
+          "name": "guard.witness_records.9605b55db4c5fbf1",
+          "id": "mutation-e55176a7a7633174bd79d2f99d860462dd33c01f9c4712787c82d5ad16961793"
+        }
+      ]
+    },
+    {
+      "id": "guard.witness_records.429eb0af731d72bf",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_witness_members",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: witness_records",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_witness_members"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.witness_records.429eb0af731d72bf"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(linked), 'a witness lists its members: ' + key)",
+          "after": "pass  # tools01-ablate:429eb0af731d72bf",
+          "operator": "remove-refusal-check",
+          "name": "guard.witness_records.429eb0af731d72bf",
+          "id": "mutation-bca7855b1eae5ef487692467bd2e56ecb00821a17bbc4f29276d92941e16abc2"
+        }
+      ]
+    },
+    {
+      "id": "guard.witness_records.68e4d659c0e24d15",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_witness_member_status",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: witness_records",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_witness_member_status"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.witness_records.68e4d659c0e24d15"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(record is not None and record['status'] == expected,\n                    'a witness member has another status: ' + member)",
+          "after": "pass  # tools01-ablate:68e4d659c0e24d15",
+          "operator": "remove-refusal-check",
+          "name": "guard.witness_records.68e4d659c0e24d15",
+          "id": "mutation-6e1e08910e7e604e7c758944ba471608d50c08ea3ac124075b969ccc20a2139f"
+        }
+      ]
+    },
+    {
+      "id": "guard.witness_records.55307ea19e8bb29a",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_witness_member_claim",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: witness_records",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_witness_member_claim"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.witness_records.55307ea19e8bb29a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(entry is not None and entry.get('claim') == row['claim'],\n                    'a witness member is registered under another claim: ' + member)",
+          "after": "pass  # tools01-ablate:55307ea19e8bb29a",
+          "operator": "remove-refusal-check",
+          "name": "guard.witness_records.55307ea19e8bb29a",
+          "id": "mutation-99b196e290afa852d8c2e7273918e250cafd689487e0fbc632da2328d66e3d65"
         }
       ]
     }

@@ -207,6 +207,9 @@ function isStatementLike(node) {
   const parent = node.parent;
   if (!parent) return false;
   if ('statements' in parent && Array.isArray(parent.statements) && parent.statements.includes(node)) return true;
+  // The single statement a loop, an if or a label governs is a statement too: `for (...) assert.ok(...)`.
+  if ((ts.isIterationStatement(parent, false) || ts.isLabeledStatement(parent)) && parent.statement === node) return true;
+  if (ts.isIfStatement(parent) && (parent.thenStatement === node || parent.elseStatement === node)) return true;
   return ts.isArrowFunction(parent) && parent.body === node; // a concise arrow body
 }
 

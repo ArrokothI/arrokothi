@@ -503,7 +503,7 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.refuses('unknown origin state', self.format_two(lambda d: d['origins'][1].update(state='accepted')))
 
     def test_format_two_closure(self):
-        self.refuses('closure is not implemented', self.format_two(lambda d: d['origins'][1].update(state='complete')))
+        self.refuses('prose triage is not implemented', self.format_two(lambda d: d['origins'][1].update(state='triaged')))
 
     def test_format_two_empty_tables(self):
         self.refuses('areas are not implemented', self.format_two(lambda d: d.update(areas=[{'id': 'x'}])))
@@ -1018,3 +1018,40 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     def test_observed_names(self):
         self.refuses('does not name its command or tree', self.observed_census(names=['command: node other.mjs']))
+
+    # Design 05 step 8: witness records and suite targets bound to refused members (P1-H, P1-T, P1-R).
+    def witness(self, claims=False, **changes):
+        row = {'kind': 'held_witness', 'claim': 'Proxy', 'members': ['m']}
+        row.update(changes)
+        members = {'m': {'status': 'held', 'file': 'a.test.mjs', 'current': [3, 1]}}
+        register = {'a.test.mjs:3:1': {'classification': 'held', 'claim': 'Proxy'}}
+        held = {'Proxy': {}, 'V-ENV': {}} if claims else {'Proxy': {}}
+        return lambda: tool.witness_records({'w': row}, members, held, register)
+
+    def test_witness_claim(self):
+        self.refuses('a witness names a held claim', self.witness(claim='Unknown'))
+
+    def test_witness_members(self):
+        self.refuses('a witness lists its members', self.witness(members=[]))
+
+    def test_witness_member_status(self):
+        self.refuses('a witness member has another status', self.witness(kind='superseded_witness'))
+
+    def test_witness_member_claim(self):
+        self.refuses('registered under another claim', self.witness(claim='V-ENV', claims=True))
+
+    def member_target(self, row, **target):
+        def change(data):
+            data['preserved'] = [row]
+            data['suite_targets'] = [dict({'id': 't', 'counterexample': 'cx', 'member': 'm', 'file': 'a.test.mjs',
+                                           'declaration': {'line': 1, 'column': 1}, 'relation': {'kind': 'exact_input'}}, **target)]
+            data['counterexamples'] = [{'id': 'cx', 'kind': 'behavior', 'origins': [data['origins'][0]['id']], 'required_result': 'r'}]
+        return self.format_two(change)
+
+    def test_target_member_status(self):
+        self.refuses('a target member is a refused member in its file',
+                     self.member_target({'member': 'm', 'status': 'preserved', 'file': 'a.test.mjs'}))
+
+    def test_target_member_declaration(self):
+        self.refuses("sits at its member's declaration",
+                     self.member_target({'member': 'm', 'status': 'refused', 'file': 'a.test.mjs', 'current': [5, 3]}))

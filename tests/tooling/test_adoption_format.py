@@ -85,9 +85,14 @@ class FormatTwoTests(RepositoryFixture):
         with self.assertRaisesRegex(tool.CheckError, 'only a revision-2 mapping'):
             self.check(rev)
 
-    def test_closure_claims_are_refused_until_implemented(self):
+    def test_a_complete_origin_needs_its_closure(self):
         rev = self.fixture(lambda data: data['origins'][1].update(state='complete'))
-        with self.assertRaisesRegex(tool.CheckError, 'closure is not implemented'):
+        with self.assertRaisesRegex(tool.CheckError, 'a complete origin records its closure'):
+            self.check(rev)
+
+    def test_prose_triage_waits_for_its_step(self):
+        rev = self.fixture(lambda data: data['origins'][1].update(state='triaged'))
+        with self.assertRaisesRegex(tool.CheckError, 'prose triage is not implemented'):
             self.check(rev)
 
     def test_source_digest_mismatch_refused(self):

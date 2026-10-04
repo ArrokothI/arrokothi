@@ -289,6 +289,57 @@ class PreservedCensusTests(unittest.TestCase):
         self.assertEqual(target['refused'], ['the target leaf is a registered held test (P1-H)'])
         self.assertNotIn('credit', target)
 
+    def held_member(self):
+        return next(row['member'] for row in self.table if row['status'] == 'held')
+
+    def witness(self, **changes):
+        origin = self.origins['tests/fx/registered.test.mjs']
+        row = {'id': 'witness.held', 'kind': 'held_witness', 'origins': [origin], 'claim': 'Proxy',
+               'members': [self.held_member()], 'required_result': 'A Proxy reaching capture is refused (held).'}
+        row.update(changes)
+        return row
+
+    def test_witness_records_name_their_claim_and_members(self):
+        spec = self.manifest(self.table, self.entries, order_model_holds=True)
+        spec['counterexamples'] = [self.witness()]
+        result = tool.corpus(self.repo.reader, self.commit_manifest(spec), 'corpus.json', toolchain=self.toolchain)
+        self.assertEqual(result['counts']['counterexamples'], 1)
+        spec['counterexamples'] = [self.witness(claim='V-ENV')]
+        with self.assertRaisesRegex(tool.CheckError, 'registered under another claim'):
+            tool.corpus(self.repo.reader, self.commit_manifest(spec), 'corpus.json', toolchain=self.toolchain)
+
+    def test_a_witness_lists_members_of_its_status(self):
+        preserved = next(row['member'] for row in self.table if row['status'] == 'preserved')
+        spec = self.manifest(self.table, self.entries, order_model_holds=True)
+        spec['counterexamples'] = [self.witness(members=[preserved])]
+        with self.assertRaisesRegex(tool.CheckError, 'a witness member has another status'):
+            tool.corpus(self.repo.reader, self.commit_manifest(spec), 'corpus.json', toolchain=self.toolchain)
+
+    def test_a_complete_origin_closes_over_its_members_and_context(self):
+        path = 'tests/fx/production-data.test.mjs'
+        origin = self.origins[path]
+        lines = len(PRODUCTION_DATA.splitlines())
+        spec = self.manifest(self.table, self.entries, order_model_holds=True)
+        for row in spec['origins']:
+            if row['id'] == origin:
+                row.update(state='complete', closure={
+                    'links': [{'kind': 'member', 'id': next(r['member'] for r in self.table if r['file'] == path)}],
+                    'context': [{'revision': self.pin, 'path': path, 'start': 1, 'end': lines}]})
+        result = tool.corpus(self.repo.reader, self.commit_manifest(spec), 'corpus.json', toolchain=self.toolchain)
+        self.assertEqual((result['states'].get('complete'), result['closures']['complete']), (1, 1))
+
+    def test_a_member_target_sits_at_its_members_declaration(self):
+        refused = next(row for row in self.table if row['status'] == 'refused' and row.get('current'))
+        spec = self.manifest(self.table, self.entries, order_model_holds=True)
+        spec['counterexamples'] = [{'id': 'cx', 'kind': 'behavior', 'origins': refused['origins'], 'required_result': 'x'}]
+        spec['suite_targets'] = [{'id': 'target.moved', 'counterexample': 'cx', 'member': refused['member'], 'command': 'repository-tests',
+                                  'file': refused['file'], 'test_path': ['member'], 'declaration': {'line': 1, 'column': 1},
+                                  'input_anchors': [{'anchor': 'x', 'sha256': tool.digest(b'x'), 'computed': True}],
+                                  'assertion_anchors': [{'anchor': 'y', 'sha256': tool.digest(b'y')}],
+                                  'relation': {'kind': 'exact_input'}, 'discrimination': {'reading': 'r'}}]
+        with self.assertRaisesRegex(tool.CheckError, "sits at its member's declaration"):
+            tool.corpus(self.repo.reader, self.commit_manifest(spec), 'corpus.json', toolchain=self.toolchain)
+
     def test_corpus_refuses_an_unclassified_register_match(self):
         rev = self.commit_manifest(self.manifest(self.table, self.entries[:1], order_model_holds=True))
         with self.assertRaisesRegex(tool.CheckError, 'register entries differ from the recomputed matches'):
