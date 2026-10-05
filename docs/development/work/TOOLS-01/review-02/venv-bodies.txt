@@ -1,0 +1,75 @@
+====================================================================================================
+packages/kernel/tests/review-11-probes.test.ts:24:5 registrations found: 1
+title: `${mode}: no read, no exception, no nested decision; the view is review 11's clean result`
+parts: [('review-11-probes.test.ts', '<registration>', 2619), ('harness.ts', 'caller', 226), ('harness.ts', 'recordingDriver', 692), ('harness.ts', 'recordOwn', 85), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('harness.ts', 'outcomeFor', 470), ('harness.ts', 'submissionFor', 459)]
+V-ENV body match: True
+  [review-11-probes.test.ts::<registration>] match 'Object.defineProperty(Object.prototype,': ...'ry {\n        accepted(\n          kernel.reportProtocolFailure(who, id, {\n            get activationId() {\n              Object.defineProperty(Object.prototype, "resultingEpoch", {\n                configurable: true,\n                get() {\n                  reads++;\n            '...
+  [review-11-probes.test.ts::<registration>] match 'Object.defineProperty(Object.prototype,': ...'\n        } catch (thrown) {\n          error = (thrown as Error).message;\n        }\n      } finally {\n        if (saved) Object.defineProperty(Object.prototype, "resultingEpoch", saved);\n        else delete (Object.prototype as Record<string, unknown>).resultingEpoch;\n      }\n   '...
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/values.test.ts:1728:3 registrations found: 1
+title: the refusal is located, the bytes are never wrong, and the borrowed slots are handed back
+parts: [('values.test.ts', '<registration>', 2198)]
+V-ENV body match: True
+  [values.test.ts::<registration>] match 'Object.defineProperty(Array.prototype,': ...'st { canonicalize } = await import("./packages/kernel/src/index.ts");\n      const clean = canonicalize({ a: 1 });\n      Object.defineProperty(Array.prototype, "0", {\n        configurable: false,\n        get() { return String.fromCharCode(34) + "HIJACKED" + String.fromCharCode(3'...
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/dispatch.test.ts:806:3 registrations found: 1
+title: a bound getter that installs Object.prototype.get still reserves the exact prefix
+parts: [('dispatch.test.ts', '<registration>', 2656), ('harness.ts', 'recordingDriver', 692), ('harness.ts', 'recordOwn', 85), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('dispatch.test.ts', 'descriptorTrappingOptions', 499), ('harness.ts', 'polluteDescriptorFields', 1178), ('harness.ts', 'descriptorConversionIsHostile', 237)]
+V-ENV body match: True
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/values.test.ts:1498:3 registrations found: 1
+title: the byte limit is enforced on the snapshot bytes, not on bytes the pollution chose
+parts: [('values.test.ts', '<registration>', 1137), ('harness.ts', 'polluteIteratorNext', 480), ('harness.ts', 'arrayIteratorPrototype', 93), ('values.test.ts', 'omitNext', 42)]
+V-ENV body match: True
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/dispatch.test.ts:1390:3 registrations found: 1
+title: Promise independence: hostile ambient constructor/species slots change nothing
+parts: [('dispatch.test.ts', '<registration>', 2534), ('harness.ts', 'recordingDriver', 692), ('harness.ts', 'recordOwn', 85), ('dispatch.test.ts', 'started', 184), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('harness.ts', 'promiseSpeciesIsHostile', 187)]
+V-ENV body match: True
+  [dispatch.test.ts::<registration>] match 'Object.defineProperty(Promise,': ...'ototype, "constructor");\n    const savedShadow = Object.getOwnPropertyDescriptor(Object.prototype, Symbol.species);\n    Object.defineProperty(Promise, Symbol.species, {\n      configurable: true,\n      get() {\n        throw new Error("species boom");\n      },\n    });\n   '...
+  [dispatch.test.ts::<registration>] match 'Object.defineProperty(Promise.prototype,': ...'Symbol.species, {\n      configurable: true,\n      get() {\n        throw new Error("species boom");\n      },\n    });\n    Object.defineProperty(Promise.prototype, "constructor", { value: 42, writable: true, enumerable: false, configurable: true });\n    Object.defineProperty(Object.'...
+  [dispatch.test.ts::<registration>] match 'Object.defineProperty(Object.prototype,': ...'neProperty(Promise.prototype, "constructor", { value: 42, writable: true, enumerable: false, configurable: true });\n    Object.defineProperty(Object.prototype, Symbol.species, { value: {}, writable: true, enumerable: false, configurable: true });\n    try {\n      assert.equal(pro'...
+  [dispatch.test.ts::<registration>] match 'Object.defineProperty(Promise,': ...'     if (savedSpecies === undefined) delete (Promise as unknown as Record<symbol, unknown>)[Symbol.species];\n      else Object.defineProperty(Promise, Symbol.species, savedSpecies);\n      if (savedCtor === undefined) delete (Promise.prototype as unknown as Record<string'...
+  [dispatch.test.ts::<registration>] match 'Object.defineProperty(Promise.prototype,': ...'f (savedCtor === undefined) delete (Promise.prototype as unknown as Record<string, unknown>)["constructor"];\n      else Object.defineProperty(Promise.prototype, "constructor", savedCtor);\n      if (savedShadow === undefined) delete (Object.prototype as unknown as Record<symbol, u'...
+  [dispatch.test.ts::<registration>] match 'Object.defineProperty(Object.prototype,': ...'(savedShadow === undefined) delete (Object.prototype as unknown as Record<symbol, unknown>)[Symbol.species];\n      else Object.defineProperty(Object.prototype, Symbol.species, savedShadow);\n    }\n    assert.equal(promiseSpeciesIsHostile(), false, "host state restored");\n    cons'...
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/recovery-ambient.test.ts:271:5 registrations found: 1
+title: `${transition}: an inherited caller object never enters, and later mutation changes nothing`
+parts: [('recovery-ambient.test.ts', '<registration>', 603), ('recovery-ambient.test.ts', 'runCase', 968), ('recovery-ambient.test.ts', 'drive', 2403), ('harness.ts', 'recordingDriver', 692), ('harness.ts', 'recordOwn', 85), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('harness.ts', 'submissionFor', 459), ('harness.ts', 'outcomeFor', 470), ('recovery-ambient.test.ts', 'retry', 65), ('recovery-ambient.test.ts', 'observe', 105), ('recovery-ambient.test.ts', 'remove', 102), ('recovery-ambient.test.ts', 'assertIntended', 2085)]
+V-ENV body match: True
+  [recovery-ambient.test.ts::runCase] match 'Object.defineProperty(Object.prototype,': ...'istory callback");\n          remove();\n          nested = retry();\n          return undefined;\n        };\n      }\n      Object.defineProperty(Object.prototype, "resultingEpoch", descriptor);\n    },\n    cleanup: remove,\n  });\n  return { ...row, reads, nested };\n}'...
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/whole-view-ambient.test.ts:123:7 registrations found: 1
+title: `${transition} / ${mode}`
+parts: [('whole-view-ambient.test.ts', '<registration>', 280), ('whole-view-ambient.test.ts', 'compare', 4362), ('harness.ts', 'recordingDriver', 692), ('harness.ts', 'recordOwn', 85), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('harness.ts', 'submissionFor', 459), ('whole-view-ambient.test.ts', 'code', 126), ('harness.ts', 'outcomeFor', 470), ('whole-view-ambient.test.ts', 'install', 637)]
+V-ENV body match: True
+  [whole-view-ambient.test.ts::compare] match 'Object.defineProperty(Object.prototype,': ...'known>).resultingEpoch;\n        nested++;\n        return kernel.submitOutcome(who, complete, grant);\n      };\n    }\n    Object.defineProperty(Object.prototype, "resultingEpoch", descriptor);\n  };\n  const request = {\n    get activationId() {\n      install();\n      return open.act'...
+  [whole-view-ambient.test.ts::compare] match 'Object.defineProperty(Object.prototype,': ...'r = kernel.recoverExecution(who, executionId, request);\n    assert.equal(answer.ok, true);\n  } finally {\n    if (saved) Object.defineProperty(Object.prototype, "resultingEpoch", saved);\n    else delete (Object.prototype as Record<string, unknown>).resultingEpoch;\n  }\n  const aft'...
+  [whole-view-ambient.test.ts::install] match 'Object.defineProperty(Object.prototype,': ...'known>).resultingEpoch;\n        nested++;\n        return kernel.submitOutcome(who, complete, grant);\n      };\n    }\n    Object.defineProperty(Object.prototype, "resultingEpoch", descriptor);\n  }'...
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/host-members.test.ts:166:3 registrations found: 1
+title: a class-based Driver without the method is not answered by Object.prototype
+parts: [('host-members.test.ts', '<registration>', 756), ('host-members.test.ts', 'opened', 457), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('host-members.test.ts', 'NoSafety', 249), ('host-members.test.ts', 'inherit', 585), ('harness.ts', 'refused', 206), ('host-members.test.ts', 'remove', 23)]
+V-ENV body match: True
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/recovery-ambient.test.ts:293:3 registrations found: 1
+title: Outcome end owns no resultingEpoch at all, even while one is inherited
+parts: [('recovery-ambient.test.ts', '<registration>', 319), ('recovery-ambient.test.ts', 'runCase', 968), ('recovery-ambient.test.ts', 'drive', 2403), ('harness.ts', 'recordingDriver', 692), ('harness.ts', 'recordOwn', 85), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('harness.ts', 'submissionFor', 459), ('harness.ts', 'outcomeFor', 470), ('recovery-ambient.test.ts', 'retry', 65), ('recovery-ambient.test.ts', 'observe', 105), ('recovery-ambient.test.ts', 'remove', 102), ('recovery-ambient.test.ts', 'assertIntended', 2085)]
+V-ENV body match: True
+  [recovery-ambient.test.ts::runCase] match 'Object.defineProperty(Object.prototype,': ...'istory callback");\n          remove();\n          nested = retry();\n          return undefined;\n        };\n      }\n      Object.defineProperty(Object.prototype, "resultingEpoch", descriptor);\n    },\n    cleanup: remove,\n  });\n  return { ...row, reads, nested };\n}'...
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
+====================================================================================================
+packages/kernel/tests/dispatch.test.ts:958:3 registrations found: 1
+title: descriptor pollution and an inherited indexed trap together still commit the exact batch
+parts: [('dispatch.test.ts', '<registration>', 1658), ('harness.ts', 'recordingDriver', 692), ('harness.ts', 'recordOwn', 85), ('harness.ts', 'accepted', 274), ('harness.ts', 'createRequest', 414), ('harness.ts', 'polluteDescriptorFields', 1178), ('harness.ts', 'trapInheritedIndices', 1672), ('harness.ts', 'descriptorConversionIsHostile', 237), ('harness.ts', 'inheritedIndexIsLive', 218)]
+V-ENV body match: True
+  [harness.ts::trapInheritedIndices] match 'Object.defineProperty(Array.prototype,': ...'value: unknown): void => {\n      recordOwn(swallowed, value);\n    };\n    installer.get = (): unknown => substitute;\n    Object.defineProperty(Array.prototype, index, installer as PropertyDescriptor);\n  }\n  return {\n    swallowed,\n    substitute,\n    restore(): void {\n      for '...
+  (matched via the anchored lookahead alternative: an intrinsic prototype and a defineProperty call both occur in the body)
