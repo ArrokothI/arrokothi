@@ -155,3 +155,14 @@ exists, worded to match what was built (owner choice 02, Q5).
 - BINDING-01's dependency, which stays "TOOLS-01 and K1.1-correction-03, both accepted and
   integrated".
 - Any hold release, Kernel claim or successor release.
+
+## Application of the 007 text (2026-10-05)
+
+The owner then directed the design author to apply the 007 text in this branch instead of a
+separate one. Verbatim: "Can't we do in the same branch?", then "let's first apply decision 4? seems
+like we already make the decision? How to apply? Can you do for me?" Reason: the new 007 text links
+to this record, which exists only on `codex/tools-01` until TOOLS-01 integrates.
+
+The design author (Claude Code, `claude-opus-5-5`) applied the four items above exactly, in the
+commit that adds this section, as part of the TOOLS-01 candidate. The gate entry check is still
+added once the gate exists. The TOOLS-01 implementer makes no other 007 edit.
