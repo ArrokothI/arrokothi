@@ -1,0 +1,322 @@
+[
+ {
+  "origin": "artifact-01c48e3f37efc92ef4c6e68a",
+  "path": "docs/development/work/K1.1-reference-01/contract.md",
+  "line": 157,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1-reference-01/contract.md@9fd2faa7: unsupported sealed-record reference: docs/development/work/*/validation-*/*.log"
+ },
+ {
+  "origin": "artifact-9775fd62e0ec1b4d45f26d3f",
+  "path": "docs/development/work/K1.1-reference-01/review-05.md",
+  "line": 109,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1-reference-01/review-05.md@9fd2faa7: missing regular source: 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1-reference-01/work/K1.1-reference-01/contract.md"
+ },
+ {
+  "origin": "artifact-5a99ec52d4f6731d34aa0926",
+  "path": "scripts/check-builder-docs.ts",
+  "line": 1,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md@9fd2faa7: unsupported sealed-record reference: https://www.anthropic.com/engineering/building-effective-agents"
+ },
+ {
+  "origin": "artifact-b7161892b7836d1e1d26c6bf",
+  "path": "tests/conformance/architecture/boundary-policy.ts",
+  "line": 1,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/implementation-04.md@9fd2faa7: missing regular source: 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/validation-04/01-tree-and-environment.log"
+ },
+ {
+  "origin": "artifact-f83cfd8c20c9d031c00c98ba",
+  "path": "docs/development/work/K1.2-correction-01/review-02/probe-equality.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-02/probe-equality.ts@66bc0411: unsupported sealed-record reference: probe-equality.ts"
+ },
+ {
+  "origin": "artifact-d3d0439b0de8a87606740816",
+  "path": "docs/development/work/K1.2-correction-01/review-06/p-receipts.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-06/p-receipts.ts@66bc0411: unsupported sealed-record reference: p-receipts.ts"
+ },
+ {
+  "origin": "artifact-876e74bca77cb8f0ac6939eb",
+  "path": "docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "case",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs@66bc0411: unsupported sealed-record reference: n15-probe.mjs"
+ },
+ {
+  "origin": "artifact-29897c65553c4a7f4ffebc1d",
+  "path": "docs/development/work/K1.2-correction-01/review-10.md",
+  "line": 172,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-10/probe-enforcement.mjs@66bc0411: unsupported sealed-record reference: enforcement-results.json"
+ },
+ {
+  "origin": "artifact-2f673089a513f4cf2c46673b",
+  "path": "docs/development/work/K1.2-correction-01/review-11.md",
+  "line": 164,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-11/run-read-mutant.mjs@66bc0411: unsupported sealed-record reference: read-mutant-suite.txt"
+ },
+ {
+  "origin": "artifact-e6335377558b4902a5eb4ac8",
+  "path": "docs/development/work/K1.2-correction-01/review-11.md",
+  "line": 174,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-11/run-read-mutant.mjs@66bc0411: unsupported sealed-record reference: read-mutant-suite.txt"
+ },
+ {
+  "origin": "artifact-0df304cfe45c7b0f825cd277",
+  "path": "docs/development/work/K1.2-correction-01/review-11.md",
+  "line": 216,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-11/run-mutants.mjs@66bc0411: unsupported sealed-record reference: mutant-results.json"
+ },
+ {
+  "origin": "artifact-aa61ddb0a0ed934d57775f7c",
+  "path": "docs/development/work/K1.2-correction-01/review-11.md",
+  "line": 222,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.2-correction-01/review-11/run-mutants.mjs@66bc0411: unsupported sealed-record reference: mutant-results.json"
+ },
+ {
+  "origin": "artifact-f41bd3ffa4f36fdfd1a93870",
+  "path": "packages/kernel/tests/sweep/preload.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "no link kind: only the required kernel-sweeps verification step runs this file; no test target imports or spawns it"
+ },
+ {
+  "origin": "artifact-e0445f9f19d3bcf95cfeba72",
+  "path": "packages/kernel/tests/sweep/run-poison-sweep.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "no link kind: only the required kernel-sweeps verification step runs this file; no test target imports or spawns it"
+ },
+ {
+  "origin": "artifact-097a4dcccf08b7048d523d00",
+  "path": "scripts/check-builder-docs.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: scripts/check-builder-docs.ts@66bc0411: unsupported sealed-record reference: docs/development/$"
+ },
+ {
+  "origin": "artifact-30024d036d904400c4493029",
+  "path": "tests/conformance/architecture/boundary-policy.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/implementation-04.md@9fd2faa7: missing regular source: 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/validation-04/01-tree-and-environment.log"
+ },
+ {
+  "origin": "artifact-1e3d57f18b66af569805e605",
+  "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/implementation-04.md@9fd2faa7: missing regular source: 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/validation-04/01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-6dbc2e2cb5e276f525858a95",
+  "path": "docs/development/work/K1.1-correction-01/validation-01/MANIFEST.md",
+  "line": 3,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1-correction-01/validation-01/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 00-scope-guard.log"
+ },
+ {
+  "origin": "mention-6a4805a0c843146b17bf61e8",
+  "path": "docs/development/work/K1.1/validation-05/MANIFEST.md",
+  "line": 27,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-05/MANIFEST.md@9fd2faa7: missing regular source: 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/K1.0/integration-01.md"
+ },
+ {
+  "origin": "mention-6d254abfc0140c6457376fe9",
+  "path": "docs/development/work/K1.1/validation-06/MANIFEST.md",
+  "line": 28,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-06/MANIFEST.md@9fd2faa7: missing regular source: 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/validation-06/review-02.md"
+ },
+ {
+  "origin": "mention-60774315b70015a7b7cee227",
+  "path": "docs/development/work/K1.1/validation-07/MANIFEST.md",
+  "line": 32,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-07/MANIFEST.md@9fd2faa7: missing regular source: 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49:docs/development/work/K1.1/validation-07/review-02.md"
+ },
+ {
+  "origin": "mention-ad9644cfe900aedf43d00e67",
+  "path": "docs/development/work/K1.1/validation-08/MANIFEST.md",
+  "line": 42,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-08/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-b0062957544d82078ef2af96",
+  "path": "docs/development/work/K1.1/validation-09/MANIFEST.md",
+  "line": 45,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-09/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-167d41016e3bfd6e87aa3dd3",
+  "path": "docs/development/work/K1.1/validation-10/MANIFEST.md",
+  "line": 53,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-10/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-b4c2499cdb06a89b3b7f84c3",
+  "path": "docs/development/work/K1.1/validation-11/MANIFEST.md",
+  "line": 48,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-11/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-123754e1ce6a38d94bac48cb",
+  "path": "docs/development/work/K1.1/validation-11/MANIFEST.md",
+  "line": 122,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1/validation-11/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-84b823d6a693c7755df18806",
+  "path": "docs/development/work/K1.1/validation-12/MANIFEST.md",
+  "line": 52,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-12/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-5766105aef6599ba38977249",
+  "path": "docs/development/work/K1.1/validation-12/MANIFEST.md",
+  "line": 148,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1/validation-12/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-83736f96199f333886eadeb1",
+  "path": "docs/development/work/K1.1/validation-13/MANIFEST.md",
+  "line": 58,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-13/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-8648d15cb01fcde0d3866342",
+  "path": "docs/development/work/K1.1/validation-13/MANIFEST.md",
+  "line": 144,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1/validation-13/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-ccaca9c2ac9e438d564a6762",
+  "path": "docs/development/work/K1.1/validation-13/MANIFEST.md",
+  "line": 145,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1/validation-13/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-afe1b89ed52e1140d4be4980",
+  "path": "docs/development/work/K1.1/validation-14/MANIFEST.md",
+  "line": 59,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/K1.1/validation-14/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: 01-tree-and-environment.log"
+ },
+ {
+  "origin": "mention-91b13f72c5b91e7c2389a7f7",
+  "path": "docs/development/work/K1.1/validation-17/MANIFEST.md",
+  "line": 27,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1/validation-17/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: docs/"
+ },
+ {
+  "origin": "mention-62c560a517e575f2b949edd4",
+  "path": "docs/development/work/K1.1/validation-17/MANIFEST.md",
+  "line": 30,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/K1.1/validation-17/MANIFEST.md@9fd2faa7: unsupported sealed-record reference: docs/"
+ },
+ {
+  "origin": "additional-1107d4b2a4d8c1365842b8ae",
+  "path": "docs/development/work/DESIGN-AUDIT-01/review-03/guards/round3_mutants.py",
+  "line": 1,
+  "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+  "legacy_status": "non_executable",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/DESIGN-AUDIT-01/review-03/guards/round3_mutants.py@b759d0ab: unsupported sealed-record reference: round3_mutants.py"
+ },
+ {
+  "origin": "additional-b60e2b509343b39e0bc4e392",
+  "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+  "line": 1,
+  "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+  "legacy_status": "case",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts@b759d0ab: unsupported sealed-record reference: kernel-lexical-creation.mts"
+ },
+ {
+  "origin": "additional-0b2b45755c80ff73e7789650",
+  "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+  "line": 1,
+  "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+  "legacy_status": "case",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts@b759d0ab: unsupported sealed-record reference: kernel-lexical-shadow.mts"
+ },
+ {
+  "origin": "additional-a11f3d5bded83b931874b438",
+  "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+  "line": 1,
+  "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+  "legacy_status": "case",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs@b759d0ab: unsupported sealed-record reference: lexical-shadow-probe.mjs"
+ },
+ {
+  "origin": "additional-4312cb8d9b027fa1ae60a720",
+  "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+  "line": 1,
+  "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+  "legacy_status": "case",
+  "cause": "context: the origin or a sibling record names a record in a refused form: docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs@b759d0ab: unsupported sealed-record reference: pin-forms-probe.mjs"
+ },
+ {
+  "origin": "additional-e0c4ff8aa1309ff5bc381c10",
+  "path": "docs/development/work/DESIGN-AUDIT-01/cleanup-01.md",
+  "line": 1,
+  "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+  "legacy_status": "non_executable",
+  "cause": "context: the transitive sealed-record traversal reaches the wider docs graph and refuses; first refusal: docs/development/work/DESIGN-AUDIT-01/cleanup-01.md@b759d0ab: unsupported sealed-record reference: implementation-03.md"
+ }
+]
