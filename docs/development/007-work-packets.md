@@ -44,6 +44,12 @@ Apply 006's repository, evidence and acceptance obligations, selecting proof met
 responsibilities, provider internals in Kernel types, speculative future-plan extensions and
 unsupported durability/isolation claims. Scaffolding must explicitly refuse unsupported APIs.
 
+**Corpus area report.** Every packet's `verify` runs TOOLS-01's advisory area gate
+(`area-gate`; [owner choice 07](work/TOOLS-01/owner-choice-07.md)). The packet's report
+quotes the gate's counts: open origins and `prose_pending` records per touched area, and the
+`ungated` count. The gate blocks nothing and requires no triage; a reviewer may cite a listed
+origin as a lead. TOOLS-02 is accepted and integrated before K1.4 is accepted.
+
 At release the planner writes `work/<id>/brief-01.md` (006 lifecycle; 008 template). Every
 criterion must be finishable: a deterministic check, a structural mechanism, or a declared bounded
 search. A criterion that cannot be stated this way goes back to the owner before any code is
@@ -230,7 +236,7 @@ defects of the same mechanism that the reconstruction finds. Requirements are un
 - K1.2-correction-01 accepted and integrated. Revision 10 was accepted at H `b7191db` and
   integrated at `ed509e1`. It changed production code under amendments 02 and 03, so the base for
   this packet is integrated `main`, not the revision-6 source.
-- TOOLS-01 accepted and integrated, so that its area gate binds this packet's changed paths
+- TOOLS-01 accepted and integrated, so that its registry and area report are available
   ([owner choice 04](work/TOOLS-01/owner-choice-04.md)).
 
 **Scope:**
@@ -346,10 +352,13 @@ No successor is released.
 **Owner direction:** 2026-10-05, [owner choice 04](work/TOOLS-01/owner-choice-04.md).
 **Dependencies:** TOOLS-01 accepted and integrated. **Scope:** the origins TOOLS-01 leaves open,
 closed under its contract's P1 rules with its tooling: the 1,395 `pending` origins, including the
-26 families, mention triage and sealed-log extraction, and the four origins limited by owner
-choice 04. Origins already closed by packets that touched their areas are not reopened.
+26 families, mention triage and sealed-log extraction, the four origins limited by owner
+choice 04, and the 40 revalidation origins transferred by [owner choice 05](work/TOOLS-01/owner-choice-05.md). Origins already closed by packets that touched their areas are not reopened.
 **Acceptance:** P1/P2 for that scope, clean-C verification and independent exact-candidate review.
-Not a dependency of K1.3, K1.1-correction-03 or BINDING-01; the area gate binds those instead.
+Not a dependency of K1.3, K1.1-correction-03 or BINDING-01. Their `verify` summaries list the
+open origins in the areas they touch, as an advisory report
+([owner choice 07](work/TOOLS-01/owner-choice-07.md)). TOOLS-02 must be accepted and integrated
+before K1.4 is accepted ([owner choice 06](work/TOOLS-01/owner-choice-06.md)).
 
 ### K1.3 — Wait and cancellation races
 
@@ -363,7 +372,8 @@ Not a dependency of K1.3, K1.1-correction-03 or BINDING-01; the area gate binds 
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k14); also inspect affected dependencies.
 
-**Dependencies:** K1.3. **Scope:** Integrate the new boundary with SDK host driving; bridge viable existing controllers as private Runtime machinery. Port useful conformance and document unsupported legacy features.
+**Dependencies:** K1.3, and TOOLS-02 accepted and integrated
+([owner choice 06](work/TOOLS-01/owner-choice-06.md)). **Scope:** Integrate the new boundary with SDK host driving; bridge viable existing controllers as private Runtime machinery. Port useful conformance and document unsupported legacy features.
 
 **Acceptance:** Full K1/E1 matrix and K1.0 structural obligations pass, including actual accepted asynchronous exchange through the supported entry; legacy resumptions do not drive new Kernel types/stores. Existing supported behavior is preserved or explicitly migrated/refused.
 
@@ -641,7 +651,7 @@ there is no second editable “done” checkbox in 001.
 | BINDING-01 | PLANNED | Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) and [decision-02](work/DESIGN-AUDIT-01/decision-02.md), 2026-10-02. Carries the [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) V-ENV hold. Not released. |
 | COORD-REFACTOR-01 | PLANNED | [Owner-decisions-02](work/DESIGN-AUDIT-01/owner-decisions-02.md) extra check d; row per [decision-02](work/DESIGN-AUDIT-01/decision-02.md). Not released. |
 | DESIGN-AUDIT-01 | ACCEPTED | **Review 03 ACCEPT, verbatim transcription:** Independent review 03 (Claude Code, `claude-opus-5-5`, 2026-10-02) of H `ce0b5a7098a9f65cf16dc55ce6eb013946564508` over C `c3e9c521c5ddbe93cc09ae880063a13f4e563d83` / B `66bc041175e6fc191c2e7cf88de198111e7d97c9`: ACCEPT. R3-CORPUS, R3-REALM, R3-PROXY, R3-KEEP and DA-1, DA-2/DA-4 (amended), DA-3, DA-3a, DA-ARCH, DA-3 owner extras, DA-5, DA-6 and DA-7 PASS. Closes `DA01-R2-REALM-01` (P2) and P3 `DA01-R2-DEP-01`, `-CONSIST-01`, `-PROXY-01` (owner question drafted, unanswered) and `-DEPENDENTS-01`; `-GUARD-01` addressed. New non-blocking P3: `DA01-R3-HOP-01`, `-GUARD-01`, `-PROXY-02`, `-LEDGER-01`. The review records new evidence against accepted integrated work (V-ENV global declarative-record hop) for owner decision. Acceptance is exact-H only. It adopts no draft, answers no owner question, lifts neither hold (invalidation-01, invalidation-02) and releases no successor. [Review 03](work/DESIGN-AUDIT-01/review-03.md) and its [evidence](work/DESIGN-AUDIT-01/review-03/README.md); accepted report [implementation-03](work/DESIGN-AUDIT-01/implementation-03.md). Integration pending owner merge. **Earlier record:** Recorder: Codex desktop/GPT-6 per session instructions, exact serving variant unavailable; local repository/history access, sandboxed writes and restricted network with reviewed Git escalation; no original owner–Claude conversation or independent acceptance authority. Owner release (verbatim): "On 2026-09-30 the owner releases DESIGN-AUDIT-01 for implementation, based on main at 66bc041, under the process reset in 006 (working principles, packet lifecycle, stop-and-redesign). The audit's brief is docs/development/work/DESIGN-AUDIT-01/brief-01.md. Independent review will be by a Claude Code (Opus 5.5) session. No other packet is released." Branch `codex/design-audit-01`; B `66bc041175e6fc191c2e7cf88de198111e7d97c9`. Prerequisite K1.2-correction-01 accepted H `b7191dbf630defeff7756122a6798e15d0b73dd3`, integrated `ed509e11dc39ff24e10c1ace68189776c4270919`. [Review 01](work/DESIGN-AUDIT-01/review-01.md) of H `7ebf80d461c439459d0c8010c04c9fb197281a59`: CHANGES REQUIRED; historical result retained. Round 2: [correction brief](work/DESIGN-AUDIT-01/review-01/brief-02.md), [owner directions/checks](work/DESIGN-AUDIT-01/owner-decisions-02.md), [design 02](work/DESIGN-AUDIT-01/design-02.md); earlier design-check preapproval is sourced to the forwarded prompt, not a verbatim owner approval; [provenance correction](work/DESIGN-AUDIT-01/owner-checks-02.md). **Round 3 recorder:** Codex coding-agent session, GPT-6 (exact serving variant unavailable); local repository/history and shell access, sandboxed writes, restricted network with approved Git escalation; no private owner transcripts or independent acceptance authority. **On the owner's current instruction, verbatim review-02 transcription:** Independent review 02 (Claude Code, `claude-opus-5-5`, 2026-10-01) of H `4c1b11e115ad61fbcfeebf83f50bb6a35478ea8e` over C `0ef728f0b93b7211d7c05795aa9f2cb5e7ce818e` / B `66bc041175e6fc191c2e7cf88de198111e7d97c9`: CHANGES REQUIRED. DA-1, DA-3a, DA-ARCH, DA-3 owner extras, DA-5, DA-6 and DA-7 PASS; DA-2/DA-4 (amended) and DA-3 FAIL on `DA01-R2-REALM-01` (P2). P3: `DA01-R2-DEP-01`, `-CONSIST-01`, `-GUARD-01`, `-PROXY-01`, `-DEPENDENTS-01`. 006 stop-and-redesign fires (second CHANGES REQUIRED in a corrected subsystem); the root-cause note and owner options are in the review. No correction round starts before the owner's choice. Both claim holds are unchanged; no successor is released. **Owner choice now recorded:** stop-and-redesign option (a), refined finishable claim, per [owner-choice](work/DESIGN-AUDIT-01/review-02/owner-choice.md); [brief-03](work/DESIGN-AUDIT-01/review-02/brief-03.md). Correction round 3 resumed under owner-approved continuation past design-03 unless a stop condition fired; none did. **Round 3 handoff:** [design-03](work/DESIGN-AUDIT-01/design-03.md), [implementation-03](work/DESIGN-AUDIT-01/implementation-03.md); payload C `c3e9c521c5ddbe93cc09ae880063a13f4e563d83`. Clean-C verifier PASS; R3-CORPUS/REALM/PROXY/KEEP and cumulative criteria assessed by implementer and submitted for independent review. H is the commit containing report 03, `ce0b5a7098a9f65cf16dc55ce6eb013946564508`. No PROXY-01 answer selected. [Review 02](work/DESIGN-AUDIT-01/review-02.md); [report 02](work/DESIGN-AUDIT-01/implementation-02.md). Both [classification hold](work/DESIGN-AUDIT-01/invalidation-01.md) and [V-D1 hold](work/K1.2/invalidation-02.md) remain. **Owner hold 2026-10-02:** the V-ENV claims named in review 03 are held for the in-process binding by owner-adopted [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md); historical ACCEPTs retained; correction routed to the binding packet, which is not yet planned or released. No self-acceptance, merge or successor release. [Cleanup complete](work/DESIGN-AUDIT-01/cleanup-01.md); integration pending owner manual merge; `next_release: none`. Integrated `c65894e7b907` (PR #40); [receipt](work/DESIGN-AUDIT-01/integration-01.md). Owner-closed 2026-10-02 ([discussion note](work/DESIGN-AUDIT-01/discussion-01.md)); `next_release: none`. **Owner decision-01, 2026-10-02:** CORE adopted as the target direction; PROXY-01 answered (refuse every Proxy at capture); transport cap 8 MiB ([owner decision-01](work/DESIGN-AUDIT-01/decision-01.md)). **Owner decision-02, 2026-10-02:** the wrapper is owned by the SDK, moved in stages; BINDING-01 and COORD-REFACTOR-01 rows added ([decision-02](work/DESIGN-AUDIT-01/decision-02.md)). |
-| TOOLS-01 | IN_PROGRESS | Owner [release 01](work/TOOLS-01/release-01.md), 2026-10-02; base `b759d0abc01915ea5abc94b4607c6f9101bbbcc7`, branch `codex/tools-01`. [Brief](work/TOOLS-01/brief-01.md), [contract](work/TOOLS-01/contract.md), [design](work/TOOLS-01/design-01.md). Research-independent foundation implemented at C `3c91db1f3dd2cc9110edc271d1b7ddd46bc88c45`; [partial implementation report](work/TOOLS-01/implementation-01.md). 39 tooling tests, 3,774 repository tests and typecheck passed at clean C. Full corpus adoption and independent review remain mandatory (P1/P2); not review-ready. No candidate acceptance or successor release. |
+| TOOLS-01 | WAITING_FOR_REVIEW | Owner [release 01](work/TOOLS-01/release-01.md), 2026-10-02; branch `codex/tools-01`, base `f62527e8d564a6e2f63b83cbb52e24053f333540`; contract [revision 7](work/TOOLS-01/contract.md) (owner choices 01–07). C `b104bab192f57c5ecf5b7eccebcfbda412a17b5d`; [implementation 02](work/TOOLS-01/implementation-02.md). 110 of 154 revalidation origins closed; 44 transferred and 1,395 pending origins left to TOOLS-02; advisory area gate in every `verify`. Independent review pending; no acceptance or successor release. |
 | TOOLS-02 | PLANNED | [Owner choice 04](work/TOOLS-01/owner-choice-04.md), 2026-10-05. Not released. |
 | K1.3 | PLANNED | — |
 | K1.4 | PLANNED | — |
