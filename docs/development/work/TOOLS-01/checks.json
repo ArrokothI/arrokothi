@@ -127,7 +127,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 484
+        "tests": 489
       }
     },
     {
@@ -140,7 +140,7 @@
       "id": "adoption",
       "operation": "corpus",
       "spec": "tests/fixtures/packet-tools/adoption.json",
-      "expected": "mappings_complete"
+      "expected": "revalidation_complete"
     },
     {
       "id": "dimensions",

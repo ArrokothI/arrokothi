@@ -535,6 +535,21 @@ def holds_table(git, rev, holds):
     return claims
 
 
+def transferred_origins(git, rev, rows, origins):
+    """P1-R under owner choices 04 and 05: revalidation origins an owner decision moved to TOOLS-02. Each
+    names its decision record at C and must still be open for revalidation; a closed one is stale."""
+    require(isinstance(rows, list), 'transferred origins are a list')
+    found = {}
+    for row in rows:
+        require(isinstance(row, dict) and isinstance(row.get('origin'), str) and isinstance(row.get('decision'), str)
+                and row['origin'] not in found, 'a transferred origin is unique and names its owner decision')
+        git.blob(rev, row['decision'])
+        require(origins.get(row['origin'], {}).get('state') == 'pending_revalidation',
+                'a transferred origin is an open revalidation origin: ' + row['origin'])
+        found[row['origin']] = row['decision']
+    return found
+
+
 def corpus_format_2(git, rev, spec, intake, toolchain=None):
     origins = {row['id']: row for row in intake['origins']}
     require(all(table in spec for table in FORMAT_2_TABLES), 'format 2 needs every adoption table')
@@ -618,8 +633,12 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     states = Counter(row['state'] for row in rows.values())
     revalidation = Counter(row['legacy']['status'] for row in rows.values() if row['state'] == 'pending_revalidation')
     pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
+    transferred = transferred_origins(git, rev, spec.get('transferred', []), rows)
+    unexplained = [key for key in pending if rows[key]['state'] == 'pending_revalidation' and key not in transferred]
     return {'operation': 'corpus', 'format': 2, 'revision': rev,
-            'result': 'mappings_complete' if not pending else 'extraction_pending',
+            'result': ('mappings_complete' if not pending else 'revalidation_complete' if not unexplained
+                       else 'extraction_pending'),
+            'transferred': {'origins': len(transferred), 'by_decision': dict(Counter(transferred.values()))},
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
             'closures': {'complete': len(closures), 'context_ranges': sum(row['ranges'] for row in closures.values()),
                          'context_candidates': sum(row['candidates'] for row in closures.values()),

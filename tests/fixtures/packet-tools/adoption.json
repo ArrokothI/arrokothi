@@ -51586,5 +51586,183 @@
       "covers": "module",
       "reason": "harness.ts changed between 9fd2faa7 and C (K1.2). Top level: the type-only import gains OutcomeEnvelope and SubmissionGrant (erased), the own-array.ts import gains readAt (module already requested), and observer, submissionFor, unsafeDriver and outcomeFor are new function-valued declarations with no load-time effect. caller now adds controlScopes, a copy of scopes; the Kernel reads it only in requestTakeover, recoverExecution and reportProtocolFailure (coordinator.ts #requireControl), none of which this file calls. recordingDriver also records each submission grant through recordOwn and declares isSafeToReplace, which only takeover reads; the file still reads seen. It installs no iterator pollution and no inherited-index trap. The inputs and assertions of its literal-titled members are unchanged."
     }
+  ],
+  "transferred": [
+    {
+      "origin": "artifact-73555fe668cc180905b1e49a",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-04.md"
+    },
+    {
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-04.md"
+    },
+    {
+      "origin": "artifact-d2153e36d9c7464883ecea0b",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-04.md"
+    },
+    {
+      "origin": "artifact-ea5444a6d42154e413fe0f2e",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-04.md"
+    },
+    {
+      "origin": "artifact-01c48e3f37efc92ef4c6e68a",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-9775fd62e0ec1b4d45f26d3f",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-5a99ec52d4f6731d34aa0926",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-b7161892b7836d1e1d26c6bf",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-f83cfd8c20c9d031c00c98ba",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-d3d0439b0de8a87606740816",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-876e74bca77cb8f0ac6939eb",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-29897c65553c4a7f4ffebc1d",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-2f673089a513f4cf2c46673b",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-e6335377558b4902a5eb4ac8",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-0df304cfe45c7b0f825cd277",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-aa61ddb0a0ed934d57775f7c",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-f41bd3ffa4f36fdfd1a93870",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-e0445f9f19d3bcf95cfeba72",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-097a4dcccf08b7048d523d00",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-30024d036d904400c4493029",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "artifact-1e3d57f18b66af569805e605",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-6dbc2e2cb5e276f525858a95",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-6a4805a0c843146b17bf61e8",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-6d254abfc0140c6457376fe9",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-60774315b70015a7b7cee227",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-ad9644cfe900aedf43d00e67",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-b0062957544d82078ef2af96",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-167d41016e3bfd6e87aa3dd3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-b4c2499cdb06a89b3b7f84c3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-123754e1ce6a38d94bac48cb",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-84b823d6a693c7755df18806",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-5766105aef6599ba38977249",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-83736f96199f333886eadeb1",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-8648d15cb01fcde0d3866342",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-ccaca9c2ac9e438d564a6762",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-afe1b89ed52e1140d4be4980",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-91b13f72c5b91e7c2389a7f7",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "mention-62c560a517e575f2b949edd4",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "additional-1107d4b2a4d8c1365842b8ae",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "additional-b60e2b509343b39e0bc4e392",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "additional-0b2b45755c80ff73e7789650",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "additional-a11f3d5bded83b931874b438",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "additional-4312cb8d9b027fa1ae60a720",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    },
+    {
+      "origin": "additional-e0c4ff8aa1309ff5bc381c10",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md"
+    }
   ]
 }

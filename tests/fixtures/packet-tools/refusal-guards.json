@@ -8070,6 +8070,93 @@
           "id": "mutation-29e6e4ba29b8272242c7e2c715ef3a46133c9df092dc648a325991daa3b62a26"
         }
       ]
+    },
+    {
+      "id": "guard.transferred_origins.7d2ba50aee2198bf",
+      "assertion": "test_adoption_format.FormatTwoTests.test_transferred_origins_are_a_list",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transferred_origins",
+      "input": {
+        "test": "test_adoption_format.FormatTwoTests.test_transferred_origins_are_a_list"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transferred_origins.7d2ba50aee2198bf"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(rows, list), 'transferred origins are a list')",
+          "after": "pass  # tools01-ablate:7d2ba50aee2198bf",
+          "operator": "remove-refusal-check",
+          "name": "guard.transferred_origins.7d2ba50aee2198bf",
+          "id": "mutation-7b092325c4b7e42ad955fd6c0844ab661a463fe905212f7f5a19e1864e1040c4"
+        }
+      ]
+    },
+    {
+      "id": "guard.transferred_origins.88c6ccbab7216ed5",
+      "assertion": "test_adoption_format.FormatTwoTests.test_a_transferred_origin_names_its_decision_once",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transferred_origins",
+      "input": {
+        "test": "test_adoption_format.FormatTwoTests.test_a_transferred_origin_names_its_decision_once"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transferred_origins.88c6ccbab7216ed5"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row, dict) and isinstance(row.get('origin'), str) and isinstance(row.get('decision'), str)\n                and row['origin'] not in found, 'a transferred origin is unique and names its owner decision')",
+          "after": "pass  # tools01-ablate:88c6ccbab7216ed5",
+          "operator": "remove-refusal-check",
+          "name": "guard.transferred_origins.88c6ccbab7216ed5",
+          "id": "mutation-4e19924830e3be006a187e70e8c359c88d39ed3d1cb5e5219ba58f487b8cfb21"
+        }
+      ]
+    },
+    {
+      "id": "guard.transferred_origins.1435cc6de72c6440",
+      "assertion": "test_adoption_format.FormatTwoTests.test_a_transferred_origin_is_an_open_revalidation_origin",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transferred_origins",
+      "input": {
+        "test": "test_adoption_format.FormatTwoTests.test_a_transferred_origin_is_an_open_revalidation_origin"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transferred_origins.1435cc6de72c6440"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(origins.get(row['origin'], {}).get('state') == 'pending_revalidation',\n                'a transferred origin is an open revalidation origin: ' + row['origin'])",
+          "after": "pass  # tools01-ablate:1435cc6de72c6440",
+          "operator": "remove-refusal-check",
+          "name": "guard.transferred_origins.1435cc6de72c6440",
+          "id": "mutation-0f394c07a0d122df33316ff4f24f1c76ce9034089d7ff890b959e95419115dbd"
+        }
+      ]
     }
   ],
   "determinism_sample": [

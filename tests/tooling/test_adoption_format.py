@@ -55,6 +55,36 @@ class FormatTwoTests(RepositoryFixture):
         self.assertEqual(result['counts']['kills'], 0)
         self.assertFalse(result['full_corpus_complete'])
 
+    def test_transferred_revalidation_origins_complete_the_revalidation_scope(self):
+        # Owner choices 04-05: only owner-transferred revalidation origins may stay open; pending ones are TOOLS-02's.
+        transfer = lambda data: data.update(transferred=[{'origin': data['origins'][0]['id'], 'decision': 'decision.md'}])
+        result = self.check(self.fixture(transfer))
+        self.assertEqual((result['result'], result['transferred']), ('revalidation_complete', {'origins': 1, 'by_decision': {'decision.md': 1}}))
+
+    def test_a_transferred_origin_is_an_open_revalidation_origin(self):
+        rev = self.fixture(lambda data: data.update(transferred=[{'origin': data['origins'][1]['id'], 'decision': 'decision.md'}]))
+        with self.assertRaisesRegex(tool.CheckError, 'a transferred origin is an open revalidation origin'):
+            self.check(rev)
+
+    def test_a_transferred_origin_names_its_decision_once(self):
+        rev, error = self.fixture(lambda data: data.update(transferred=[{'origin': data['origins'][0]['id']}])), None
+        try:
+            self.check(rev)
+        except Exception as exc:
+            error = exc
+        self.assertIsInstance(error, tool.CheckError, 'a transfer without its decision must be a declared refusal')
+        self.assertIn('a transferred origin is unique and names its owner decision', str(error))
+
+    def test_a_transferred_origin_is_listed_once(self):
+        rev = self.fixture(lambda data: data.update(transferred=[{'origin': data['origins'][0]['id'], 'decision': 'decision.md'}] * 2))
+        with self.assertRaisesRegex(tool.CheckError, 'a transferred origin is unique and names its owner decision'):
+            self.check(rev)
+
+    def test_transferred_origins_are_a_list(self):
+        rev = self.fixture(lambda data: data.update(transferred={'origin': data['origins'][0]['id']}))
+        with self.assertRaisesRegex(tool.CheckError, 'transferred origins are a list'):
+            self.check(rev)
+
     def test_missing_origin_refused(self):
         rev = self.fixture(lambda data: data['origins'].pop())
         with self.assertRaisesRegex(tool.CheckError, 'every origin'):
