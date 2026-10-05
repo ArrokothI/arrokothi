@@ -48974,13 +48974,6 @@
     ],
     "register": {
       "recipes": {
-        "V-D1": {
-          "title": "V-D1",
-          "files": [
-            "packages/kernel/tests/value-diagnostic-work.test.ts",
-            "packages/kernel/tests/value-refusal-cost.test.ts"
-          ]
-        },
         "Proxy": {
           "body": "new Proxy|Proxy\\.revocable"
         },
@@ -48988,7 +48981,18 @@
           "body": "setPrototypeOf|__proto__|Object\\.create\\("
         },
         "V-ENV": {
-          "body": "\\bvm\\b|createContext|runInContext|frozen-intrinsics|globalThis|\\b(?:Object|Reflect)\\s*\\.\\s*(?:definePropert(?:y|ies)|assign|set)\\s*\\(\\s*(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Map|Set|WeakMap|WeakSet|WeakRef|FinalizationRegistry|Promise|ArrayBuffer|SharedArrayBuffer|DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float16Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|JSON|Math|Reflect|Atomics|Intl|WebAssembly)(?:\\s*\\.\\s*prototype)?\\s*,|\\b(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Map|Set|WeakMap|WeakSet|WeakRef|FinalizationRegistry|Promise|ArrayBuffer|SharedArrayBuffer|DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float16Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|JSON|Math|Reflect|Atomics|Intl|WebAssembly)(?:\\s*\\.\\s*prototype)?\\s*(?:\\.\\s*\\w+|\\[[^\\]\\n]+\\])\\s*=(?!=|>)|\\A(?s:(?=.*(?:\\b(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Map|Set|WeakMap|WeakSet|WeakRef|FinalizationRegistry|Promise|ArrayBuffer|SharedArrayBuffer|DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float16Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|JSON|Math|Reflect|Atomics|Intl|WebAssembly)\\s*\\.\\s*prototype\\b|getPrototypeOf\\s*\\(\\s*\\[\\s*\\]))(?=.*\\b(?:Object|Reflect)\\s*\\.\\s*definePropert(?:y|ies)\\s*\\())"
+          "body": "\\bvm\\b|createContext|runInContext|frozen-intrinsics|globalThis|\\b(?:Object|Reflect)\\s*\\.\\s*(?:definePropert(?:y|ies)|assign|set)\\s*\\(\\s*(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Map|Set|WeakMap|WeakSet|WeakRef|FinalizationRegistry|Promise|ArrayBuffer|SharedArrayBuffer|DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float16Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|JSON|Math|Reflect|Atomics|Intl|WebAssembly)(?:\\s*\\.\\s*prototype)?\\s*,|\\b(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Map|Set|WeakMap|WeakSet|WeakRef|FinalizationRegistry|Promise|ArrayBuffer|SharedArrayBuffer|DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float16Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|JSON|Math|Reflect|Atomics|Intl|WebAssembly)(?:\\s*\\.\\s*prototype)?\\s*(?:\\.\\s*\\w+|\\[[^\\]\\n]+\\])\\s*=(?!=|>)|\\A(?s:(?=.*(?:\\b(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Map|Set|WeakMap|WeakSet|WeakRef|FinalizationRegistry|Promise|ArrayBuffer|SharedArrayBuffer|DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float16Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|JSON|Math|Reflect|Atomics|Intl|WebAssembly)\\s*\\.\\s*prototype\\b|getPrototypeOf\\s*\\(\\s*\\[\\s*\\]))(?=.*\\b(?:Object|Reflect)\\s*\\.\\s*definePropert(?:y|ies)\\s*\\())",
+          "files": [
+            "tests/tooling/realm-probe.mjs"
+          ]
+        },
+        "V-D1": {
+          "title": "V-D1",
+          "files": [
+            "packages/kernel/tests/value-diagnostic-work.test.ts",
+            "packages/kernel/tests/value-refusal-cost.test.ts",
+            "tests/tooling/work-charge-probe.mjs"
+          ]
         }
       },
       "entries": [
@@ -50511,6 +50515,603 @@
           "classification": "held",
           "claim": "V-ENV",
           "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+        },
+        {
+          "key": "case:realm.kernel-lexical-shadow.control",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        },
+        {
+          "key": "case:realm.kernel-lexical-shadow.JSON",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        },
+        {
+          "key": "case:realm.kernel-lexical-shadow.Object",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        },
+        {
+          "key": "case:realm.kernel-lexical-shadow.Array",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        },
+        {
+          "key": "case:realm.kernel-lexical-creation.control",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        },
+        {
+          "key": "case:realm.kernel-lexical-creation.hop",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        },
+        {
+          "key": "case:realm.lexical-shadow.unpinned.ordinary",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.lexical-shadow.unpinned.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.lexical-shadow.pinned.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.object-freeze-witness.unpinned.ordinary",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.object-freeze-witness.pinned.ordinary",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.object-freeze-witness.unpinned.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.object-freeze-witness.pinned.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.define.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.declare.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.assign.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.define.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.declare.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.assign.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.define.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.declare.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.assign.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.assign.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.define.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.define.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.declare.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.declare.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.preexisting.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Map.preexisting.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.assign.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.assign.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.define.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.define.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.declare.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.declare.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.preexisting.full.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "reason": "Registry case attributed mechanism_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit."
+        },
+        {
+          "key": "case:work-charge.array-surplus",
+          "matched": [
+            "V-D1",
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-D1",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Bounded existing surplus-charge observation; V-D1 remains held. The count proves no general work bound."
+        },
+        {
+          "key": "case:capture.current.Map",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.Date",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.Set",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.Uint8Array",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.ArrayBuffer",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.RegExp",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.Error",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.String",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.Boolean",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.WeakMap",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "re-prototyped-built-in",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        },
+        {
+          "key": "case:capture.current.Proxy",
+          "matched": [
+            "Proxy",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "Proxy",
+          "reason": "Registry case attributed held_witness to K1.1-correction-03: Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
         }
       ]
     }

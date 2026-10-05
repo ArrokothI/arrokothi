@@ -69,9 +69,12 @@ VENV_PROPERTY_WRITE = (
 REGISTER_MINIMUM = {
     'Proxy': {'body': r'new Proxy|Proxy\.revocable'},
     're-prototyped-built-in': {'body': r'setPrototypeOf|__proto__|Object\.create\('},
-    'V-ENV': {'body': r'\bvm\b|createContext|runInContext|frozen-intrinsics|globalThis|' + VENV_PROPERTY_WRITE},
+    # Step 9: the probes that run every realm and work-charge registry case name their claims by file.
+    'V-ENV': {'body': r'\bvm\b|createContext|runInContext|frozen-intrinsics|globalThis|' + VENV_PROPERTY_WRITE,
+              'files': ['tests/tooling/realm-probe.mjs']},
     'V-D1': {'title': r'V-D1', 'files': ['packages/kernel/tests/value-diagnostic-work.test.ts',
-                                         'packages/kernel/tests/value-refusal-cost.test.ts']},
+                                         'packages/kernel/tests/value-refusal-cost.test.ts',
+                                         'tests/tooling/work-charge-probe.mjs']},
 }
 TEST_SUFFIXES = ('.test.ts', '.test.mjs', '.test.js')
 # P1-M (design 05 D04-CHK-03, D05-CHK-06): census kinds over pinned runner bytes, and member routes.
@@ -576,7 +579,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     with contextlib.ExitStack() as stack:
         context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
-        register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain)
+        register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
+                                 registry['cases'], spec['registry'])
         results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
         evaluations, all_earlier = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
         _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain)
@@ -622,6 +626,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'suite_credit': target_counts(results)['credit'], 'holds': sorted(claims),
             'preserved': figures, 'families': family_counts,
             'register': {'scope_files': len(scope), 'entries': len(register),
+                         'cases': sum(key.startswith('case:') for key in register),
                          'by_classification': {f'{kind}:{claim or "-"}': count for (kind, claim), count in sorted(register_counts.items(), key=str)}},
             'mapping_complete': not pending, 'execution': 'not evaluated',
             'full_corpus_complete': False, 'acceptance': 'not evaluated',
@@ -630,8 +635,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                        'Revision-2 mappings carry no credit until revalidated (P1-R)',
                        'Preserved means the same test-side code, fixtures and assertion at C, not discrimination; '
                        'reads outside fs, by native code or in processes that drop NODE_OPTIONS are unseen',
-                       'The hold register covers leaf registrations in preserved and target files; '
-                       'registry cases are not yet registered']}
+                       'The hold register covers leaf registrations in preserved and target files and every '
+                       'registry case']}
 
 
 def coverage_manifest(spec, registry):
@@ -1920,8 +1925,34 @@ def register_matches(git, rev, files, recipes, environment, toolchain=None):
     return matches
 
 
-def hold_register(git, rev, register, claims, files, environment, toolchain=None):
-    """P1-H: the register's recipes, recomputed at C over `files`, must equal its classified entries."""
+CASE_ATTRIBUTIONS = ('held_witness', 'mechanism_witness')
+
+
+def register_case_matches(git, rev, cases, recipes, registry_path):
+    """P1-H over registry cases, keyed `case:<id>`. A case's title is its ID and assertion; its body is its
+    stored input, its argv and the text of every repository file it names or runs, except the registry."""
+    compiled = {claim: {field: re.compile(recipe[field]) for field in ('title', 'body') if field in recipe}
+                for claim, recipe in recipes.items()}
+    matches = []
+    for case in cases:
+        named = [*case.get('files', []), *case.get('argv', [])]
+        files = [name for name in dict.fromkeys(named) if name != registry_path and blob_id(git, rev, name) is not None]
+        title = f"{case['id']}\n{case.get('assertion', '')}"
+        body = '\n'.join([json.dumps(case.get('input'), sort_keys=True), ' '.join(case.get('argv', [])),
+                          *(git.blob(rev, name).decode('utf-8', 'replace') for name in files)])
+        claims = sorted(claim for claim, recipe in recipes.items()
+                        if set(files) & set(recipe.get('files', [])) or
+                        ('title' in compiled[claim] and compiled[claim]['title'].search(title)) or
+                        ('body' in compiled[claim] and compiled[claim]['body'].search(body)))
+        if claims:
+            matches.append({'key': 'case:' + case['id'], 'claims': claims})
+    return matches
+
+
+def hold_register(git, rev, register, claims, files, environment, toolchain=None, cases=(), registry_path=None):
+    """P1-H: the register's recipes, recomputed at C over `files` and the registry cases, must equal its
+    classified entries. A held or superseded case carries its witness attribution, and every attributed
+    case is registered so."""
     recipes = register_recipes(claims, register)
     entries = {}
     for row in register.get('entries', []):
@@ -1933,9 +1964,17 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
                 'a held or superseded entry names its held claim')
         entries[row['key']] = row
     matches = register_matches(git, rev, files, recipes, environment, toolchain)
+    matches += register_case_matches(git, rev, cases, recipes, registry_path)
     require({row['key'] for row in matches} == set(entries), 'register entries differ from the recomputed matches')
     for row in matches:
         require(entries[row['key']].get('matched') == row['claims'], 'register entry records other matched claims: ' + row['key'])
+    for case in cases:
+        attributed = (case.get('claim') or {}).get('kind') in CASE_ATTRIBUTIONS
+        entry = entries.get('case:' + case['id'])
+        require(entry is None or entry['classification'] == 'not_held' or attributed,
+                'a held or superseded case carries its witness attribution: ' + case['id'])
+        require(not attributed or entry is not None and entry['classification'] != 'not_held',
+                'an attributed witness case is registered as held or superseded: ' + case['id'])
     return entries
 
 

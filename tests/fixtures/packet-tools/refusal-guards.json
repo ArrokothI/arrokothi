@@ -7867,6 +7867,64 @@
           "id": "mutation-b3b536676355cb491abec23c33a7bb584f8b77da0ddf8a4a96d24e90c82241c6"
         }
       ]
+    },
+    {
+      "id": "guard.hold_register.4cc982d5cf1cda97",
+      "assertion": "test_case_register.CaseRegisterTests.test_a_held_case_needs_its_witness_attribution",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_case_register.CaseRegisterTests.test_a_held_case_needs_its_witness_attribution"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.4cc982d5cf1cda97"
+      ],
+      "timeout_seconds": 30,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(entry is None or entry['classification'] == 'not_held' or attributed,\n                'a held or superseded case carries its witness attribution: ' + case['id'])",
+          "after": "pass  # tools01-ablate:4cc982d5cf1cda97",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.4cc982d5cf1cda97",
+          "id": "mutation-8383815986c108f1cc1c78f0f1e302798ded456783e49452a7dd9dfa79c69fa6"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.a98e832f0c0da01f",
+      "assertion": "test_case_register.CaseRegisterTests.test_an_attributed_case_is_registered_held_or_superseded",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_case_register.CaseRegisterTests.test_an_attributed_case_is_registered_held_or_superseded"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.a98e832f0c0da01f"
+      ],
+      "timeout_seconds": 30,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not attributed or entry is not None and entry['classification'] != 'not_held',\n                'an attributed witness case is registered as held or superseded: ' + case['id'])",
+          "after": "pass  # tools01-ablate:a98e832f0c0da01f",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.a98e832f0c0da01f",
+          "id": "mutation-aa7f1392f46029dcc575e0d573c81d6ad4a5e5902c99e13f76a000f14316f314"
+        }
+      ]
     }
   ],
   "determinism_sample": [

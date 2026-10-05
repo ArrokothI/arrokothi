@@ -174,9 +174,13 @@ requires them to equal the recomputation exactly. A stale record fails; it never
   anchored at the body's start, so a search stays linear in the body. A body is the leaf registration's text plus
   the same-file and test-side helpers it references, followed transitively (a namespace import widens
   to every exported helper). The recipes are matched against every leaf registration in the preserved
-  and target files, and the matches must equal `holds.register.entries`, each classified `held`,
-  `superseded` or `not_held` with a reason. A held or superseded entry names its claim and turns a
-  member into a witness record, never credit. A suite target on such a leaf is refused.
+  and target files, and against every registry case (key `case:<id>`; title its ID and assertion; body
+  its stored input, argv and the text of each repository file it names or runs, except the registry).
+  The matches must equal `holds.register.entries`, each classified `held`, `superseded` or `not_held`
+  with a reason. A held or superseded entry names its claim and turns a member into a witness record,
+  never credit. A suite target on such a leaf is refused. A held or superseded case needs its own
+  `held_witness` or `mechanism_witness` attribution in the registry, and every attributed case must be
+  registered held or superseded.
 - **Run model.** `floor` names the floor record and its SHA-256. Its A10 result decides the run model.
   On v26.10.0 the order model does not hold, so every leaf counts as earlier, and so does every leaf in
   a file with a `concurrency` option. A command that does not run each file in its own process
@@ -201,8 +205,7 @@ requires them to equal the recomputation exactly. A stale record fails; it never
 A preserved member claims the same test-side code, fixtures and assertion at C, not discrimination.
 Members are keyed by pinned path, line, column and blob, and origins that share one are merged. The
 summary counts members by status, the preserved labels and refusals by reason. Reads outside `fs`, by
-native code, or in processes that drop `NODE_OPTIONS` are unseen. Registry cases are not yet in the
-register.
+native code, or in processes that drop `NODE_OPTIONS` are unseen.
 
 ## Families and target-set mutants
 
