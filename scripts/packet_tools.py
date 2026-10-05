@@ -62,7 +62,8 @@ VENV_PROPERTY_WRITE = (
     r'\b(?:Object|Reflect)\s*\.\s*(?:definePropert(?:y|ies)|assign|set)\s*\(\s*' + VENV_INTRINSICS +
     r'(?:\s*\.\s*prototype)?\s*,'
     r'|\b' + VENV_INTRINSICS + r'(?:\s*\.\s*prototype)?\s*(?:\.\s*\w+|\[[^\]\n]+\])\s*=(?!=|>)'
-    r'|(?s:(?=.*(?:\b' + VENV_INTRINSICS + r'\s*\.\s*prototype\b|getPrototypeOf\s*\(\s*\[\s*\]))'
+    # Anchored: both lookaheads scan the whole body, so position 0 decides; unanchored, `search` is quadratic.
+    r'|\A(?s:(?=.*(?:\b' + VENV_INTRINSICS + r'\s*\.\s*prototype\b|getPrototypeOf\s*\(\s*\[\s*\]))'
     r'(?=.*\b(?:Object|Reflect)\s*\.\s*definePropert(?:y|ies)\s*\())')
 # D05-CHK-05: the minimum hold-register recipes; a manifest may widen them, never narrow them.
 REGISTER_MINIMUM = {

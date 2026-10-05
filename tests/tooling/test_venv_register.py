@@ -1,4 +1,7 @@
 """CONT-05: property installation recipes register ambient tests without executing their writes."""
+import re
+import time
+
 from test_packet_tools import RepositoryFixture, tool
 from test_target_tools import ROOT, pinned_toolchain
 
@@ -35,3 +38,13 @@ test('own input control', () => { const input = {}; Object.defineProperty(input,
         register['recipes']['V-ENV']['body'] = r'\bvm\b|createContext|runInContext|frozen-intrinsics|globalThis'
         with self.assertRaisesRegex(tool.CheckError, 'register recipe narrows the minimum body: V-ENV'):
             tool.register_recipes(set(tool.REGISTER_MINIMUM), register)
+
+    def test_the_minimum_body_recipe_is_linear_and_still_matches_distant_halves(self):
+        # CONT-05 repair: the unanchored lookahead alternative made `search` quadratic in the body.
+        body = re.compile(tool.REGISTER_MINIMUM['V-ENV']['body'])
+        started = time.monotonic()
+        self.assertIsNone(body.search('x' * 40_000))
+        self.assertLess(time.monotonic() - started, 2.0)
+        distant = 'const p = Array.prototype;\n' + 'x\n' * 100_000 + 'Object.defineProperty(p, "0", {value: 1});\n'
+        self.assertIsNotNone(body.search(distant))
+        self.assertIsNotNone(body.search('Object.defineProperty(q, "0", {});\n' + 'x\n' * 100_000 + 'Array.prototype;'))

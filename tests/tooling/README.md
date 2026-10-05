@@ -168,7 +168,10 @@ requires them to equal the recomputation exactly. A stale record fails; it never
 
 - **Hold register (P1-H).** `holds.register.recipes` gives each held claim a title, body and file
   recipe. Each recipe may widen design 05's minimum (an added `|` alternative, more files), never
-  narrow it, and every P1-H claim stays in `holds.claims`. A body is the leaf registration's text plus
+  narrow it, and every P1-H claim stays in `holds.claims`. Since TOOLS-CONT-05 the tool's V-ENV
+  minimum also matches writes to members of named built-in intrinsics, and a body that names an
+  intrinsic prototype (or an array iterator's) and calls `defineProperty`. That last alternative is
+  anchored at the body's start, so a search stays linear in the body. A body is the leaf registration's text plus
   the same-file and test-side helpers it references, followed transitively (a namespace import widens
   to every exported helper). The recipes are matched against every leaf registration in the preserved
   and target files, and the matches must equal `holds.register.entries`, each classified `held`,
