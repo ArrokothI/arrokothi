@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "scripts/packet_tools.py",
+    "verify",
+    "--revision",
+    "b104bab192f57c5ecf5b7eccebcfbda412a17b5d",
+    "--spec",
+    "docs/development/work/TOOLS-01/checks.json"
+  ],
+  "start_utc": "2026-10-05T17:22:55.703712+00:00",
+  "seconds": 2854.5991150839254,
+  "exit": 1,
+  "node": "v26.10.0"
+}

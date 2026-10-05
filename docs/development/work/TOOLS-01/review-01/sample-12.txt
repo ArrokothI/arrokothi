@@ -1,0 +1,31 @@
+docs/development/work/K1.1-correction-01/contract.md @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49 lines 235:264
+235: ## Command plan
+236: 
+237: Run on the payload commit C, from the repository root, Node 22.9+:
+238: 
+239: ```bash
+240: npm run typecheck
+241: npm test
+242: npm run test:conformance
+243: npm run test:kernel
+244: npm run test:sdk
+245: npm run check:builder-docs
+246: node --test --test-reporter=tap "tests/conformance/architecture/*.test.ts"
+247: ```
+248: 
+249: plus the packet case inventory, the new mental-model link/anchor check, all correction
+250: regressions, the retained unrelated ablation/mutation checks plus the four reporting-boundary
+251: mutations in decision-01, and the 015 structural gates. `npm run test:evals`
+252: is not run: this correction reaches no Agent behaviour and no model path.
+253: 
+254: The KC1-DEC-7 documentation scope guard is part of this plan and its raw output is recorded:
+255: 
+256: ```bash
+257: git diff --name-only 0ee13f8138af52107d86967043bcc460faba8893 HEAD -- mental-model/   # must be empty
+258: git diff --stat 777b9955fb3a443f700b4f3d1f4f2aef1869345b 0ee13f8138af52107d86967043bcc460faba8893 -- mental-model/
+259: ```
+260: 
+261: The first line is the gate. The second is the B→D accounting the report classifies, together with
+262: the word-level comparison that shows which of those paths changed in substance rather than in line
+263: wrapping. A non-empty first result fails the packet; it is never explained away in a report.
+264: 

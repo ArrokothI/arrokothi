@@ -1,0 +1,292 @@
+{
+  "origin": {
+    "id": "artifact-ce2e69842afb779a3e70c0f5",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Own __proto__ capture and retention is checked in the named K11-R1-VAL-01 value and creation cases.",
+      "targets": [
+        "suite.packages/kernel/tests/values.test.ts",
+        "suite.packages/kernel/tests/creation.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.values.177.5.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.207.5.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.dispatch.445.3.5a8d958ffdab"
+        },
+        {
+          "kind": "target",
+          "id": "target.creation.516.3"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1/review-01.md",
+          "start": 53,
+          "end": 73
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/core.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  "members": [],
+  "targets": [
+    {
+      "id": "target.values.177.5.fb228bec8c58",
+      "counterexample": "cx.values.177.5.fb228bec8c58",
+      "member": "packages/kernel/tests/values.test.ts:177:5@fb228bec8c58",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/values.test.ts",
+      "test_path": [
+        "K1.1-C3 boundary values are validated, never repaired",
+        "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+        "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+      ],
+      "declaration": {
+        "line": 177,
+        "column": 5
+      },
+      "input_anchors": [
+        {
+          "anchor": "const input = JSON.parse('{\"__proto__\":{\"admin\":true},\"safe\":2}') as Record<string, unknown>;",
+          "sha256": "f3684c974a1a6c4f287ced7221d110078578d8a352a1eddd9b0deefe6c2c146f",
+          "literals": [
+            {
+              "ordinal": 7,
+              "value": "{\"__proto__\":{\"admin\":true},\"safe\":2}"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.ok(Object.prototype.hasOwnProperty.call(input, \"__proto__\"), \"the fixture really carries an own member\");",
+          "sha256": "1fb33c79dae5d2216af5947d9fe37ca73bd051bd525212a2a6514ffc8b2cfb12"
+        },
+        {
+          "anchor": "assert.deepEqual(issueCodes(input), [], \"values.md permits arbitrary well-formed member names\");",
+          "sha256": "339838e23134eb9d85421dfea00f939a1056c20c566ed3cd72e9fd19301298d2"
+        },
+        {
+          "anchor": "assert.ok(result.ok, \"it canonicalizes\");",
+          "sha256": "d8d4eeafc406352a8a44feeab6a091a2093431b7edc90e87b3ea8ce7748f5d21"
+        },
+        {
+          "anchor": "assert.ok(Object.prototype.hasOwnProperty.call(sealed, \"__proto__\"), \"the member survives as an own property\");",
+          "sha256": "353026082086f3254a5b6ce578f9c2b218c8246df0eb17e9b1b053a7e772394b"
+        },
+        {
+          "anchor": "assert.deepEqual(Object.keys(sealed).sort(), [\"__proto__\", \"safe\"]);",
+          "sha256": "b8558886a7ea37020a38d1265916e1759b995ae231d7d711dfcea650621e1dd1"
+        },
+        {
+          "anchor": "assert.deepEqual(sealed[\"__proto__\"], { admin: true });",
+          "sha256": "c9551c804b38df2c5ff6b080f6a39f1957dfb688879e7082a613a595ad1fd1b1"
+        },
+        {
+          "anchor": "assert.equal(Object.getPrototypeOf(sealed), Object.prototype, \"no prototype was grown\");",
+          "sha256": "3363a398ef8c4c8a1c830e9c3b0d381a83ab07e0d5ef7d1c58775855d2806ff7"
+        },
+        {
+          "anchor": "assert.ok(Object.isFrozen(sealed), \"the copy is frozen\");",
+          "sha256": "82d6c8555e7d52d1b9188cb7a6a4a9e0e53670c82e69425feca04b3076f2cadd"
+        },
+        {
+          "anchor": "assert.ok(Object.isFrozen(sealed[\"__proto__\"]), \"nested values are frozen too\");",
+          "sha256": "460cde3e6bde75ef1961ef95c5122cc3d6bd82272df6a28b14a96d07c0dd920d"
+        },
+        {
+          "anchor": "assert.equal(result.value.canonical, '{\"__proto__\":{\"admin\":true},\"safe\":2}');",
+          "sha256": "8a85a2583377a0e6f4338273e025df17a43f2ae0194f2c03496f615b705ebdf6"
+        },
+        {
+          "anchor": "assert.equal(\n        canonicalOf(sealed),\n        result.value.canonical,\n        \"re-canonicalizing the retained copy yields the bound identity\",\n      );",
+          "sha256": "676c54113b6fd43e7e324896dd9018b6dfcdb9700d0e024ea40bbdf8ae81fdb6"
+        },
+        {
+          "anchor": "assert.equal(Object.prototype.hasOwnProperty.call(weak, \"__proto__\"), false, \"the weak copy loses the member\");",
+          "sha256": "4bd5577832237925cd069883c8ca5db1907432b3ab7b2ab671aee20c557f55cf"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "The JSON input owns a \"__proto__\" member; the assertions require no issue, an own \"__proto__\" with its value in the frozen copy, Object.prototype unchanged as its prototype, the exact canonical bytes and their reproduction, and that a weak copy would lose it."
+      }
+    },
+    {
+      "id": "target.values.207.5.fb228bec8c58",
+      "counterexample": "cx.values.207.5.fb228bec8c58",
+      "member": "packages/kernel/tests/values.test.ts:207:5@fb228bec8c58",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/values.test.ts",
+      "test_path": [
+        "K1.1-C3 boundary values are validated, never repaired",
+        "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+        "nested and array-embedded __proto__ members survive at depth"
+      ],
+      "declaration": {
+        "line": 207,
+        "column": 5
+      },
+      "input_anchors": [
+        {
+          "anchor": "const input = JSON.parse('{\"a\":[{\"__proto__\":{\"deep\":true}}],\"b\":{\"c\":{\"__proto__\":1}}}') as unknown;",
+          "sha256": "829e5972ee99383c9bcb397671bc37523450332876b3887105095552bfee82d2",
+          "literals": [
+            {
+              "ordinal": 7,
+              "value": "{\"a\":[{\"__proto__\":{\"deep\":true}}],\"b\":{\"c\":{\"__proto__\":1}}}"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.ok(first && Object.prototype.hasOwnProperty.call(first, \"__proto__\"));",
+          "sha256": "309c82050aebf85f9fe90fc6f9059592133939e5bc43c31d91d3a082d58b2fcc"
+        },
+        {
+          "anchor": "assert.deepEqual(first[\"__proto__\"], { deep: true });",
+          "sha256": "80d15568f1511a9de27cb7c4e8bd25611274f6b390aa6f2eb0f0df61ee9aa35a"
+        },
+        {
+          "anchor": "assert.ok(Object.prototype.hasOwnProperty.call(sealed.b.c, \"__proto__\"));",
+          "sha256": "e38dbc78b3f4c7b0e0676aeed388f68d7b78b2dc827f70090e800c5b126a61e9"
+        },
+        {
+          "anchor": "assert.equal(sealed.b.c[\"__proto__\"], 1);",
+          "sha256": "f07d77848a6c064c3a87155e94ee8a22e05ec53ed3b527c474c1d3f765f362bb"
+        },
+        {
+          "anchor": "assert.equal(canonicalOf(sealed), result.value.canonical);",
+          "sha256": "c46a89f69acaf0e3cd03e8922185e0b886322192383eafe0d663b5fa4c171165"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "The JSON input nests \"__proto__\" members in an array element and an object; the assertions require each as own data with its value, and identical re-canonicalization."
+      }
+    },
+    {
+      "id": "target.dispatch.445.3.5a8d958ffdab",
+      "counterexample": "cx.dispatch.445.3.5a8d958ffdab",
+      "member": "packages/kernel/tests/dispatch.test.ts:445:3@5a8d958ffdab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "test_path": [
+        "K1.1-C5 ordinary redelivery is the same exchange",
+        "K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value"
+      ],
+      "declaration": {
+        "line": 448,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const payload = JSON.parse('{\"__proto__\":{\"x\":1},\"safe\":2}') as Record<string, unknown>;",
+          "sha256": "3d78f7298c340c44366156aef74f0c5c7e67d72cf4c1f257efa9d8d3852be728",
+          "literals": [
+            {
+              "ordinal": 7,
+              "value": "{\"__proto__\":{\"x\":1},\"safe\":2}"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.ok(Object.prototype.hasOwnProperty.call(carried, \"__proto__\"), \"Activation carries the own member\");",
+          "sha256": "f253a69e61a6254c0b842d361a86a01bd601afc19c25d984de21d3a2e6c7751a"
+        },
+        {
+          "anchor": "assert.deepEqual(carried[\"__proto__\"], { x: 1 });",
+          "sha256": "36692e24e1d1ed1b1047a9cfd487020a5a1c734f815c80d3635627ce7fdd12b8"
+        },
+        {
+          "anchor": "assert.ok(Object.prototype.hasOwnProperty.call(recarried, \"__proto__\"));",
+          "sha256": "6f139570ee6d4dc5767baee984b60c43a5070e50317ba5d98032fa8476a4a574"
+        },
+        {
+          "anchor": "assert.deepEqual(recarried, carried);",
+          "sha256": "97819d5c53105448068cb8787dfa59ae0328a9c6418ab32dcc9d6e985cfca80c"
+        },
+        {
+          "anchor": "assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).mailbox[0]?.payload, carried);",
+          "sha256": "0e17e4f88701b027dbf999c9658c479721a0989f2842a2da492bf47db5546cfd"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "The JSON payload owns \"__proto__\"; the first and the redelivered Activation and the inspected mailbox must all carry it as own data with its value."
+      }
+    },
+    {
+      "id": "target.creation.516.3",
+      "counterexample": "cx.creation.516.3",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/creation.test.ts",
+      "test_path": [
+        "K1.1-C1 the key is scoped, and the scope comes from authentication",
+        "K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection"
+      ],
+      "declaration": {
+        "line": 516,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const payload = JSON.parse('{\"__proto__\":{\"admin\":true},\"safe\":2}') as Record<string, unknown>;",
+          "sha256": "831e7db38402e380f94a9bfbf219fb11c133f315a06c515d8613225f9b2b4726",
+          "literals": [
+            {
+              "ordinal": 7,
+              "value": "{\"__proto__\":{\"admin\":true},\"safe\":2}"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.ok(Object.prototype.hasOwnProperty.call(stored, \"__proto__\"), \"stored state keeps the member as own data\");",
+          "sha256": "17735ea5e6f2256b6f5f5e8025cd9f3e9b1d28f09c5e14e6f17f3c40b3086205"
+        },
+        {
+          "anchor": "assert.deepEqual(stored[\"__proto__\"], { admin: true });",
+          "sha256": "0636252c8b3686d70954e72da0aedf588d9c067dac379d9c4d4305cf9d14cb31"
+        },
+        {
+          "anchor": "assert.equal(Object.getPrototypeOf(stored), Object.prototype);",
+          "sha256": "494155eb88e09111c19e9d5c72ad02b108c67e1cfa1fe2f876245cccfc63aafa"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "The stored payload must own a \"__proto__\" member equal to {admin: true}, and its prototype must be Object.prototype."
+      }
+    }
+  ],
+  "counterexamples": []
+}

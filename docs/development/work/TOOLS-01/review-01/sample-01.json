@@ -1,0 +1,382 @@
+{
+  "origin": {
+    "id": "artifact-ab4a0cceaeed3b426232f62f",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Maintained source packages/kernel/tests/boundary.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "targets": [
+        "suite.packages/kernel/tests/boundary.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/boundary.test.ts",
+          "start": 1,
+          "end": 207
+        }
+      ],
+      "context_reasons": {
+        "tests/conformance/architecture/kernel-landing-zone.test.ts": "A test or test-side path the text names; it binds through the closure links, not as context."
+      }
+    }
+  },
+  "members": [
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:55:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "neither word appears in the zone's executable text",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        55,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:69:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "no legacy controller vocabulary is carried forward into code either",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        69,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:77:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "the exported surface names no Agent or Workflow concept",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        77,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:84:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        84,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:94:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "which code can read progress is answered only by pinned revisions and a codec",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        94,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:101:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        101,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:135:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        135,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:157:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        157,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/boundary.test.ts:191:3@2f74754bd710",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "file": "packages/kernel/tests/boundary.test.ts",
+      "pin_blob": "2f74754bd7105634484b790abf0c3287b9265ea1",
+      "title": "every import in the zone is internal, a node: builtin, or the approved JCS dependency",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        191,
+        3
+      ],
+      "reads": "4463b9635bb15185a94ede2392de210417b6cde493ac5a0ea76fba1c04c60d5d",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [],
+      "repository_read_changed": [
+        "packages/kernel/package.json",
+        "packages/kernel/src",
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/driver.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/inspection.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ]
+    }
+  ],
+  "targets": [],
+  "counterexamples": []
+}

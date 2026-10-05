@@ -1,0 +1,85 @@
+packages/kernel/tests/refusal-diagnostics-fixture.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9 lines 1:84
+1: /** Shared observable boundary schedule for ordinary regression tests and the explicit engine-max probe. */
+2: import assert from "node:assert/strict";
+3: import { ExecutionCoordinator, type ExecutionView, type RefusalRecord, type SubmissionGrant } from "../src/index.ts";
+4: import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
+5: 
+6: const absent = undefined as unknown as SubmissionGrant;
+7: const available = {
+8:   definitionRevisions: ["weekly-report@3"],
+9:   runtimeContractRevisions: ["runtime-contract@1"],
+10:   progressCodecs: ["inline-json@1"],
+11: };
+12: 
+13: export function assertDiagnostic(reason: string, limit = 1_024): void {
+14:   assert.ok(reason.length > 0 && reason.length <= limit, `diagnostic length ${reason.length} exceeds ${limit}`);
+15:   assert.match(reason, /^[\x20-\x7e]*$/, "identity diagnostics retain only printable ASCII");
+16: }
+17: 
+18: export function assertOnlyRefusal(before: ExecutionView, after: ExecutionView, refusal: RefusalRecord): void {
+19:   assert.equal(after.refusals.length, before.refusals.length + 1, "exactly one refusal appended");
+20:   assert.strictEqual(after.refusals.at(-1), refusal, "returned object is the retained refusal");
+21:   assert.ok(Object.isFrozen(refusal), "the shared refusal is frozen");
+22:   assert.deepEqual(after.refusals.slice(0, -1), before.refusals, "existing refusals unchanged");
+23:   const { refusals: _beforeRefusals, ...oldState } = before;
+24:   const { refusals: _afterRefusals, ...newState } = after;
+25:   assert.deepEqual(newState, oldState, "whole accepted view, holds, history, delivery and receipts unchanged");
+26: }
+27: 
+28: /** 3 lifecycle states x (visibility-only Outcome + 3 powered controls + 3 visibility-only controls). */
+29: export function runBoundaryDiagnosticSchedule(identity: string, observed?: (caseName: string) => void): number {
+30:   let cases = 0;
+31:   for (const phase of ["open", "resolved", "terminal"] as const) {
+32:     for (const surface of ["outcome", "takeover", "recovery", "protocol", "denied-takeover", "denied-recovery", "denied-protocol"] as const) {
+33:       const who = caller("diagnostic-author");
+34:       const visible = observer("diagnostic-observer");
+35:       const otherVisible = observer("second-observer");
+36:       const driver = recordingDriver();
+37:       const kernel = new ExecutionCoordinator({ driver });
+38:       const { executionId } = accepted(kernel.createExecution(who, createRequest()));
+39:       const open = accepted(kernel.dispatch(who, executionId, { bound: 1 }));
+40:       const grant = submissionFor(driver, open.activationId);
+41:       const valid = outcomeFor(executionId, open, phase === "terminal" ? { next: { step: "complete", result: 1 } } : {});
+42:       const decision = phase === "open" ? null : accepted(kernel.submitOutcome(who, valid, grant));
+43:       const before = accepted(kernel.inspect(visible, executionId));
+44:       const deliveries = driver.seen.length;
+45:       let identityReads = 0;
+46:       let progressReads = 0;
+47:       const named = { get activationId() { identityReads++; return identity; }, writerEpoch: 1, available };
+48:       const powered = !surface.startsWith("denied-");
+49:       const actor = powered ? who : visible;
+50:       const result = surface === "outcome"
+51:         ? kernel.submitOutcome(visible, { ...valid, get activationId() { identityReads++; return identity; }, get progress() { progressReads++; return null; } }, absent)
+52:         : surface.endsWith("takeover") ? kernel.requestTakeover(actor, executionId, named)
+53:           : surface.endsWith("recovery") ? kernel.recoverExecution(actor, executionId, named)
+54:             : kernel.reportProtocolFailure(actor, executionId, named);
+55:       const refusal = refused(result);
+56:       assert.equal(refusal.classification, !powered ? "unauthorized_control"
+57:         : phase === "terminal" ? "terminal_destination"
+58:           : phase === "resolved" && surface !== "outcome" ? "no_unresolved_exchange" : "stale_exchange");
+59:       assertDiagnostic(refusal.reason);
+60:       assert.equal(identityReads, powered ? 1 : 0, "identity is captured once after control power");
+61:       assert.equal(progressReads, surface === "outcome" ? 1 : 0, "Outcome content capture stays eager");
+62:       assert.equal(refusal.executionId, executionId, "structured identity remains exact");
+63:       assertOnlyRefusal(before, accepted(kernel.inspect(visible, executionId)), refusal);
+64:       assert.strictEqual(accepted(kernel.inspect(otherVisible, executionId)).refusals.at(-1), refusal);
+65:       assert.equal(driver.seen.length, deliveries, "refusal neither retries nor delivers");
+66:       if (phase === "open") {
+67:         accepted(kernel.submitOutcome(who, valid, grant));
+68:       } else if (phase === "resolved") {
+69:         const next = accepted(kernel.dispatch(who, executionId, { bound: 1 }));
+70:         accepted(kernel.submitOutcome(who, outcomeFor(executionId, next), submissionFor(driver, next.activationId)));
+71:       } else {
+72:         const beforeReplay = accepted(kernel.inspect(who, executionId));
+73:         const replay = accepted(kernel.submitOutcome(visible, valid, absent));
+74:         assert.equal(replay.replayed, true);
+75:         assert.strictEqual(replay.receipt, decision?.receipt);
+76:         assert.deepEqual(accepted(kernel.inspect(who, executionId)), beforeReplay);
+77:       }
+78:       cases++;
+79:       observed?.(`${phase}/${surface}`);
+80:     }
+81:   }
+82:   assert.equal(cases, 21);
+83:   return cases;
+84: }

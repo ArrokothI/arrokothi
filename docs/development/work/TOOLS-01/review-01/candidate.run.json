@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "scripts/packet_tools.py",
+    "candidate",
+    "--payload",
+    "b104bab192f57c5ecf5b7eccebcfbda412a17b5d",
+    "--head",
+    "446dd25820500db4e0eb3d6940ec49e45634f39c",
+    "--spec",
+    "docs/development/work/TOOLS-01/verification.json"
+  ],
+  "start_utc": "2026-10-05T17:22:54.446838+00:00",
+  "seconds": 1.1362771249841899,
+  "exit": 0,
+  "node": "v26.10.0"
+}

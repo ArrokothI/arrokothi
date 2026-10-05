@@ -1,0 +1,41 @@
+{
+  "rows": [
+    {
+      "mode": "fail",
+      "run": {
+        "status": "finished",
+        "exit": 7,
+        "output": ""
+      },
+      "mutated_copy_observed": true,
+      "copy_removed": true,
+      "source_sha256_before": "5b493338301b9616de01667ce16e253670722938942858261747cf24b6112b32",
+      "source_sha256_after": "5b493338301b9616de01667ce16e253670722938942858261747cf24b6112b32"
+    },
+    {
+      "mode": "timeout",
+      "run": {
+        "status": "timeout",
+        "exit": -9,
+        "output": ""
+      },
+      "mutated_copy_observed": true,
+      "copy_removed": true,
+      "source_sha256_before": "5b493338301b9616de01667ce16e253670722938942858261747cf24b6112b32",
+      "source_sha256_after": "5b493338301b9616de01667ce16e253670722938942858261747cf24b6112b32"
+    },
+    {
+      "mode": "interrupt",
+      "run": {
+        "status": "interrupted",
+        "exit": -2,
+        "exception": "KeyboardInterrupt"
+      },
+      "mutated_copy_observed": true,
+      "copy_removed": true,
+      "source_sha256_before": "5b493338301b9616de01667ce16e253670722938942858261747cf24b6112b32",
+      "source_sha256_after": "5b493338301b9616de01667ce16e253670722938942858261747cf24b6112b32"
+    }
+  ],
+  "seconds": 1.2477314579300582
+}

@@ -1,0 +1,28 @@
+{
+  "base": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+  "payload": "b104bab192f57c5ecf5b7eccebcfbda412a17b5d",
+  "head": "446dd25820500db4e0eb3d6940ec49e45634f39c",
+  "parent": "b104bab192f57c5ecf5b7eccebcfbda412a17b5d",
+  "remote": "https://github.com/ArrokothI/arrokothi.git",
+  "advertised_branch_tip_observed": "fb410cb99519fbd922fcfcaeb872cb168caf4f9c",
+  "exact_head_fetch": {
+    "command": [
+      "git",
+      "fetch",
+      "origin",
+      "446dd25820500db4e0eb3d6940ec49e45634f39c"
+    ],
+    "exit": 0,
+    "observation": "Remote accepted exact H and returned it as FETCH_HEAD"
+  },
+  "fetch_head_after_exact_fetch": "446dd25820500db4e0eb3d6940ec49e45634f39c",
+  "H_ancestor_of_advertised_tip": false,
+  "administrative_paths": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/TOOLS-01/implementation-02.md"
+  ],
+  "reviewed_policy": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+  "node": "v26.10.0",
+  "archive": "node-v26.10.0-darwin-arm64.tar.gz",
+  "verified_archive_sha256": "751fdf7439f115d87ee2a8f3f18c065b6151852068e3e666ac60ac2996f75ac9"
+}

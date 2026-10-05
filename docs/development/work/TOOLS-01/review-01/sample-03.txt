@@ -1,0 +1,312 @@
+packages/kernel/tests/receipts.test.ts @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49 lines 1:311
+1: /**
+2:  * K1.1-C6 - per-boundary receipts, and reads that are scoped before they reveal anything.
+3:  *
+4:  * `mental-model/concepts/identity.md`, "Acceptance, boundary and receipt": a receipt names one
+5:  * boundary and one revision/position, "There is no single receipt per Execution", and a refusal is
+6:  * not an acceptance. The failures behind the cases: one receipt per Execution reused at every
+7:  * boundary; a receipt minted for a refused request; and a lookup that tells an unauthorized caller
+8:  * an Execution exists by answering differently from a missing one.
+9:  */
+10: 
+11: import { test, describe } from "node:test";
+12: import assert from "node:assert/strict";
+13: 
+14: import { ExecutionCoordinator } from "../src/index.ts";
+15: import { packIdentity } from "../src/identity.ts";
+16: import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
+17: 
+18: const author = caller("app-a", "tenant-a");
+19: const coordinator = (): ExecutionCoordinator => new ExecutionCoordinator({ driver: recordingDriver() });
+20: 
+21: describe("K11-R3-ID-02 identity packing is injective only over text, and says so", () => {
+22:   test("the length-prefixed packing separates parts no separator could", () => {
+23:     assert.notEqual(packIdentity(["ab", "c"]), packIdentity(["a", "bc"]));
+24:     assert.equal(packIdentity(["ab", "c"]), packIdentity(["ab", "c"]));
+25:     assert.equal(packIdentity([]), "");
+26:     assert.equal(packIdentity([""]), "0:");
+27:     assert.notEqual(packIdentity(["", "a"]), packIdentity(["a", ""]));
+28:   });
+29: 
+30:   test("a part that is not text is raised rather than packed into a colliding key", () => {
+31:     // Two different objects would both render `[object Object]` with no length. Producing a key from
+32:     // them would make one request answer for another, so the packing refuses to produce one at all.
+33:     for (const part of [{ a: 1 }, ["a"], 17, null, undefined, true]) {
+34:       assert.throws(() => packIdentity([part as unknown as string]), TypeError, `${String(part)} is not an identity part`);
+35:     }
+36:     // Caller-supplied identity fields never reach here: the request boundary refuses them first with
+37:     // a located malformed-value reason. This guard is for the host's trusted authentication boundary,
+38:     // where a non-text namespace or scope would be a programming error rather than a bad request.
+39:     assert.throws(() => packIdentity(["app-a", 1 as unknown as string, "key"]), /identity parts must be text/);
+40:   });
+41: });
+42: 
+43: describe("K1.1-C6 one receipt per accepted boundary", () => {
+44:   test("creation, ingress and dispatch intent each mint their own", () => {
+45:     const kernel = coordinator();
+46:     const created = accepted(kernel.createExecution(author, createRequest()));
+47:     const ingress = accepted(
+48:       kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 1 } }),
+49:     );
+50:     const dispatch = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
+51: 
+52:     assert.deepEqual(
+53:       [created.receipt.boundary, ingress.receipt.boundary, dispatch.receipt.boundary],
+54:       ["creation", "input_ingress", "dispatch_intent"],
+55:     );
+56:     const tokens = new Set([created.receipt.token, ingress.receipt.token, dispatch.receipt.token]);
+57:     assert.equal(tokens.size, 3, "three accepted decisions, three distinct receipts");
+58: 
+59:     const view = accepted(kernel.inspect(author, created.executionId));
+60:     assert.deepEqual(view.receipts, [created.receipt, ingress.receipt, dispatch.receipt], "in acceptance order");
+61:     assert.deepEqual(
+62:       view.receipts.map((receipt) => receipt.position),
+63:       [...view.receipts.map((receipt) => receipt.position)].sort((left, right) => left - right),
+64:       "positions order the accepted facts",
+65:     );
+66:   });
+67: 
+68:   test("a receipt from one boundary can never be mistaken for another's", () => {
+69:     const kernel = coordinator();
+70:     const first = accepted(kernel.createExecution(author, createRequest({ creationKey: "a" })));
+71:     const second = accepted(kernel.createExecution(author, createRequest({ creationKey: "b" })));
+72: 
+73:     // Two Executions, and one boundary each: no two receipts collapse onto one token.
+74:     assert.notEqual(second.receipt.token, first.receipt.token);
+75: 
+76:     const ingress = accepted(
+77:       kernel.submitInput(author, { destination: first.executionId, requestKey: "c1", kind: "k", payload: null }),
+78:     );
+79:     assert.notEqual(ingress.receipt.token, first.receipt.token);
+80:     assert.match(first.receipt.token, /^crt:/);
+81:     assert.match(ingress.receipt.token, /^inp:/);
+82:   });
+83: 
+84:   test("an exact replay returns the original token, at each boundary that can replay", () => {
+85:     const kernel = coordinator();
+86:     const created = accepted(kernel.createExecution(author, createRequest()));
+87:     const ingress = accepted(
+88:       kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 1 } }),
+89:     );
+90:     const dispatch = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
+91: 
+92:     assert.deepEqual(accepted(kernel.createExecution(author, createRequest())).receipt, created.receipt);
+93:     assert.deepEqual(
+94:       accepted(kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 1 } })).receipt,
+95:       ingress.receipt,
+96:     );
+97:     assert.deepEqual(accepted(kernel.redeliver(author, created.executionId)).receipt, dispatch.receipt);
+98: 
+99:     assert.equal(accepted(kernel.inspect(author, created.executionId)).receipts.length, 3, "and no replay minted a fourth");
+100:   });
+101: 
+102:   test("every refusal mints none", () => {
+103:     const kernel = coordinator();
+104:     const created = accepted(kernel.createExecution(author, createRequest()));
+105:     accepted(kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 1 } }));
+106:     const before = accepted(kernel.inspect(author, created.executionId)).receipts;
+107: 
+108:     refused(kernel.createExecution(author, createRequest({ initialInput: { kind: "k", payload: { other: true } } })));
+109:     refused(kernel.createExecution(caller("app-a", "tenant-b"), createRequest({ scope: "tenant-a" })));
+110:     refused(kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 2 } }));
+111:     refused(kernel.submitInput(author, { destination: created.executionId, requestKey: "c2", kind: "k", payload: { n: Number.NaN } as never }));
+112:     refused(kernel.submitInput(author, { destination: "execution-404", requestKey: "c3", kind: "k", payload: null }));
+113:     refused(kernel.dispatch(author, created.executionId, { bound: 0 }));
+114:     refused(kernel.redeliver(author, created.executionId));
+115: 
+116:     assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).receipts, before, "seven refusals, no receipt");
+117:   });
+118: });
+119: 
+120: describe("K1.1-C6 reads are authenticated and scoped first", () => {
+121:   test("an unauthorized caller cannot learn that an Execution exists", () => {
+122:     const kernel = coordinator();
+123:     const created = accepted(kernel.createExecution(author, createRequest()));
+124:     const outsider = caller("app-c", "tenant-c");
+125: 
+126:     const hidden = refused(kernel.inspect(outsider, created.executionId));
+127:     const missing = refused(kernel.inspect(outsider, "execution-404"));
+128:     assert.equal(hidden.classification, "unknown_destination");
+129:     assert.equal(hidden.reason, missing.reason);
+130:     assert.equal(hidden.executionId, null, "and the refusal names nothing");
+131:     assert.deepEqual(kernel.visibleExecutions(outsider), []);
+132:   });
+133: 
+134:   test("refusals that name no Execution advance nothing observable", () => {
+135:     const kernel = coordinator();
+136:     const created = accepted(kernel.createExecution(author, createRequest()));
+137:     const outsider = caller("app-c", "tenant-c");
+138: 
+139:     // K11-R12-ID-01: a refusal that names no Execution concerns no record and therefore orders
+140:     // against nothing. Its position is always 0 — identically for a hidden record and a missing
+141:     // one — so probing for another principal's Execution cannot move any caller-visible
+142:     // sequence. Both orders are measured, so the check cannot be satisfied by a constant
+143:     // offset. The K11-R1-ID-01 cases below assert equal lookup *work* via scope-read counting,
+144:     // which is what distinguishes a missing fast path from a hidden scope search.
+145:     const hiddenFirst = refused(kernel.inspect(outsider, created.executionId));
+146:     const missingAfter = refused(kernel.inspect(outsider, "execution-404"));
+147:     const missingFirst = refused(kernel.inspect(outsider, "execution-405"));
+148:     const hiddenAfter = refused(kernel.inspect(outsider, created.executionId));
+149: 
+150:     assert.deepEqual({ ...hiddenFirst }, { ...missingAfter }, "hidden and missing refusals are identical");
+151:     assert.deepEqual({ ...missingFirst }, { ...hiddenAfter }, "in either order");
+152:     assert.equal(hiddenFirst.position, 0, "a refusal that names no Execution carries position 0");
+153:     assert.equal(hiddenFirst.executionId, null, "and names nothing");
+154: 
+155:     // And the author's own Execution is undisturbed: its next acceptance still follows its own
+156:     // record order with no gap for the four refusals above.
+157:     const next = accepted(
+158:       kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 1 } }),
+159:     );
+160:     assert.equal(next.receipt.position, 2, "creation took 1; refusals take none");
+161:     assert.equal(next.acceptancePosition, 2);
+162:   });
+163: 
+164:   test("a caller that holds the scope sees the Execution and its receipts", () => {
+165:     const kernel = coordinator();
+166:     const created = accepted(kernel.createExecution(author, createRequest()));
+167:     // A second producer in the same authority scope is a different Input ID namespace but the same
+168:     // visibility: the scope decides what may be seen, the namespace decides what collides.
+169:     const sibling = caller("app-b", "tenant-a");
+170:     const view = accepted(kernel.inspect(sibling, created.executionId));
+171:     assert.deepEqual(view.receipts, [created.receipt]);
+172:     assert.deepEqual(kernel.visibleExecutions(sibling), [created.executionId]);
+173:   });
+174: 
+175:   describe("K11-R1-ID-01 hidden and missing lookups do equal work", () => {
+176:     const countingCaller = (namespace: string, scopes: string[]): { caller: { namespace: string; scopes: readonly string[] }; reads: () => number } => {
+177:       let reads = 0;
+178:       const proxied = new Proxy(scopes.slice(), {
+179:         get(target, property, receiver) {
+180:           if (property === "length" || (typeof property === "string" && /^\d+$/.test(property))) reads += 1;
+181:           return Reflect.get(target, property, receiver);
+182:         },
+183:       });
+184:       return { caller: { namespace, scopes: proxied as unknown as readonly string[] }, reads: () => reads };
+185:     };
+186: 
+187:     test("inspect performs the same scope work for hidden and missing", () => {
+188:       const kernel = coordinator();
+189:       const created = accepted(kernel.createExecution(author, createRequest()));
+190: 
+191:       const hiddenCounter = countingCaller("app-c", ["tenant-c"]);
+192:       const hidden = refused(kernel.inspect(hiddenCounter.caller, created.executionId));
+193:       const hiddenReads = hiddenCounter.reads();
+194: 
+195:       const missingCounter = countingCaller("app-c", ["tenant-c"]);
+196:       const missing = refused(kernel.inspect(missingCounter.caller, "execution-404"));
+197:       const missingReads = missingCounter.reads();
+198: 
+199:       assert.equal(hidden.classification, "unknown_destination");
+200:       // K11-R12-ID-01: unmasked on purpose. A refusal that names no Execution carries position
+201:       // 0 and names nothing, so masking `position` before comparing would hide a global
+202:       // sequence smuggled into exactly this path.
+203:       assert.deepEqual({ ...hidden }, { ...missing });
+204:       assert.equal(hidden.position, 0, "a refusal that names no Execution orders against nothing");
+205:       assert.equal(hidden.executionId, null, "and names nothing");
+206:       assert.ok(hiddenReads > 0, "the hidden path really scans scopes");
+207:       assert.equal(missingReads, hiddenReads, "a missing fast path that skipped the scan would read 0");
+208:     });
+209: 
+210:     test("equal work holds with many legitimate scopes and in both orders", () => {
+211:       const kernel = coordinator();
+212:       const created = accepted(kernel.createExecution(author, createRequest()));
+213:       const many = ["tenant-c", ...Array.from({ length: 200 }, (_, index) => `scope-${index}`)];
+214: 
+215:       const first = countingCaller("app-c", many);
+216:       refused(kernel.inspect(first.caller, created.executionId));
+217:       const hiddenReads = first.reads();
+218: 
+219:       const second = countingCaller("app-c", many);
+220:       refused(kernel.inspect(second.caller, "execution-404"));
+221:       const missingReads = second.reads();
+222: 
+223:       assert.equal(missingReads, hiddenReads, "work depends only on caller scope count, not on existence");
+224:       assert.ok(hiddenReads > 200, "the scan really walks the whole list without early exit");
+225:     });
+226: 
+227:     test("scope work does not depend on where the match sits", () => {
+228:       const kernel = coordinator();
+229:       const created = accepted(kernel.createExecution(author, createRequest()));
+230:       const tail = Array.from({ length: 100 }, (_, index) => `other-${index}`);
+231:       const early = countingCaller("app-e", ["tenant-a", ...tail]);
+232:       const late = countingCaller("app-l", [...tail, "tenant-a"]);
+233: 
+234:       const earlyView = accepted(kernel.inspect(early.caller, created.executionId));
+235:       const lateView = accepted(kernel.inspect(late.caller, created.executionId));
+236:       assert.equal(earlyView.executionId, created.executionId);
+237:       assert.equal(lateView.executionId, created.executionId);
+238:       assert.equal(late.reads(), early.reads(), "an early-exit includes would cost less for an early match");
+239:     });
+240: 
+241:     test("single-ID lookup work does not depend on hidden-record population", () => {
+242:       const kernel = coordinator();
+243:       const created = accepted(kernel.createExecution(author, createRequest()));
+244:       for (let index = 0; index < 50; index += 1) {
+245:         accepted(kernel.createExecution(caller(`hidden-${index}`, "tenant-hidden"), createRequest({ creationKey: `h-${index}`, scope: "tenant-hidden" })));
+246:       }
+247: 
+248:       const hiddenCounter = countingCaller("app-c", ["tenant-c"]);
+249:       refused(kernel.inspect(hiddenCounter.caller, created.executionId));
+250:       const hiddenReads = hiddenCounter.reads();
+251: 
+252:       const missingCounter = countingCaller("app-c", ["tenant-c"]);
+253:       refused(kernel.inspect(missingCounter.caller, "execution-404"));
+254:       const missingReads = missingCounter.reads();
+255: 
+256:       assert.equal(missingReads, hiddenReads, "population changes total map size but not per-lookup scope work");
+257:     });
+258: 
+259:     test("ingress, dispatch and redelivery share the same normalized lookup", () => {
+260:       const kernel = coordinator();
+261:       const created = accepted(kernel.createExecution(author, createRequest()));
+262:       accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+263: 
+264:       const hiddenIngress = countingCaller("app-c", ["tenant-c"]);
+265:       const hiddenIngressRefusal = refused(kernel.submitInput(hiddenIngress.caller, { destination: created.executionId, requestKey: "k", kind: "k", payload: null }));
+266:       const missingIngress = countingCaller("app-c", ["tenant-c"]);
+267:       const missingIngressRefusal = refused(kernel.submitInput(missingIngress.caller, { destination: "execution-404", requestKey: "k", kind: "k", payload: null }));
+268:       // K11-R12-ID-01: unmasked — see the inspect case above.
+269:       assert.deepEqual({ ...hiddenIngressRefusal }, { ...missingIngressRefusal });
+270:       assert.equal(hiddenIngressRefusal.position, 0);
+271:       assert.equal(hiddenIngressRefusal.executionId, null);
+272:       assert.equal(missingIngress.reads(), hiddenIngress.reads());
+273: 
+274:       const hiddenDispatch = countingCaller("app-c", ["tenant-c"]);
+275:       const hiddenDispatchRefusal = refused(kernel.dispatch(hiddenDispatch.caller, created.executionId, { bound: 1 }));
+276:       const missingDispatch = countingCaller("app-c", ["tenant-c"]);
+277:       const missingDispatchRefusal = refused(kernel.dispatch(missingDispatch.caller, "execution-404", { bound: 1 }));
+278:       // K11-R12-ID-01: unmasked — see the inspect case above.
+279:       assert.deepEqual({ ...hiddenDispatchRefusal }, { ...missingDispatchRefusal });
+280:       assert.equal(hiddenDispatchRefusal.position, 0);
+281:       assert.equal(hiddenDispatchRefusal.executionId, null);
+282:       assert.equal(missingDispatch.reads(), hiddenDispatch.reads());
+283: 
+284:       const hiddenRedeliver = countingCaller("app-c", ["tenant-c"]);
+285:       const hiddenRedeliverRefusal = refused(kernel.redeliver(hiddenRedeliver.caller, created.executionId));
+286:       const missingRedeliver = countingCaller("app-c", ["tenant-c"]);
+287:       const missingRedeliverRefusal = refused(kernel.redeliver(missingRedeliver.caller, "execution-404"));
+288:       // K11-R12-ID-01: unmasked — see the inspect case above.
+289:       assert.deepEqual({ ...hiddenRedeliverRefusal }, { ...missingRedeliverRefusal });
+290:       assert.equal(hiddenRedeliverRefusal.position, 0);
+291:       assert.equal(hiddenRedeliverRefusal.executionId, null);
+292:       assert.equal(missingRedeliver.reads(), hiddenRedeliver.reads());
+293:     });
+294: 
+295:     test("visibleExecutions does uniform per-record work and reveals only visible IDs", () => {
+296:       const kernel = coordinator();
+297:       const inA = accepted(kernel.createExecution(caller("app-a", "tenant-a"), createRequest({ scope: "tenant-a" })));
+298:       accepted(kernel.createExecution(caller("app-b", "tenant-b"), createRequest({ scope: "tenant-b" })));
+299: 
+300:       const counter = countingCaller("app-a", ["tenant-a"]);
+301:       const listed = kernel.visibleExecutions(counter.caller);
+302:       assert.deepEqual(listed, [inA.executionId], "hidden IDs never appear in shape");
+303:       // Two records, one scope each: two full scans. A per-record early exit or a skipped
+304:       // hidden record would read fewer.
+305:       assert.ok(counter.reads() > 0, "listing really scans scopes");
+306: 
+307:       const emptyCounter = countingCaller("app-z", ["tenant-z"]);
+308:       assert.deepEqual(kernel.visibleExecutions(emptyCounter.caller), [], "empty for an outsider regardless of hidden population");
+309:     });
+310:   });
+311: });

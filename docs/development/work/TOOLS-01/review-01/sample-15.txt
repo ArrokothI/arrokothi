@@ -1,0 +1,13 @@
+docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9 lines 1:12
+1: import { canonicalize } from "./packages/kernel/src/values.ts";
+2: const show = (label: string, v: unknown) => { const r = canonicalize(v); console.log(label, r.ok ? `ACCEPT ${r.value.canonical}` : `REFUSE ${r.issues.map(i => i.code).join(",")}`); };
+3: show("Map(null proto, 1 entry)", Object.setPrototypeOf(new Map([["k", 1]]), null));
+4: show("Date(null proto)", Object.setPrototypeOf(new Date(0), null));
+5: show("Set(Object.prototype)", Object.setPrototypeOf(new Set([1, 2]), Object.prototype));
+6: show("Uint8Array(3, null proto)", Object.setPrototypeOf(new Uint8Array([7, 8, 9]), null));
+7: show("ArrayBuffer(null proto)", Object.setPrototypeOf(new ArrayBuffer(8), null));
+8: show("RegExp(null proto)", Object.setPrototypeOf(/abc/g, null));
+9: show("Error(null proto)", Object.setPrototypeOf(new Error("m"), null));
+10: show("String wrapper(null proto)", Object.setPrototypeOf(new String("ab"), null));
+11: show("Boolean wrapper(null proto)", Object.setPrototypeOf(new Boolean(true), null));
+12: show("WeakMap(null proto)", Object.setPrototypeOf(new WeakMap(), null));

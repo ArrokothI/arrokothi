@@ -1,0 +1,390 @@
+{
+  "origin": {
+    "id": "artifact-ee81a9215a4b627e88fda2d5",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Maintained source packages/kernel/tests/unsupported.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "targets": [
+        "suite.packages/kernel/tests/unsupported.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.unsupported.18.3.d2ca81b5d1ab"
+        },
+        {
+          "kind": "target",
+          "id": "target.unsupported.26.3.d2ca81b5d1ab"
+        },
+        {
+          "kind": "target",
+          "id": "target.unsupported.40.3.d2ca81b5d1ab"
+        },
+        {
+          "kind": "target",
+          "id": "target.unsupported.45.3.d2ca81b5d1ab"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/unsupported.test.ts",
+          "start": 1,
+          "end": 72
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [
+    {
+      "member": "packages/kernel/tests/unsupported.test.ts:18:3@d2ca81b5d1ab",
+      "origins": [
+        "artifact-ee81a9215a4b627e88fda2d5"
+      ],
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "pin_blob": "d2ca81b5d1ab723d3ccc99cf67a904ed04b3ab3a",
+      "title": "an unimplemented surface throws rather than returning anything",
+      "title_kind": "literal",
+      "status": "refused",
+      "reasons": [
+        "span changed or removed"
+      ],
+      "scope": "span",
+      "current": null,
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": [],
+      "prefix_differences": [
+        "head: registration head"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/unsupported.test.ts:26:3@d2ca81b5d1ab",
+      "origins": [
+        "artifact-ee81a9215a4b627e88fda2d5"
+      ],
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "pin_blob": "d2ca81b5d1ab723d3ccc99cf67a904ed04b3ab3a",
+      "title": "the refusal names the surface and the packet that owns implementing it",
+      "title_kind": "literal",
+      "status": "refused",
+      "reasons": [
+        "span changed or removed"
+      ],
+      "scope": "span",
+      "current": null,
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": [],
+      "prefix_differences": [
+        "head: registration head"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/unsupported.test.ts:40:3@d2ca81b5d1ab",
+      "origins": [
+        "artifact-ee81a9215a4b627e88fda2d5"
+      ],
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "pin_blob": "d2ca81b5d1ab723d3ccc99cf67a904ed04b3ab3a",
+      "title": "the refusal points at the supported implementation instead of leaving a dead end",
+      "title_kind": "literal",
+      "status": "refused",
+      "reasons": [
+        "span changed or removed"
+      ],
+      "scope": "span",
+      "current": null,
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": [],
+      "prefix_differences": [
+        "head: registration head"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/unsupported.test.ts:45:3@d2ca81b5d1ab",
+      "origins": [
+        "artifact-ee81a9215a4b627e88fda2d5"
+      ],
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "pin_blob": "d2ca81b5d1ab723d3ccc99cf67a904ed04b3ab3a",
+      "title": "the package exports exactly the K1.1 surface and nothing that could look like a later packet's",
+      "title_kind": "literal",
+      "status": "refused",
+      "reasons": [
+        "span changed or removed"
+      ],
+      "scope": "span",
+      "current": null,
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": "unchanged",
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": [],
+      "prefix_differences": [
+        "head: registration head"
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "id": "target.unsupported.18.3.d2ca81b5d1ab",
+      "counterexample": "cx.unsupported.18.3.d2ca81b5d1ab",
+      "member": "packages/kernel/tests/unsupported.test.ts:18:3@d2ca81b5d1ab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "test_path": [
+        "target Kernel scaffolding",
+        "an unimplemented surface throws rather than returning anything"
+      ],
+      "declaration": {
+        "line": 19,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "assert.throws(() => {\n      returned = refuseUnsupportedSurface(\"registerWait\", \"K1.3\");\n    }, UnsupportedKernelSurfaceError);",
+          "sha256": "f5e7e8e136f1993382071bef9577ce5298290da485a3a94335ca7ba857eb710a",
+          "literals": [
+            {
+              "ordinal": 12,
+              "value": "registerWait"
+            },
+            {
+              "ordinal": 14,
+              "value": "K1.3"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.throws(() => {\n      returned = refuseUnsupportedSurface(\"registerWait\", \"K1.3\");\n    }, UnsupportedKernelSurfaceError);",
+          "sha256": "f5e7e8e136f1993382071bef9577ce5298290da485a3a94335ca7ba857eb710a"
+        },
+        {
+          "anchor": "assert.equal(returned, \"sentinel\", \"the refusal never produced a value a caller could act on\");",
+          "sha256": "67a5bd54968e478b47e301bea8766b3e37377062e7025cc73777eab713fb5007"
+        }
+      ],
+      "relation": {
+        "kind": "authorized_replacement",
+        "decision": "docs/development/work/K1.2/contract.md: K1.2 implements Outcome acceptance (007 K1.2 row); the refusal examples move to registerWait, which K1.3 owns"
+      },
+      "discrimination": {
+        "reading": "refuseUnsupportedSurface(\"registerWait\", \"K1.3\") must throw UnsupportedKernelSurfaceError and leave the sentinel unchanged."
+      }
+    },
+    {
+      "id": "target.unsupported.26.3.d2ca81b5d1ab",
+      "counterexample": "cx.unsupported.26.3.d2ca81b5d1ab",
+      "member": "packages/kernel/tests/unsupported.test.ts:26:3@d2ca81b5d1ab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "test_path": [
+        "target Kernel scaffolding",
+        "the refusal names the surface and the packet that owns implementing it"
+      ],
+      "declaration": {
+        "line": 27,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "try {\n      refuseUnsupportedSurface(\"registerWait\", \"K1.3\");\n      assert.fail(\"expected a refusal\");\n    } catch (error) {\n      assert.ok(error instanceof UnsupportedKernelSurfaceError);\n      assert.equal(error.name, \"UnsupportedKernelSurfaceError\");\n      assert.equal(error.surface, \"registerWait\");\n      assert.equal(error.owner, \"K1.3\");\n      assert.match(error.message, /registerWait is not implemented in @arrokothi\\/kernel/);\n      assert.match(error.message, /K1\\.3 owns this surface/);\n    }",
+          "sha256": "bd8c619e61bf149e557fb0064be029cee93fe13a4681d6540146241c75fa98cd",
+          "literals": [
+            {
+              "ordinal": 4,
+              "value": "registerWait"
+            },
+            {
+              "ordinal": 6,
+              "value": "K1.3"
+            },
+            {
+              "ordinal": 13,
+              "value": "expected a refusal"
+            },
+            {
+              "ordinal": 39,
+              "value": "UnsupportedKernelSurfaceError"
+            },
+            {
+              "ordinal": 50,
+              "value": "registerWait"
+            },
+            {
+              "ordinal": 61,
+              "value": "K1.3"
+            },
+            {
+              "ordinal": 72,
+              "value": "/registerWait is not implemented in @arrokothi\\/kernel/"
+            },
+            {
+              "ordinal": 83,
+              "value": "/K1\\.3 owns this surface/"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.fail(\"expected a refusal\");",
+          "sha256": "f627f8bbcad591ec385ab00f314e339fd9727373b5d8290843b63bb7ab974989"
+        }
+      ],
+      "relation": {
+        "kind": "authorized_replacement",
+        "decision": "docs/development/work/K1.2/contract.md: K1.2 implements Outcome acceptance (007 K1.2 row); the refusal examples move to registerWait, which K1.3 owns"
+      },
+      "discrimination": {
+        "reading": "If the call returned, assert.fail would fail the test; the checks of the error inside the catch (class, name, surface, owner, message) are in a try statement and are not observable."
+      }
+    },
+    {
+      "id": "target.unsupported.40.3.d2ca81b5d1ab",
+      "counterexample": "cx.unsupported.40.3.d2ca81b5d1ab",
+      "member": "packages/kernel/tests/unsupported.test.ts:40:3@d2ca81b5d1ab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "test_path": [
+        "target Kernel scaffolding",
+        "the refusal points at the supported implementation instead of leaving a dead end"
+      ],
+      "declaration": {
+        "line": 41,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const error = new UnsupportedKernelSurfaceError(\"cancelExecution\", \"K1.3\");",
+          "sha256": "94ba5e9eee6a9c0dc51d1a4b652fc28224c03d36dff8da6ea98c350ade42caee",
+          "literals": [
+            {
+              "ordinal": 6,
+              "value": "cancelExecution"
+            },
+            {
+              "ordinal": 8,
+              "value": "K1.3"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.match(error.message, /@arrokothi\\/core, which is explicitly legacy/);",
+          "sha256": "f2bcdc58c3686e147680bdc76c55138831f58a44f062a5043f59269cf5a2b04f"
+        }
+      ],
+      "relation": {
+        "kind": "authorized_replacement",
+        "decision": "docs/development/work/K1.2/contract.md: K1.2 implements Outcome acceptance (007 K1.2 row); the refusal examples move to registerWait, which K1.3 owns"
+      },
+      "discrimination": {
+        "reading": "The message of an UnsupportedKernelSurfaceError for cancelExecution/K1.3 must name @arrokothi/core as explicitly legacy."
+      }
+    },
+    {
+      "id": "target.unsupported.45.3.d2ca81b5d1ab",
+      "counterexample": "cx.unsupported.45.3.d2ca81b5d1ab",
+      "member": "packages/kernel/tests/unsupported.test.ts:45:3@d2ca81b5d1ab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/unsupported.test.ts",
+      "test_path": [
+        "target Kernel scaffolding",
+        "the package exports exactly the K1.1 and K1.2 runtime surface and nothing that could look like a later packet's"
+      ],
+      "declaration": {
+        "line": 46,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const surface = await import(\"../src/index.ts\");",
+          "sha256": "cced70975115914ac283da5586562bf735cd905008bf7c0ed48c5858a2755924",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(Object.keys(surface).sort(), [\n      \"BOUNDARY_LIMITS\",\n      \"ExecutionCoordinator\",\n      \"TERMINAL_STATES\",\n      \"UNKNOWN_DESTINATION_REASON\",\n      \"UnsupportedKernelSurfaceError\",\n      \"boundaryValueIssues\",\n      \"canonicalize\",\n      \"creationRequestIdKey\",\n      \"err\",\n      \"inputIdKey\",\n      \"isBoundaryValue\",\n      \"isTerminal\",\n      \"mayReachScope\",\n      \"mintReceipt\",\n      \"ok\",\n      \"refuseUnsupportedSurface\",\n      \"sameLogicalValue\",\n    ]);",
+          "sha256": "f11abb12be766b47ceebb803a7b8b0a9b7f2d216884d8c38b0dd920d95320487"
+        },
+        {
+          "anchor": "assert.doesNotMatch(name, /effect|wait|deadline|cancel|child|message/i, `${name} would advertise an unbuilt boundary`);",
+          "sha256": "2a9b8d387615083f186ea726fef0a90d6285d5b3307d1269fc75dc50c99fb6fe"
+        }
+      ],
+      "relation": {
+        "kind": "authorized_replacement",
+        "decision": "docs/development/work/K1.2/contract.md: K1.2 implements Outcome acceptance (007 K1.2 row); the refusal examples move to registerWait, which K1.3 owns"
+      },
+      "discrimination": {
+        "reading": "The sorted export names must equal the listed surface, and no name may match the unbuilt-boundary pattern, which K1.2 changed from outcome/takeover to cancel/message."
+      }
+    }
+  ],
+  "counterexamples": []
+}

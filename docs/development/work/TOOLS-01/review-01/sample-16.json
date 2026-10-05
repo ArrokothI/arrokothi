@@ -1,0 +1,48 @@
+{
+  "origin": {
+    "id": "additional-13c84103ae156ad2a2b93960",
+    "state": "complete",
+    "legacy": {
+      "status": "case",
+      "rationale": "Each stored argv/expected observation from object-freeze-witness runs in a fresh child, preserves its held/mechanism-witness attribution, and has a negative observation control and comparison-removal ablation.",
+      "targets": [
+        "realm.object-freeze-witness.unpinned.ordinary",
+        "realm.object-freeze-witness.pinned.ordinary",
+        "realm.object-freeze-witness.unpinned.frozen-intrinsics",
+        "realm.object-freeze-witness.pinned.frozen-intrinsics"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "case",
+          "id": "realm.object-freeze-witness.unpinned.ordinary"
+        },
+        {
+          "kind": "case",
+          "id": "realm.object-freeze-witness.pinned.ordinary"
+        },
+        {
+          "kind": "case",
+          "id": "realm.object-freeze-witness.unpinned.frozen-intrinsics"
+        },
+        {
+          "kind": "case",
+          "id": "realm.object-freeze-witness.pinned.frozen-intrinsics"
+        }
+      ],
+      "context": [
+        {
+          "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+          "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
+          "start": 1,
+          "end": 14
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [],
+  "targets": [],
+  "counterexamples": []
+}

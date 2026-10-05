@@ -1,0 +1,48 @@
+docs/development/work/K1.1/review-02.md @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49 lines 73:119
+73: ### K11-R2-VAL-02 — P1 — accepted Proxy-backed values can bind canonical bytes different from the retained value
+74: 
+75: **Affected:** `packages/kernel/src/values.ts`; creation and input acceptance; mailbox, Activation and inspection projections.  
+76: **Governing criteria/sources:** K1.1-C1/C2/C3/C4/C9; `mental-model/concepts/values.md` reject/no-repair and canonical-equality rules.
+77: 
+78: Round 2 repaired the two concrete copying mistakes from review-01, but the value subsystem still validates, canonicalizes and seals the caller object in separate passes that can observe different semantics.
+79: 
+80: For arrays, `walk` accepts anything for which `Array.isArray(value)` is true and `Object.getPrototypeOf(value) === Array.prototype`. It checks an own descriptor only to reject accessors, but then validates the element by reading `container[index]`. The approved JCS implementation likewise obtains array members through ordinary array mapping/property access. `sealBoundaryValue`, however, obtains an own data descriptor and copies `descriptor.value` when one exists.
+81: 
+82: A JavaScript Proxy can therefore satisfy every current structural check while making ordinary indexed access disagree with its own data descriptor. Concrete counterexample:
+83: 
+84: ```js
+85: const target = [1];
+86: const value = new Proxy(target, {
+87:   get(inner, key, receiver) {
+88:     if (key === "0") return 2;
+89:     return Reflect.get(inner, key, receiver);
+90:   },
+91: });
+92: ```
+93: 
+94: For this value:
+95: 
+96: - `Array.isArray(value)` is `true`;
+97: - its prototype is exactly `Array.prototype`;
+98: - own property `"0"` has a data descriptor whose value is `1`;
+99: - `walk` reads `value[0]` and validates `2`;
+100: - unmodified `canonicalize@3.0.0` reads the array element and produces canonical `[2]`;
+101: - `sealBoundaryValue` reads the own descriptor and retains `[1]`.
+102: 
+103: An isolated Node probe reproducing those exact language operations and the v3.0.0 canonicalizer produced:
+104: 
+105: ```text
+106: isArray: true
+107: proto: true
+108: descriptorValue: 1
+109: walkItem: 2
+110: canon: '[2]'
+111: sealItem: 1
+112: ```
+113: 
+114: So `canonicalize(value)` can return one `CanonicalValue` whose `canonical` says `[2]` while its retained `value` is `[1]`. This is stronger than a cosmetic representation difference: creation/input identity and replay decisions bind one logical value, while inspection and Driver delivery expose another. The implementation has accepted an exotic/unsupported representation and repaired/transformed it instead of either refusing it or deriving identity and retained state from one immutable validated snapshot.
+115: 
+116: The existing ordinary-hole, exotic-prototype, accessor, `__proto__` and `"01"` cases do not distinguish this. The round-3 ablations likewise mutate known fixes but never vary repeated reads/descriptors of one accepted root.
+117: 
+118: **Required outcome:** reconstruct the acceptance/snapshot boundary so validation, canonical bytes and retained content are derived from one coherent structural snapshot, or refuse representations for which that invariant cannot be established. In particular, no accepted array position may be supplied only or differently through dynamic property access while the retained own-data member says something else. Add distinguishing regressions that exercise descriptor-versus-property-access disagreement (and absent own positions supplied by a Proxy/prototype) through direct canonicalization plus creation/ingress, Activation and inspection. The required outcome is the invariant, not a prescribed patch mechanism.
+119: 

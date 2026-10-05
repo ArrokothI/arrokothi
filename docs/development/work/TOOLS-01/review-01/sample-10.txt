@@ -1,0 +1,537 @@
+packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9 lines 1:536
+1: /**
+2:  * Poisoned built-in prototypes for the DEC-8 runtime sweep (contract revision 9, amendment 03).
+3:  *
+4:  * While a Kernel boundary call runs, every name of the sweep's name set is installed on
+5:  * `Object.prototype` and `Function.prototype` as an accessor. The zone reads no member its object
+6:  * may not own (correction DEC-8), so a correct zone never resolves any of these accessors: every
+7:  * member it reads is found on the object itself, or on a host or class prototype below the two
+8:  * built-in roots. An accessor that does run was reached by walking past the object, and the sweep
+9:  * attributes it:
+10:  *
+11:  * - **Zone.** The first non-built-in stack frame above the accessor is a zone source file (or the
+12:  *   `canonicalize` dependency the zone calls): a Kernel read of a member its object does not own.
+13:  *   The mode decides what happens next. `count` records it and answers as the prototype would have;
+14:  *   `throw` records it and throws; `reenter` records it, re-enters the Kernel through the window's
+15:  *   reentry hook, then answers as the prototype would have.
+16:  * - **Caller.** Any other frame (test code, a fake Driver, a caller getter): the accessor records a
+17:  *   liveness count and answers exactly as the prototype would have, so caller code sees no change.
+18:  * - **Proxy handler.** The receiver is a registered Proxy handler: the engine looking up a trap the
+19:  *   caller's handler does not define. That is Proxy semantics of a caller-owned object, induced by an
+20:  *   observation the zone is allowed to make, not a Kernel read; it is counted separately.
+21:  *
+22:  * The accessors are present only between the outermost `enter` and its `exit`, so everything
+23:  * outside Kernel calls (the test runner, fixtures, assertions) runs against untouched prototypes. An
+24:  * installed name that a caller replaces during the window (a hostile getter installing its own
+25:  * pollution) is left as the caller installed it; only accessors still installed are removed.
+26:  *
+27:  * Everything this module does while a window is open goes through references captured when it
+28:  * loaded and null-prototype descriptors, so the sweep does not trip its own poison.
+29:  */
+30: 
+31: import { createHash } from "node:crypto";
+32: import { fileURLToPath, pathToFileURL } from "node:url";
+33: 
+34: const ObjectDefineProperty = Object.defineProperty;
+35: const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+36: const ObjectCreate = Object.create;
+37: const ObjectIsExtensible = Object.isExtensible;
+38: const ObjectIsFrozen = Object.isFrozen;
+39: const ObjectGetPrototypeOf = Object.getPrototypeOf;
+40: const ReflectApply = Reflect.apply;
+41: const ReflectOwnKeys = Reflect.ownKeys;
+42: const HasOwn = Object.prototype.hasOwnProperty;
+43: const ErrorCaptureStackTrace = Error.captureStackTrace;
+44: const WeakSetHas = WeakSet.prototype.has;
+45: const WeakSetAdd = WeakSet.prototype.add;
+46: const StringStartsWith = String.prototype.startsWith;
+47: const StringIncludes = String.prototype.includes;
+48: const OriginalProxy = Proxy;
+49: const OriginalProxyRevocable = Proxy.revocable;
+50: const ArrayIsArray = Array.isArray;
+51: const ObjectIs = Object.is;
+52: const NativeMap = Map;
+53: const MapGet = Map.prototype.get;
+54: const MapSet = Map.prototype.set;
+55: const NativeError = Error;
+56: const NativeTypeError = TypeError;
+57: const ReflectConstruct = Reflect.construct;
+58: const ReflectGet = Reflect.get;
+59: 
+60: const hasOwn = (holder: object, key: PropertyKey): boolean => ReflectApply(HasOwn, holder, [key]) as boolean;
+61: const startsWith = (text: string, prefix: string): boolean => ReflectApply(StringStartsWith, text, [prefix]) as boolean;
+62: const includes = (text: string, part: string): boolean => ReflectApply(StringIncludes, text, [part]) as boolean;
+63: 
+64: export type PoisonMode = "off" | "count" | "throw" | "reenter";
+65: 
+66: /**
+67:  * The built-in prototypes the sweep poisons. Amendment 03 names the first two; every object and
+68:  * function the zone reads inherits from one of them. The last two are where Kernel lists and strings
+69:  * find the live methods C13 forbids after the first observation (`push`, `map`, `startsWith`, …), so
+70:  * poisoning them as well catches a zone read of such a method, which the first two cannot see
+71:  * because the array or string prototype answers first. Index names are not installed on
+72:  * `Array.prototype`: a hole read already walks on to `Object.prototype`.
+73:  */
+74: export type HolderName = "Object.prototype" | "Function.prototype" | "Array.prototype" | "String.prototype";
+75: export const HOLDERS: readonly (readonly [object, HolderName])[] = [
+76:   [Object.prototype, "Object.prototype"],
+77:   [Function.prototype, "Function.prototype"],
+78:   [Array.prototype, "Array.prototype"],
+79:   [String.prototype, "String.prototype"],
+80: ];
+81: const INDEX_LIKE = /^(0|[1-9][0-9]*)$/;
+82: 
+83: /** A saved property position, read field by field from its own descriptor. */
+84: interface Saved {
+85:   readonly kind: "absent" | "data" | "accessor";
+86:   readonly value: unknown;
+87:   readonly writable: boolean;
+88:   readonly enumerable: boolean;
+89:   readonly configurable: boolean;
+90:   readonly get: unknown;
+91:   readonly set: unknown;
+92: }
+93: 
+94: const ownField = (descriptor: object, key: string): unknown => {
+95:   if (!hasOwn(descriptor, key)) return undefined;
+96:   const field = ObjectGetOwnPropertyDescriptor(descriptor, key) as PropertyDescriptor;
+97:   return hasOwn(field, "value") ? field.value : undefined;
+98: };
+99: 
+100: const snapshot = (holder: object, name: PropertyKey): Saved => {
+101:   const descriptor = ObjectGetOwnPropertyDescriptor(holder, name);
+102:   const saved = ObjectCreate(null) as { -readonly [K in keyof Saved]: Saved[K] };
+103:   if (descriptor === undefined) {
+104:     saved.kind = "absent";
+105:     saved.value = undefined;
+106:     saved.writable = true;
+107:     saved.enumerable = false;
+108:     saved.configurable = true;
+109:     saved.get = undefined;
+110:     saved.set = undefined;
+111:     return saved;
+112:   }
+113:   saved.kind = hasOwn(descriptor, "value") || hasOwn(descriptor, "writable") ? "data" : "accessor";
+114:   saved.value = ownField(descriptor, "value");
+115:   saved.writable = ownField(descriptor, "writable") === true;
+116:   saved.enumerable = ownField(descriptor, "enumerable") === true;
+117:   saved.configurable = ownField(descriptor, "configurable") === true;
+118:   saved.get = ownField(descriptor, "get");
+119:   saved.set = ownField(descriptor, "set");
+120:   return saved;
+121: };
+122: 
+123: /** A writable, enumerable, configurable data descriptor on a null-prototype object. */
+124: const dataDescriptor = (value: unknown): PropertyDescriptor => {
+125:   const descriptor = ObjectCreate(null) as Record<string, unknown>;
+126:   descriptor.value = value;
+127:   descriptor.writable = true;
+128:   descriptor.enumerable = true;
+129:   descriptor.configurable = true;
+130:   return descriptor as PropertyDescriptor;
+131: };
+132: 
+133: /** Appends as own data: an ordinary indexed write would walk to the poisoned index names. */
+134: const append = <T>(list: T[], item: T): void => {
+135:   ObjectDefineProperty(list, `${list.length}`, dataDescriptor(item));
+136: };
+137: 
+138: const restore = (holder: object, name: PropertyKey, saved: Saved): void => {
+139:   if (saved.kind === "absent") {
+140:     delete (holder as Record<PropertyKey, unknown>)[name];
+141:     return;
+142:   }
+143:   const descriptor = ObjectCreate(null) as Record<string, unknown>;
+144:   descriptor.enumerable = saved.enumerable;
+145:   descriptor.configurable = saved.configurable;
+146:   if (saved.kind === "data") {
+147:     descriptor.value = saved.value;
+148:     descriptor.writable = saved.writable;
+149:   } else {
+150:     descriptor.get = saved.get;
+151:     descriptor.set = saved.set;
+152:   }
+153:   ObjectDefineProperty(holder, name, descriptor as PropertyDescriptor);
+154: };
+155: 
+156: /** What the prototype would have answered for an ordinary `[[Get]]` that reached it. */
+157: const answerGet = (saved: Saved, receiver: unknown): unknown => {
+158:   if (saved.kind === "absent") return undefined;
+159:   if (saved.kind === "data") return saved.value;
+160:   return typeof saved.get === "function" ? ReflectApply(saved.get as (...args: unknown[]) => unknown, receiver, []) : undefined;
+161: };
+162: 
+163: /** What an ordinary `[[Set]]` that reached the prototype would have done (strict code). */
+164: const answerSet = (saved: Saved, receiver: unknown, name: PropertyKey, value: unknown): void => {
+165:   if (saved.kind === "accessor") {
+166:     if (typeof saved.set !== "function") throw new NativeTypeError(`Cannot set property ${String(name)} which has only a getter`);
+167:     ReflectApply(saved.set as (...args: unknown[]) => unknown, receiver, [value]);
+168:     return;
+169:   }
+170:   if (saved.kind === "data" && !saved.writable) throw new NativeTypeError(`Cannot assign to read only property '${String(name)}'`);
+171:   if ((typeof receiver !== "object" && typeof receiver !== "function") || receiver === null) {
+172:     throw new NativeTypeError(`Cannot create property '${String(name)}' on ${typeof receiver}`);
+173:   }
+174:   if (!ObjectIsExtensible(receiver)) throw new NativeTypeError(`Cannot add property ${String(name)}, object is not extensible`);
+175:   ObjectDefineProperty(receiver, name, dataDescriptor(value));
+176: };
+177: 
+178: /** One accessor that ran because a zone read walked past its object. */
+179: export interface ZoneFiring {
+180:   readonly holder: HolderName;
+181:   readonly name: string;
+182:   readonly operation: "get" | "set";
+183:   /** The zone frame that performed the access, as `file:line:column`. */
+184:   readonly site: string;
+185:   /** The boundary window it happened in. */
+186:   readonly window: string;
+187: }
+188: 
+189: /** Raised by `throw` mode at a zone firing. */
+190: export class PoisonedMemberError extends NativeError {
+191:   constructor(name: string) {
+192:     super(`poisoned member ${name} read by the Kernel`);
+193:   }
+194: }
+195: 
+196: export interface PoisonOptions {
+197:   readonly mode: PoisonMode;
+198:   readonly names: readonly (string | symbol)[];
+199:   /** Directory of the zone sources: frames there are Kernel frames. */
+200:   readonly zoneRoot: string;
+201:   /** The prototypes to poison; all four of `HOLDERS` when omitted. */
+202:   readonly holders?: readonly (readonly [object, HolderName])[];
+203: }
+204: 
+205: /** What a window may do when `reenter` mode meets a zone firing. */
+206: export type Reentry = (() => void) | undefined;
+207: 
+208: export interface PoisonController {
+209:   readonly mode: PoisonMode;
+210:   /** Opens a window; the accessors are installed only by the outermost one. */
+211:   enter(window: string, reentry?: Reentry): void;
+212:   /** Closes the window opened last. */
+213:   exit(): void;
+214:   /** Runs `work` inside a window. */
+215:   within<T>(window: string, work: () => T, reentry?: Reentry): T;
+216:   /** Registers a Proxy handler, so the engine's trap lookups on it are attributed to the caller. */
+217:   registerHandler(handler: object): void;
+218:   readonly zoneFirings: ZoneFiring[];
+219:   readonly counts: { windows: number; installed: number; skipped: number; callerFirings: number; handlerFirings: number; reentries: number; liveProbes: number };
+220: }
+221: 
+222: /** One poisoned position: a name on one of the poisoned built-in prototypes. */
+223: interface Slot {
+224:   readonly holder: object;
+225:   readonly holderName: HolderName;
+226:   readonly name: string | symbol;
+227:   /** The accessor this window installed, or undefined when the position was not poisonable. */
+228:   installed: Installation | undefined;
+229: }
+230: 
+231: /**
+232:  * One installation of the accessor pair at one position. Each carries the state it replaced, so an
+233:  * accessor a caller saved inside a window and reinstalled later still answers as the prototype did
+234:  * before the sweep touched it, and is recognised (and unwrapped) by later windows.
+235:  */
+236: interface Installation {
+237:   readonly slot: Slot;
+238:   readonly saved: Saved;
+239:   readonly getter: () => unknown;
+240:   readonly setter: (value: unknown) => void;
+241: }
+242: 
+243: const siteOf = (site: NodeJS.CallSite): string | undefined => {
+244:   const file = site.getFileName();
+245:   if (typeof file !== "string" || file === "" || file === "<anonymous>" || startsWith(file, "node:") || site.isNative()) return undefined;
+246:   return `${file}:${site.getLineNumber() ?? 0}:${site.getColumnNumber() ?? 0}`;
+247: };
+248: 
+249: export function createPoison(options: PoisonOptions): PoisonController {
+250:   const zoneUrl = `${pathToFileURL(options.zoneRoot).href}/`;
+251:   const zonePath = `${options.zoneRoot}/`;
+252:   const ownFile = fileURLToPath(import.meta.url);
+253:   const ownUrl = import.meta.url;
+254:   const handlers = new WeakSet<object>();
+255:   const zoneFirings: ZoneFiring[] = [];
+256:   const counts = { windows: 0, installed: 0, skipped: 0, callerFirings: 0, handlerFirings: 0, reentries: 0, liveProbes: 0 };
+257:   // The liveness probe: at every outermost window, one ordinary read of an installed name on a fresh
+258:   // ordinary object must reach the accessor. It is counted apart from every attribution class.
+259:   let probing = false;
+260:   let depth = 0;
+261:   let windowName = "";
+262:   let reentry: Reentry;
+263:   let busy = false;
+264:   let reentering = false;
+265: 
+266:   /** The first non-built-in frame above the accessor, or undefined. */
+267:   const accessingFrame = (accessor: (...args: never[]) => unknown): string | undefined => {
+268:     const holder = ObjectCreate(null) as { stack?: unknown };
+269:     const prepare = (NativeError as unknown as { prepareStackTrace?: unknown }).prepareStackTrace;
+270:     const limit = NativeError.stackTraceLimit;
+271:     (NativeError as unknown as { prepareStackTrace?: unknown }).prepareStackTrace = (_error: unknown, sites: NodeJS.CallSite[]) => sites;
+272:     NativeError.stackTraceLimit = 32;
+273:     let sites: NodeJS.CallSite[] = [];
+274:     try {
+275:       ErrorCaptureStackTrace(holder, accessor);
+276:       const captured = ObjectGetOwnPropertyDescriptor(holder, "stack");
+277:       const value = captured === undefined ? undefined : hasOwn(captured, "value") ? captured.value : typeof captured.get === "function" ? ReflectApply(captured.get, holder, []) : undefined;
+278:       if (ArrayIsArray(value)) sites = value as NodeJS.CallSite[];
+279:     } finally {
+280:       (NativeError as unknown as { prepareStackTrace?: unknown }).prepareStackTrace = prepare;
+281:       NativeError.stackTraceLimit = limit;
+282:     }
+283:     for (let index = 0; index < sites.length; index += 1) {
+284:       const site = siteOf(sites[index] as NodeJS.CallSite);
+285:       if (site === undefined) continue;
+286:       if (startsWith(site, ownFile) || startsWith(site, ownUrl)) continue;
+287:       return site;
+288:     }
+289:     return undefined;
+290:   };
+291: 
+292:   const isZone = (site: string): boolean =>
+293:     startsWith(site, zoneUrl) || startsWith(site, zonePath) || includes(site, "/node_modules/canonicalize/");
+294: 
+295:   /** Every accessor this controller ever installed, by getter and by setter. */
+296:   const installations = new WeakMap<object, Installation>();
+297:   const WeakMapGet = WeakMap.prototype.get;
+298:   const WeakMapSet = WeakMap.prototype.set;
+299:   const installationOf = (fn: unknown): Installation | undefined =>
+300:     typeof fn === "function" ? (ReflectApply(WeakMapGet, installations, [fn]) as Installation | undefined) : undefined;
+301: 
+302:   /**
+303:    * The state a position had before the sweep: its current descriptor, unless that descriptor is one
+304:    * of the sweep's own accessors (reinstalled by a caller that saved it), which stands for the state
+305:    * it replaced.
+306:    */
+307:   const unpoisoned = (holder: object, name: string | symbol): Saved => {
+308:     const current = snapshot(holder, name);
+309:     const own = current.kind === "accessor" ? installationOf(current.get) : undefined;
+310:     return own === undefined ? current : own.saved;
+311:   };
+312: 
+313:   const makeInstallation = (slot: Slot, saved: Saved): Installation => {
+314:     const installation: Installation = {
+315:       slot,
+316:       saved,
+317:       getter: function poisonedGet(this: unknown): unknown {
+318:         return fire(installation, "get", this, undefined, getterRef);
+319:       },
+320:       setter: function poisonedSet(this: unknown, value: unknown): void {
+321:         fire(installation, "set", this, value, setterRef);
+322:       },
+323:     };
+324:     const getterRef = installation.getter as (...args: never[]) => unknown;
+325:     const setterRef = installation.setter as (...args: never[]) => unknown;
+326:     ReflectApply(WeakMapSet, installations, [installation.getter, installation]);
+327:     ReflectApply(WeakMapSet, installations, [installation.setter, installation]);
+328:     return installation;
+329:   };
+330: 
+331:   const answer = (installation: Installation, operation: "get" | "set", receiver: unknown, value: unknown): unknown => {
+332:     if (operation === "get") return answerGet(installation.saved, receiver);
+333:     answerSet(installation.saved, receiver, installation.slot.name, value);
+334:     return undefined;
+335:   };
+336: 
+337:   const fire = (installation: Installation, operation: "get" | "set", receiver: unknown, value: unknown, accessor: (...args: never[]) => unknown): unknown => {
+338:     const slot = installation.slot;
+339:     if (probing) {
+340:       counts.liveProbes += 1;
+341:       return answer(installation, operation, receiver, value);
+342:     }
+343:     // Outside a window (a caller reinstalled a saved accessor) or inside the sweep's own work.
+344:     if (busy || depth === 0) return answer(installation, operation, receiver, value);
+345:     busy = true;
+346:     let site: string | undefined;
+347:     let handler = false;
+348:     try {
+349:       handler = typeof receiver === "object" && receiver !== null && (ReflectApply(WeakSetHas, handlers, [receiver]) as boolean);
+350:       if (!handler) site = accessingFrame(accessor);
+351:     } finally {
+352:       busy = false;
+353:     }
+354:     if (handler) {
+355:       counts.handlerFirings += 1;
+356:       return answer(installation, operation, receiver, value);
+357:     }
+358:     if (site === undefined || !isZone(site)) {
+359:       counts.callerFirings += 1;
+360:       return answer(installation, operation, receiver, value);
+361:     }
+362:     const name = typeof slot.name === "symbol" ? slot.name.toString() : slot.name;
+363:     append(zoneFirings, { holder: slot.holderName, name, operation, site, window: windowName });
+364:     if (options.mode === "throw") throw new PoisonedMemberError(name);
+365:     if (options.mode === "reenter" && reentry !== undefined && !reentering) {
+366:       reentering = true;
+367:       counts.reentries += 1;
+368:       try {
+369:         reentry();
+370:       } finally {
+371:         reentering = false;
+372:       }
+373:     }
+374:     return answer(installation, operation, receiver, value);
+375:   };
+376: 
+377:   const slots: Slot[] = [];
+378:   for (const [holder, holderName] of options.holders ?? HOLDERS) {
+379:     for (const name of options.names) {
+380:       if (holderName === "Array.prototype" && typeof name === "string" && INDEX_LIKE.test(name)) continue;
+381:       append(slots, { holder, holderName, name, installed: undefined });
+382:     }
+383:   }
+384: 
+385:   const install = (): void => {
+386:     for (let index = 0; index < slots.length; index += 1) {
+387:       const slot = slots[index] as Slot;
+388:       const saved = unpoisoned(slot.holder, slot.name);
+389:       const current = ObjectGetOwnPropertyDescriptor(slot.holder, slot.name);
+390:       if (current !== undefined && !current.configurable) {
+391:         slot.installed = undefined;
+392:         counts.skipped += 1;
+393:         continue;
+394:       }
+395:       const installation = makeInstallation(slot, saved);
+396:       const descriptor = ObjectCreate(null) as Record<string, unknown>;
+397:       descriptor.get = installation.getter;
+398:       descriptor.set = installation.setter;
+399:       descriptor.enumerable = false;
+400:       descriptor.configurable = true;
+401:       ObjectDefineProperty(slot.holder, slot.name, descriptor as PropertyDescriptor);
+402:       slot.installed = installation;
+403:       counts.installed += 1;
+404:     }
+405:   };
+406: 
+407:   const uninstall = (): void => {
+408:     for (let index = slots.length - 1; index >= 0; index -= 1) {
+409:       const slot = slots[index] as Slot;
+410:       if (slot.installed === undefined) continue;
+411:       slot.installed = undefined;
+412:       const current = snapshot(slot.holder, slot.name);
+413:       // A caller that replaced the accessor during the window keeps what it installed; one of the
+414:       // sweep's own accessors (this window's, or an older one a caller reinstalled) is unwrapped.
+415:       const own = current.kind === "accessor" ? installationOf(current.get) : undefined;
+416:       if (own !== undefined) restore(slot.holder, slot.name, own.saved);
+417:     }
+418:   };
+419: 
+420:   const controller: PoisonController = {
+421:     mode: options.mode,
+422:     enter(window: string, hook?: Reentry): void {
+423:       depth += 1;
+424:       if (depth > 1) return;
+425:       counts.windows += 1;
+426:       windowName = window;
+427:       reentry = hook;
+428:       if (options.mode !== "off") {
+429:         install();
+430:         const probeName = (slots[0] as Slot).name;
+431:         if ((slots[0] as Slot).installed === undefined) throw new NativeError(`poison probe name ${String(probeName)} is not installable`);
+432:         const before = counts.liveProbes;
+433:         probing = true;
+434:         try {
+435:           void (ObjectCreate(Object.prototype) as Record<PropertyKey, unknown>)[probeName];
+436:         } finally {
+437:           probing = false;
+438:         }
+439:         if (counts.liveProbes !== before + 1) throw new NativeError(`poison is not live in window ${window}`);
+440:       }
+441:     },
+442:     exit(): void {
+443:       depth -= 1;
+444:       if (depth > 0) return;
+445:       if (options.mode !== "off") uninstall();
+446:       windowName = "";
+447:       reentry = undefined;
+448:     },
+449:     within<T>(window: string, work: () => T, hook?: Reentry): T {
+450:       controller.enter(window, hook);
+451:       try {
+452:         return work();
+453:       } finally {
+454:         controller.exit();
+455:       }
+456:     },
+457:     registerHandler(handler: object): void {
+458:       ReflectApply(WeakSetAdd, handlers, [handler]);
+459:     },
+460:     zoneFirings,
+461:     counts,
+462:   };
+463:   return controller;
+464: }
+465: 
+466: /**
+467:  * Replaces the global `Proxy` so that every handler a caller creates is registered with `poison`.
+468:  * The zone never constructs a Proxy; only caller and test code do.
+469:  */
+470: export function registerProxyHandlers(poison: PoisonController): void {
+471:   const wrapped = new OriginalProxy(OriginalProxy, {
+472:     construct(target, args, newTarget) {
+473:       if (typeof args[1] === "object" && args[1] !== null) poison.registerHandler(args[1] as object);
+474:       return ReflectConstruct(target, args, newTarget) as object;
+475:     },
+476:     get(target, key, receiver) {
+477:       if (key === "revocable") {
+478:         return (proxyTarget: object, handler: ProxyHandler<object>) => {
+479:           if (typeof handler === "object" && handler !== null) poison.registerHandler(handler);
+480:           return OriginalProxyRevocable(proxyTarget, handler);
+481:         };
+482:       }
+483:       return ReflectGet(target, key, receiver) as unknown;
+484:     },
+485:   });
+486:   globalThis.Proxy = wrapped;
+487: }
+488: 
+489: /**
+490:  * A structural digest of a boundary result: own properties only, through their descriptors (so no
+491:  * getter runs and no prototype is consulted), with frozen-ness and shared references recorded.
+492:  */
+493: export function digest(value: unknown): string {
+494:   const hash = createHash("sha256");
+495:   const seen = new NativeMap<object, number>();
+496:   let objects = 0;
+497:   const walk = (current: unknown): void => {
+498:     if (current === null) return void hash.update("n;");
+499:     switch (typeof current) {
+500:       case "undefined":
+501:         return void hash.update("u;");
+502:       case "boolean":
+503:         return void hash.update(current ? "t;" : "f;");
+504:       case "number":
+505:         return void hash.update(`d${ObjectIs(current, -0) ? "-0" : `${current}`};`);
+506:       case "bigint":
+507:         return void hash.update(`b${current};`);
+508:       case "string":
+509:         return void hash.update(`s${current.length}:`).update(current);
+510:       case "symbol":
+511:         return void hash.update("y;");
+512:       case "function":
+513:         return void hash.update("F;");
+514:       default:
+515:         break;
+516:     }
+517:     const object = current as object;
+518:     const previous = ReflectApply(MapGet, seen, [object]) as number | undefined;
+519:     if (previous !== undefined) return void hash.update(`r${previous};`);
+520:     ReflectApply(MapSet, seen, [object, objects]);
+521:     objects += 1;
+522:     const proto = ObjectGetPrototypeOf(object);
+523:     hash.update(`${ArrayIsArray(object) ? "A" : proto === null ? "N" : "O"}${ObjectIsFrozen(object) ? "z" : "m"}{`);
+524:     const keys = ReflectOwnKeys(object);
+525:     for (let index = 0; index < keys.length; index += 1) {
+526:       const key = keys[index] as string | symbol;
+527:       const descriptor = ObjectGetOwnPropertyDescriptor(object, key) as PropertyDescriptor;
+528:       hash.update(typeof key === "symbol" ? "y=" : `k${key.length}:${key}=`);
+529:       if (hasOwn(descriptor, "value")) walk(descriptor.value);
+530:       else hash.update("accessor;");
+531:     }
+532:     hash.update("}");
+533:   };
+534:   walk(value);
+535:   return hash.digest("hex");
+536: }

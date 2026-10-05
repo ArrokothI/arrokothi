@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "review-01/audit_tables.py",
+    "<candidate-root>"
+  ],
+  "seconds": 0.7706617910880595,
+  "exit": 0
+}

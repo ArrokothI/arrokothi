@@ -1,0 +1,33 @@
+{
+  "origin": {
+    "id": "artifact-91a16df2b59f363129b8a582",
+    "state": "complete",
+    "legacy": {
+      "status": "non_executable",
+      "rationale": "Historical packet validation command list: typecheck, repository/conformance/kernel/SDK and documentation checks. It specifies how that prior candidate was checked, not a separate input/counterexample. TOOLS-01 checks.json independently declares current runs and unexecuted profiles; historical pass counts earn no present credit.",
+      "reason": "historical_command"
+    },
+    "closure": {
+      "links": [],
+      "non_executable": {
+        "reason": "historical_command",
+        "rationale": "Historical packet validation command list: typecheck, repository/conformance/kernel/SDK and documentation checks. It specifies how that prior candidate was checked, not a separate input/counterexample. TOOLS-01 checks.json independently declares current runs and unexecuted profiles; historical pass counts earn no present credit."
+      },
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1-correction-01/contract.md",
+          "start": 235,
+          "end": 264
+        }
+      ],
+      "context_reasons": {
+        "0ee13f8138af52107d86967043bcc460faba8893": "A revision the text cites as provenance; this context reads the origin and its records at their pinned revisions.",
+        "777b9955fb3a443f700b4f3d1f4f2aef1869345b": "A revision the text cites as provenance; this context reads the origin and its records at their pinned revisions."
+      }
+    }
+  },
+  "members": [],
+  "targets": [],
+  "counterexamples": []
+}

@@ -1,0 +1,271 @@
+{
+  "origin": {
+    "id": "artifact-d5ce2b4c65a4f714507485f0",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Maintained source packages/kernel/tests/refusal-diagnostics-fixture.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "targets": [
+        "suite.packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.aggregate-refusal.100.1"
+        },
+        {
+          "kind": "target",
+          "id": "target.exact-coordinates.17.3.accent-complete"
+        },
+        {
+          "kind": "target",
+          "id": "target.exact-coordinates.17.3.accent-fail"
+        },
+        {
+          "kind": "target",
+          "id": "target.exact-coordinates.17.3.surrogate-complete"
+        },
+        {
+          "kind": "target",
+          "id": "target.exact-coordinates.17.3.surrogate-fail"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+          "start": 1,
+          "end": 84
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [],
+  "targets": [
+    {
+      "id": "target.aggregate-refusal.100.1",
+      "counterexample": "cx.aggregate-refusal.100.1",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+      "test_path": [
+        "AGG-01 all recovery roots and the two other malformed controls return and retain"
+      ],
+      "declaration": {
+        "line": 100,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const s = setup(), root = Array(4_096).fill(undefined);",
+          "sha256": "af86bd44685a9876f241638104b584c5aa3a1f8135c9cc146b7a0c84f06c8d2f",
+          "literals": [
+            {
+              "ordinal": 11,
+              "value": "4096"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.match(r.reason, /12280 additional issues: undefined_member=12280$/);",
+          "sha256": "fa5861e2839a0a9d4bcd2840176d74425070752947fd1bbc6760461b14dbd3dc"
+        },
+        {
+          "anchor": "assert.match(refusal.reason, /activationId unsupported_form; writerEpoch not_a_count/);",
+          "sha256": "57603cbbe0c0a035f3001790131437113bea1bd6ebd215c23c14efe869a134ae"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "Each refusal must carry the exact additional-issues and unsupported-form texts; the test also applies the fixture helpers assertDiagnostic and assertOnlyRefusal (refusal-diagnostics-fixture.ts), which are not anchors."
+      }
+    },
+    {
+      "id": "target.exact-coordinates.17.3.accent-complete",
+      "counterexample": "cx.exact-coordinates.17.3.accent-complete",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/exact-coordinates.test.ts",
+      "test_path": [
+        "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+      ],
+      "declaration": {
+        "line": 17,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const scope = \"tenant-\u00e9\", who = caller(namespace, scope), driver = delayedDriver();",
+          "sha256": "dabb92d77e13de3b3ad501342df5f0356eae575d141b37b6a757ef495cfd7221",
+          "literals": [
+            {
+              "ordinal": 3,
+              "value": "tenant-\u00e9"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(created, { executionId, receipt: receiptAt(executionId, \"creation\", 1), replayed: false, initialEventId });",
+          "sha256": "75aa3f9cf382405eb0fe296707003745546cff0ce5f5f681aad3d0d59c4a4efe"
+        },
+        {
+          "anchor": "assert.deepEqual(open, { activationId, writerEpoch: 1, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 3), redelivered: false });",
+          "sha256": "15865d1aa22ccdb12fa626e2b1ebeaeb9b1040fd92d2b276769b41f19c73f0ef"
+        },
+        {
+          "anchor": "assert.deepEqual(taken, { activationId, supersededEpoch: 1, writerEpoch: 2, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 4) });",
+          "sha256": "4cccde9d0b6aa8b47f5fbd79f8a979e4031e77bc4a8b6caef8c587ebbde1edd7"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "Each deep comparison expects receipts and identifiers built from the length-prefixed inputs, never from another Kernel answer."
+      }
+    },
+    {
+      "id": "target.exact-coordinates.17.3.accent-fail",
+      "counterexample": "cx.exact-coordinates.17.3.accent-fail",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/exact-coordinates.test.ts",
+      "test_path": [
+        "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+      ],
+      "declaration": {
+        "line": 17,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const scope = \"tenant-\u00e9\", who = caller(namespace, scope), driver = delayedDriver();",
+          "sha256": "dabb92d77e13de3b3ad501342df5f0356eae575d141b37b6a757ef495cfd7221",
+          "literals": [
+            {
+              "ordinal": 3,
+              "value": "tenant-\u00e9"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(created, { executionId, receipt: receiptAt(executionId, \"creation\", 1), replayed: false, initialEventId });",
+          "sha256": "75aa3f9cf382405eb0fe296707003745546cff0ce5f5f681aad3d0d59c4a4efe"
+        },
+        {
+          "anchor": "assert.deepEqual(open, { activationId, writerEpoch: 1, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 3), redelivered: false });",
+          "sha256": "15865d1aa22ccdb12fa626e2b1ebeaeb9b1040fd92d2b276769b41f19c73f0ef"
+        },
+        {
+          "anchor": "assert.deepEqual(taken, { activationId, supersededEpoch: 1, writerEpoch: 2, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 4) });",
+          "sha256": "4cccde9d0b6aa8b47f5fbd79f8a979e4031e77bc4a8b6caef8c587ebbde1edd7"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "Each deep comparison expects receipts and identifiers built from the length-prefixed inputs, never from another Kernel answer."
+      }
+    },
+    {
+      "id": "target.exact-coordinates.17.3.surrogate-complete",
+      "counterexample": "cx.exact-coordinates.17.3.surrogate-complete",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/exact-coordinates.test.ts",
+      "test_path": [
+        "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+      ],
+      "declaration": {
+        "line": 17,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const scope = \"tenant-\u00e9\", who = caller(namespace, scope), driver = delayedDriver();",
+          "sha256": "dabb92d77e13de3b3ad501342df5f0356eae575d141b37b6a757ef495cfd7221",
+          "literals": [
+            {
+              "ordinal": 3,
+              "value": "tenant-\u00e9"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(created, { executionId, receipt: receiptAt(executionId, \"creation\", 1), replayed: false, initialEventId });",
+          "sha256": "75aa3f9cf382405eb0fe296707003745546cff0ce5f5f681aad3d0d59c4a4efe"
+        },
+        {
+          "anchor": "assert.deepEqual(open, { activationId, writerEpoch: 1, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 3), redelivered: false });",
+          "sha256": "15865d1aa22ccdb12fa626e2b1ebeaeb9b1040fd92d2b276769b41f19c73f0ef"
+        },
+        {
+          "anchor": "assert.deepEqual(taken, { activationId, supersededEpoch: 1, writerEpoch: 2, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 4) });",
+          "sha256": "4cccde9d0b6aa8b47f5fbd79f8a979e4031e77bc4a8b6caef8c587ebbde1edd7"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "Each deep comparison expects receipts and identifiers built from the length-prefixed inputs, never from another Kernel answer."
+      }
+    },
+    {
+      "id": "target.exact-coordinates.17.3.surrogate-fail",
+      "counterexample": "cx.exact-coordinates.17.3.surrogate-fail",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/exact-coordinates.test.ts",
+      "test_path": [
+        "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+      ],
+      "declaration": {
+        "line": 17,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const scope = \"tenant-\u00e9\", who = caller(namespace, scope), driver = delayedDriver();",
+          "sha256": "dabb92d77e13de3b3ad501342df5f0356eae575d141b37b6a757ef495cfd7221",
+          "literals": [
+            {
+              "ordinal": 3,
+              "value": "tenant-\u00e9"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(created, { executionId, receipt: receiptAt(executionId, \"creation\", 1), replayed: false, initialEventId });",
+          "sha256": "75aa3f9cf382405eb0fe296707003745546cff0ce5f5f681aad3d0d59c4a4efe"
+        },
+        {
+          "anchor": "assert.deepEqual(open, { activationId, writerEpoch: 1, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 3), redelivered: false });",
+          "sha256": "15865d1aa22ccdb12fa626e2b1ebeaeb9b1040fd92d2b276769b41f19c73f0ef"
+        },
+        {
+          "anchor": "assert.deepEqual(taken, { activationId, supersededEpoch: 1, writerEpoch: 2, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, \"dispatch_intent\", 4) });",
+          "sha256": "4cccde9d0b6aa8b47f5fbd79f8a979e4031e77bc4a8b6caef8c587ebbde1edd7"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "Each deep comparison expects receipts and identifiers built from the length-prefixed inputs, never from another Kernel answer."
+      }
+    }
+  ],
+  "counterexamples": []
+}

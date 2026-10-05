@@ -1,0 +1,616 @@
+{
+  "origin": {
+    "id": "artifact-f1a28bedebfe204b9687fa53",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Maintained source packages/kernel/tests/receipts.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "targets": [
+        "suite.packages/kernel/tests/receipts.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/receipts.test.ts",
+          "start": 1,
+          "end": 311
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  "members": [
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:22:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "the length-prefixed packing separates parts no separator could",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        22,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:30:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "a part that is not text is raised rather than packed into a colliding key",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        30,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:44:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "creation, ingress and dispatch intent each mint their own",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        44,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:68:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "a receipt from one boundary can never be mistaken for another's",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        68,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:84:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "an exact replay returns the original token, at each boundary that can replay",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        84,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:102:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "every refusal mints none",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        102,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:121:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "an unauthorized caller cannot learn that an Execution exists",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        121,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:134:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "refusals that name no Execution advance nothing observable",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        134,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:164:3@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "a caller that holds the scope sees the Execution and its receipts",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        164,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:187:5@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "inspect performs the same scope work for hidden and missing",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        187,
+        5
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "not_held",
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:210:5@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "equal work holds with many legitimate scopes and in both orders",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        210,
+        5
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "not_held",
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:227:5@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "scope work does not depend on where the match sits",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        227,
+        5
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "not_held",
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:241:5@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "single-ID lookup work does not depend on hidden-record population",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        241,
+        5
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "not_held",
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:259:5@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "ingress, dispatch and redelivery share the same normalized lookup",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        259,
+        5
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "not_held",
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/receipts.test.ts:295:5@a0a1368492ff",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "file": "packages/kernel/tests/receipts.test.ts",
+      "pin_blob": "a0a1368492fffa9c9c542017fec1659a85b3eafb",
+      "title": "visibleExecutions does uniform per-record work and reveals only visible IDs",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        295,
+        5
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "not_held",
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.receipts"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    }
+  ],
+  "targets": [],
+  "counterexamples": []
+}

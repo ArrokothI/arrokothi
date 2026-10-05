@@ -1,0 +1,183 @@
+{
+  "origin": {
+    "id": "artifact-1bc6bdfb882a53a207254ef4",
+    "state": "complete",
+    "legacy": {
+      "status": "case",
+      "rationale": "The 29 CHECKS entries are registered with exact replacement anchors and independent fault-oracle negative controls. The old runner remains sealed; compile/setup failures no longer count as kills.",
+      "targets": [
+        "oracle.returned",
+        "oracle.view",
+        "oracle.nextRefusal",
+        "oracle.nextAcceptance",
+        "oracle.setupGrant",
+        "oracle.refusalPosition",
+        "oracle.refusalExecution",
+        "oracle.acceptingExit",
+        "oracle.fired",
+        "oracle.sameOperation",
+        "oracle.quietRepeat",
+        "oracle.callbackRan",
+        "oracle.deliveredAt",
+        "oracle.takeoverWindowAt",
+        "oracle.outcomeStepAt",
+        "oracle.outcomePrefix",
+        "oracle.applySequence",
+        "oracle.applyModel",
+        "oracle.referenceKind",
+        "oracle.referenceRefusal",
+        "oracle.referenceUnnamed",
+        "oracle.referenceUnchanged",
+        "oracle.referenceReplay",
+        "oracle.recoveryAnswer",
+        "oracle.takeoverAnswer",
+        "oracle.outcomeAnswer",
+        "oracle.declaredExit",
+        "oracle.attributed",
+        "oracle.exitReached"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "case",
+          "id": "oracle.returned"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.view"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.nextRefusal"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.nextAcceptance"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.setupGrant"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.refusalPosition"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.refusalExecution"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.acceptingExit"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.fired"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.sameOperation"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.quietRepeat"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.callbackRan"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.deliveredAt"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.takeoverWindowAt"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.outcomeStepAt"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.outcomePrefix"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.applySequence"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.applyModel"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.referenceKind"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.referenceRefusal"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.referenceUnnamed"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.referenceUnchanged"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.referenceReplay"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.recoveryAnswer"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.takeoverAnswer"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.outcomeAnswer"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.declaredExit"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.attributed"
+        },
+        {
+          "kind": "case",
+          "id": "oracle.exitReached"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs",
+          "start": 1,
+          "end": 88
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs",
+          "start": 1,
+          "end": 88
+        }
+      ],
+      "context_reasons": {
+        "packages/kernel": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
+        "packages/kernel/tests/fault-oracle.test.ts": "A test or test-side path the text names; it binds through the closure links, not as context.",
+        "packages/kernel/tests/sweep/fault-oracle.ts": "A test or test-side path the text names; it binds through the closure links, not as context."
+      }
+    }
+  },
+  "members": [],
+  "targets": [],
+  "counterexamples": []
+}

@@ -1,0 +1,538 @@
+{
+  "origin": {
+    "id": "artifact-394a3572417fe81cafbd7097",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Maintained source packages/kernel/tests/evidence.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "targets": [
+        "suite.packages/kernel/tests/evidence.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/evidence.test.ts",
+          "start": 1,
+          "end": 351
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  "members": [
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:77:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "the creation receipt is unchanged by editing the returned one, on replay and in inspection",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        77,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:93:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "the ingress receipt is unchanged by editing the returned one",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        93,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:111:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "the dispatch receipt is unchanged by editing the returned one, and redelivery returns the original",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        111,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:128:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "editing a receipt reached through inspection cannot reach the Execution either",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        128,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:145:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "the retained mailbox disposition cannot be edited into a different disposition",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        145,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:168:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "a recorded creation conflict is unchanged by editing the returned record",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        168,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:184:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "a recorded ingress conflict is unchanged, and editing it invents no Execution",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        184,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:199:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "editing a refusal reached through inspection cannot reach the Execution",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        199,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:215:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "a refusal that names no Execution is immutable too, and stays unrecorded",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        215,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:229:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "every evidence object any exposed path returns is immutable",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        229,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:275:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "evidence the Kernel retains and evidence it returns are the same object, safely",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        275,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:303:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "the terminal vocabulary cannot be extended, emptied or re-spelled",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        303,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:329:3@6f11f8b27115",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "file": "packages/kernel/tests/evidence.test.ts",
+      "pin_blob": "6f11f8b27115d158f59474df018580a9dea4a468",
+      "title": "the published limits cannot be raised or lowered by a caller",
+      "title_kind": "literal",
+      "status": "preserved",
+      "reasons": [],
+      "scope": "whole_file",
+      "current": [
+        329,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": null,
+      "helper_closure": {
+        "reviewed": [
+          "review.harness.evidence"
+        ]
+      },
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": []
+    }
+  ],
+  "targets": [],
+  "counterexamples": []
+}

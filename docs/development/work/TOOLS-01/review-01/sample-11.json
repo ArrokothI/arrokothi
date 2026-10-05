@@ -1,0 +1,71 @@
+{
+  "origin": {
+    "id": "artifact-f5306a247782c53fd004e62d",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Maintained source packages/kernel/tests/sweep/zone-names.ts is retained at the current profile; its executable consumer is kernel-sweeps. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "targets": [
+        "suite.packages/kernel/tests/sweep/zone-names.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.poison-catalog.291.3"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/sweep/zone-names.ts",
+          "start": 1,
+          "end": 130
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [],
+  "targets": [
+    {
+      "id": "target.poison-catalog.291.3",
+      "counterexample": "cx.poison-catalog.291.3",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/poison-catalog.test.ts",
+      "test_path": [
+        "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+        "the catalog poisons the complete name set, the descriptor fields included"
+      ],
+      "declaration": {
+        "line": 291,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const NAMES = zoneMemberNames(ZONE_ROOT);",
+          "sha256": "217442f6cf41d50a5938df6c48befa9998f30b14a6d4f0fc166f675f67bac2b1",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.ok(NAMES.includes(\"resultingEpoch\") && NAMES.includes(\"controlScopes\") && NAMES.includes(\"isSafeToReplace\"));",
+          "sha256": "c6f8d200d9c52f07f2b11e1ad96a08cd7d418c80715dd98022d7af648d690419"
+        },
+        {
+          "anchor": "assert.ok(NAMES.includes(Symbol.toPrimitive) && NAMES.includes(Symbol.iterator) && NAMES.includes(\"then\"));",
+          "sha256": "abbdf4679e5f2cd331cb7ae7658def78c82e43d34ccd0e4437aad950cc93ec55"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "NAMES, computed by zoneMemberNames (sweep/zone-names.ts) at module load, must include resultingEpoch, controlScopes, isSafeToReplace, Symbol.toPrimitive, Symbol.iterator and then."
+      }
+    }
+  ],
+  "counterexamples": []
+}
