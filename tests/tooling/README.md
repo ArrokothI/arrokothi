@@ -266,14 +266,21 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   linked target bound to it (`member`, at its declaration unless the relation is an authorized
   replacement), or listed in a linked `held_witness` or `superseded_witness`. A witness names its
   hold claim and its members, and the register must classify each member the same way under that
-  claim. An origin with a family links it, and no family member may still be pending.
+  claim. The witness kind must match the member's held or superseded status and its provenance must
+  include the origin being closed; an ordinary behavior record supplies no witness closure.
+  An origin with a family links it, and no family member may still be pending.
 - **Non-executable.** `non_executable` gives one of the four reasons (`policy`,
   `historical_command`, `record`, `unavailable_source`) and a rationale.
 - **Context (D04-CHK-06 as design 05 adapts it).** `context` ranges (revision, path, first and last
   line) must cover an artifact's whole file, or a fence's heading section, at its pinned revision.
+  Context, fence and prose-origin coordinates count byte LF separators only; CR and Unicode line
+  separators remain source content. A trailing LF terminates its line without adding another line;
+  an extra LF adds an empty line. Empty files use context endpoint 1. Fence bodies retain their
+  non-LF bytes when their digest is checked.
   Every sealed record under `docs/` that this text names, followed transitively, must be covered as a
-  whole file. Every other path or revision candidate in it must be covered, or reasoned in
-  `context_reasons`, and no reason may name a candidate that does not occur. Production files a test
+  whole file. A reason cannot waive a named sealed record or its dependencies. Every other path or
+  revision candidate in it must be covered, or reasoned in `context_reasons`; reasons for absent or
+  mandatory candidates are refused. Production files a test
   reads are targets, not context; they are reasoned.
 
 ## Isolation, inputs and identities

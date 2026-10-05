@@ -7338,11 +7338,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(set(reasons) <= used, 'context reasons name candidates that do not occur: ' + origin['id'])",
+          "before": "require(set(reasons) <= used, 'context reasons name absent or mandatory candidates: ' + origin['id'])",
           "after": "pass  # tools01-ablate:65d96bd4eda9ea71",
           "operator": "remove-refusal-check",
           "name": "guard.context_check.65d96bd4eda9ea71",
-          "id": "mutation-8d17b7975017f2f27f642187f6792c72d4d4e8be9b6b0623cd39c6a51e2c0432"
+          "id": "mutation-fa99ecf49cf614c6c009c351b9d41b4e7aa167fa5bc66f755a643577d696c0a5"
         }
       ]
     },
@@ -7367,11 +7367,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(covers(origin['revision'], candidate, 1, max(len(record.splitlines()), 1)),\n                        'a named sealed record is outside the context: ' + candidate)",
+          "before": "require(covers(origin['revision'], candidate, 1, max(len(source_lines(record)), 1)),\n                        'a named sealed record is outside the context: ' + candidate)",
           "after": "pass  # tools01-ablate:557d3f1c1daa356e",
           "operator": "remove-refusal-check",
           "name": "guard.context_check.557d3f1c1daa356e",
-          "id": "mutation-7b9b5b690cc77161c3285c1f8792ae33f5fe8a6b75e8813f8af0e208beee9242"
+          "id": "mutation-5cc08b296b80bfedb4fe81b44c6aa12c07ea970fab4cd2b37d7f13df3b80f7b7"
         }
       ]
     },
@@ -7715,11 +7715,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(any(member['member'] in facts['counterexample'][cx].get('members', []) for cx in linked['counterexample']),\n                    'a held or superseded member of this origin has no linked witness: ' + member['member'])",
+          "before": "require(any(facts['counterexample'][cx]['kind'] == expected_kind and\n                        key in facts['counterexample'][cx]['origins'] and\n                        member['member'] in facts['counterexample'][cx].get('members', [])\n                        for cx in linked['counterexample']),\n                    'a held or superseded member of this origin has no linked witness: ' + member['member'])",
           "after": "pass  # tools01-ablate:223651272b5992b9",
           "operator": "remove-refusal-check",
           "name": "guard.origin_closure.223651272b5992b9",
-          "id": "mutation-27adf03db5f80474b9ea2c92dc536bb8d01dd5a9fcc242c889e6d74ba78a566e"
+          "id": "mutation-c805d6796db0c586fe928184817e22390e3b3908cf38a6f434d7f395f6ee6f8a"
         }
       ]
     },

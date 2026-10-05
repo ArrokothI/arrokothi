@@ -1,0 +1,19 @@
+{
+  "subject": "266de3beb620ac6e1df004d65e637d6e13fb769d",
+  "probes": [
+    {
+      "id": "TOOLS-CONT-01",
+      "required_refusal": true,
+      "observed": "refused",
+      "reason": "a named sealed record is outside the context: docs/records/note.md"
+    },
+    {
+      "id": "TOOLS-CONT-02",
+      "required_refusal": true,
+      "observed": "refused",
+      "reason": "a held or superseded member of this origin has no linked witness: tests/fx/registered.test.mjs:5:1@bdda52f74a43"
+    }
+  ],
+  "elapsed_seconds": 14.935,
+  "acceptance": "not evaluated"
+}

@@ -87,13 +87,49 @@ class FormatTwoTests(RepositoryFixture):
 
     def test_a_complete_origin_needs_its_closure(self):
         rev = self.fixture(lambda data: data['origins'][1].update(state='complete'))
-        with self.assertRaisesRegex(tool.CheckError, 'a complete origin records its closure'):
+        error = None
+        try:
+            self.check(rev)
+        except Exception as exc:
+            error = exc
+        self.assertIsInstance(error, tool.CheckError, 'missing closure must produce a declared refusal')
+        self.assertIn('a complete origin records its closure', str(error))
+
+    def test_corpus_cannot_waive_a_named_sealed_dependency(self):
+        self.write('sealed.txt', 'Read docs/records/note.md.\n')
+        self.write('docs/records/note.md', 'Read docs/records/deeper.md.\n')
+        self.write('docs/records/deeper.md', 'Required transitive context.\n')
+        self.b = self.commit('pinned sealed dependencies')
+
+        def change(spec):
+            spec['origins'][1].update(state='complete', closure={
+                'links': [], 'non_executable': {'reason': 'record', 'rationale': 'A historical record.'},
+                'context': [{'revision': self.b, 'path': 'sealed.txt', 'start': 1, 'end': 1}],
+                'context_reasons': {'docs/records/note.md': 'Omit the named sealed record.'}})
+
+        rev = self.fixture(change)
+        with self.assertRaisesRegex(tool.CheckError, 'a named sealed record is outside the context: docs/records/note.md'):
             self.check(rev)
 
     def test_prose_triage_waits_for_its_step(self):
         rev = self.fixture(lambda data: data['origins'][1].update(state='triaged'))
         with self.assertRaisesRegex(tool.CheckError, 'prose triage is not implemented'):
             self.check(rev)
+
+    def test_corpus_closes_valid_lf_context_with_embedded_separators(self):
+        (self.root / 'sealed.txt').write_bytes('prefix\r\u2028\u2029\nRead docs/records/note.md.\n'.encode())
+        self.write('docs/records/note.md', 'Sealed\r\u2028\u2029content.\n')
+        self.b = self.commit('LF sealed context')
+
+        def change(spec):
+            spec['origins'][1].update(state='complete', closure={
+                'links': [], 'non_executable': {'reason': 'record', 'rationale': 'A historical record.'},
+                'context': [{'revision': self.b, 'path': 'sealed.txt', 'start': 1, 'end': 2},
+                            {'revision': self.b, 'path': 'docs/records/note.md', 'start': 1, 'end': 1}]})
+
+        result = self.check(self.fixture(change))
+        self.assertEqual(result['closures']['complete'], 1)
+        self.assertEqual(result['closures']['context_candidates'], 1)
 
     def test_source_digest_mismatch_refused(self):
         rev = self.fixture(lambda data: data['migration']['source'].update(sha256='0' * 64))

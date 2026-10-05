@@ -1,0 +1,79 @@
+{
+  "subject": "266de3beb620ac6e1df004d65e637d6e13fb769d",
+  "probes": [
+    {
+      "probe": "pinned_whole_file",
+      "origin": {
+        "kind": "artifact",
+        "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+        "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+        "line": 1,
+        "id": "artifact-9fd619f5375d598ebb2b88aa"
+      },
+      "sha256": "06f065d151af04916ee34a6ae14d22a1164f66fbb5ccf2a5d36952e7809fc9a2",
+      "expected_range": [
+        1,
+        4489
+      ],
+      "observed_range": [
+        1,
+        4489
+      ],
+      "defect_reproduced": false
+    },
+    {
+      "probe": "pinned_whole_file",
+      "origin": {
+        "kind": "artifact",
+        "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+        "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+        "line": 1,
+        "id": "artifact-1e3d57f18b66af569805e605"
+      },
+      "sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "expected_range": [
+        1,
+        4494
+      ],
+      "observed_range": [
+        1,
+        4494
+      ],
+      "defect_reproduced": false
+    },
+    {
+      "probe": "fence_omits_required_context",
+      "source_utf8": "# Intro\nprefix\u2028## Forged\u2028padding\u2028padding\n## Required\nRead docs/records/note.md.\n```js\nconst value = 1;\n```\n",
+      "fence_LF_line": 5,
+      "expected_minimum": [
+        3,
+        7
+      ],
+      "observed_minimum": [
+        3,
+        7
+      ],
+      "text_checker_scanned": "## Required\nRead docs/records/note.md.\n```js\nconst value = 1;\n```",
+      "recorded_range": [
+        3,
+        5
+      ],
+      "omitted": [
+        "docs/records/note.md",
+        "docs/records/deeper.md"
+      ],
+      "observed": "refused",
+      "reason": "the context does not cover the minimum: origin.fence",
+      "defect_reproduced": false
+    },
+    {
+      "probe": "ordinary_LF_control",
+      "observed": "refused",
+      "reason": "the context does not cover the minimum: origin.fence",
+      "control_passed": true
+    }
+  ],
+  "elapsed_seconds": 0.598,
+  "scope": "context_minimum and origin_closure with real Git blobs, not a full corpus run",
+  "acceptance": "not evaluated"
+}

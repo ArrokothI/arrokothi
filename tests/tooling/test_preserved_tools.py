@@ -315,6 +315,31 @@ class PreservedCensusTests(unittest.TestCase):
         with self.assertRaisesRegex(tool.CheckError, 'a witness member has another status'):
             tool.corpus(self.repo.reader, self.commit_manifest(spec), 'corpus.json', toolchain=self.toolchain)
 
+    def test_corpus_requires_an_attributed_witness_to_close_a_held_origin(self):
+        path = 'tests/fx/registered.test.mjs'
+        origin = self.origins[path]
+        for kind in ('behavior', 'held_witness'):
+            with self.subTest(kind=kind):
+                spec = self.manifest(self.table, self.entries, order_model_holds=True)
+                witness = self.witness(kind=kind)
+                if kind == 'behavior':
+                    witness.pop('claim')
+                spec['counterexamples'] = [witness]
+                for row in spec['origins']:
+                    if row['id'] == origin:
+                        row.update(state='complete', closure={
+                            'links': [{'kind': 'counterexample', 'id': witness['id']}],
+                            'context': [{'revision': self.pin, 'path': path, 'start': 1,
+                                         'end': len(REGISTERED.encode().split(b'\n'))}]})
+                rev = self.commit_manifest(spec)
+                if kind == 'behavior':
+                    with self.assertRaisesRegex(tool.CheckError, 'has no linked witness'):
+                        tool.corpus(self.repo.reader, rev, 'corpus.json', toolchain=self.toolchain)
+                else:
+                    result = tool.corpus(self.repo.reader, rev, 'corpus.json', toolchain=self.toolchain)
+                    self.assertEqual(result['closures']['complete'], 1)
+                    self.assertEqual(result['preserved']['by_status']['held'], 1)
+
     def test_a_complete_origin_closes_over_its_members_and_context(self):
         path = 'tests/fx/production-data.test.mjs'
         origin = self.origins[path]

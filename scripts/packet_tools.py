@@ -288,8 +288,18 @@ def candidate(git, payload, head, spec_path):
                        'No remote push or integration claim']}
 
 
+def source_lines(data):
+    """LF source coordinates: preserve every other byte and omit only the terminal empty chunk.
+
+    Empty files have no lines; context ranges use the conventional empty-file endpoint 1.
+    A trailing LF terminates its line, while an additional LF contributes an empty line.
+    """
+    lines = data.split(b'\n')
+    return lines[:-1] if lines[-1] == b'' else lines
+
+
 def fenced_bytes(data, line):
-    lines = data.decode().splitlines()
+    lines = [row.decode() for row in source_lines(data)]
     require(isinstance(line, int) and 1 <= line <= len(lines), 'invalid fence line')
     opening = re.match(r'^\s*(`{3,}|~{3,})([\w-]*)', lines[line - 1])
     require(opening is not None, 'fence locator is not an opening fence')
@@ -327,7 +337,7 @@ def inventory(git, revision, spec_path):
                 body = fenced_bytes(data, row['line']) if row['kind'].startswith('inline ') else data
                 require(digest(body) == row['sha256'], f'origin digest mismatch: {row["path"]}:{row["line"]}')
             else:
-                lines = data.decode().splitlines()
+                lines = [line.decode() for line in source_lines(data)]
                 require(row['line'] <= len(lines) and lines[row['line'] - 1] == row['text'],
                         f'prose locator mismatch: {row["path"]}:{row["line"]}')
             key = origin_id(kind, row)
@@ -2501,8 +2511,9 @@ def markdown_section(lines, line):
 
 def context_minimum(git, origin):
     """D04-CHK-06 as design 05 adapts it: an artifact's whole file, or a fence's heading section."""
-    data = git.blob(origin['revision'], origin['path']).decode('utf-8', 'replace')
-    lines = data.splitlines()
+    raw = git.blob(origin['revision'], origin['path'])
+    data = raw.decode('utf-8', 'replace')
+    lines = [line.decode('utf-8', 'replace') for line in source_lines(raw)]
     if origin['line'] == 1:
         return 1, max(len(lines), 1), data
     start, end = markdown_section(lines, origin['line'])
@@ -2535,17 +2546,18 @@ def context_check(git, origin, closure):
                 continue
             seen.add(candidate)
             entry = git.tree(origin['revision']).get(candidate)
-            if entry is not None and entry[0] == '100644' and candidate.startswith(SEALED_PREFIXES) and candidate not in reasons:
-                record = git.blob(origin['revision'], candidate).decode('utf-8', 'replace')
-                require(covers(origin['revision'], candidate, 1, max(len(record.splitlines()), 1)),
+            # Required sealed dependencies cannot be waived by the reason map for other candidates.
+            if entry is not None and entry[0] == '100644' and candidate.startswith(SEALED_PREFIXES):
+                record = git.blob(origin['revision'], candidate)
+                require(covers(origin['revision'], candidate, 1, max(len(source_lines(record)), 1)),
                         'a named sealed record is outside the context: ' + candidate)
-                queue.append(record)
+                queue.append(record.decode('utf-8', 'replace'))
             elif candidate in reasons:
                 used.add(candidate)
             else:
                 require(any(row['path'] == candidate or row['revision'].startswith(candidate) for row in ranges),
                         'an unreasoned path or revision candidate in the context: ' + candidate)
-    require(set(reasons) <= used, 'context reasons name candidates that do not occur: ' + origin['id'])
+    require(set(reasons) <= used, 'context reasons name absent or mandatory candidates: ' + origin['id'])
     return {'ranges': len(ranges), 'candidates': len(seen), 'reasoned': len(used)}
 
 
@@ -2576,7 +2588,11 @@ def origin_closure(git, rev, key, row, origin, facts):
             require(any(facts['target'][target]['member'] == member['member'] for target in linked['target']),
                     'a refused member of this origin has no linked target: ' + member['member'])
         elif member['status'] in ('held', 'superseded'):
-            require(any(member['member'] in facts['counterexample'][cx].get('members', []) for cx in linked['counterexample']),
+            expected_kind = member['status'] + '_witness'
+            require(any(facts['counterexample'][cx]['kind'] == expected_kind and
+                        key in facts['counterexample'][cx]['origins'] and
+                        member['member'] in facts['counterexample'][cx].get('members', [])
+                        for cx in linked['counterexample']),
                     'a held or superseded member of this origin has no linked witness: ' + member['member'])
     for family in (row for row in facts['family'].values() if row['origin'] == key):
         require(family['id'] in linked['family'], 'an origin with a family links it: ' + key)
