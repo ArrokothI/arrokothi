@@ -1,0 +1,80 @@
+[
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "source_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "source": "docs/development/work/K1.0/ownership-inventory.md",
+    "source_sha256": "5c240bd78968ed13d6274da5b37e4d7ed754c32a65a147f2b180d4d651802662",
+    "source_LF_line": 101,
+    "link": "../K1.1/implementation-03.md",
+    "resolved_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "resolved_path": "docs/development/work/K1.1/implementation-03.md",
+    "resolved_sha256": "05fc6adc255c6b1ae23ae8befa1d4639aeb2ec4ba3480bf24bfd395395e8ffe3",
+    "resolved_LF_lines": 338,
+    "covered_in_generated_context": false
+  },
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "source_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "source": "docs/development/work/K1.0/ownership-inventory.md",
+    "source_sha256": "5c240bd78968ed13d6274da5b37e4d7ed754c32a65a147f2b180d4d651802662",
+    "source_LF_line": 154,
+    "link": "../K1.1/implementation-03.md",
+    "resolved_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "resolved_path": "docs/development/work/K1.1/implementation-03.md",
+    "resolved_sha256": "05fc6adc255c6b1ae23ae8befa1d4639aeb2ec4ba3480bf24bfd395395e8ffe3",
+    "resolved_LF_lines": 338,
+    "covered_in_generated_context": false
+  },
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "source_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "source": "docs/development/work/K1.0/ownership-inventory.md",
+    "source_sha256": "5c240bd78968ed13d6274da5b37e4d7ed754c32a65a147f2b180d4d651802662",
+    "source_LF_line": 158,
+    "link": "../K1.1/implementation-04.md",
+    "resolved_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "resolved_path": "docs/development/work/K1.1/implementation-04.md",
+    "resolved_sha256": "17513b0f33c231c8f36ed5e473f76fc74ad26603172e3f99bc6a68322b27b560",
+    "resolved_LF_lines": 316,
+    "covered_in_generated_context": false
+  },
+  {
+    "origin": "artifact-1e3d57f18b66af569805e605",
+    "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "source": "docs/development/kernel-ownership.md",
+    "source_sha256": "a30c089a74163b2319a28d55d1b6ffb28e9238816ef995cd6fa574f0b0445a41",
+    "source_LF_line": 105,
+    "link": "https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/implementation-03.md",
+    "resolved_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "resolved_path": "docs/development/work/K1.1/implementation-03.md",
+    "resolved_sha256": "05fc6adc255c6b1ae23ae8befa1d4639aeb2ec4ba3480bf24bfd395395e8ffe3",
+    "resolved_LF_lines": 338,
+    "covered_in_generated_context": false
+  },
+  {
+    "origin": "artifact-1e3d57f18b66af569805e605",
+    "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "source": "docs/development/kernel-ownership.md",
+    "source_sha256": "a30c089a74163b2319a28d55d1b6ffb28e9238816ef995cd6fa574f0b0445a41",
+    "source_LF_line": 158,
+    "link": "https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/implementation-03.md",
+    "resolved_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "resolved_path": "docs/development/work/K1.1/implementation-03.md",
+    "resolved_sha256": "05fc6adc255c6b1ae23ae8befa1d4639aeb2ec4ba3480bf24bfd395395e8ffe3",
+    "resolved_LF_lines": 338,
+    "covered_in_generated_context": false
+  },
+  {
+    "origin": "artifact-1e3d57f18b66af569805e605",
+    "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "source": "docs/development/kernel-ownership.md",
+    "source_sha256": "a30c089a74163b2319a28d55d1b6ffb28e9238816ef995cd6fa574f0b0445a41",
+    "source_LF_line": 162,
+    "link": "https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/implementation-04.md",
+    "resolved_revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "resolved_path": "docs/development/work/K1.1/implementation-04.md",
+    "resolved_sha256": "17513b0f33c231c8f36ed5e473f76fc74ad26603172e3f99bc6a68322b27b560",
+    "resolved_LF_lines": 316,
+    "covered_in_generated_context": false
+  }
+]

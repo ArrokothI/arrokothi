@@ -1,0 +1,59 @@
+{
+  "subject": "3fd79044f7e85f083cc08e2214c72917c0d0a7f6",
+  "probes": [
+    {
+      "form": "relative",
+      "source": "Required context: [note](./docs/records/note.md).\n",
+      "omitted": [
+        "docs/records/note.md",
+        "docs/records/deeper.md"
+      ],
+      "required_refusal": true,
+      "observed": "accepted",
+      "states": {
+        "pending_revalidation": 1,
+        "complete": 1
+      },
+      "closures": {
+        "complete": 1,
+        "context_ranges": 1,
+        "context_candidates": 0,
+        "context_reasoned": 0
+      }
+    },
+    {
+      "form": "qualified",
+      "source": "Required context: [note](https://github.com/ArrokothI/arrokothi/blob/384f009b5d59df13e3f53df97f52764d5502d29d/docs/records/note.md).\n",
+      "omitted": [
+        "docs/records/note.md",
+        "docs/records/deeper.md"
+      ],
+      "required_refusal": true,
+      "observed": "accepted",
+      "states": {
+        "pending_revalidation": 1,
+        "complete": 1
+      },
+      "closures": {
+        "complete": 1,
+        "context_ranges": 1,
+        "context_candidates": 1,
+        "context_reasoned": 1
+      }
+    },
+    {
+      "form": "direct_control",
+      "source": "Required context: docs/records/note.md.\n",
+      "omitted": [
+        "docs/records/note.md",
+        "docs/records/deeper.md"
+      ],
+      "required_refusal": true,
+      "observed": "refused",
+      "reason": "a named sealed record is outside the context: docs/records/note.md"
+    }
+  ],
+  "elapsed_seconds": 1.995,
+  "scope": "full corpus in temporary Git fixtures; no checker mocks",
+  "acceptance": "not evaluated"
+}

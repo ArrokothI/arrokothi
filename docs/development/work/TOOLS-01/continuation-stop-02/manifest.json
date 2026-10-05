@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "subject": "3fd79044f7e85f083cc08e2214c72917c0d0a7f6",
+  "source_sha256": {
+    "scripts/packet_tools.py": "0f74f15d09f386a2c5933e03f0265029826eaec54f0158b699287f30b80e1d40",
+    "tests/fixtures/packet-tools/adoption.json": "4db4db259bd8f8e93bf4fe71851e9c8bf779883c58691d7f3e49ada60299511d",
+    "packages/kernel/tests/values.test.ts": "96c78364c04f26883357729f4d22f27bc0508a1aa074ea1feff162eaeddde680",
+    "docs/development/work/DESIGN-AUDIT-01/invalidation-03.md": "1dd792174eb819b0690ea91e1cbdb4ce094d6a6b70f1c8164c7ef992cbead62c"
+  },
+  "artifacts": {
+    "hold-credit-result.json": "15c21d2e4467f09343700302b8c4dc3e773ba84e5edec7a846602cf122558b79",
+    "initial-corpus-fixture.json": "d158662acc12890c8d69c3cf5ba8e7b997460bdab205b43c85dc5649d13a358b",
+    "initial-corpus-result.json.gz": "c09706dbb6ecc37ff10333e3eb5f560d9ce13e9b58cbfc7dee3aff0209de7d48",
+    "pinned-link-examples.json": "2030c5829e80977814030a351aa6892a3c93bf2c5cac75f0ee093a8221ce7bbc",
+    "probe_hold_credit.py": "1a382c69ef508968f7bd47af77270d5f024dbc72a69fc7c538f38407e62923f3",
+    "probe_relative_context.py": "fecd579789d7c4429470b664e0b163fa39dde96215623447550650863ab5d868",
+    "proposed-target.json": "8ec890e5bf61d05e4f3d1d0e9c2cf37161560648eeaed7e888ebad14e000b8aa",
+    "relative-context-result.json": "e3e5ffb8ef8d7a033c1e6d9ec74129934e9d5ff21236528ab5edeadfa2f25787",
+    "unadopted-context-samples.json": "928a9c45207edb729a3d4440468b2f4aff6a28898ff17b36ff4b4d58dfdd36f1"
+  },
+  "acceptance": "not evaluated"
+}

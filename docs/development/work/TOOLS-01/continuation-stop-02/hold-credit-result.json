@@ -1,0 +1,113 @@
+{
+  "subject": "3fd79044f7e85f083cc08e2214c72917c0d0a7f6",
+  "fixture": "30b19cdb0056655f5c26840b2da42cb8125a6f7f",
+  "fixture_tree": "6e1a3bbc55f5eda3f76b2b55590955bfa1fbaae3",
+  "proposal": {
+    "counterexample": {
+      "id": "cx.values.1424.3.fb228bec8c58",
+      "kind": "behavior",
+      "origins": [
+        "artifact-ea5444a6d42154e413fe0f2e"
+      ],
+      "required_result": "Under an environment the serializer window cannot control, the refusal is located, no bytes are produced, and the borrowed slots are handed back.",
+      "members": [
+        "packages/kernel/tests/values.test.ts:1424:3@fb228bec8c58"
+      ]
+    },
+    "target": {
+      "id": "target.values.1424.3.fb228bec8c58",
+      "counterexample": "cx.values.1424.3.fb228bec8c58",
+      "member": "packages/kernel/tests/values.test.ts:1424:3@fb228bec8c58",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/values.test.ts",
+      "test_path": [
+        "K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never to wrong bytes",
+        "the refusal is located, the bytes are never wrong, and the borrowed slots are handed back"
+      ],
+      "declaration": {
+        "line": 1728,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const probe = `\n      const { canonicalize } = await import(\"./packages/kernel/src/index.ts\");\n      const clean = canonicalize({ a: 1 });\n      Object.defineProperty(Array.prototype, \"0\", {\n        configurable: false,\n        get() { return String.fromCharCode(34) + \"HIJACKED\" + String.fromCharCode(34); },\n        set(_value) {},\n      });\n      let polluted;\n      try { polluted = canonicalize({ a: 1 }); } catch (error) { polluted = { escaped: String(error && error.name) }; }\n      console.log(JSON.stringify({\n        cleanCanonical: clean.ok ? clean.value.canonical : null,\n        ok: polluted.ok,\n        escaped: polluted.escaped ?? null,\n        code: polluted.ok === false ? polluted.issues[0].code : null,\n        canonical: polluted.ok === true ? polluted.value.canonical : null,\n        slotsRestored: typeof JSON.stringify === \"function\" && typeof Object.keys === \"function\" && typeof Object.getOwnPropertyDescriptor(Object, \"keys\").value === \"function\",\n      }));\n    `;",
+          "sha256": "ce982186a97d444e329539bba700b587969bd7f77f7bdf8365efcce2a6eddaeb",
+          "literals": [
+            {
+              "ordinal": 3,
+              "value": "\n      const { canonicalize } = await import(\"./packages/kernel/src/index.ts\");\n      const clean = canonicalize({ a: 1 });\n      Object.defineProperty(Array.prototype, \"0\", {\n        configurable: false,\n        get() { return String.fromCharCode(34) + \"HIJACKED\" + String.fromCharCode(34); },\n        set(_value) {},\n      });\n      let polluted;\n      try { polluted = canonicalize({ a: 1 }); } catch (error) { polluted = { escaped: String(error && error.name) }; }\n      console.log(JSON.stringify({\n        cleanCanonical: clean.ok ? clean.value.canonical : null,\n        ok: polluted.ok,\n        escaped: polluted.escaped ?? null,\n        code: polluted.ok === false ? polluted.issues[0].code : null,\n        canonical: polluted.ok === true ? polluted.value.canonical : null,\n        slotsRestored: typeof JSON.stringify === \"function\" && typeof Object.keys === \"function\" && typeof Object.getOwnPropertyDescriptor(Object, \"keys\").value === \"function\",\n      }));\n    "
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(observed.slotsRestored, true, \"the named slots the window did install were handed back\");",
+          "sha256": "79b898e1f5b6df66079637cefccef485b72f875787d37441fa985ebbce33e40a"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "The input is the probe program run in a child process; the cited assertion requires the window's slots restored. Its other five assertions repeat statements found elsewhere in the file and cannot be anchored."
+      }
+    }
+  },
+  "register_key": "packages/kernel/tests/values.test.ts:1728:3",
+  "stored_register_entry": null,
+  "member_status": "refused",
+  "corpus_result": "extraction_pending",
+  "states": {
+    "pending_revalidation": 154,
+    "pending": 1395
+  },
+  "register": {
+    "scope_files": 53,
+    "entries": 140,
+    "by_classification": {
+      "held:Proxy": 10,
+      "held:V-D1": 28,
+      "held:V-ENV": 10,
+      "held:re-prototyped-built-in": 1,
+      "not_held:-": 45,
+      "superseded:Proxy": 46
+    }
+  },
+  "suite_credit": {
+    "target_reading": 1
+  },
+  "target_result": {
+    "id": "target.values.1424.3.fb228bec8c58",
+    "counterexample": "cx.values.1424.3.fb228bec8c58",
+    "refused": [],
+    "anchors": [
+      {
+        "file": "packages/kernel/tests/values.test.ts",
+        "role": "input",
+        "anchor": "const probe = `\n      const { canonicalize } = await import(\"./packages/kernel/src/index.ts\");\n      const clean = canon",
+        "bound": true,
+        "scope": "span",
+        "input": "tokens_matched",
+        "offset": 86693,
+        "count": 1,
+        "baseline": 0,
+        "reached": true
+      },
+      {
+        "file": "packages/kernel/tests/values.test.ts",
+        "role": "assertion",
+        "anchor": "assert.equal(observed.slotsRestored, true, \"the named slots the window did install were handed back\");",
+        "bound": true,
+        "offset": 88674,
+        "count": 1,
+        "baseline": 0,
+        "reached": true
+      }
+    ],
+    "reach_run": "valid",
+    "credit": "target_reading"
+  },
+  "elapsed_seconds": 94.534,
+  "acceptance": "not evaluated"
+}

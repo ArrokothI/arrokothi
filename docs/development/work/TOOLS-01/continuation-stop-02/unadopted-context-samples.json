@@ -1,0 +1,514 @@
+[
+  {
+    "origin": {
+      "id": "artifact-9fd619f5375d598ebb2b88aa",
+      "kind": "artifact",
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 1,
+      "source_sha256": "06f065d151af04916ee34a6ae14d22a1164f66fbb5ccf2a5d36952e7809fc9a2",
+      "recommended_disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+      "adoption": "pending"
+    },
+    "unresolved_members": [
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:221:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:238:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:246:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:254:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:262:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:310:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:346:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:357:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:365:3@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:1822:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:1865:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:1930:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:1974:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:2031:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:2044:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:2108:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:4138:5@deedd7950724",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts:4207:5@deedd7950724"
+    ],
+    "context_candidate_count": 55,
+    "closure_context": {
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.0/ownership-inventory.md",
+          "start": 1,
+          "end": 165
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/agents/strands/src/agent-executor.ts",
+          "start": 1,
+          "end": 312
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/package.json",
+          "start": 1,
+          "end": 17
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/index.ts",
+          "start": 1,
+          "end": 12
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/ports/controller.ts",
+          "start": 1,
+          "end": 183
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/ports/index.ts",
+          "start": 1,
+          "end": 292
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/ports/runtime-store.ts",
+          "start": 1,
+          "end": 428
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/ports/scheduler.ts",
+          "start": 1,
+          "end": 39
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/runtime/effect-processor.ts",
+          "start": 1,
+          "end": 3461
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/runtime/harness.ts",
+          "start": 1,
+          "end": 1699
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/runtime/resumption-processor.ts",
+          "start": 1,
+          "end": 446
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/schema/value-schema.ts",
+          "start": 1,
+          "end": 417
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/util/hash.ts",
+          "start": 1,
+          "end": 59
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/util/json.ts",
+          "start": 1,
+          "end": 88
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/core/src/util/result.ts",
+          "start": 1,
+          "end": 10
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/package.json",
+          "start": 1,
+          "end": 17
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/coordinator.ts",
+          "start": 1,
+          "end": 1358
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/driver.ts",
+          "start": 1,
+          "end": 94
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/identity.ts",
+          "start": 1,
+          "end": 203
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/index.ts",
+          "start": 1,
+          "end": 64
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/inspection.ts",
+          "start": 1,
+          "end": 97
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/lifecycle.ts",
+          "start": 1,
+          "end": 54
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/own-array.ts",
+          "start": 1,
+          "end": 263
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/refusal.ts",
+          "start": 1,
+          "end": 96
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/result.ts",
+          "start": 1,
+          "end": 22
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/unsupported.ts",
+          "start": 1,
+          "end": 32
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/src/values.ts",
+          "start": 1,
+          "end": 1338
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/boundary.test.ts",
+          "start": 1,
+          "end": 207
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/refusals.test.ts",
+          "start": 1,
+          "end": 79
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/sdk/package.json",
+          "start": 1,
+          "end": 27
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/sdk/src/index.ts",
+          "start": 1,
+          "end": 14
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "tests/conformance/architecture/boundary-policy.ts",
+          "start": 1,
+          "end": 229
+        },
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+          "start": 1,
+          "end": 4489
+        }
+      ],
+      "context_reasons": {
+        "c9a9ed7e6e538ab0542fc6a999426264abb6212a": "Hexadecimal/revision candidate retained from source text. This closure uses the declared origin pin and named files there; this candidate supplies no independent source or execution credit.",
+        "packages/a": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/agents/strands/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/b": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/core/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/core/src/util/composite.ts": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/core/src/util/unaudited.ts": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/evil/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/interoperability/mcp/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/invented/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/kernel": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/kernel/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/kernel/src/helper.ts": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/kernel/src/internal.ts": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/kernel/tests": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/models/gemini/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/retrieval/local/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/sdk/src": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "777b9955fb3a443f700b4f3d1f4f2aef1869345b": "Hexadecimal/revision candidate retained from source text. This closure uses the declared origin pin and named files there; this candidate supplies no independent source or execution credit.",
+        "packages/core": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/core/src/controllers": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit.",
+        "packages/core/src/util": "No ordinary file exists at this literal candidate in pinned tree 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49; retain the source reference without source or execution credit."
+      }
+    }
+  },
+  {
+    "origin": {
+      "id": "artifact-1e3d57f18b66af569805e605",
+      "kind": "artifact",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 1,
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "recommended_disposition": "TOOLS-01 corpus + mutation registry; retire duplicate harness after extraction",
+      "adoption": "pending"
+    },
+    "unresolved_members": [],
+    "context_candidate_count": 58,
+    "closure_context": {
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/kernel-ownership.md",
+          "start": 1,
+          "end": 184
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/agents/strands/src/agent-executor.ts",
+          "start": 1,
+          "end": 312
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/package.json",
+          "start": 1,
+          "end": 17
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/index.ts",
+          "start": 1,
+          "end": 12
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/ports/controller.ts",
+          "start": 1,
+          "end": 183
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/ports/index.ts",
+          "start": 1,
+          "end": 292
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/ports/runtime-store.ts",
+          "start": 1,
+          "end": 428
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/ports/scheduler.ts",
+          "start": 1,
+          "end": 39
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/runtime/effect-processor.ts",
+          "start": 1,
+          "end": 3461
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/runtime/harness.ts",
+          "start": 1,
+          "end": 1699
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/runtime/resumption-processor.ts",
+          "start": 1,
+          "end": 446
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/schema/value-schema.ts",
+          "start": 1,
+          "end": 417
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/util/hash.ts",
+          "start": 1,
+          "end": 59
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/util/json.ts",
+          "start": 1,
+          "end": 88
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/core/src/util/result.ts",
+          "start": 1,
+          "end": 10
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/package.json",
+          "start": 1,
+          "end": 17
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/coordinator.ts",
+          "start": 1,
+          "end": 2471
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/driver.ts",
+          "start": 1,
+          "end": 146
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/envelope.ts",
+          "start": 1,
+          "end": 327
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/identity.ts",
+          "start": 1,
+          "end": 220
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/index.ts",
+          "start": 1,
+          "end": 83
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/inspection.ts",
+          "start": 1,
+          "end": 256
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/lifecycle.ts",
+          "start": 1,
+          "end": 53
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/outcome.ts",
+          "start": 1,
+          "end": 575
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/own-array.ts",
+          "start": 1,
+          "end": 282
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/refusal.ts",
+          "start": 1,
+          "end": 144
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/result.ts",
+          "start": 1,
+          "end": 22
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/unsupported.ts",
+          "start": 1,
+          "end": 39
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/src/values.ts",
+          "start": 1,
+          "end": 1516
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/boundary.test.ts",
+          "start": 1,
+          "end": 207
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/refusals.test.ts",
+          "start": 1,
+          "end": 75
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/sdk/package.json",
+          "start": 1,
+          "end": 27
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/sdk/src/index.ts",
+          "start": 1,
+          "end": 14
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "tests/conformance/architecture/boundary-policy.ts",
+          "start": 1,
+          "end": 229
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+          "start": 1,
+          "end": 4494
+        }
+      ],
+      "context_reasons": {
+        "c9a9ed7e6e538ab0542fc6a999426264abb6212a": "Hexadecimal/revision candidate retained from source text. This closure uses the declared origin pin and named files there; this candidate supplies no independent source or execution credit.",
+        "packages/a": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/agents/strands/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/b": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/core/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/core/src/util/composite.ts": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/core/src/util/unaudited.ts": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/evil/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/interoperability/mcp/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/invented/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/kernel": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/kernel/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/kernel/src/helper.ts": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/kernel/src/internal.ts": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/kernel/tests": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/models/gemini/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/retrieval/local/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/sdk/src": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "777b9955fb3a443f700b4f3d1f4f2aef1869345b": "Hexadecimal/revision candidate retained from source text. This closure uses the declared origin pin and named files there; this candidate supplies no independent source or execution credit.",
+        "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49": "Hexadecimal/revision candidate retained from source text. This closure uses the declared origin pin and named files there; this candidate supplies no independent source or execution credit.",
+        "packages/core": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/core/src/controllers": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit.",
+        "packages/core/src/util": "No ordinary file exists at this literal candidate in pinned tree 66bc041175e6fc191c2e7cf88de198111e7d97c9; retain the source reference without source or execution credit."
+      }
+    }
+  }
+]
