@@ -1,4 +1,5 @@
-"""P1-X area map, area derivation and the unconditional gate (gate-design-01)."""
+"""P1-X area map, area derivation and the gate verify always runs, advisory under owner choice 07:
+it reports the open origins and prose_pending records per touched area and never fails verify."""
 import sys
 import test_adoption_format
 from test_packet_tools import RepositoryFixture, tool
@@ -49,7 +50,7 @@ class AreaGateTests(RepositoryFixture):
                 with self.assertRaisesRegex(tool.CheckError, message):
                     tool.area_map(self.reader, self.b, areas)
 
-    def test_derivation_is_lexical_and_every_area_when_nothing_is_named(self):
+    def test_derivation_is_lexical_and_an_origin_naming_nothing_is_ungated(self):
         rev = self.fixture(lambda data: data.update(areas=MAP))
         spec = self.reader.document(rev, 'corpus.json', versions=(2,))
         intake = tool.inventory(self.reader, rev, spec['inventory'])
@@ -63,29 +64,36 @@ class AreaGateTests(RepositoryFixture):
         ids, area_of, paths = tool.area_map(self.reader, rev, MAP)
         derived = tool.origin_areas(self.reader, {'origins': [{'id': 'origin.empty', 'state': 'pending'}]}, intake,
                                     ids, area_of, paths)
-        self.assertEqual(derived, {'origin.empty': {'state': 'pending', 'areas': sorted(ids), 'derived': False}})
+        self.assertEqual(derived, {'origin.empty': {'state': 'pending', 'areas': [], 'derived': False}})
 
-    def test_an_untouched_area_passes(self):
+    def listed(self, result):
+        return {area: (row['origins'], row['records']) for area, row in result['by_area'].items()}
+
+    def test_an_area_without_open_origins_reports_none(self):
         result = self.gate(self.candidate(['scripts/tool.py']))
-        self.assertEqual((result['result'], result['touched_areas']), ('gate_passed', ['docs', 'scripts']))
+        self.assertEqual((result['advisory'], result['result'], result['touched_areas']), (True, 'reported', ['scripts']))
+        self.assertEqual((self.listed(result), result['reported']['open_origins'], result['ungated']),
+                         ({'scripts': ([], [])}, 0, 0))
 
-    def test_a_touched_area_with_an_open_origin_blocks(self):
+    def test_open_origins_in_a_touched_area_are_listed_with_counts(self):
         result = self.gate(self.candidate(['packages/kernel/src/values.ts']))
-        self.assertEqual(result['result'], 'gate_blocked')
-        self.assertEqual([(row['state'], row['touched']) for row in result['blocking_origins']],
-                         [('pending_revalidation', ['kernel'])])
+        self.assertEqual(result['result'], 'reported')
+        self.assertEqual(result['by_area']['kernel']['open_origins'], 1)
+        self.assertEqual(result['reported']['by_state'], {'pending_revalidation': 1})
 
-    def test_declared_administrative_files_count_as_touched(self):
-        result = self.gate(self.candidate([], administrative=['docs/notes.md']))
-        self.assertEqual([(row['state'], row['touched']) for row in result['blocking_origins']], [('pending', ['notes'])])
+    def test_docs_mental_model_root_markdown_and_administrative_records_touch_nothing(self):
+        result = self.gate(self.candidate(['docs/notes.md', 'mental-model/rule.md', 'NOTES.md'],
+                                          administrative=['docs/development/report.md']))
+        # The sealed origin names docs/notes.md, yet editing that note touches no area (owner choice 06 rule 1).
+        self.assertEqual((result['behaviour_paths'], result['touched_areas'], result['by_area']), (0, [], {}))
 
-    def test_a_prose_pending_record_in_a_touched_area_blocks(self):
+    def test_a_prose_pending_record_in_a_touched_area_is_listed(self):
         def prose(data):
             data['counterexamples'].append({'id': 'prose.one', 'kind': 'prose_pending', 'origins': [data['origins'][1]['id']],
                                             'required_result': 'A prose obligation.', 'areas': ['scripts']})
         result = self.gate(self.candidate(['scripts/tool.py'], extra=prose))
-        self.assertEqual((result['result'], result['blocking_origins'], result['blocking_prose_pending']),
-                         ('gate_blocked', [], [{'record': 'prose.one', 'touched': ['scripts']}]))
+        self.assertEqual((result['result'], self.listed(result), result['reported']['prose_pending']),
+                         ('reported', {'scripts': ([], ['prose.one'])}, 1))
 
     def test_a_prose_pending_record_names_areas_from_the_map(self):
         def prose(data):
@@ -118,7 +126,7 @@ class AreaGateTests(RepositoryFixture):
         self.assertIsInstance(error, tool.CheckError, 'a spec naming no packet must be a declared refusal')
         self.assertIn('verify needs the packet verification spec', str(error))
 
-    def test_verify_runs_the_gate_whatever_its_checks(self):
+    def test_verify_always_runs_the_gate_and_never_fails_on_it(self):
         rev = self.fixture(lambda data: data.update(areas=MAP))
         self.write(tool.ADOPTION_MANIFEST, (self.root / 'corpus.json').read_text())
         self.document(PACKET, {'version': 1, 'base': rev, 'administrative_files': []})
@@ -129,10 +137,10 @@ class AreaGateTests(RepositoryFixture):
                         'output_limit_bytes': 1024}]})
         self.write('packages/kernel/src/values.ts', 'changed\n')
         result = tool.verify(self.reader, self.commit('candidate'), 'gate-verify.json')
+        gate = result['checks'][-1]
         self.assertEqual((result['result'], [check['id'] for check in result['checks']]),
-                         ('attention_required', ['unit', 'area-gate']))
-        self.assertTrue(result['checks'][0]['passed'])
-        self.assertEqual(result['checks'][1]['result']['result'], 'gate_blocked')
+                         ('checks_passed', ['unit', 'area-gate']))
+        self.assertEqual((gate['advisory'], gate['passed'], gate['result']['by_area']['kernel']['open_origins']), (True, True, 1))
 
     def test_corpus_needs_a_covering_area_map(self):
         with self.assertRaisesRegex(tool.CheckError, 'the area map does not cover'):

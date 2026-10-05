@@ -1,5 +1,7 @@
 # TOOLS-01 gate design 01 — area map and area derivation
 
+Amended for owner choices 06 (rules 1–2) and 07 (advisory); no other section changes.
+
 2026-10-05. Claude Code (`claude-opus-5-5`), implementer. Owner choice 04 §3 asks for this note
 before the gate is built. It is reviewed in the final independent review, not in a separate check.
 
@@ -41,17 +43,27 @@ This applies to every origin that is `pending` or `pending_revalidation`, and to
    - the files its revision-2 mapping names (`suite.<path>`).
 3. A name's areas are the areas of every path at C that equals it or lies under it. A glob is cut at
    its first `*`. A name matching no path takes the area its own spelling matches.
-4. The origin's areas are the union. If step 2 yields no name, the areas cannot be derived, and the
-   origin has every area.
+4. The origin's areas are the union. If step 2 yields no name, the origin has no area and is
+   `ungated` (owner choice 06 rule 2, which replaces "every area"). `corpus` counts and lists the
+   ungated origins.
 
-This over-includes. A directory, glob or root manifest name brings in every area under it, and a
-section that names no path is gated by every change. Nothing reads meaning: the derivation is
-lexical and is recomputed at C on each run, so new files cannot leave stale stored areas.
+This over-includes: a directory, glob or root manifest name brings in every area under it. Nothing
+reads meaning. The derivation is lexical and is recomputed at C on each run, so new files cannot
+leave stale stored areas.
 
-## Gate
+## Gate (advisory, owner choice 07)
 
-`verify` runs the gate after its checks, whatever its spec lists. It reads the packet's
-`verification.json`, named by the verify spec's `candidate` field; `verify` refuses a spec that lacks
-it. Touched areas are the areas of B..C's changed paths plus the declared administrative files: F1
-limits C..H to exactly those files. The gate fails when a touched area contains an open origin or a
-`prose_pending` record, and it lists each such origin with its areas.
+`verify` runs the gate after its checks, whatever its spec lists, and it never fails `verify`.
+
+- **Inputs.** The gate reads the packet's `verification.json`, named by the verify spec's
+  `candidate` field. `verify` refuses a spec without that field, so no spec can disable the gate.
+  The packet's base must be an ancestor of C.
+- **Touched areas.** The areas of B..C's changed paths plus the declared administrative files; F1
+  limits C..H to exactly those files. Under owner choice 06 rule 1, a path under `docs/` or
+  `mental-model/`, or a Markdown file at the root, touches no area.
+- **Report.** For each touched area, the open origins and `prose_pending` records, with counts and
+  IDs. The report also gives the totals and the `ungated` count.
+
+A packet's 008 report quotes these counts. No triage is required, and no origin is closed for the
+gate. Owner choice 04's 50-origin stop and choice 06 rule 3 no longer apply. Enforcement is the
+backstop: TOOLS-02 must be accepted before K1.4 (owner choice 06 rule 4).

@@ -636,7 +636,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                          'cases': sum(key.startswith('case:') for key in register),
                          'by_classification': {f'{kind}:{claim or "-"}': count for (kind, claim), count in sorted(register_counts.items(), key=str)}},
             'areas': {'map': len(area_ids), 'open_origins': len(open_areas),
-                      'underivable': sum(not row['derived'] for row in open_areas.values()),
+                      'ungated': sum(not row['derived'] for row in open_areas.values()),
+                      'ungated_origins': sorted(key for key, row in open_areas.items() if not row['derived']),
                       'open_by_area': dict(sorted(Counter(area for row in open_areas.values()
                                                           for area in row['areas']).items()))},
             'mapping_complete': not pending, 'execution': 'not evaluated',
@@ -644,7 +645,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'limits': ['Semantic equivalence and non-executable classifications require source review',
                        'A complete mapping is not a passing corpus run or release of held claims',
                        'Revision-2 mappings carry no credit until revalidated (P1-R)',
-                       'Areas are derived lexically and over-include; the gate runs in verify',
+                       'Areas are derived lexically and over-include; the advisory gate runs in verify',
                        'Preserved means the same test-side code, fixtures and assertion at C, not discrimination; '
                        'reads outside fs, by native code or in processes that drop NODE_OPTIONS are unseen',
                        'The hold register covers leaf registrations in preserved and target files and every '
@@ -2771,7 +2772,8 @@ def area_map(git, rev, areas):
 def origin_areas(git, spec, intake, ids, area_of, paths):
     """P1-X (gate-design-01): each open origin's areas, from the repository paths and root files its
     minimum context names, its own path outside docs/ and its revision-2 suite files. A name brings the
-    areas of every path at C under it; an origin that names nothing has every area."""
+    areas of every path at C under it; an origin that names nothing has no area and is `ungated`
+    (owner choice 06 rule 2)."""
     under = {}
     for path in paths:
         parts = path.split('/')
@@ -2799,7 +2801,7 @@ def origin_areas(git, spec, intake, ids, area_of, paths):
         names |= {target[len('suite.'):] for target in (row.get('legacy') or {}).get('targets', [])
                   if target.startswith('suite.')}
         names = {name for name in names if name != '..' and not name.startswith('../')}
-        derived = set().union(*(areas_of(name) for name in names)) if names else set(ids)
+        derived = set().union(*(areas_of(name) for name in names)) if names else set()
         result[row['id']] = {'state': row['state'], 'areas': sorted(derived), 'derived': bool(names)}
     return result
 
@@ -2815,10 +2817,16 @@ def prose_areas(counterexamples, ids):
     return rows
 
 
+def touches_area(path):
+    """Owner choice 06 rule 1: changes under docs/ and mental-model/, and root Markdown files, touch no area."""
+    return not (path.startswith(('docs/', 'mental-model/')) or ('/' not in path and path.lower().endswith('.md')))
+
+
 def area_gate(git, revision, verification_path, adoption_path=ADOPTION_MANIFEST):
-    """P1-X, unconditional in `verify`: the touched areas are those of B..C's changed paths and of the
-    packet's declared administrative files (F1 limits C..H to them). Every open origin and every
-    prose_pending record in a touched area blocks."""
+    """P1-X, run by `verify` for every packet and advisory (owner choice 07): it reports, never fails.
+    The touched areas are those of B..C's changed paths and the packet's declared administrative files
+    (F1 limits C..H to them) that touch an area. It lists the open origins and prose_pending records in
+    each touched area, and counts the ungated origins."""
     rev = git.commit(revision)
     packet = git.document(rev, verification_path)
     base = git.commit(packet.get('base'))
@@ -2831,23 +2839,25 @@ def area_gate(git, revision, verification_path, adoption_path=ADOPTION_MANIFEST)
     counterexamples = counterexample_table(spec['counterexamples'], {row['id']: row for row in intake['origins']})
     prose = prose_areas(counterexamples, ids)
     origins = origin_areas(git, spec, intake, ids, area_of, paths)
-    touched = set().union(*({area_of(path)} if area_of(path) else set(ids) for path in changed)) if changed else set()
-    blocking = {key: sorted(set(row['areas']) & touched) for key, row in origins.items() if set(row['areas']) & touched}
-    blocking_prose = {key: sorted(set(areas) & touched) for key, areas in prose.items() if set(areas) & touched}
-    return {'operation': 'gate', 'revision': rev, 'base': base,
-            'result': 'gate_blocked' if blocking or blocking_prose else 'gate_passed',
-            'changed_paths': len(changed), 'touched_areas': sorted(touched), 'areas': len(ids),
-            'open_origins': len(origins), 'underivable': sum(not row['derived'] for row in origins.values()),
-            'blocking': {'origins': len(blocking), 'prose_pending': len(blocking_prose),
-                         'by_state': dict(Counter(origins[key]['state'] for key in blocking)),
-                         'underivable': sum(not origins[key]['derived'] for key in blocking),
-                         'by_area': dict(sorted(Counter(area for areas in blocking.values() for area in areas).items()))},
-            'blocking_origins': [{'origin': key, 'state': origins[key]['state'], 'touched': areas,
-                                  'derived': origins[key]['derived']} for key, areas in sorted(blocking.items())],
-            'blocking_prose_pending': [{'record': key, 'touched': areas} for key, areas in sorted(blocking_prose.items())],
+    behaviour = [path for path in changed if touches_area(path)]
+    touched = sorted({area_of(path) or 'unmapped' for path in behaviour})
+    by_area = {}
+    for area in touched:
+        listed = sorted(key for key, row in origins.items() if area in row['areas'])
+        records = sorted(key for key, areas in prose.items() if area in areas)
+        by_area[area] = {'open_origins': len(listed), 'prose_pending': len(records), 'origins': listed, 'records': records}
+    reported = {key for row in by_area.values() for key in row['origins']}
+    return {'operation': 'gate', 'advisory': True, 'result': 'reported', 'revision': rev, 'base': base,
+            'changed_paths': len(changed), 'behaviour_paths': len(behaviour), 'touched_areas': touched,
+            'areas': len(ids), 'open_origins': len(origins),
+            'reported': {'open_origins': len(reported),
+                         'by_state': dict(Counter(origins[key]['state'] for key in reported)),
+                         'prose_pending': len({key for row in by_area.values() for key in row['records']})},
+            'by_area': by_area, 'ungated': sum(not row['derived'] for row in origins.values()),
             'acceptance': 'not evaluated',
-            'limits': ['Areas are derived lexically from minimum contexts and over-include; they are not a semantic '
-                       'impact analysis']}
+            'limits': ['Advisory (owner choice 07): the report fails nothing and requires no triage',
+                       'Areas are derived lexically from minimum contexts and over-include; they are not a semantic '
+                       'impact analysis', 'Origins that name no path are ungated and counted, not listed by area']}
 
 
 def clean_payload(git, rev):
@@ -2910,7 +2920,8 @@ def verify(git, revision, spec_path, toolchain=None):
         clean_payload(git, rev)
     print('Checking area-gate', file=sys.stderr, flush=True)
     gate = area_gate(git, rev, spec['candidate'])
-    results.append({'id': 'area-gate', 'operation': 'gate', 'passed': gate['result'] == 'gate_passed', 'result': gate})
+    # Advisory (owner choice 07): the gate always runs and never fails verify.
+    results.append({'id': 'area-gate', 'operation': 'gate', 'advisory': True, 'passed': True, 'result': gate})
     return {'operation': 'verify', 'revision': rev, 'specification': spec_path,
             'result': 'checks_passed' if all(r['passed'] for r in results) else 'attention_required',
             'environment': {'python': platform.python_version(), 'platform': platform.platform(),

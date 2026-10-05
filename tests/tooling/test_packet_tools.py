@@ -18,7 +18,7 @@ spec.loader.exec_module(tool)
 
 def stub_area_gate(case):
     """Verify tests that are not about P1-X: the gate is stubbed; test_area_gate runs the real one."""
-    patcher = unittest.mock.patch.object(tool, 'area_gate', lambda git, rev, path: {'operation': 'gate', 'result': 'gate_passed'})
+    patcher = unittest.mock.patch.object(tool, 'area_gate', lambda git, rev, path: {'operation': 'gate', 'advisory': True, 'result': 'reported'})
     patcher.start()
     case.addCleanup(patcher.stop)
 

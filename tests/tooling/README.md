@@ -309,15 +309,19 @@ P1-X and owner choice 04 §3; the design is
   - the origin's own path, when it is outside `docs/`;
   - its revision-2 suite files.
 
-  A name covers every path under it. An origin that names nothing has every area. A
-  `prose_pending` record stores its areas, which must come from the map.
-- **Gate.** `verify` always runs `area-gate` after its checks, from the maintained manifest
-  `tests/fixtures/packet-tools/adoption.json` at C. The verify spec's `candidate` field names the
-  packet's `verification.json`, and `verify` refuses a spec without one.
-  - The touched areas are those of the paths changed from that file's `base` to C, plus its
-    administrative files (F1 limits C..H to them). The base must be an ancestor of C.
-  - The gate blocks while a touched area holds an open origin or a `prose_pending` record, and it
-    lists each one.
+  A name covers every path under it. An origin that names nothing has no area and is `ungated`;
+  `corpus` counts and lists those. A `prose_pending` record stores its areas, which must come from
+  the map.
+- **Gate (advisory, owner choice 07).** `verify` always runs `area-gate` after its checks, from the
+  maintained manifest `tests/fixtures/packet-tools/adoption.json` at C. The gate never fails
+  `verify`.
+  - The verify spec's `candidate` field names the packet's `verification.json`. `verify` refuses a
+    spec without it, so no spec can disable the gate.
+  - The touched areas are those of the paths changed from that file's `base` (which must be an
+    ancestor of C) to C, plus its administrative files. Paths under `docs/` or `mental-model/`, and
+    root Markdown files, touch nothing.
+  - The report lists the open origins and `prose_pending` records in each touched area with counts,
+    and gives the `ungated` count.
   - `packet_tools.py gate --revision C --spec <verification.json>` runs it alone.
 
 ## Isolation, inputs and identities
