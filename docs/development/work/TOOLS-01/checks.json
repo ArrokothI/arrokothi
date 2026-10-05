@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "candidate": "docs/development/work/TOOLS-01/verification.json",
   "environment": {
     "pass": [
       "PATH",
@@ -126,7 +127,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 472
+        "tests": 484
       }
     },
     {

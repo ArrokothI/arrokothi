@@ -91,6 +91,11 @@ CONTEXT_TOKEN = re.compile(r'[^\s`\x27"<>()[\]{},;]+')
 CONTEXT_LOCAL = re.compile(r'[\w.@/-]+', re.ASCII)
 CONTEXT_GITHUB = re.compile(r'https://github\.com/ArrokothI/arrokothi/blob/([0-9a-f]{7,40})/([\w.@/-]+)', re.ASCII)
 SEALED_PREFIXES = ('docs/',)
+# P1-X area gate (gate-design-01): the maintained manifest the gate reads, and its lexical names.
+ADOPTION_MANIFEST = 'tests/fixtures/packet-tools/adoption.json'
+OPEN_STATES = ('pending', 'pending_revalidation')
+AREA_PATH = re.compile(r'(?<![\w/.-])((?:docs|packages|tests|scripts|examples|mental-model)/[\w./@*-]*)')
+AREA_ROOT_FILE = re.compile(r'(?<![\w/.-])(AGENTS\.md|CLAUDE\.md|README\.md|package(?:-lock)?\.json)(?![\w/-])')
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
@@ -549,11 +554,13 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             require(row['state'] != 'pending', 'a revision-2 mapping cannot return to pending')
         # Prose triage arrives with the mentions (design 05 §6 step 11); a complete origin is checked below.
         require(row['state'] != 'triaged', 'prose triage is not implemented in this format revision: ' + key)
-    require(spec['areas'] == [], 'areas are not implemented in this format revision')
+    area_ids, area_of, tree_paths = area_map(git, rev, spec['areas'])
     claims = holds_table(git, rev, spec['holds'])
     require(set(REGISTER_MINIMUM) <= set(claims), 'P1-H claims cannot leave the holds table')
     registry, _ = scheduled_registry(git, rev, spec)
     counterexamples = counterexample_table(spec['counterexamples'], origins)
+    prose_areas(counterexamples, area_ids)
+    open_areas = origin_areas(git, spec, intake, area_ids, area_of, tree_paths)
     targets = unique_records(spec['suite_targets'], 'suite targets')
     for target in targets.values():
         require(counterexamples.get(target.get('counterexample'), {}).get('kind') == 'behavior',
@@ -628,11 +635,16 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'register': {'scope_files': len(scope), 'entries': len(register),
                          'cases': sum(key.startswith('case:') for key in register),
                          'by_classification': {f'{kind}:{claim or "-"}': count for (kind, claim), count in sorted(register_counts.items(), key=str)}},
+            'areas': {'map': len(area_ids), 'open_origins': len(open_areas),
+                      'underivable': sum(not row['derived'] for row in open_areas.values()),
+                      'open_by_area': dict(sorted(Counter(area for row in open_areas.values()
+                                                          for area in row['areas']).items()))},
             'mapping_complete': not pending, 'execution': 'not evaluated',
             'full_corpus_complete': False, 'acceptance': 'not evaluated',
             'limits': ['Semantic equivalence and non-executable classifications require source review',
                        'A complete mapping is not a passing corpus run or release of held claims',
                        'Revision-2 mappings carry no credit until revalidated (P1-R)',
+                       'Areas are derived lexically and over-include; the gate runs in verify',
                        'Preserved means the same test-side code, fixtures and assertion at C, not discrimination; '
                        'reads outside fs, by native code or in processes that drop NODE_OPTIONS are unseen',
                        'The hold register covers leaf registrations in preserved and target files and every '
@@ -2730,6 +2742,114 @@ def witness_records(counterexamples, members, claims, register):
         require(bool(linked), 'a witness lists its members: ' + key)
 
 
+def glob_pattern(glob):
+    """`**` matches any characters, `*` any characters except `/`; a glob matches a whole path."""
+    return re.compile(''.join('.*' if part == '**' else '[^/]*' if part == '*' else re.escape(part)
+                              for part in re.split(r'(\*\*|\*)', glob)) + r'\Z')
+
+
+def area_map(git, rev, areas):
+    """P1-X: an ordered, finite area map. A path's area is the first area with a matching glob, and every
+    path in the tree at C must have one."""
+    require(isinstance(areas, list) and bool(areas) and all(isinstance(row, dict) for row in areas),
+            'the area map lists its areas')
+    ids = unique_text([row.get('id') for row in areas], 'area IDs')
+    compiled = []
+    for row in areas:
+        globs = unique_text(row.get('globs'), 'area globs')
+        require(bool(globs), 'an area names its globs: ' + row['id'])
+        compiled.append((row['id'], [glob_pattern(glob) for glob in globs]))
+
+    def area_of(path):
+        return next((key for key, patterns in compiled if any(pattern.match(path) for pattern in patterns)), None)
+    paths = [path for path, entry in git.tree(rev).items() if entry[0] != '040000']
+    uncovered = [path for path in paths if area_of(path) is None]
+    require(not uncovered, f'the area map does not cover {len(uncovered)} paths at C (first: {uncovered[:3]})')
+    return ids, area_of, paths
+
+
+def origin_areas(git, spec, intake, ids, area_of, paths):
+    """P1-X (gate-design-01): each open origin's areas, from the repository paths and root files its
+    minimum context names, its own path outside docs/ and its revision-2 suite files. A name brings the
+    areas of every path at C under it; an origin that names nothing has every area."""
+    under = {}
+    for path in paths:
+        parts = path.split('/')
+        for depth in range(1, len(parts) + 1):
+            under.setdefault('/'.join(parts[:depth]), set()).add(area_of(path))
+
+    def areas_of(name):
+        name = re.sub(r'(?::\d+){1,2}$', '', name.split('#', 1)[0]).split('*', 1)[0].rstrip('/.')
+        found = under.get(name) or {area_of(name)} if name else set(ids)
+        return set(ids) if None in found else found
+    origins = {row['id']: row for row in intake['origins']}
+    result = {}
+    for row in spec['origins']:
+        if row['state'] not in OPEN_STATES:
+            continue
+        origin = origins[row['id']]
+        _, _, text = context_minimum(git, origin)
+        names = {match.group(1) for match in AREA_PATH.finditer(text)} | set(AREA_ROOT_FILE.findall(text))
+        for match in CONTEXT_LINK.finditer(text):
+            destination = match.group(1).split('#', 1)[0]
+            if destination and not re.match(r'[A-Za-z][A-Za-z0-9+.-]*:', destination):
+                names.add(posixpath.normpath(posixpath.join(posixpath.dirname(origin['path']), destination)))
+        if not origin['path'].startswith(SEALED_PREFIXES):
+            names.add(origin['path'])
+        names |= {target[len('suite.'):] for target in (row.get('legacy') or {}).get('targets', [])
+                  if target.startswith('suite.')}
+        names = {name for name in names if name != '..' and not name.startswith('../')}
+        derived = set().union(*(areas_of(name) for name in names)) if names else set(ids)
+        result[row['id']] = {'state': row['state'], 'areas': sorted(derived), 'derived': bool(names)}
+    return result
+
+
+def prose_areas(counterexamples, ids):
+    """A prose_pending record keeps its areas from the finite map (P1-X)."""
+    rows = {}
+    for key, row in counterexamples.items():
+        if row['kind'] == 'prose_pending':
+            areas = unique_text(row.get('areas', []), 'prose_pending areas')
+            require(bool(areas) and set(areas) <= set(ids), 'a prose_pending record names areas from the map: ' + key)
+            rows[key] = areas
+    return rows
+
+
+def area_gate(git, revision, verification_path, adoption_path=ADOPTION_MANIFEST):
+    """P1-X, unconditional in `verify`: the touched areas are those of B..C's changed paths and of the
+    packet's declared administrative files (F1 limits C..H to them). Every open origin and every
+    prose_pending record in a touched area blocks."""
+    rev = git.commit(revision)
+    packet = git.document(rev, verification_path)
+    base = git.commit(packet.get('base'))
+    require(git.run('rev-list', '--count', rev + '..' + base).strip() == b'0', 'the packet base is an ancestor of C')
+    changed = sorted({path for path in git.run('diff', '--name-only', '-z', '--no-renames', base, rev).decode().split('\0') if path} |
+                     set(unique_text(packet.get('administrative_files', []), 'administrative files')))
+    spec = git.document(rev, adoption_path, versions=(2,))
+    intake = inventory(git, rev, spec['inventory'])
+    ids, area_of, paths = area_map(git, rev, spec['areas'])
+    counterexamples = counterexample_table(spec['counterexamples'], {row['id']: row for row in intake['origins']})
+    prose = prose_areas(counterexamples, ids)
+    origins = origin_areas(git, spec, intake, ids, area_of, paths)
+    touched = set().union(*({area_of(path)} if area_of(path) else set(ids) for path in changed)) if changed else set()
+    blocking = {key: sorted(set(row['areas']) & touched) for key, row in origins.items() if set(row['areas']) & touched}
+    blocking_prose = {key: sorted(set(areas) & touched) for key, areas in prose.items() if set(areas) & touched}
+    return {'operation': 'gate', 'revision': rev, 'base': base,
+            'result': 'gate_blocked' if blocking or blocking_prose else 'gate_passed',
+            'changed_paths': len(changed), 'touched_areas': sorted(touched), 'areas': len(ids),
+            'open_origins': len(origins), 'underivable': sum(not row['derived'] for row in origins.values()),
+            'blocking': {'origins': len(blocking), 'prose_pending': len(blocking_prose),
+                         'by_state': dict(Counter(origins[key]['state'] for key in blocking)),
+                         'underivable': sum(not origins[key]['derived'] for key in blocking),
+                         'by_area': dict(sorted(Counter(area for areas in blocking.values() for area in areas).items()))},
+            'blocking_origins': [{'origin': key, 'state': origins[key]['state'], 'touched': areas,
+                                  'derived': origins[key]['derived']} for key, areas in sorted(blocking.items())],
+            'blocking_prose_pending': [{'record': key, 'touched': areas} for key, areas in sorted(blocking_prose.items())],
+            'acceptance': 'not evaluated',
+            'limits': ['Areas are derived lexically from minimum contexts and over-include; they are not a semantic '
+                       'impact analysis']}
+
+
 def clean_payload(git, rev):
     require(git.run('rev-parse', 'HEAD').decode().strip() == rev, 'HEAD must be payload C')
     require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')
@@ -2747,6 +2867,8 @@ def verify(git, revision, spec_path, toolchain=None):
     census = environment_census(git, rev, declaration, [row['environment'] for row in inputs.values()])
     base_environment, _ = child_environment(declaration)
     node = node_version(base_environment, git.repo)
+    require(isinstance(spec.get('candidate'), str) and bool(spec['candidate']),
+            'verify needs the packet verification spec (candidate) for the area gate')
     results = []
     for step in spec['checks']:
         print('Checking ' + step['id'], file=sys.stderr, flush=True)
@@ -2786,6 +2908,9 @@ def verify(git, revision, spec_path, toolchain=None):
                             'counts': counts, 'environment': record, 'inputs': facts,
                             **({'catalog': catalog} if catalog is not None else {}), **run})
         clean_payload(git, rev)
+    print('Checking area-gate', file=sys.stderr, flush=True)
+    gate = area_gate(git, rev, spec['candidate'])
+    results.append({'id': 'area-gate', 'operation': 'gate', 'passed': gate['result'] == 'gate_passed', 'result': gate})
     return {'operation': 'verify', 'revision': rev, 'specification': spec_path,
             'result': 'checks_passed' if all(r['passed'] for r in results) else 'attention_required',
             'environment': {'python': platform.python_version(), 'platform': platform.platform(),
@@ -2808,7 +2933,7 @@ def main():
     c.add_argument('--payload', required=True)
     c.add_argument('--head', required=True)
     c.add_argument('--spec', required=True)
-    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify', 'coverage'):
+    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify', 'coverage', 'gate'):
         child = sub.add_parser(name)
         child.add_argument('--revision', required=True)
         child.add_argument('--spec', required=True)
@@ -2825,6 +2950,8 @@ def main():
             result = coverage(git, args.revision, args.spec)
         elif args.operation == 'verify':
             result = verify(git, args.revision, args.spec)
+        elif args.operation == 'gate':
+            result = area_gate(git, args.revision, args.spec)
         else:
             result = mutations(git, args.revision, args.spec, cases_only=args.operation == 'cases')
         print(json.dumps(result, indent=2))

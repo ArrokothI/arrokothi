@@ -2,7 +2,7 @@
 import json
 import sys
 from unittest.mock import patch
-from test_packet_tools import RepositoryFixture, tool
+from test_packet_tools import RepositoryFixture, stub_area_gate, tool
 
 
 class CorpusTests(RepositoryFixture):
@@ -202,9 +202,13 @@ class DependencyTests(RepositoryFixture):
 
 
 class VerificationTests(RepositoryFixture):
+    def setUp(self):
+        super().setUp()
+        stub_area_gate(self)
+
     def fixture(self, script='print("tests 3; skips 0")'):
         self.write('check.py', script + '\n')
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'],
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'candidate': 'packet.json',
             'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'},
                             'census': {'roots': ['check.py']}}, 'checks': [{
             'id': 'unit', 'argv': [sys.executable, '-B', 'check.py'], 'timeout_seconds': 2,

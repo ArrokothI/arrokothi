@@ -4186,35 +4186,6 @@
       ]
     },
     {
-      "id": "guard.corpus_format_2.2ac5193c0e990dbd",
-      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_empty_tables",
-      "category": "tool-refusal",
-      "source": "scripts/packet_tools.py: corpus_format_2",
-      "input": {
-        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_empty_tables"
-      },
-      "files": [],
-      "argv": [
-        "python3",
-        "-B",
-        "tests/tooling/python-probe.py",
-        "guard.corpus_format_2.2ac5193c0e990dbd"
-      ],
-      "timeout_seconds": 20,
-      "output_limit_bytes": 32768,
-      "failure_exit": 17,
-      "mutants": [
-        {
-          "path": "scripts/packet_tools.py",
-          "before": "require(spec['areas'] == [], 'areas are not implemented in this format revision')",
-          "after": "pass  # tools01-ablate:2ac5193c0e990dbd",
-          "operator": "remove-refusal-check",
-          "name": "guard.corpus_format_2.2ac5193c0e990dbd",
-          "id": "mutation-cfadadc83d6268d92a4a8bb03c04f5390496be967ede2da6d90f6f73412da690"
-        }
-      ]
-    },
-    {
       "id": "guard.corpus_format_2.c3a9aefdc427a5a2",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_unmapped_revalidation",
       "category": "tool-refusal",
@@ -7923,6 +7894,180 @@
           "operator": "remove-refusal-check",
           "name": "guard.hold_register.a98e832f0c0da01f",
           "id": "mutation-aa7f1392f46029dcc575e0d573c81d6ad4a5e5902c99e13f76a000f14316f314"
+        }
+      ]
+    },
+    {
+      "id": "guard.area_map.6a49a6a733a9c860",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_empty_tables",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: area_map",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_format_two_empty_tables"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.area_map.6a49a6a733a9c860"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(areas, list) and bool(areas) and all(isinstance(row, dict) for row in areas),\n            'the area map lists its areas')",
+          "after": "pass  # tools01-ablate:6a49a6a733a9c860",
+          "operator": "remove-refusal-check",
+          "name": "guard.area_map.6a49a6a733a9c860",
+          "id": "mutation-be4fef5f3dba0d34e0b8e76092f727ffcd39b4db61c760a7fe78a18248ef1595"
+        }
+      ]
+    },
+    {
+      "id": "guard.area_map.9729128805b9b28f",
+      "assertion": "test_area_gate.AreaGateTests.test_area_map_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: area_map",
+      "input": {
+        "test": "test_area_gate.AreaGateTests.test_area_map_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.area_map.9729128805b9b28f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(globs), 'an area names its globs: ' + row['id'])",
+          "after": "pass  # tools01-ablate:9729128805b9b28f",
+          "operator": "remove-refusal-check",
+          "name": "guard.area_map.9729128805b9b28f",
+          "id": "mutation-84204d2549efe1ddd2e13b632e8ac5c210ec38d1e550049b82e09fb558ee5b22"
+        }
+      ]
+    },
+    {
+      "id": "guard.area_map.f809598b7e317166",
+      "assertion": "test_area_gate.AreaGateTests.test_corpus_needs_a_covering_area_map",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: area_map",
+      "input": {
+        "test": "test_area_gate.AreaGateTests.test_corpus_needs_a_covering_area_map"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.area_map.f809598b7e317166"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not uncovered, f'the area map does not cover {len(uncovered)} paths at C (first: {uncovered[:3]})')",
+          "after": "pass  # tools01-ablate:f809598b7e317166",
+          "operator": "remove-refusal-check",
+          "name": "guard.area_map.f809598b7e317166",
+          "id": "mutation-108f91f1557069704ea5b46fcfd4ded9e9220e5c105172def854e46674451185"
+        }
+      ]
+    },
+    {
+      "id": "guard.prose_areas.2256a615cd2b3ae1",
+      "assertion": "test_area_gate.AreaGateTests.test_a_prose_pending_record_names_areas_from_the_map",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: prose_areas",
+      "input": {
+        "test": "test_area_gate.AreaGateTests.test_a_prose_pending_record_names_areas_from_the_map"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.prose_areas.2256a615cd2b3ae1"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(areas) and set(areas) <= set(ids), 'a prose_pending record names areas from the map: ' + key)",
+          "after": "pass  # tools01-ablate:2256a615cd2b3ae1",
+          "operator": "remove-refusal-check",
+          "name": "guard.prose_areas.2256a615cd2b3ae1",
+          "id": "mutation-19de5f549025510968ec8af9796345f276f8bdc37364b83ead672342c8a5faaf"
+        }
+      ]
+    },
+    {
+      "id": "guard.area_gate.dfdee77b7c2d65e8",
+      "assertion": "test_area_gate.AreaGateTests.test_the_base_must_be_an_ancestor_of_c",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: area_gate",
+      "input": {
+        "test": "test_area_gate.AreaGateTests.test_the_base_must_be_an_ancestor_of_c"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.area_gate.dfdee77b7c2d65e8"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(git.run('rev-list', '--count', rev + '..' + base).strip() == b'0', 'the packet base is an ancestor of C')",
+          "after": "pass  # tools01-ablate:dfdee77b7c2d65e8",
+          "operator": "remove-refusal-check",
+          "name": "guard.area_gate.dfdee77b7c2d65e8",
+          "id": "mutation-fe295f8f76027afa8deae83442003860d67a9ac77c536a7ae361eacfd82450c4"
+        }
+      ]
+    },
+    {
+      "id": "guard.verify.f8e91c7a9550177b",
+      "assertion": "test_area_gate.AreaGateTests.test_verify_refuses_a_spec_without_the_packet_verification",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: verify",
+      "input": {
+        "test": "test_area_gate.AreaGateTests.test_verify_refuses_a_spec_without_the_packet_verification"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.verify.f8e91c7a9550177b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(spec.get('candidate'), str) and bool(spec['candidate']),\n            'verify needs the packet verification spec (candidate) for the area gate')",
+          "after": "pass  # tools01-ablate:f8e91c7a9550177b",
+          "operator": "remove-refusal-check",
+          "name": "guard.verify.f8e91c7a9550177b",
+          "id": "mutation-29e6e4ba29b8272242c7e2c715ef3a46133c9df092dc648a325991daa3b62a26"
         }
       ]
     }

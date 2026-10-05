@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
-from test_packet_tools import RepositoryFixture, tool
+from test_packet_tools import RepositoryFixture, stub_area_gate, tool
 from test_target_tools import pinned_toolchain
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -32,6 +32,10 @@ class CatalogFixture(RepositoryFixture):
     def setUpClass(cls):
         cls.toolchain = pinned_toolchain()
 
+    def setUp(self):
+        super().setUp()
+        stub_area_gate(self)
+
     def verify(self, rev):
         return tool.verify(self.reader, rev, 'verify.json', self.toolchain)
 
@@ -41,7 +45,7 @@ class CatalogFixture(RepositoryFixture):
         for name, text in (files or {'tests/a.test.mjs': PASSING}).items():
             self.write(name, text)
         self.document('package.json', {'type': 'module', 'scripts': {'test': script}})
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'],
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'candidate': 'packet.json',
                                       'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'},
                                                       'census': {'roots': ['tests']}},
                                       'checks': [{'id': 'repository-tests', 'catalog': {

@@ -51116,7 +51116,418 @@
       ]
     }
   },
-  "areas": [],
+  "areas": [
+    {
+      "id": "tooling",
+      "globs": [
+        "scripts/packet_tools.py",
+        "tests/tooling/**",
+        "tests/fixtures/packet-tools/**"
+      ]
+    },
+    {
+      "id": "packages/agents/strands",
+      "globs": [
+        "packages/agents/strands/**"
+      ]
+    },
+    {
+      "id": "packages/interoperability/mcp",
+      "globs": [
+        "packages/interoperability/mcp/**"
+      ]
+    },
+    {
+      "id": "packages/models/gemini",
+      "globs": [
+        "packages/models/gemini/**"
+      ]
+    },
+    {
+      "id": "packages/retrieval/local",
+      "globs": [
+        "packages/retrieval/local/**"
+      ]
+    },
+    {
+      "id": "packages/core",
+      "globs": [
+        "packages/core/**"
+      ]
+    },
+    {
+      "id": "packages/kernel",
+      "globs": [
+        "packages/kernel/**"
+      ]
+    },
+    {
+      "id": "packages/sdk",
+      "globs": [
+        "packages/sdk/**"
+      ]
+    },
+    {
+      "id": "packages",
+      "globs": [
+        "packages/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/agent",
+      "globs": [
+        "tests/conformance/agent/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/architecture",
+      "globs": [
+        "tests/conformance/architecture/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/composition",
+      "globs": [
+        "tests/conformance/composition/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/contracts",
+      "globs": [
+        "tests/conformance/contracts/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/effects",
+      "globs": [
+        "tests/conformance/effects/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/execution",
+      "globs": [
+        "tests/conformance/execution/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/interaction",
+      "globs": [
+        "tests/conformance/interaction/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/k0",
+      "globs": [
+        "tests/conformance/k0/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/mcp",
+      "globs": [
+        "tests/conformance/mcp/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/memory",
+      "globs": [
+        "tests/conformance/memory/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/models",
+      "globs": [
+        "tests/conformance/models/**"
+      ]
+    },
+    {
+      "id": "tests/conformance/workflow",
+      "globs": [
+        "tests/conformance/workflow/**"
+      ]
+    },
+    {
+      "id": "tests/archive",
+      "globs": [
+        "tests/archive/**"
+      ]
+    },
+    {
+      "id": "tests/conformance",
+      "globs": [
+        "tests/conformance/**"
+      ]
+    },
+    {
+      "id": "tests/evals",
+      "globs": [
+        "tests/evals/**"
+      ]
+    },
+    {
+      "id": "tests/fixtures",
+      "globs": [
+        "tests/fixtures/**"
+      ]
+    },
+    {
+      "id": "tests",
+      "globs": [
+        "tests/**"
+      ]
+    },
+    {
+      "id": "docs/development/work/DESIGN-AUDIT-01",
+      "globs": [
+        "docs/development/work/DESIGN-AUDIT-01/**"
+      ]
+    },
+    {
+      "id": "docs/development/work/DOCS-CLEANUP-01",
+      "globs": [
+        "docs/development/work/DOCS-CLEANUP-01/**"
+      ]
+    },
+    {
+      "id": "docs/development/work/K1.1-correction-02",
+      "globs": [
+        "docs/development/work/K1.1-correction-02/**"
+      ]
+    },
+    {
+      "id": "docs/development/work/K1.2",
+      "globs": [
+        "docs/development/work/K1.2/**"
+      ]
+    },
+    {
+      "id": "docs/development/work/K1.2-correction-01",
+      "globs": [
+        "docs/development/work/K1.2-correction-01/**"
+      ]
+    },
+    {
+      "id": "docs/development/work/PLAN-01",
+      "globs": [
+        "docs/development/work/PLAN-01/**"
+      ]
+    },
+    {
+      "id": "docs/development/work/TOOLS-01",
+      "globs": [
+        "docs/development/work/TOOLS-01/**"
+      ]
+    },
+    {
+      "id": "docs/development/work",
+      "globs": [
+        "docs/development/work/**"
+      ]
+    },
+    {
+      "id": "docs/development/research",
+      "globs": [
+        "docs/development/research/**"
+      ]
+    },
+    {
+      "id": "docs/development/001-current-status-and-roadmap.md",
+      "globs": [
+        "docs/development/001-current-status-and-roadmap.md"
+      ]
+    },
+    {
+      "id": "docs/development/002-implemented-kernel-baseline.md",
+      "globs": [
+        "docs/development/002-implemented-kernel-baseline.md"
+      ]
+    },
+    {
+      "id": "docs/development/003-evidence-and-findings.md",
+      "globs": [
+        "docs/development/003-evidence-and-findings.md"
+      ]
+    },
+    {
+      "id": "docs/development/006-development-process.md",
+      "globs": [
+        "docs/development/006-development-process.md"
+      ]
+    },
+    {
+      "id": "docs/development/007-work-packets.md",
+      "globs": [
+        "docs/development/007-work-packets.md"
+      ]
+    },
+    {
+      "id": "docs/development/008-implementation-report.md",
+      "globs": [
+        "docs/development/008-implementation-report.md"
+      ]
+    },
+    {
+      "id": "docs/development/009-universal-prompts.md",
+      "globs": [
+        "docs/development/009-universal-prompts.md"
+      ]
+    },
+    {
+      "id": "docs/development/012-review-methods.md",
+      "globs": [
+        "docs/development/012-review-methods.md"
+      ]
+    },
+    {
+      "id": "docs/development/013-structure-and-evidence-sequencing.md",
+      "globs": [
+        "docs/development/013-structure-and-evidence-sequencing.md"
+      ]
+    },
+    {
+      "id": "docs/development/014-owner-progress-summary.md",
+      "globs": [
+        "docs/development/014-owner-progress-summary.md"
+      ]
+    },
+    {
+      "id": "docs/development/015-structural-evidence-rules.md",
+      "globs": [
+        "docs/development/015-structural-evidence-rules.md"
+      ]
+    },
+    {
+      "id": "docs/development/016-process-reset.md",
+      "globs": [
+        "docs/development/016-process-reset.md"
+      ]
+    },
+    {
+      "id": "docs/development/README.md",
+      "globs": [
+        "docs/development/README.md"
+      ]
+    },
+    {
+      "id": "docs/development/archive.md",
+      "globs": [
+        "docs/development/archive.md"
+      ]
+    },
+    {
+      "id": "docs/development/kernel-ownership.md",
+      "globs": [
+        "docs/development/kernel-ownership.md"
+      ]
+    },
+    {
+      "id": "docs/development",
+      "globs": [
+        "docs/development/**"
+      ]
+    },
+    {
+      "id": "docs/guides",
+      "globs": [
+        "docs/guides/**"
+      ]
+    },
+    {
+      "id": "docs/research",
+      "globs": [
+        "docs/research/**"
+      ]
+    },
+    {
+      "id": "docs/README.md",
+      "globs": [
+        "docs/README.md"
+      ]
+    },
+    {
+      "id": "docs/future-plan.md",
+      "globs": [
+        "docs/future-plan.md"
+      ]
+    },
+    {
+      "id": "docs",
+      "globs": [
+        "docs/**"
+      ]
+    },
+    {
+      "id": "mental-model",
+      "globs": [
+        "mental-model/**"
+      ]
+    },
+    {
+      "id": "scripts",
+      "globs": [
+        "scripts/**"
+      ]
+    },
+    {
+      "id": "examples",
+      "globs": [
+        "examples/**"
+      ]
+    },
+    {
+      "id": ".env.example",
+      "globs": [
+        ".env.example"
+      ]
+    },
+    {
+      "id": ".gitignore",
+      "globs": [
+        ".gitignore"
+      ]
+    },
+    {
+      "id": "AGENTS.md",
+      "globs": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "id": "CLAUDE.md",
+      "globs": [
+        "CLAUDE.md"
+      ]
+    },
+    {
+      "id": "README.md",
+      "globs": [
+        "README.md"
+      ]
+    },
+    {
+      "id": "package-lock.json",
+      "globs": [
+        "package-lock.json"
+      ]
+    },
+    {
+      "id": "package.json",
+      "globs": [
+        "package.json"
+      ]
+    },
+    {
+      "id": "tsconfig.json",
+      "globs": [
+        "tsconfig.json"
+      ]
+    },
+    {
+      "id": "other",
+      "globs": [
+        "**"
+      ]
+    }
+  ],
   "moves": [
     {
       "from": "tests/conformance/architecture/evidence-records.test.ts",

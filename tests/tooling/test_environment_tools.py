@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from test_packet_tools import RepositoryFixture, tool
+from test_packet_tools import RepositoryFixture, stub_area_gate, tool
 
 # Inherited names a contaminated parent could carry; none may reach a declared child.
 CONTAMINANTS = {
@@ -84,10 +84,14 @@ class EnvironmentTests(RepositoryFixture):
 
 
 class CensusTests(RepositoryFixture):
+    def setUp(self):
+        super().setUp()
+        stub_area_gate(self)
+
     def spec(self, source, **declaration):
         self.write('tests/read.mjs', source)
         self.write('check.py', 'print("tests 1")\n')
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'],
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'candidate': 'packet.json',
                                       'environment': census(**declaration), 'checks': [{
                                           'id': 'unit', 'argv': [sys.executable, '-B', 'check.py'],
                                           'timeout_seconds': 10, 'output_limit_bytes': 1024,
@@ -134,6 +138,10 @@ class CensusTests(RepositoryFixture):
 
 
 class SnapshotInputTests(RepositoryFixture):
+    def setUp(self):
+        super().setUp()
+        stub_area_gate(self)
+
     def spec(self, reader, other='print("tests 1")'):
         self.write('reader.py', reader + '\n')
         self.write('other.py', other + '\n')
@@ -142,7 +150,7 @@ class SnapshotInputTests(RepositoryFixture):
                    'minimum_counts': {'tests': 1}},
                   {'id': 'without-input', 'argv': [sys.executable, '-B', 'other.py'], 'timeout_seconds': 10,
                    'output_limit_bytes': 4096, 'counts': {'tests': r'tests (\d+)'}, 'minimum_counts': {'tests': 1}}]
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'],
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'candidate': 'packet.json',
                                       'environment': census(census={'roots': ['reader.py']}),
                                       'inputs': [{'id': 'sealed', 'kind': 'git_snapshot', 'revision': self.b,
                                                   'environment': 'TOOLS01_SNAPSHOT'}],
@@ -158,7 +166,8 @@ class SnapshotInputTests(RepositoryFixture):
         with patch.dict(os.environ, {'TOOLS01_SNAPSHOT': '/nonexistent/inherited'}):
             result = tool.verify(self.reader, rev, 'verify.json')
         self.assertEqual(result['result'], 'checks_passed')
-        first, second = result['checks']
+        first, second, gate = result['checks']
+        self.assertEqual(gate['id'], 'area-gate')
         self.assertEqual(first['inputs'][0]['revision'], self.b)
         self.assertEqual(first['inputs'][0]['regular_files'], 2)
         self.assertEqual(first['environment']['inputs'], ['TOOLS01_SNAPSHOT'])

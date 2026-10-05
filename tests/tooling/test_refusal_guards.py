@@ -19,6 +19,10 @@ tool = base.tool
 
 
 class RefusalGuardTests(base.RepositoryFixture):
+    def setUp(self):
+        super().setUp()
+        base.stub_area_gate(self)  # the gate's own refusals are in test_area_gate
+
     def refuses(self, fragment, call):
         error = None
         try:
@@ -389,7 +393,7 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     def test_step_input_undeclared(self):
         self.write('tests/read.mjs', 'const x = 1;\n')
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'candidate': 'packet.json', 'checks': [
             {'id': 'unit', 'argv': ['true'], 'inputs': ['absent'], 'timeout_seconds': 5, 'output_limit_bytes': 100}],
             'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}, 'census': {'roots': ['tests']}}})
         rev = self.commit('undeclared input')
@@ -398,7 +402,7 @@ class RefusalGuardTests(base.RepositoryFixture):
     def test_step_input_changed(self):
         self.write('tests/read.mjs', 'const x = 1;\n')
         self.write('change.py', 'import os\nopen(os.path.join(os.environ["X"], "sealed.txt"), "w").write("changed")\n')
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'candidate': 'packet.json', 'checks': [
             {'id': 'unit', 'argv': [sys.executable, '-B', 'change.py'], 'inputs': ['x'], 'timeout_seconds': 10,
              'output_limit_bytes': 100}],
             'inputs': [{'id': 'x', 'kind': 'git_snapshot', 'revision': self.b, 'environment': 'X'}],
@@ -411,7 +415,7 @@ class RefusalGuardTests(base.RepositoryFixture):
         for name in files:
             self.write(name, "import { test } from 'node:test';\ntest('a', () => {});\n")
         self.document('package.json', {'type': 'module', 'scripts': {'test': script}})
-        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'checks': [
+        self.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'], 'candidate': 'packet.json', 'checks': [
             {'id': 'repository-tests', 'catalog': catalog, 'timeout_seconds': 30, 'output_limit_bytes': 65536}],
             'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}, 'census': {'roots': ['tests']}}})
         return self.commit('catalog spec')
@@ -506,7 +510,7 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.refuses('prose triage is not implemented', self.format_two(lambda d: d['origins'][1].update(state='triaged')))
 
     def test_format_two_empty_tables(self):
-        self.refuses('areas are not implemented', self.format_two(lambda d: d.update(areas=[{'id': 'x'}])))
+        self.refuses('the area map lists its areas', self.format_two(lambda d: d.update(areas=[])))
 
     def test_format_two_unmapped_revalidation(self):
         self.refuses('only a revision-2 mapping', self.format_two(lambda d: d['origins'][1].update(state='pending_revalidation')))

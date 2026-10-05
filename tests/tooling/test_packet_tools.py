@@ -8,11 +8,19 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import unittest.mock
 
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location('packet_tools', Path(__file__).resolve().parents[2] / 'scripts/packet_tools.py')
 tool = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(tool)
+
+
+def stub_area_gate(case):
+    """Verify tests that are not about P1-X: the gate is stubbed; test_area_gate runs the real one."""
+    patcher = unittest.mock.patch.object(tool, 'area_gate', lambda git, rev, path: {'operation': 'gate', 'result': 'gate_passed'})
+    patcher.start()
+    case.addCleanup(patcher.stop)
 
 
 class RepositoryFixture(unittest.TestCase):
@@ -55,7 +63,7 @@ class RepositoryFixture(unittest.TestCase):
         return {'holds': {'claims': claims, 'register': {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),
                                                          'entries': []}},
                 'moves': [], 'floor': {'record': 'floor.json.gz', 'sha256': tool.digest(record), 'order_model_holds': False},
-                'helper_reviews': []}
+                'helper_reviews': [], 'areas': [{'id': 'other', 'globs': ['**']}]}
 
     def candidate_pair(self, **changes):
         data = {'version': 1, 'base': self.b, 'require_direct_parent': True,

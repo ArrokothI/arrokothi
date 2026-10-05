@@ -294,6 +294,32 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   mandatory candidates are refused. Production files a test
   reads are targets, not context; they are reasoned.
 
+## Area map and gate
+
+P1-X and owner choice 04 §3; the design is
+[gate-design-01](../../docs/development/work/TOOLS-01/gate-design-01.md).
+
+- **Area map.** `areas` in `adoption.json` is an ordered list of `{id, globs}`. A path's area is the
+  first area with a matching glob: `**` matches anything, `*` matches anything but `/`. `corpus` refuses
+  a map that leaves any path at C uncovered. The last area, `other`, is `**`.
+- **Open origins' areas.** `corpus` reports the areas of every `pending` or `pending_revalidation`
+  origin. They are derived lexically, at C, from four sources:
+  - the repository paths and root files named in the origin's minimum context;
+  - relative Markdown links in that context;
+  - the origin's own path, when it is outside `docs/`;
+  - its revision-2 suite files.
+
+  A name covers every path under it. An origin that names nothing has every area. A
+  `prose_pending` record stores its areas, which must come from the map.
+- **Gate.** `verify` always runs `area-gate` after its checks, from the maintained manifest
+  `tests/fixtures/packet-tools/adoption.json` at C. The verify spec's `candidate` field names the
+  packet's `verification.json`, and `verify` refuses a spec without one.
+  - The touched areas are those of the paths changed from that file's `base` to C, plus its
+    administrative files (F1 limits C..H to them). The base must be an ancestor of C.
+  - The gate blocks while a touched area holds an open origin or a `prose_pending` record, and it
+    lists each one.
+  - `packet_tools.py gate --revision C --spec <verification.json>` runs it alone.
+
 ## Isolation, inputs and identities
 
 `mutations` copies registered ordinary files into a new temporary directory for every control,
