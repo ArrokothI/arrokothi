@@ -278,7 +278,12 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   an extra LF adds an empty line. Empty files use context endpoint 1. Fence bodies retain their
   non-LF bytes when their digest is checked.
   Every sealed record under `docs/` that this text names, followed transitively, must be covered as a
-  whole file. A reason cannot waive a named sealed record or its dependencies. Every other path or
+  whole file. Supported references are bare repository-root paths, simple relative Markdown
+  destinations resolved against the referring file, and `https://github.com/ArrokothI/arrokothi/blob/<sha>/<path>`
+  links (7–40 hexadecimal commit characters, resolved to a full commit). Fragments are stripped.
+  Traversal retains the referring revision and path; cycles use that pair. Unsupported forms naming
+  a required record, missing records and symlinks refuse; this is not a general Markdown resolver.
+  A reason cannot waive a named sealed record or its dependencies. Every other path or
   revision candidate in it must be covered, or reasoned in `context_reasons`; reasons for absent or
   mandatory candidates are refused. Production files a test
   reads are targets, not context; they are reasoned.

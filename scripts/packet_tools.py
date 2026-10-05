@@ -21,6 +21,8 @@ import sys
 import tempfile
 import time
 import platform
+import posixpath
+from urllib.parse import unquote
 from itertools import product
 from math import prod
 
@@ -68,6 +70,10 @@ CLOSURE_LINKS = ('target', 'counterexample', 'family', 'case', 'member')
 NON_EXECUTABLE_REASONS = ('policy', 'historical_command', 'record', 'unavailable_source')
 CONTEXT_PATH = re.compile(r'(?<![\w/.-])((?:docs|packages|tests|scripts|examples|mental-model)/[\w./@-]*\w)')
 CONTEXT_SHA = re.compile(r'(?<![0-9A-Za-z])([0-9a-f]{7,40})(?![0-9A-Za-z])')
+CONTEXT_LINK = re.compile(r'\[[^\]\n]*\]\(([^)\n]*)\)')
+CONTEXT_TOKEN = re.compile(r'[^\s`\x27"<>()[\]{},;]+')
+CONTEXT_LOCAL = re.compile(r'[\w.@/-]+', re.ASCII)
+CONTEXT_GITHUB = re.compile(r'https://github\.com/ArrokothI/arrokothi/blob/([0-9a-f]{7,40})/([\w.@/-]+)', re.ASCII)
 SEALED_PREFIXES = ('docs/',)
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
@@ -2520,6 +2526,56 @@ def context_minimum(git, origin):
     return start, end, '\n'.join(lines[start - 1:end])
 
 
+def context_references(git, revision, referring_path, text):
+    """A deliberately small reference language, not a Markdown resolver. Required records
+    are classified only after normalization. Unsupported spellings of record references refuse."""
+    references, masked = [], list(text)
+    for match in CONTEXT_LINK.finditer(text):
+        references.append((match.group(1), True))
+        masked[match.start():match.end()] = ' ' * (match.end() - match.start())
+    remaining = ''.join(masked)
+    references.extend((match.group().rstrip('.:'), False) for match in CONTEXT_TOKEN.finditer(remaining))
+    required, candidates = set(), set()
+    for raw, markdown in references:
+        destination = raw.split('#', 1)[0]
+        if not destination:
+            continue
+        qualified = CONTEXT_GITHUB.fullmatch(destination)
+        local = CONTEXT_LOCAL.fullmatch(destination)
+        root = CONTEXT_PATH.fullmatch(destination)
+        path = posixpath.normpath(posixpath.join(posixpath.dirname(referring_path), destination))
+        decoded = unquote(destination).replace('\\', '/')
+        record_like = ('docs/' in decoded or path.startswith(SEALED_PREFIXES) and
+                       (markdown or git.tree(revision).get(path, ('',))[0] in
+                        ('100644', '100755', '120000')))
+        if qualified:
+            pin, path = qualified.groups()
+            reference_revision = git.commit(git.run('rev-parse', '--verify', pin + '^{commit}').decode().strip())
+            supported = posixpath.normpath(path) == path
+        else:
+            reference_revision = revision
+            if not markdown and root:
+                path = destination
+            supported = bool(local and not destination.startswith('/') and
+                             not path.startswith('../') and (markdown or root))
+        require(not record_like or supported, 'unsupported sealed-record reference: ' + raw)
+        if not supported:
+            continue
+        entry = git.tree(reference_revision).get(path)
+        if path.startswith(SEALED_PREFIXES) and (entry is None or entry[0] != '040000'):
+            # Missing files and symlinks must not become reasonable-away candidates.
+            git.blob(reference_revision, path)
+            required.add((reference_revision, path))
+        elif root or markdown:
+            candidates.add(path)
+    candidates.update(sha for sha in CONTEXT_SHA.findall(remaining)
+                      if re.search('[a-f]', sha) and re.search('[0-9]', sha))
+    # Qualified references consume their revision as part of the reference, not as a free SHA.
+    for match in CONTEXT_GITHUB.finditer(remaining):
+        candidates.discard(match.group(1))
+    return required, candidates
+
+
 def context_check(git, origin, closure):
     """Recorded ranges cover the minimum context and every sealed record it names, transitively;
     every other path or revision candidate in that text is covered or reasoned."""
@@ -2537,28 +2593,29 @@ def context_check(git, origin, closure):
                    for row in ranges)
     start, end, text = context_minimum(git, origin)
     require(covers(origin['revision'], origin['path'], start, end), 'the context does not cover the minimum: ' + origin['id'])
-    seen, queue, used = set(), [text], set()
+    seen, candidates_seen, used = set(), set(), set()
+    queue = [(origin['revision'], origin['path'], text)]
     while queue:
-        current = queue.pop()
-        for candidate in sorted(set(CONTEXT_PATH.findall(current)) | {sha for sha in CONTEXT_SHA.findall(current)
-                                                                      if re.search('[a-f]', sha) and re.search('[0-9]', sha)}):
-            if candidate in seen:
+        revision, referring_path, current = queue.pop()
+        required, candidates = context_references(git, revision, referring_path, current)
+        for identity in sorted(required):
+            if identity in seen:
                 continue
-            seen.add(candidate)
-            entry = git.tree(origin['revision']).get(candidate)
-            # Required sealed dependencies cannot be waived by the reason map for other candidates.
-            if entry is not None and entry[0] == '100644' and candidate.startswith(SEALED_PREFIXES):
-                record = git.blob(origin['revision'], candidate)
-                require(covers(origin['revision'], candidate, 1, max(len(source_lines(record)), 1)),
-                        'a named sealed record is outside the context: ' + candidate)
-                queue.append(record.decode('utf-8', 'replace'))
-            elif candidate in reasons:
+            seen.add(identity)
+            reference_revision, path = identity
+            record = git.blob(reference_revision, path)
+            require(covers(reference_revision, path, 1, max(len(source_lines(record)), 1)),
+                    'a named sealed record is outside the context: ' + path + '@' + reference_revision)
+            queue.append((reference_revision, path, record.decode('utf-8', 'replace')))
+        for candidate in sorted(candidates):
+            candidates_seen.add(candidate)
+            if candidate in reasons:
                 used.add(candidate)
             else:
                 require(any(row['path'] == candidate or row['revision'].startswith(candidate) for row in ranges),
                         'an unreasoned path or revision candidate in the context: ' + candidate)
     require(set(reasons) <= used, 'context reasons name absent or mandatory candidates: ' + origin['id'])
-    return {'ranges': len(ranges), 'candidates': len(seen), 'reasoned': len(used)}
+    return {'ranges': len(ranges), 'candidates': len(seen) + len(candidates_seen), 'reasoned': len(used)}
 
 
 def origin_closure(git, rev, key, row, origin, facts):

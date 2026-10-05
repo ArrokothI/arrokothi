@@ -7367,11 +7367,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(covers(origin['revision'], candidate, 1, max(len(source_lines(record)), 1)),\n                        'a named sealed record is outside the context: ' + candidate)",
+          "before": "require(covers(reference_revision, path, 1, max(len(source_lines(record)), 1)),\n                    'a named sealed record is outside the context: ' + path + '@' + reference_revision)",
           "after": "pass  # tools01-ablate:557d3f1c1daa356e",
           "operator": "remove-refusal-check",
           "name": "guard.context_check.557d3f1c1daa356e",
-          "id": "mutation-5cc08b296b80bfedb4fe81b44c6aa12c07ea970fab4cd2b37d7f13df3b80f7b7"
+          "id": "mutation-b91a5d5ea679dba135a83cb98cf7403df8262701e54fe690d1d6882ccfcad321"
         }
       ]
     },
@@ -7836,6 +7836,35 @@
           "operator": "remove-refusal-check",
           "name": "guard.witness_records.55307ea19e8bb29a",
           "id": "mutation-99b196e290afa852d8c2e7273918e250cafd689487e0fbc632da2328d66e3d65"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_references.15f230d04083c872",
+      "assertion": "test_context_references.ContextReferenceTests.test_unsupported_record_forms_refuse_with_declared_error",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_references",
+      "input": {
+        "test": "test_context_references.ContextReferenceTests.test_unsupported_record_forms_refuse_with_declared_error"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_references.15f230d04083c872"
+      ],
+      "timeout_seconds": 30,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not record_like or supported, 'unsupported sealed-record reference: ' + raw)",
+          "after": "pass  # tools01-ablate:15f230d04083c872",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_references.15f230d04083c872",
+          "id": "mutation-b3b536676355cb491abec23c33a7bb584f8b77da0ddf8a4a96d24e90c82241c6"
         }
       ]
     }
