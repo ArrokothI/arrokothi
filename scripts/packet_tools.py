@@ -52,11 +52,23 @@ NODE_BUILTINS = {'assert', 'async_hooks', 'buffer', 'child_process', 'crypto', '
                  'net', 'os', 'path', 'perf_hooks', 'process', 'readline', 'stream', 'string_decoder', 'test', 'timers',
                  'url', 'util', 'vm', 'worker_threads', 'zlib'}
 REGISTER_CLASSES = ('held', 'superseded', 'not_held')
+# CONT-05: property writes on named intrinsics, plus conservative prototype/helper aliases.
+VENV_INTRINSICS = (r'(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|'
+                   r'Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|'
+                   r'Map|Set|WeakMap|WeakSet|WeakRef|FinalizationRegistry|Promise|ArrayBuffer|SharedArrayBuffer|'
+                   r'DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|'
+                   r'Float16Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|JSON|Math|Reflect|Atomics|Intl|WebAssembly)')
+VENV_PROPERTY_WRITE = (
+    r'\b(?:Object|Reflect)\s*\.\s*(?:definePropert(?:y|ies)|assign|set)\s*\(\s*' + VENV_INTRINSICS +
+    r'(?:\s*\.\s*prototype)?\s*,'
+    r'|\b' + VENV_INTRINSICS + r'(?:\s*\.\s*prototype)?\s*(?:\.\s*\w+|\[[^\]\n]+\])\s*=(?!=|>)'
+    r'|(?s:(?=.*(?:\b' + VENV_INTRINSICS + r'\s*\.\s*prototype\b|getPrototypeOf\s*\(\s*\[\s*\]))'
+    r'(?=.*\b(?:Object|Reflect)\s*\.\s*definePropert(?:y|ies)\s*\())')
 # D05-CHK-05: the minimum hold-register recipes; a manifest may widen them, never narrow them.
 REGISTER_MINIMUM = {
     'Proxy': {'body': r'new Proxy|Proxy\.revocable'},
     're-prototyped-built-in': {'body': r'setPrototypeOf|__proto__|Object\.create\('},
-    'V-ENV': {'body': r'\bvm\b|createContext|runInContext|frozen-intrinsics|globalThis'},
+    'V-ENV': {'body': r'\bvm\b|createContext|runInContext|frozen-intrinsics|globalThis|' + VENV_PROPERTY_WRITE},
     'V-D1': {'title': r'V-D1', 'files': ['packages/kernel/tests/value-diagnostic-work.test.ts',
                                          'packages/kernel/tests/value-refusal-cost.test.ts']},
 }
