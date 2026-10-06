@@ -87,6 +87,12 @@
         "named_tests": [
           "report: enter a protocol hold / completed / returned value"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -120,6 +126,12 @@
         "named_tests": [
           "report: enter a protocol hold / completed / view"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -153,6 +165,12 @@
         "named_tests": [
           "report: enter a protocol hold / completed / next refusal position"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -186,6 +204,12 @@
         "named_tests": [
           "report: enter a protocol hold / completed / next acceptance position"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -219,6 +243,12 @@
         "named_tests": [
           "a refusal that leaves the setup grant unauthorized is a violation"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -252,6 +282,12 @@
         "named_tests": [
           "at another position, returned and retained alike"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -285,6 +321,12 @@
         "named_tests": [
           "naming another Execution, returned and retained alike"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -318,6 +360,12 @@
         "named_tests": [
           "a located exception in a scenario whose uninjected call does not accept"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -351,6 +399,12 @@
         "named_tests": [
           "a fault that did not fire, and a repeat in which one did"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -384,6 +438,12 @@
         "named_tests": [
           "a run whose faulted operation is not the reference run's"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -417,6 +477,12 @@
         "named_tests": [
           "a fault that did not fire, and a repeat in which one did"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -450,6 +516,12 @@
         "named_tests": [
           "a fault after the safety callback, in a run where it did not run"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -483,6 +555,12 @@
         "named_tests": [
           "a delivery row left absent, at the capability's freeze"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -516,6 +594,12 @@
         "named_tests": [
           "the takeover window's receipt-only state, outside the clearing append"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -549,6 +633,12 @@
         "named_tests": [
           "an Outcome prefix, outside the apply window"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -582,6 +672,12 @@
         "named_tests": [
           "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -615,6 +711,12 @@
         "named_tests": [
           "a declared apply sequence that no longer matches the source"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -648,6 +750,12 @@
         "named_tests": [
           "an Outcome decision the declared apply sequence cannot reproduce"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -681,6 +789,12 @@
         "named_tests": [
           "an uninjected call that did not take its declared exit"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -714,6 +828,12 @@
         "named_tests": [
           "a refusal that also revokes the grant"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -747,6 +867,12 @@
         "named_tests": [
           "a refusal naming no Execution that consumes a position"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -780,6 +906,12 @@
         "named_tests": [
           "an idempotent answer that changed the history"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -813,6 +945,12 @@
         "named_tests": [
           "an exact replay returning another decision"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -846,6 +984,12 @@
         "named_tests": [
           "a recovery answer that disagrees with the holds it left"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -879,6 +1023,12 @@
         "named_tests": [
           "a takeover answer with another receipt"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -912,6 +1062,12 @@
         "named_tests": [
           "an Outcome answer naming other Emissions"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -945,6 +1101,12 @@
         "named_tests": [
           "a scenario that does not take its declared exit"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -978,6 +1140,12 @@
         "named_tests": [
           "an exit no scenario takes"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {
@@ -1011,6 +1179,12 @@
         "named_tests": [
           "an exit no scenario takes"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {

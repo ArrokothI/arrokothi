@@ -182,3 +182,29 @@ class LimitTests(RepositoryFixture):
         self.members['m.listed']['origins'] = ['o.other']
         self.lists[tool.LIMIT_DECISION]['o.limited']['members'] = 3
         self.refuses('an unbound-member list entry lies outside the limited origins', self.limit)
+
+
+class RepositoryLimitTests(RepositoryFixture):
+    """The maintained manifest: owner choices 04 and 05 pin their lists, and owner choice 04's limit admits
+    exactly the two extras design 06 names as positive controls, each through its target record."""
+
+    def test_the_manifest_pins_both_lists_and_maps_both_extras(self):
+        import json
+        from test_target_tools import ROOT
+        manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
+        lists = {row['decision']: row for row in manifest['transfer_lists']}
+        self.assertEqual(sorted(lists), [tool.LIMIT_DECISION, 'docs/development/work/TOOLS-01/owner-choice-05.md'])
+        for decision, row in lists.items():
+            listed = {item['origin'] for item in json.loads((ROOT / row['list']).read_text())}
+            self.assertEqual(tool.digest((ROOT / row['list']).read_bytes()), row['sha256'])
+            self.assertEqual(listed, {item['origin'] for item in manifest['transferred'] if item['decision'] == decision})
+        extras = {row['origin']: row['limited']['extras'] for row in manifest['transferred'] if 'limited' in row}
+        self.assertEqual(len(extras), 4)
+        self.assertEqual(extras.pop('artifact-73555fe668cc180905b1e49a'), [
+            {'member': 'packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab', 'target': 'target.dispatch.1363.3.5a8d958ffdab'},
+            {'member': 'packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab', 'target': 'target.dispatch.1426.3.5a8d958ffdab'}])
+        self.assertEqual(list(extras.values()), [[], [], []])
+        targets = {row['id']: row for row in manifest['suite_targets']}
+        self.assertEqual({key: [targets[key]['declaration']['line'], targets[key]['declaration']['column']]
+                          for key in ('target.dispatch.1363.3.5a8d958ffdab', 'target.dispatch.1426.3.5a8d958ffdab')},
+                         {'target.dispatch.1363.3.5a8d958ffdab': [1390, 3], 'target.dispatch.1426.3.5a8d958ffdab': [1459, 3]})
