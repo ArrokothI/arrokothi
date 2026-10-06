@@ -3,19 +3,19 @@ packages/kernel/tests/refusal-diagnostics-fixture.ts @ 66bc041175e6fc191c2e7cf88
 2: import assert from "node:assert/strict";
 3: import { ExecutionCoordinator, type ExecutionView, type RefusalRecord, type SubmissionGrant } from "../src/index.ts";
 4: import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-5: 
+5:
 6: const absent = undefined as unknown as SubmissionGrant;
 7: const available = {
 8:   definitionRevisions: ["weekly-report@3"],
 9:   runtimeContractRevisions: ["runtime-contract@1"],
 10:   progressCodecs: ["inline-json@1"],
 11: };
-12: 
+12:
 13: export function assertDiagnostic(reason: string, limit = 1_024): void {
 14:   assert.ok(reason.length > 0 && reason.length <= limit, `diagnostic length ${reason.length} exceeds ${limit}`);
 15:   assert.match(reason, /^[\x20-\x7e]*$/, "identity diagnostics retain only printable ASCII");
 16: }
-17: 
+17:
 18: export function assertOnlyRefusal(before: ExecutionView, after: ExecutionView, refusal: RefusalRecord): void {
 19:   assert.equal(after.refusals.length, before.refusals.length + 1, "exactly one refusal appended");
 20:   assert.strictEqual(after.refusals.at(-1), refusal, "returned object is the retained refusal");
@@ -25,7 +25,7 @@ packages/kernel/tests/refusal-diagnostics-fixture.ts @ 66bc041175e6fc191c2e7cf88
 24:   const { refusals: _afterRefusals, ...newState } = after;
 25:   assert.deepEqual(newState, oldState, "whole accepted view, holds, history, delivery and receipts unchanged");
 26: }
-27: 
+27:
 28: /** 3 lifecycle states x (visibility-only Outcome + 3 powered controls + 3 visibility-only controls). */
 29: export function runBoundaryDiagnosticSchedule(identity: string, observed?: (caseName: string) => void): number {
 30:   let cases = 0;

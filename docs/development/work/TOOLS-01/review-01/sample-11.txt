@@ -25,11 +25,11 @@ packages/kernel/tests/sweep/zone-names.ts @ 66bc041175e6fc191c2e7cf88de198111e7d
 24:  * What the set cannot contain is a name the zone builds at run time from something other than a
 25:  * literal. The zone builds exactly one kind: list positions (`${index}`), bounded above.
 26:  */
-27: 
+27:
 28: import { readdirSync, readFileSync } from "node:fs";
 29: import { resolve } from "node:path";
 30: import ts from "typescript";
-31: 
+31:
 32: /**
 33:  * Names the engine reads without the zone spelling them, with the operation that reads each.
 34:  * A zone read of any of them through a built-in prototype is a live prototype method or an implicit
@@ -59,19 +59,19 @@ packages/kernel/tests/sweep/zone-names.ts @ 66bc041175e6fc191c2e7cf88de198111e7d
 58:   ["cause", "error options"],
 59:   ["prototype", "constructor prototypes"],
 60: ];
-61: 
+61:
 62: /** The small list positions the sweep poisons. */
 63: export const INDEX_NAMES: readonly string[] = Array.from({ length: 16 }, (_unused, index) => `${index}`);
-64: 
+64:
 65: /**
 66:  * Never poisoned: `__proto__` is the accessor every ordinary `[[GetPrototypeOf]]` spelling goes
 67:  * through, and replacing it would change what `obj.__proto__` means for the test code the sweep
 68:  * runs, not only for the zone. The zone never spells it.
 69:  */
 70: export const NEVER_POISONED: ReadonlySet<string | symbol> = new Set(["__proto__"]);
-71: 
+71:
 72: const IDENTIFIER_LIKE = /^[A-Za-z_$][\w$]*$/;
-73: 
+73:
 74: /** Every name one zone source spells in a member position (see the module comment). */
 75: function spelledNames(fileName: string, text: string, into: Set<string>): void {
 76:   const source = ts.createSourceFile(fileName, text, ts.ScriptTarget.Latest, true);
@@ -102,14 +102,14 @@ packages/kernel/tests/sweep/zone-names.ts @ 66bc041175e6fc191c2e7cf88de198111e7d
 101:   };
 102:   visit(source);
 103: }
-104: 
+104:
 105: /** The zone's 13 sources, sorted, as absolute paths. */
 106: export const zoneSources = (sourceRoot: string): string[] =>
 107:   readdirSync(sourceRoot)
 108:     .filter((name) => name.endsWith(".ts"))
 109:     .sort()
 110:     .map((name) => resolve(sourceRoot, name));
-111: 
+111:
 112: /** The complete poisoned name set for the zone at `sourceRoot`, spelled names first. */
 113: export function zoneMemberNames(sourceRoot: string): (string | symbol)[] {
 114:   const spelled = new Set<string>();
@@ -119,13 +119,13 @@ packages/kernel/tests/sweep/zone-names.ts @ 66bc041175e6fc191c2e7cf88de198111e7d
 118:   for (const name of INDEX_NAMES) if (!names.includes(name)) names.push(name);
 119:   return names.filter((name) => !NEVER_POISONED.has(name));
 120: }
-121: 
+121:
 122: /** The six property-descriptor fields, which the whole-suite sweep leaves to the catalog sweep. */
 123: export const DESCRIPTOR_FIELDS: readonly string[] = ["value", "writable", "get", "set", "enumerable", "configurable"];
-124: 
+124:
 125: /** Names travel between processes as text; a well-known symbol as `@@<its name>`. */
 126: export const encodeName = (name: string | symbol): string =>
 127:   typeof name === "symbol" ? `@@${(name.description ?? "").replace(/^Symbol\./, "")}` : name;
-128: 
+128:
 129: export const decodeName = (name: string): string | symbol =>
 130:   name.startsWith("@@") ? ((Symbol as unknown as Record<string, symbol>)[name.slice(2)] as symbol) : name;

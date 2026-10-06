@@ -40,12 +40,12 @@ The implementer applied this diff to [contract.md](contract.md) in the commit th
 @@ -1,2 +1,2 @@
 -# TOOLS-01 contract — revision 8
 +# TOOLS-01 contract — revision 9
- 
+
 @@ -18,2 +18,4 @@ the gate advisory for every packet. [Owner choice 08](owner-choice-08.md) holds
  by record, transfers its per-test classification to BINDING-01, and sets this round's correction route.
 +[Owner choice 09](owner-choice-09.md) withholds kills from the target-set route in TOOLS-01 and moves
 +the design of its qualifying-assertion evidence to TOOLS-02.
- 
+
 @@ -23,3 +25,3 @@ by record, transfers its per-test classification to BINDING-01, and sets this ro
  | F2 | Preserve the complete pinned origin inventory and stable provenance IDs. Adoption format 2 links origins to distinct counterexample records and family members. Pinned records outside the inventory may be cited as sealed sources, never as origins. Include all final-review additions. | Recompute 208 artifact/fence digests, 1,333 prose locations and eight additions. Exact-set checks reject missing, duplicate, corrupt or dangling origin, member and sealed-source links. Pending, triaged and revalidation states stay visible. Provenance completeness is not executable adoption. |
 -| F3 | Provide a versioned case/mutation registry and isolated runner with a passing control, uniquely applicable single- or multi-edit mutations, reached witness and a named qualifying assertion from the member's declared target set. | Existing controls plus multi-edit, wrong-kill and target-set controls. Survived, uncovered, invalid baseline, not applicable, setup error, timeout, output-limit and malformed-result categories stay. No process exit, reading argument, census or family count earns a kill. |

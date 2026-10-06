@@ -9,12 +9,12 @@ packages/kernel/tests/unsupported.test.ts @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d
 8:  * The example surface changed with K1.1: `createExecution` is implemented now, so the refusal cases
 9:  * name `acceptOutcome`/`submitOutcome`, which K1.2 owns.
 10:  */
-11: 
+11:
 12: import { test, describe } from "node:test";
 13: import assert from "node:assert/strict";
-14: 
+14:
 15: import { UnsupportedKernelSurfaceError, refuseUnsupportedSurface } from "../src/index.ts";
-16: 
+16:
 17: describe("target Kernel scaffolding", () => {
 18:   test("an unimplemented surface throws rather than returning anything", () => {
 19:     let returned: unknown = "sentinel";
@@ -23,7 +23,7 @@ packages/kernel/tests/unsupported.test.ts @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d
 22:     }, UnsupportedKernelSurfaceError);
 23:     assert.equal(returned, "sentinel", "the refusal never produced a value a caller could act on");
 24:   });
-25: 
+25:
 26:   test("the refusal names the surface and the packet that owns implementing it", () => {
 27:     try {
 28:       refuseUnsupportedSurface("acceptOutcome", "K1.2");
@@ -37,12 +37,12 @@ packages/kernel/tests/unsupported.test.ts @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d
 36:       assert.match(error.message, /K1\.2 owns this surface/);
 37:     }
 38:   });
-39: 
+39:
 40:   test("the refusal points at the supported implementation instead of leaving a dead end", () => {
 41:     const error = new UnsupportedKernelSurfaceError("registerWait", "K1.3");
 42:     assert.match(error.message, /@arrokothi\/core, which is explicitly legacy/);
 43:   });
-44: 
+44:
 45:   test("the package exports exactly the K1.1 surface and nothing that could look like a later packet's", async () => {
 46:     const surface = await import("../src/index.ts");
 47:     assert.deepEqual(Object.keys(surface).sort(), [

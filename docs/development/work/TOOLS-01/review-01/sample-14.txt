@@ -17,14 +17,14 @@ docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc1
 16: import { tmpdir } from "node:os";
 17: import { join, resolve } from "node:path";
 18: import ts from "typescript";
-19: 
+19:
 20: const root = process.cwd();
 21: const ORACLE = "packages/kernel/tests/sweep/fault-oracle.ts";
 22: const CONTROLS = "packages/kernel/tests/fault-oracle.test.ts";
-23: 
+23:
 24: /** Comparisons whose mutant may survive, with the reason. None is expected. */
 25: const NOT_NEEDED = new Map([]);
-26: 
+26:
 27: const source = readFileSync(join(root, ORACLE), "utf8");
 28: const file = ts.createSourceFile(ORACLE, source, ts.ScriptTarget.Latest, true);
 29: const entries = [];
@@ -43,11 +43,11 @@ docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc1
 42: assert.ok(entries.length > 0, "CHECKS found");
 43: console.log(`ENV node=${process.version} platform=${process.platform} arch=${process.arch} oracle-comparisons=${entries.length}`);
 44: console.log(`CHECKS: ${entries.map((entry) => entry.name).join(", ")}`);
-45: 
+45:
 46: const snapshot = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-"));
 47: cpSync(join(root, "packages/kernel"), join(snapshot, "packages/kernel"), { recursive: true });
 48: for (const name of ["package.json", "tsconfig.json"]) cpSync(join(root, name), join(snapshot, name));
-49: 
+49:
 50: const controls = (replacement) => {
 51:   const dir = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-mutant-"));
 52:   try {
@@ -64,7 +64,7 @@ docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc1
 63:     rmSync(dir, { recursive: true, force: true });
 64:   }
 65: };
-66: 
+66:
 67: let failures = 0;
 68: try {
 69:   const clean = controls(null);
@@ -107,14 +107,14 @@ docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc1
 16: import { tmpdir } from "node:os";
 17: import { join, resolve } from "node:path";
 18: import ts from "typescript";
-19: 
+19:
 20: const root = process.cwd();
 21: const ORACLE = "packages/kernel/tests/sweep/fault-oracle.ts";
 22: const CONTROLS = "packages/kernel/tests/fault-oracle.test.ts";
-23: 
+23:
 24: /** Comparisons whose mutant may survive, with the reason. None is expected. */
 25: const NOT_NEEDED = new Map([]);
-26: 
+26:
 27: const source = readFileSync(join(root, ORACLE), "utf8");
 28: const file = ts.createSourceFile(ORACLE, source, ts.ScriptTarget.Latest, true);
 29: const entries = [];
@@ -133,11 +133,11 @@ docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc1
 42: assert.ok(entries.length > 0, "CHECKS found");
 43: console.log(`ENV node=${process.version} platform=${process.platform} arch=${process.arch} oracle-comparisons=${entries.length}`);
 44: console.log(`CHECKS: ${entries.map((entry) => entry.name).join(", ")}`);
-45: 
+45:
 46: const snapshot = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-"));
 47: cpSync(join(root, "packages/kernel"), join(snapshot, "packages/kernel"), { recursive: true });
 48: for (const name of ["package.json", "tsconfig.json"]) cpSync(join(root, name), join(snapshot, name));
-49: 
+49:
 50: const controls = (replacement) => {
 51:   const dir = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-mutant-"));
 52:   try {
@@ -154,7 +154,7 @@ docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc1
 63:     rmSync(dir, { recursive: true, force: true });
 64:   }
 65: };
-66: 
+66:
 67: let failures = 0;
 68: try {
 69:   const clean = controls(null);

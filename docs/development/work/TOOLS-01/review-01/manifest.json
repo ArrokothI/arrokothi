@@ -79,8 +79,8 @@
     },
     {
       "path": "sample-01.txt",
-      "bytes": 12730,
-      "sha256": "822db51131b3adab93753252a3e1bd5e37a0de165a8338451a2fe8e346781fbd"
+      "bytes": 12714,
+      "sha256": "6e25712911b8a6d983d3c6faa94f0e3411add54814be4751eff859a5aef77e34"
     },
     {
       "path": "sample-02.json",
@@ -89,8 +89,8 @@
     },
     {
       "path": "sample-02.txt",
-      "bytes": 19770,
-      "sha256": "892dfecd3a2de61623bb40333663172e65166a42d948c6ac614f10863d12a287"
+      "bytes": 19723,
+      "sha256": "7a4aab3dd6b7f123939201f63ae92808b48f0ad0d1d9a90511830d49bff40fcf"
     },
     {
       "path": "sample-03.json",
@@ -99,8 +99,8 @@
     },
     {
       "path": "sample-03.txt",
-      "bytes": 19558,
-      "sha256": "c836a74a52a6473a4d788901e6a9379bfb8d7a592179633a54aad250aba2a198"
+      "bytes": 19512,
+      "sha256": "0a2eddbe85db2126e8d963a58f14986dfc8c13730b2bf11ba8dfd530f0fedccd"
     },
     {
       "path": "sample-04.json",
@@ -109,8 +109,8 @@
     },
     {
       "path": "sample-04.txt",
-      "bytes": 3395,
-      "sha256": "3c2a199656f4b473a1c173d28026338465beee14b65fabf84b1ac8933642c678"
+      "bytes": 3389,
+      "sha256": "064c759582966bec976142aadb62e5f261d21c866afe3ec885d8878802839b31"
     },
     {
       "path": "sample-05.json",
@@ -119,8 +119,8 @@
     },
     {
       "path": "sample-05.txt",
-      "bytes": 2704,
-      "sha256": "d3ce45e8fe4786ac0c0f56f3f7db2f56100f70362b9477e43c269d4b1ffd0017"
+      "bytes": 2697,
+      "sha256": "83f826d8bcf5e628c567058edfae46a00121214f44565df097e319d34f741831"
     },
     {
       "path": "sample-06.json",
@@ -129,8 +129,8 @@
     },
     {
       "path": "sample-06.txt",
-      "bytes": 2837,
-      "sha256": "76b787457c5627c8a5f376a7fee73e7b619323a376bf4cd662d54c1a404c158f"
+      "bytes": 2826,
+      "sha256": "dad178737b119f5bd42b7f2d5dd788a8e922225ce6842c387a79426075f216f0"
     },
     {
       "path": "sample-07.json",
@@ -139,8 +139,8 @@
     },
     {
       "path": "sample-07.txt",
-      "bytes": 3732,
-      "sha256": "ed699ae330052d2c51d05d7ce2d31b29ccc1c41c3171da9feb2b14892ed17203"
+      "bytes": 3717,
+      "sha256": "a2bd0fbbffc65a4ce28a2e083e291ac0c000eb1fc4000e75150fcbe439dd23d8"
     },
     {
       "path": "sample-08.json",
@@ -159,8 +159,8 @@
     },
     {
       "path": "sample-09.txt",
-      "bytes": 5739,
-      "sha256": "4cc3e27cb8ef78a566002447b40e0370dc7baef5d0133a18e055bc09d421a45d"
+      "bytes": 5735,
+      "sha256": "2c7ca4bf7d5ac4f70d6cb4faeceb0b90c39b758dd6718a5a43c6fccf15c512f1"
     },
     {
       "path": "sample-10.json",
@@ -169,8 +169,8 @@
     },
     {
       "path": "sample-10.txt",
-      "bytes": 26374,
-      "sha256": "707bed2dd18484e28e9b1aed07e3ed5ec0141188a01be4867e10599261eff520"
+      "bytes": 26339,
+      "sha256": "c099c19973c4290551d06999de8f2458a10f6adb615870a8e13b2cb7f4b7e2a8"
     },
     {
       "path": "sample-11.json",
@@ -179,8 +179,8 @@
     },
     {
       "path": "sample-11.txt",
-      "bytes": 7563,
-      "sha256": "322134b9ab5f0e817b4d77df6a404d5d24e6bd847b1fd513fd745e68ca2dbe70"
+      "bytes": 7552,
+      "sha256": "e09f3bd8e3e36b4dc81bad3e9f6590cabd0cc99e8865976b6d813ba523d49bff"
     },
     {
       "path": "sample-12.json",
@@ -189,8 +189,8 @@
     },
     {
       "path": "sample-12.txt",
-      "bytes": 1498,
-      "sha256": "c458ec0b3fa6bd9d050fae836d4df4c274bcae4f702d978acc68b89336f246cf"
+      "bytes": 1491,
+      "sha256": "5e6cbff4b6a170b62cbe01e504cdb6a2f89b774003b54bc8c2d922f28bd522c7"
     },
     {
       "path": "sample-13.json",
@@ -199,8 +199,8 @@
     },
     {
       "path": "sample-13.txt",
-      "bytes": 1120,
-      "sha256": "8611caac41e8e1a90e402bb3619a09a450f7c0eee2f471f940face224ff1a31a"
+      "bytes": 1118,
+      "sha256": "a38a13d672928aacb6b397582858e4c3f3744649c21299018674b17aa900035c"
     },
     {
       "path": "sample-14.json",
@@ -209,8 +209,8 @@
     },
     {
       "path": "sample-14.txt",
-      "bytes": 11934,
-      "sha256": "59b579d1f4e2a5d4cd74c18ee53d8f969d74a04e065ddd511a8e4612b1828721"
+      "bytes": 11922,
+      "sha256": "a5d3a14dbdfa4088029b10bcf9f0900cfa49e555d7fcf1b48772cc9187921987"
     },
     {
       "path": "sample-15.json",

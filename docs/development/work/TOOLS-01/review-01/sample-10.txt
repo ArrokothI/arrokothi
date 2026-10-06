@@ -28,10 +28,10 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 27:  * Everything this module does while a window is open goes through references captured when it
 28:  * loaded and null-prototype descriptors, so the sweep does not trip its own poison.
 29:  */
-30: 
+30:
 31: import { createHash } from "node:crypto";
 32: import { fileURLToPath, pathToFileURL } from "node:url";
-33: 
+33:
 34: const ObjectDefineProperty = Object.defineProperty;
 35: const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 36: const ObjectCreate = Object.create;
@@ -57,13 +57,13 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 56: const NativeTypeError = TypeError;
 57: const ReflectConstruct = Reflect.construct;
 58: const ReflectGet = Reflect.get;
-59: 
+59:
 60: const hasOwn = (holder: object, key: PropertyKey): boolean => ReflectApply(HasOwn, holder, [key]) as boolean;
 61: const startsWith = (text: string, prefix: string): boolean => ReflectApply(StringStartsWith, text, [prefix]) as boolean;
 62: const includes = (text: string, part: string): boolean => ReflectApply(StringIncludes, text, [part]) as boolean;
-63: 
+63:
 64: export type PoisonMode = "off" | "count" | "throw" | "reenter";
-65: 
+65:
 66: /**
 67:  * The built-in prototypes the sweep poisons. Amendment 03 names the first two; every object and
 68:  * function the zone reads inherits from one of them. The last two are where Kernel lists and strings
@@ -80,7 +80,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 79:   [String.prototype, "String.prototype"],
 80: ];
 81: const INDEX_LIKE = /^(0|[1-9][0-9]*)$/;
-82: 
+82:
 83: /** A saved property position, read field by field from its own descriptor. */
 84: interface Saved {
 85:   readonly kind: "absent" | "data" | "accessor";
@@ -91,13 +91,13 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 90:   readonly get: unknown;
 91:   readonly set: unknown;
 92: }
-93: 
+93:
 94: const ownField = (descriptor: object, key: string): unknown => {
 95:   if (!hasOwn(descriptor, key)) return undefined;
 96:   const field = ObjectGetOwnPropertyDescriptor(descriptor, key) as PropertyDescriptor;
 97:   return hasOwn(field, "value") ? field.value : undefined;
 98: };
-99: 
+99:
 100: const snapshot = (holder: object, name: PropertyKey): Saved => {
 101:   const descriptor = ObjectGetOwnPropertyDescriptor(holder, name);
 102:   const saved = ObjectCreate(null) as { -readonly [K in keyof Saved]: Saved[K] };
@@ -120,7 +120,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 119:   saved.set = ownField(descriptor, "set");
 120:   return saved;
 121: };
-122: 
+122:
 123: /** A writable, enumerable, configurable data descriptor on a null-prototype object. */
 124: const dataDescriptor = (value: unknown): PropertyDescriptor => {
 125:   const descriptor = ObjectCreate(null) as Record<string, unknown>;
@@ -130,12 +130,12 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 129:   descriptor.configurable = true;
 130:   return descriptor as PropertyDescriptor;
 131: };
-132: 
+132:
 133: /** Appends as own data: an ordinary indexed write would walk to the poisoned index names. */
 134: const append = <T>(list: T[], item: T): void => {
 135:   ObjectDefineProperty(list, `${list.length}`, dataDescriptor(item));
 136: };
-137: 
+137:
 138: const restore = (holder: object, name: PropertyKey, saved: Saved): void => {
 139:   if (saved.kind === "absent") {
 140:     delete (holder as Record<PropertyKey, unknown>)[name];
@@ -153,14 +153,14 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 152:   }
 153:   ObjectDefineProperty(holder, name, descriptor as PropertyDescriptor);
 154: };
-155: 
+155:
 156: /** What the prototype would have answered for an ordinary `[[Get]]` that reached it. */
 157: const answerGet = (saved: Saved, receiver: unknown): unknown => {
 158:   if (saved.kind === "absent") return undefined;
 159:   if (saved.kind === "data") return saved.value;
 160:   return typeof saved.get === "function" ? ReflectApply(saved.get as (...args: unknown[]) => unknown, receiver, []) : undefined;
 161: };
-162: 
+162:
 163: /** What an ordinary `[[Set]]` that reached the prototype would have done (strict code). */
 164: const answerSet = (saved: Saved, receiver: unknown, name: PropertyKey, value: unknown): void => {
 165:   if (saved.kind === "accessor") {
@@ -175,7 +175,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 174:   if (!ObjectIsExtensible(receiver)) throw new NativeTypeError(`Cannot add property ${String(name)}, object is not extensible`);
 175:   ObjectDefineProperty(receiver, name, dataDescriptor(value));
 176: };
-177: 
+177:
 178: /** One accessor that ran because a zone read walked past its object. */
 179: export interface ZoneFiring {
 180:   readonly holder: HolderName;
@@ -186,14 +186,14 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 185:   /** The boundary window it happened in. */
 186:   readonly window: string;
 187: }
-188: 
+188:
 189: /** Raised by `throw` mode at a zone firing. */
 190: export class PoisonedMemberError extends NativeError {
 191:   constructor(name: string) {
 192:     super(`poisoned member ${name} read by the Kernel`);
 193:   }
 194: }
-195: 
+195:
 196: export interface PoisonOptions {
 197:   readonly mode: PoisonMode;
 198:   readonly names: readonly (string | symbol)[];
@@ -202,10 +202,10 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 201:   /** The prototypes to poison; all four of `HOLDERS` when omitted. */
 202:   readonly holders?: readonly (readonly [object, HolderName])[];
 203: }
-204: 
+204:
 205: /** What a window may do when `reenter` mode meets a zone firing. */
 206: export type Reentry = (() => void) | undefined;
-207: 
+207:
 208: export interface PoisonController {
 209:   readonly mode: PoisonMode;
 210:   /** Opens a window; the accessors are installed only by the outermost one. */
@@ -219,7 +219,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 218:   readonly zoneFirings: ZoneFiring[];
 219:   readonly counts: { windows: number; installed: number; skipped: number; callerFirings: number; handlerFirings: number; reentries: number; liveProbes: number };
 220: }
-221: 
+221:
 222: /** One poisoned position: a name on one of the poisoned built-in prototypes. */
 223: interface Slot {
 224:   readonly holder: object;
@@ -228,7 +228,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 227:   /** The accessor this window installed, or undefined when the position was not poisonable. */
 228:   installed: Installation | undefined;
 229: }
-230: 
+230:
 231: /**
 232:  * One installation of the accessor pair at one position. Each carries the state it replaced, so an
 233:  * accessor a caller saved inside a window and reinstalled later still answers as the prototype did
@@ -240,13 +240,13 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 239:   readonly getter: () => unknown;
 240:   readonly setter: (value: unknown) => void;
 241: }
-242: 
+242:
 243: const siteOf = (site: NodeJS.CallSite): string | undefined => {
 244:   const file = site.getFileName();
 245:   if (typeof file !== "string" || file === "" || file === "<anonymous>" || startsWith(file, "node:") || site.isNative()) return undefined;
 246:   return `${file}:${site.getLineNumber() ?? 0}:${site.getColumnNumber() ?? 0}`;
 247: };
-248: 
+248:
 249: export function createPoison(options: PoisonOptions): PoisonController {
 250:   const zoneUrl = `${pathToFileURL(options.zoneRoot).href}/`;
 251:   const zonePath = `${options.zoneRoot}/`;
@@ -263,7 +263,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 262:   let reentry: Reentry;
 263:   let busy = false;
 264:   let reentering = false;
-265: 
+265:
 266:   /** The first non-built-in frame above the accessor, or undefined. */
 267:   const accessingFrame = (accessor: (...args: never[]) => unknown): string | undefined => {
 268:     const holder = ObjectCreate(null) as { stack?: unknown };
@@ -289,17 +289,17 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 288:     }
 289:     return undefined;
 290:   };
-291: 
+291:
 292:   const isZone = (site: string): boolean =>
 293:     startsWith(site, zoneUrl) || startsWith(site, zonePath) || includes(site, "/node_modules/canonicalize/");
-294: 
+294:
 295:   /** Every accessor this controller ever installed, by getter and by setter. */
 296:   const installations = new WeakMap<object, Installation>();
 297:   const WeakMapGet = WeakMap.prototype.get;
 298:   const WeakMapSet = WeakMap.prototype.set;
 299:   const installationOf = (fn: unknown): Installation | undefined =>
 300:     typeof fn === "function" ? (ReflectApply(WeakMapGet, installations, [fn]) as Installation | undefined) : undefined;
-301: 
+301:
 302:   /**
 303:    * The state a position had before the sweep: its current descriptor, unless that descriptor is one
 304:    * of the sweep's own accessors (reinstalled by a caller that saved it), which stands for the state
@@ -310,7 +310,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 309:     const own = current.kind === "accessor" ? installationOf(current.get) : undefined;
 310:     return own === undefined ? current : own.saved;
 311:   };
-312: 
+312:
 313:   const makeInstallation = (slot: Slot, saved: Saved): Installation => {
 314:     const installation: Installation = {
 315:       slot,
@@ -328,13 +328,13 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 327:     ReflectApply(WeakMapSet, installations, [installation.setter, installation]);
 328:     return installation;
 329:   };
-330: 
+330:
 331:   const answer = (installation: Installation, operation: "get" | "set", receiver: unknown, value: unknown): unknown => {
 332:     if (operation === "get") return answerGet(installation.saved, receiver);
 333:     answerSet(installation.saved, receiver, installation.slot.name, value);
 334:     return undefined;
 335:   };
-336: 
+336:
 337:   const fire = (installation: Installation, operation: "get" | "set", receiver: unknown, value: unknown, accessor: (...args: never[]) => unknown): unknown => {
 338:     const slot = installation.slot;
 339:     if (probing) {
@@ -374,7 +374,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 373:     }
 374:     return answer(installation, operation, receiver, value);
 375:   };
-376: 
+376:
 377:   const slots: Slot[] = [];
 378:   for (const [holder, holderName] of options.holders ?? HOLDERS) {
 379:     for (const name of options.names) {
@@ -382,7 +382,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 381:       append(slots, { holder, holderName, name, installed: undefined });
 382:     }
 383:   }
-384: 
+384:
 385:   const install = (): void => {
 386:     for (let index = 0; index < slots.length; index += 1) {
 387:       const slot = slots[index] as Slot;
@@ -404,7 +404,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 403:       counts.installed += 1;
 404:     }
 405:   };
-406: 
+406:
 407:   const uninstall = (): void => {
 408:     for (let index = slots.length - 1; index >= 0; index -= 1) {
 409:       const slot = slots[index] as Slot;
@@ -417,7 +417,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 416:       if (own !== undefined) restore(slot.holder, slot.name, own.saved);
 417:     }
 418:   };
-419: 
+419:
 420:   const controller: PoisonController = {
 421:     mode: options.mode,
 422:     enter(window: string, hook?: Reentry): void {
@@ -463,7 +463,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 462:   };
 463:   return controller;
 464: }
-465: 
+465:
 466: /**
 467:  * Replaces the global `Proxy` so that every handler a caller creates is registered with `poison`.
 468:  * The zone never constructs a Proxy; only caller and test code do.
@@ -486,7 +486,7 @@ packages/kernel/tests/sweep/poison.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9
 485:   });
 486:   globalThis.Proxy = wrapped;
 487: }
-488: 
+488:
 489: /**
 490:  * A structural digest of a boundary result: own properties only, through their descriptors (so no
 491:  * getter runs and no prototype is consulted), with frozen-ness and shared references recorded.

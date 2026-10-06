@@ -1,22 +1,22 @@
 docs/development/work/K1.1/review-01.md @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49 lines 53:73
 53: ### K11-R1-VAL-01 — P1 — accepted boundary values are not faithfully retained over the accepted object-key space
-54: 
-55: **Affected:** `packages/kernel/src/values.ts`, especially `sealBoundaryValue`; dependent creation, ingress, Activation and inspection paths.  
+54:
+55: **Affected:** `packages/kernel/src/values.ts`, especially `sealBoundaryValue`; dependent creation, ingress, Activation and inspection paths.
 56: **Governing criteria/sources:** K1.1-C1/C2/C3/C4/C9; `mental-model/concepts/values.md`; `mental-model/concepts/core.md`.
-57: 
+57:
 58: `values.md` permits ordinary boundary objects with arbitrary well-formed string member names and defines equality by canonical bytes. Candidate validation/canonicalization accepts an ordinary JSON object with an own `"__proto__"` member. But `sealBoundaryValue` creates `{}` and copies each member with `sealed[name] = ...`. For `"__proto__"`, that assignment invokes the inherited legacy setter rather than installing the original member as own data. The accepted copy can therefore lose the member and acquire its value as its prototype, while the already-computed canonical bytes still describe the original object.
-59: 
+59:
 60: A concrete valid input is:
-61: 
+61:
 62: ```js
 63: JSON.parse('{"__proto__":{"admin":true},"safe":2}')
 64: ```
-65: 
+65:
 66: A standalone language probe reproducing the candidate's assignment-style copy showed that the copied object no longer had an own `"__proto__"` member while its prototype supplied `admin: true`. Creation/input can therefore bind one canonical logical value but retain, inspect and dispatch a different structural value. That violates the exact-content and immutable-record claims across C1/C2/C3/C4/C9.
-67: 
+67:
 68: This also reintroduces a previously reviewed project defect family. K0.2 finding `K02-R2-02` rejected the same `{}` + `copy[key] = ...` snapshot construction for a valid `"__proto__"` key and required own-data preservation plus a distinguishing regression.
-69: 
+69:
 70: An adjacent oracle gap shows why this subsystem should be reconstructed rather than patched by special-casing one string. Array validation classifies every all-digit own property name as an array index. An own `"01"` member therefore escapes the "extra property" rejection even though array canonicalization/copying omits it, contradicting the module's stated invariant that unsupported members are refused rather than silently dropped.
-71: 
+71:
 72: **Required outcome:** restore one value-preserving acceptance invariant across validation, canonical identity, retained state, Driver projection and inspection for every supported boundary shape; unsupported JavaScript shapes must be refused rather than silently transformed. Add distinguishing regressions covering the prior `"__proto__"` defect family and numeric-looking non-index array members. This finding specifies outcomes, not a mandatory patch mechanism.
-73: 
+73:
