@@ -167,12 +167,13 @@ class TargetSetRunnerTests(RepositoryFixture):
         self.assertEqual(rows['hang']['status'], 'timeout')
         self.assertTrue(rows['hang']['invalid'])
         row = mutant('m', 'x', 'y')
-        for run, status in (({'status': 'output_limit', 'exit': None}, 'output_limit'),
-                            ({'status': 'setup_error', 'exit': None}, 'setup_error'),
-                            ({'status': 'not_applicable', 'exit': None, 'matches': 0}, 'not_applicable'),
-                            ({'status': 'finished', 'exit': 1, 'tree': None}, 'malformed'),
-                            ({'status': 'finished', 'exit': 1, 'tree': {'valid': False, 'refused': {}}}, 'malformed')):
-            with self.subTest(status=status):
+        # Labels are unique: python-probe refuses an observation with repeated failure names.
+        for label, run, status in (('output limit', {'status': 'output_limit', 'exit': None}, 'output_limit'),
+                                   ('setup error', {'status': 'setup_error', 'exit': None}, 'setup_error'),
+                                   ('no match', {'status': 'not_applicable', 'exit': None, 'matches': 0}, 'not_applicable'),
+                                   ('no catalog events', {'status': 'finished', 'exit': 1, 'tree': None}, 'malformed'),
+                                   ('invalid catalog tree', {'status': 'finished', 'exit': 1, 'tree': {'valid': False, 'refused': {}}}, 'malformed')):
+            with self.subTest(label, status=status):
                 self.assertEqual(tool.target_outcome(run, row, True)['status'], status)
 
     def test_multi_edit_applies_atomically_or_not_at_all(self):
