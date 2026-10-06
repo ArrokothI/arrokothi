@@ -1,4 +1,4 @@
-# Design 06 — TOOLS-01 correction after reviews 01 and 02 (revision 2)
+# Design 06 — TOOLS-01 correction after reviews 01 and 02 (revision 3)
 
 Claude Code (`claude-opus-5-5`), implementer under [owner choice 08](owner-choice-08.md),
 2026-10-05, for the design check; contract revision 9 ([owner choice 09](owner-choice-09.md)).
@@ -145,9 +145,17 @@ report cites node-floor-04 and uses real hunk headers and SHA-bound approvals.
 
 ## Revision 2
 
-Answers the [design 06 check](design-06-check.md) (`b66688c6`): (1) unclassified call results are
-match 7, with their enforcing consumers named, and `residual` grants nothing; (2) C2-LIMIT maps an
-extra through its target record, never a title; (3) R1-04 follows owner choice 09; (4) the closer
-rule is complete, and "closed fence" applies to fence origins only. The owner answered revision 1's
-questions: category entries keep their owners, child processes match, and the 18 relinked origins
-stay closed.
+Answers the [first check](design-06-check.md) (`b66688c6`): (1) unclassified call results are match
+7, with enforcing consumers named; `residual` grants nothing; (2) extras map through a target
+record, never a title; (3) R1-04 follows owner choice 09; (4) the complete closer rule, and "closed
+fence" only for fence origins. Owner answers: category entries keep their owners, child processes
+match, the 18 relinked origins stay closed.
+
+## Revision 3
+
+Answers the [second check](design-06-check-02.md) (`9b2aafcd`) with two corpus items. **R1-04:**
+malformed provenance, distinct from missing provenance and from a malformed catalog event: a valid
+`test:fail` whose assertion-origin metadata is unusable (an empty, non-string or frameless stack);
+expected `observed` with a visible outcome and reason, no kill. **R1-02:** a `~~~` fence holding a
+line of three backticks and then `## x`, a later true `~~~` closer and the required record after it;
+both lines stay content and the section keeps its true minimum.
