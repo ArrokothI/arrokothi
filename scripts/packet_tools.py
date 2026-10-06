@@ -104,6 +104,12 @@ FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', '
 COUNTEREXAMPLE_KINDS = ('behavior', 'mutation', 'held_witness', 'superseded_witness', 'prose_pending')
 TARGET_FIELDS = ('id', 'counterexample', 'command', 'file', 'test_path', 'declaration', 'input_anchors',
                  'assertion_anchors', 'relation', 'discrimination')
+# P1-H's refusal of a target on a held or superseded leaf, appended after the P1-T checks.
+P1H_TARGET_REFUSAL = 'the target leaf is a registered {} test (P1-H)'
+# Owner choice 08 §2: its rule 1 holds every V-ENV match; its §2.4 amends owner choice 04 §1's limit (C2-LIMIT).
+VENV_RECORD = 'docs/development/work/TOOLS-01/owner-choice-08.md'
+LIMIT_DECISION = 'docs/development/work/TOOLS-01/owner-choice-04.md'
+LIMIT_MEMBERS = 'docs/development/work/TOOLS-01/continuation-stop-01/unbound-members.json'
 
 
 class CheckError(Exception):
@@ -532,9 +538,35 @@ def holds_table(git, rev, holds):
     return claims
 
 
-def transferred_origins(git, rev, rows, origins):
+def transfer_lists(git, rev, rows):
+    """R1-03 (design 06): each decision that transfers origins pins its machine-readable list, which lies in
+    the decision's attachment directory. Which list a decision states stays a human review boundary."""
+    require(isinstance(rows, list), 'transfer lists are a list')
+    lists = {}
+    for row in rows:
+        require(isinstance(row, dict) and set(row) == {'decision', 'list', 'sha256'} and
+                all(isinstance(value, str) for value in row.values()) and row['decision'] not in lists,
+                'a transfer list names its decision once, the list and its SHA-256')
+        require(row['decision'].endswith('.md') and row['list'].startswith(row['decision'][:-len('.md')] + '/'),
+                "a transfer list lies in its decision's attachment directory: " + row['list'])
+        git.blob(rev, row['decision'])
+        data = git.blob(rev, row['list'])
+        require(digest(data) == row['sha256'], 'transfer list digest mismatch: ' + row['list'])
+        try:
+            listed = json.loads(data)
+        except ValueError as exc:
+            raise CheckError('a transfer list is not JSON: ' + row['list']) from exc
+        require(isinstance(listed, list) and all(isinstance(item, dict) and isinstance(item.get('origin'), str)
+                                                 for item in listed) and
+                len({item['origin'] for item in listed}) == len(listed), 'a transfer list names each origin once: ' + row['list'])
+        lists[row['decision']] = {item['origin']: item for item in listed}
+    return lists
+
+
+def transferred_origins(git, rev, rows, origins, lists):
     """P1-R under owner choices 04 and 05: revalidation origins an owner decision moved to TOOLS-02. Each
-    names its decision record at C and must still be open for revalidation; a closed one is stale."""
+    names its decision record at C and must still be open for revalidation; a closed one is stale. R1-03:
+    the origins transferred under a decision are exactly those its pinned list names."""
     require(isinstance(rows, list), 'transferred origins are a list')
     found = {}
     for row in rows:
@@ -543,8 +575,64 @@ def transferred_origins(git, rev, rows, origins):
         git.blob(rev, row['decision'])
         require(origins.get(row['origin'], {}).get('state') == 'pending_revalidation',
                 'a transferred origin is an open revalidation origin: ' + row['origin'])
+        require(row['origin'] in lists.get(row['decision'], {}),
+                "a transferred origin is in its decision's pinned list: " + row['origin'])
         found[row['origin']] = row['decision']
+    for decision, listed in lists.items():
+        require(set(listed) == {origin for origin, cited in found.items() if cited == decision},
+                "a decision's pinned list differs from the origins transferred under it: " + decision)
     return found
+
+
+def limited_origins(git, rev, rows, lists, members, targets, results, register):
+    """C2-LIMIT (owner choice 04 §1, amended by owner choice 08 §2.4). Each origin transferred under owner
+    choice 04 carries `limited`: the pinned unbound-member list and its extras, each `{member, target}`. An
+    extra is admitted only through its target record: the only suite target naming that member, declared at
+    a rule-1 held leaf with a literal title and refused by P1-H alone. Titles are never compared. Per origin,
+    the refused members without a credited target must equal its listed members plus admitted extras, and
+    the decision's list restates the origin's member count."""
+    results = {result['id']: result for result in results}
+    by_member = {}
+    for target in targets.values():
+        if 'member' in target:
+            by_member.setdefault(target['member'], []).append(target)
+    credited = {member for member, mapped in by_member.items() if any(not results[row['id']]['refused'] for row in mapped)}
+    limited, listed_all = {}, None
+    for row in rows:
+        if row['decision'] != LIMIT_DECISION:
+            require('limited' not in row, "only owner choice 04's origins carry a limit: " + row['origin'])
+            continue
+        limit, origin = row.get('limited'), row['origin']
+        require(isinstance(limit, dict) and set(limit) == {'members', 'sha256', 'extras'} and
+                limit['members'] == LIMIT_MEMBERS and isinstance(limit['extras'], list),
+                'a limited origin names the unbound-member list, its SHA-256 and its extras: ' + origin)
+        data = git.blob(rev, LIMIT_MEMBERS)
+        require(digest(data) == limit['sha256'], 'the unbound-member list digest differs: ' + origin)
+        listed_all = {item['member'] for item in json.loads(data)['rows']}
+        in_origin = {key for key, member in members.items() if origin in member['origins']}
+        require(lists[LIMIT_DECISION][origin].get('members') == len(in_origin),
+                "owner choice 04's member count differs from the preserved table: " + origin)
+        listed, extras = listed_all & in_origin, set()
+        for extra in limit['extras']:
+            require(isinstance(extra, dict) and set(extra) == {'member', 'target'} and extra['member'] in in_origin and
+                    extra['member'] not in listed | extras, 'an extra limited member is a further member of its origin: ' + str(extra))
+            mapped = by_member.get(extra['member'], [])
+            require(len(mapped) == 1 and mapped[0]['id'] == extra['target'],
+                    'an extra limited member maps through its only target: ' + extra['member'])
+            declaration, result = mapped[0]['declaration'], results[extra['target']]
+            entry = register.get(f"{mapped[0]['file']}:{declaration['line']}:{declaration['column']}", {})
+            require(entry.get('classification') == 'held' and entry.get('claim') == 'V-ENV' and
+                    entry.get('decision') == VENV_RECORD and result.get('title_kind') == 'literal' and
+                    result['refused'] == [P1H_TARGET_REFUSAL.format('held')],
+                    "an extra limited member's target passes P1-T at a rule-1 held leaf: " + extra['member'])
+            extras.add(extra['member'])
+        unbound = {key for key in in_origin if members[key]['status'] == 'refused' and key not in credited}
+        require(unbound == listed | extras, f'the refused members without a credited target differ from the limit: {origin} '
+                                            f'(unlisted {sorted(unbound - listed - extras)[:3]}, bound {sorted(listed - unbound)[:3]})')
+        limited[origin] = {'listed': len(listed), 'extras': sorted(extras)}
+    require(listed_all is None or listed_all <= {key for key in members if any(origin in members[key]['origins'] for origin in limited)},
+            'an unbound-member list entry lies outside the limited origins')
+    return limited
 
 
 def corpus_format_2(git, rev, spec, intake, toolchain=None):
@@ -607,7 +695,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
         declaration = target.get('declaration') or {}
         entry = register.get(f"{target['file']}:{declaration.get('line')}:{declaration.get('column')}")
         if entry is not None and entry['classification'] != 'not_held':
-            result['refused'].append('the target leaf is a registered ' + entry['classification'] + ' test (P1-H)')
+            result['refused'].append(P1H_TARGET_REFUSAL.format(entry['classification']))
             result.pop('credit', None)
     table = preserved_table(evaluations)
     if spec['preserved'] != table:
@@ -630,12 +718,15 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     states = Counter(row['state'] for row in rows.values())
     revalidation = Counter(row['legacy']['status'] for row in rows.values() if row['state'] == 'pending_revalidation')
     pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
-    transferred = transferred_origins(git, rev, spec.get('transferred', []), rows)
+    lists = transfer_lists(git, rev, spec.get('transfer_lists', []))
+    transferred = transferred_origins(git, rev, spec.get('transferred', []), rows, lists)
+    limited = limited_origins(git, rev, spec.get('transferred', []), lists, members, targets, results, register)
     unexplained = [key for key in pending if rows[key]['state'] == 'pending_revalidation' and key not in transferred]
     return {'operation': 'corpus', 'format': 2, 'revision': rev,
             'result': ('mappings_complete' if not pending else 'revalidation_complete' if not unexplained
                        else 'extraction_pending'),
-            'transferred': {'origins': len(transferred), 'by_decision': dict(Counter(transferred.values()))},
+            'transferred': {'origins': len(transferred), 'by_decision': dict(Counter(transferred.values())),
+                            'limited': limited},
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
             'closures': {'complete': len(closures), 'context_ranges': sum(row['ranges'] for row in closures.values()),
                          'context_candidates': sum(row['candidates'] for row in closures.values()),
@@ -1545,6 +1636,7 @@ def check_target(git, rev, target, counterexamples, registry, context):
         refuse('a t.test subtest cannot be selected by its full path (A9)')
         return facts
     title = registration['title']
+    facts['title_kind'] = title['kind']
     if title['kind'] == 'literal' and title['value'] != target['test_path'][-1]:
         refuse('the declaration registers another title')
     leaf = [pair for pair in catalog['tree']['files'].get(file, {'pairs': []})['pairs']

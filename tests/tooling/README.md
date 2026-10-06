@@ -293,6 +293,24 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   revision candidate in it must be covered, or reasoned in `context_reasons`; reasons for absent or
   mandatory candidates are refused. Production files a test
   reads are targets, not context; they are reasoned.
+- **One block parse (design 06 R1-02).** `markdown_blocks`, a subset of CommonMark 0.31.2 §§4.2, 4.5
+  and 4.6, decides fence bounds for both the inventory's fence bodies and the section minimum. A fence
+  opens with 0–3 spaces and three or more backticks or tildes, and closes only at 0–3 spaces, the same
+  character at least as many times, then spaces or tabs; every other line inside is content. Section
+  headings are column-0 `#{1,6} ` lines outside fences and HTML blocks. A fence-like line that is no
+  top-level opener, a heading- or fence-like line in an HTML block, an unclosed fence and a lone CR
+  are uncertain: an uncertain line at or before a section's end refuses closure, a fence origin must be
+  a recognized closed fence, and an uncertain origin's areas come from its whole file.
+- **Transfers and limits (design 06 R1-03, C2-LIMIT).** `transferred` rows name an open revalidation
+  origin and its owner decision; `transfer_lists` pins each such decision's machine-readable list
+  (`{decision, list, sha256}`, the list in the decision's attachment directory). The origins
+  transferred under a decision must equal its list. Origins transferred under owner choice 04 carry
+  `limited`: the digest-pinned unbound-member list of continuation-stop-01 and extras
+  `{member, target}` (owner choice 08 §2.4). An extra is admitted only through its target record —
+  the only suite target naming the member, at a rule-1 held leaf with a literal title, refused by P1-H
+  alone — never by title. Per origin, the refused members without a credited target must equal the
+  listed members plus the admitted extras, and owner choice 04's list restates each origin's member
+  count. Which list a decision states remains a human review boundary.
 
 ## Area map and gate
 

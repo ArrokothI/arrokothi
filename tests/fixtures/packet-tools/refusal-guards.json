@@ -8215,6 +8215,470 @@
           "id": "mutation-0f394c07a0d122df33316ff4f24f1c76ce9034089d7ff890b959e95419115dbd"
         }
       ]
+    },
+    {
+      "id": "guard.transferred_origins.de503352fbc482bf",
+      "assertion": "test_transfer_limits.TransferListTests.test_review_01_extra_transfer_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transferred_origins",
+      "input": {
+        "test": "test_transfer_limits.TransferListTests.test_review_01_extra_transfer_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transferred_origins.de503352fbc482bf"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['origin'] in lists.get(row['decision'], {}),\n                \"a transferred origin is in its decision's pinned list: \" + row['origin'])",
+          "after": "pass  # tools01-ablate:de503352fbc482bf",
+          "operator": "remove-refusal-check",
+          "name": "guard.transferred_origins.de503352fbc482bf",
+          "id": "mutation-243391c1faffafb4f95e290f359b7e100a2f73cecb0e672f555acc497aef8559"
+        }
+      ]
+    },
+    {
+      "id": "guard.transferred_origins.0e832cefcc653f5c",
+      "assertion": "test_transfer_limits.TransferListTests.test_a_listed_origin_without_its_transfer_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transferred_origins",
+      "input": {
+        "test": "test_transfer_limits.TransferListTests.test_a_listed_origin_without_its_transfer_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transferred_origins.0e832cefcc653f5c"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(listed) == {origin for origin, cited in found.items() if cited == decision},\n                \"a decision's pinned list differs from the origins transferred under it: \" + decision)",
+          "after": "pass  # tools01-ablate:0e832cefcc653f5c",
+          "operator": "remove-refusal-check",
+          "name": "guard.transferred_origins.0e832cefcc653f5c",
+          "id": "mutation-3def6221308fcbcc52fbdb7b1203f8027f5c8ce179b33a3b615b1a722167de07"
+        }
+      ]
+    },
+    {
+      "id": "guard.transfer_lists.c23c23eb2ae6a07a",
+      "assertion": "test_transfer_limits.TransferListTests.test_list_shape_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transfer_lists",
+      "input": {
+        "test": "test_transfer_limits.TransferListTests.test_list_shape_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transfer_lists.c23c23eb2ae6a07a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(rows, list), 'transfer lists are a list')",
+          "after": "pass  # tools01-ablate:c23c23eb2ae6a07a",
+          "operator": "remove-refusal-check",
+          "name": "guard.transfer_lists.c23c23eb2ae6a07a",
+          "id": "mutation-a16d698b57fc344a859b646459c1e52c858dde8b8ab270e58b92c643a4601eb8"
+        }
+      ]
+    },
+    {
+      "id": "guard.transfer_lists.6fc42344bc41dd3e",
+      "assertion": "test_transfer_limits.TransferListTests.test_list_shape_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transfer_lists",
+      "input": {
+        "test": "test_transfer_limits.TransferListTests.test_list_shape_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transfer_lists.6fc42344bc41dd3e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(row, dict) and set(row) == {'decision', 'list', 'sha256'} and\n                all(isinstance(value, str) for value in row.values()) and row['decision'] not in lists,\n                'a transfer list names its decision once, the list and its SHA-256')",
+          "after": "pass  # tools01-ablate:6fc42344bc41dd3e",
+          "operator": "remove-refusal-check",
+          "name": "guard.transfer_lists.6fc42344bc41dd3e",
+          "id": "mutation-756efdf93c66eb36e1279d8ae269588ac57cf0171acdfef4769cdecc51bef606"
+        }
+      ]
+    },
+    {
+      "id": "guard.transfer_lists.af78918d747ced87",
+      "assertion": "test_transfer_limits.TransferListTests.test_list_shape_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transfer_lists",
+      "input": {
+        "test": "test_transfer_limits.TransferListTests.test_list_shape_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transfer_lists.af78918d747ced87"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['decision'].endswith('.md') and row['list'].startswith(row['decision'][:-len('.md')] + '/'),\n                \"a transfer list lies in its decision's attachment directory: \" + row['list'])",
+          "after": "pass  # tools01-ablate:af78918d747ced87",
+          "operator": "remove-refusal-check",
+          "name": "guard.transfer_lists.af78918d747ced87",
+          "id": "mutation-549e1473c4cb45fd80e6f454e269b91e1d7e5d663f755b71f7777813c381a5e3"
+        }
+      ]
+    },
+    {
+      "id": "guard.transfer_lists.8b711a79617f0754",
+      "assertion": "test_transfer_limits.TransferListTests.test_list_shape_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transfer_lists",
+      "input": {
+        "test": "test_transfer_limits.TransferListTests.test_list_shape_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transfer_lists.8b711a79617f0754"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(data) == row['sha256'], 'transfer list digest mismatch: ' + row['list'])",
+          "after": "pass  # tools01-ablate:8b711a79617f0754",
+          "operator": "remove-refusal-check",
+          "name": "guard.transfer_lists.8b711a79617f0754",
+          "id": "mutation-249138df28f661a5b323801fc45314d45f3440c3ddf46b61da641874c5b9d5e2"
+        }
+      ]
+    },
+    {
+      "id": "guard.transfer_lists.fde59a328fe175b5",
+      "assertion": "test_transfer_limits.TransferListTests.test_a_list_names_each_origin_once",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: transfer_lists",
+      "input": {
+        "test": "test_transfer_limits.TransferListTests.test_a_list_names_each_origin_once"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.transfer_lists.fde59a328fe175b5"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(listed, list) and all(isinstance(item, dict) and isinstance(item.get('origin'), str)\n                                                 for item in listed) and\n                len({item['origin'] for item in listed}) == len(listed), 'a transfer list names each origin once: ' + row['list'])",
+          "after": "pass  # tools01-ablate:fde59a328fe175b5",
+          "operator": "remove-refusal-check",
+          "name": "guard.transfer_lists.fde59a328fe175b5",
+          "id": "mutation-d4b18629d9b0583b3fa134efbcbd128d148266b81b6dc511573dd82f3ab69e6a"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.f748e3dc22016bd4",
+      "assertion": "test_transfer_limits.LimitTests.test_only_owner_choice_04_origins_carry_a_limit",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_only_owner_choice_04_origins_carry_a_limit"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.f748e3dc22016bd4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require('limited' not in row, \"only owner choice 04's origins carry a limit: \" + row['origin'])",
+          "after": "pass  # tools01-ablate:f748e3dc22016bd4",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.f748e3dc22016bd4",
+          "id": "mutation-ee3ae524414ea639e7e1ea6a014f89286334a5b5feffcf8f8b2583659a9ea156"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.1a245a8b0f8a75c4",
+      "assertion": "test_transfer_limits.LimitTests.test_limit_record_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_limit_record_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.1a245a8b0f8a75c4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(limit, dict) and set(limit) == {'members', 'sha256', 'extras'} and\n                limit['members'] == LIMIT_MEMBERS and isinstance(limit['extras'], list),\n                'a limited origin names the unbound-member list, its SHA-256 and its extras: ' + origin)",
+          "after": "pass  # tools01-ablate:1a245a8b0f8a75c4",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.1a245a8b0f8a75c4",
+          "id": "mutation-34eb13cd0e32421ee0951d3300b2834f7cceb7a4252625c19541932435069eed"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.8a6c23dd828de2f1",
+      "assertion": "test_transfer_limits.LimitTests.test_limit_record_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_limit_record_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.8a6c23dd828de2f1"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(digest(data) == limit['sha256'], 'the unbound-member list digest differs: ' + origin)",
+          "after": "pass  # tools01-ablate:8a6c23dd828de2f1",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.8a6c23dd828de2f1",
+          "id": "mutation-64c71f485db78c2a3e5c6963ab719164e91342720dbdf09daeed95b7963b1f5c"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.81c01932f465f19c",
+      "assertion": "test_transfer_limits.LimitTests.test_limit_record_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_limit_record_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.81c01932f465f19c"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(lists[LIMIT_DECISION][origin].get('members') == len(in_origin),\n                \"owner choice 04's member count differs from the preserved table: \" + origin)",
+          "after": "pass  # tools01-ablate:81c01932f465f19c",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.81c01932f465f19c",
+          "id": "mutation-33503efb97808e06995392ec68bbed3fd3d8575017ed76804772cb8d3a45f5cc"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.d111f368d0230bc1",
+      "assertion": "test_transfer_limits.LimitTests.test_an_extra_is_a_further_member_of_its_own_origin",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_an_extra_is_a_further_member_of_its_own_origin"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.d111f368d0230bc1"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(extra, dict) and set(extra) == {'member', 'target'} and extra['member'] in in_origin and\n                    extra['member'] not in listed | extras, 'an extra limited member is a further member of its origin: ' + str(extra))",
+          "after": "pass  # tools01-ablate:d111f368d0230bc1",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.d111f368d0230bc1",
+          "id": "mutation-36bd5ca3ba7b4c894dcc1d41c1511a10a98601567c31d691738f623377070f46"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.1fd6f97acab8f2d0",
+      "assertion": "test_transfer_limits.LimitTests.test_missing_and_duplicate_mappings_create_no_exception",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_missing_and_duplicate_mappings_create_no_exception"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.1fd6f97acab8f2d0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(mapped) == 1 and mapped[0]['id'] == extra['target'],\n                    'an extra limited member maps through its only target: ' + extra['member'])",
+          "after": "pass  # tools01-ablate:1fd6f97acab8f2d0",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.1fd6f97acab8f2d0",
+          "id": "mutation-9b74cdf77208e96d5a3bbf1287b00705bfc76a307b4767c084e802c3e3dab670"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.353802aa3a90880b",
+      "assertion": "test_transfer_limits.LimitTests.test_an_otherwise_refused_or_generated_or_non_rule_1_target_creates_no_exception",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_an_otherwise_refused_or_generated_or_non_rule_1_target_creates_no_exception"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.353802aa3a90880b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(entry.get('classification') == 'held' and entry.get('claim') == 'V-ENV' and\n                    entry.get('decision') == VENV_RECORD and result.get('title_kind') == 'literal' and\n                    result['refused'] == [P1H_TARGET_REFUSAL.format('held')],\n                    \"an extra limited member's target passes P1-T at a rule-1 held leaf: \" + extra['member'])",
+          "after": "pass  # tools01-ablate:353802aa3a90880b",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.353802aa3a90880b",
+          "id": "mutation-7975d58c12d6a5daff46df01e85034351ac4d5712ad0ec15566ee51fb6943f4a"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.b33877e260b6aa63",
+      "assertion": "test_transfer_limits.LimitTests.test_review_02_unlisted_unbound_member_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_review_02_unlisted_unbound_member_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.b33877e260b6aa63"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(unbound == listed | extras, f'the refused members without a credited target differ from the limit: {origin} '\n                                            f'(unlisted {sorted(unbound - listed - extras)[:3]}, bound {sorted(listed - unbound)[:3]})')",
+          "after": "pass  # tools01-ablate:b33877e260b6aa63",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.b33877e260b6aa63",
+          "id": "mutation-047d9187857d7846f063b8725bcebb660f865be8227ca726666422e544e3dcbd"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.0766b115b3e04195",
+      "assertion": "test_transfer_limits.LimitTests.test_a_listed_member_outside_the_limited_origins_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_a_listed_member_outside_the_limited_origins_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.0766b115b3e04195"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(listed_all is None or listed_all <= {key for key in members if any(origin in members[key]['origins'] for origin in limited)},\n            'an unbound-member list entry lies outside the limited origins')",
+          "after": "pass  # tools01-ablate:0766b115b3e04195",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.0766b115b3e04195",
+          "id": "mutation-bf40d00a8c216b87396cda145d124421d63a56c91d0a83937bfaa78b1cffbdcb"
+        }
+      ]
     }
   ],
   "determinism_sample": [

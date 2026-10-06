@@ -55,16 +55,30 @@ class FormatTwoTests(RepositoryFixture):
         self.assertEqual(result['counts']['kills'], 0)
         self.assertFalse(result['full_corpus_complete'])
 
+    def pin_list(self, data, decision, origins, path=None):
+        """R1-03: the decision's machine-readable list of transferred origins, in its attachment directory."""
+        path = path or decision[:-len('.md')] + '/transferred.json'
+        self.write(decision, 'Transfer decision.\n')
+        self.document(path, [{'origin': origin} for origin in origins])
+        data.setdefault('transfer_lists', []).append({'decision': decision, 'list': path,
+                                                      'sha256': tool.digest((self.root / path).read_bytes())})
+
+    def transfer(self, data, decision='decision.md', listed=None):
+        data.update(transferred=[{'origin': data['origins'][0]['id'], 'decision': decision}])
+        self.pin_list(data, decision, [data['origins'][0]['id']] if listed is None else listed)
+
     def test_transferred_revalidation_origins_complete_the_revalidation_scope(self):
         # Owner choices 04-05: only owner-transferred revalidation origins may stay open; pending ones are TOOLS-02's.
-        transfer = lambda data: data.update(transferred=[{'origin': data['origins'][0]['id'], 'decision': 'decision.md'}])
-        result = self.check(self.fixture(transfer))
-        self.assertEqual((result['result'], result['transferred']), ('revalidation_complete', {'origins': 1, 'by_decision': {'decision.md': 1}}))
+        result = self.check(self.fixture(self.transfer))
+        self.assertEqual((result['result'], result['transferred']),
+                         ('revalidation_complete', {'origins': 1, 'by_decision': {'decision.md': 1}, 'limited': {}}))
 
     def test_a_transferred_origin_is_an_open_revalidation_origin(self):
-        rev = self.fixture(lambda data: data.update(transferred=[{'origin': data['origins'][1]['id'], 'decision': 'decision.md'}]))
+        def change(data):
+            data.update(transferred=[{'origin': data['origins'][1]['id'], 'decision': 'decision.md'}])
+            self.pin_list(data, 'decision.md', [data['origins'][1]['id']])
         with self.assertRaisesRegex(tool.CheckError, 'a transferred origin is an open revalidation origin'):
-            self.check(rev)
+            self.check(self.fixture(change))
 
     def test_a_transferred_origin_names_its_decision_once(self):
         rev, error = self.fixture(lambda data: data.update(transferred=[{'origin': data['origins'][0]['id']}])), None
@@ -76,7 +90,10 @@ class FormatTwoTests(RepositoryFixture):
         self.assertIn('a transferred origin is unique and names its owner decision', str(error))
 
     def test_a_transferred_origin_is_listed_once(self):
-        rev = self.fixture(lambda data: data.update(transferred=[{'origin': data['origins'][0]['id'], 'decision': 'decision.md'}] * 2))
+        def change(data):
+            self.transfer(data)
+            data['transferred'] *= 2
+        rev = self.fixture(change)
         with self.assertRaisesRegex(tool.CheckError, 'a transferred origin is unique and names its owner decision'):
             self.check(rev)
 

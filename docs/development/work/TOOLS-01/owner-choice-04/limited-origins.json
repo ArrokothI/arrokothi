@@ -1,0 +1,22 @@
+[
+ {
+  "origin": "artifact-73555fe668cc180905b1e49a",
+  "file": "packages/kernel/tests/dispatch.test.ts",
+  "members": 50
+ },
+ {
+  "origin": "artifact-9fd619f5375d598ebb2b88aa",
+  "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+  "members": 189
+ },
+ {
+  "origin": "artifact-d2153e36d9c7464883ecea0b",
+  "file": "tests/archive/evidence-records.test.ts",
+  "members": 4
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "file": "packages/kernel/tests/values.test.ts",
+  "members": 74
+ }
+]
