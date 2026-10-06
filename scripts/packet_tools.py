@@ -115,6 +115,10 @@ P1H_TARGET_REFUSAL = 'the target leaf is a registered {} test (P1-H)'
 VENV_RECORD = 'docs/development/work/TOOLS-01/owner-choice-08.md'
 LIMIT_DECISION = 'docs/development/work/TOOLS-01/owner-choice-04.md'
 LIMIT_MEMBERS = 'docs/development/work/TOOLS-01/continuation-stop-01/unbound-members.json'
+# Owner choice 08 §2.3: category entries name their existing decision.
+CATEGORY_DECISIONS = {'Proxy': ('docs/development/work/DESIGN-AUDIT-01/decision-01.md',),
+                      're-prototyped-built-in': ('docs/development/work/DESIGN-AUDIT-01/decision-01.md',),
+                      'V-D1': ('docs/development/work/K1.2/decision-05.md', 'docs/development/work/K1.2/invalidation-02.md')}
 
 
 class CheckError(Exception):
@@ -691,8 +695,9 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     with contextlib.ExitStack() as stack:
         context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
+        detected = {}
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
-                                 registry['cases'], spec['registry'])
+                                 registry['cases'], spec['registry'], detected)
         results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
         evaluations, all_earlier = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
         _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain)
@@ -746,7 +751,13 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'preserved': figures, 'families': family_counts,
             'register': {'scope_files': len(scope), 'entries': len(register),
                          'cases': sum(key.startswith('case:') for key in register),
-                         'by_classification': {f'{kind}:{claim or "-"}': count for (kind, claim), count in sorted(register_counts.items(), key=str)}},
+                         'by_classification': {f'{kind}:{claim or "-"}': count for (kind, claim), count in sorted(register_counts.items(), key=str)},
+                         'rule_1': sum(row.get('decision') == VENV_RECORD for row in register.values()),
+                         'detector': dict(sorted(Counter(site.split('@')[0] for sites in detected.values()
+                                                         for site in set(sites)).items())),
+                         'detector_entries': sum(bool(sites) for sites in detected.values()),
+                         'unclassified': sorted(key for key, sites in detected.items()
+                                                if any(site.startswith('unclassified@') for site in sites))},
             'areas': {'map': len(area_ids), 'open_origins': len(open_areas),
                       'ungated': sum(not row['derived'] for row in open_areas.values()),
                       'ungated_origins': sorted(key for key, row in open_areas.items() if not row['derived']),
@@ -2022,19 +2033,95 @@ def register_recipes(claims, register):
     return recipes
 
 
-def register_matches(git, rev, files, recipes, environment, toolchain=None):
-    """D05-CHK-05: match each claim's title, body and file recipes against every leaf registration in
-    `files`. A body is the registration's text plus, transitively, the text of the same-file and
-    test-side helpers whose names it references; a namespace import widens to every exported helper."""
-    if not files:
-        return []
+def register_facts(git, rev, files, environment, toolchain=None):
+    """Helper and import facts for `files` and their test-side import closures, parsed once."""
     closures = import_closures(git, rev, files, environment, toolchain)
     modules = sorted({*files, *(path for closure in closures.values() for path in closure['test_side'])})
     requests = [{'op': op, 'path': name, 'text': git.blob(rev, name).decode()} for name in modules for op in ('helpers', 'imports')]
     results = source_facts(git, rev, requests, environment, toolchain)
     helper_facts = {name: results[2 * index] for index, name in enumerate(modules)}
     import_facts = {name: results[2 * index + 1] for index, name in enumerate(modules)}
+    return closures, helper_facts, import_facts
+
+
+class RunSet:
+    """Design 06 R1-01: the V-ENV detector's matches in what a run reaches from given names: same-file
+    functions and module-scope variables, and through test-side imports their exports, aliases and
+    re-exports. Builtins, external packages and production modules are outside the run set. A referenced
+    test-side binding whose text cannot be found is itself a match (`unresolved`)."""
+
+    def __init__(self, git, rev, helper_facts, import_facts):
+        self.git, self.rev, self.helpers, self.imports = git, rev, helper_facts, import_facts
+        self.packages = workspace_packages(git, rev)
+
+    @staticmethod
+    def sites(module, rows):
+        return {row.split('@', 1)[0] + '@' + module + ':' + row.split('@', 1)[1] for row in rows}
+
+    def names(self, module, names, seen, found):
+        facts = self.helpers[module]
+        bindings = {row['local']: row for row in self.imports[module]['bindings'] if not row['type_only']}
+        for name in names:
+            if (module, name) in seen:
+                continue
+            seen.add((module, name))
+            for row in [*facts['functions'].get(name, []), *facts['constants'].get(name, [])]:
+                found.update(self.sites(module, row['ambient']))
+                self.names(module, row['references'], seen, found)
+            if name in bindings and not self.imported(module, bindings[name], seen, found):
+                found.add(f'unresolved@{module}:{name}')
+
+    def imported(self, module, binding, seen, found):
+        kind, target = resolve_specifier(self.git, self.rev, module, binding['module'], self.packages)
+        if kind in ('builtin', 'external') or (kind == 'file' and not test_side(target)):
+            return True
+        if kind != 'file' or target not in self.helpers:
+            return False
+        return self.export(target, binding['imported'], seen, found, set())
+
+    def export(self, module, name, seen, found, visiting):
+        """A module's export `name` (`*` for every export): reached and expanded, or False when absent."""
+        if (module, name) in visiting:
+            return True
+        visiting.add((module, name))
+        facts = self.helpers[module]
+        aliases = {row['exported']: row['local'] for row in facts['exports']}
+        local = [key for table in (facts['functions'], facts['constants']) for key, rows in table.items()
+                 if any(row['exported'] for row in rows)]
+        if name == '*':
+            self.names(module, [*local, *aliases.values()], seen, found)
+            for row in facts['reexports']:
+                if not self.reexport(module, row, row['local'], seen, found, visiting):
+                    found.add(f"unresolved@{module}:{row['module']}")
+            return True
+        if name in aliases or name in local:
+            self.names(module, [aliases.get(name, name)], seen, found)
+            return True
+        for row in facts['reexports']:
+            if row['exported'] == name:
+                return self.reexport(module, row, '*' if row['local'] == '*' else row['local'], seen, found, visiting)
+        return any(self.reexport(module, row, name, seen, found, visiting)
+                   for row in facts['reexports'] if row['exported'] == '*')
+
+    def reexport(self, module, row, name, seen, found, visiting):
+        kind, target = resolve_specifier(self.git, self.rev, module, row['module'], self.packages)
+        if kind in ('builtin', 'external') or (kind == 'file' and not test_side(target)):
+            return True
+        return kind == 'file' and target in self.helpers and self.export(target, name, seen, found, visiting)
+
+
+def register_matches(git, rev, files, recipes, environment, toolchain=None):
+    """D05-CHK-05: match each claim's title, body and file recipes against every leaf registration in
+    `files`. A body is the registration's text plus, transitively, the text of the same-file and
+    test-side helpers whose names it references; a namespace import widens to every exported helper.
+    Design 06 R1-01: a leaf also matches V-ENV when the detector finds a match in its run set: the
+    registration, the helpers and module-scope variables it reaches, its enclosing hooks, and the load-time
+    code of its file and test-side import closure (suite bodies included), or a parse diagnostic there."""
+    if not files:
+        return []
+    closures, helper_facts, import_facts = register_facts(git, rev, files, environment, toolchain)
     packages = workspace_packages(git, rev)
+    reach = RunSet(git, rev, helper_facts, import_facts)
     compiled = {claim: {field: re.compile(recipe[field]) for field in ('title', 'body') if field in recipe}
                 for claim, recipe in recipes.items()}
 
@@ -2064,6 +2151,14 @@ def register_matches(git, rev, files, recipes, environment, toolchain=None):
 
     matches = []
     for name in files:
+        loaded = [name, *closures[name]['test_side']]
+        load = set()
+        for module in loaded:
+            load.update(reach.sites(module, helper_facts[module]['load']['ambient']))
+            reach.names(module, helper_facts[module]['load']['references'], set(), load)
+        if any(helper_facts[module]['diagnostics'] for module in loaded):
+            load.add('parse@' + name)
+        registrations = {row['index']: row for row in helper_facts[name]['registrations']}
         for registration in helper_facts[name]['registrations']:
             if registration['kind'] != 'leaf':
                 continue
@@ -2071,44 +2166,74 @@ def register_matches(git, rev, files, recipes, environment, toolchain=None):
             expand(name, registration['references'], set(), texts)
             body = '\n'.join(texts)
             title = registration['title'].get('value', registration['title'].get('text', ''))
-            claims = sorted(claim for claim, recipe in recipes.items()
-                            if name in recipe.get('files', []) or
-                            ('title' in compiled[claim] and compiled[claim]['title'].search(title)) or
-                            ('body' in compiled[claim] and compiled[claim]['body'].search(body)))
+            claims = {claim for claim, recipe in recipes.items()
+                      if name in recipe.get('files', []) or
+                      ('title' in compiled[claim] and compiled[claim]['title'].search(title)) or
+                      ('body' in compiled[claim] and compiled[claim]['body'].search(body))}
+            found, seen = set(load) | reach.sites(name, registration['ambient']), set()
+            reach.names(name, registration['references'], seen, found)
+            ancestors, parent = set(), registration['parent']
+            while parent is not None:
+                ancestors.add(parent)
+                parent = registrations[parent]['parent']
+            for hook in registrations.values():
+                if hook['kind'] == 'hook' and (hook['parent'] is None or hook['parent'] in ancestors):
+                    found |= reach.sites(name, hook['ambient'])
+                    reach.names(name, hook['references'], seen, found)
+            if found and 'V-ENV' in recipes:
+                claims.add('V-ENV')
             if claims:
                 location = registration['location']
-                matches.append({'key': f"{name}:{location['line']}:{location['column']}", 'claims': claims})
+                matches.append({'key': f"{name}:{location['line']}:{location['column']}", 'claims': sorted(claims),
+                                'detector': sorted(found)})
     return matches
 
 
 CASE_ATTRIBUTIONS = ('held_witness', 'mechanism_witness')
 
 
-def register_case_matches(git, rev, cases, recipes, registry_path):
+def register_case_matches(git, rev, cases, recipes, registry_path, environment=None, toolchain=None):
     """P1-H over registry cases, keyed `case:<id>`. A case's title is its ID and assertion; its body is its
-    stored input, its argv and the text of every repository file it names or runs, except the registry."""
+    stored input, its argv and the text of every repository file it names or runs, except the registry.
+    Design 06 R1-01: a case also matches V-ENV when the detector finds a match anywhere in the JavaScript
+    or TypeScript files it names or runs, or their test-side import closures, or one of those imports is
+    missing. Other files (Python, data) are read by the recipes only."""
     compiled = {claim: {field: re.compile(recipe[field]) for field in ('title', 'body') if field in recipe}
                 for claim, recipe in recipes.items()}
+    named = {case['id']: [name for name in dict.fromkeys([*case.get('files', []), *case.get('argv', [])])
+                          if name != registry_path and blob_id(git, rev, name) is not None] for case in cases}
+    sources = sorted({name for files in named.values() for name in files if name.endswith(SOURCE_SUFFIXES)})
+    environment = environment if environment is not None else child_environment(environment_declaration(None))[0]
+    closures, helper_facts, _ = register_facts(git, rev, sources, environment, toolchain) if sources else ({}, {}, {})
     matches = []
     for case in cases:
-        named = [*case.get('files', []), *case.get('argv', [])]
-        files = [name for name in dict.fromkeys(named) if name != registry_path and blob_id(git, rev, name) is not None]
+        files = named[case['id']]
         title = f"{case['id']}\n{case.get('assertion', '')}"
         body = '\n'.join([json.dumps(case.get('input'), sort_keys=True), ' '.join(case.get('argv', [])),
                           *(git.blob(rev, name).decode('utf-8', 'replace') for name in files)])
-        claims = sorted(claim for claim, recipe in recipes.items()
-                        if set(files) & set(recipe.get('files', [])) or
-                        ('title' in compiled[claim] and compiled[claim]['title'].search(title)) or
-                        ('body' in compiled[claim] and compiled[claim]['body'].search(body)))
+        claims = {claim for claim, recipe in recipes.items()
+                  if set(files) & set(recipe.get('files', [])) or
+                  ('title' in compiled[claim] and compiled[claim]['title'].search(title)) or
+                  ('body' in compiled[claim] and compiled[claim]['body'].search(body))}
+        found = set()
+        for name in (name for name in files if name in closures):
+            for module in [name, *closures[name]['test_side']]:
+                found.update(RunSet.sites(module, helper_facts[module]['writes']))
+            found.update('unresolved@' + name + ':' + missing for missing in closures[name]['missing'])
+        if found and 'V-ENV' in recipes:
+            claims.add('V-ENV')
         if claims:
-            matches.append({'key': 'case:' + case['id'], 'claims': claims})
+            matches.append({'key': 'case:' + case['id'], 'claims': sorted(claims), 'detector': sorted(found)})
     return matches
 
 
-def hold_register(git, rev, register, claims, files, environment, toolchain=None, cases=(), registry_path=None):
+def hold_register(git, rev, register, claims, files, environment, toolchain=None, cases=(), registry_path=None, report=None):
     """P1-H: the register's recipes, recomputed at C over `files` and the registry cases, must equal its
     classified entries. A held or superseded case carries its witness attribution, and every attributed
-    case is registered so."""
+    case is registered so. Design 06 §2 (owner choice 08 §2.3): a held or superseded entry names exactly
+    one of its governing `decision` (one of its claim's decisions) or its `reading`; category entries
+    name their existing decision; every V-ENV match is held (rule 1), under V-ENV only by owner choice
+    08, which no other entry names. `report`, when given, receives each match's detector sites."""
     recipes = register_recipes(claims, register)
     entries = {}
     for row in register.get('entries', []):
@@ -2119,11 +2244,34 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
         require(row['classification'] == 'not_held' or row.get('claim') in claims,
                 'a held or superseded entry names its held claim')
         entries[row['key']] = row
+    for row in entries.values():
+        if row['classification'] == 'not_held':
+            require('decision' not in row, 'a not_held entry names no hold decision: ' + row['key'])
+            continue
+        require(('decision' in row) != ('reading' in row),
+                'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])
+        if 'decision' in row:
+            require(row['decision'] in claims[row['claim']]['decisions'],
+                    "a held or superseded entry's decision governs its claim: " + row['key'])
+        else:
+            reading = row['reading']
+            require(isinstance(reading, dict) and set(reading) == {'facts', 'claim'} and isinstance(reading['facts'], str) and
+                    bool(reading['facts'].strip()) and reading['claim'] == row['claim'],
+                    'a reading states its facts and the claim they bear on: ' + row['key'])
+        require(row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],
+                'a category entry names its existing decision: ' + row['key'])
     matches = register_matches(git, rev, files, recipes, environment, toolchain)
-    matches += register_case_matches(git, rev, cases, recipes, registry_path)
+    matches += register_case_matches(git, rev, cases, recipes, registry_path, environment, toolchain)
     require({row['key'] for row in matches} == set(entries), 'register entries differ from the recomputed matches')
     for row in matches:
         require(entries[row['key']].get('matched') == row['claims'], 'register entry records other matched claims: ' + row['key'])
+    for key, row in entries.items():
+        venv = 'V-ENV' in row['matched']
+        require(not venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)
+        require(not venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),
+                'a V-ENV match held under V-ENV names owner choice 08: ' + key)
+        require(row.get('decision') != VENV_RECORD or (venv and row.get('claim') == 'V-ENV'),
+                'owner choice 08 holds V-ENV matches only: ' + key)
     for case in cases:
         attributed = (case.get('claim') or {}).get('kind') in CASE_ATTRIBUTIONS
         entry = entries.get('case:' + case['id'])
@@ -2131,6 +2279,8 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
                 'a held or superseded case carries its witness attribution: ' + case['id'])
         require(not attributed or entry is not None and entry['classification'] != 'not_held',
                 'an attributed witness case is registered as held or superseded: ' + case['id'])
+    if report is not None:
+        report.update({row['key']: row['detector'] for row in matches})
     return entries
 
 

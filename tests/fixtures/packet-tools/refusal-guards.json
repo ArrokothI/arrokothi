@@ -7956,6 +7956,238 @@
       ]
     },
     {
+      "id": "guard.hold_register.4c5498b39f68ada4",
+      "assertion": "test_venv_detector.StructureTests.test_a_not_held_entry_names_no_hold_decision",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_a_not_held_entry_names_no_hold_decision"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.4c5498b39f68ada4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require('decision' not in row, 'a not_held entry names no hold decision: ' + row['key'])",
+          "after": "pass  # tools01-ablate:4c5498b39f68ada4",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.4c5498b39f68ada4",
+          "id": "mutation-20118256d987d3c5dbf279bcb5dd3a82a2825fef4857e143bf57e164425a12c3"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.d9ed523177a6ea39",
+      "assertion": "test_venv_detector.StructureTests.test_an_entry_names_exactly_one_decision_or_reading",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_an_entry_names_exactly_one_decision_or_reading"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.d9ed523177a6ea39"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(('decision' in row) != ('reading' in row),\n                'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])",
+          "after": "pass  # tools01-ablate:d9ed523177a6ea39",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.d9ed523177a6ea39",
+          "id": "mutation-1f8e86f31ba161f940be564fe6bababe4ce6148772db66e98e6487ca535a974b"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.dabd16be1bc58890",
+      "assertion": "test_venv_detector.StructureTests.test_a_decision_governs_its_claim",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_a_decision_governs_its_claim"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.dabd16be1bc58890"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['decision'] in claims[row['claim']]['decisions'],\n                    \"a held or superseded entry's decision governs its claim: \" + row['key'])",
+          "after": "pass  # tools01-ablate:dabd16be1bc58890",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.dabd16be1bc58890",
+          "id": "mutation-f06e4f7cc9ee8bfee103564c2640ab3aaf8e579f87a3195ac0b22842a2d452ad"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.ee7ae9a35da34b13",
+      "assertion": "test_venv_detector.StructureTests.test_a_reading_states_its_facts_and_claim",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_a_reading_states_its_facts_and_claim"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.ee7ae9a35da34b13"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(reading, dict) and set(reading) == {'facts', 'claim'} and isinstance(reading['facts'], str) and\n                    bool(reading['facts'].strip()) and reading['claim'] == row['claim'],\n                    'a reading states its facts and the claim they bear on: ' + row['key'])",
+          "after": "pass  # tools01-ablate:ee7ae9a35da34b13",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.ee7ae9a35da34b13",
+          "id": "mutation-43390457bba83ed5b1e2222654cb1f8e2f590e033bf6897d9e16bbab1db75445"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.0f33bb919dea0e97",
+      "assertion": "test_venv_detector.StructureTests.test_a_category_entry_names_its_existing_decision",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_a_category_entry_names_its_existing_decision"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.0f33bb919dea0e97"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],\n                'a category entry names its existing decision: ' + row['key'])",
+          "after": "pass  # tools01-ablate:0f33bb919dea0e97",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.0f33bb919dea0e97",
+          "id": "mutation-4f45baa75777b3b0121f77fb8793fb03b6104e87bc159475c1e1be7447c551dd"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.f03d63e9cca797f2",
+      "assertion": "test_venv_detector.StructureTests.test_a_v_env_match_left_not_held_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_a_v_env_match_left_not_held_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.f03d63e9cca797f2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)",
+          "after": "pass  # tools01-ablate:f03d63e9cca797f2",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.f03d63e9cca797f2",
+          "id": "mutation-626f723a95b1943fb5054d928af59b833d2060d345e9a2191b0fb930155e7e7a"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.cac4c2072a1d75cc",
+      "assertion": "test_venv_detector.StructureTests.test_a_rule_1_entry_names_owner_choice_08",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_a_rule_1_entry_names_owner_choice_08"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.cac4c2072a1d75cc"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),\n                'a V-ENV match held under V-ENV names owner choice 08: ' + key)",
+          "after": "pass  # tools01-ablate:cac4c2072a1d75cc",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.cac4c2072a1d75cc",
+          "id": "mutation-3ed8056aebc101e8201940be2f866a9d2cd419b8d3117f952f9190cbea867397"
+        }
+      ]
+    },
+    {
+      "id": "guard.hold_register.2c1d190106cb44e0",
+      "assertion": "test_venv_detector.StructureTests.test_owner_choice_08_names_only_v_env_matches",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: hold_register",
+      "input": {
+        "test": "test_venv_detector.StructureTests.test_owner_choice_08_names_only_v_env_matches"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.hold_register.2c1d190106cb44e0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row.get('decision') != VENV_RECORD or (venv and row.get('claim') == 'V-ENV'),\n                'owner choice 08 holds V-ENV matches only: ' + key)",
+          "after": "pass  # tools01-ablate:2c1d190106cb44e0",
+          "operator": "remove-refusal-check",
+          "name": "guard.hold_register.2c1d190106cb44e0",
+          "id": "mutation-bf070bb87486909009e731b960a81a6da97fbb9d2884898a56671eaa4d4790a7"
+        }
+      ]
+    },
+    {
       "id": "guard.area_map.6a49a6a733a9c860",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_format_two_empty_tables",
       "category": "tool-refusal",

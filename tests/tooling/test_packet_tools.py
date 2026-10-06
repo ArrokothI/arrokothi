@@ -53,13 +53,17 @@ class RepositoryFixture(unittest.TestCase):
         return self.git('rev-parse', 'HEAD')
 
     def format_two_tables(self):
-        """Format-2 holds with the minimum register recipes, a passing A10 floor record, no moves or reviews."""
+        """Format-2 holds with the minimum register recipes, a passing A10 floor record, no moves or reviews.
+        Each claim's decisions include the records design 06 §2 requires its entries to name."""
         self.write('decision.md', 'Held claim decision.\n')
+        for path in {tool.VENV_RECORD, *(path for paths in tool.CATEGORY_DECISIONS.values() for path in paths)}:
+            self.write(path, 'Fixture copy of a governing decision.\n')
         record = gzip.compress(json.dumps({'results': [{'assumption': 'A10', 'passed': True, 'facts': {
             'process_isolation': {'distinct_processes': True}, 'order_model_holds': False}}]}).encode(), mtime=0)
         (self.root / 'floor.json.gz').write_bytes(record)
         claims = [{'id': claim, 'owner': 'BINDING-01' if claim == 'V-ENV' else 'K1.1-correction-03',
-                   'decisions': ['decision.md']} for claim in ('V-D1', 'Proxy', 're-prototyped-built-in', 'V-ENV')]
+                   'decisions': ['decision.md', *(tool.CATEGORY_DECISIONS.get(claim) or (tool.VENV_RECORD,))]}
+                  for claim in ('V-D1', 'Proxy', 're-prototyped-built-in', 'V-ENV')]
         return {'holds': {'claims': claims, 'register': {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),
                                                          'entries': []}},
                 'moves': [], 'floor': {'record': 'floor.json.gz', 'sha256': tool.digest(record), 'order_model_holds': False},
@@ -75,6 +79,19 @@ class RepositoryFixture(unittest.TestCase):
         self.write('report.md', 'Implementation observations, not acceptance.\n')
         h = self.commit('report')
         return c, h
+
+
+def classified(row, classification='not_held', claim=None, reason='Fixture classification.'):
+    """A register entry for a recomputed match: a V-ENV match is held by owner choice 08 rule 1 unless a
+    category claim keeps it; a held category entry names its existing decision (design 06 §2)."""
+    entry = {'key': row['key'], 'matched': row['claims'], 'classification': classification, 'reason': reason}
+    if classification == 'not_held' and 'V-ENV' in row['claims']:
+        classification, claim = 'held', 'V-ENV'
+        entry['classification'] = 'held'
+    if classification != 'not_held':
+        entry['claim'] = claim
+        entry['decision'] = tool.VENV_RECORD if claim == 'V-ENV' else tool.CATEGORY_DECISIONS[claim][0]
+    return entry
 
 
 class CandidateTests(RepositoryFixture):

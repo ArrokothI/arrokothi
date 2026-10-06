@@ -1000,7 +1000,12 @@
           "target-never-kills",
           "target-absent",
           "target-malformed",
-          "target-assertion-shape"
+          "target-assertion-shape",
+          "venv-leaf",
+          "venv-load",
+          "venv-hooks",
+          "venv-unresolved",
+          "venv-case"
         ],
         "environment": [
           "POSIX-Python"
@@ -1078,6 +1083,46 @@
           "case": "result.target-assertion-shape",
           "values": {
             "failure": "target-assertion-shape",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-leaf",
+          "values": {
+            "failure": "venv-leaf",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-load",
+          "values": {
+            "failure": "venv-load",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-hooks",
+          "values": {
+            "failure": "venv-hooks",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-unresolved",
+          "values": {
+            "failure": "venv-unresolved",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-case",
+          "values": {
+            "failure": "venv-case",
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }

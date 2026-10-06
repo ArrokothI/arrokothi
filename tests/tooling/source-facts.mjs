@@ -808,34 +808,330 @@ function imports(source) {
   return { requests: moduleRequests(source), bindings, dynamic };
 }
 
-// For the hold register (design 05 D05-CHK-05): each registration's text and the names it references,
-// and every same-file function-like declaration's text and references, so helpers are followed.
-function helpers(source) {
-  const { found } = collect(source);
-  // A null-prototype table: a helper named `constructor` or `__proto__` is an ordinary key.
-  const functions = Object.create(null);
-  const add = (name, node) => {
-    functions[name] ??= [];
-    functions[name].push({ text: node.getText(source), references: [...identifiers(node)], exported: exported(node.parent?.parent ?? node) || exported(node) });
+// ---------------------------------------------------------------------------------------------
+// Design 06 R1-01: what a registration, helper, hook or load-time code can do to the process's
+// built-in environment (V-ENV). Syntactic, over the pinned parse, never executed; aliases are a
+// scope-blind fixpoint that over-includes. Each match is `kind@line`; the hold register holds every
+// leaf or case whose run set has one (owner choice 08 rule 1).
+const INTRINSIC_NAMES = new Set(['Object', 'Function', 'Array', 'String', 'Number', 'Boolean', 'BigInt', 'Symbol', 'Date',
+  'RegExp', 'Error', 'AggregateError', 'EvalError', 'RangeError', 'ReferenceError', 'SyntaxError', 'TypeError', 'URIError',
+  'Map', 'Set', 'WeakMap', 'WeakSet', 'WeakRef', 'FinalizationRegistry', 'Promise', 'ArrayBuffer', 'SharedArrayBuffer',
+  'DataView', 'Int8Array', 'Uint8Array', 'Uint8ClampedArray', 'Int16Array', 'Uint16Array', 'Int32Array', 'Uint32Array',
+  'Float16Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array', 'JSON', 'Math', 'Reflect', 'Atomics',
+  'Intl', 'WebAssembly', 'globalThis', 'global']);
+const PROTOTYPE_NAMES = new Set(['prototype', '__proto__', 'constructor']);
+const PROTOTYPE_OBJECTS = new Set(['prototype', '__proto__']);
+const WRITER_CALLS = {
+  Object: new Set(['defineProperty', 'defineProperties', 'assign', 'setPrototypeOf', 'freeze', 'seal', 'preventExtensions']),
+  Reflect: new Set(['set', 'defineProperty', 'deleteProperty', 'setPrototypeOf', 'preventExtensions']),
+};
+const PROTOTYPE_READERS = { Object: new Set(['getPrototypeOf']), Reflect: new Set(['getPrototypeOf']) };
+// Read-only reflection: an intrinsic object passed to these does not escape.
+const READ_ONLY = new Set(['create', 'getPrototypeOf', 'getOwnPropertyNames', 'getOwnPropertyDescriptor',
+  'getOwnPropertyDescriptors', 'getOwnPropertySymbols', 'keys', 'values', 'entries', 'ownKeys', 'has', 'isFrozen',
+  'isSealed', 'isExtensible', 'is', 'hasOwn', 'isPrototypeOf', 'from', 'isArray', 'isInteger', 'stringify']);
+// Readers whose results are fresh or primitive; any other call or `new` receiving an intrinsic object
+// returns an unclassified value.
+const FRESH_RESULTS = new Set(['keys', 'getOwnPropertyNames', 'getOwnPropertySymbols', 'create', 'is', 'isArray',
+  'isFrozen', 'isSealed', 'isExtensible', 'isInteger', 'isPrototypeOf', 'hasOwn', 'stringify', 'getPrototypeOf']);
+const ASSIGNMENTS = new Set([ts.SyntaxKind.EqualsToken, ts.SyntaxKind.PlusEqualsToken, ts.SyntaxKind.MinusEqualsToken,
+  ts.SyntaxKind.AsteriskEqualsToken, ts.SyntaxKind.AsteriskAsteriskEqualsToken, ts.SyntaxKind.SlashEqualsToken,
+  ts.SyntaxKind.PercentEqualsToken, ts.SyntaxKind.LessThanLessThanEqualsToken, ts.SyntaxKind.GreaterThanGreaterThanEqualsToken,
+  ts.SyntaxKind.GreaterThanGreaterThanGreaterThanEqualsToken, ts.SyntaxKind.AmpersandEqualsToken, ts.SyntaxKind.BarEqualsToken,
+  ts.SyntaxKind.CaretEqualsToken, ts.SyntaxKind.BarBarEqualsToken, ts.SyntaxKind.AmpersandAmpersandEqualsToken,
+  ts.SyntaxKind.QuestionQuestionEqualsToken]);
+const CHILD_MODULES = new Set(['child_process', 'node:child_process']);
+const CHILD_CALLS = new Set(['exec', 'execSync', 'execFile', 'execFileSync', 'spawn', 'spawnSync', 'fork']);
+const EVAL_FLAGS = /^(?:-e|--eval|-p|--print|--input-type(?:=.*)?)$/;
+
+function memberCall(node, table) {
+  const callee = unwrapTypes(node.expression);
+  return ts.isPropertyAccessExpression(callee) && ts.isIdentifier(unwrapTypes(callee.expression)) &&
+    !!table[unwrapTypes(callee.expression).text]?.has(callee.name.text);
+}
+
+function calleeName(node) {
+  const callee = unwrapTypes(node);
+  return ts.isIdentifier(callee) ? callee.text : ts.isPropertyAccessExpression(callee) ? callee.name.text : null;
+}
+
+function inTypePosition(node) {
+  for (let current = node.parent; current; current = current.parent) {
+    if (ts.isTypeNode(current) || ts.isHeritageClause(current) || ts.isTypeAliasDeclaration(current) ||
+        ts.isInterfaceDeclaration(current)) return true;
+    if (ts.isExpression(current) || ts.isStatement(current)) return false;
+  }
+  return false;
+}
+
+// A value position: not a declared name, a property name, a type or an import/export specifier.
+function valueIdentifier(node) {
+  const parent = node.parent;
+  if (!parent || inTypePosition(node)) return false;
+  if ((ts.isPropertyAccessExpression(parent) || ts.isQualifiedName(parent)) && parent.name === node) return false;
+  if ((ts.isVariableDeclaration(parent) || ts.isParameter(parent) || ts.isFunctionDeclaration(parent) ||
+       ts.isFunctionExpression(parent) || ts.isClassDeclaration(parent) || ts.isClassExpression(parent) ||
+       ts.isPropertyAssignment(parent) || ts.isMethodDeclaration(parent) || ts.isPropertyDeclaration(parent) ||
+       ts.isBindingElement(parent) || ts.isImportSpecifier(parent) || ts.isImportClause(parent) ||
+       ts.isNamespaceImport(parent) || ts.isExportSpecifier(parent) || ts.isLabeledStatement(parent) ||
+       ts.isGetAccessorDeclaration(parent) || ts.isSetAccessorDeclaration(parent)) && parent.name === node) return false;
+  if (ts.isBindingElement(parent) && parent.propertyName === node) return false;
+  return true;
+}
+
+function ambientMatches(source) {
+  const childNames = new Set(), childSpaces = new Set();
+  for (const statement of source.statements) {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier) ||
+        !CHILD_MODULES.has(statement.moduleSpecifier.text) || !statement.importClause) continue;
+    if (statement.importClause.name) childSpaces.add(statement.importClause.name.text);
+    const bindings = statement.importClause.namedBindings;
+    if (bindings && ts.isNamespaceImport(bindings)) childSpaces.add(bindings.name.text);
+    if (bindings && ts.isNamedImports(bindings)) for (const element of bindings.elements) childNames.add(element.name.text);
+  }
+  const fixpoint = (holds) => {
+    const names = new Set();
+    for (let grew = true; grew;) {
+      grew = false;
+      const visit = (node) => {
+        let bound = [];
+        if (ts.isVariableDeclaration(node) && node.initializer && holds(node.initializer, names)) bound = bindingNames(node.name);
+        if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+            holds(node.right, names)) {
+          const left = unwrapTypes(node.left);
+          if (ts.isIdentifier(left)) bound = [left.text];
+          else if (ts.isObjectLiteralExpression(left) || ts.isArrayLiteralExpression(left)) {
+            const collect = (current) => { if (ts.isIdentifier(current)) bound.push(current.text); else ts.forEachChild(current, collect); };
+            collect(left);
+          }
+        }
+        for (const name of bound) if (!names.has(name)) { names.add(name); grew = true; }
+        ts.forEachChild(node, visit);
+      };
+      visit(source);
+    }
+    return names;
+  };
+  // Intrinsic objects: named intrinsics, prototype/constructor chains, getPrototypeOf results, aliases.
+  const intrinsic = (node, aliases) => {
+    node = unwrapTypes(node);
+    if (ts.isIdentifier(node)) return INTRINSIC_NAMES.has(node.text) || aliases.has(node.text);
+    if (ts.isPropertyAccessExpression(node)) return PROTOTYPE_NAMES.has(node.name.text) || intrinsic(node.expression, aliases);
+    if (ts.isElementAccessExpression(node)) {
+      const key = node.argumentExpression;
+      return (ts.isStringLiteralLike(key) && PROTOTYPE_NAMES.has(key.text)) || intrinsic(node.expression, aliases);
+    }
+    return ts.isCallExpression(node) && memberCall(node, PROTOTYPE_READERS);
+  };
+  const aliases = fixpoint(intrinsic);
+  // Prototype-like objects, for escapes: intrinsic constructors, prototypes, getPrototypeOf results.
+  const prototypeLike = (node, names) => {
+    node = unwrapTypes(node);
+    if (ts.isIdentifier(node)) return INTRINSIC_NAMES.has(node.text) || names.has(node.text);
+    if (ts.isPropertyAccessExpression(node)) return PROTOTYPE_OBJECTS.has(node.name.text);
+    if (ts.isElementAccessExpression(node)) return ts.isStringLiteralLike(node.argumentExpression) &&
+      PROTOTYPE_OBJECTS.has(node.argumentExpression.text);
+    return ts.isCallExpression(node) && memberCall(node, PROTOTYPE_READERS);
+  };
+  const prototypes = fixpoint(prototypeLike);
+  // Unclassified values (change 1): results of calls and `new` that receive an intrinsic object.
+  const unclassified = (node, names) => {
+    node = unwrapTypes(node);
+    if (ts.isIdentifier(node)) return names.has(node.text);
+    if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) return unclassified(node.expression, names);
+    if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+      if (ts.isCallExpression(node) && FRESH_RESULTS.has(calleeName(node.expression))) return false;
+      return (node.arguments ?? []).some(argument => prototypeLike(argument, prototypes) || intrinsic(argument, aliases) ||
+        unclassified(argument, names));
+    }
+    return false;
+  };
+  const tainted = fixpoint(unclassified);
+  // Code generators: Function and eval, their aliases and `.constructor` of a value.
+  const generator = (node, names) => {
+    node = unwrapTypes(node);
+    if (ts.isIdentifier(node)) return node.text === 'Function' || node.text === 'eval' || names.has(node.text);
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.CommaToken) return generator(node.right, names);
+    return (ts.isPropertyAccessExpression(node) && node.name.text === 'constructor') ||
+      (ts.isElementAccessExpression(node) && ts.isStringLiteralLike(node.argumentExpression) &&
+       node.argumentExpression.text === 'constructor');
+  };
+  const generators = fixpoint(generator);
+
+  const found = [];
+  const add = (node, kind) => found.push({ start: node.getStart(source), end: node.end, kind,
+    line: lineColumn(source, node.getStart(source)).line });
+  const member = (node, holds) => {
+    node = unwrapTypes(node);
+    return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) && holds(node.expression);
+  };
+  const writesInto = (node, holds) => {
+    let hit = false;
+    const visit = (current) => { if (member(current, holds)) hit = true; else ts.forEachChild(current, visit); };
+    visit(node);
+    return hit;
+  };
+  const isIntrinsic = (node) => intrinsic(node, aliases);
+  const isTainted = (node) => unclassified(node, tainted);
+  const escapes = (node) => {
+    const parent = node.parent;
+    if (ts.isCallExpression(parent) || ts.isNewExpression(parent)) {
+      if (!(parent.arguments ?? []).includes(node)) return false;
+      const callee = unwrapTypes(parent.expression);
+      const root = ts.isPropertyAccessExpression(callee) && ts.isIdentifier(unwrapTypes(callee.expression)) ?
+        unwrapTypes(callee.expression).text : null;
+      const name = calleeName(callee);
+      return !(root === 'assert' || name === 'assert' || READ_ONLY.has(name));
+    }
+    if (ts.isReturnStatement(parent) || (ts.isArrowFunction(parent) && parent.body === node)) return true;
+    if (ts.isPropertyAssignment(parent) && parent.initializer === node) return true;
+    if (ts.isShorthandPropertyAssignment(parent) || ts.isSpreadElement(parent) || ts.isArrayLiteralExpression(parent)) return true;
+    return ts.isBinaryExpression(parent) && parent.right === node && parent.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+      !ts.isIdentifier(unwrapTypes(parent.left));
   };
   const visit = (node) => {
-    if (ts.isFunctionDeclaration(node) && node.name) add(node.name.text, node);
-    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer &&
-        (isFunction(unwrapTypes(node.initializer)) || ts.isClassExpression(unwrapTypes(node.initializer)))) add(node.name.text, node);
-    if (ts.isClassDeclaration(node) && node.name) add(node.name.text, node);
+    if (ts.isBinaryExpression(node) && ASSIGNMENTS.has(node.operatorToken.kind)) {
+      if (writesInto(node.left, isIntrinsic)) add(node, 'assignment');
+      else if (writesInto(node.left, isTainted)) add(node, 'unclassified');
+    } else if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
+               [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator)) {
+      if (member(node.operand, isIntrinsic)) add(node, 'update');
+      else if (member(node.operand, isTainted)) add(node, 'unclassified');
+    } else if (ts.isDeleteExpression(node)) {
+      if (member(node.expression, isIntrinsic)) add(node, 'delete');
+      else if (member(node.expression, isTainted)) add(node, 'unclassified');
+    } else if (ts.isCallExpression(node) && memberCall(node, WRITER_CALLS) && node.arguments[0]) {
+      if (isIntrinsic(node.arguments[0])) add(node, 'writer-call');
+      else if (isTainted(node.arguments[0])) add(node, 'unclassified');
+    }
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(unwrapTypes(node.expression)) &&
+        /^__define[GS]etter__$/.test(unwrapTypes(node.expression).name.text) &&
+        isIntrinsic(unwrapTypes(node.expression).expression)) add(node, 'writer-call');
+    // Match 3: a prototype-like object passed on, returned or stored.
+    const bare = unwrapTypes(node);
+    if (node === bare && (ts.isIdentifier(node) || ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node) ||
+        ts.isCallExpression(node)) && !(ts.isIdentifier(node) && !valueIdentifier(node)) &&
+        prototypeLike(node, prototypes) && !ts.isPropertyAccessExpression(node.parent) &&
+        !ts.isElementAccessExpression(node.parent) && escapes(node)) add(node, 'escape');
+    // Match 7: an unclassified value returned.
+    if ((ts.isReturnStatement(node) && node.expression && isTainted(node.expression)) ||
+        (ts.isArrowFunction(node) && !ts.isBlock(node.body) && isTainted(node.body))) add(node, 'unclassified');
+    // Match 4: code this parse cannot read.
+    if (ts.isIdentifier(node) && node.text === 'eval' && valueIdentifier(node)) add(node, 'generated');
+    if ((ts.isCallExpression(node) || ts.isNewExpression(node)) && node.expression.kind !== ts.SyntaxKind.ImportKeyword &&
+        generator(node.expression, generators)) add(node, 'generated');
+    if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const argument = node.arguments[0];
+      if (!argument || !ts.isStringLiteralLike(argument) || /^data:/.test(argument.text)) add(node, 'generated');
+      else if (CHILD_MODULES.has(argument.text)) add(node, 'child-process');
+    }
+    if (ts.isStringLiteralLike(node) && EVAL_FLAGS.test(node.text) && ts.isArrayLiteralExpression(node.parent)) add(node, 'generated');
+    if (ts.isPropertyAssignment(node) && (ts.isIdentifier(node.name) || ts.isStringLiteral(node.name)) && node.name.text === 'eval' &&
+        node.initializer.kind !== ts.SyntaxKind.FalseKeyword) add(node, 'generated');
+    if (ts.isCallExpression(node)) {
+      const callee = unwrapTypes(node.expression);
+      if ((ts.isIdentifier(callee) && childNames.has(callee.text)) ||
+          (ts.isPropertyAccessExpression(callee) && ts.isIdentifier(unwrapTypes(callee.expression)) &&
+           childSpaces.has(unwrapTypes(callee.expression).text) && CHILD_CALLS.has(callee.name.text)) ||
+          (ts.isIdentifier(callee) && callee.text === 'require' && node.arguments[0] &&
+           ts.isStringLiteralLike(node.arguments[0]) && CHILD_MODULES.has(node.arguments[0].text))) add(node, 'child-process');
+    }
     ts.forEachChild(node, visit);
   };
   visit(source);
-  const exportedNames = [];
+  if (source.parseDiagnostics.length) found.push({ start: 0, end: source.end, kind: 'parse', line: 1 });
+  return found;
+}
+
+function matchesWithin(found, node, source) {
+  const start = node.getStart(source), end = node.end;
+  return found.filter(row => row.start >= start && row.end <= end && row.kind !== 'parse').map(row => row.kind + '@' + row.line);
+}
+
+const FUNCTION_LIKE = (node) => ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node) ||
+  ts.isMethodDeclaration(node) || ts.isGetAccessorDeclaration(node) || ts.isSetAccessorDeclaration(node) || ts.isConstructorDeclaration(node);
+
+// Load-time code: everything outside function bodies, leaf/subtest/hook registrations and imports.
+// Suite callbacks run while the file loads, so their code outside nested registrations is load-time.
+function loadTime(source, found, registered) {
+  const suites = new Set(registered.filter(({ record }) => record.kind === 'suite').map(({ callback }) => callback).filter(Boolean));
+  const calls = new Set(registered.filter(({ record }) => record.kind !== 'suite').map(({ call }) => call));
+  const outside = [], references = new Set();
+  const visit = (node) => {
+    if (ts.isImportDeclaration(node) || calls.has(node) || (FUNCTION_LIKE(node) && !suites.has(node))) {
+      outside.push([node.getStart(source), node.end]);
+      return;
+    }
+    if (ts.isIdentifier(node) && valueIdentifier(node)) references.add(node.text);
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  const inside = (row) => !outside.some(([start, end]) => row.start >= start && row.end <= end);
+  return { ambient: found.filter(row => row.kind !== 'parse' && inside(row)).map(row => row.kind + '@' + row.line),
+    references: [...references] };
+}
+
+// For the hold register (design 05 D05-CHK-05; design 06 R1-01): each registration's text and the names
+// it references, every same-file function-like declaration's and module-scope variable's text and
+// references, exports and re-exports, so helpers are followed; and the V-ENV detector's matches within
+// each, at load time and in the whole file, with the file's parse diagnostics.
+function helpers(source) {
+  const { found } = collect(source);
+  const ambient = ambientMatches(source);
+  const functions = Object.create(null), constants = Object.create(null);
+  const add = (table, name, node, statement) => {
+    table[name] ??= [];
+    table[name].push({ text: node.getText(source), references: [...identifiers(node)],
+      exported: exported(statement ?? node.parent?.parent ?? node) || exported(node), ambient: matchesWithin(ambient, node, source) });
+  };
+  const visit = (node) => {
+    if (ts.isFunctionDeclaration(node) && node.name) add(functions, node.name.text, node);
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer &&
+        (isFunction(unwrapTypes(node.initializer)) || ts.isClassExpression(unwrapTypes(node.initializer)))) add(functions, node.name.text, node);
+    if (ts.isClassDeclaration(node) && node.name) add(functions, node.name.text, node);
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  const exportedNames = [], reexports = [];
   for (const statement of source.statements) {
-    if (ts.isExportDeclaration(statement) && statement.exportClause && ts.isNamedExports(statement.exportClause) && !statement.moduleSpecifier) {
-      for (const element of statement.exportClause.elements) exportedNames.push({ exported: element.name.text, local: (element.propertyName ?? element.name).text });
+    if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        for (const name of bindingNames(declaration.name)) {
+          if (!(name in functions)) add(constants, name, declaration, statement);
+        }
+      }
+    }
+    if ((ts.isFunctionDeclaration(statement) || ts.isClassDeclaration(statement)) && statement.name &&
+        ts.getModifiers(statement)?.some(m => m.kind === ts.SyntaxKind.DefaultKeyword)) {
+      exportedNames.push({ exported: 'default', local: statement.name.text });
+    }
+    if (ts.isExportAssignment(statement) && !statement.isExportEquals) {
+      const value = unwrapTypes(statement.expression);
+      if (ts.isIdentifier(value)) exportedNames.push({ exported: 'default', local: value.text });
+      else {
+        add(constants, '*default*', statement, statement);
+        exportedNames.push({ exported: 'default', local: '*default*' });
+      }
+    }
+    if (!ts.isExportDeclaration(statement) || statement.isTypeOnly) continue;
+    const module = statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier) ? statement.moduleSpecifier.text : null;
+    if (statement.exportClause && ts.isNamedExports(statement.exportClause)) {
+      for (const element of statement.exportClause.elements) {
+        if (element.isTypeOnly) continue;
+        const row = { exported: element.name.text, local: (element.propertyName ?? element.name).text };
+        if (module === null) exportedNames.push(row);
+        else reexports.push({ ...row, module });
+      }
+    } else if (module !== null) {
+      reexports.push({ exported: statement.exportClause ? statement.exportClause.name.text : '*', local: '*', module });
     }
   }
   return {
     registrations: found.map(({ record, call }) => ({ index: record.index, kind: record.kind, location: record.location,
-      title: record.title, parent: record.parent, text: call.getText(source), references: [...identifiers(call)] })),
-    functions, exports: exportedNames,
+      title: record.title, parent: record.parent, text: call.getText(source), references: [...identifiers(call)],
+      ambient: matchesWithin(ambient, call, source) })),
+    functions, constants, exports: exportedNames, reexports, load: loadTime(source, ambient, found),
+    writes: ambient.map(row => row.kind + '@' + row.line), diagnostics: source.parseDiagnostics.length,
   };
 }
 

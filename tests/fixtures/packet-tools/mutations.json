@@ -4852,6 +4852,166 @@
           "id": "mutation-3f3835885ed7d3dd2eff14d3719a388f89f7a3eab2efb3cd5a6efb2d26d95d69"
         }
       ]
+    },
+    {
+      "id": "result.venv-leaf",
+      "assertion": "test_venv_detector.DetectorTests.test_every_variant_matches_and_every_control_does_not",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-01 (design 06): the V-ENV run set holds every leaf or case whose detector finds a match",
+      "input": {
+        "test": "test_venv_detector.DetectorTests.test_every_variant_matches_and_every_control_does_not"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.venv-leaf",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "            if found and 'V-ENV' in recipes:\n                claims.add('V-ENV')",
+          "after": "            if False:\n                claims.add('V-ENV')",
+          "operator": "remove-result-classification",
+          "name": "result.venv-leaf",
+          "id": "mutation-8f392ebcdb43b22556a4b224a9c078469accf619c4ea30b43b34318e905b5f66"
+        }
+      ]
+    },
+    {
+      "id": "result.venv-load",
+      "assertion": "test_venv_detector.DetectorTests.test_hooks_suite_bodies_and_load_time_code_hold_the_leaves_they_run_around",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-01 (design 06): the V-ENV run set holds every leaf or case whose detector finds a match",
+      "input": {
+        "test": "test_venv_detector.DetectorTests.test_hooks_suite_bodies_and_load_time_code_hold_the_leaves_they_run_around"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.venv-load",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "            load.update(reach.sites(module, helper_facts[module]['load']['ambient']))",
+          "after": "            pass  # tools01-ablate:venv-load",
+          "operator": "remove-result-classification",
+          "name": "result.venv-load",
+          "id": "mutation-939c0b1383fd7bd4d925b29a23b3a3215f892f8b20d15b2274084286a8826ed8"
+        }
+      ]
+    },
+    {
+      "id": "result.venv-hooks",
+      "assertion": "test_venv_detector.DetectorTests.test_hooks_suite_bodies_and_load_time_code_hold_the_leaves_they_run_around",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-01 (design 06): the V-ENV run set holds every leaf or case whose detector finds a match",
+      "input": {
+        "test": "test_venv_detector.DetectorTests.test_hooks_suite_bodies_and_load_time_code_hold_the_leaves_they_run_around"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.venv-hooks",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "                if hook['kind'] == 'hook' and (hook['parent'] is None or hook['parent'] in ancestors):",
+          "after": "                if hook['kind'] == 'hook' and hook['parent'] in ancestors:",
+          "operator": "remove-result-classification",
+          "name": "result.venv-hooks",
+          "id": "mutation-b996e8678242b0f1401f1a6497cc5e8b741be736bbf1467499d843472653b586"
+        }
+      ]
+    },
+    {
+      "id": "result.venv-unresolved",
+      "assertion": "test_venv_detector.DetectorTests.test_every_variant_matches_and_every_control_does_not",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-01 (design 06): the V-ENV run set holds every leaf or case whose detector finds a match",
+      "input": {
+        "test": "test_venv_detector.DetectorTests.test_every_variant_matches_and_every_control_does_not"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.venv-unresolved",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "            if name in bindings and not self.imported(module, bindings[name], seen, found):",
+          "after": "            if name in bindings and not self.imported(module, bindings[name], seen, found) and False:",
+          "operator": "remove-result-classification",
+          "name": "result.venv-unresolved",
+          "id": "mutation-a3140ac966b82cd83cb40054ea7d74d24db6f34e2f01a76caf3a2c00e8465b63"
+        }
+      ]
+    },
+    {
+      "id": "result.venv-case",
+      "assertion": "test_venv_detector.DetectorTests.test_a_case_run_set_is_its_named_files_and_their_closures",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-01 (design 06): the V-ENV run set holds every leaf or case whose detector finds a match",
+      "input": {
+        "test": "test_venv_detector.DetectorTests.test_a_case_run_set_is_its_named_files_and_their_closures"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.venv-case",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "        if found and 'V-ENV' in recipes:\n            claims.add('V-ENV')",
+          "after": "        if False:\n            claims.add('V-ENV')",
+          "operator": "remove-result-classification",
+          "name": "result.venv-case",
+          "id": "mutation-1e430e273f5c163daf01fcb9d837000ca43269795d76dc9af027daa363811e59"
+        }
+      ]
     }
   ],
   "source_trees": [
@@ -4880,7 +5040,9 @@
     "tests/tooling/test_runner_targets.py",
     "tests/tooling/test_target_tools.py",
     "tests/tooling/catalog-reporter.mjs",
-    "tests/tooling/reach-coverage.mjs"
+    "tests/tooling/reach-coverage.mjs",
+    "tests/tooling/test_venv_detector.py",
+    "tests/tooling/source-facts.mjs"
   ],
   "dependencies": [
     {

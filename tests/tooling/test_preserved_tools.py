@@ -5,7 +5,7 @@ import gzip
 import json
 import unittest
 
-from test_packet_tools import RepositoryFixture, tool
+from test_packet_tools import RepositoryFixture, classified, tool
 from test_target_tools import ROOT, pinned_toolchain
 
 TOOLING = ['tests/tooling/catalog-reporter.mjs', 'tests/tooling/source-facts.mjs', 'tests/tooling/read-trace.mjs',
@@ -154,8 +154,7 @@ class PreservedCensusTests(unittest.TestCase):
         recipes = tool.register_recipes(claims, cls.spec['holds']['register'])
         cls.matches = tool.register_matches(repo.reader, cls.c, sorted(files), recipes, cls.environment, cls.toolchain)
         held = f'tests/fx/registered.test.mjs:{cls.line("member")}:1'
-        cls.entries = [{'key': row['key'], 'matched': row['claims'], 'classification': 'held' if row['key'] == held else 'not_held',
-                        'claim': 'Proxy', 'reason': 'Fixture classification.'} for row in cls.matches]
+        cls.entries = [classified(row, 'held', 'Proxy') if row['key'] == held else classified(row) for row in cls.matches]
         register = {row['key']: row for row in cls.entries}
         with contextlib.ExitStack() as stack:
             context = tool.target_context(repo.reader, cls.c, cls.spec, stack, cls.toolchain)
