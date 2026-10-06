@@ -150,9 +150,9 @@ its SHA-256, and must occur exactly once in its file at C. `corpus` then checks,
   `coverageExecuted`; an anchor is reached when the run's count exceeds the baseline's. Every
   observable assertion anchor and every in-span input anchor must be reached;
 - discrimination: a reading trace gives `target_reading`; a mutation must be registered with this
-  counterexample as its `obligation` and mutate a file holding a cited operation anchor, and its
-  qualifying kill of the target leaf runs with the target-set mutants (step 7) — until then it is
-  `target_mutation_pending_execution`, never credit.
+  counterexample as its `obligation` and mutate a file holding a cited operation anchor; it stays
+  `target_mutation_pending_execution`, never credit, since no target-set mutant earns a kill in
+  TOOLS-01 (owner choice 09).
 
 A target whose counterexample is held or superseded is refused outright (P1-H). A failed check is
 reported with its reason and counted; it never becomes credit. Summaries count anchors bound,
@@ -218,8 +218,16 @@ instead of `argv`, and runs under the catalog reporter in a temporary copy.
   must be passing leaves there.
 - The control also records V8 coverage, and a mutant whose edit sites the control never executed is
   `uncovered`.
-- A mutant `killed` only when a leaf in its declared target set fails; `killed_by` names it. Any other
-  failure is a `wrong_kill`, never a kill.
+- Under owner choice 09 a target-set mutant is never `killed` (design 06 R1-04). It is `survived`
+  when every leaf passed, `wrong_kill` when every expected target passed and another leaf did not,
+  and otherwise `observed`, with one outcome per expected target: `passed`, `assertion` (a cause named
+  `AssertionError` or coded `ERR_ASSERTION`; its origin is not established), `error`, `skipped`,
+  `todo`, `cancelled`, `timeout`, `hook` or `absent`. The catalog reporter forwards each failure's
+  `failureType`, its cause's name and code, and the shape of its stack (type and frame count), which
+  is reported as provenance `frames`, `unusable` or `absent`. Run-level `timeout`, `output_limit`,
+  `not_applicable`, `setup_error`, `malformed` (missing or invalid catalog events), `uncovered`,
+  `invalid_baseline` and `nondeterministic` stay distinct. No observation is credit; TOOLS-02 designs
+  the evidence that a qualifying assertion executed and failed.
 - A mutant's `discovery` field (one full-suite run's first failures) is reported as metadata with
   `credit: none`, and never decides a status.
 
@@ -372,13 +380,15 @@ unchanged, separately from these executable identities.
 
 | Result | Meaning |
 |---|---|
-| `killed` | Passing control, unique replacement, reached fixture and named independent assertion failure with the declared exit. `killed_by` names the first failing assertion/test. |
+| `killed` | Probe route only: passing control, unique replacement, reached fixture and named independent assertion failure with the declared exit. `killed_by` names the first failing assertion/test. |
+| `observed` / `wrong_kill` | Target-set route only (owner choice 09): the observed outcome of each expected target, or failures outside the target set. Never a kill. |
 | `survived` | Applied and reached; the assertion still passes. |
 | `uncovered` | The fixture did not establish reach. |
 | `not_applicable` | Zero or multiple anchor matches; explicit stale/ambiguous result. |
 | `invalid_baseline` | The control did not produce a passing reached observation, or its sampled repeat changed. All dependent mutants lose kill credit. |
 | `setup_error` | Runtime start, import, syntax, compilation, harness or observation-protocol failure. Invalid execution, never a kill. |
 | `timeout` / `output_limit` | Declared resource bound exceeded; no kill credit. |
+| `malformed` | Target-set route: the catalog events are missing or invalid. Invalid execution, never a kill. |
 | `nondeterministic` | A sampled fresh-process repeat changed the structured outcome; any earlier kill credit is removed. |
 
 Fixtures emit one JSON observation with case, assertion, boolean reached/passed and optionally

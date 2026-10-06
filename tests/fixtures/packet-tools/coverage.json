@@ -996,7 +996,11 @@
           "invalid-repeat",
           "unstable-control",
           "target-wrong-kill",
-          "target-uncovered"
+          "target-uncovered",
+          "target-never-kills",
+          "target-absent",
+          "target-malformed",
+          "target-assertion-shape"
         ],
         "environment": [
           "POSIX-Python"
@@ -1042,6 +1046,38 @@
           "case": "result.target-uncovered",
           "values": {
             "failure": "target-uncovered",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-never-kills",
+          "values": {
+            "failure": "target-never-kills",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-absent",
+          "values": {
+            "failure": "target-absent",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-malformed",
+          "values": {
+            "failure": "target-malformed",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-assertion-shape",
+          "values": {
+            "failure": "target-assertion-shape",
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }

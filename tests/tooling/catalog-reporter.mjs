@@ -16,7 +16,17 @@ export default async function* catalogReporter(events) {
         row.todo = data.todo !== undefined && data.todo !== false;
         if (data.details && 'type' in data.details) row.details_type = data.details.type;
         const error = data.details?.error;
-        if (error) row.failure_type = error.failureType ?? null;
+        if (error) {
+          // R1-04 (owner choice 09): the failure's kind and its cause's name and code; the stack only by its shape.
+          row.failure_type = error.failureType ?? null;
+          const cause = error.cause;
+          const object = cause !== null && (typeof cause === 'object' || typeof cause === 'function');
+          row.cause_name = object && typeof cause.name === 'string' ? cause.name : null;
+          row.cause_code = object && typeof cause.code === 'string' ? cause.code : null;
+          const stack = object ? cause.stack : undefined;
+          row.cause_stack = stack === undefined || stack === null ? null : { type: typeof stack,
+            frames: typeof stack === 'string' ? stack.split('\n').filter((line) => /^\s+at\s/.test(line)).length : 0 };
+        }
       }
       // A zero-match file run reports one result named after its file at 1:1 (D05-CHK-02).
       row.synthetic = data.nesting === 0 && data.line === 1 && data.column === 1 && typeof data.file === 'string' &&

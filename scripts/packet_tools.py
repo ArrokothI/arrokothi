@@ -97,6 +97,11 @@ OPEN_STATES = ('pending', 'pending_revalidation')
 AREA_PATH = re.compile(r'(?<![\w/.-])((?:docs|packages|tests|scripts|examples|mental-model)/[\w./@*-]*)')
 AREA_ROOT_FILE = re.compile(r'(?<![\w/.-])(AGENTS\.md|CLAUDE\.md|README\.md|package(?:-lock)?\.json)(?![\w/-])')
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
+# R1-04 (owner choice 09): what the catalog reporter forwards about a failing result, kept on its leaf.
+FAILURE_FIELDS = (('type', 'failure_type'), ('cause_name', 'cause_name'), ('cause_code', 'cause_code'),
+                  ('stack', 'cause_stack'))
+TARGET_FAILURES = {'testCodeFailure': 'error', 'cancelledByParent': 'cancelled', 'testTimeoutFailure': 'timeout',
+                   'hookFailed': 'hook'}
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
 FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', 'families', 'holds', 'areas',
@@ -1047,25 +1052,50 @@ def expected_targets(mutant):
     return {(row['file'], tuple(row['path'])) for row in rows}
 
 
+def target_observation(pair):
+    """One expected target's observed outcome. An assertion-like failure names its cause; its origin is
+    never established in TOOLS-01 (owner choice 09), so the stack is reported only by its shape."""
+    if pair is None:
+        return {'outcome': 'absent'}
+    if pair['verdict'] != 'failed':
+        return {'outcome': pair['verdict']}
+    failure = pair.get('failure') or {}
+    outcome = TARGET_FAILURES.get(failure.get('type'), 'error')
+    if outcome == 'error' and (failure.get('cause_name') == 'AssertionError' or failure.get('cause_code') == 'ERR_ASSERTION'):
+        outcome = 'assertion'
+    stack = failure.get('stack')
+    provenance = ('absent' if stack is None else
+                  'frames' if isinstance(stack, dict) and type(stack.get('frames')) is int and stack['frames'] > 0 and
+                  stack.get('type') == 'string' else 'unusable')
+    return {'outcome': outcome, 'failure_type': failure.get('type'), 'cause': {'name': failure.get('cause_name'),
+            'code': failure.get('cause_code')}, 'provenance': provenance, 'origin': 'not established'}
+
+
 def target_outcome(run, mutant, reached):
-    """F3: a kill is a failing leaf in the mutant's declared target set; any other failure is a wrong kill."""
+    """F3 under owner choice 09: the target-set route reports what it observed and never returns `killed`.
+    `survived`: every leaf passed; `wrong_kill`: every expected target passed and another leaf did not;
+    otherwise `observed`, with one outcome per expected target. The run-level categories (timeout,
+    output_limit, not_applicable, setup_error, malformed, uncovered) stay distinct. None of them is credit."""
     if run['status'] != 'finished':
         return dict(status=run['status'], matches=run.get('matches'))
     leaves = target_leaves(run)
     if leaves is None:
-        return dict(status='setup_error', exit=run['exit'])
+        return dict(status='malformed', exit=run['exit'])
     failed = sorted(key for key, verdict in leaves.items() if verdict != 'passed')
     expected = expected_targets(mutant)
-    qualifying = [key for key in failed if key in expected]
     if not reached:
         return {'status': 'uncovered', 'failures': len(failed)}
-    if qualifying:
-        return {'status': 'killed', 'killed_by': qualifying[0][0] + ' > ' + ' > '.join(qualifying[0][1]),
-                'failures': len(failed)}
-    if failed:
+    passed = all(leaves.get(key) == 'passed' for key in expected)
+    if not failed and passed:
+        return {'status': 'survived' if run['exit'] == 0 else 'setup_error', 'failures': 0}
+    if passed:
         return {'status': 'wrong_kill', 'first_failure': failed[0][0] + ' > ' + ' > '.join(failed[0][1]),
                 'failures': len(failed)}
-    return {'status': 'survived' if run['exit'] == 0 else 'setup_error', 'failures': 0}
+    pairs = {(name, tuple(pair['path'])): pair for name, facts in run['tree']['files'].items()
+             for pair in facts['pairs'] if pair['leaf']}
+    observed = [dict(target=name + ' > ' + ' > '.join(path), **target_observation(pairs.get((name, path))))
+                for name, path in sorted(expected)]
+    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'none (owner choice 09)'}
 
 
 def target_control(files, case, environment, mutants):
@@ -1140,12 +1170,14 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                     outcome = execution_outcome(run, case)
                 state = outcome['status']
                 result = {'mutation': mutant['id'], 'status': state, 'run': run,
-                          'invalid': state in ('setup_error', 'timeout', 'output_limit')}
+                          'invalid': state in ('setup_error', 'timeout', 'output_limit', 'malformed')}
                 if state == 'killed':
                     result['killed_by'] = outcome['killed_by'] if targeted else \
                         outcome['observation'].get('failures', [case['assertion']])[0]
                 if state == 'wrong_kill':
                     result['first_failure'] = outcome['first_failure']
+                if state == 'observed':
+                    result['targets'] = outcome['targets']
                 if case['id'] in registry.get('determinism_sample', []):
                     repeated_run = run_targets(files, case, environment, mutant) if targeted else \
                         run_case(files, case, environment, mutant)
@@ -1399,6 +1431,8 @@ def file_tree(rows):
         path = (pairs[parent]['path'] if parent is not None else []) + [key[3]]
         pairs.append({'path': path, 'line': key[0], 'column': key[1], 'nesting': key[2], 'kind': kind,
                       'parent': parent, 'verdict': verdict})
+        if verdict == 'failed':
+            pairs[-1]['failure'] = {field: result.get(name) for field, name in FAILURE_FIELDS}
     parents = {pair['parent'] for pair in pairs}
     for index, pair in enumerate(pairs):
         pair['leaf'] = pair['kind'] == 'test' and index not in parents
@@ -1733,7 +1767,7 @@ def check_target(git, rev, target, counterexamples, registry, context):
         elif not {path for path, _, _ in mutation_edits(mutation)} & operation_files:
             refuse('the mutated file holds no cited operation anchor')
         else:
-            # A qualifying named failure of this leaf is executed with the target-set mutants (step 7).
+            # Owner choice 09: no target-set mutant earns a kill in TOOLS-01, so this stays pending (TOOLS-02).
             facts['credit'] = 'target_mutation_pending_execution'
     return facts
 

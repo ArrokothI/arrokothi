@@ -4665,7 +4665,7 @@
       "id": "result.target-wrong-kill",
       "assertion": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes",
       "category": "tool-result",
-      "source": "TOOLS-01 step 7: target-set kills name a leaf of the declared target set at a reached site (F3, D05-04)",
+      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
       "input": {
         "test": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes"
       },
@@ -4685,11 +4685,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "    qualifying = [key for key in failed if key in expected]",
-          "after": "    qualifying = list(failed)",
+          "before": "    if passed:\n        return {'status': 'wrong_kill',",
+          "after": "    if failed:\n        return {'status': 'wrong_kill',",
           "operator": "remove-result-classification",
           "name": "result.target-wrong-kill",
-          "id": "mutation-904768e6a8b2b74dc01b31c6e6429625943afd023602e075b448d82eddf98c8d"
+          "id": "mutation-b75ff2fcfadd9545335a032f660fdb2ee9fbb0f94c4e3b8f0caa3eeef3d787dd"
         }
       ]
     },
@@ -4722,6 +4722,134 @@
           "operator": "remove-result-classification",
           "name": "result.target-uncovered",
           "id": "mutation-cf432fd26dab61e859b4072480214323ff2dfdfedcb92baf2886387682961e03"
+        }
+      ]
+    },
+    {
+      "id": "result.target-never-kills",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-never-kills",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'none (owner choice 09)'}",
+          "after": "    return {'status': 'killed', 'killed_by': observed[0]['target'], 'failures': len(failed)}",
+          "operator": "remove-result-classification",
+          "name": "result.target-never-kills",
+          "id": "mutation-036e128fd3c05252e18949e4acbf3f118b3d64127d589b4f72cf0d7e7570447a"
+        }
+      ]
+    },
+    {
+      "id": "result.target-absent",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-absent",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "    passed = all(leaves.get(key) == 'passed' for key in expected)",
+          "after": "    passed = all(leaves.get(key, 'passed') == 'passed' for key in expected)",
+          "operator": "remove-result-classification",
+          "name": "result.target-absent",
+          "id": "mutation-b4f35d8df7277bba84cde668ef846afd22f139a8776af0365b428fe25e970b75"
+        }
+      ]
+    },
+    {
+      "id": "result.target-malformed",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_run_level_categories_stay_distinct",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_run_level_categories_stay_distinct"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-malformed",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "        return dict(status='malformed', exit=run['exit'])",
+          "after": "        return dict(status='setup_error', exit=run['exit'])",
+          "operator": "remove-result-classification",
+          "name": "result.target-malformed",
+          "id": "mutation-e038f14573b39fe26fd063ba65f110418418cc956cf4549e0b1558137bfdca65"
+        }
+      ]
+    },
+    {
+      "id": "result.target-assertion-shape",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill",
+      "category": "tool-result",
+      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-assertion-shape",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 120,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "        outcome = 'assertion'",
+          "after": "        outcome = 'error'",
+          "operator": "remove-result-classification",
+          "name": "result.target-assertion-shape",
+          "id": "mutation-3f3835885ed7d3dd2eff14d3719a388f89f7a3eab2efb3cd5a6efb2d26d95d69"
         }
       ]
     }
