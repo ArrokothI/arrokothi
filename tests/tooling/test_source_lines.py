@@ -49,7 +49,7 @@ class SourceLineTests(RepositoryFixture):
                 (self.root / 'source.md').write_bytes(data)
                 pin = self.commit('whole file endpoint')
                 origin = {'id': 'whole', 'path': 'source.md', 'revision': pin, 'line': 1}
-                self.assertEqual(tool.context_minimum(self.reader, origin), (1, end, data.decode()))
+                self.assertEqual(tool.context_minimum(self.reader, origin), (1, end, data.decode(), None))
 
     def test_fence_cannot_omit_context_after_embedded_separators(self):
         for separator in ('\r', '\u2028', '\u2029'):
@@ -62,6 +62,12 @@ class SourceLineTests(RepositoryFixture):
                 origin = {'id': 'fence', 'path': 'source.md', 'revision': pin, 'line': 5}
                 self.assertEqual(tool.context_minimum(self.reader, origin)[:2], (3, 7))
                 closure = {'context': [{'revision': pin, 'path': 'source.md', 'start': 3, 'end': 5}]}
+                if separator == '\r':
+                    # R1-02: a lone CR ends a CommonMark line inside an LF line, so the parse is uncertain.
+                    self.assertEqual(tool.context_minimum(self.reader, origin)[3], 'a carriage return inside the line at line 2')
+                    with self.assertRaisesRegex(tool.CheckError, 'minimum context is uncertain'):
+                        tool.context_check(self.reader, origin, closure)
+                    continue
                 with self.assertRaisesRegex(tool.CheckError, 'does not cover the minimum'):
                     tool.context_check(self.reader, origin, closure)
                 closure['context'][0]['end'] = 7

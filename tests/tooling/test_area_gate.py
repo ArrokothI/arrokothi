@@ -64,7 +64,7 @@ class AreaGateTests(RepositoryFixture):
         ids, area_of, paths = tool.area_map(self.reader, rev, MAP)
         derived = tool.origin_areas(self.reader, {'origins': [{'id': 'origin.empty', 'state': 'pending'}]}, intake,
                                     ids, area_of, paths)
-        self.assertEqual(derived, {'origin.empty': {'state': 'pending', 'areas': [], 'derived': False}})
+        self.assertEqual(derived, {'origin.empty': {'state': 'pending', 'areas': [], 'derived': False, 'uncertain': False}})
 
     def listed(self, result):
         return {area: (row['origins'], row['records']) for area, row in result['by_area'].items()}

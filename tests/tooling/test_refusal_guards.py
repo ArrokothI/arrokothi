@@ -72,6 +72,17 @@ class RefusalGuardTests(base.RepositoryFixture):
     def test_fence_opening(self):
         self.refuses('not an opening', lambda: tool.fenced_bytes(b'plain\n', 1))
 
+    def test_fence_closed(self):
+        self.refuses('unclosed source fence', lambda: tool.fenced_bytes(b'```js\ncode\n', 1))
+
+    def test_uncertain_minimum_context(self):
+        # R1-02: a list fence the block subset cannot place precedes the origin's section end.
+        self.write('docs/review.md', '## Section\n- ```\n```js\ncode\n```\n')
+        pin = self.commit('uncertain section')
+        origin = {'id': 'origin.fence', 'kind': 'artifact', 'revision': pin, 'path': 'docs/review.md', 'line': 3}
+        closure = {'context': [{'revision': pin, 'path': 'docs/review.md', 'start': 1, 'end': 5}]}
+        self.refuses('minimum context is uncertain', lambda: tool.context_check(self.reader, origin, closure))
+
     def inventory_change(self, change, message):
         base.InventoryTests.fixture(self)
         rev = self.edit('inventory.json', change)

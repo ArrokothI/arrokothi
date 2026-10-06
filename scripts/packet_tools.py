@@ -326,16 +326,13 @@ def source_lines(data):
 
 
 def fenced_bytes(data, line):
+    """An inline origin's body: the lines between its opener and closer in the shared block parse (R1-02)."""
     lines = [row.decode() for row in source_lines(data)]
     require(isinstance(line, int) and 1 <= line <= len(lines), 'invalid fence line')
-    opening = re.match(r'^\s*(`{3,}|~{3,})([\w-]*)', lines[line - 1])
-    require(opening is not None, 'fence locator is not an opening fence')
-    body = []
-    for text in lines[line:]:
-        if re.match(r'^\s*' + re.escape(opening[1][0]) + r'{' + str(len(opening[1])) + r',}\s*$', text):
-            return ('\n'.join(body) + '\n').encode()
-        body.append(text)
-    raise CheckError('unclosed source fence')
+    fences = markdown_blocks(lines)['fences']
+    require(line in fences, 'fence locator is not an opening fence')
+    require(fences[line] is not None, 'unclosed source fence')
+    return ('\n'.join(lines[line:fences[line] - 1]) + '\n').encode()
 
 
 def origin_id(kind, row):
@@ -657,6 +654,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'areas': {'map': len(area_ids), 'open_origins': len(open_areas),
                       'ungated': sum(not row['derived'] for row in open_areas.values()),
                       'ungated_origins': sorted(key for key, row in open_areas.items() if not row['derived']),
+                      'uncertain_context': sorted(key for key, row in open_areas.items() if row['uncertain']),
                       'open_by_area': dict(sorted(Counter(area for row in open_areas.values()
                                                           for area in row['areas']).items()))},
             'mapping_complete': not pending, 'execution': 'not evaluated',
@@ -2577,37 +2575,101 @@ def family_table(git, rev, rows, origins, counterexamples, registry, environment
     return families, {role: dict(count) for role, count in counts.items()}
 
 
-def markdown_section(lines, line):
-    """The heading section enclosing a fence line: from its nearest heading to the next of equal or higher level."""
-    level = lambda text: len(text) - len(text.lstrip('#')) if re.match(r'#{1,6} ', text) else 0
-    fenced, start = False, 1
-    heading = 0
-    for index, text in enumerate(lines[:line - 1], 1):
-        if text.lstrip().startswith('```'):
-            fenced = not fenced
-        elif not fenced and level(text):
-            start, heading = index, level(text)
-    end = len(lines)
-    fenced = False
-    for index in range(line, len(lines) + 1):
-        text = lines[index - 1]
-        if text.lstrip().startswith('```'):
-            fenced = not fenced
-        elif not fenced and level(text) and (heading == 0 or level(text) <= heading) and index > line:
-            end = index - 1
+# Design 06 R1-02: one LF-line Markdown block scan, a subset of CommonMark 0.31.2 §§4.2, 4.5 and 4.6
+# (fences, ATX headings, HTML blocks), learned from the specification, not copied.
+FENCE_OPENER = re.compile(r'( {0,3})(`{3,}|~{3,})(.*)')
+FENCE_LIKE = re.compile(r'[ \t>*+\-0-9.)]*(?:`{3,}|~{3,})')
+HEADING_LIKE = re.compile(r' {0,3}#{1,6}(?:[ \t]|$)')
+HTML_START = re.compile(r' {0,3}<(?:((?:script|pre|style|textarea)(?:[ \t>]|$))|(!--)|(\?)|(![A-Za-z])|(!\[CDATA\[))', re.I)
+HTML_END = {1: re.compile(r'</(?:script|pre|style|textarea)>', re.I), 2: re.compile('-->'), 3: re.compile(r'\?>'),
+            4: re.compile('>'), 5: re.compile(r'\]\]>')}
+HTML_BLOCK_TAG = re.compile(
+    r' {0,3}</?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|'
+    r'div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|'
+    r'main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|'
+    r'title|tr|track|ul)(?:[ \t/>]|$)', re.I)
+HTML_TAG_LINE = re.compile(r' {0,3}(?:<[A-Za-z][A-Za-z0-9-]*(?:[ \t]+[A-Za-z_:][\w.:-]*(?:[ \t]*=[ \t]*(?:[^ \t"\'=<>`]+|'
+                           r'\'[^\']*\'|"[^"]*"))?)*[ \t]*/?>|</[A-Za-z][A-Za-z0-9-]*[ \t]*>)[ \t]*')
+
+
+def markdown_blocks(lines):
+    """Fences (opener line to closer line, or None when unclosed), section headings and uncertain lines.
+
+    A fence opens with 0-3 spaces and three or more backticks or tildes (no backtick in a backtick info
+    string) and closes at 0-3 spaces, the same character at least as many times, then only spaces or
+    tabs; every other line inside is content. A section heading is a column-0 `#{1,6} ` line outside
+    fences and HTML blocks. Lines this subset cannot place are uncertain: a lone carriage return (a
+    CommonMark line ending inside an LF line), a fence-like line that is no top-level opener, a heading-
+    or fence-like line inside an HTML block, and an unclosed fence. A trailing CR belongs to the line end."""
+    fences, headings, uncertain = {}, {}, []
+    fence = html = None
+    for index, raw in enumerate(lines, 1):
+        text = raw[:-1] if raw.endswith('\r') else raw
+        if '\r' in text:
+            uncertain.append((index, 'a carriage return inside the line'))
+        if fence is not None:
+            character, length, opened = fence
+            if re.fullmatch(' {0,3}' + re.escape(character) + '{' + str(length) + r',}[ \t]*', text):
+                fences[opened], fence = index, None
+            continue
+        if html is not None:
+            if HEADING_LIKE.match(text) or FENCE_LIKE.match(text):
+                uncertain.append((index, 'a heading- or fence-like line in an HTML block'))
+            if HTML_END[html].search(text) if html in HTML_END else not text.strip(' \t'):
+                html = None
+            continue
+        opener = FENCE_OPENER.fullmatch(text)
+        if opener and not (opener[2][0] == '`' and '`' in opener[3]):
+            fence = (opener[2][0], len(opener[2]), index)
+            continue
+        if FENCE_LIKE.match(text):
+            uncertain.append((index, 'a fence-like line that is not a top-level fence'))
+            continue
+        start = HTML_START.match(text)
+        if start:
+            kind = next(kind for kind in range(1, 6) if start.group(kind))
+            html = None if HTML_END[kind].search(text, start.end()) else kind
+            continue
+        if HTML_BLOCK_TAG.match(text) or HTML_TAG_LINE.fullmatch(text):
+            html = 6
+            continue
+        if re.match(r'#{1,6} ', text):
+            headings[index] = len(text) - len(text.lstrip('#'))
+    if fence is not None:
+        fences[fence[2]] = None
+        uncertain.append((fence[2], 'an unclosed fence'))
+    return {'fences': fences, 'headings': headings, 'uncertain': sorted(uncertain)}
+
+
+def markdown_section(lines, line, blocks=None):
+    """The heading section enclosing a line, by the shared block parse: from its nearest heading to the
+    next of equal or higher level."""
+    headings = (markdown_blocks(lines) if blocks is None else blocks)['headings']
+    start, heading = 1, 0
+    for index in sorted(headings):
+        if index >= line:
             break
+        start, heading = index, headings[index]
+    end = next((index - 1 for index in sorted(headings)
+                if index > line and (heading == 0 or headings[index] <= heading)), len(lines))
     return start, end
 
 
 def context_minimum(git, origin):
-    """D04-CHK-06 as design 05 adapts it: an artifact's whole file, or a fence's heading section."""
+    """D04-CHK-06 as design 05 adapts it: an artifact's whole file, or the heading section of a fence or
+    mention. The fourth value is None, or why the section is uncertain (R1-02): an uncertain line at or
+    before its end, or a fence origin that is not a recognized closed fence."""
     raw = git.blob(origin['revision'], origin['path'])
     data = raw.decode('utf-8', 'replace')
     lines = [line.decode('utf-8', 'replace') for line in source_lines(raw)]
     if origin['line'] == 1:
-        return 1, max(len(lines), 1), data
-    start, end = markdown_section(lines, origin['line'])
-    return start, end, '\n'.join(lines[start - 1:end])
+        return 1, max(len(lines), 1), data, None
+    blocks = markdown_blocks(lines)
+    start, end = markdown_section(lines, origin['line'], blocks)
+    uncertain = next((f'{reason} at line {index}' for index, reason in blocks['uncertain'] if index <= end), None)
+    if uncertain is None and origin.get('kind') != 'mention' and blocks['fences'].get(origin['line']) is None:
+        uncertain = 'the origin is not a recognized closed fence'
+    return start, end, '\n'.join(lines[start - 1:end]), uncertain
 
 
 def context_references(git, revision, referring_path, text):
@@ -2675,7 +2737,8 @@ def context_check(git, origin, closure):
     def covers(revision, path, start, end):
         return any(row['revision'] == revision and row['path'] == path and row['start'] <= start and end <= row['end']
                    for row in ranges)
-    start, end, text = context_minimum(git, origin)
+    start, end, text, uncertain = context_minimum(git, origin)
+    require(uncertain is None, 'the minimum context is uncertain (' + str(uncertain) + '): ' + origin['id'])
     require(covers(origin['revision'], origin['path'], start, end), 'the context does not cover the minimum: ' + origin['id'])
     seen, candidates_seen, used = set(), set(), set()
     queue = [(origin['revision'], origin['path'], text)]
@@ -2809,7 +2872,10 @@ def origin_areas(git, spec, intake, ids, area_of, paths):
         if row['state'] not in OPEN_STATES:
             continue
         origin = origins[row['id']]
-        _, _, text = context_minimum(git, origin)
+        _, _, text, uncertain = context_minimum(git, origin)
+        if uncertain is not None:
+            # R1-02: an uncertain section names areas from its whole file and never permits closure.
+            text = git.blob(origin['revision'], origin['path']).decode('utf-8', 'replace')
         names = {match.group(1) for match in AREA_PATH.finditer(text)} | set(AREA_ROOT_FILE.findall(text))
         for match in CONTEXT_LINK.finditer(text):
             destination = match.group(1).split('#', 1)[0]
@@ -2821,7 +2887,8 @@ def origin_areas(git, spec, intake, ids, area_of, paths):
                   if target.startswith('suite.')}
         names = {name for name in names if name != '..' and not name.startswith('../')}
         derived = set().union(*(areas_of(name) for name in names)) if names else set()
-        result[row['id']] = {'state': row['state'], 'areas': sorted(derived), 'derived': bool(names)}
+        result[row['id']] = {'state': row['state'], 'areas': sorted(derived), 'derived': bool(names),
+                             'uncertain': uncertain is not None}
     return result
 
 

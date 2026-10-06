@@ -1489,35 +1489,6 @@
       ]
     },
     {
-      "id": "guard.fenced_bytes.0a45dca8fdb8f89a",
-      "assertion": "test_refusal_guards.RefusalGuardTests.test_fence_opening",
-      "category": "tool-refusal",
-      "source": "scripts/packet_tools.py: fenced_bytes",
-      "input": {
-        "test": "test_refusal_guards.RefusalGuardTests.test_fence_opening"
-      },
-      "files": [],
-      "argv": [
-        "python3",
-        "-B",
-        "tests/tooling/python-probe.py",
-        "guard.fenced_bytes.0a45dca8fdb8f89a"
-      ],
-      "timeout_seconds": 20,
-      "output_limit_bytes": 32768,
-      "failure_exit": 17,
-      "mutants": [
-        {
-          "path": "scripts/packet_tools.py",
-          "before": "require(opening is not None, 'fence locator is not an opening fence')",
-          "after": "pass  # tools01-ablate:0a45dca8fdb8f89a",
-          "operator": "remove-refusal-check",
-          "name": "guard.fenced_bytes.0a45dca8fdb8f89a",
-          "id": "mutation-da815fefea6018302ec673d3ec057e134c2c9d9ab53480bc64a53fe7d02e7614"
-        }
-      ]
-    },
-    {
       "id": "guard.fenced_bytes.224a61bb8b6df713",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_fence_position",
       "category": "tool-refusal",
@@ -1543,6 +1514,64 @@
           "operator": "remove-refusal-check",
           "name": "guard.fenced_bytes.224a61bb8b6df713",
           "id": "mutation-89cafa6face19147f9d6dd87eefc69b8044237653a1270fb6040a748924932d3"
+        }
+      ]
+    },
+    {
+      "id": "guard.fenced_bytes.860b660f92be55e9",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_fence_opening",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: fenced_bytes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_fence_opening"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.fenced_bytes.860b660f92be55e9"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(line in fences, 'fence locator is not an opening fence')",
+          "after": "pass  # tools01-ablate:860b660f92be55e9",
+          "operator": "remove-refusal-check",
+          "name": "guard.fenced_bytes.860b660f92be55e9",
+          "id": "mutation-40e5f2f8b7b5c7428aa0e2b99e4c3f100aac79b917e2533409370cc99b39d7b3"
+        }
+      ]
+    },
+    {
+      "id": "guard.fenced_bytes.3b483ca92afc40e5",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_fence_closed",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: fenced_bytes",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_fence_closed"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.fenced_bytes.3b483ca92afc40e5"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(fences[line] is not None, 'unclosed source fence')",
+          "after": "pass  # tools01-ablate:3b483ca92afc40e5",
+          "operator": "remove-refusal-check",
+          "name": "guard.fenced_bytes.3b483ca92afc40e5",
+          "id": "mutation-fbeb09c6a2e99cda6f6c7ca343a5143047e2aebd5eb41c99346746073c7057a5"
         }
       ]
     },
@@ -7372,6 +7401,35 @@
           "operator": "remove-refusal-check",
           "name": "guard.context_check.2cf13e6029674f22",
           "id": "mutation-767cb6f2a30be7ab338c477ad688fa0f333c09c2598e7f33637d41b88ce0fab8"
+        }
+      ]
+    },
+    {
+      "id": "guard.context_check.7583034af1b483c6",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_uncertain_minimum_context",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: context_check",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_uncertain_minimum_context"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.context_check.7583034af1b483c6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(uncertain is None, 'the minimum context is uncertain (' + str(uncertain) + '): ' + origin['id'])",
+          "after": "pass  # tools01-ablate:7583034af1b483c6",
+          "operator": "remove-refusal-check",
+          "name": "guard.context_check.7583034af1b483c6",
+          "id": "mutation-c997c354e52858c63f4d3361a05e3af4d67debb14c61cc9ded710420acf164dd"
         }
       ]
     },
