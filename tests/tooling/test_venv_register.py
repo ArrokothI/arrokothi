@@ -33,6 +33,21 @@ test('own input control', () => { const input = {}; Object.defineProperty(input,
         self.assertEqual({row['key'] for row in matches}, {f'tests/install.test.mjs:{line}:1' for line in range(3, 10)})
         self.assertTrue(all('V-ENV' in row['claims'] for row in matches))
 
+    def test_a_helper_named_constructor_is_an_ordinary_helper(self):
+        # Self-found (design 06): the helpers table was a plain object, so `constructor` crashed source-facts.
+        self.document('package.json', {'type': 'module'})
+        self.write('tests/tooling/source-facts.mjs', (ROOT / 'tests/tooling/source-facts.mjs').read_bytes().decode())
+        self.write('tests/named.test.mjs', '''import { test } from 'node:test';
+function constructor() { Object.defineProperty(Array.prototype, '0', {value: 1}); }
+function __proto__() { return 1; }
+test('calls constructor', () => { constructor(); __proto__(); });
+''')
+        revision = self.commit('helper named constructor')
+        env = tool.child_environment(tool.environment_declaration(None))[0]
+        matches = tool.register_matches(self.reader, revision, ['tests/named.test.mjs'], tool.REGISTER_MINIMUM,
+                                        env, pinned_toolchain())
+        self.assertEqual([(row['key'], 'V-ENV' in row['claims']) for row in matches], [('tests/named.test.mjs:4:1', True)])
+
     def test_old_recipe_cannot_omit_the_known_restoration_target_family(self):
         register = {'recipes': {key: dict(value) for key, value in tool.REGISTER_MINIMUM.items()}}
         register['recipes']['V-ENV']['body'] = r'\bvm\b|createContext|runInContext|frozen-intrinsics|globalThis'

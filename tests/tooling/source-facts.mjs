@@ -812,7 +812,8 @@ function imports(source) {
 // and every same-file function-like declaration's text and references, so helpers are followed.
 function helpers(source) {
   const { found } = collect(source);
-  const functions = {};
+  // A null-prototype table: a helper named `constructor` or `__proto__` is an ordinary key.
+  const functions = Object.create(null);
   const add = (name, node) => {
     functions[name] ??= [];
     functions[name].push({ text: node.getText(source), references: [...identifiers(node)], exported: exported(node.parent?.parent ?? node) || exported(node) });
