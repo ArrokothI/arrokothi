@@ -115,6 +115,8 @@ P1H_TARGET_REFUSAL = 'the target leaf is a registered {} test (P1-H)'
 VENV_RECORD = 'docs/development/work/TOOLS-01/owner-choice-08.md'
 LIMIT_DECISION = 'docs/development/work/TOOLS-01/owner-choice-04.md'
 LIMIT_MEMBERS = 'docs/development/work/TOOLS-01/continuation-stop-01/unbound-members.json'
+LISTED_DECISION = 'docs/development/work/TOOLS-01/owner-choice-11.md'
+LISTED_MEMBERS = 'docs/development/work/TOOLS-01/owner-choice-11/limited-members.json'
 # Owner choice 08 §2.3: category entries name their existing decision.
 CATEGORY_DECISIONS = {'Proxy': ('docs/development/work/DESIGN-AUDIT-01/decision-01.md',),
                       're-prototyped-built-in': ('docs/development/work/DESIGN-AUDIT-01/decision-01.md',),
@@ -594,34 +596,57 @@ def transferred_origins(git, rev, rows, origins, lists):
 
 
 def limited_origins(git, rev, rows, lists, members, targets, results, register):
-    """C2-LIMIT (owner choice 04 §1, amended by owner choice 08 §2.4). Each origin transferred under owner
-    choice 04 carries `limited`: the pinned unbound-member list and its extras, each `{member, target}`. An
-    extra is admitted only through its target record: the only suite target naming that member, declared at
-    a rule-1 held leaf with a literal title and refused by P1-H alone. Titles are never compared. Per origin,
-    the refused members without a credited target must equal its listed members plus admitted extras, and
-    the decision's list restates the origin's member count."""
+    """C2-LIMIT (owner choice 04 §1, amended by owner choice 08 §2.4 and owner choice 11). Each origin transferred
+    under owner choice 04 carries `limited`: the pinned unbound-member list and its extras, each `{member, target}`,
+    and, where owner choice 11 lists a member of that origin, its pinned list under `listed`. An extra is admitted
+    only through its target record: the only suite target naming that member, declared at a rule-1 held leaf with
+    a literal title and refused by P1-H alone. Titles are never compared. A listed member counts while it is refused
+    without a credited target or held by rule 1 (owner answers to design 06 revision 4). Per origin, those members
+    must equal its listed members plus admitted extras, and the decision's list restates the origin's member count."""
     results = {result['id']: result for result in results}
     by_member = {}
     for target in targets.values():
         if 'member' in target:
             by_member.setdefault(target['member'], []).append(target)
     credited = {member for member, mapped in by_member.items() if any(not results[row['id']]['refused'] for row in mapped)}
-    limited, listed_all = {}, None
+
+    def rule_1_held(key):
+        row = members[key]
+        entry = register.get(f"{row['file']}:{row['current'][0]}:{row['current'][1]}", {}) if row.get('current') else {}
+        return row['status'] == 'held' and entry.get('claim') == 'V-ENV' and entry.get('decision') == VENV_RECORD
+
+    limited, listed_all, owner_listed = {}, None, None
     for row in rows:
         if row['decision'] != LIMIT_DECISION:
             require('limited' not in row, "only owner choice 04's origins carry a limit: " + row['origin'])
             continue
         limit, origin = row.get('limited'), row['origin']
-        require(isinstance(limit, dict) and set(limit) == {'members', 'sha256', 'extras'} and
+        require(isinstance(limit, dict) and set(limit) - {'listed'} == {'members', 'sha256', 'extras'} and
                 limit['members'] == LIMIT_MEMBERS and isinstance(limit['extras'], list),
                 'a limited origin names the unbound-member list, its SHA-256 and its extras: ' + origin)
         data = git.blob(rev, LIMIT_MEMBERS)
         require(digest(data) == limit['sha256'], 'the unbound-member list digest differs: ' + origin)
         listed_all = {item['member'] for item in json.loads(data)['rows']}
+        if 'listed' in limit:
+            require(isinstance(limit['listed'], dict) and limit['listed'].get('members') == LISTED_MEMBERS and
+                    digest(git.blob(rev, LISTED_MEMBERS)) == limit['listed'].get('sha256'),
+                    "a limited origin pins owner choice 11's listed members and their SHA-256: " + origin)
+            git.blob(rev, LISTED_DECISION)
+            try:
+                owner_listed = json.loads(git.blob(rev, LISTED_MEMBERS))
+            except ValueError as exc:
+                raise CheckError("owner choice 11's listed members are not JSON") from exc
+            require(isinstance(owner_listed, list) and all(isinstance(item, dict) and isinstance(item.get('origin'), str) and
+                                                           isinstance(item.get('member'), str) for item in owner_listed) and
+                    len({item['member'] for item in owner_listed}) == len(owner_listed),
+                    "owner choice 11's list names each member once, with its origin")
         in_origin = {key for key, member in members.items() if origin in member['origins']}
         require(lists[LIMIT_DECISION][origin].get('members') == len(in_origin),
                 "owner choice 04's member count differs from the preserved table: " + origin)
-        listed, extras = listed_all & in_origin, set()
+        named = {item['member'] for item in owner_listed or [] if item.get('origin') == origin} if 'listed' in limit else set()
+        listed, extras = (listed_all | named) & in_origin, set()
+        require(named <= in_origin and not named & listed_all,
+                "owner choice 11 lists further members of its origin: " + origin)
         for extra in limit['extras']:
             require(isinstance(extra, dict) and set(extra) == {'member', 'target'} and extra['member'] in in_origin and
                     extra['member'] not in listed | extras, 'an extra limited member is a further member of its origin: ' + str(extra))
@@ -635,12 +660,15 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
                     result['refused'] == [P1H_TARGET_REFUSAL.format('held')],
                     "an extra limited member's target passes P1-T at a rule-1 held leaf: " + extra['member'])
             extras.add(extra['member'])
-        unbound = {key for key in in_origin if members[key]['status'] == 'refused' and key not in credited}
+        unbound = {key for key in in_origin if (members[key]['status'] == 'refused' and key not in credited) or
+                   (key in listed and rule_1_held(key))}
         require(unbound == listed | extras, f'the refused members without a credited target differ from the limit: {origin} '
                                             f'(unlisted {sorted(unbound - listed - extras)[:3]}, bound {sorted(listed - unbound)[:3]})')
         limited[origin] = {'listed': len(listed), 'extras': sorted(extras)}
     require(listed_all is None or listed_all <= {key for key in members if any(origin in members[key]['origins'] for origin in limited)},
             'an unbound-member list entry lies outside the limited origins')
+    require(owner_listed is None or all(item.get('origin') in limited for item in owner_listed),
+            "owner choice 11's listed members lie in the limited origins")
     return limited
 
 

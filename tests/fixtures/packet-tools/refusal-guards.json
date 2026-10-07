@@ -8681,35 +8681,6 @@
       ]
     },
     {
-      "id": "guard.limited_origins.1a245a8b0f8a75c4",
-      "assertion": "test_transfer_limits.LimitTests.test_limit_record_refusals",
-      "category": "tool-refusal",
-      "source": "scripts/packet_tools.py: limited_origins",
-      "input": {
-        "test": "test_transfer_limits.LimitTests.test_limit_record_refusals"
-      },
-      "files": [],
-      "argv": [
-        "python3",
-        "-B",
-        "tests/tooling/python-probe.py",
-        "guard.limited_origins.1a245a8b0f8a75c4"
-      ],
-      "timeout_seconds": 20,
-      "output_limit_bytes": 32768,
-      "failure_exit": 17,
-      "mutants": [
-        {
-          "path": "scripts/packet_tools.py",
-          "before": "require(isinstance(limit, dict) and set(limit) == {'members', 'sha256', 'extras'} and\n                limit['members'] == LIMIT_MEMBERS and isinstance(limit['extras'], list),\n                'a limited origin names the unbound-member list, its SHA-256 and its extras: ' + origin)",
-          "after": "pass  # tools01-ablate:1a245a8b0f8a75c4",
-          "operator": "remove-refusal-check",
-          "name": "guard.limited_origins.1a245a8b0f8a75c4",
-          "id": "mutation-34eb13cd0e32421ee0951d3300b2834f7cceb7a4252625c19541932435069eed"
-        }
-      ]
-    },
-    {
       "id": "guard.limited_origins.8a6c23dd828de2f1",
       "assertion": "test_transfer_limits.LimitTests.test_limit_record_refusals",
       "category": "tool-refusal",
@@ -8909,6 +8880,151 @@
           "operator": "remove-refusal-check",
           "name": "guard.limited_origins.0766b115b3e04195",
           "id": "mutation-bf40d00a8c216b87396cda145d124421d63a56c91d0a83937bfaa78b1cffbdcb"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.6754d7e3f536cca6",
+      "assertion": "test_transfer_limits.LimitTests.test_limit_record_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_limit_record_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.6754d7e3f536cca6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(limit, dict) and set(limit) - {'listed'} == {'members', 'sha256', 'extras'} and\n                limit['members'] == LIMIT_MEMBERS and isinstance(limit['extras'], list),\n                'a limited origin names the unbound-member list, its SHA-256 and its extras: ' + origin)",
+          "after": "pass  # tools01-ablate:6754d7e3f536cca6",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.6754d7e3f536cca6",
+          "id": "mutation-aa4ded0437ab519c3a641dd5a41a9267036358a02d62a2179045ae771ddda230"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.4ba730eaa0b3f480",
+      "assertion": "test_transfer_limits.LimitTests.test_owner_list_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_owner_list_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.4ba730eaa0b3f480"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(limit['listed'], dict) and limit['listed'].get('members') == LISTED_MEMBERS and\n                    digest(git.blob(rev, LISTED_MEMBERS)) == limit['listed'].get('sha256'),\n                    \"a limited origin pins owner choice 11's listed members and their SHA-256: \" + origin)",
+          "after": "pass  # tools01-ablate:4ba730eaa0b3f480",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.4ba730eaa0b3f480",
+          "id": "mutation-c0540d786f987a81d759a3993706ac0b91e31f52e07bee513e470bdcec5479bd"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.8df412d1fdb7af23",
+      "assertion": "test_transfer_limits.LimitTests.test_owner_list_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_owner_list_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.8df412d1fdb7af23"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(owner_listed, list) and all(isinstance(item, dict) and isinstance(item.get('origin'), str) and\n                                                           isinstance(item.get('member'), str) for item in owner_listed) and\n                    len({item['member'] for item in owner_listed}) == len(owner_listed),\n                    \"owner choice 11's list names each member once, with its origin\")",
+          "after": "pass  # tools01-ablate:8df412d1fdb7af23",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.8df412d1fdb7af23",
+          "id": "mutation-0bfaf4ee03785c2a18ee40641c1857e212cf430128795fd370673791c7ea1980"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.ebbee80aa2ef99de",
+      "assertion": "test_transfer_limits.LimitTests.test_owner_list_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_owner_list_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.ebbee80aa2ef99de"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(named <= in_origin and not named & listed_all,\n                \"owner choice 11 lists further members of its origin: \" + origin)",
+          "after": "pass  # tools01-ablate:ebbee80aa2ef99de",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.ebbee80aa2ef99de",
+          "id": "mutation-179c26362c81b904a7184f42e959f0a13434b9a90fce6fd6cf0087103acba772"
+        }
+      ]
+    },
+    {
+      "id": "guard.limited_origins.a2f2ccfebfa5063a",
+      "assertion": "test_transfer_limits.LimitTests.test_owner_list_refusals",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: limited_origins",
+      "input": {
+        "test": "test_transfer_limits.LimitTests.test_owner_list_refusals"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.limited_origins.a2f2ccfebfa5063a"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(owner_listed is None or all(item.get('origin') in limited for item in owner_listed),\n            \"owner choice 11's listed members lie in the limited origins\")",
+          "after": "pass  # tools01-ablate:a2f2ccfebfa5063a",
+          "operator": "remove-refusal-check",
+          "name": "guard.limited_origins.a2f2ccfebfa5063a",
+          "id": "mutation-eee1cc3497f60e83b5ad7679677f491da3526fce13889a8f227bb2130cce05ad"
         }
       ]
     },

@@ -183,6 +183,55 @@ class LimitTests(RepositoryFixture):
         self.lists[tool.LIMIT_DECISION]['o.limited']['members'] = 3
         self.refuses('an unbound-member list entry lies outside the limited origins', self.limit)
 
+    # Owner answers to design 06 revision 4 and owner choice 11.
+    def owner_list(self, items):
+        self.write(tool.LISTED_DECISION, 'Owner choice 11 fixture.\n')
+        self.document(tool.LISTED_MEMBERS, items)
+        self.rev = self.commit('owner choice 11 list')
+        self.rows[0]['limited']['listed'] = {'members': tool.LISTED_MEMBERS,
+                                             'sha256': tool.digest((self.root / tool.LISTED_MEMBERS).read_bytes())}
+
+    def multi_leaf_member(self):
+        """A refused member whose generated title maps through two targets, both refused by P1-H."""
+        self.members['m.multi'] = {'member': 'm.multi', 'origins': ['o.limited'], 'status': 'refused'}
+        self.lists[tool.LIMIT_DECISION]['o.limited']['members'] = 5
+        for key in ('t.multi.1', 't.multi.2'):
+            self.targets[key] = self.target(key, 'm.multi', 20)
+            self.results.append({'id': key, 'refused': [P1H], 'title_kind': 'template'})
+
+    def test_a_listed_member_held_by_rule_1_stays_in_the_limit(self):
+        self.members['m.listed'].update(status='held', file='f.test.ts', current=[12, 3])
+        self.register['f.test.ts:12:3'] = {'classification': 'held', 'claim': 'V-ENV', 'decision': tool.VENV_RECORD}
+        self.assertEqual(self.limit(), {'o.limited': {'listed': 1, 'extras': ['m.extra']}})
+
+    def test_a_listed_member_held_by_a_category_claim_is_bound(self):
+        self.members['m.listed'].update(status='held', file='f.test.ts', current=[12, 3])
+        self.register['f.test.ts:12:3'] = {'classification': 'held', 'claim': 'Proxy', 'decision': 'decision-01.md'}
+        self.refuses('the refused members without a credited target differ from the limit', self.limit)
+
+    def test_owner_choice_11_lists_a_multi_leaf_member(self):
+        self.multi_leaf_member()
+        self.refuses('the refused members without a credited target differ from the limit', self.limit)
+        self.owner_list([{'origin': 'o.limited', 'member': 'm.multi', 'cause': 'two generated leaves'}])
+        self.assertEqual(self.limit(), {'o.limited': {'listed': 2, 'extras': ['m.extra']}})
+
+    def test_owner_list_refusals(self):
+        for message, items, change in [
+                ("owner choice 11's listed members and their SHA-256",
+                 [{'origin': 'o.limited', 'member': 'm.multi'}], lambda: self.rows[0]['limited']['listed'].update(sha256='0' * 64)),
+                ("owner choice 11's list names each member once, with its origin", [{'origin': 'o.limited'}], None),
+                ("owner choice 11 lists further members of its origin", [{'origin': 'o.limited', 'member': 'm.listed'}], None),
+                ("owner choice 11 lists further members of its origin", [{'origin': 'o.limited', 'member': 'm.other'}], None),
+                ("owner choice 11's listed members lie in the limited origins",
+                 [{'origin': 'o.limited', 'member': 'm.multi'}, {'origin': 'o.other', 'member': 'm.other'}], None)]:
+            with self.subTest(message=message, items=items):
+                self.setUp()
+                self.multi_leaf_member()
+                self.owner_list(items)
+                if change:
+                    change()
+                self.refuses(message, self.limit)
+
 
 class RepositoryLimitTests(RepositoryFixture):
     """The maintained manifest: owner choices 04 and 05 pin their lists, and owner choice 04's limit admits

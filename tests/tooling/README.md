@@ -341,9 +341,12 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   `limited`: the digest-pinned unbound-member list of continuation-stop-01 and extras
   `{member, target}` (owner choice 08 §2.4). An extra is admitted only through its target record —
   the only suite target naming the member, at a rule-1 held leaf with a literal title, refused by P1-H
-  alone — never by title. Per origin, the refused members without a credited target must equal the
-  listed members plus the admitted extras, and owner choice 04's list restates each origin's member
-  count. Which list a decision states remains a human review boundary.
+  alone — never by title. Owner choice 11 lists one further member by name: its pinned list sits under
+  `limited.listed` for that member's origin, and its admission rule is unchanged for every other extra.
+  A listed member counts while it is refused without a credited target, or held by rule 1 (owner
+  answers to design 06 revision 4). Per origin, those members must equal the listed members plus the
+  admitted extras, and owner choice 04's list restates each origin's member count. Which list a
+  decision states remains a human review boundary.
 
 ## Area map and gate
 
