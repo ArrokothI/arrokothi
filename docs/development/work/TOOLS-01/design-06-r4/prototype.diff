@@ -1,0 +1,395 @@
+diff --git a/scripts/packet_tools.py b/scripts/packet_tools.py
+index f0cece36..c8c5e2d0 100644
+--- a/scripts/packet_tools.py
++++ b/scripts/packet_tools.py
+@@ -635,7 +635,9 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
+                     result['refused'] == [P1H_TARGET_REFUSAL.format('held')],
+                     "an extra limited member's target passes P1-T at a rule-1 held leaf: " + extra['member'])
+             extras.add(extra['member'])
+-        unbound = {key for key in in_origin if members[key]['status'] == 'refused' and key not in credited}
++        # PROTOTYPE reading for design 06 r4 (owner question): a listed member rule 1 now holds stays in the limit.
++        held_listed = {key for key in listed if members[key]['status'] == 'held'}
++        unbound = {key for key in in_origin if members[key]['status'] == 'refused' and key not in credited} | held_listed
+         require(unbound == listed | extras, f'the refused members without a credited target differ from the limit: {origin} '
+                                             f'(unlisted {sorted(unbound - listed - extras)[:3]}, bound {sorted(listed - unbound)[:3]})')
+         limited[origin] = {'listed': len(listed), 'extras': sorted(extras)}
+diff --git a/tests/tooling/source-facts.mjs b/tests/tooling/source-facts.mjs
+index 76d18d95..bb0e075a 100644
+--- a/tests/tooling/source-facts.mjs
++++ b/tests/tooling/source-facts.mjs
+@@ -809,10 +809,11 @@ function imports(source) {
+ }
+
+ // ---------------------------------------------------------------------------------------------
+-// Design 06 R1-01: what a registration, helper, hook or load-time code can do to the process's
+-// built-in environment (V-ENV). Syntactic, over the pinned parse, never executed; aliases are a
+-// scope-blind fixpoint that over-includes. Each match is `kind@line`; the hold register holds every
+-// leaf or case whose run set has one (owner choice 08 rule 1).
++// Owner choice 10 (design 06 revision 4): a member earns ordinary credit only if every reference to an
++// intrinsic value in its run set sits in a listed safe position; every other reference is a rule-1 match,
++// `kind@line`, whose kind is its reason. Design 06's recognition is kept: intrinsic names, `.prototype`,
++// `__proto__` and `.constructor` reads, and the scope-blind aliases of intrinsic, prototype-like and tainted
++// values. Built-in module bindings from node:assert are intrinsic values too, so a write to one is a match.
+ const INTRINSIC_NAMES = new Set(['Object', 'Function', 'Array', 'String', 'Number', 'Boolean', 'BigInt', 'Symbol', 'Date',
+   'RegExp', 'Error', 'AggregateError', 'EvalError', 'RangeError', 'ReferenceError', 'SyntaxError', 'TypeError', 'URIError',
+   'Map', 'Set', 'WeakMap', 'WeakSet', 'WeakRef', 'FinalizationRegistry', 'Promise', 'ArrayBuffer', 'SharedArrayBuffer',
+@@ -821,19 +822,7 @@ const INTRINSIC_NAMES = new Set(['Object', 'Function', 'Array', 'String', 'Numbe
+   'Intl', 'WebAssembly', 'globalThis', 'global']);
+ const PROTOTYPE_NAMES = new Set(['prototype', '__proto__', 'constructor']);
+ const PROTOTYPE_OBJECTS = new Set(['prototype', '__proto__']);
+-const WRITER_CALLS = {
+-  Object: new Set(['defineProperty', 'defineProperties', 'assign', 'setPrototypeOf', 'freeze', 'seal', 'preventExtensions']),
+-  Reflect: new Set(['set', 'defineProperty', 'deleteProperty', 'setPrototypeOf', 'preventExtensions']),
+-};
+ const PROTOTYPE_READERS = { Object: new Set(['getPrototypeOf']), Reflect: new Set(['getPrototypeOf']) };
+-// Read-only reflection: an intrinsic object passed to these does not escape.
+-const READ_ONLY = new Set(['create', 'getPrototypeOf', 'getOwnPropertyNames', 'getOwnPropertyDescriptor',
+-  'getOwnPropertyDescriptors', 'getOwnPropertySymbols', 'keys', 'values', 'entries', 'ownKeys', 'has', 'isFrozen',
+-  'isSealed', 'isExtensible', 'is', 'hasOwn', 'isPrototypeOf', 'from', 'isArray', 'isInteger', 'stringify']);
+-// Readers whose results are fresh or primitive; any other call or `new` receiving an intrinsic object
+-// returns an unclassified value.
+-const FRESH_RESULTS = new Set(['keys', 'getOwnPropertyNames', 'getOwnPropertySymbols', 'create', 'is', 'isArray',
+-  'isFrozen', 'isSealed', 'isExtensible', 'isInteger', 'isPrototypeOf', 'hasOwn', 'stringify', 'getPrototypeOf']);
+ const ASSIGNMENTS = new Set([ts.SyntaxKind.EqualsToken, ts.SyntaxKind.PlusEqualsToken, ts.SyntaxKind.MinusEqualsToken,
+   ts.SyntaxKind.AsteriskEqualsToken, ts.SyntaxKind.AsteriskAsteriskEqualsToken, ts.SyntaxKind.SlashEqualsToken,
+   ts.SyntaxKind.PercentEqualsToken, ts.SyntaxKind.LessThanLessThanEqualsToken, ts.SyntaxKind.GreaterThanGreaterThanEqualsToken,
+@@ -844,27 +833,49 @@ const CHILD_MODULES = new Set(['child_process', 'node:child_process']);
+ const CHILD_CALLS = new Set(['exec', 'execSync', 'execFile', 'execFileSync', 'spawn', 'spawnSync', 'fork']);
+ const EVAL_FLAGS = /^(?:-e|--eval|-p|--print|--input-type(?:=.*)?)$/;
+
++// The safe-position table (design 06 revision 4). A row is a built-in, resolved by identity, that writes
++// nothing reachable from its receiver or arguments and returns a fresh object or a primitive. `intrinsic`
++// lists the argument positions that may hold an intrinsic value ('*' any): only rows whose result holds
++// nothing from that argument. The receiver and callee of a listed call are safe positions.
++const ROW = (intrinsic = []) => ({ intrinsic });
++const SAFE_CALLS = new Map([
++  ['Object.keys', ROW('*')], ['Object.getOwnPropertyNames', ROW('*')], ['Object.isFrozen', ROW('*')], ['Object.hasOwn', ROW('*')],
++  ['Object.entries', ROW()], ['Object.values', ROW()], ['Object.fromEntries', ROW()], ['Object.create', ROW()],
++  ['Array.isArray', ROW('*')], ['Array.from', ROW()], ['Array', ROW()], ['new Array', ROW()],
++  ['JSON.stringify', ROW([0])], ['JSON.parse', ROW()],
++  ['String', ROW()], ['String.fromCharCode', ROW()], ['Number', ROW()], ['Number.isInteger', ROW()], ['Number.isSafeInteger', ROW()],
++  ['Number.parseInt', ROW()], ['Symbol', ROW()], ['Symbol.for', ROW()],
++  ['Math.random', ROW()], ['Math.round', ROW()], ['Math.min', ROW()], ['Math.max', ROW()], ['Math.ceil', ROW()],
++  ['Date', ROW()], ['new Date', ROW()], ['Date.now', ROW()], ['RegExp', ROW()], ['new RegExp', ROW()],
++  ['Error', ROW()], ['new Error', ROW()], ['new TypeError', ROW()], ['new RangeError', ROW()], ['new SyntaxError', ROW()],
++  ['new Map', ROW()], ['new Set', ROW()], ['new WeakMap', ROW()], ['new WeakSet', ROW()], ['new Uint32Array', ROW()],
++  ['new Promise', ROW()], ['Promise.all', ROW()], ['Promise.resolve', ROW()], ['Promise.reject', ROW()],
++  ['Reflect.ownKeys', ROW('*')],
++]);
++// Primitive constants: non-writable, non-configurable data properties (ECMA-262 §20.4.2, §21.1.2).
++const SAFE_CONSTANTS = new Set(['Number.NaN', 'Number.POSITIVE_INFINITY', 'Number.NEGATIVE_INFINITY', 'Symbol.iterator',
++  'Symbol.asyncIterator', 'Symbol.hasInstance', 'Symbol.isConcatSpreadable', 'Symbol.species', 'Symbol.toPrimitive', 'Symbol.toStringTag']);
++
++const WRAPPER = (node) => ts.isParenthesizedExpression(node) || ts.isAsExpression(node) || ts.isSatisfiesExpression(node) ||
++  ts.isNonNullExpression(node) || ts.isTypeAssertionExpression(node) || ts.isExpressionWithTypeArguments(node);
++
+ function memberCall(node, table) {
+   const callee = unwrapTypes(node.expression);
+   return ts.isPropertyAccessExpression(callee) && ts.isIdentifier(unwrapTypes(callee.expression)) &&
+     !!table[unwrapTypes(callee.expression).text]?.has(callee.name.text);
+ }
+
+-function calleeName(node) {
+-  const callee = unwrapTypes(node);
+-  return ts.isIdentifier(callee) ? callee.text : ts.isPropertyAccessExpression(callee) ? callee.name.text : null;
+-}
+-
+ function inTypePosition(node) {
+   for (let current = node.parent; current; current = current.parent) {
+-    if (ts.isTypeNode(current) || ts.isHeritageClause(current) || ts.isTypeAliasDeclaration(current) ||
+-        ts.isInterfaceDeclaration(current)) return true;
++    if (ts.isHeritageClause(current)) return current.token !== ts.SyntaxKind.ExtendsKeyword || !ts.isClassLike(current.parent);
++    if (ts.isTypeNode(current) || ts.isTypeAliasDeclaration(current) || ts.isInterfaceDeclaration(current)) return true;
+     if (ts.isExpression(current) || ts.isStatement(current)) return false;
+   }
+   return false;
+ }
+
+-// A value position: not a declared name, a property name, a type or an import/export specifier.
++// A value position: not a declared name, a property name, a type or an import/export specifier. A class's
++// `extends` expression is a value.
+ function valueIdentifier(node) {
+   const parent = node.parent;
+   if (!parent || inTypePosition(node)) return false;
+@@ -874,12 +885,33 @@ function valueIdentifier(node) {
+        ts.isPropertyAssignment(parent) || ts.isMethodDeclaration(parent) || ts.isPropertyDeclaration(parent) ||
+        ts.isBindingElement(parent) || ts.isImportSpecifier(parent) || ts.isImportClause(parent) ||
+        ts.isNamespaceImport(parent) || ts.isExportSpecifier(parent) || ts.isLabeledStatement(parent) ||
+-       ts.isGetAccessorDeclaration(parent) || ts.isSetAccessorDeclaration(parent)) && parent.name === node) return false;
++       ts.isGetAccessorDeclaration(parent) || ts.isSetAccessorDeclaration(parent) || ts.isEnumDeclaration(parent) ||
++       ts.isEnumMember(parent) || ts.isImportEqualsDeclaration(parent) || ts.isBreakOrContinueStatement(parent) ||
++       ts.isPropertySignature(parent) || ts.isMethodSignature(parent)) && parent.name === node) return false;
+   if (ts.isBindingElement(parent) && parent.propertyName === node) return false;
++  if (ts.isImportSpecifier(parent) || ts.isExportSpecifier(parent)) return false;
+   return true;
+ }
+
+-function ambientMatches(source) {
++// Every name the file declares, in any scope: a global spelled the same is shadowed in the whole file.
++function declaredNames(source) {
++  const names = new Map();
++  const add = (name, node) => { names.set(name, (names.get(name) ?? 0) + 1); };
++  const visit = (node) => {
++    if ((ts.isVariableDeclaration(node) || ts.isParameter(node) || ts.isBindingElement(node)) && ts.isIdentifier(node.name)) add(node.name.text, node);
++    if ((ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isClassDeclaration(node) || ts.isClassExpression(node) ||
++         ts.isEnumDeclaration(node) || ts.isModuleDeclaration(node) || ts.isImportEqualsDeclaration(node)) && node.name && ts.isIdentifier(node.name)) add(node.name.text, node);
++    if (ts.isImportClause(node) && node.name) add(node.name.text, node);
++    if (ts.isNamespaceImport(node) || ts.isImportSpecifier(node)) add(node.name.text, node);
++    ts.forEachChild(node, visit);
++  };
++  visit(source);
++  return names;
++}
++
++function ambientMatches(source, survey = null) {
++  const declared = declaredNames(source);
++  const broken = new Set();
+   const childNames = new Set(), childSpaces = new Set();
+   for (const statement of source.statements) {
+     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier) ||
+@@ -896,8 +928,7 @@ function ambientMatches(source) {
+       const visit = (node) => {
+         let bound = [];
+         if (ts.isVariableDeclaration(node) && node.initializer && holds(node.initializer, names)) bound = bindingNames(node.name);
+-        if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+-            holds(node.right, names)) {
++        if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken && holds(node.right, names)) {
+           const left = unwrapTypes(node.left);
+           if (ts.isIdentifier(left)) bound = [left.text];
+           else if (ts.isObjectLiteralExpression(left) || ts.isArrayLiteralExpression(left)) {
+@@ -912,7 +943,8 @@ function ambientMatches(source) {
+     }
+     return names;
+   };
+-  // Intrinsic objects: named intrinsics, prototype/constructor chains, getPrototypeOf results, aliases.
++  // Design 06's recognition, unchanged: intrinsic objects, prototype-like objects and tainted call results,
++  // with their scope-blind aliases.
+   const intrinsic = (node, aliases) => {
+     node = unwrapTypes(node);
+     if (ts.isIdentifier(node)) return INTRINSIC_NAMES.has(node.text) || aliases.has(node.text);
+@@ -924,7 +956,6 @@ function ambientMatches(source) {
+     return ts.isCallExpression(node) && memberCall(node, PROTOTYPE_READERS);
+   };
+   const aliases = fixpoint(intrinsic);
+-  // Prototype-like objects, for escapes: intrinsic constructors, prototypes, getPrototypeOf results.
+   const prototypeLike = (node, names) => {
+     node = unwrapTypes(node);
+     if (ts.isIdentifier(node)) return INTRINSIC_NAMES.has(node.text) || names.has(node.text);
+@@ -934,20 +965,18 @@ function ambientMatches(source) {
+     return ts.isCallExpression(node) && memberCall(node, PROTOTYPE_READERS);
+   };
+   const prototypes = fixpoint(prototypeLike);
+-  // Unclassified values (change 1): results of calls and `new` that receive an intrinsic object.
+   const unclassified = (node, names) => {
+     node = unwrapTypes(node);
+     if (ts.isIdentifier(node)) return names.has(node.text);
+     if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) return unclassified(node.expression, names);
+     if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+-      if (ts.isCallExpression(node) && FRESH_RESULTS.has(calleeName(node.expression))) return false;
++      if (listed(node)) return false;
+       return (node.arguments ?? []).some(argument => prototypeLike(argument, prototypes) || intrinsic(argument, aliases) ||
+         unclassified(argument, names));
+     }
+     return false;
+   };
+   const tainted = fixpoint(unclassified);
+-  // Code generators: Function and eval, their aliases and `.constructor` of a value.
+   const generator = (node, names) => {
+     node = unwrapTypes(node);
+     if (ts.isIdentifier(node)) return node.text === 'Function' || node.text === 'eval' || names.has(node.text);
+@@ -958,65 +987,133 @@ function ambientMatches(source) {
+   };
+   const generators = fixpoint(generator);
+
+-  const found = [];
+-  const add = (node, kind) => found.push({ start: node.getStart(source), end: node.end, kind,
+-    line: lineColumn(source, node.getStart(source)).line });
+-  const member = (node, holds) => {
+-    node = unwrapTypes(node);
+-    return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) && holds(node.expression);
+-  };
+-  const writesInto = (node, holds) => {
+-    let hit = false;
+-    const visit = (current) => { if (member(current, holds)) hit = true; else ts.forEachChild(current, visit); };
+-    visit(node);
+-    return hit;
+-  };
+-  const isIntrinsic = (node) => intrinsic(node, aliases);
+-  const isTainted = (node) => unclassified(node, tainted);
+-  const escapes = (node) => {
++  // The static path of a callee or constant: a chain of plain `.name` reads, no wrapper, on a root resolved by
++  // identity: an intrinsic name the file never declares, or a node:assert binding. Anything else has no path.
++  function staticPath(node) {
++    const names = [];
++    while (ts.isPropertyAccessExpression(node)) {
++      if (!ts.isIdentifier(node.name)) return null;
++      names.unshift(node.name.text);
++      node = node.expression;
++    }
++    if (!ts.isIdentifier(node)) return null;
++    if (!INTRINSIC_NAMES.has(node.text) || declared.has(node.text) || broken.has(node.text) || broken.has('*')) return null;
++    return [node.text, ...names].join('.');
++  }
++  function listed(call) {
++    const path = staticPath(call.expression);
++    if (path === null) return null;
++    const row = SAFE_CALLS.get((ts.isNewExpression(call) ? 'new ' : '') + path);
++    return row ? { path, ...row } : null;
++  }
++  const isWriteTarget = (node) => {
+     const parent = node.parent;
+-    if (ts.isCallExpression(parent) || ts.isNewExpression(parent)) {
+-      if (!(parent.arguments ?? []).includes(node)) return false;
+-      const callee = unwrapTypes(parent.expression);
+-      const root = ts.isPropertyAccessExpression(callee) && ts.isIdentifier(unwrapTypes(callee.expression)) ?
+-        unwrapTypes(callee.expression).text : null;
+-      const name = calleeName(callee);
+-      return !(root === 'assert' || name === 'assert' || READ_ONLY.has(name));
++    return (ts.isBinaryExpression(parent) && ASSIGNMENTS.has(parent.operatorToken.kind) && parent.left === node) ||
++      ((ts.isPrefixUnaryExpression(parent) || ts.isPostfixUnaryExpression(parent)) &&
++       [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(parent.operator)) ||
++      (ts.isDeleteExpression(parent) && parent.expression === node) ||
++      ((ts.isForInStatement(parent) || ts.isForOfStatement(parent)) && parent.initializer === node);
++  };
++  const storage = (parent, node) => (ts.isVariableDeclaration(parent) && parent.initializer === node) ||
++    (ts.isPropertyAssignment(parent) && parent.initializer === node) || ts.isShorthandPropertyAssignment(parent) ||
++    ts.isArrayLiteralExpression(parent) || ts.isSpreadElement(parent) || ts.isSpreadAssignment(parent) ||
++    (ts.isBinaryExpression(parent) && parent.right === node && ASSIGNMENTS.has(parent.operatorToken.kind)) ||
++    (ts.isPropertyDeclaration(parent) && parent.initializer === node) || (ts.isParameter(parent) && parent.initializer === node) ||
++    (ts.isBindingElement(parent) && parent.initializer === node) || ts.isExportAssignment(parent) || ts.isYieldExpression(parent);
++  // Climb from an intrinsic value to its use: `safe` names the table row or position, otherwise `reason` says why
++  // it is unsafe. `depth` counts member reads climbed; `member` marks a verdict on a member of the current value.
++  function classify(node) {
++    let current = node, depth = 0;
++    const result = (verdict, member = false) => ({ ...verdict, depth, member });
++    for (;;) {
++      const parent = current.parent;
++      if (WRAPPER(parent)) return result({ reason: 'wrapper' });
++      if ((ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) && parent.expression === current) {
++        if (isWriteTarget(parent)) return result({ reason: 'write' }, true);
++        const call = parent.parent;
++        if ((ts.isCallExpression(call) || ts.isNewExpression(call)) && call.expression === parent) {
++          const row = listed(call);
++          return result(row ? { safe: 'receiver', path: row.path } : { reason: 'call', path: staticPath(parent) ?? '?' }, true);
++        }
++        if (ts.isTaggedTemplateExpression(call) && call.tag === parent) return result({ reason: 'call', path: staticPath(parent) ?? '?' }, true);
++        if (ts.isPropertyAccessExpression(parent) && SAFE_CONSTANTS.has(staticPath(parent))) return result({ safe: 'constant', path: staticPath(parent) }, true);
++        current = parent;
++        depth += 1;
++        continue;
++      }
++      if ((ts.isCallExpression(parent) || ts.isNewExpression(parent)) && parent.expression === current) {
++        const row = listed(parent);
++        return result(row ? { safe: 'callee', path: row.path } : { reason: 'call', path: staticPath(current) ?? '?' });
++      }
++      if ((ts.isCallExpression(parent) || ts.isNewExpression(parent)) && (parent.arguments ?? []).includes(current)) {
++        const row = listed(parent), index = parent.arguments.indexOf(current);
++        if (row && (row.intrinsic === '*' || row.intrinsic.includes(index))) return result({ safe: 'argument', path: row.path, index });
++        return result({ reason: 'call', path: (row?.path ?? staticPath(parent.expression) ?? '?') + '#' + index });
++      }
++      if (ts.isTaggedTemplateExpression(parent) && parent.tag === current) return result({ reason: 'call', path: staticPath(current) ?? '?' });
++      if (ts.isReturnStatement(parent) || (ts.isArrowFunction(parent) && parent.body === current)) return result({ reason: 'return' });
++      if (isWriteTarget(current)) return result({ reason: 'write' });
++      if (storage(parent, current)) return result({ reason: 'storage' });
++      if (ts.isHeritageClause(parent) || ts.isExpressionWithTypeArguments(parent)) return result({ reason: 'operator', path: 'extends' });
++      return result({ reason: 'operator', path: ts.SyntaxKind[parent.kind] + (ts.isBinaryExpression(parent) ? ':' + ts.SyntaxKind[parent.operatorToken.kind] : '') });
+     }
+-    if (ts.isReturnStatement(parent) || (ts.isArrowFunction(parent) && parent.body === node)) return true;
+-    if (ts.isPropertyAssignment(parent) && parent.initializer === node) return true;
+-    if (ts.isShorthandPropertyAssignment(parent) || ts.isSpreadElement(parent) || ts.isArrayLiteralExpression(parent)) return true;
+-    return ts.isBinaryExpression(parent) && parent.right === node && parent.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+-      !ts.isIdentifier(unwrapTypes(parent.left));
++  }
++  const isRoot = (node) => {
++    if (ts.isIdentifier(node)) {
++      return valueIdentifier(node) && (INTRINSIC_NAMES.has(node.text) || aliases.has(node.text) ||
++        prototypes.has(node.text) || tainted.has(node.text));
++    }
++    if (ts.isPropertyAccessExpression(node)) return PROTOTYPE_NAMES.has(node.name.text) && !inTypePosition(node);
++    if (ts.isElementAccessExpression(node)) return ts.isStringLiteralLike(node.argumentExpression) &&
++      PROTOTYPE_NAMES.has(node.argumentExpression.text);
++    return false;
+   };
++
++  // Identity (owner choice 10 §1.2): a root resolves only if the file declares no binding of its name and
++  // nowhere reassigns it: assigns it or writes one of its own members, or passes on, stores, wraps or
++  // returns it bare when it has listed members. `globalThis.<root>` and `global.<root>` count as the root; a
++  // computed member of either, or either passed on, stored, wrapped or returned bare, breaks every root.
++  // File-wide, because a file's tests share a process; in a run set, any such use is itself a match.
++  const roots = [];
++  const scan = (node) => { if (isRoot(node)) roots.push(node); ts.forEachChild(node, scan); };
++  scan(source);
++  const MEMBER_ROOTS = new Set([...SAFE_CALLS.keys()].map(key => key.replace(/^new /, '')).filter(key => key.includes('.')).map(key => key.split('.')[0]));
++  const unsafeUse = (verdict) => verdict.reason && verdict.reason !== 'operator';
++  for (const node of roots) {
++    if (!ts.isIdentifier(node) || !INTRINSIC_NAMES.has(node.text)) continue;
++    let root = node, name = node.text;
++    if (name === 'globalThis' || name === 'global') {
++      const parent = node.parent;
++      const member = (ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) && parent.expression === node;
++      const key = !member ? null : ts.isPropertyAccessExpression(parent) ? parent.name.text :
++        ts.isStringLiteralLike(parent.argumentExpression) ? parent.argumentExpression.text : null;
++      if (!member) {
++        if (unsafeUse(classify(node))) broken.add('*');
++        continue;
++      }
++      if (key === null) {
++        if (isWriteTarget(parent) || unsafeUse(classify(parent))) broken.add('*');
++        continue;
++      }
++      if (!INTRINSIC_NAMES.has(key)) continue;
++      root = parent;
++      name = key;
++    }
++    const verdict = classify(root);
++    if (!verdict.reason) continue;
++    if ((verdict.depth === 0 && verdict.reason === 'write') ||
++        (verdict.depth === 0 && !verdict.member && unsafeUse(verdict) && MEMBER_ROOTS.has(name))) broken.add(name);
++  }
++  const found = [];
++  const add = (node, kind) => found.push({ start: node.getStart(source), end: node.end, kind,
++    line: lineColumn(source, node.getStart(source)).line });
+   const visit = (node) => {
+-    if (ts.isBinaryExpression(node) && ASSIGNMENTS.has(node.operatorToken.kind)) {
+-      if (writesInto(node.left, isIntrinsic)) add(node, 'assignment');
+-      else if (writesInto(node.left, isTainted)) add(node, 'unclassified');
+-    } else if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
+-               [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator)) {
+-      if (member(node.operand, isIntrinsic)) add(node, 'update');
+-      else if (member(node.operand, isTainted)) add(node, 'unclassified');
+-    } else if (ts.isDeleteExpression(node)) {
+-      if (member(node.expression, isIntrinsic)) add(node, 'delete');
+-      else if (member(node.expression, isTainted)) add(node, 'unclassified');
+-    } else if (ts.isCallExpression(node) && memberCall(node, WRITER_CALLS) && node.arguments[0]) {
+-      if (isIntrinsic(node.arguments[0])) add(node, 'writer-call');
+-      else if (isTainted(node.arguments[0])) add(node, 'unclassified');
++    if (isRoot(node)) {
++      const verdict = classify(node);
++      if (verdict.reason) add(node, verdict.reason);
++      survey?.push({ line: lineColumn(source, node.getStart(source)).line, text: node.getText(source).slice(0, 60), ...verdict });
+     }
+-    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(unwrapTypes(node.expression)) &&
+-        /^__define[GS]etter__$/.test(unwrapTypes(node.expression).name.text) &&
+-        isIntrinsic(unwrapTypes(node.expression).expression)) add(node, 'writer-call');
+-    // Match 3: a prototype-like object passed on, returned or stored.
+-    const bare = unwrapTypes(node);
+-    if (node === bare && (ts.isIdentifier(node) || ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node) ||
+-        ts.isCallExpression(node)) && !(ts.isIdentifier(node) && !valueIdentifier(node)) &&
+-        prototypeLike(node, prototypes) && !ts.isPropertyAccessExpression(node.parent) &&
+-        !ts.isElementAccessExpression(node.parent) && escapes(node)) add(node, 'escape');
+-    // Match 7: an unclassified value returned.
+-    if ((ts.isReturnStatement(node) && node.expression && isTainted(node.expression)) ||
+-        (ts.isArrowFunction(node) && !ts.isBlock(node.body) && isTainted(node.body))) add(node, 'unclassified');
+-    // Match 4: code this parse cannot read.
++    // Unread code (design 06 match 4), unchanged.
+     if (ts.isIdentifier(node) && node.text === 'eval' && valueIdentifier(node)) add(node, 'generated');
+     if ((ts.isCallExpression(node) || ts.isNewExpression(node)) && node.expression.kind !== ts.SyntaxKind.ImportKeyword &&
+         generator(node.expression, generators)) add(node, 'generated');
+@@ -1235,6 +1332,7 @@ const operations = {
+   container: (request) => container(parse(request.path, request.text), request.name),
+   loop: (request) => loopElements(parse(request.path, request.text), request.line),
+   helpers: (request) => helpers(parse(request.path, request.text)),
++  survey: (request) => { const rows = []; ambientMatches(parse(request.path, request.text), rows); return rows; },
+   prefix: (request) => prefix(request.pin, request.current, request.path, request.all_earlier === true),
+   registrations: (request) => {
+     const source = parse(request.path, request.text);

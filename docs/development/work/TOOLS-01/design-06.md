@@ -1,4 +1,4 @@
-# Design 06 — TOOLS-01 correction after reviews 01 and 02 (revision 3)
+# Design 06 — TOOLS-01 correction after reviews 01 and 02 (revision 4)
 
 Claude Code (`claude-opus-5-5`), implementer under [owner choice 08](owner-choice-08.md),
 2026-10-05, for the design check; contract revision 9 ([owner choice 09](owner-choice-09.md)).
@@ -159,3 +159,78 @@ malformed provenance, distinct from missing provenance and from a malformed cata
 expected `observed` with a visible outcome and reason, no kill. **R1-02:** a `~~~` fence holding a
 line of three backticks and then `## x`, a later true `~~~` closer and the required record after it;
 both lines stay content and the section keeps its true minimum.
+
+## Revision 4: the safe-position rule (owner choice 10)
+
+Answers [review 03](review-03.md) under [owner choice 10](owner-choice-10.md) and replaces R1-01's
+matches 1–3 and 7. Everything else in R1-01 and §2 stays. The prototype, probe and figures are in
+[design-06-r4](design-06-r4/README.md).
+
+**Rule.** From each reference to an intrinsic value (design 06's recognition, plus a class's
+`extends`) the detector climbs to its use on the tree as written. It is safe only as the receiver or
+callee of a listed call or `new`, an argument in a position its row admits, or the object of a
+member read whose result is a listed constant or is itself used only safely. Anything else is a
+rule-1 match whose kind is its reason:
+- `wrapper`: parentheses, `as`, `satisfies`, `!`, `<T>`;
+- `write`: assignment, update, `delete`, a loop target;
+- `call`: an unlisted or unresolved call, `new` or tag;
+- `storage`: an initializer, property, element, spread, assigned value, default, `export` or `yield`;
+- `return`;
+- `operator`: everything else, including `===`, `typeof` and `instanceof`.
+
+A listed call's result is untainted.
+
+**Identity.** A row's path is plain `.name` reads from a root. Spelling never counts: local,
+imported, namespace, member and shadowed functions have no path. The root resolves only if the file
+never declares it and never reassigns it. Reassigning means assigning it or one of its members, or
+passing it on, storing, wrapping or returning it bare when it has listed members. `globalThis.<root>`
+counts as the root; a computed or bare use of `globalThis`/`global` breaks every root. The record
+says "in the run set", where every such use is already a match. Revision 4 applies the rule
+file-wide, because a file's tests share a process.
+
+**Table**: the rows the corpus uses. Each writes nothing reachable from its receiver or arguments
+and returns a fresh object or a primitive. An intrinsic argument is admitted only where the result
+holds nothing from it.
+
+| Rows | Intrinsic args | Why |
+|---|---|---|
+| `Object.keys`, `.getOwnPropertyNames`, `.isFrozen`, `.hasOwn`; `Reflect.ownKeys`; `Array.isArray` | any | reads keys or a slot; keys or boolean |
+| `JSON.stringify` | first | reads; string |
+| `Object.entries`, `.values`, `.fromEntries`, `.create`; `Array.from`, `Array` | none | fresh, holding the argument's values or prototype |
+| `JSON.parse`; `String`, `.fromCharCode`; `Number`, `.isInteger`, `.isSafeInteger`, `.parseInt`; `Symbol`, `.for`; `Math.random`, `.round`, `.min`, `.max`, `.ceil`; `Date`, `.now`; `RegExp`; `Error` | none | primitive or fresh |
+| `new` `Array`, `Date`, `RegExp`, `Error`, `TypeError`, `RangeError`, `SyntaxError`, `Map`, `Set`, `WeakMap`, `WeakSet`, `Uint32Array`, `Promise`; `Promise.all`, `.resolve`, `.reject` | none | fresh (`resolve` may return its own argument) |
+| `Number.NaN`, `.POSITIVE_INFINITY`, `.NEGATIVE_INFINITY`; `Symbol.iterator`, `.asyncIterator`, `.hasInstance`, `.isConcatSpreadable`, `.species`, `.toPrimitive`, `.toStringTag` | — | non-writable, non-configurable primitives (ECMA-262 §20.4.2, §21.1.2) |
+
+`node:assert` is not a row: an intrinsic passed to it is unsafe (76 references, 12 files).
+
+**Recheck.** The producer is `ambientMatches`. Every register, census, target, witness, closure and
+C2-LIMIT consumer is recomputed, and the ablations and tests naming old kinds are updated.
+
+**Measured** (prototype on `60af5db9`'s tree, regenerated, then `corpus`): `revalidation_complete`.
+- All 110 closed origins still close. 32 change their links, and 53 now include a held or superseded
+  witness (39 at C).
+- Members 713/183/74/302 → 616/314/74/268.
+- Register 305 → 393. Rule-1 entries 188 → 295, including 19 former `not_held` readings.
+- Targets 383 → 315: 306 credited, and 9 refused by P1-H only. Those 9 are the two mapping targets
+  and seven new C2-LIMIT extras (`dispatch:369,1173,1211,1256,1283,1401` and `values:115`).
+- Under the record's run-set wording the figures would be 641/272/74/285 and 330 targets.
+- Nine members are held only for `operator` positions.
+
+**Owner question.** `dispatch:1527:3` and `values:735:3`, two of choice 04's 24, now match V-ENV.
+Choice 04 keeps the 24 `refused`; choice 08 rule 1 holds every match. The prototype holds them and
+still counts them among the 24. Neither reading grants credit.
+
+**Corpus** (81 cases): review 03's 19; six wrappers (none, parentheses, `as`, `satisfies`, `!`,
+`<any>`) × seven positions (argument, method receiver, listed receiver, array and object storage,
+return, alias); seven same-named functions; five rebinding cases in another test. Every hazard
+matches. Eight controls do not, including `Object.keys` of an intrinsic and a local-object write.
+Through the real register and census, review 03's two preservation cases become `held`.
+
+**Review 03's questions.**
+1. No edge crosses a wrapper, because a wrapper is unsafe.
+2. Exemptions follow identity, not spelling.
+3. An unrecognized form is a visible match, held before `preserved_table` or `check_target` reads it.
+4. The cause was a list of hazards with credit by default; that default is now inverted.
+
+**Stated gaps** (unchanged): production modules, native code, inherited members of ordinary values
+(`[].push`), and state another test leaves in an ordinary container.
