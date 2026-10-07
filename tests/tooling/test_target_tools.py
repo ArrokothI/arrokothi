@@ -11,7 +11,7 @@ SUBJECT = """import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 const TABLE = [33554432];
-function op(n) { if (n > 10) throw new RangeError('too big'); return { ok: true, charge: n }; }
+function op(n) { if (n > 10) throw { tooBig: n }; return { ok: true, charge: n }; } const Calc = { min: (a, b) => (a < b ? a : b) };
 function checkCharge(r, n) {
   assert.equal(r.charge, n);
 }
@@ -45,7 +45,7 @@ describe('suite', () => {
     assert.ok(text.length > 0);
   });
   test('two arguments', () => {
-    const r = op(Math.min(16777216, 33554432) - 16777211);
+    const r = op(Calc.min(16777216, 33554432) - 16777211);
     assert.equal(r.charge * 1, 5);
   });
   test('module input', () => {
@@ -186,7 +186,7 @@ class TargetTests(TargetFixture):
         self.assertEqual(reasons, ['anchor starts inside a literal', 'anchor starts inside a comment'])
 
     def test_a_different_value_at_the_recorded_position_fails(self):
-        statement = 'const r = op(Math.min(16777216, 33554432) - 16777211);'
+        statement = 'const r = op(Calc.min(16777216, 33554432) - 16777211);'
         # Token 9 is 16777216; the stored input 33554432 sits in another argument (token 11).
         row = self.target('two arguments', anchor(statement, literals=[{'ordinal': 9, 'value': '33554432'}]),
                           ['assert.equal(r.charge * 1, 5);'])

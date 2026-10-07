@@ -809,10 +809,11 @@ function imports(source) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Design 06 R1-01: what a registration, helper, hook or load-time code can do to the process's
-// built-in environment (V-ENV). Syntactic, over the pinned parse, never executed; aliases are a
-// scope-blind fixpoint that over-includes. Each match is `kind@line`; the hold register holds every
-// leaf or case whose run set has one (owner choice 08 rule 1).
+// Design 06 R1-01, revision 5 (owner choice 10 §2): what a registration, helper, hook or load-time code can do
+// to the process's built-in environment (V-ENV). Every reference to an intrinsic value is a match; no table
+// exempts any position. Syntactic, over the pinned parse, never executed; aliases and taint are a scope-blind
+// fixpoint that over-includes. Each match is `kind@line`; the hold register holds every leaf or case whose run
+// set has one (owner choice 08 rule 1).
 const INTRINSIC_NAMES = new Set(['Object', 'Function', 'Array', 'String', 'Number', 'Boolean', 'BigInt', 'Symbol', 'Date',
   'RegExp', 'Error', 'AggregateError', 'EvalError', 'RangeError', 'ReferenceError', 'SyntaxError', 'TypeError', 'URIError',
   'Map', 'Set', 'WeakMap', 'WeakSet', 'WeakRef', 'FinalizationRegistry', 'Promise', 'ArrayBuffer', 'SharedArrayBuffer',
@@ -821,25 +822,7 @@ const INTRINSIC_NAMES = new Set(['Object', 'Function', 'Array', 'String', 'Numbe
   'Intl', 'WebAssembly', 'globalThis', 'global']);
 const PROTOTYPE_NAMES = new Set(['prototype', '__proto__', 'constructor']);
 const PROTOTYPE_OBJECTS = new Set(['prototype', '__proto__']);
-const WRITER_CALLS = {
-  Object: new Set(['defineProperty', 'defineProperties', 'assign', 'setPrototypeOf', 'freeze', 'seal', 'preventExtensions']),
-  Reflect: new Set(['set', 'defineProperty', 'deleteProperty', 'setPrototypeOf', 'preventExtensions']),
-};
 const PROTOTYPE_READERS = { Object: new Set(['getPrototypeOf']), Reflect: new Set(['getPrototypeOf']) };
-// Read-only reflection: an intrinsic object passed to these does not escape.
-const READ_ONLY = new Set(['create', 'getPrototypeOf', 'getOwnPropertyNames', 'getOwnPropertyDescriptor',
-  'getOwnPropertyDescriptors', 'getOwnPropertySymbols', 'keys', 'values', 'entries', 'ownKeys', 'has', 'isFrozen',
-  'isSealed', 'isExtensible', 'is', 'hasOwn', 'isPrototypeOf', 'from', 'isArray', 'isInteger', 'stringify']);
-// Readers whose results are fresh or primitive; any other call or `new` receiving an intrinsic object
-// returns an unclassified value.
-const FRESH_RESULTS = new Set(['keys', 'getOwnPropertyNames', 'getOwnPropertySymbols', 'create', 'is', 'isArray',
-  'isFrozen', 'isSealed', 'isExtensible', 'isInteger', 'isPrototypeOf', 'hasOwn', 'stringify', 'getPrototypeOf']);
-const ASSIGNMENTS = new Set([ts.SyntaxKind.EqualsToken, ts.SyntaxKind.PlusEqualsToken, ts.SyntaxKind.MinusEqualsToken,
-  ts.SyntaxKind.AsteriskEqualsToken, ts.SyntaxKind.AsteriskAsteriskEqualsToken, ts.SyntaxKind.SlashEqualsToken,
-  ts.SyntaxKind.PercentEqualsToken, ts.SyntaxKind.LessThanLessThanEqualsToken, ts.SyntaxKind.GreaterThanGreaterThanEqualsToken,
-  ts.SyntaxKind.GreaterThanGreaterThanGreaterThanEqualsToken, ts.SyntaxKind.AmpersandEqualsToken, ts.SyntaxKind.BarEqualsToken,
-  ts.SyntaxKind.CaretEqualsToken, ts.SyntaxKind.BarBarEqualsToken, ts.SyntaxKind.AmpersandAmpersandEqualsToken,
-  ts.SyntaxKind.QuestionQuestionEqualsToken]);
 const CHILD_MODULES = new Set(['child_process', 'node:child_process']);
 const CHILD_CALLS = new Set(['exec', 'execSync', 'execFile', 'execFileSync', 'spawn', 'spawnSync', 'fork']);
 const EVAL_FLAGS = /^(?:-e|--eval|-p|--print|--input-type(?:=.*)?)$/;
@@ -850,15 +833,14 @@ function memberCall(node, table) {
     !!table[unwrapTypes(callee.expression).text]?.has(callee.name.text);
 }
 
-function calleeName(node) {
-  const callee = unwrapTypes(node);
-  return ts.isIdentifier(callee) ? callee.text : ts.isPropertyAccessExpression(callee) ? callee.name.text : null;
-}
-
+// A class's `extends` expression is a value; `implements`, interface heritage and type nodes are types.
 function inTypePosition(node) {
   for (let current = node.parent; current; current = current.parent) {
-    if (ts.isTypeNode(current) || ts.isHeritageClause(current) || ts.isTypeAliasDeclaration(current) ||
-        ts.isInterfaceDeclaration(current)) return true;
+    // TypeScript counts a heritage clause's expression as a type node, so the clause decides first.
+    const clause = ts.isExpressionWithTypeArguments(current) && ts.isHeritageClause(current.parent) ? current.parent :
+      ts.isHeritageClause(current) ? current : null;
+    if (clause) return clause.token !== ts.SyntaxKind.ExtendsKeyword || !ts.isClassLike(clause.parent);
+    if (ts.isTypeNode(current) || ts.isTypeAliasDeclaration(current) || ts.isInterfaceDeclaration(current)) return true;
     if (ts.isExpression(current) || ts.isStatement(current)) return false;
   }
   return false;
@@ -896,8 +878,7 @@ function ambientMatches(source) {
       const visit = (node) => {
         let bound = [];
         if (ts.isVariableDeclaration(node) && node.initializer && holds(node.initializer, names)) bound = bindingNames(node.name);
-        if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
-            holds(node.right, names)) {
+        if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken && holds(node.right, names)) {
           const left = unwrapTypes(node.left);
           if (ts.isIdentifier(left)) bound = [left.text];
           else if (ts.isObjectLiteralExpression(left) || ts.isArrayLiteralExpression(left)) {
@@ -912,7 +893,8 @@ function ambientMatches(source) {
     }
     return names;
   };
-  // Intrinsic objects: named intrinsics, prototype/constructor chains, getPrototypeOf results, aliases.
+  // Design 06's recognition, without exemptions: intrinsic objects, prototype-like objects and the results of
+  // calls and `new` that receive either, with their scope-blind aliases.
   const intrinsic = (node, aliases) => {
     node = unwrapTypes(node);
     if (ts.isIdentifier(node)) return INTRINSIC_NAMES.has(node.text) || aliases.has(node.text);
@@ -924,7 +906,6 @@ function ambientMatches(source) {
     return ts.isCallExpression(node) && memberCall(node, PROTOTYPE_READERS);
   };
   const aliases = fixpoint(intrinsic);
-  // Prototype-like objects, for escapes: intrinsic constructors, prototypes, getPrototypeOf results.
   const prototypeLike = (node, names) => {
     node = unwrapTypes(node);
     if (ts.isIdentifier(node)) return INTRINSIC_NAMES.has(node.text) || names.has(node.text);
@@ -934,20 +915,17 @@ function ambientMatches(source) {
     return ts.isCallExpression(node) && memberCall(node, PROTOTYPE_READERS);
   };
   const prototypes = fixpoint(prototypeLike);
-  // Unclassified values (change 1): results of calls and `new` that receive an intrinsic object.
   const unclassified = (node, names) => {
     node = unwrapTypes(node);
     if (ts.isIdentifier(node)) return names.has(node.text);
     if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) return unclassified(node.expression, names);
     if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
-      if (ts.isCallExpression(node) && FRESH_RESULTS.has(calleeName(node.expression))) return false;
       return (node.arguments ?? []).some(argument => prototypeLike(argument, prototypes) || intrinsic(argument, aliases) ||
         unclassified(argument, names));
     }
     return false;
   };
   const tainted = fixpoint(unclassified);
-  // Code generators: Function and eval, their aliases and `.constructor` of a value.
   const generator = (node, names) => {
     node = unwrapTypes(node);
     if (ts.isIdentifier(node)) return node.text === 'Function' || node.text === 'eval' || names.has(node.text);
@@ -957,66 +935,24 @@ function ambientMatches(source) {
        node.argumentExpression.text === 'constructor');
   };
   const generators = fixpoint(generator);
+  // A reference to an intrinsic value: a recognized name or alias in a value position, or any prototype-name read.
+  const reference = (node) => {
+    if (ts.isIdentifier(node)) {
+      return valueIdentifier(node) && (INTRINSIC_NAMES.has(node.text) || aliases.has(node.text) || prototypes.has(node.text) ||
+        tainted.has(node.text));
+    }
+    if (ts.isPropertyAccessExpression(node)) return PROTOTYPE_NAMES.has(node.name.text) && !inTypePosition(node);
+    if (ts.isElementAccessExpression(node)) return ts.isStringLiteralLike(node.argumentExpression) &&
+      PROTOTYPE_NAMES.has(node.argumentExpression.text);
+    return false;
+  };
 
   const found = [];
   const add = (node, kind) => found.push({ start: node.getStart(source), end: node.end, kind,
     line: lineColumn(source, node.getStart(source)).line });
-  const member = (node, holds) => {
-    node = unwrapTypes(node);
-    return (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) && holds(node.expression);
-  };
-  const writesInto = (node, holds) => {
-    let hit = false;
-    const visit = (current) => { if (member(current, holds)) hit = true; else ts.forEachChild(current, visit); };
-    visit(node);
-    return hit;
-  };
-  const isIntrinsic = (node) => intrinsic(node, aliases);
-  const isTainted = (node) => unclassified(node, tainted);
-  const escapes = (node) => {
-    const parent = node.parent;
-    if (ts.isCallExpression(parent) || ts.isNewExpression(parent)) {
-      if (!(parent.arguments ?? []).includes(node)) return false;
-      const callee = unwrapTypes(parent.expression);
-      const root = ts.isPropertyAccessExpression(callee) && ts.isIdentifier(unwrapTypes(callee.expression)) ?
-        unwrapTypes(callee.expression).text : null;
-      const name = calleeName(callee);
-      return !(root === 'assert' || name === 'assert' || READ_ONLY.has(name));
-    }
-    if (ts.isReturnStatement(parent) || (ts.isArrowFunction(parent) && parent.body === node)) return true;
-    if (ts.isPropertyAssignment(parent) && parent.initializer === node) return true;
-    if (ts.isShorthandPropertyAssignment(parent) || ts.isSpreadElement(parent) || ts.isArrayLiteralExpression(parent)) return true;
-    return ts.isBinaryExpression(parent) && parent.right === node && parent.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
-      !ts.isIdentifier(unwrapTypes(parent.left));
-  };
   const visit = (node) => {
-    if (ts.isBinaryExpression(node) && ASSIGNMENTS.has(node.operatorToken.kind)) {
-      if (writesInto(node.left, isIntrinsic)) add(node, 'assignment');
-      else if (writesInto(node.left, isTainted)) add(node, 'unclassified');
-    } else if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
-               [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator)) {
-      if (member(node.operand, isIntrinsic)) add(node, 'update');
-      else if (member(node.operand, isTainted)) add(node, 'unclassified');
-    } else if (ts.isDeleteExpression(node)) {
-      if (member(node.expression, isIntrinsic)) add(node, 'delete');
-      else if (member(node.expression, isTainted)) add(node, 'unclassified');
-    } else if (ts.isCallExpression(node) && memberCall(node, WRITER_CALLS) && node.arguments[0]) {
-      if (isIntrinsic(node.arguments[0])) add(node, 'writer-call');
-      else if (isTainted(node.arguments[0])) add(node, 'unclassified');
-    }
-    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(unwrapTypes(node.expression)) &&
-        /^__define[GS]etter__$/.test(unwrapTypes(node.expression).name.text) &&
-        isIntrinsic(unwrapTypes(node.expression).expression)) add(node, 'writer-call');
-    // Match 3: a prototype-like object passed on, returned or stored.
-    const bare = unwrapTypes(node);
-    if (node === bare && (ts.isIdentifier(node) || ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node) ||
-        ts.isCallExpression(node)) && !(ts.isIdentifier(node) && !valueIdentifier(node)) &&
-        prototypeLike(node, prototypes) && !ts.isPropertyAccessExpression(node.parent) &&
-        !ts.isElementAccessExpression(node.parent) && escapes(node)) add(node, 'escape');
-    // Match 7: an unclassified value returned.
-    if ((ts.isReturnStatement(node) && node.expression && isTainted(node.expression)) ||
-        (ts.isArrowFunction(node) && !ts.isBlock(node.body) && isTainted(node.body))) add(node, 'unclassified');
-    // Match 4: code this parse cannot read.
+    if (reference(node)) add(node, 'intrinsic');
+    // Code this parse cannot read (design 06 match 4), unchanged.
     if (ts.isIdentifier(node) && node.text === 'eval' && valueIdentifier(node)) add(node, 'generated');
     if ((ts.isCallExpression(node) || ts.isNewExpression(node)) && node.expression.kind !== ts.SyntaxKind.ImportKeyword &&
         generator(node.expression, generators)) add(node, 'generated');

@@ -181,21 +181,20 @@ requires them to equal the recomputation exactly. A stale record fails; it never
   never credit. A suite target on such a leaf is refused. A held or superseded case needs its own
   `held_witness` or `mechanism_witness` attribution in the registry, and every attributed case must be
   registered held or superseded.
-- **V-ENV run set (design 06 R1-01).** Beyond the regex minimum, a fixed detector in
-  `source-facts.mjs` matches V-ENV in what a leaf runs in its process: its registration, the same-file
-  and test-side helpers and module-scope variables it reaches (through aliases, default exports and
-  re-exports), its enclosing hooks, and the load-time code (suite bodies included) of its file and its
-  test-side import closure. Intrinsic objects are the named built-ins, `globalThis` and `global`,
-  `.prototype`/`__proto__`/`.constructor` chains, `getPrototypeOf` results and their scope-blind
-  aliases; results of calls and `new` that receive one are unclassified (except fresh or primitive
-  readers). A match is a write, update, `delete` or writer call on an intrinsic object; an escape (one
-  passed to a call other than `assert.*` or read-only reflection, returned or stored); unread code
-  (`eval` or `Function` as values, `.constructor` calls, a non-literal or `data:` `import()`, `-e`
-  style flags, `eval: true`, any `node:child_process` call); a parse diagnostic; a referenced test-side
-  binding with no resolvable text; or a write, writer call or `return` through an unclassified value.
-  A case's run set is the JavaScript and TypeScript files it names or runs and their test-side
-  closures. The summary counts matches by kind and lists `unclassified` entries. Values that never
-  meet an intrinsic object, production modules and native code are stated gaps.
+- **V-ENV run set (design 06 R1-01; revision 5, owner choice 10 §2).** Beyond the regex minimum, a
+  fixed detector in `source-facts.mjs` matches V-ENV in what a leaf runs in its process: its
+  registration, the same-file and test-side helpers and module-scope variables it reaches (through
+  aliases, default exports and re-exports), its enclosing hooks, and the load-time code (suite bodies
+  included) of its file and its test-side import closure. Under the coarse rule every reference to an
+  intrinsic value is a match of kind `intrinsic`; no table or position exempts any. Intrinsic values are
+  the named built-ins, `globalThis` and `global` in value positions (a class's `extends` included),
+  every `.prototype`/`__proto__`/`.constructor` read, and the scope-blind aliases of intrinsic,
+  prototype-like and tainted values (results of calls and `new` that receive one). Unread code is a
+  match too (`eval` or `Function` as values, `.constructor` calls, a non-literal or `data:` `import()`,
+  `-e` style flags, `eval: true`, any `node:child_process` call), as are a parse diagnostic and a
+  referenced test-side binding with no resolvable text. A case's run set is the JavaScript and
+  TypeScript files it names or runs and their test-side closures. Values that never meet a recognized
+  reference, production modules and native code are stated gaps.
 - **Rule 1 and the structural check (owner choice 08 §2).** Every V-ENV match is held; under the
   V-ENV claim it is `held` and names `decision: owner-choice-08.md`, which no other entry names. A
   held or superseded entry names exactly one of its `decision` (one of its claim's decisions) or its

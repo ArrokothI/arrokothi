@@ -30,7 +30,8 @@ test('own input control', () => { const input = {}; Object.defineProperty(input,
         env = tool.child_environment(tool.environment_declaration(None))[0]
         matches = tool.register_matches(self.reader, revision, ['tests/install.test.mjs'], tool.REGISTER_MINIMUM,
                                         env, pinned_toolchain())
-        self.assertEqual({row['key'] for row in matches}, {f'tests/install.test.mjs:{line}:1' for line in range(3, 10)})
+        # Revision 5 (owner choice 10 §2): the own-input control references Object, so it matches too.
+        self.assertEqual({row['key'] for row in matches}, {f'tests/install.test.mjs:{line}:1' for line in range(3, 11)})
         self.assertTrue(all('V-ENV' in row['claims'] for row in matches))
 
     def test_a_helper_named_constructor_is_an_ordinary_helper(self):

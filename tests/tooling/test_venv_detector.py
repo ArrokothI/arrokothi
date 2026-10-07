@@ -1,14 +1,18 @@
-"""Design 06 R1-01 and §2. The V-ENV detector reads what a leaf runs in its process (registration,
-helpers, module-scope variables, re-exports, hooks, load-time code); every match is held by owner
-choice 08 rule 1 and earns no credit. Uncertain forms are matches. Each held or superseded entry names
-its decision or its reading; category entries keep their decisions."""
+"""Design 06 R1-01 and §2, revision 5 (owner choice 10 §2's coarse rule). The V-ENV detector reads what
+a leaf runs in its process (registration, helpers, module-scope variables, re-exports, hooks, load-time
+code); every reference to an intrinsic value there is a match, held by owner choice 08 rule 1, and no
+table exempts any position. Each held or superseded entry names its decision or its reading; category
+entries keep their decisions."""
+import contextlib
+import itertools
 import json
 
-from test_packet_tools import RepositoryFixture, tool
+from test_packet_tools import RepositoryFixture, classified, tool
 from test_target_tools import ROOT, pinned_toolchain
 
 HEAD = "import { test, beforeEach } from 'node:test';\nimport assert from 'node:assert/strict';\n"
-# Positive variants: review 01's probe family, the design's adjacent forms and design-06-check change 1.
+# Positive variants: review 01's probe family, the design's adjacent forms, design-06-check change 1, and
+# the former controls that reference an intrinsic, which the coarse rule matches too.
 POSITIVE = {
     'direct': "(Object.prototype as any).toJSON = () => 42;",
     'cast': "(Object.prototype as Record<string, unknown>).toJSON = () => 42;",
@@ -34,15 +38,20 @@ POSITIVE = {
     'Reflect.get result': "const r = Reflect.get(Object, 'prototype'); r.toJSON = 1;",
     'unreadable helper called with Object': "mystery(Object);",
     'unresolvable import': "gone();",
-}
-# Negative controls. Aliases are scope-blind (design 06), so they use names no positive variant binds.
-NEGATIVE = {
-    'local object write': "const o: Record<string, unknown> = {}; o.x = 1;",
     'Object.keys result': "const k = Object.keys(Object); k.push('x');",
     'local descriptor': "const own = Object.getOwnPropertyDescriptor({ a: 1 }, 'a')!; own.value = 2;",
     'Number.NaN argument': "local(Number.NaN);",
     'read-only assertion': "assert.equal(Object.getPrototypeOf([]), Array.prototype);",
+    'fresh Map': "const m = new Map(); m.set('a', 1);",
+    'extends a built-in': "class Failure extends Error {} void new Failure('x');",
+}
+# Controls: no reference to an intrinsic value. Aliases are scope-blind (design 06), so they use names no
+# positive variant binds.
+NEGATIVE = {
+    'local object write': "const o: Record<string, unknown> = {}; o.x = 1;",
     'type annotation': "const f: Function | undefined = undefined; assert.equal(f, undefined);",
+    'built-in names as keys and text': "const n = { Map: 1, Object: 'Object' }; n.Map = 2;",
+    'local class': "class Base {} class Sub extends Base {} void new Sub();",
 }
 SUBJECT = HEAD + """import { spawnSync } from 'node:child_process';
 import { Worker } from 'node:worker_threads';
@@ -59,6 +68,134 @@ HELPER = """export function install() { const holder = Object.prototype as any; 
 export { installAgain } from './again.ts';
 """
 AGAIN = "export function installAgain() { Object.defineProperty(Array.prototype, 'x', { value: 1 }); }\n"
+
+# Owner choice 10's corpus, kept as maintained regression cases. Review 03's 19 probe cases
+# (review-03/probe_detector.py), the wrapper x position cross-product and the same-name and rebinding
+# cases (design-06-r4/probe_safe_positions.py): under the coarse rule every leaf that references an
+# intrinsic matches, the former safe-position controls included.
+MUTATE = "function mutate(p) { p.toJSON = () => 42; }\n"
+REVIEW_03 = {
+    'direct-control': ('', 'Object.prototype.toJSON = () => 42;'),
+    'escape-control': (MUTATE, 'mutate(Object.prototype);'),
+    'parenthesized-escape': (MUTATE, 'mutate((Object.prototype));'),
+    'cast-escape': (MUTATE, 'mutate(Object.prototype as any);'),
+    'non-null-escape': (MUTATE, 'mutate(Object.prototype!);'),
+    'satisfies-escape': (MUTATE, 'mutate(Object.prototype satisfies object);'),
+    'parenthesized-storage': ('', 'const box = [(Object.prototype)]; box[0].toJSON = () => 42;'),
+    'parenthesized-return': ('function proto() { return (Object.prototype); }\n', 'proto().toJSON = () => 42;'),
+    'named-reader-helper': ('function keys(p) { p.toJSON = () => 42; }\n', 'keys(Object.prototype);'),
+    'named-reader-return': ('function keys(p) { return p; }\n', 'const p = keys(Object.prototype); p.toJSON = () => 42;'),
+    'reader-method-helper': ('const helper = { keys(p) { p.toJSON = () => 42; } };\n', 'helper.keys(Object.prototype);'),
+    'descriptor-result': ('', "const d = Object.getOwnPropertyDescriptor(Object, 'prototype'); d.value.toJSON = () => 42;"),
+    'descriptor-destructure': ('', "const { value } = Object.getOwnPropertyDescriptor(Object, 'prototype'); value.toJSON = () => 42;"),
+    'descriptor-return': ("function proto() { return Object.getOwnPropertyDescriptor(Object, 'prototype').value; }\n",
+                          'proto().toJSON = () => 42;'),
+    'reflect-get': ('', "const p = Reflect.get(Object, 'prototype'); p.toJSON = () => 42;"),
+    'entries-result': ('', "const p = Object.entries(Object.getOwnPropertyDescriptors(Object))[0]; p.extra = 1;"),
+    'values-result': ('', "const p = Object.values(Object.getOwnPropertyDescriptors(Object)); p.extra = 1;"),
+    'local-control': ('', 'const p = {}; p.x = 1;'),
+    'keys-control': ('', "const p = Object.keys(Object); p.push('x');"),
+}
+WRAPPERS = {'bare': '{}', 'paren': '({})', 'as': '{} as any', 'satisfies': '{} satisfies object', 'nonnull': '{}!', 'angle': '<any>{}'}
+POSITIONS = {
+    'argument': (MUTATE, 'mutate(@);'),
+    'receiver': ('', "@@.__defineGetter__('x', () => 42);"),
+    'receiver-listed': ('', 'const n = @@.hasOwnProperty("x");'),
+    'storage-array': ('', 'const box = [@]; box[0].toJSON = () => 42;'),
+    'storage-object': ('', 'const box = { p: @ }; box.p.toJSON = () => 42;'),
+    'return': ('function proto() { return @; }\n', 'proto().toJSON = () => 42;'),
+    'alias': ('', 'const p = @; p.toJSON = () => 42;'),
+}
+SAME_NAME = {
+    'local-function': ('function keys(p) { p.toJSON = () => 42; }\n', 'keys(Object.prototype);'),
+    'local-arrow': ('const stringify = (p) => { p.toJSON = () => 42; };\n', 'stringify(Object.prototype);'),
+    'imported-function': ("import { keys } from './helper.ts';\n", 'keys(Object.prototype);'),
+    'imported-namespace': ("import * as Obj from './helper.ts';\n", 'Obj.keys(Object.prototype);'),
+    'member-function': ('const helper = { keys(p) { p.toJSON = () => 42; } };\n', 'helper.keys(Object.prototype);'),
+    'shadowed-global-param': ('function run(JSON) { JSON.stringify(Object.prototype); }\n', 'run({ stringify(p) { p.toJSON = () => 42; } });'),
+    'shadowed-global-local': ('', 'const Array = { isArray(p) { p.toJSON = () => 42; } }; Array.isArray(Object.prototype);'),
+}
+REBINDING = {
+    'rebound-member': "Object.keys = (p) => { p.toJSON = () => 42; return []; };\ntest('other', () => { Object.keys(Object.prototype); });",
+    'rebound-global-member': "test('other', () => { JSON.stringify(Object.prototype); });\ntest('rebind', () => { globalThis.JSON = { stringify() {} }; });",
+    'rebound-global-computed': "const k = 'JSON';\ntest('other', () => { JSON.stringify(Object.prototype); });\ntest('rebind', () => { globalThis[k] = { stringify() {} }; });",
+    'rebound-global-escape': "function swap(g) { g.JSON = { stringify() {} }; }\ntest('other', () => { JSON.stringify(Object.prototype); });\ntest('rebind', () => { swap(globalThis); });",
+    'rebound-elsewhere': "test('other', () => { Object.keys(Object.prototype); });\ntest('rebind', () => { globalThis.Object = { keys() {} }; });",
+}
+
+
+def corpus_files():
+    """One test file per case; the value of each is whether its leaves must match."""
+    files = {}
+    test = lambda body: f"test('member', () => {{ {body} }});\n"
+    for name, (helper, body) in REVIEW_03.items():
+        files[f'tests/r03-{name}.test.ts'] = (HEAD + helper + test(body), name != 'local-control')
+    for (wrapper, form), (position, (helper, body)) in itertools.product(WRAPPERS.items(), POSITIONS.items()):
+        value = form.replace('{}', 'Object.prototype')
+        member = value if wrapper in ('bare', 'paren') else f'({value})'
+        fill = lambda text: text.replace('@@', member).replace('@', value)
+        files[f'tests/x-{position}-{wrapper}.test.ts'] = (HEAD + fill(helper) + test(fill(body)), True)
+    for name, (helper, body) in SAME_NAME.items():
+        files[f'tests/name-{name}.test.ts'] = (HEAD + helper + test(body), True)
+    for name, body in REBINDING.items():
+        files[f'tests/name-{name}.test.ts'] = (HEAD + body + '\n', True)
+    return files
+
+
+# Design check 03's five false-preserved leaves under revision 4's prototype
+# (design-06-check-03/probe_credit.py): each victim and poison leaf is held, never preserved.
+CHECK_03 = {}
+for _name, _assignment in {
+    'destructure-member': '({replacement: Object.keys} = {replacement: replacement});',
+    'array-destructure-member': '[Object.keys] = [replacement];',
+    'global-destructure-member': '({replacement: global.Object.keys} = {replacement: replacement});',
+}.items():
+    CHECK_03[_name] = """let touched = false;
+test('poison', () => {
+  const original = Object.keys;
+  function replacement(p) {
+    p.__check03 = 42;
+    assert.equal(p.__check03, 42);
+    delete p.__check03;
+    touched = true;
+    return original(p);
+  }
+  ASSIGNMENT
+});
+test('victim', () => {
+  Object.keys(Object.prototype);
+  assert.equal(touched, true);
+});
+""".replace('ASSIGNMENT', _assignment)
+CHECK_03['json-replacer'] = """test('victim', () => {
+  const escaped = [];
+  JSON.stringify(Object.prototype, function(key, value) {
+    escaped.push(value);
+    return value;
+  });
+  escaped[0].__check03 = 42;
+  assert.equal(escaped[0].__check03, 42);
+  delete escaped[0].__check03;
+});
+"""
+CHECK_03['global-getter'] = """let touched = false;
+test('poison', () => {
+  const original = JSON.stringify;
+  const parse = JSON.parse;
+  function replacement(p) {
+    p.__check03 = 42;
+    assert.equal(p.__check03, 42);
+    delete p.__check03;
+    touched = true;
+    return original(p);
+  }
+  globalThis.__defineGetter__('JSON', () => ({stringify: replacement, parse}));
+});
+test('victim', () => {
+  JSON.stringify(Object.prototype);
+  assert.equal(touched, true);
+});
+"""
 
 
 class DetectorTests(RepositoryFixture):
@@ -85,11 +222,52 @@ class DetectorTests(RepositoryFixture):
         self.assertEqual(unmatched, [])
         self.assertEqual({title: found[title] for title in NEGATIVE}, dict.fromkeys(NEGATIVE))
         kinds = {title: {site.split('@')[0] for site in found[title]['detector']} for title in POSITIVE}
-        self.assertEqual({title for title, found_kinds in kinds.items() if 'unclassified' in found_kinds},
-                         {'descriptor result', 'descriptor helper return', 'destructured descriptor', 'Reflect.get result'})
-        self.assertIn('unresolved', kinds['unresolvable import'])
-        self.assertIn('escape', kinds['unreadable helper called with Object'])
+        self.assertEqual(set().union(*kinds.values()), {'intrinsic', 'generated', 'child-process', 'unresolved'})
+        self.assertEqual(kinds['unresolvable import'], {'unresolved'})
         self.assertIn('child-process', kinds['child process'])
+        self.assertIn('generated', kinds['indirect eval'])
+        self.assertEqual(kinds['Object.keys result'], {'intrinsic'})
+
+    def test_owner_choice_10_corpus_matches_every_intrinsic_reference(self):
+        files = corpus_files()
+        _, rows = self.matches({**{path: text for path, (text, _) in files.items()},
+                                'tests/helper.ts': "export function keys(p: any) { p.toJSON = () => 42; }\n"})
+        matched = {path: any(key.startswith(path + ':') and 'V-ENV' in row['claims'] for key, row in rows.items())
+                   for path in files}
+        self.assertEqual(len(files), 19 + 42 + 12)
+        self.assertEqual({path for path, (_, expected) in files.items() if matched[path] != expected}, set())
+        leaves = {key for key in rows if key.startswith('tests/name-rebound-')}
+        self.assertEqual(len(leaves), 9, 'every leaf of a rebinding case, the rebinding leaf included, matches')
+
+    def test_design_check_03_false_preserved_leaves_earn_no_credit(self):
+        files = {f'tests/{name}.test.ts': HEAD + text for name, text in CHECK_03.items()}
+        pin, matches = self.matches(files)
+        tables = self.format_two_tables()
+        tables['holds']['register']['entries'] = [classified(row) for row in matches.values()]
+        for path in ('catalog-reporter.mjs', 'read-trace.mjs', 'reach-coverage.mjs'):
+            self.write('tests/tooling/' + path, (ROOT / 'tests/tooling' / path).read_text())
+        command = 'node --test --experimental-strip-types ' + ' '.join(files)
+        self.document('package.json', {'type': 'module', 'scripts': {'test': command}})
+        self.document('verify.json', {'version': 1, 'checks': [{
+            'id': 'tests', 'catalog': {'script': 'test', 'script_text': command,
+                                       'flags': ['--test', '--experimental-strip-types'], 'globs': list(files)},
+            'timeout_seconds': 60, 'output_limit_bytes': 1048576}]})
+        current = self.commit('credit subject')
+        intake = {'origins': [{'id': path, 'kind': 'artifact', 'path': path, 'revision': pin, 'line': 1} for path in files]}
+        spec = {'verification': 'verify.json', 'suite_targets': [], **tables}
+        environment = tool.child_environment(tool.environment_declaration(None))[0]
+        register = tool.hold_register(self.reader, current, tables['holds']['register'],
+                                      tool.holds_table(self.reader, current, tables['holds']), list(files),
+                                      environment, pinned_toolchain())
+        with contextlib.ExitStack() as stack:
+            context = tool.target_context(self.reader, current, spec, stack, pinned_toolchain())
+            evaluations, _ = tool.preserved_census(self.reader, current, spec, intake, context, register)
+        members = tool.preserved_table(evaluations)
+        self.assertEqual(sorted((row['file'], row['title'], row['status']) for row in members),
+                         sorted([(path, 'poison', 'held') for path in files if 'replacer' not in path] +
+                                [(path, 'victim', 'held') for path in files]))
+        self.assertTrue(all(register[f"{row['file']}:{row['current'][0]}:{row['current'][1]}"]['claim'] == 'V-ENV'
+                            for row in members))
 
     def test_hooks_suite_bodies_and_load_time_code_hold_the_leaves_they_run_around(self):
         cases = {
