@@ -1,4 +1,4 @@
-# Design 06 — TOOLS-01 correction after reviews 01 and 02 (revision 4)
+# Design 06 — TOOLS-01 correction after reviews 01 and 02 (revision 5)
 
 Claude Code (`claude-opus-5-5`), implementer under [owner choice 08](owner-choice-08.md),
 2026-10-05, for the design check; contract revision 9 ([owner choice 09](owner-choice-09.md)).
@@ -234,3 +234,46 @@ Through the real register and census, review 03's two preservation cases become 
 
 **Stated gaps** (unchanged): production modules, native code, inherited members of ordinary values
 (`[].push`), and state another test leaves in an ordinary container.
+
+## Revision 5: owner choice 10 §2's exit (coarse rule)
+
+[Design check 03](design-06-check-03.md) (`b7598918`) found five leaves that revision 4's prototype
+credits although they reach an intrinsic outside the table. Three rebind a listed callee by
+destructuring in a sibling test; one uses `globalThis.__defineGetter__`; in the fifth, a
+`JSON.stringify` replacer receives `Object.prototype` and writes it. That triggers [owner choice
+10](owner-choice-10.md) §2. The implementer applies the exit directly; no design check follows.
+
+**Rule.** Every member whose run set references any intrinsic value is a rule-1 match, held under
+V-ENV by owner choice 08. No safe-position table exempts anything: revision 4's table, identity rule
+and unsafe-reason kinds are withdrawn, and so are design 06's exemptions for `assert.*`, read-only
+reflection and fresh results. Every intrinsic reference is a match of kind `intrinsic`. The kinds
+`generated`, `child-process`, `parse` and `unresolved` are unchanged.
+
+**Kept.** The following stay as they are:
+- the run set;
+- intrinsic recognition and taint: names, `.prototype`/`__proto__`/`.constructor` reads,
+  `getPrototypeOf` results, a class's `extends`, and scope-blind aliases of intrinsic,
+  prototype-like and tainted values;
+- file-wide scope;
+- child processes as unread code;
+- owner choice 08 §2.3 category precedence;
+- C2-LIMIT, and owner choice 09's no-target-kills rule.
+
+A structural trace in `corpus` requires that every key with a detector site is held, and that no
+member or target at such a leaf earns credit.
+
+**Owner answers to revision 4**, verbatim:
+
+> 1. dispatch:1527:3 and values:735:3 are held under owner choice 08 rule 1 and stay among owner
+>    choice 04's 24 limited members. Neither earns credit.
+> 2. The identity rule applies file-wide, not only to the run set, because a file's tests share a
+>    process. This is stricter than owner choice 10's wording and is adopted.
+> 3. No `node:assert` or comparison-operator rows are added to the safe-position table. Those
+>    references stay unsafe.
+
+**Corpus.** Design check 03's five false-preserved leaves earn no credit. Review 03's 19 cases and
+the wrapper × position cross-product stay, and every hazard in them matches. Under the coarse rule
+the controls match too, including `Object.keys` and `new Map()`. Only a local-object write with no
+intrinsic reference stays unmatched. The build reports every changed figure against 713/183/74/302
+(H `7f3a2af4`) and 616/314/74/268 (revision 4's prototype). It stops under owner choice 08 §2.5 if
+any of the 110 closed origins loses every route.
