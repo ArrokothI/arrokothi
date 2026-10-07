@@ -195,6 +195,11 @@ requires them to equal the recomputation exactly. A stale record fails; it never
   referenced test-side binding with no resolvable text. A case's run set is the JavaScript and
   TypeScript files it names or runs and their test-side closures. Values that never meet a recognized
   reference, production modules and native code are stated gaps.
+- **Intrinsic trace (design 06 revision 5).** `corpus` traces recognition to every credit consumer:
+  `intrinsic_trace` refuses a key with a detector site that the register leaves `not_held`, a `preserved`
+  member whose current leaf has one, and a target at such a leaf without a P1-H refusal. Closures link
+  only unrefused targets and attributed witnesses, and C2-LIMIT extras sit at rule-1 held leaves. The
+  summary reports the trace's sites, keys, cases, members and targets.
 - **Rule 1 and the structural check (owner choice 08 §2).** Every V-ENV match is held; under the
   V-ENV claim it is `held` and names `decision: owner-choice-08.md`, which no other entry names. A
   held or superseded entry names exactly one of its `decision` (one of its claim's decisions) or its

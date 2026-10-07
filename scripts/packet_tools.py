@@ -731,6 +731,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     lists = transfer_lists(git, rev, spec.get('transfer_lists', []))
     transferred = transferred_origins(git, rev, spec.get('transferred', []), rows, lists)
     limited = limited_origins(git, rev, spec.get('transferred', []), lists, members, targets, results, register)
+    trace = intrinsic_trace(detected, register, members, targets, results)
     unexplained = [key for key in pending if rows[key]['state'] == 'pending_revalidation' and key not in transferred]
     return {'operation': 'corpus', 'format': 2, 'revision': rev,
             'result': ('mappings_complete' if not pending else 'revalidation_complete' if not unexplained
@@ -756,8 +757,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                          'detector': dict(sorted(Counter(site.split('@')[0] for sites in detected.values()
                                                          for site in set(sites)).items())),
                          'detector_entries': sum(bool(sites) for sites in detected.values()),
-                         'unclassified': sorted(key for key, sites in detected.items()
-                                                if any(site.startswith('unclassified@') for site in sites))},
+                         'trace': trace},
             'areas': {'map': len(area_ids), 'open_origins': len(open_areas),
                       'ungated': sum(not row['derived'] for row in open_areas.values()),
                       'ungated_origins': sorted(key for key, row in open_areas.items() if not row['derived']),
@@ -2283,6 +2283,27 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
         report.update({row['key']: row['detector'] for row in matches})
     return entries
 
+
+def intrinsic_trace(detected, register, members, targets, results):
+    """Owner choice 10 §2 (design 06 revision 5): the structural trace from intrinsic recognition to each credit
+    consumer. Every key whose run set has a detector site is held or superseded in the register; no member whose
+    current leaf has one is preserved; no target at such a leaf earns credit. Closures link only unrefused targets
+    and attributed witnesses (origin_closure), and C2-LIMIT's extras sit at rule-1 held leaves (limited_origins)."""
+    traced = {key for key, sites in detected.items() if sites}
+    unheld = sorted(key for key in traced if register.get(key, {}).get('classification') not in ('held', 'superseded'))
+    require(not unheld, 'a key with a detector site is held or superseded: ' + ', '.join(unheld[:3]))
+    leaf = lambda path, line, column: f'{path}:{line}:{column}'
+    at_leaf = [row for row in members.values() if row.get('current') and leaf(row['file'], *row['current']) in traced]
+    preserved = sorted(row['member'] for row in at_leaf if row['status'] == 'preserved')
+    require(not preserved, 'a member at a leaf with a detector site earns no preserved credit: ' + ', '.join(preserved[:3]))
+    results = {row['id']: row for row in results}
+    held_targets = [key for key, target in targets.items()
+                    if leaf(target.get('file'), (target.get('declaration') or {}).get('line'),
+                            (target.get('declaration') or {}).get('column')) in traced]
+    credited = sorted(key for key in held_targets if 'credit' in results[key] or not results[key]['refused'])
+    require(not credited, 'a target at a leaf with a detector site earns no credit: ' + ', '.join(credited[:3]))
+    return {'sites': sum(len(detected[key]) for key in traced), 'keys': len(traced),
+            'cases': sum(key.startswith('case:') for key in traced), 'members': len(at_leaf), 'targets': len(held_targets)}
 
 def floor_order_model(git, rev, floor):
     """Design 05 §2.3 rule 1: the A10 result of the recorded floor run decides the run model."""

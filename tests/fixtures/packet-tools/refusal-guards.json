@@ -8911,6 +8911,93 @@
           "id": "mutation-bf40d00a8c216b87396cda145d124421d63a56c91d0a83937bfaa78b1cffbdcb"
         }
       ]
+    },
+    {
+      "id": "guard.intrinsic_trace.583133dcde11d582",
+      "assertion": "test_intrinsic_trace.IntrinsicTraceTests.test_a_key_with_a_detector_site_left_not_held_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: intrinsic_trace",
+      "input": {
+        "test": "test_intrinsic_trace.IntrinsicTraceTests.test_a_key_with_a_detector_site_left_not_held_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.intrinsic_trace.583133dcde11d582"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not unheld, 'a key with a detector site is held or superseded: ' + ', '.join(unheld[:3]))",
+          "after": "pass  # tools01-ablate:583133dcde11d582",
+          "operator": "remove-refusal-check",
+          "name": "guard.intrinsic_trace.583133dcde11d582",
+          "id": "mutation-7ed4c7f2cfc4751b2d20b521a17c07c969c8cffa162a8af63ba68ef47c73526a"
+        }
+      ]
+    },
+    {
+      "id": "guard.intrinsic_trace.9e3fe342ba286490",
+      "assertion": "test_intrinsic_trace.IntrinsicTraceTests.test_a_preserved_member_at_a_traced_leaf_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: intrinsic_trace",
+      "input": {
+        "test": "test_intrinsic_trace.IntrinsicTraceTests.test_a_preserved_member_at_a_traced_leaf_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.intrinsic_trace.9e3fe342ba286490"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not preserved, 'a member at a leaf with a detector site earns no preserved credit: ' + ', '.join(preserved[:3]))",
+          "after": "pass  # tools01-ablate:9e3fe342ba286490",
+          "operator": "remove-refusal-check",
+          "name": "guard.intrinsic_trace.9e3fe342ba286490",
+          "id": "mutation-8286b34f25c6ece7f7fc0d95e281e09dd65793ee98850380fce0e11ddb5f5b40"
+        }
+      ]
+    },
+    {
+      "id": "guard.intrinsic_trace.322697e5c96d426f",
+      "assertion": "test_intrinsic_trace.IntrinsicTraceTests.test_a_credited_target_at_a_traced_leaf_is_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: intrinsic_trace",
+      "input": {
+        "test": "test_intrinsic_trace.IntrinsicTraceTests.test_a_credited_target_at_a_traced_leaf_is_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.intrinsic_trace.322697e5c96d426f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not credited, 'a target at a leaf with a detector site earns no credit: ' + ', '.join(credited[:3]))",
+          "after": "pass  # tools01-ablate:322697e5c96d426f",
+          "operator": "remove-refusal-check",
+          "name": "guard.intrinsic_trace.322697e5c96d426f",
+          "id": "mutation-8357738618ec89007b8c1c913bafeb22d523a33caef54e49dde18e1ee3fcce7b"
+        }
+      ]
     }
   ],
   "determinism_sample": [
