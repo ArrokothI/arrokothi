@@ -1,0 +1,646 @@
+{
+  "subject": "28258b282532b36eef8fb1571d79b6343b54427b",
+  "markdown": {
+    "trailing-text": {
+      "source": "# Review\n## Finding\n~~~js\n~~~ not-a-close\n## still code\n~~~\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        7
+      ],
+      "uncertain": null,
+      "checks": {
+        "False": {
+          "refused": "a named sealed record is outside the context: docs/records/note.md@577981616b14b6f9e8e2dcee11b1236797f2d9d3"
+        },
+        "True": {
+          "ranges": 2,
+          "candidates": 1,
+          "reasoned": 0
+        }
+      }
+    },
+    "shorter": {
+      "source": "# Review\n## Finding\n~~~~js\n~~~\n## still code\n~~~~\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        7
+      ],
+      "uncertain": null,
+      "checks": {
+        "False": {
+          "refused": "a named sealed record is outside the context: docs/records/note.md@b21fed06a4060b3eed62a8ca8d6dc7660f9fa0dc"
+        },
+        "True": {
+          "ranges": 2,
+          "candidates": 1,
+          "reasoned": 0
+        }
+      }
+    },
+    "mixed": {
+      "source": "# Review\n## Finding\n~~~js\n```\n## still code\n~~~\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        7
+      ],
+      "uncertain": null,
+      "checks": {
+        "False": {
+          "refused": "a named sealed record is outside the context: docs/records/note.md@5263670ad97df792e2e96b2a34d14597709a8b52"
+        },
+        "True": {
+          "ranges": 2,
+          "candidates": 1,
+          "reasoned": 0
+        }
+      }
+    },
+    "whitespace": {
+      "source": "# Review\n## Finding\n~~~js\n## still code\n   ~~~~ \t\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        6
+      ],
+      "uncertain": null,
+      "checks": {
+        "False": {
+          "refused": "a named sealed record is outside the context: docs/records/note.md@10de11fdec874c4a5c75e51dc0f1284829cf7ea6"
+        },
+        "True": {
+          "ranges": 2,
+          "candidates": 1,
+          "reasoned": 0
+        }
+      }
+    },
+    "backticks": {
+      "source": "# Review\n## Finding\n````js\n```\n## still code\n````\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        7
+      ],
+      "uncertain": null,
+      "checks": {
+        "False": {
+          "refused": "a named sealed record is outside the context: docs/records/note.md@8ec7922360c47c566ffbb5be38e2e30edd0f80f5"
+        },
+        "True": {
+          "ranges": 2,
+          "candidates": 1,
+          "reasoned": 0
+        }
+      }
+    },
+    "unclosed": {
+      "source": "# Review\n## Finding\n~~~js\n## still code\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        7
+      ],
+      "uncertain": "an unclosed fence at line 3",
+      "checks": {
+        "False": {
+          "refused": "the minimum context is uncertain (an unclosed fence at line 3): unclosed"
+        },
+        "True": {
+          "refused": "the minimum context is uncertain (an unclosed fence at line 3): unclosed"
+        }
+      }
+    },
+    "indented": {
+      "source": "# Review\n## Finding\n    ~~~js\n## still code\n    ~~~\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        3
+      ],
+      "uncertain": "a fence-like line that is not a top-level fence at line 3",
+      "checks": {
+        "False": {
+          "refused": "the minimum context is uncertain (a fence-like line that is not a top-level fence at line 3): indented"
+        },
+        "True": {
+          "refused": "the minimum context is uncertain (a fence-like line that is not a top-level fence at line 3): indented"
+        }
+      }
+    },
+    "list": {
+      "source": "# Review\n## Finding\n- ~~~js\n  ## still code\n  ~~~\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        8
+      ],
+      "uncertain": "a fence-like line that is not a top-level fence at line 3",
+      "checks": {
+        "False": {
+          "refused": "the minimum context is uncertain (a fence-like line that is not a top-level fence at line 3): list"
+        },
+        "True": {
+          "refused": "the minimum context is uncertain (a fence-like line that is not a top-level fence at line 3): list"
+        }
+      }
+    },
+    "quote": {
+      "source": "# Review\n## Finding\n> ~~~js\n> ## still code\n> ~~~\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        6
+      ],
+      "uncertain": "a fence-like line that is not a top-level fence at line 3",
+      "checks": {
+        "False": {
+          "refused": "the minimum context is uncertain (a fence-like line that is not a top-level fence at line 3): quote"
+        },
+        "True": {
+          "refused": "the minimum context is uncertain (a fence-like line that is not a top-level fence at line 3): quote"
+        }
+      }
+    },
+    "html": {
+      "source": "# Review\n## Finding\n<!--\n## still comment\n-->\n~~~js\ncode\n~~~\nRead [note](docs/records/note.md).\n## Next\noutside\n",
+      "minimum": [
+        2,
+        9
+      ],
+      "uncertain": "a heading- or fence-like line in an HTML block at line 4",
+      "checks": {
+        "False": {
+          "refused": "the minimum context is uncertain (a heading- or fence-like line in an HTML block at line 4): html"
+        },
+        "True": {
+          "refused": "the minimum context is uncertain (a heading- or fence-like line in an HTML block at line 4): html"
+        }
+      }
+    }
+  },
+  "mutations": [
+    {
+      "id": "trimmed-production",
+      "expected_targets": [
+        {
+          "file": "tests/a.test.mjs",
+          "path": [
+            "compute adds one"
+          ]
+        }
+      ],
+      "path": "src/value.mjs",
+      "before": "return n + 1;",
+      "after": "throw new AssertionError({actual: 0, expected: 1, operator: 'strictEqual', stackStartFn: compute});"
+    },
+    {
+      "id": "empty-provenance",
+      "expected_targets": [
+        {
+          "file": "tests/a.test.mjs",
+          "path": [
+            "compute adds one"
+          ]
+        }
+      ],
+      "path": "src/value.mjs",
+      "before": "return n + 1;",
+      "after": "const e = new AssertionError({actual: 0, expected: 1}); e.stack = ''; throw e;"
+    },
+    {
+      "id": "numeric-provenance",
+      "expected_targets": [
+        {
+          "file": "tests/a.test.mjs",
+          "path": [
+            "compute adds one"
+          ]
+        }
+      ],
+      "path": "src/value.mjs",
+      "before": "return n + 1;",
+      "after": "const e = new AssertionError({actual: 0, expected: 1}); Object.defineProperty(e, 'stack', {value: 17}); throw e;"
+    },
+    {
+      "id": "missing-provenance",
+      "expected_targets": [
+        {
+          "file": "tests/a.test.mjs",
+          "path": [
+            "compute adds one"
+          ]
+        }
+      ],
+      "path": "src/value.mjs",
+      "before": "return n + 1;",
+      "after": "throw 17;"
+    }
+  ],
+  "observations": {
+    "operation": "mutations",
+    "revision": "f6d82a0090e8409064248c21d7e6a5469c205a74",
+    "registry": "registry.json",
+    "result": "attention_required",
+    "counts": {
+      "observed": 4
+    },
+    "cases": [
+      {
+        "case": "targets",
+        "content_key": "case-91e0ad73817f0350680207fa7ac276282c0cffd29969eb6a48c7b6d959cf621f",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "target_set",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "",
+          "reach": {
+            "src/value.mjs:75": 1
+          },
+          "tree": {
+            "files": {
+              "tests/a.test.mjs": {
+                "pairs": [
+                  {
+                    "path": [
+                      "compute adds one"
+                    ],
+                    "line": 4,
+                    "column": 1,
+                    "nesting": 0,
+                    "kind": "test",
+                    "parent": null,
+                    "verdict": "passed",
+                    "leaf": true
+                  },
+                  {
+                    "path": [
+                      "other doubles"
+                    ],
+                    "line": 5,
+                    "column": 1,
+                    "nesting": 0,
+                    "kind": "test",
+                    "parent": null,
+                    "verdict": "passed",
+                    "leaf": true
+                  }
+                ],
+                "synthetic": 0
+              }
+            },
+            "refused": {},
+            "unselected": [],
+            "summary": {
+              "tests": 2,
+              "suites": 0,
+              "pass": 2,
+              "fail": 0,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0
+            },
+            "summary_consistent": true,
+            "valid": true
+          }
+        },
+        "mutations": [
+          {
+            "mutation": "trimmed-production",
+            "status": "observed",
+            "run": {
+              "status": "finished",
+              "exit": 1,
+              "output": "",
+              "tree": {
+                "files": {
+                  "tests/a.test.mjs": {
+                    "pairs": [
+                      {
+                        "path": [
+                          "compute adds one"
+                        ],
+                        "line": 4,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "failed",
+                        "failure": {
+                          "type": "testCodeFailure",
+                          "cause_name": "AssertionError",
+                          "cause_code": "ERR_ASSERTION",
+                          "stack": {
+                            "type": "string",
+                            "frames": 5
+                          }
+                        },
+                        "leaf": true
+                      },
+                      {
+                        "path": [
+                          "other doubles"
+                        ],
+                        "line": 5,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "passed",
+                        "leaf": true
+                      }
+                    ],
+                    "synthetic": 0
+                  }
+                },
+                "refused": {},
+                "unselected": [],
+                "summary": {
+                  "tests": 2,
+                  "suites": 0,
+                  "pass": 1,
+                  "fail": 1,
+                  "cancelled": 0,
+                  "skipped": 0,
+                  "todo": 0
+                },
+                "summary_consistent": true,
+                "valid": true
+              }
+            },
+            "invalid": false,
+            "targets": [
+              {
+                "target": "tests/a.test.mjs > compute adds one",
+                "outcome": "assertion",
+                "failure_type": "testCodeFailure",
+                "cause": {
+                  "name": "AssertionError",
+                  "code": "ERR_ASSERTION"
+                },
+                "provenance": "frames",
+                "origin": "not established"
+              }
+            ],
+            "content_key": "mutation-9b9cd6e2867c63b524c4302effee89906e3b41dc7abcd8a1a67ca9135ddbe716"
+          },
+          {
+            "mutation": "empty-provenance",
+            "status": "observed",
+            "run": {
+              "status": "finished",
+              "exit": 1,
+              "output": "",
+              "tree": {
+                "files": {
+                  "tests/a.test.mjs": {
+                    "pairs": [
+                      {
+                        "path": [
+                          "compute adds one"
+                        ],
+                        "line": 4,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "failed",
+                        "failure": {
+                          "type": "testCodeFailure",
+                          "cause_name": "AssertionError",
+                          "cause_code": "ERR_ASSERTION",
+                          "stack": {
+                            "type": "string",
+                            "frames": 0
+                          }
+                        },
+                        "leaf": true
+                      },
+                      {
+                        "path": [
+                          "other doubles"
+                        ],
+                        "line": 5,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "passed",
+                        "leaf": true
+                      }
+                    ],
+                    "synthetic": 0
+                  }
+                },
+                "refused": {},
+                "unselected": [],
+                "summary": {
+                  "tests": 2,
+                  "suites": 0,
+                  "pass": 1,
+                  "fail": 1,
+                  "cancelled": 0,
+                  "skipped": 0,
+                  "todo": 0
+                },
+                "summary_consistent": true,
+                "valid": true
+              }
+            },
+            "invalid": false,
+            "targets": [
+              {
+                "target": "tests/a.test.mjs > compute adds one",
+                "outcome": "assertion",
+                "failure_type": "testCodeFailure",
+                "cause": {
+                  "name": "AssertionError",
+                  "code": "ERR_ASSERTION"
+                },
+                "provenance": "unusable",
+                "origin": "not established"
+              }
+            ],
+            "content_key": "mutation-908678d3e218ca58f01da673694021c8073cc3b756821ddb92d0e98135afcaf1"
+          },
+          {
+            "mutation": "numeric-provenance",
+            "status": "observed",
+            "run": {
+              "status": "finished",
+              "exit": 1,
+              "output": "",
+              "tree": {
+                "files": {
+                  "tests/a.test.mjs": {
+                    "pairs": [
+                      {
+                        "path": [
+                          "compute adds one"
+                        ],
+                        "line": 4,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "failed",
+                        "failure": {
+                          "type": "testCodeFailure",
+                          "cause_name": "AssertionError",
+                          "cause_code": "ERR_ASSERTION",
+                          "stack": {
+                            "type": "number",
+                            "frames": 0
+                          }
+                        },
+                        "leaf": true
+                      },
+                      {
+                        "path": [
+                          "other doubles"
+                        ],
+                        "line": 5,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "passed",
+                        "leaf": true
+                      }
+                    ],
+                    "synthetic": 0
+                  }
+                },
+                "refused": {},
+                "unselected": [],
+                "summary": {
+                  "tests": 2,
+                  "suites": 0,
+                  "pass": 1,
+                  "fail": 1,
+                  "cancelled": 0,
+                  "skipped": 0,
+                  "todo": 0
+                },
+                "summary_consistent": true,
+                "valid": true
+              }
+            },
+            "invalid": false,
+            "targets": [
+              {
+                "target": "tests/a.test.mjs > compute adds one",
+                "outcome": "assertion",
+                "failure_type": "testCodeFailure",
+                "cause": {
+                  "name": "AssertionError",
+                  "code": "ERR_ASSERTION"
+                },
+                "provenance": "unusable",
+                "origin": "not established"
+              }
+            ],
+            "content_key": "mutation-ccdef3ae93cbdad2b77ec74481975967e58522b6ad41d1c19534f3a0785d1f42"
+          },
+          {
+            "mutation": "missing-provenance",
+            "status": "observed",
+            "run": {
+              "status": "finished",
+              "exit": 1,
+              "output": "",
+              "tree": {
+                "files": {
+                  "tests/a.test.mjs": {
+                    "pairs": [
+                      {
+                        "path": [
+                          "compute adds one"
+                        ],
+                        "line": 4,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "failed",
+                        "failure": {
+                          "type": "testCodeFailure",
+                          "cause_name": null,
+                          "cause_code": null,
+                          "stack": null
+                        },
+                        "leaf": true
+                      },
+                      {
+                        "path": [
+                          "other doubles"
+                        ],
+                        "line": 5,
+                        "column": 1,
+                        "nesting": 0,
+                        "kind": "test",
+                        "parent": null,
+                        "verdict": "passed",
+                        "leaf": true
+                      }
+                    ],
+                    "synthetic": 0
+                  }
+                },
+                "refused": {},
+                "unselected": [],
+                "summary": {
+                  "tests": 2,
+                  "suites": 0,
+                  "pass": 1,
+                  "fail": 1,
+                  "cancelled": 0,
+                  "skipped": 0,
+                  "todo": 0
+                },
+                "summary_consistent": true,
+                "valid": true
+              }
+            },
+            "invalid": false,
+            "targets": [
+              {
+                "target": "tests/a.test.mjs > compute adds one",
+                "outcome": "error",
+                "failure_type": "testCodeFailure",
+                "cause": {
+                  "name": null,
+                  "code": null
+                },
+                "provenance": "absent",
+                "origin": "not established"
+              }
+            ],
+            "content_key": "mutation-f545d7d8c88b6d98e9df03ef0e670585642d7ac0a5455ce061e0b4c49f6b5d4f"
+          }
+        ]
+      }
+    ],
+    "determinism_sample": [],
+    "environment": {
+      "passed": [
+        "PATH",
+        "HOME",
+        "TMPDIR"
+      ],
+      "unset_in_parent": [],
+      "set": {
+        "LANG": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "inputs": [],
+      "absent": [],
+      "inherited_values_recorded": false
+    },
+    "acceptance": "not evaluated",
+    "witnesses": [],
+    "limits": [
+      "Only the listed cases and mutations were executed",
+      "Structured witnesses rely on reviewed independent fixtures; no universal causal proof",
+      "Trusted repository commands run without containment; temporary copies protect source files"
+    ]
+  }
+}

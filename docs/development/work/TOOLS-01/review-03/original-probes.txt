@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/arrokothi-tools-01-review-03-c/docs/development/work/TOOLS-01/review-01/probe_review.py", line 17, in <module>
+    assert (ROOT/'scripts/packet_tools.py').read_bytes()==blob('scripts/packet_tools.py'), 'Requires exact candidate checker bytes'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Requires exact candidate checker bytes

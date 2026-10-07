@@ -1,0 +1,327 @@
+{
+  "subject": "28258b282532b36eef8fb1571d79b6343b54427b",
+  "review01_manifest_shape": [
+    "subject",
+    "payload",
+    "files"
+  ],
+  "review01_trimmed": [
+    "docs/development/work/TOOLS-01/review-01/sample-01.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-02.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-03.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-04.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-05.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-06.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-07.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-09.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-10.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-11.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-12.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-13.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-14.txt"
+  ],
+  "restoration": {
+    "sha256": "d5ea1655908497538c545f7d94aaac451689b9b297421445779d174a28f7b278",
+    "scratch_targets": 43,
+    "prior_rows_equal": 34,
+    "previously_absent": [
+      "target.dispatch.1001.3.5a8d958ffdab",
+      "target.dispatch.1363.3.5a8d958ffdab",
+      "target.dispatch.1512.3.5a8d958ffdab",
+      "target.dispatch.673.3.5a8d958ffdab",
+      "target.dispatch.725.3.5a8d958ffdab",
+      "target.dispatch.803.3.5a8d958ffdab",
+      "target.dispatch.866.3.5a8d958ffdab",
+      "target.dispatch.913.3.5a8d958ffdab",
+      "target.dispatch.955.3.5a8d958ffdab"
+    ],
+    "restored_row_equals_scratch": true,
+    "target": {
+      "id": "target.dispatch.1363.3.5a8d958ffdab",
+      "counterexample": "cx.dispatch.1363.3.5a8d958ffdab",
+      "member": "packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "test_path": [
+        "KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)",
+        "Promise independence: hostile ambient constructor/species slots change nothing"
+      ],
+      "declaration": {
+        "line": 1390,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "Object.defineProperty(Promise, Symbol.species, {\n      configurable: true,\n      get() {\n        throw new Error(\"species boom\");\n      },\n    });",
+          "sha256": "4271d6f766421335d63b2e772834b198fc5e619ce1fa8278fbbf3ae7d4886dcd",
+          "literals": [
+            {
+              "ordinal": 23,
+              "value": "species boom"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(promiseSpeciesIsHostile(), true, \"throwing species live across the calls\");",
+          "sha256": "46836c696044b333dc3c62c7ea4039fe4c5f8da0e178c2924455b8e5153bfbef"
+        },
+        {
+          "anchor": "assert.equal(typeof Object.getOwnPropertyDescriptor(Promise, Symbol.species)?.get, \"function\");",
+          "sha256": "7bc66ea905066b6c2ccf06cafd8d31f2fe985ed8cba1b6f4e742e6e5e62b654d"
+        },
+        {
+          "anchor": "assert.equal(promiseSpeciesIsHostile(), false, \"host state restored\");",
+          "sha256": "20c87c455a1c2991dd56200a3842c1aefa5f18580afbf0397899a904655762aa"
+        },
+        {
+          "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"delivered\", failure: null, activationId: view.activation?.activationId as string, writerEpoch: 1 },\n      { attempt: 2, status: \"delivered\", failure: null, activationId: view.activation?.activationId as string, writerEpoch: 1 },\n    ]);",
+          "sha256": "9a6f147378c5a2d3d0bd8309c3ad86758b1c3c7c9a56e2744fc211595ff79164"
+        }
+      ],
+      "relation": {
+        "kind": "authorized_replacement",
+        "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+      },
+      "discrimination": {
+        "reading": "With a throwing species live, dispatch and redelivery must succeed, the host state must be restored, and the row must read delivered. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+      }
+    }
+  },
+  "historical_dispatch_check": {
+    "id": "target.dispatch.1363.3.5a8d958ffdab",
+    "counterexample": "cx.dispatch.1363.3.5a8d958ffdab",
+    "refused": [],
+    "anchors": [
+      {
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "role": "input",
+        "anchor": "Object.defineProperty(Promise, Symbol.species, {\n      configurable: true,\n      get() {\n        throw new Error(\"specie",
+        "bound": true,
+        "scope": "span",
+        "input": "tokens_matched",
+        "offset": 65133,
+        "count": 1,
+        "baseline": 0,
+        "reached": true
+      },
+      {
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "role": "assertion",
+        "anchor": "assert.equal(promiseSpeciesIsHostile(), true, \"throwing species live across the calls\");",
+        "bound": true,
+        "not_observable": "try block",
+        "offset": 65558,
+        "count": 1,
+        "baseline": 0,
+        "reached": true
+      },
+      {
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "role": "assertion",
+        "anchor": "assert.equal(typeof Object.getOwnPropertyDescriptor(Promise, Symbol.species)?.get, \"function\");",
+        "bound": true,
+        "not_observable": "try block",
+        "offset": 66028,
+        "count": 1,
+        "baseline": 0,
+        "reached": true
+      },
+      {
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "role": "assertion",
+        "anchor": "assert.equal(promiseSpeciesIsHostile(), false, \"host state restored\");",
+        "bound": true,
+        "offset": 66727,
+        "count": 1,
+        "baseline": 0,
+        "reached": true
+      },
+      {
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "role": "assertion",
+        "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"delivered\", failure: null, activationId: vi",
+        "bound": true,
+        "offset": 66874,
+        "count": 1,
+        "baseline": 0,
+        "reached": true
+      }
+    ],
+    "reach_run": "valid",
+    "credit": "target_reading"
+  },
+  "conservation": {
+    "transfer_count": 44,
+    "origin_states_unchanged": true,
+    "closures_changed": [
+      "artifact-b06e44e7a30c0b735cf084aa",
+      "artifact-55f842727285272a53a9e5d9",
+      "artifact-ce2e69842afb779a3e70c0f5",
+      "artifact-6c57cc9dd8febdefa65ed496",
+      "artifact-210dd0aaaf1f9edcdcaa0600",
+      "artifact-ecb10ef937e0612352e7c7ef",
+      "artifact-febb180b453e17b8edab6893",
+      "artifact-bca863b02ba3f5f894baa47d",
+      "artifact-0e16542de3087c0c508b3601",
+      "artifact-791d72837fcc45454f5b0ab6",
+      "artifact-0f12d86d31f51cf923cb05e8",
+      "artifact-510be2a0362710c9996c358a",
+      "artifact-98679309de7791acf7f59c87",
+      "artifact-30fdff7b12e937121758c7e7",
+      "artifact-ae65d3df0a6ed394770ff256",
+      "artifact-a8dc74e516932f00626f70e1",
+      "artifact-f5306a247782c53fd004e62d",
+      "artifact-ebfa0eb36bcd33f72a4dffce"
+    ],
+    "member_status_transitions": {
+      "preserved -> preserved": 713,
+      "held -> held": 125,
+      "refused -> refused": 302,
+      "preserved -> held": 53,
+      "superseded -> superseded": 74,
+      "refused -> held": 5
+    }
+  },
+  "p1t": [
+    {
+      "id": "target.dispatch.1363.3.5a8d958ffdab",
+      "counterexample": "cx.dispatch.1363.3.5a8d958ffdab",
+      "refused": [
+        "the target leaf is a registered held test (P1-H)"
+      ],
+      "anchors": [
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "input",
+          "anchor": "Object.defineProperty(Promise, Symbol.species, {\n      configurable: true,\n      get() {\n        throw new Error(\"specie",
+          "bound": true,
+          "scope": "span",
+          "input": "tokens_matched",
+          "offset": 65133,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.equal(promiseSpeciesIsHostile(), true, \"throwing species live across the calls\");",
+          "bound": true,
+          "not_observable": "try block",
+          "offset": 65558,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.equal(typeof Object.getOwnPropertyDescriptor(Promise, Symbol.species)?.get, \"function\");",
+          "bound": true,
+          "not_observable": "try block",
+          "offset": 66028,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.equal(promiseSpeciesIsHostile(), false, \"host state restored\");",
+          "bound": true,
+          "offset": 66727,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"delivered\", failure: null, activationId: vi",
+          "bound": true,
+          "offset": 66874,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        }
+      ],
+      "title_kind": "literal",
+      "reach_run": "valid"
+    },
+    {
+      "id": "target.dispatch.1426.3.5a8d958ffdab",
+      "counterexample": "cx.dispatch.1426.3.5a8d958ffdab",
+      "refused": [
+        "the target leaf is a registered held test (P1-H)"
+      ],
+      "anchors": [
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "input",
+          "anchor": "const probe = `\n      const { ExecutionCoordinator } = await import(\"./packages/kernel/src/index.ts\");\n      const harne",
+          "bound": true,
+          "scope": "span",
+          "input": "tokens_matched",
+          "offset": 68403,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.equal(observed.unhandled, 0, \"the conforming Driver handled its own rejection on both attempts\");",
+          "bound": true,
+          "offset": 70754,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.equal(observed.state, \"RUNNING\", \"reports change no accepted state\");",
+          "bound": true,
+          "offset": 70863,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.deepEqual(observed.deliveries, [\n      { attempt: 1, status: \"failed\", failure: \"Driver delivery failed\", activat",
+          "bound": true,
+          "offset": 70944,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.equal((observed.batch ?? []).length, 1, \"the reserved batch is intact\");",
+          "bound": true,
+          "offset": 71252,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        },
+        {
+          "file": "packages/kernel/tests/dispatch.test.ts",
+          "role": "assertion",
+          "anchor": "assert.deepEqual(observed.acknowledged, [], \"a failure acknowledges nothing\");",
+          "bound": true,
+          "offset": 71336,
+          "count": 1,
+          "baseline": 0,
+          "reached": true
+        }
+      ],
+      "title_kind": "literal",
+      "reach_run": "valid"
+    }
+  ]
+}

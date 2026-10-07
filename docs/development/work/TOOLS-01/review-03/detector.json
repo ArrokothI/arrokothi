@@ -1,0 +1,268 @@
+{
+  "subject": "28258b282532b36eef8fb1571d79b6343b54427b",
+  "results": {
+    "tests/direct-control.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { Object.prototype.toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [
+        {
+          "key": "tests/direct-control.test.ts:3:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "assignment@tests/direct-control.test.ts:3"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.535042ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 96.223042\n",
+      "runtime_stderr": ""
+    },
+    "tests/escape-control.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction mutate(p) { p.toJSON = () => 42; }\ntest('member', () => { mutate(Object.prototype); assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [
+        {
+          "key": "tests/escape-control.test.ts:4:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "escape@tests/escape-control.test.ts:4"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.549083ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 99.546417\n",
+      "runtime_stderr": ""
+    },
+    "tests/parenthesized-escape.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction mutate(p) { p.toJSON = () => 42; }\ntest('member', () => { mutate((Object.prototype)); assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.595833ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 97.30375\n",
+      "runtime_stderr": ""
+    },
+    "tests/cast-escape.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction mutate(p) { p.toJSON = () => 42; }\ntest('member', () => { mutate(Object.prototype as any); assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.555459ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 104.472333\n",
+      "runtime_stderr": ""
+    },
+    "tests/non-null-escape.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction mutate(p) { p.toJSON = () => 42; }\ntest('member', () => { mutate(Object.prototype!); assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.544416ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 98.687083\n",
+      "runtime_stderr": ""
+    },
+    "tests/satisfies-escape.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction mutate(p) { p.toJSON = () => 42; }\ntest('member', () => { mutate(Object.prototype satisfies object); assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.580666ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 95.841291\n",
+      "runtime_stderr": ""
+    },
+    "tests/parenthesized-storage.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const box = [(Object.prototype)]; box[0].toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.5435ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 91.244625\n",
+      "runtime_stderr": ""
+    },
+    "tests/parenthesized-return.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction proto() { return (Object.prototype); }\ntest('member', () => { proto().toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.601542ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 94.679125\n",
+      "runtime_stderr": ""
+    },
+    "tests/named-reader-helper.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction keys(p) { p.toJSON = () => 42; }\ntest('member', () => { keys(Object.prototype); assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.627875ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 111.064875\n",
+      "runtime_stderr": ""
+    },
+    "tests/named-reader-return.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction keys(p) { return p; }\ntest('member', () => { const p = keys(Object.prototype); p.toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.629583ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 107.472958\n",
+      "runtime_stderr": ""
+    },
+    "tests/reader-method-helper.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nconst helper = { keys(p) { p.toJSON = () => 42; } };\ntest('member', () => { helper.keys(Object.prototype); assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.689709ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 103.256667\n",
+      "runtime_stderr": ""
+    },
+    "tests/descriptor-result.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const d = Object.getOwnPropertyDescriptor(Object, 'prototype'); d.value.toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [
+        {
+          "key": "tests/descriptor-result.test.ts:3:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "unclassified@tests/descriptor-result.test.ts:3"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.705667ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 105.723917\n",
+      "runtime_stderr": ""
+    },
+    "tests/descriptor-destructure.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const { value } = Object.getOwnPropertyDescriptor(Object, 'prototype'); value.toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [
+        {
+          "key": "tests/descriptor-destructure.test.ts:3:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "unclassified@tests/descriptor-destructure.test.ts:3"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.551833ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 96.509625\n",
+      "runtime_stderr": ""
+    },
+    "tests/descriptor-return.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nfunction proto() { return Object.getOwnPropertyDescriptor(Object, 'prototype').value; }\ntest('member', () => { proto().toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [
+        {
+          "key": "tests/descriptor-return.test.ts:4:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "unclassified@tests/descriptor-return.test.ts:3"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.563625ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 96.46725\n",
+      "runtime_stderr": ""
+    },
+    "tests/reflect-get.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const p = Reflect.get(Object, 'prototype'); p.toJSON = () => 42; assert.equal(JSON.stringify({a: 1}), '42'); });\n",
+      "matches": [
+        {
+          "key": "tests/reflect-get.test.ts:3:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "escape@tests/reflect-get.test.ts:3",
+            "unclassified@tests/reflect-get.test.ts:3"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.564208ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 100.259042\n",
+      "runtime_stderr": ""
+    },
+    "tests/entries-result.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const p = Object.entries(Object.getOwnPropertyDescriptors(Object))[0]; p.extra = 1; assert.ok(true); });\n",
+      "matches": [
+        {
+          "key": "tests/entries-result.test.ts:3:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "unclassified@tests/entries-result.test.ts:3"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.56825ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 99.505917\n",
+      "runtime_stderr": ""
+    },
+    "tests/values-result.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const p = Object.values(Object.getOwnPropertyDescriptors(Object)); p.extra = 1; assert.ok(true); });\n",
+      "matches": [
+        {
+          "key": "tests/values-result.test.ts:3:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "unclassified@tests/values-result.test.ts:3"
+          ]
+        }
+      ],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.565791ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 102.116875\n",
+      "runtime_stderr": ""
+    },
+    "tests/local-control.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const p = {}; p.x = 1; assert.ok(true); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.482ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 91.911334\n",
+      "runtime_stderr": ""
+    },
+    "tests/keys-control.test.ts": {
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('member', () => { const p = Object.keys(Object); p.push('x'); assert.ok(true); });\n",
+      "matches": [],
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 member (0.537291ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 100.122375\n",
+      "runtime_stderr": ""
+    },
+    "preservation": {
+      "register": {},
+      "members": [
+        {
+          "member": "tests/named-reader-helper.test.ts:4:1@a3137c42a239",
+          "origins": [
+            "tests/named-reader-helper.test.ts"
+          ],
+          "file": "tests/named-reader-helper.test.ts",
+          "pin_blob": "a3137c42a239bdc97b7d6bde4816eab853f884f8",
+          "title": "member",
+          "title_kind": "literal",
+          "status": "preserved",
+          "reasons": [],
+          "scope": "whole_file",
+          "current": [
+            4,
+            1
+          ],
+          "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "register": null,
+          "helper_closure": "unchanged",
+          "production_changed": [],
+          "repository_read_changed": []
+        },
+        {
+          "member": "tests/parenthesized-escape.test.ts:4:1@610448513a2f",
+          "origins": [
+            "tests/parenthesized-escape.test.ts"
+          ],
+          "file": "tests/parenthesized-escape.test.ts",
+          "pin_blob": "610448513a2f0ee3f692b66963d480dbc291ad39",
+          "title": "member",
+          "title_kind": "literal",
+          "status": "preserved",
+          "reasons": [],
+          "scope": "whole_file",
+          "current": [
+            4,
+            1
+          ],
+          "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "register": null,
+          "helper_closure": "unchanged",
+          "production_changed": [],
+          "repository_read_changed": []
+        }
+      ]
+    }
+  }
+}
