@@ -54,6 +54,12 @@
           "0:3:abc",
           "3:abc0:"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "BINDING-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
       }
     },
     {

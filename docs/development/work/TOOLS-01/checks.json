@@ -127,7 +127,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 561
+        "tests": 573
       }
     },
     {
