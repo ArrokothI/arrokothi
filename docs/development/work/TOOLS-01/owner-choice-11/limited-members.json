@@ -1,0 +1,14 @@
+[
+ {
+  "origin": "artifact-9fd619f5375d598ebb2b88aa",
+  "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1200:9@deedd7950724",
+  "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+  "targets": [
+   "target.kernel-landing-zone.1200.9.deedd7950724.1",
+   "target.kernel-landing-zone.1200.9.deedd7950724.2",
+   "target.kernel-landing-zone.1200.9.deedd7950724.3",
+   "target.kernel-landing-zone.1200.9.deedd7950724.4"
+  ],
+  "cause": "refused (span changed; boundary-policy.ts changed without a helper review) and unbound under owner choice 10 §2's coarse rule (design 06 revision 5): its template title in two nested loops maps through four targets, one per generated leaf at 1205:9, so C2-LIMIT's single-target admission cannot admit it; listed by owner choice 11, open item for TOOLS-02"
+ }
+]
