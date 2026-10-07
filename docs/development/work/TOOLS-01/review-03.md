@@ -20,7 +20,8 @@ reproduce false preserved credit. No implementation changes were made.
 
 This verdict binds only to exact H, never the review commit, a merge or a successor. `candidate`
 independently reports `facts_verified`, with H directly after C and exactly 007 plus implementation-03
-in C..H. At initial clone, `origin/codex/tools-01` and the reserved review-03 branch both pointed to H.
+in C..H. At the initial GitHub clone, `origin/codex/tools-01` pointed to H. The review branch was
+created locally from H; the C clone's remote refers to that local review clone, not GitHub.
 
 I have shell execution, local source/Git history and filesystem access. Network access is restricted;
 the remote clone and locked dependency installation used approval after sandbox/offline limitations.
