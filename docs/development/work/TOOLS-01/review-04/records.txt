@@ -1,0 +1,36 @@
+PASS owner-choice-08.md@9e84b587 applies to contract@0eee9b41 and equals contract@e39a8b10 — e211a38ebddcaa65cc1d3cdb06ada9a0684cd2c487aa59e6dbc82ed513ddea90
+PASS owner-choice-08.md@28258b282532b36eef8fb1571d79b6343b54427b applies to contract@0eee9b41 and equals contract@e39a8b10 — e211a38ebddcaa65cc1d3cdb06ada9a0684cd2c487aa59e6dbc82ed513ddea90
+PASS owner-choice-08.md@7f3a2af46d714dc2a0e47a755ccd4fe8aeb0ba94 applies to contract@0eee9b41 and equals contract@e39a8b10 — e211a38ebddcaa65cc1d3cdb06ada9a0684cd2c487aa59e6dbc82ed513ddea90
+PASS owner-choice-09.md@2b48e40e applies to contract@e39a8b10 and equals contract@2b48e40e — c6fcac955f3010dad3cebae98c9d7c5c733d709b02dc19a4af108da4afb79a0e
+PASS owner-choice-09.md@28258b282532b36eef8fb1571d79b6343b54427b applies to contract@e39a8b10 and equals contract@2b48e40e — c6fcac955f3010dad3cebae98c9d7c5c733d709b02dc19a4af108da4afb79a0e
+PASS owner-choice-09.md@7f3a2af46d714dc2a0e47a755ccd4fe8aeb0ba94 applies to contract@e39a8b10 and equals contract@2b48e40e — c6fcac955f3010dad3cebae98c9d7c5c733d709b02dc19a4af108da4afb79a0e
+PASS contract at C and H equals revision 9 (2b48e40e)
+PASS owner-choice-08.md unchanged since its binding commit 9e84b587
+PASS 28258b28 changes owner-choice-09.md, review-01/manifest.json and 13 review-01 samples — 15
+PASS owner-choice-09.md: only trailing whitespace removed
+PASS sample-01.txt: only trailing whitespace removed
+PASS sample-02.txt: only trailing whitespace removed
+PASS sample-03.txt: only trailing whitespace removed
+PASS sample-04.txt: only trailing whitespace removed
+PASS sample-05.txt: only trailing whitespace removed
+PASS sample-06.txt: only trailing whitespace removed
+PASS sample-07.txt: only trailing whitespace removed
+PASS sample-09.txt: only trailing whitespace removed
+PASS sample-10.txt: only trailing whitespace removed
+PASS sample-11.txt: only trailing whitespace removed
+PASS sample-12.txt: only trailing whitespace removed
+PASS sample-13.txt: only trailing whitespace removed
+PASS sample-14.txt: only trailing whitespace removed
+PASS 217 sample lines and 2 owner-choice-09 lines changed — 219
+PASS manifest: same 61 entries, other fields equal
+PASS manifest: exactly the 13 samples changed, in bytes and sha256 only
+PASS manifest: every entry matches its file at C — []
+PASS git diff --check B C prints nothing
+PASS C..H changes exactly 007 and implementation-03.md
+PASS the report's TOOLS-02 sentence equals owner choice 09's
+PASS 007 at C has the TOOLS-02 anchor once and one TOOLS-01 row
+PASS H's 007 = 007 at C + the report's status row + choice 09's sentence (modulo wrapping)
+PASS B..H: 272 paths, none production, Layer 3, skills, research, policy or another packet — []
+PASS B..H outside TOOLS-01 records and tooling: the review-02-checked files, packet_tools.py and 007 — ['AGENTS.md', 'README.md', 'docs/development/007-work-packets.md', 'package-lock.json', 'package.json', 'scripts/packet_tools.py', 'tests/conformance/effects/fast-slow-equivalence.test.ts']
+PASS 446dd258..C outside TOOLS-01 records and tooling changes only scripts/packet_tools.py — ['scripts/packet_tools.py']
+FAILURES: []
