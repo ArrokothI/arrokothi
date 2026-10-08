@@ -1,12 +1,11 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-08 against remote main/base
-`f62527e8d564a6e2f63b83cbb52e24053f333540` and the TOOLS-01 branch at acceptance transcription
-`c411391019b4c7961439057f0a23b30b310faed7`. TOOLS-01's accepted H is
+Snapshot: checked 2026-10-08 against remote main `8f82900337e38dfdb93026b04de2066df75b175c`, the
+merge of TOOLS-01 (PR #45) into base `f62527e8d564a6e2f63b83cbb52e24053f333540`. TOOLS-01's accepted H is
 `a50c38867c93c63094f271d099cec71624382577`, payload C is
 `83094969e591dba5c4f25d19c572522b78a7a396`, and independent review 06 is recorded at
 `82b09e1f9ddbfe60e86a64f4adbdb8feab67e9c4`. Its [cleanup](work/TOOLS-01/cleanup-01.md)
-is complete; integration awaits the owner's manual merge. Main already contains the accepted,
+is complete, and it is [integrated](work/TOOLS-01/integration-01.md). Main also contains the accepted,
 owner-closed DESIGN-AUDIT-01 and K1.2-correction-01 work. The [status ledger](007-work-packets.md)
 and linked records own exact acceptance, integration and release identities.
 
@@ -20,7 +19,7 @@ and linked records own exact acceptance, integration and release identities.
 | Held value-capture claims | V-D1 refusal cost ([invalidation-02](work/K1.2/invalidation-02.md)); re-prototyped built-in classification ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)); environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
 | BINDING-01, COORD-REFACTOR-01 | Planned; not released |
-| TOOLS-01 | Independently accepted at H above; cleanup complete; integration pending owner merge |
+| TOOLS-01 | Independently accepted at H above; integrated at `8f829003` (PR #45) |
 | TOOLS-02 | Planned remaining corpus extraction; not released; acceptance and integration required before K1.4 acceptance |
 | K1.1-correction-03 | Planned, with scope amended by decision-01; not released |
 | K1.3 | Planned; not released |
@@ -138,8 +137,8 @@ only dangerous syntax missed combinations that still reached a credited result. 
 holds every recognized intrinsic reference in the declared run set, with no safe-position exemption,
 and checks the path from recognition through every credit consumer.
 
-Status: independently accepted, with [cleanup complete](work/TOOLS-01/cleanup-01.md); integration
-awaits the owner's manual merge. Limits: this is development tooling, not a Kernel capability,
+Status: independently accepted and [integrated](work/TOOLS-01/integration-01.md) at `8f829003`
+(PR #45). Limits: this is development tooling, not a Kernel capability,
 complete historical-corpus adoption, a sound analysis of arbitrary JavaScript, a hold release or an
 E1 result. The advisory report blocks no packet. Live-provider, large-memory/timing and the recorded
 known-base-failure profile were not run. The repository verification floor is now Node 26.10+;
