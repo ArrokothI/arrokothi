@@ -1,0 +1,19 @@
+{
+  "operation": "candidate",
+  "result": "facts_verified",
+  "base": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+  "payload": "83094969e591dba5c4f25d19c572522b78a7a396",
+  "candidate": "a50c38867c93c63094f271d099cec71624382577",
+  "specification": "docs/development/work/TOOLS-01/verification.json",
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/TOOLS-01/implementation-04.md"
+  ],
+  "evidence": [],
+  "acceptance": "not evaluated",
+  "limits": [
+    "File sets do not establish absence of semantic prose changes",
+    "Owner/reviewer authenticity and command execution are not inferred from metadata",
+    "No remote push or integration claim"
+  ]
+}

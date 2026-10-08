@@ -1,0 +1,23 @@
+{
+  "cwd": "/private/tmp/arrokothi-tools-01-review-06-clean-c",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/packet_tools.py",
+    "verify",
+    "--revision",
+    "83094969e591dba5c4f25d19c572522b78a7a396",
+    "--spec",
+    "docs/development/work/TOOLS-01/checks.json"
+  ],
+  "wrapper": "caffeinate -i",
+  "head": "83094969e591dba5c4f25d19c572522b78a7a396",
+  "status_before": "",
+  "node": "v26.10.0",
+  "python": "Python 3.14.6",
+  "node_path": "/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin/node",
+  "start": "2026-10-07T22:13:32.503784+00:00",
+  "end": "2026-10-07T22:48:38.055264+00:00",
+  "exit_code": 0,
+  "status_after": ""
+}

@@ -1,0 +1,1277 @@
+{
+  "revision": "83094969e591dba5c4f25d19c572522b78a7a396",
+  "node": "v26.10.0",
+  "typescript": "5.9.3",
+  "cases": [
+    {
+      "name": "bare/Object",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Object; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Object",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Object; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Function",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Function; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Function",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Function; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/String",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void String; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/String",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof String; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Number",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Number; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Number",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Number; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Boolean",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Boolean; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Boolean",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Boolean; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/BigInt",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void BigInt; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/BigInt",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof BigInt; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Symbol",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Symbol; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Symbol",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Symbol; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Date",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Date; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Date",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Date; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/RegExp",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void RegExp; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/RegExp",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof RegExp; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Error",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Error; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Error",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Error; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/AggregateError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void AggregateError; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/AggregateError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof AggregateError; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/EvalError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void EvalError; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/EvalError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof EvalError; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/RangeError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void RangeError; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/RangeError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof RangeError; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/ReferenceError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void ReferenceError; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/ReferenceError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof ReferenceError; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/SyntaxError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void SyntaxError; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/SyntaxError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof SyntaxError; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/TypeError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void TypeError; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/TypeError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof TypeError; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/URIError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void URIError; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/URIError",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof URIError; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Map",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Map; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Map",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Map; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Set",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Set; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Set",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Set; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/WeakMap",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void WeakMap; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/WeakMap",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof WeakMap; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/WeakSet",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void WeakSet; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/WeakSet",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof WeakSet; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/WeakRef",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void WeakRef; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/WeakRef",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof WeakRef; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/FinalizationRegistry",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void FinalizationRegistry; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/FinalizationRegistry",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof FinalizationRegistry; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Promise",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Promise; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Promise",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Promise; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/ArrayBuffer",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void ArrayBuffer; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/ArrayBuffer",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof ArrayBuffer; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/SharedArrayBuffer",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void SharedArrayBuffer; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/SharedArrayBuffer",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof SharedArrayBuffer; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/DataView",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void DataView; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/DataView",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof DataView; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Int8Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Int8Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Int8Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Int8Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Uint8Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Uint8Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Uint8Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Uint8Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Uint8ClampedArray",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Uint8ClampedArray; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Uint8ClampedArray",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Uint8ClampedArray; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Int16Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Int16Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Int16Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Int16Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Uint16Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Uint16Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Uint16Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Uint16Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Int32Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Int32Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Int32Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Int32Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Uint32Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Uint32Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Uint32Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Uint32Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Float16Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Float16Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Float16Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Float16Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Float32Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Float32Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Float32Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Float32Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Float64Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Float64Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Float64Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Float64Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/BigInt64Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void BigInt64Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/BigInt64Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof BigInt64Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/BigUint64Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void BigUint64Array; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/BigUint64Array",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof BigUint64Array; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/JSON",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void JSON; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/JSON",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof JSON; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Math",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Math; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Math",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Math; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Reflect",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Reflect; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Reflect",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Reflect; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Atomics",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Atomics; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Atomics",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Atomics; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/Intl",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void Intl; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/Intl",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof Intl; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/WebAssembly",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void WebAssembly; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/WebAssembly",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof WebAssembly; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/globalThis",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void globalThis; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/globalThis",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof globalThis; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "bare/global",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void global; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "type/global",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { type T = typeof global; let x: T | undefined; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/keys",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Object.keys({a:1})); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/reflection",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Reflect.ownKeys({a:1})); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/array-is",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Array.isArray([])); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/assert",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (assert.equal(Object.prototype,Object.prototype)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2",
+        "intrinsic@2",
+        "intrinsic@2",
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/comparison",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Object===Object); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2",
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/entries",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Object.entries(Object)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2",
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/values",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Object.values(Object)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2",
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/create",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Object.create(null)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/json",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (JSON.stringify({a:1})); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/json-parse",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (JSON.parse('{}')); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/map",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (new Map()); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/promise",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Promise.resolve(1)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/constant",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Number.NaN); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/symbol",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Symbol.iterator); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/math",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Math.min(1,2)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/date",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Date.now()); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/string",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (String(1)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/number",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (Number(1)); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/error",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (new Error('x')); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/regexp",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (new RegExp('x')); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "formerly-safe/webassembly",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void (WebAssembly.Module); });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/descriptor",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const d=Object.getOwnPropertyDescriptor(Object,'prototype'); void d; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2",
+        "intrinsic@2",
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/destructure",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const {prototype:p}=Object; void p; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2",
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/scope-blind",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const Object = {}; void Object; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/member-name",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void value.prototype; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/computed-name",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void value['constructor']; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/computed-prototype",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void value['__proto__']; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/getPrototypeOf",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const p=Reflect.getPrototypeOf(value); void p; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2",
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/class-extends",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { class E extends Error {} });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/unicode",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void \\u004fbject; });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "recognition/optional",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { Object?.keys?.({}) });\n",
+      "expected": true,
+      "sites": [
+        "intrinsic@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "negative/ordinary",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const x={a:1}; x.a=2; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "negative/property-spelling",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const x={Object:1}; void x.Object; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "negative/string",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const x='Object.prototype'; void x; });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "negative/interface",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { interface X extends Object {} });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "negative/implements",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { class X implements Object {} });\n",
+      "expected": false,
+      "sites": [],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "unread/eval",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { const e=eval; e('1'); });\n",
+      "expected": true,
+      "sites": [
+        "generated@2",
+        "generated@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "unread/dynamic-import",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void import(name); });\n",
+      "expected": true,
+      "sites": [
+        "generated@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "unread/data-import",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { void import('data:text/javascript,1'); });\n",
+      "expected": true,
+      "sites": [
+        "generated@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    },
+    {
+      "name": "unread/worker-eval",
+      "text": "import {test} from 'node:test';\ntest('probe', () => { new Worker('1',{eval:true}); });\n",
+      "expected": true,
+      "sites": [
+        "generated@2"
+      ],
+      "diagnostics": 0,
+      "passed": true
+    }
+  ],
+  "summary": {
+    "total": 136,
+    "passed": 136,
+    "failed": []
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "candidate": "a50c38867c93c63094f271d099cec71624382577",
+  "evidence": {
+    "source_file": "344e520e-6c4e-471d-8fe7-8a6662f2a7ac.jsonl",
+    "line": 4509,
+    "message_uuid": "b78cf3f6-1be4-4a1f-ab8e-b7f7e0b20c13",
+    "timestamp": "2026-10-07T18:50:58.478Z",
+    "source_role": "user",
+    "source_line_sha256": "9fa2db115643673e6e05e3c36682ab55ad51981b450c3bea882678d4415b86b1",
+    "message": "Owner answers to the coarse-rule stop (2026-10-07):\n1. Option (a): transfer the three origins artifact-ecb10ef937e0612352e7c7ef,\n   artifact-b21077d3d4d8265db9b7c7ab and artifact-ee81a9215a4b627e88fda2d5 to TOOLS-02 by an owner\n   list, as owner choice 05 did. No new closure route; 107 of 110 stay closed.\n2. Option (b): list kernel-landing-zone.test.ts:1200:9@deedd7950724 explicitly as an extra limited\n   member. The C2-LIMIT admission rule is unchanged.\n3. Record the kernel-landing-zone.test.ts:1200:9 listing as an open item for TOOLS-02: when TOOLS-02\n   closes the four limited origins, it binds this member normally or designs multi-leaf target\n   admission if more such members exist by then.\nRecord these as owner-choice-11.md, quoting this message verbatim and citing your stop report and the\ncoarse-rule figures. Attach pinned JSON lists for the three origins and the one member, in the\nformat R1-03's check reads. Embed a contract diff (revision 10 → 11) with real hunk headers that\nupdates P1 and P1-R's \"4 and 40\" exceptions to include owner choice 11's three. Apply it, run the\nsuite and refusal registry, commit and push. Then build the coarse rule as instructed, with the\nstructural trace and regression corpus, regenerate, and continue to C, verify and H. In H's report,\npropose the 007 TOOLS-02 scope sentence for owner choice 11's three origins alongside the status row.",
+    "message_sha256": "b4b881b9bcf11036edf282e8bbdc021265b3a1dcaa2fbda374882e1697f200b9",
+    "quote_sha256": "b4b881b9bcf11036edf282e8bbdc021265b3a1dcaa2fbda374882e1697f200b9",
+    "comparison": "Remove Markdown > prefixes and surrounding block spacing only; no content reflow or normalization.",
+    "byte_equal": true
+  },
+  "limit": "Locally recorded human message; no independent server authentication."
+}
