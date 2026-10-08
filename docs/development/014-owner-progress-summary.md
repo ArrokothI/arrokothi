@@ -1,12 +1,14 @@
 # Owner progress summary
 
-Snapshot: checked remote main `8292d6f3e56223c425bd5d048299735ccc248ac4`, which adds the audit's closure
-note (PR #42) and the [prior-art research](research/README.md) (PR #43) to the merge of PR #40 (`c65894e7b907fd8ce6a4f8b4dd13b8646c84d955`) and its receipt (PR #41). PR #40
-integrates DESIGN-AUDIT-01's accepted candidate `ce0b5a7098a9f65cf16dc55ce6eb013946564508`, its
-acceptance transcription `dc03b365cbc65bdcb68333bc7ad74726cb62835d` and the owner hold record
-`3d36a05de4f4b8cdb219449c31cd17b296768402`. Earlier on main are K1.2-correction-01
-(`ed509e11dc39ff24e10c1ace68189776c4270919`) and the process reset (PR #39). Current authority is the [status ledger](007-work-packets.md);
-exact acceptance and integration identities stay there and in its linked records.
+Snapshot: checked 2026-10-08 against remote main/base
+`f62527e8d564a6e2f63b83cbb52e24053f333540` and the TOOLS-01 branch at acceptance transcription
+`c411391019b4c7961439057f0a23b30b310faed7`. TOOLS-01's accepted H is
+`a50c38867c93c63094f271d099cec71624382577`, payload C is
+`83094969e591dba5c4f25d19c572522b78a7a396`, and independent review 06 is recorded at
+`82b09e1f9ddbfe60e86a64f4adbdb8feab67e9c4`. Its [cleanup](work/TOOLS-01/cleanup-01.md)
+is complete; integration awaits the owner's manual merge. Main already contains the accepted,
+owner-closed DESIGN-AUDIT-01 and K1.2-correction-01 work. The [status ledger](007-work-packets.md)
+and linked records own exact acceptance, integration and release identities.
 
 | Area | Current position |
 |---|---|
@@ -18,7 +20,8 @@ exact acceptance and integration identities stay there and in its linked records
 | Held value-capture claims | V-D1 refusal cost ([invalidation-02](work/K1.2/invalidation-02.md)); re-prototyped built-in classification ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)); environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
 | BINDING-01, COORD-REFACTOR-01 | Planned; not released |
-| TOOLS-01 | Released 2026-10-02 and in progress on `codex/tools-01`; its release record and ledger row are on that branch |
+| TOOLS-01 | Independently accepted at H above; cleanup complete; integration pending owner merge |
+| TOOLS-02 | Planned remaining corpus extraction; not released; acceptance and integration required before K1.4 acceptance |
 | K1.1-correction-03 | Planned, with scope amended by decision-01; not released |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
@@ -63,8 +66,8 @@ establishing the general claim. The accepted evidence names every comparison its
 shows each one is needed, and draws its list of control exits from the source rather than from the
 scenarios.
 
-Status: independently accepted at the candidate above, integrated and owner-closed; K1.3 is not
-released. Limits:
+Status: K1.2 and its cumulative correction are independently accepted, integrated and owner-closed;
+K1.3 is not released. Limits:
 - The Kernel is in-process and not durable. How submission authority survives a restart is open
   for K3.2.
 - There are no Effects (K2), waits, deadlines or cancellation (K1.3), and no output reads (K4.4).
@@ -88,8 +91,9 @@ the in-process capture threat model. What now exists, under [its directory](work
   same-process threat model, the own-array and serializer environment, exotic classification,
   coordinator responsibilities, evidence infrastructure, and process notes. Each option has its cost,
   the accepted claims it would keep, narrow or remove, and how its follow-up would close.
-- 23 decision drafts for the owner to adopt or reject, none of them adopted. The joint CORE draft
-  follows the owner's recorded direction: a scoped contract, a canonical-bytes Kernel core, a caller-side
+- 23 decision drafts, with the adopted CORE direction and SDK-wrapper ownership recorded separately
+  in the owner decisions below. The joint CORE draft describes a scoped contract, a canonical-bytes
+  Kernel core, a caller-side
   live-object wrapper and a separate transport adapter. The proposed sequence is TOOLS-01,
   K1.1-correction-03, a binding packet, a coordinator refactor, then K1.3.
 - A hostile-input corpus of 16 recorded labels and 8 serializer bindings, with executable
@@ -108,12 +112,38 @@ Status: independently accepted, integrated and owner-closed. Owner
 [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01:
 refuse every Proxy at capture. Adoption ships nothing; the implementing packets change the canonical pages.
 Limits:
-- The audit changes no code and no claim. Its recommendations bind nothing until the owner adopts them
-  through separate records and packets.
+- The audit itself changes no code and releases no held claim. Owner decisions select direction;
+  the implementing packets must establish it.
 - Per-option reconciliation closes by reading. Its checkers catch omissions, not wrong prose.
 - Realm hardening is evaluated, not guaranteed. A declaration made before the binding starts remains
   outside every check that reads only the global object.
 - Probes ran only on Node v25 and v26; no other engine was tried.
+
+**Maintained packet evidence tooling.** TOOLS-01 answered how to check a packet's exact source and
+historical evidence while keeping observations, credit and acceptance distinct. It now provides:
+
+- A verifier for B/C/H identities, administrative file sets, preserved source and accessible evidence;
+  a provenance inventory of 1,549 origins; and one composition for the declared checks.
+- An isolated mutation runner with passing controls, reached witnesses and qualifying probe assertions,
+  plus negative controls for the tooling's own refusal and comparison rules. Target-set observations
+  remain separate and earn no kill.
+- Revalidation of 154 earlier origin mappings: 107 close through checked routes and 47 remain
+  explicitly transferred. A further 1,395 origins remain pending for TOOLS-02.
+- A conservative intrinsic-contact register, attributed held witnesses and an advisory report of open
+  origins in touched areas. The accepted corpus retains 49 preserved members and 15 target readings;
+  it claims zero adoption kills.
+
+The lesson is to require positive evidence before granting credit. Successive attempts to recognize
+only dangerous syntax missed combinations that still reached a credited result. The accepted rule
+holds every recognized intrinsic reference in the declared run set, with no safe-position exemption,
+and checks the path from recognition through every credit consumer.
+
+Status: independently accepted, with [cleanup complete](work/TOOLS-01/cleanup-01.md); integration
+awaits the owner's manual merge. Limits: this is development tooling, not a Kernel capability,
+complete historical-corpus adoption, a sound analysis of arbitrary JavaScript, a hold release or an
+E1 result. The advisory report blocks no packet. Live-provider, large-memory/timing and the recorded
+known-base-failure profile were not run. The repository verification floor is now Node 26.10+;
+this does not change the supported SDK's runtime declaration.
 
 **A smaller current documentation tree.** DOCS-CLEANUP-01 answered how to preserve closed evidence
 while making current guidance easier to find. The sealed archive and relocated active fixtures now
@@ -136,23 +166,35 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-1. Finish TOOLS-01, then run its independent review, final cleanup and merge.
-2. The wrapper's packaging is settled: the SDK owns it, moved in three stages. Its public surface changes only
-   at K1.4 ([decision-02](work/DESIGN-AUDIT-01/decision-02.md)).
-3. Release K1.1-correction-03, starting with a brief. Its amended scope:
-   - the metered V-D1 bound;
-   - refusal of re-prototyped built-ins;
-   - refusal of every Proxy at capture.
+All successors remain unreleased. The dependencies below come from 007 and become eligible for an
+owner release only after their prerequisites are accepted and integrated.
 
-   On acceptance it releases the classification and V-D1 holds.
-4. Then BINDING-01 (bytes core, 8 MiB transport adapter, and the wrapper moved into the SDK as an internal
-   module), which carries the V-ENV hold; then COORD-REFACTOR-01; then K1.3. None of these is released.
-5. K1.4 owns the SDK host bridge and the full K1/E1 gate. External blocker: before K1.3 closes, the
-   benchmark owner must confirm that the E1 fixtures drive the new supported entry; otherwise K1.4 is
-   BLOCKED_EXTERNAL. Fixture preparation is not an E1 result.
+1. **K1.1-correction-03** depends on TOOLS-01. Its brief covers the metered V-D1 bound, refusal of
+   re-prototyped built-ins by internal-slot checks, and refusal of every Proxy before own-key listing.
+   Acceptance is to release the recorded refusal-cost and classification holds.
+2. **BINDING-01** depends on both TOOLS-01 and correction-03. It owns the canonical-bytes core,
+   8 MiB transport adapter and capture wrapper moved into the SDK as an internal module, plus the
+   V-ENV hold. It must classify the 853 rule-1 V-ENV entries. The 96 V-ENV-matching category entries
+   retain correction-03's ownership. Runtime evidence, such as evaluating Node's
+   `--frozen-intrinsics`, is a candidate approach for its brief, not an owner-selected design or
+   evidence that the hold can be lifted. The supported SDK surface changes at K1.4, as
+   [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies.
+3. **TOOLS-02** also depends on TOOLS-01. It owns the remaining extraction, mention triage and
+   mutation-family work, target-set assertion-provenance design, and all 47 transferred origins.
+   These include [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins and the limited member
+   `kernel-landing-zone.test.ts:1200:9@deedd7950724`, to bind normally or address through a reviewed
+   multi-leaf admission design if needed. TOOLS-02 must be accepted and integrated before K1.4
+   acceptance; 007 does not make it a prerequisite for correction-03, BINDING-01 or K1.3.
+4. **COORD-REFACTOR-01**, after BINDING-01, then **K1.3** retain their planned sequence. They have no
+   release from this cleanup.
+5. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:
+   before K1.3 closes, the benchmark owner must confirm that E1 fixtures drive the new supported
+   entry. An unavailable fixture makes K1.4 BLOCKED_EXTERNAL. Fixture preparation is not an E1
+   result; no E1 gate result is recorded in the current ledger.
 
 Carry forward:
-- the historical Node 22.22.3 legacy Effect-test cancellation limitation;
+- the historical Node 22.22.3 legacy Effect-test cancellation limitation, distinct from TOOLS-01's
+  accepted Node 26.10 verification and host-handle test fix;
 - the reference review's five non-blocking P3 observations and its authentication limit;
 - the limits stated in the K1.2-correction-01 report and review: finite sweeps, and runs on Node 25 only, with no
   Node 22 run (the poison sweep needs Node 22.15 or later);
