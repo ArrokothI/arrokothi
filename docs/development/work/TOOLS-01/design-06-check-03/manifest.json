@@ -1,0 +1,53 @@
+{
+  "subject": "2690166797e80c6446be3308e736fbd363406f16",
+  "contract": "297375d5d947a6a9bbb132d52a6d489246a65c05",
+  "mandate": "60af5db9368f12451a3fe8a108511419316a5828",
+  "node": {
+    "version": "v26.10.0",
+    "execPath": "/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin/node",
+    "platform": "darwin",
+    "arch": "arm64",
+    "existing_archive_sha256": "751fdf7439f115d87ee2a8f3f18c065b6151852068e3e666ac60ac2996f75ac9"
+  },
+  "scratch_commits": {
+    "prototype": "011e2b04c15fadb8335a9d03477712b21f01c8d0",
+    "regenerated": "f22c4ad550ed9c6938c06138b5a8bdd49d15b213"
+  },
+  "prototype_diff_sha256": "cf8024b087144ec2853d9712744faf7647d216daf0a9f2c2d769d90d7bf73c58",
+  "scratch_sources": {
+    "scripts/packet_tools.py": "70c92b26f590c2b83a05418aa229cb0be3cffc4c9970a7fce6335264f6865c2b",
+    "tests/tooling/source-facts.mjs": "cd79593421cadd1b08774827d201ea4c5434adea5fd0d01adc1e3d6118965894",
+    "tests/fixtures/packet-tools/adoption.json": "034aa8745f609b978d272e03d793d726e24d64b9ca2292a4fdc8bbcd33e98f11",
+    "tests/fixtures/packet-tools/mutations.json": "e55492cb9ac30a5ed8316f86a4ce15a7dd757b7ba9078b48bb2eab83d5799e12"
+  },
+  "checks": {
+    "original_cases": 81,
+    "extended_cases": 515,
+    "extended_unmet_expectations": 9,
+    "matrix_cases": 216,
+    "admission_cases": 141,
+    "all_root_alias_cases": 94,
+    "runtime_false_preserved": 5,
+    "supplied_corpus_summary_reproduced_exactly": true
+  },
+  "sha256": {
+    "docs/development/work/TOOLS-01/design-06-check-03.md": "c5630ad2f1f4a85e1b0a027d4029e57b3d908a33ee9ba1722c7be6e7393d3801",
+    "docs/development/work/TOOLS-01/design-06-check-03/README.md": "fba30a4b466773cca6f36774561e89f620ffc126ede8f9191bc3abf11cef6430",
+    "docs/development/work/TOOLS-01/design-06-check-03/check_figures.py": "f573f56687ea66441ffdc6fe0f8011cffab8e3e16959ce015e625b7ce9284c62",
+    "docs/development/work/TOOLS-01/design-06-check-03/corpus-summary.json": "e1b750e18f917c3aebe2254e359bae61bbece9f4312940520ecf0903faf2fc43",
+    "docs/development/work/TOOLS-01/design-06-check-03/corpus.json": "e3d1e8d19b9f4f4c43fc6dbb0bf748f2fd12d536d824217a917cb14e1f07ec0e",
+    "docs/development/work/TOOLS-01/design-06-check-03/corpus.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/development/work/TOOLS-01/design-06-check-03/credit.json": "35e34166baeaf0cdc14a99870103dc3bd623b26320eb15fad1cdbd20dac241d0",
+    "docs/development/work/TOOLS-01/design-06-check-03/extended-summary.json": "1b93ef0973831a7485823454a15f9b4781f52779390115e0a66cca16d5c1ef26",
+    "docs/development/work/TOOLS-01/design-06-check-03/extended.json": "7d05a657a180fee074f3b19bc9a9ecc09ef9aa84713659724ceb1a290538e721",
+    "docs/development/work/TOOLS-01/design-06-check-03/figure-check.json": "7225266b913f818047eb5c8220b69c30b1b5d7d7ec4bc5b7ed8e44ae988e0d33",
+    "docs/development/work/TOOLS-01/design-06-check-03/measure.txt": "0a676bb6a1fae691fbd2681d3d7d1c55b38ae774174ef90878f46839d6bb62a1",
+    "docs/development/work/TOOLS-01/design-06-check-03/measured.json": "ef6787528d105550e96fa70bc30569f05f624d0c2f67d2923f571aa5c83838da",
+    "docs/development/work/TOOLS-01/design-06-check-03/original-81.txt": "9cc7ca488d4cf877263c7a12ef022f8b27ef9d50bc7512621a5f196ccc85a2e9",
+    "docs/development/work/TOOLS-01/design-06-check-03/probe_credit.py": "9334a8f8a1d5f8a0169d0be1c8c8ed800db28ce23074eae03a356e9cf4e0ddf9",
+    "docs/development/work/TOOLS-01/design-06-check-03/probe_extended.py": "d0701f91f74a337734dc2ec1cf826e612093dcccf0c4f1f0d50c24dccad31f96",
+    "docs/development/work/TOOLS-01/design-06-check-03/table-audit.md": "48b14c2ca7c82841a19c44ad670ed4242466592ee0fd67310d4075a8132e3492",
+    "docs/development/work/TOOLS-01/design-06-check-03/table-runtime.json": "2d5a50f303229ca4da647790afb9d87b30bccb5f3eb52e3a282743475e404861",
+    "docs/development/work/TOOLS-01/design-06-check-03/table-runtime.mjs": "9c693d7be6961f50c64603419d55469b8652bd63c9a2af89b3264e3889116470"
+  }
+}

@@ -1,0 +1,186 @@
+{
+ "command": "python3 -B scripts/packet_tools.py verify --revision b104bab192f57c5ecf5b7eccebcfbda412a17b5d --spec docs/development/work/TOOLS-01/checks.json",
+ "checkout": "owner checkout detached at C, clean; no other packet_tools process during the run",
+ "started": "2026-10-05T18:40:40Z",
+ "finished": "2026-10-05T19:23:01Z",
+ "exit": 0,
+ "result": "checks_passed",
+ "revision": "b104bab192f57c5ecf5b7eccebcfbda412a17b5d",
+ "environment": {
+  "python": "3.13.5",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "node": "v26.10.0",
+  "git": "git version 2.39.5 (Apple Git-154)"
+ },
+ "steps": [
+  {
+   "id": "tool-tests",
+   "passed": true,
+   "counts": {
+    "tests": 489
+   },
+   "exit": 0,
+   "status": "finished"
+  },
+  {
+   "id": "inventory",
+   "passed": true,
+   "result": "provenance_verified",
+   "counts": {
+    "artifact": 208,
+    "mention": 1333,
+    "additional": 8
+   }
+  },
+  {
+   "id": "adoption",
+   "passed": true,
+   "result": "revalidation_complete",
+   "states": {
+    "complete": 110,
+    "pending_revalidation": 44,
+    "pending": 1395
+   },
+   "transferred": {
+    "origins": 44,
+    "by_decision": {
+     "docs/development/work/TOOLS-01/owner-choice-04.md": 4,
+     "docs/development/work/TOOLS-01/owner-choice-05.md": 40
+    }
+   },
+   "counts": {
+    "origins": 1549,
+    "counterexamples": 590,
+    "families": 26,
+    "members": 415,
+    "suite_targets": 391,
+    "preserved": 766,
+    "kills": 0
+   },
+   "closures": {
+    "complete": 110,
+    "context_ranges": 116,
+    "context_candidates": 139,
+    "context_reasoned": 131
+   },
+   "register": {
+    "scope_files": 53,
+    "entries": 226,
+    "cases": 65,
+    "by_classification": {
+     "held:Proxy": 11,
+     "held:V-D1": 29,
+     "held:V-ENV": 107,
+     "held:re-prototyped-built-in": 11,
+     "not_held:-": 22,
+     "superseded:Proxy": 46
+    }
+   }
+  },
+  {
+   "id": "dimensions",
+   "passed": true,
+   "result": "coverage_reported"
+  },
+  {
+   "id": "registered-mutants",
+   "passed": true,
+   "result": "selected_cases_passed",
+   "counts": {
+    "killed": 100
+   }
+  },
+  {
+   "id": "refusal-mutants",
+   "passed": true,
+   "result": "selected_cases_passed",
+   "counts": {
+    "killed": 281
+   }
+  },
+  {
+   "id": "refusal-census",
+   "passed": true,
+   "exit": 0,
+   "status": "finished"
+  },
+  {
+   "id": "oracle-census",
+   "passed": true,
+   "exit": 0,
+   "status": "finished"
+  },
+  {
+   "id": "typecheck",
+   "passed": true,
+   "exit": 0,
+   "status": "finished"
+  },
+  {
+   "id": "repository-tests",
+   "passed": true,
+   "counts": {
+    "tests": 3774,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+   },
+   "exit": 0,
+   "status": "finished"
+  },
+  {
+   "id": "archive-tests",
+   "passed": true,
+   "counts": {
+    "tests": 4,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+   },
+   "exit": 0,
+   "status": "finished"
+  },
+  {
+   "id": "kernel-sweeps",
+   "passed": true,
+   "exit": 0,
+   "status": "finished"
+  },
+  {
+   "id": "area-gate",
+   "passed": true,
+   "result": "reported",
+   "touched_areas": [
+    "package-lock.json",
+    "package.json",
+    "tests/conformance/effects",
+    "tooling"
+   ],
+   "ungated": 664,
+   "reported": {
+    "open_origins": 69,
+    "by_state": {
+     "pending": 64,
+     "pending_revalidation": 5
+    },
+    "prose_pending": 0
+   },
+   "changed_paths": 181,
+   "behaviour_paths": 65,
+   "advisory": true
+  }
+ ],
+ "profiles_not_run": [
+  "live-provider",
+  "large-memory-timing",
+  "known-base-failure"
+ ],
+ "acceptance": "not evaluated",
+ "full_output": {
+  "file": "verify-C.json.gz",
+  "sha256_uncompressed": "fc303c47998256ad700bd83993676ef4a2654a3959bbc0904f42f5c867f49bdb",
+  "bytes_uncompressed": 3002420
+ }
+}

@@ -1,0 +1,22 @@
+{
+  "subject": "3e4566ef7a775b53cfbdb54bb3d2d25feaadce1e",
+  "kind": "diagnostic checkpoint; no acceptance or adoption",
+  "archive_sha256": "c424b1627686bb1757891493546d6915df685af1da1552e80420b380f8a23710",
+  "sources": {
+    "scripts/packet_tools.py": "6720d7ab11664fb96037fd989e0620af6205ead7fcd3ce5bc6cb9666602a906c",
+    "tests/tooling/test_packet_tools.py": "a380cbc7234a7f39f34c521648043385eeb3c2ab7b1d0510deb4ea95fb3e60a1",
+    "tests/tooling/test_adoption_format.py": "d8b9b25ad94737891939bd3b960d6db01d20c18cc77e1dc28064dd29cd469b37",
+    "tests/tooling/test_preserved_tools.py": "6f91bfaad05e9685f6405aff9c3403bbf15bb14039ad0aaad17c337e159ab2ed",
+    "tests/tooling/source-facts.mjs": "4af24082398a7fbc36d8e0a185ed8c257b1badedea7c6e40a2f67a9d4b55e567"
+  },
+  "attachments": {
+    "check-built-results.json.gz": "e5df72cc9590c4108785d68f33183bafd88a6dd310c553cfa7cfe0c04076e85d",
+    "check-built-summary.txt": "1872f302e47cbb7882eaea19f2a5927182868ab39634ee179fc9d32523a14caf",
+    "enumerate_unbound.mjs": "1c5ea4335dfbe378269f3ec2b342602531cc8643086192b00cc6e1c4252f535b",
+    "probe-closure-result.json": "87768e21e08a844bc219dc02a4ff4bfffdc82c7d5e8ca6209e3c5bcbd229d50b",
+    "probe_closure.py": "4636b59c5935c16e799c10064b2fe5f9e920e873a0d71d7679d75d05a2a559f9",
+    "tooling-tests.txt": "04d5048bfd4dcf5bb6170484b58e5acda0037252ba9890736cd27286a914026d",
+    "unbound-members.json": "c317e1382347e426a9c8e3628b9da9fc73b8c8ddcab013bebb4ee643eae8f0de",
+    "unbound-requests.json": "89accfa8682beb5cefb613f1ac3451ddcf2101493affc33beabe706070b51e48"
+  }
+}

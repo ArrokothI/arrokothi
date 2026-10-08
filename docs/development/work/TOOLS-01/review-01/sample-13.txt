@@ -1,0 +1,13 @@
+docs/development/work/K1.1/validation-13/MANIFEST.md @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49 lines 126:137
+126: ## Counts (payload change C10 → C11)
+127:
+128: | Figure | At base `777b995` | At C10 (round-12 rerun) | At C11 (this rerun) |
+129: |---|---|---|---|
+130: | `npm test` | 2,060 tests, 302 suites | 2,265 tests, 345 suites | **2,279 tests, 346 suites** (+14/+1: the new nondisclosure oracle) |
+131: | `npm run test:conformance` | 1,947 / 283 | 1,949 / 283 | **1,949 / 283** (unchanged) |
+132: | `npm run test:kernel` | 4 tests | 207 tests, 44 suites | **221 tests, 45 suites** (+14/+1) |
+133: | Architecture suite | 360 tests | 362 / 37 | **362 / 37** (unchanged) |
+134: | `packages/kernel/src` tracked `.ts` files | 2 | **11** (listed, counted from the same output, and self-checked in `01`) | **11** (same definition, command and self-check) |
+135: | `@arrokothi/kernel` runtime exports | 2 | **17** (named and asserted in `01`) | **17** (same measurement and assertion) |
+136: | Target-zone third-party reach | nothing | `canonicalize` (exact `3.0.0`) | `canonicalize` (exact `3.0.0`, unchanged) |
+137:

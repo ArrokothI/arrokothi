@@ -1,0 +1,170 @@
+[
+  {
+    "member": "packages/kernel/tests/dispatch.test.ts:247:3@5a8d958ffdab",
+    "file": "packages/kernel/tests/dispatch.test.ts",
+    "line": 247,
+    "column": 3,
+    "title": "an invisible Execution is not dispatched"
+  },
+  {
+    "member": "packages/kernel/tests/dispatch.test.ts:420:3@5a8d958ffdab",
+    "file": "packages/kernel/tests/dispatch.test.ts",
+    "line": 423,
+    "column": 3,
+    "title": "redelivering an invisible Execution answers as an unknown one"
+  },
+  {
+    "member": "packages/kernel/tests/dispatch.test.ts:1527:3@5a8d958ffdab",
+    "file": "packages/kernel/tests/dispatch.test.ts",
+    "line": 1560,
+    "column": 3,
+    "title": "a bound carried only by inheritance reads as missing"
+  },
+  {
+    "member": "packages/kernel/tests/values.test.ts:572:3@fb228bec8c58",
+    "file": "packages/kernel/tests/values.test.ts",
+    "line": 572,
+    "column": 3,
+    "title": "sibling roots are not summed"
+  },
+  {
+    "member": "packages/kernel/tests/values.test.ts:735:3@fb228bec8c58",
+    "file": "packages/kernel/tests/values.test.ts",
+    "line": 1039,
+    "column": 3,
+    "title": "exactly-at-limit passes and one-over refuses"
+  },
+  {
+    "member": "tests/conformance/architecture/evidence-records.test.ts:157:3@5d3f432848c3",
+    "file": "tests/archive/evidence-records.test.ts",
+    "line": 158,
+    "column": 3,
+    "title": "no token presented as a digest has an impossible length"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:221:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 226,
+    "column": 3,
+    "title": "a direct relative import into the legacy implementation is rejected"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:238:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 243,
+    "column": 3,
+    "title": "an import of the legacy package root barrel is rejected"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:246:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 251,
+    "column": 3,
+    "title": "a re-export of the legacy package root barrel is rejected"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:254:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 259,
+    "column": 3,
+    "title": "a dynamic import of the legacy implementation is rejected"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:262:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 267,
+    "column": 3,
+    "title": "a forbidden import after a regular expression after a control-flow paren is rejected (K10-R1-01)"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:310:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 315,
+    "column": 3,
+    "title": "a typeof import-type dependency on the legacy barrel is rejected (K10-R2-01)"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:346:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 351,
+    "column": 3,
+    "title": "a triple-slash reference into the legacy tree is rejected (K10-R2-01)"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:357:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 362,
+    "column": 3,
+    "title": "a triple-slash types reference on a forbidden package is rejected (K10-R2-01)"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:365:3@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 370,
+    "column": 3,
+    "title": "an ambient declaration of a forbidden module is rejected (K10-R2-01)"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1822:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 1827,
+    "column": 5,
+    "title": "an ordered-list equivalent cannot truncate the section"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1865:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 1870,
+    "column": 5,
+    "title": "a heading nested two containers deep cannot truncate the section"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1930:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 1935,
+    "column": 5,
+    "title": "a task-list item is a list container too"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1974:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 1979,
+    "column": 5,
+    "title": "a dash line that is really a second item keeps the container open"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:2031:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 2036,
+    "column": 5,
+    "title": "a single-quoted value containing < still opens the raw block"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:2044:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 2049,
+    "column": 5,
+    "title": "ordinary and unquoted attributes still open the raw block"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:2108:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 2113,
+    "column": 5,
+    "title": "a tag after a table row still opens the raw block"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:4138:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 4143,
+    "column": 5,
+    "title": "valid multi-attribute tags still open raw blocks"
+  },
+  {
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:4207:5@deedd7950724",
+    "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "line": 4212,
+    "column": 5,
+    "title": "valid open boundaries still open the raw block"
+  }
+]

@@ -1,0 +1,925 @@
+{
+ "register": {
+  "entries": 305,
+  "cases": 94,
+  "by_class": {
+   "held": 239,
+   "superseded": 46,
+   "not_held": 20
+  }
+ },
+ "held_or_superseded": {
+  "count": 285,
+  "name_a_decision": 285,
+  "name_a_reading": 0,
+  "name_neither": []
+ },
+ "v_env_matched": {
+  "count": 244,
+  "not_held": [],
+  "claimed_v_env": 188
+ },
+ "rule_1": {
+  "count": 188,
+  "all_held_v_env_and_v_env_matched": true,
+  "v_env_claims_not_naming_choice_08": [],
+  "includes_review_02_44": true,
+  "review_02_keys": 44,
+  "former_not_held": [
+   "packages/kernel/tests/creation.test.ts:516:3",
+   "packages/kernel/tests/ingress.test.ts:459:3"
+  ],
+  "new_since_previous_h": 79,
+  "keys": [
+   "packages/kernel/tests/aggregate-refusal.test.ts:185:1",
+   "packages/kernel/tests/ambient-reads.test.ts:160:3",
+   "packages/kernel/tests/creation.test.ts:516:3",
+   "packages/kernel/tests/creation.test.ts:883:3",
+   "packages/kernel/tests/dispatch.test.ts:676:3",
+   "packages/kernel/tests/dispatch.test.ts:728:3",
+   "packages/kernel/tests/dispatch.test.ts:806:3",
+   "packages/kernel/tests/dispatch.test.ts:869:3",
+   "packages/kernel/tests/dispatch.test.ts:916:3",
+   "packages/kernel/tests/dispatch.test.ts:958:3",
+   "packages/kernel/tests/dispatch.test.ts:1004:3",
+   "packages/kernel/tests/dispatch.test.ts:1390:3",
+   "packages/kernel/tests/dispatch.test.ts:1545:3",
+   "packages/kernel/tests/host-members.test.ts:76:3",
+   "packages/kernel/tests/host-members.test.ts:109:3",
+   "packages/kernel/tests/host-members.test.ts:122:3",
+   "packages/kernel/tests/host-members.test.ts:166:3",
+   "packages/kernel/tests/host-members.test.ts:196:5",
+   "packages/kernel/tests/host-members.test.ts:234:3",
+   "packages/kernel/tests/ingress.test.ts:459:3",
+   "packages/kernel/tests/ingress.test.ts:790:3",
+   "packages/kernel/tests/inspection.test.ts:178:3",
+   "packages/kernel/tests/inspection.test.ts:211:3",
+   "packages/kernel/tests/inspection.test.ts:251:3",
+   "packages/kernel/tests/outcome-hostile.test.ts:82:3",
+   "packages/kernel/tests/outcome-hostile.test.ts:235:3",
+   "packages/kernel/tests/outcome-hostile.test.ts:275:3",
+   "packages/kernel/tests/outcome-hostile.test.ts:295:3",
+   "packages/kernel/tests/poison-catalog.test.ts:273:5",
+   "packages/kernel/tests/recovery-ambient.test.ts:259:7",
+   "packages/kernel/tests/recovery-ambient.test.ts:271:5",
+   "packages/kernel/tests/recovery-ambient.test.ts:286:3",
+   "packages/kernel/tests/recovery-ambient.test.ts:293:3",
+   "packages/kernel/tests/recovery-ambient.test.ts:327:7",
+   "packages/kernel/tests/review-11-probes.test.ts:24:5",
+   "packages/kernel/tests/transaction.test.ts:150:3",
+   "packages/kernel/tests/values.test.ts:220:5",
+   "packages/kernel/tests/values.test.ts:264:5",
+   "packages/kernel/tests/values.test.ts:1307:3",
+   "packages/kernel/tests/values.test.ts:1323:3",
+   "packages/kernel/tests/values.test.ts:1342:3",
+   "packages/kernel/tests/values.test.ts:1414:3",
+   "packages/kernel/tests/values.test.ts:1454:3",
+   "packages/kernel/tests/values.test.ts:1480:3",
+   "packages/kernel/tests/values.test.ts:1498:3",
+   "packages/kernel/tests/values.test.ts:1518:3",
+   "packages/kernel/tests/values.test.ts:1553:3",
+   "packages/kernel/tests/values.test.ts:1579:3",
+   "packages/kernel/tests/values.test.ts:1615:3",
+   "packages/kernel/tests/values.test.ts:1665:3",
+   "packages/kernel/tests/values.test.ts:1728:3",
+   "packages/kernel/tests/values.test.ts:1786:3",
+   "packages/kernel/tests/values.test.ts:1816:3",
+   "packages/kernel/tests/values.test.ts:1834:3",
+   "packages/kernel/tests/values.test.ts:1847:3",
+   "packages/kernel/tests/whole-view-ambient.test.ts:123:7",
+   "case:realm.kernel-lexical-shadow.control",
+   "case:realm.kernel-lexical-shadow.JSON",
+   "case:realm.kernel-lexical-shadow.Object",
+   "case:realm.kernel-lexical-shadow.Array",
+   "case:realm.kernel-lexical-creation.control",
+   "case:realm.kernel-lexical-creation.hop",
+   "case:realm.lexical-shadow.unpinned.ordinary",
+   "case:realm.lexical-shadow.unpinned.frozen-intrinsics",
+   "case:realm.lexical-shadow.pinned.frozen-intrinsics",
+   "case:realm.object-freeze-witness.unpinned.ordinary",
+   "case:realm.object-freeze-witness.pinned.ordinary",
+   "case:realm.object-freeze-witness.unpinned.frozen-intrinsics",
+   "case:realm.object-freeze-witness.pinned.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.define.full.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.declare.full.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
+   "case:realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Object.assign.full.frozen-intrinsics",
+   "case:realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Object.define.full.frozen-intrinsics",
+   "case:realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Object.declare.full.frozen-intrinsics",
+   "case:realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
+   "case:realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Array.assign.full.frozen-intrinsics",
+   "case:realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Array.define.full.frozen-intrinsics",
+   "case:realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Array.declare.full.frozen-intrinsics",
+   "case:realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
+   "case:realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
+   "case:realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Map.assign.full.frozen-intrinsics",
+   "case:realm.zone.Map.assign.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Map.define.full.frozen-intrinsics",
+   "case:realm.zone.Map.define.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Map.declare.full.frozen-intrinsics",
+   "case:realm.zone.Map.declare.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Map.preexisting.full.frozen-intrinsics",
+   "case:realm.zone.Map.preexisting.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Reflect.assign.full.frozen-intrinsics",
+   "case:realm.zone.Reflect.assign.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Reflect.define.full.frozen-intrinsics",
+   "case:realm.zone.Reflect.define.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Reflect.declare.full.frozen-intrinsics",
+   "case:realm.zone.Reflect.declare.writableOnly.frozen-intrinsics",
+   "case:realm.zone.Reflect.preexisting.full.frozen-intrinsics",
+   "case:realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics",
+   "case:oracle.acceptingExit",
+   "case:oracle.applyModel",
+   "case:oracle.applySequence",
+   "case:oracle.attributed",
+   "case:oracle.callbackRan",
+   "case:oracle.declaredExit",
+   "case:oracle.deliveredAt",
+   "case:oracle.exitReached",
+   "case:oracle.fired",
+   "case:oracle.nextAcceptance",
+   "case:oracle.nextRefusal",
+   "case:oracle.outcomeAnswer",
+   "case:oracle.outcomePrefix",
+   "case:oracle.outcomeStepAt",
+   "case:oracle.quietRepeat",
+   "case:oracle.recoveryAnswer",
+   "case:oracle.referenceKind",
+   "case:oracle.referenceRefusal",
+   "case:oracle.referenceReplay",
+   "case:oracle.referenceUnchanged",
+   "case:oracle.referenceUnnamed",
+   "case:oracle.refusalExecution",
+   "case:oracle.refusalPosition",
+   "case:oracle.returned",
+   "case:oracle.sameOperation",
+   "case:oracle.setupGrant",
+   "case:oracle.takeoverAnswer",
+   "case:oracle.takeoverWindowAt",
+   "case:oracle.view",
+   "packages/kernel/tests/creation.test.ts:1009:3",
+   "packages/kernel/tests/creation.test.ts:333:3",
+   "packages/kernel/tests/dispatch.test.ts:1459:3",
+   "packages/kernel/tests/dispatch.test.ts:1529:3",
+   "packages/kernel/tests/dispatch.test.ts:178:3",
+   "packages/kernel/tests/dispatch.test.ts:615:3",
+   "packages/kernel/tests/fault-oracle.test.ts:151:1",
+   "packages/kernel/tests/fault-oracle.test.ts:163:1",
+   "packages/kernel/tests/fault-oracle.test.ts:177:3",
+   "packages/kernel/tests/fault-oracle.test.ts:187:3",
+   "packages/kernel/tests/fault-oracle.test.ts:200:3",
+   "packages/kernel/tests/fault-oracle.test.ts:250:9",
+   "packages/kernel/tests/fault-oracle.test.ts:254:3",
+   "packages/kernel/tests/fault-oracle.test.ts:284:3",
+   "packages/kernel/tests/fault-oracle.test.ts:285:3",
+   "packages/kernel/tests/fault-oracle.test.ts:298:3",
+   "packages/kernel/tests/fault-oracle.test.ts:300:3",
+   "packages/kernel/tests/fault-oracle.test.ts:302:3",
+   "packages/kernel/tests/fault-oracle.test.ts:304:3",
+   "packages/kernel/tests/fault-oracle.test.ts:306:3",
+   "packages/kernel/tests/fault-oracle.test.ts:320:3",
+   "packages/kernel/tests/fault-oracle.test.ts:322:3",
+   "packages/kernel/tests/fault-oracle.test.ts:329:3",
+   "packages/kernel/tests/fault-oracle.test.ts:335:3",
+   "packages/kernel/tests/fault-oracle.test.ts:342:3",
+   "packages/kernel/tests/fault-oracle.test.ts:350:3",
+   "packages/kernel/tests/fault-oracle.test.ts:352:3",
+   "packages/kernel/tests/fault-oracle.test.ts:354:3",
+   "packages/kernel/tests/fault-oracle.test.ts:371:3",
+   "packages/kernel/tests/fault-oracle.test.ts:372:3",
+   "packages/kernel/tests/fault-oracle.test.ts:373:3",
+   "packages/kernel/tests/fault-oracle.test.ts:375:3",
+   "packages/kernel/tests/fault-oracle.test.ts:376:3",
+   "packages/kernel/tests/fault-oracle.test.ts:377:3",
+   "packages/kernel/tests/fault-oracle.test.ts:383:3",
+   "packages/kernel/tests/fault-oracle.test.ts:385:3",
+   "packages/kernel/tests/fault-oracle.test.ts:386:3",
+   "packages/kernel/tests/fault-oracle.test.ts:388:3",
+   "packages/kernel/tests/fault-oracle.test.ts:390:3",
+   "packages/kernel/tests/fault-oracle.test.ts:392:3",
+   "packages/kernel/tests/fault-oracle.test.ts:407:3",
+   "packages/kernel/tests/fault-oracle.test.ts:412:3",
+   "packages/kernel/tests/fault-oracle.test.ts:416:3",
+   "packages/kernel/tests/fault-oracle.test.ts:420:3",
+   "packages/kernel/tests/fault-sweep.test.ts:49:1",
+   "packages/kernel/tests/fault-sweep.test.ts:78:1",
+   "packages/kernel/tests/poison-catalog.test.ts:286:3",
+   "packages/kernel/tests/poison-catalog.test.ts:291:3",
+   "packages/kernel/tests/values.test.ts:893:3",
+   "packages/kernel/tests/values.test.ts:910:3"
+  ]
+ },
+ "category": {
+  "count": 97,
+  "owner": {
+   "Proxy": "K1.1-correction-03",
+   "V-D1": "K1.1-correction-03",
+   "re-prototyped-built-in": "K1.1-correction-03"
+  },
+  "decisions": {
+   "V-D1 -> docs/development/work/K1.2/decision-05.md": 29,
+   "Proxy -> docs/development/work/DESIGN-AUDIT-01/decision-01.md": 57,
+   "re-prototyped-built-in -> docs/development/work/DESIGN-AUDIT-01/decision-01.md": 11
+  },
+  "classification_claim_reason_changed_since_previous_h": []
+ },
+ "v_env_matched_category_entries": {
+  "count": 56,
+  "by_claim_and_class": {
+   "Proxy/superseded": 31,
+   "Proxy/held": 3,
+   "V-D1/held": 11,
+   "re-prototyped-built-in/held": 11
+  },
+  "newly_v_env_matched_at_c": 30,
+  "entries": [
+   {
+    "key": "packages/kernel/tests/creation.test.ts:362:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/creation.test.ts:415:3",
+    "classification": "held",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/creation.test.ts:441:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/creation.test.ts:630:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/creation.test.ts:742:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/creation.test.ts:823:3",
+    "classification": "held",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/creation.test.ts:1031:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/dispatch.test.ts:523:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/dispatch.test.ts:567:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/ingress.test.ts:535:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/ingress.test.ts:598:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/ingress.test.ts:661:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/ingress.test.ts:726:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:61:3",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:134:3",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:170:3",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:269:1",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:299:1",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:317:1",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:406:1",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:434:1",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:452:1",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:508:1",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "V-D1",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:541:1",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "V-D1",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/value-diagnostic-work.test.ts:573:1",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "V-D1",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/value-refusal-cost.test.ts:120:1",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "Proxy",
+     "V-D1",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:251:5",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:672:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:694:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:722:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:763:3",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:781:3",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:799:3",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:826:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:863:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:926:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1065:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1095:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1126:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1147:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1225:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1239:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1253:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "packages/kernel/tests/values.test.ts:1631:3",
+    "classification": "superseded",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "case:work-charge.array-surplus",
+    "classification": "held",
+    "claim": "V-D1",
+    "decision": "docs/development/work/K1.2/decision-05.md",
+    "matched": [
+     "V-D1",
+     "V-ENV"
+    ],
+    "v_env_matched_at_previous_h": true
+   },
+   {
+    "key": "case:capture.current.Map",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.Date",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.Set",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.Uint8Array",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.ArrayBuffer",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.RegExp",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.Error",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.String",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.Boolean",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.WeakMap",
+    "classification": "held",
+    "claim": "re-prototyped-built-in",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   },
+   {
+    "key": "case:capture.current.Proxy",
+    "classification": "held",
+    "claim": "Proxy",
+    "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
+    "matched": [
+     "Proxy",
+     "V-ENV",
+     "re-prototyped-built-in"
+    ],
+    "v_env_matched_at_previous_h": false
+   }
+  ]
+ },
+ "refusal_probes": {
+  "Proxy superseded entry naming neither": {
+   "key": "packages/kernel/tests/creation.test.ts:362:3",
+   "refused": "a held or superseded entry names exactly one of its decision or its reading: packages/kernel/tests/creation.test.ts:362:3"
+  },
+  "rule-1 entry naming neither": {
+   "key": "packages/kernel/tests/aggregate-refusal.test.ts:185:1",
+   "refused": "a held or superseded entry names exactly one of its decision or its reading: packages/kernel/tests/aggregate-refusal.test.ts:185:1"
+  },
+  "V-D1 entry naming neither": {
+   "key": "packages/kernel/tests/aggregate-refusal.test.ts:69:3",
+   "refused": "a held or superseded entry names exactly one of its decision or its reading: packages/kernel/tests/aggregate-refusal.test.ts:69:3"
+  },
+  "V-D1 entry naming another claim's decision": {
+   "key": "packages/kernel/tests/aggregate-refusal.test.ts:69:3",
+   "refused": "a held or superseded entry's decision governs its claim: packages/kernel/tests/aggregate-refusal.test.ts:69:3"
+  },
+  "Proxy entry with a reading instead of decision-01": {
+   "key": "packages/kernel/tests/creation.test.ts:362:3",
+   "refused": "a category entry names its existing decision: packages/kernel/tests/creation.test.ts:362:3"
+  }
+ }
+}

@@ -1,0 +1,335 @@
+{
+ "subject": {
+  "tree": "60af5db9368f12451a3fe8a108511419316a5828",
+  "prototype": "prototype.diff",
+  "node": "v26.10.0"
+ },
+ "corpus": {
+  "result": "revalidation_complete",
+  "states": {
+   "complete": 110,
+   "pending_revalidation": 44,
+   "pending": 1395
+  },
+  "closures": {
+   "complete": 110,
+   "context_ranges": 116,
+   "context_candidates": 139,
+   "context_reasoned": 131
+  },
+  "targets": {
+   "targets": 315,
+   "targets_refused": 9,
+   "anchors_bound": 922,
+   "anchors_reached": 848,
+   "anchors_not_observable": 7,
+   "input_tokens_matched": 289,
+   "input_computed": 26,
+   "input_module_scope": 74,
+   "credit": {
+    "target_reading": 306
+   }
+  },
+  "suite_credit": {
+   "target_reading": 306
+  },
+  "preserved": {
+   "held": 314,
+   "preserved": 616,
+   "refused": 268,
+   "superseded": 74
+  },
+  "register": {
+   "scope_files": 53,
+   "entries": 393,
+   "cases": 95,
+   "by_classification": {
+    "held:Proxy": 11,
+    "held:V-D1": 29,
+    "held:V-ENV": 295,
+    "held:re-prototyped-built-in": 11,
+    "not_held:-": 1,
+    "superseded:Proxy": 46
+   },
+   "rule_1": 295,
+   "detector": {
+    "call": 781,
+    "child-process": 136,
+    "generated": 14,
+    "operator": 102,
+    "return": 2,
+    "storage": 177,
+    "wrapper": 119,
+    "write": 53
+   },
+   "detector_entries": 380,
+   "unclassified": []
+  },
+  "transferred": {
+   "origins": 44,
+   "by_decision": {
+    "docs/development/work/TOOLS-01/owner-choice-04.md": 4,
+    "docs/development/work/TOOLS-01/owner-choice-05.md": 40
+   },
+   "limited": {
+    "artifact-73555fe668cc180905b1e49a": {
+     "listed": 3,
+     "extras": [
+      "packages/kernel/tests/dispatch.test.ts:1173:3@5a8d958ffdab",
+      "packages/kernel/tests/dispatch.test.ts:1211:3@5a8d958ffdab",
+      "packages/kernel/tests/dispatch.test.ts:1256:3@5a8d958ffdab",
+      "packages/kernel/tests/dispatch.test.ts:1283:3@5a8d958ffdab",
+      "packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+      "packages/kernel/tests/dispatch.test.ts:1401:3@5a8d958ffdab",
+      "packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+      "packages/kernel/tests/dispatch.test.ts:369:3@5a8d958ffdab"
+     ]
+    },
+    "artifact-9fd619f5375d598ebb2b88aa": {
+     "listed": 18,
+     "extras": []
+    },
+    "artifact-d2153e36d9c7464883ecea0b": {
+     "listed": 1,
+     "extras": []
+    },
+    "artifact-ea5444a6d42154e413fe0f2e": {
+     "listed": 2,
+     "extras": [
+      "packages/kernel/tests/values.test.ts:115:3@fb228bec8c58"
+     ]
+    }
+   }
+  }
+ },
+ "regeneration": {
+  "register": {
+   "entries": 393,
+   "new": 88,
+   "new_cases": 1,
+   "flipped": [
+    "packages/kernel/tests/creation.test.ts:579:3",
+    "packages/kernel/tests/creation.test.ts:1058:3",
+    "packages/kernel/tests/dispatch.test.ts:448:3",
+    "packages/kernel/tests/dispatch.test.ts:1302:3",
+    "packages/kernel/tests/dispatch.test.ts:1560:3",
+    "packages/kernel/tests/host-members.test.ts:159:3",
+    "packages/kernel/tests/host-members.test.ts:224:3",
+    "packages/kernel/tests/inspection.test.ts:118:3",
+    "packages/kernel/tests/receipts.test.ts:187:5",
+    "packages/kernel/tests/receipts.test.ts:210:5",
+    "packages/kernel/tests/receipts.test.ts:227:5",
+    "packages/kernel/tests/receipts.test.ts:241:5",
+    "packages/kernel/tests/receipts.test.ts:259:5",
+    "packages/kernel/tests/receipts.test.ts:295:5",
+    "packages/kernel/tests/values.test.ts:177:5",
+    "packages/kernel/tests/values.test.ts:207:5",
+    "packages/kernel/tests/values.test.ts:347:5",
+    "packages/kernel/tests/values.test.ts:388:5",
+    "packages/kernel/tests/values.test.ts:632:3"
+   ],
+   "rule_1": 295,
+   "by": {
+    "held:V-D1": 29,
+    "held:V-ENV": 295,
+    "superseded:Proxy": 46,
+    "held:Proxy": 11,
+    "not_held:-": 1,
+    "held:re-prototyped-built-in": 11
+   }
+  },
+  "census": {
+   "by_status": {
+    "held": 314,
+    "preserved": 616,
+    "refused": 268,
+    "superseded": 74
+   },
+   "moved": {
+    "preserved->held": 97,
+    "refused->held": 34
+   }
+  },
+  "targets": {
+   "rows": 315,
+   "removed": [
+    "target.activation-identity.46.3.exchange-9-to-10",
+    "target.activation-identity.46.3.key-at-limit",
+    "target.ambient-reads.79.3.4a94f4ea0361",
+    "target.control-commits.100.3.1cc0368ebe2d",
+    "target.control-commits.117.3.1cc0368ebe2d",
+    "target.control-commits.123.3.1cc0368ebe2d",
+    "target.control-commits.128.3.1cc0368ebe2d",
+    "target.control-commits.135.3.1cc0368ebe2d",
+    "target.control-commits.145.3.1cc0368ebe2d",
+    "target.control-commits.226.3.1cc0368ebe2d",
+    "target.control-commits.231.5.1cc0368ebe2d.1",
+    "target.control-commits.231.5.1cc0368ebe2d.10",
+    "target.control-commits.231.5.1cc0368ebe2d.11",
+    "target.control-commits.231.5.1cc0368ebe2d.12",
+    "target.control-commits.231.5.1cc0368ebe2d.13",
+    "target.control-commits.231.5.1cc0368ebe2d.14",
+    "target.control-commits.231.5.1cc0368ebe2d.15",
+    "target.control-commits.231.5.1cc0368ebe2d.16",
+    "target.control-commits.231.5.1cc0368ebe2d.17",
+    "target.control-commits.231.5.1cc0368ebe2d.18",
+    "target.control-commits.231.5.1cc0368ebe2d.19",
+    "target.control-commits.231.5.1cc0368ebe2d.2",
+    "target.control-commits.231.5.1cc0368ebe2d.20",
+    "target.control-commits.231.5.1cc0368ebe2d.21",
+    "target.control-commits.231.5.1cc0368ebe2d.22",
+    "target.control-commits.231.5.1cc0368ebe2d.23",
+    "target.control-commits.231.5.1cc0368ebe2d.24",
+    "target.control-commits.231.5.1cc0368ebe2d.25",
+    "target.control-commits.231.5.1cc0368ebe2d.26",
+    "target.control-commits.231.5.1cc0368ebe2d.27",
+    "target.control-commits.231.5.1cc0368ebe2d.28",
+    "target.control-commits.231.5.1cc0368ebe2d.29",
+    "target.control-commits.231.5.1cc0368ebe2d.3",
+    "target.control-commits.231.5.1cc0368ebe2d.30",
+    "target.control-commits.231.5.1cc0368ebe2d.31",
+    "target.control-commits.231.5.1cc0368ebe2d.4",
+    "target.control-commits.231.5.1cc0368ebe2d.5",
+    "target.control-commits.231.5.1cc0368ebe2d.6",
+    "target.control-commits.231.5.1cc0368ebe2d.7",
+    "target.control-commits.231.5.1cc0368ebe2d.8",
+    "target.control-commits.231.5.1cc0368ebe2d.9",
+    "target.control-commits.81.3.1cc0368ebe2d",
+    "target.control-commits.93.5.1cc0368ebe2d.1",
+    "target.control-commits.93.5.1cc0368ebe2d.2",
+    "target.control-commits.93.5.1cc0368ebe2d.3",
+    "target.dispatch.199.3.5a8d958ffdab",
+    "target.dispatch.209.3.5a8d958ffdab",
+    "target.dispatch.445.3.5a8d958ffdab",
+    "target.evidence.168.3",
+    "target.evidence.77.3",
+    "target.values.107.3.fb228bec8c58",
+    "target.values.128.3.fb228bec8c58",
+    "target.values.142.3.fb228bec8c58",
+    "target.values.159.3.fb228bec8c58",
+    "target.values.177.5.fb228bec8c58",
+    "target.values.207.5.fb228bec8c58",
+    "target.values.233.5.fb228bec8c58",
+    "target.values.347.5.fb228bec8c58",
+    "target.values.388.5.fb228bec8c58",
+    "target.values.451.3.fb228bec8c58",
+    "target.values.464.3.fb228bec8c58",
+    "target.values.470.3.fb228bec8c58",
+    "target.values.478.3.fb228bec8c58",
+    "target.values.488.3.fb228bec8c58",
+    "target.values.500.3.fb228bec8c58",
+    "target.values.529.3.fb228bec8c58",
+    "target.values.558.3.fb228bec8c58",
+    "target.values.98.3.fb228bec8c58"
+   ],
+   "kept_mapping": [
+    "target.dispatch.369.3.5a8d958ffdab",
+    "target.dispatch.1173.3.5a8d958ffdab",
+    "target.dispatch.1211.3.5a8d958ffdab",
+    "target.dispatch.1256.3.5a8d958ffdab",
+    "target.dispatch.1283.3.5a8d958ffdab",
+    "target.dispatch.1401.3.5a8d958ffdab",
+    "target.values.115.3.fb228bec8c58"
+   ]
+  },
+  "witnesses": {
+   "total": 388,
+   "created": 131
+  },
+  "limited": {
+   "artifact-73555fe668cc180905b1e49a": [
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:1173:3@5a8d958ffdab",
+     "target": "target.dispatch.1173.3.5a8d958ffdab"
+    },
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:1211:3@5a8d958ffdab",
+     "target": "target.dispatch.1211.3.5a8d958ffdab"
+    },
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:1256:3@5a8d958ffdab",
+     "target": "target.dispatch.1256.3.5a8d958ffdab"
+    },
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:1283:3@5a8d958ffdab",
+     "target": "target.dispatch.1283.3.5a8d958ffdab"
+    },
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+     "target": "target.dispatch.1363.3.5a8d958ffdab"
+    },
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:1401:3@5a8d958ffdab",
+     "target": "target.dispatch.1401.3.5a8d958ffdab"
+    },
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+     "target": "target.dispatch.1426.3.5a8d958ffdab"
+    },
+    {
+     "member": "packages/kernel/tests/dispatch.test.ts:369:3@5a8d958ffdab",
+     "target": "target.dispatch.369.3.5a8d958ffdab"
+    }
+   ],
+   "artifact-9fd619f5375d598ebb2b88aa": [],
+   "artifact-d2153e36d9c7464883ecea0b": [],
+   "artifact-ea5444a6d42154e413fe0f2e": [
+    {
+     "member": "packages/kernel/tests/values.test.ts:115:3@fb228bec8c58",
+     "target": "target.values.115.3.fb228bec8c58"
+    }
+   ]
+  }
+ },
+ "closures_relinked": [
+  "artifact-b06e44e7a30c0b735cf084aa",
+  "artifact-55f842727285272a53a9e5d9",
+  "artifact-ce2e69842afb779a3e70c0f5",
+  "artifact-70d6df0d9d69aeaa93cc8b66",
+  "artifact-6c57cc9dd8febdefa65ed496",
+  "artifact-394a3572417fe81cafbd7097",
+  "artifact-210dd0aaaf1f9edcdcaa0600",
+  "artifact-ecb10ef937e0612352e7c7ef",
+  "artifact-a45b1c9d40d46e183ebd203d",
+  "artifact-f1a28bedebfe204b9687fa53",
+  "artifact-b46445caeaa7feb4193b6677",
+  "artifact-bf8be457073b319f1d960816",
+  "artifact-21fb34d9cd3ad15575371064",
+  "artifact-ada9f66cd74e3bc95eef93d6",
+  "artifact-febb180b453e17b8edab6893",
+  "artifact-bca863b02ba3f5f894baa47d",
+  "artifact-41fff78d8c610a53b2aafa0e",
+  "artifact-0f12d86d31f51cf923cb05e8",
+  "artifact-3310e718c17bac5248395d3d",
+  "artifact-a4fa946d2759121d53f06ef8",
+  "artifact-510be2a0362710c9996c358a",
+  "artifact-c65a82c89661d8cb815b5b1b",
+  "artifact-e675d28451f3413582099c7a",
+  "artifact-58a5b7bc09b47ad262f7e4f5",
+  "artifact-7902341bc00c3376b26ef71f",
+  "artifact-234036da40df72ad36095f4b",
+  "artifact-b303eed73b3e154fe6365c09",
+  "artifact-1ab5c124484bc58b2a471c96",
+  "artifact-fcbe9b87cbe87b398197c578",
+  "artifact-ebfa0eb36bcd33f72a4dffce",
+  "artifact-b93fa92a81d4582fdc056ed6",
+  "artifact-933874e859e8d7b79504af10"
+ ],
+ "run_set_identity_comparison": {
+  "census": {
+   "by_status": {
+    "held": 272,
+    "preserved": 641,
+    "refused": 285,
+    "superseded": 74
+   },
+   "moved": {
+    "preserved->held": 72,
+    "refused->held": 17
+   }
+  },
+  "register_entries": 373,
+  "rule_1": 270,
+  "targets": 330
+ }
+}

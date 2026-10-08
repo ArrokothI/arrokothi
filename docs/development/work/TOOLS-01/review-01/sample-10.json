@@ -1,0 +1,47 @@
+{
+  "origin": {
+    "id": "artifact-6dcba4da5936b64c77a8b470",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Maintained source packages/kernel/tests/sweep/poison.ts is retained at the current profile; its executable consumer is kernel-sweeps. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+      "targets": [
+        "suite.packages/kernel/tests/sweep/poison.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.poison-catalog.273.5.46794b39598a"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/sweep/poison.ts",
+          "start": 1,
+          "end": 536
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [],
+  "targets": [],
+  "counterexamples": [
+    {
+      "id": "witness.poison-catalog.273.5.46794b39598a",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6dcba4da5936b64c77a8b470",
+        "artifact-98679309de7791acf7f59c87"
+      ],
+      "members": [
+        "packages/kernel/tests/poison-catalog.test.ts:273:5@46794b39598a"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Was not_held for Proxy, re-prototyped-built-in (The DEC-8 poison catalog's own windows; no held claim decides its result). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: `${mode}: no zone frame reaches a poisoned member; every window was live`"
+    }
+  ]
+}

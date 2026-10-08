@@ -1,0 +1,834 @@
+{
+  "members": 24,
+  "assertion_statements": 41,
+  "method": "Pinned member keys from preserved; current declarations from the scratch catalog; TypeScript statement extraction; exact file-wide text occurrence counts; occurrence line numbers split only on LF. Diagnostic scope: direct assert.* / t.assert.* expression statements in these callbacks; no imported-helper analysis.",
+  "rows": [
+    {
+      "member": "packages/kernel/tests/dispatch.test.ts:247:3@5a8d958ffdab",
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "line": 247,
+      "column": 3,
+      "title": "an invisible Execution is not dispatched",
+      "source_sha256": "84b2b74f2690617604c9bdae64da0340e32aafbee05b64f27970551364f802b6",
+      "assertions": [
+        {
+          "line": 255,
+          "statement": "assert.deepEqual({ ...hidden }, { ...missing });",
+          "occurrences": 2,
+          "occurrence_lines": [
+            255,
+            432
+          ]
+        },
+        {
+          "line": 256,
+          "statement": "assert.equal(hidden.position, 0);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            256,
+            433
+          ]
+        }
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/dispatch.test.ts:420:3@5a8d958ffdab",
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "line": 423,
+      "column": 3,
+      "title": "redelivering an invisible Execution answers as an unknown one",
+      "source_sha256": "84b2b74f2690617604c9bdae64da0340e32aafbee05b64f27970551364f802b6",
+      "assertions": [
+        {
+          "line": 432,
+          "statement": "assert.deepEqual({ ...hidden }, { ...missing });",
+          "occurrences": 2,
+          "occurrence_lines": [
+            255,
+            432
+          ]
+        },
+        {
+          "line": 433,
+          "statement": "assert.equal(hidden.position, 0);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            256,
+            433
+          ]
+        }
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/dispatch.test.ts:1527:3@5a8d958ffdab",
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "line": 1560,
+      "column": 3,
+      "title": "a bound carried only by inheritance reads as missing",
+      "source_sha256": "84b2b74f2690617604c9bdae64da0340e32aafbee05b64f27970551364f802b6",
+      "assertions": [
+        {
+          "line": 1564,
+          "statement": "assert.equal(refusal.classification, \"invalid_batch_bound\");",
+          "occurrences": 3,
+          "occurrence_lines": [
+            1536,
+            1552,
+            1564
+          ]
+        }
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/values.test.ts:572:3@fb228bec8c58",
+      "file": "packages/kernel/tests/values.test.ts",
+      "line": 572,
+      "column": 3,
+      "title": "sibling roots are not summed",
+      "source_sha256": "96c78364c04f26883357729f4d22f27bc0508a1aa074ea1feff162eaeddde680",
+      "assertions": [
+        {
+          "line": 576,
+          "statement": "assert.deepEqual(issueCodes(sevenHundredKiB), []);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            576,
+            577
+          ]
+        },
+        {
+          "line": 577,
+          "statement": "assert.deepEqual(issueCodes(sevenHundredKiB), []);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            576,
+            577
+          ]
+        }
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/values.test.ts:735:3@fb228bec8c58",
+      "file": "packages/kernel/tests/values.test.ts",
+      "line": 1039,
+      "column": 3,
+      "title": "exactly-at-limit passes and one-over refuses",
+      "source_sha256": "96c78364c04f26883357729f4d22f27bc0508a1aa074ea1feff162eaeddde680",
+      "assertions": [
+        {
+          "line": 1041,
+          "statement": "assert.deepEqual(issueCodes(atLimit), []);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            531,
+            1041
+          ]
+        },
+        {
+          "line": 1042,
+          "statement": "assert.deepEqual(issueCodes([...atLimit, 0]), [\"too_many_entries\"]);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            532,
+            1042
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/evidence-records.test.ts:157:3@5d3f432848c3",
+      "file": "tests/archive/evidence-records.test.ts",
+      "line": 158,
+      "column": 3,
+      "title": "no token presented as a digest has an impossible length",
+      "source_sha256": "b06453bbba52524605d3faf969f94a02fa4e90badc95c80cf4af5a7d74b5bdb4",
+      "assertions": [
+        {
+          "line": 184,
+          "statement": "assert.deepEqual(problems, []);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            155,
+            184
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:221:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 226,
+      "column": 3,
+      "title": "a direct relative import into the legacy implementation is rejected",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 230,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 231,
+          "statement": "assert.match(violations[0]!.reason, /packages\\/core\\/src\\/runtime\\/harness\\.ts/);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            231,
+            359
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:238:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 243,
+      "column": 3,
+      "title": "an import of the legacy package root barrel is rejected",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 247,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 248,
+          "statement": "assert.equal(violations[0]!.specifier, \"@arrokothi/core\");",
+          "occurrences": 8,
+          "occurrence_lines": [
+            248,
+            256,
+            264,
+            278,
+            311,
+            320,
+            367,
+            376
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:246:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 251,
+      "column": 3,
+      "title": "a re-export of the legacy package root barrel is rejected",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 255,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 256,
+          "statement": "assert.equal(violations[0]!.specifier, \"@arrokothi/core\");",
+          "occurrences": 8,
+          "occurrence_lines": [
+            248,
+            256,
+            264,
+            278,
+            311,
+            320,
+            367,
+            376
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:254:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 259,
+      "column": 3,
+      "title": "a dynamic import of the legacy implementation is rejected",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 263,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 264,
+          "statement": "assert.equal(violations[0]!.specifier, \"@arrokothi/core\");",
+          "occurrences": 8,
+          "occurrence_lines": [
+            248,
+            256,
+            264,
+            278,
+            311,
+            320,
+            367,
+            376
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:262:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 267,
+      "column": 3,
+      "title": "a forbidden import after a regular expression after a control-flow paren is rejected (K10-R1-01)",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 276,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 277,
+          "statement": "assert.equal(violations[0]!.from, \"packages/kernel/src/index.ts\");",
+          "occurrences": 3,
+          "occurrence_lines": [
+            277,
+            291,
+            310
+          ]
+        },
+        {
+          "line": 278,
+          "statement": "assert.equal(violations[0]!.specifier, \"@arrokothi/core\");",
+          "occurrences": 8,
+          "occurrence_lines": [
+            248,
+            256,
+            264,
+            278,
+            311,
+            320,
+            367,
+            376
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:310:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 315,
+      "column": 3,
+      "title": "a typeof import-type dependency on the legacy barrel is rejected (K10-R2-01)",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 319,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 320,
+          "statement": "assert.equal(violations[0]!.specifier, \"@arrokothi/core\");",
+          "occurrences": 8,
+          "occurrence_lines": [
+            248,
+            256,
+            264,
+            278,
+            311,
+            320,
+            367,
+            376
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:346:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 351,
+      "column": 3,
+      "title": "a triple-slash reference into the legacy tree is rejected (K10-R2-01)",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 358,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 359,
+          "statement": "assert.match(violations[0]!.reason, /packages\\/core\\/src\\/runtime\\/harness\\.ts/);",
+          "occurrences": 2,
+          "occurrence_lines": [
+            231,
+            359
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:357:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 362,
+      "column": 3,
+      "title": "a triple-slash types reference on a forbidden package is rejected (K10-R2-01)",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 366,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 367,
+          "statement": "assert.equal(violations[0]!.specifier, \"@arrokothi/core\");",
+          "occurrences": 8,
+          "occurrence_lines": [
+            248,
+            256,
+            264,
+            278,
+            311,
+            320,
+            367,
+            376
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:365:3@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 370,
+      "column": 3,
+      "title": "an ambient declaration of a forbidden module is rejected (K10-R2-01)",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 375,
+          "statement": "assert.equal(violations.length, 1);",
+          "occurrences": 20,
+          "occurrence_lines": [
+            230,
+            238,
+            247,
+            255,
+            263,
+            276,
+            290,
+            309,
+            319,
+            346,
+            358,
+            366,
+            375,
+            395,
+            403,
+            411,
+            420,
+            435,
+            472,
+            489
+          ]
+        },
+        {
+          "line": 376,
+          "statement": "assert.equal(violations[0]!.specifier, \"@arrokothi/core\");",
+          "occurrences": 8,
+          "occurrence_lines": [
+            248,
+            256,
+            264,
+            278,
+            311,
+            320,
+            367,
+            376
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1822:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 1827,
+      "column": 5,
+      "title": "an ordered-list equivalent cannot truncate the section",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 1836,
+          "statement": "assert.equal(disagreements.length, 2, `got: ${JSON.stringify(disagreements)}`);",
+          "occurrences": 3,
+          "occurrence_lines": [
+            1836,
+            1884,
+            2045
+          ]
+        },
+        {
+          "line": 1837,
+          "statement": "assert.ok(disagreements.every((message) => furtherDeferred.test(message)), `got: ${JSON.stringify(disagreements)}`);",
+          "occurrences": 4,
+          "occurrence_lines": [
+            1837,
+            1885,
+            2033,
+            2046
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1865:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 1870,
+      "column": 5,
+      "title": "a heading nested two containers deep cannot truncate the section",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 1884,
+          "statement": "assert.equal(disagreements.length, 2, `got: ${JSON.stringify(disagreements)}`);",
+          "occurrences": 3,
+          "occurrence_lines": [
+            1836,
+            1884,
+            2045
+          ]
+        },
+        {
+          "line": 1885,
+          "statement": "assert.ok(disagreements.every((message) => furtherDeferred.test(message)), `got: ${JSON.stringify(disagreements)}`);",
+          "occurrences": 4,
+          "occurrence_lines": [
+            1837,
+            1885,
+            2033,
+            2046
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1930:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 1935,
+      "column": 5,
+      "title": "a task-list item is a list container too",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 1944,
+          "statement": "assert.ok(\n        disagreements.some((message) => furtherDeferred.test(message)),\n        `got: ${JSON.stringify(disagreements)}`,\n      );",
+          "occurrences": 3,
+          "occurrence_lines": [
+            1944,
+            1988,
+            2124
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:1974:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 1979,
+      "column": 5,
+      "title": "a dash line that is really a second item keeps the container open",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 1988,
+          "statement": "assert.ok(\n        disagreements.some((message) => furtherDeferred.test(message)),\n        `got: ${JSON.stringify(disagreements)}`,\n      );",
+          "occurrences": 3,
+          "occurrence_lines": [
+            1944,
+            1988,
+            2124
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:2031:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 2036,
+      "column": 5,
+      "title": "a single-quoted value containing < still opens the raw block",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 2045,
+          "statement": "assert.equal(disagreements.length, 2, `got: ${JSON.stringify(disagreements)}`);",
+          "occurrences": 3,
+          "occurrence_lines": [
+            1836,
+            1884,
+            2045
+          ]
+        },
+        {
+          "line": 2046,
+          "statement": "assert.ok(disagreements.every((message) => furtherDeferred.test(message)), `got: ${JSON.stringify(disagreements)}`);",
+          "occurrences": 4,
+          "occurrence_lines": [
+            1837,
+            1885,
+            2033,
+            2046
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:2044:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 2049,
+      "column": 5,
+      "title": "ordinary and unquoted attributes still open the raw block",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 2059,
+          "statement": "assert.ok(\n          disagreements.some((message) => furtherDeferred.test(message)),\n          `${opener} must open a raw block; got: ${JSON.stringify(disagreements)}`,\n        );",
+          "occurrences": 2,
+          "occurrence_lines": [
+            2059,
+            4153
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:2108:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 2113,
+      "column": 5,
+      "title": "a tag after a table row still opens the raw block",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 2124,
+          "statement": "assert.ok(\n        disagreements.some((message) => furtherDeferred.test(message)),\n        `got: ${JSON.stringify(disagreements)}`,\n      );",
+          "occurrences": 3,
+          "occurrence_lines": [
+            1944,
+            1988,
+            2124
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:4138:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 4143,
+      "column": 5,
+      "title": "valid multi-attribute tags still open raw blocks",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 4153,
+          "statement": "assert.ok(\n          disagreements.some((message) => furtherDeferred.test(message)),\n          `${opener} must open a raw block; got: ${JSON.stringify(disagreements)}`,\n        );",
+          "occurrences": 2,
+          "occurrence_lines": [
+            2059,
+            4153
+          ]
+        }
+      ]
+    },
+    {
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:4207:5@deedd7950724",
+      "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "line": 4212,
+      "column": 5,
+      "title": "valid open boundaries still open the raw block",
+      "source_sha256": "e43be3eb1629df3498bbd112b2b18ed52d2fa47e947cf5aecf6060565f70dc25",
+      "assertions": [
+        {
+          "line": 4221,
+          "statement": "assert.ok(\n          disagreements.some((message) => furtherDeferred.test(message)),\n          `${opener} must open type 6 and hide the heading; got: ${JSON.stringify(disagreements)}`,\n        );",
+          "occurrences": 2,
+          "occurrence_lines": [
+            4221,
+            4237
+          ]
+        }
+      ]
+    }
+  ]
+}

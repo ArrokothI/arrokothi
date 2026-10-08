@@ -1,0 +1,93 @@
+{
+  "node": "v26.10.0",
+  "results": [
+    {
+      "case": "passing_control",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=./reporter.mjs",
+        "target.test.mjs"
+      ],
+      "exit": 0,
+      "seconds": 0.216,
+      "events": [
+        {
+          "type": "test:pass",
+          "name": "declared target",
+          "instanceOfAssertionError": false
+        }
+      ],
+      "stderr": ""
+    },
+    {
+      "case": "target_assertion",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=./reporter.mjs",
+        "target.test.mjs"
+      ],
+      "exit": 1,
+      "seconds": 0.082,
+      "events": [
+        {
+          "type": "test:fail",
+          "name": "declared target",
+          "failureType": "testCodeFailure",
+          "causeName": "AssertionError",
+          "code": "ERR_ASSERTION",
+          "instanceOfAssertionError": false,
+          "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 1\n\n    at TestContext.<anonymous> (file://<fixture>/target.test.mjs:6:10)\n    at Test.runInAsyncScope (node:async_hooks:226:14)\n    at Test.run (node:internal/test_runner/test:1402:25)\n    at Test.start (node:internal/test_runner/test:1262:17)\n    at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)"
+        }
+      ],
+      "stderr": ""
+    },
+    {
+      "case": "production_assertion",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=./reporter.mjs",
+        "target.test.mjs"
+      ],
+      "exit": 1,
+      "seconds": 0.081,
+      "events": [
+        {
+          "type": "test:fail",
+          "name": "declared target",
+          "failureType": "testCodeFailure",
+          "causeName": "AssertionError",
+          "code": "ERR_ASSERTION",
+          "instanceOfAssertionError": false,
+          "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 1\n\n    at new AssertionError (node:internal/assert/assertion_error:380:5)\n    at value (file://<fixture>/production.mjs:3:9)\n    at TestContext.<anonymous> (file://<fixture>/target.test.mjs:5:18)\n    at Test.runInAsyncScope (node:async_hooks:226:14)\n    at Test.run (node:internal/test_runner/test:1402:25)\n    at Test.start (node:internal/test_runner/test:1262:17)\n    at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)"
+        }
+      ],
+      "stderr": ""
+    },
+    {
+      "case": "production_assertion_trimmed",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=./reporter.mjs",
+        "target.test.mjs"
+      ],
+      "exit": 1,
+      "seconds": 0.082,
+      "events": [
+        {
+          "type": "test:fail",
+          "name": "declared target",
+          "failureType": "testCodeFailure",
+          "causeName": "AssertionError",
+          "code": "ERR_ASSERTION",
+          "instanceOfAssertionError": false,
+          "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 1\n\n    at TestContext.<anonymous> (file://<fixture>/target.test.mjs:5:18)\n    at Test.runInAsyncScope (node:async_hooks:226:14)\n    at Test.run (node:internal/test_runner/test:1402:25)\n    at Test.start (node:internal/test_runner/test:1262:17)\n    at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)"
+        }
+      ],
+      "stderr": ""
+    }
+  ]
+}

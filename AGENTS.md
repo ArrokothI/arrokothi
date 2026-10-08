@@ -98,7 +98,7 @@ Kernel conformance should use deterministic fake Execution Runtimes where possib
 
 ## Commands
 
-Node 22.9+.
+Node 26.10+.
 
 ```bash
 npm install

@@ -1,0 +1,66 @@
+..........................Checking repository-tests
+.Checking repository-tests
+.Checking repository-tests
+.Checking repository-tests
+..Checking repository-tests
+.Checking repository-tests
+.Checking repository-tests
+..............................................Checking unit
+.Checking unit
+..Checking unit
+.Checking unit
+.Checking unit
+....Checking unit
+.Checking unit
+.......Case case
+.....Checking with-input
+.Checking with-input
+Checking without-input
+..Checking with-input
+..........................................Case case
+.Case case
+..Case case
+.Case case
+..Case case
+..Case case
+.Case case
+..Case case
+.Case case
+..Case case
+....................................................................................................................................................Case targets
+....................................Case case
+Case case
+.Case case
+.Case case
+..Case case
+.Case case
+.Case case
+.Case case
+..........Checking unit
+.Checking unit
+......Case targets
+.....Case targets
+.Case targets
+..Case targets
+.Case targets
+..........................Case case
+.Case case
+.Case case
+.Case case
+.Case case
+.Case case
+.Case case
+.Case case
+.Case case
+.Case case
+.Case case
+.Case targets
+.Case targets
+.Case targets
+.Case targets
+..Case targets
+....................
+----------------------------------------------------------------------
+Ran 439 tests in 196.391s
+
+OK

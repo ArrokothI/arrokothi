@@ -1,0 +1,189 @@
+{
+ "restored_1363": "already in the manifest",
+ "dropped": [],
+ "register": {
+  "entries": 393,
+  "new": 88,
+  "new_cases": 1,
+  "flipped": [
+   "packages/kernel/tests/creation.test.ts:579:3",
+   "packages/kernel/tests/creation.test.ts:1058:3",
+   "packages/kernel/tests/dispatch.test.ts:448:3",
+   "packages/kernel/tests/dispatch.test.ts:1302:3",
+   "packages/kernel/tests/dispatch.test.ts:1560:3",
+   "packages/kernel/tests/host-members.test.ts:159:3",
+   "packages/kernel/tests/host-members.test.ts:224:3",
+   "packages/kernel/tests/inspection.test.ts:118:3",
+   "packages/kernel/tests/receipts.test.ts:187:5",
+   "packages/kernel/tests/receipts.test.ts:210:5",
+   "packages/kernel/tests/receipts.test.ts:227:5",
+   "packages/kernel/tests/receipts.test.ts:241:5",
+   "packages/kernel/tests/receipts.test.ts:259:5",
+   "packages/kernel/tests/receipts.test.ts:295:5",
+   "packages/kernel/tests/values.test.ts:177:5",
+   "packages/kernel/tests/values.test.ts:207:5",
+   "packages/kernel/tests/values.test.ts:347:5",
+   "packages/kernel/tests/values.test.ts:388:5",
+   "packages/kernel/tests/values.test.ts:632:3"
+  ],
+  "rule_1": 295,
+  "by": {
+   "held:V-D1": 29,
+   "held:V-ENV": 295,
+   "superseded:Proxy": 46,
+   "held:Proxy": 11,
+   "not_held:-": 1,
+   "held:re-prototyped-built-in": 11
+  }
+ },
+ "census": {
+  "by_status": {
+   "held": 314,
+   "preserved": 616,
+   "refused": 268,
+   "superseded": 74
+  },
+  "moved": {
+   "preserved->held": 97,
+   "refused->held": 34
+  }
+ },
+ "targets": {
+  "rows": 315,
+  "removed": [
+   "target.activation-identity.46.3.exchange-9-to-10",
+   "target.activation-identity.46.3.key-at-limit",
+   "target.ambient-reads.79.3.4a94f4ea0361",
+   "target.control-commits.100.3.1cc0368ebe2d",
+   "target.control-commits.117.3.1cc0368ebe2d",
+   "target.control-commits.123.3.1cc0368ebe2d",
+   "target.control-commits.128.3.1cc0368ebe2d",
+   "target.control-commits.135.3.1cc0368ebe2d",
+   "target.control-commits.145.3.1cc0368ebe2d",
+   "target.control-commits.226.3.1cc0368ebe2d",
+   "target.control-commits.231.5.1cc0368ebe2d.1",
+   "target.control-commits.231.5.1cc0368ebe2d.10",
+   "target.control-commits.231.5.1cc0368ebe2d.11",
+   "target.control-commits.231.5.1cc0368ebe2d.12",
+   "target.control-commits.231.5.1cc0368ebe2d.13",
+   "target.control-commits.231.5.1cc0368ebe2d.14",
+   "target.control-commits.231.5.1cc0368ebe2d.15",
+   "target.control-commits.231.5.1cc0368ebe2d.16",
+   "target.control-commits.231.5.1cc0368ebe2d.17",
+   "target.control-commits.231.5.1cc0368ebe2d.18",
+   "target.control-commits.231.5.1cc0368ebe2d.19",
+   "target.control-commits.231.5.1cc0368ebe2d.2",
+   "target.control-commits.231.5.1cc0368ebe2d.20",
+   "target.control-commits.231.5.1cc0368ebe2d.21",
+   "target.control-commits.231.5.1cc0368ebe2d.22",
+   "target.control-commits.231.5.1cc0368ebe2d.23",
+   "target.control-commits.231.5.1cc0368ebe2d.24",
+   "target.control-commits.231.5.1cc0368ebe2d.25",
+   "target.control-commits.231.5.1cc0368ebe2d.26",
+   "target.control-commits.231.5.1cc0368ebe2d.27",
+   "target.control-commits.231.5.1cc0368ebe2d.28",
+   "target.control-commits.231.5.1cc0368ebe2d.29",
+   "target.control-commits.231.5.1cc0368ebe2d.3",
+   "target.control-commits.231.5.1cc0368ebe2d.30",
+   "target.control-commits.231.5.1cc0368ebe2d.31",
+   "target.control-commits.231.5.1cc0368ebe2d.4",
+   "target.control-commits.231.5.1cc0368ebe2d.5",
+   "target.control-commits.231.5.1cc0368ebe2d.6",
+   "target.control-commits.231.5.1cc0368ebe2d.7",
+   "target.control-commits.231.5.1cc0368ebe2d.8",
+   "target.control-commits.231.5.1cc0368ebe2d.9",
+   "target.control-commits.81.3.1cc0368ebe2d",
+   "target.control-commits.93.5.1cc0368ebe2d.1",
+   "target.control-commits.93.5.1cc0368ebe2d.2",
+   "target.control-commits.93.5.1cc0368ebe2d.3",
+   "target.dispatch.199.3.5a8d958ffdab",
+   "target.dispatch.209.3.5a8d958ffdab",
+   "target.dispatch.445.3.5a8d958ffdab",
+   "target.evidence.168.3",
+   "target.evidence.77.3",
+   "target.values.107.3.fb228bec8c58",
+   "target.values.128.3.fb228bec8c58",
+   "target.values.142.3.fb228bec8c58",
+   "target.values.159.3.fb228bec8c58",
+   "target.values.177.5.fb228bec8c58",
+   "target.values.207.5.fb228bec8c58",
+   "target.values.233.5.fb228bec8c58",
+   "target.values.347.5.fb228bec8c58",
+   "target.values.388.5.fb228bec8c58",
+   "target.values.451.3.fb228bec8c58",
+   "target.values.464.3.fb228bec8c58",
+   "target.values.470.3.fb228bec8c58",
+   "target.values.478.3.fb228bec8c58",
+   "target.values.488.3.fb228bec8c58",
+   "target.values.500.3.fb228bec8c58",
+   "target.values.529.3.fb228bec8c58",
+   "target.values.558.3.fb228bec8c58",
+   "target.values.98.3.fb228bec8c58"
+  ],
+  "kept_mapping": [
+   "target.dispatch.369.3.5a8d958ffdab",
+   "target.dispatch.1173.3.5a8d958ffdab",
+   "target.dispatch.1211.3.5a8d958ffdab",
+   "target.dispatch.1256.3.5a8d958ffdab",
+   "target.dispatch.1283.3.5a8d958ffdab",
+   "target.dispatch.1401.3.5a8d958ffdab",
+   "target.values.115.3.fb228bec8c58"
+  ]
+ },
+ "witnesses": {
+  "total": 388,
+  "created": 131
+ },
+ "limited_listed_not_unbound": {
+  "artifact-73555fe668cc180905b1e49a": [],
+  "artifact-9fd619f5375d598ebb2b88aa": [],
+  "artifact-d2153e36d9c7464883ecea0b": [],
+  "artifact-ea5444a6d42154e413fe0f2e": []
+ },
+ "limited": {
+  "artifact-73555fe668cc180905b1e49a": [
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1173:3@5a8d958ffdab",
+    "target": "target.dispatch.1173.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1211:3@5a8d958ffdab",
+    "target": "target.dispatch.1211.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1256:3@5a8d958ffdab",
+    "target": "target.dispatch.1256.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1283:3@5a8d958ffdab",
+    "target": "target.dispatch.1283.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+    "target": "target.dispatch.1363.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1401:3@5a8d958ffdab",
+    "target": "target.dispatch.1401.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+    "target": "target.dispatch.1426.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:369:3@5a8d958ffdab",
+    "target": "target.dispatch.369.3.5a8d958ffdab"
+   }
+  ],
+  "artifact-9fd619f5375d598ebb2b88aa": [],
+  "artifact-d2153e36d9c7464883ecea0b": [],
+  "artifact-ea5444a6d42154e413fe0f2e": [
+   {
+    "member": "packages/kernel/tests/values.test.ts:115:3@fb228bec8c58",
+    "target": "target.values.115.3.fb228bec8c58"
+   }
+  ]
+ }
+}
+closures relinked 32
+written

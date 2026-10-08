@@ -1,0 +1,19 @@
+{
+  "status": "finished",
+  "exit": 0,
+  "command": [
+    "node",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "packages/kernel/tests/sweep/run-poison-sweep.ts",
+    "--modes",
+    "off,reenter",
+    "--files",
+    "values.test.ts",
+    "--out",
+    "/private/tmp/tools01-review1/sweep-recheck"
+  ],
+  "seconds": 15.081232333090156,
+  "head": "446dd25820500db4e0eb3d6940ec49e45634f39c",
+  "node": "v26.10.0"
+}

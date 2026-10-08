@@ -1,0 +1,42 @@
+{
+  "admission": {
+    "count": 141,
+    "unexpected": []
+  },
+  "all-roots": {
+    "count": 94,
+    "unexpected": []
+  },
+  "identity": {
+    "count": 15,
+    "unexpected": [
+      "identity-with"
+    ]
+  },
+  "matrix": {
+    "count": 216,
+    "unexpected": []
+  },
+  "semantics": {
+    "count": 4,
+    "unexpected": [
+      "semantics-stringify-callback",
+      "semantics-stringify-callback-return"
+    ]
+  },
+  "sibling": {
+    "count": 19,
+    "unexpected": [
+      "sibling-destructure-member",
+      "sibling-array-destructure-member",
+      "sibling-computed-unrelated",
+      "sibling-global-destructure-member",
+      "sibling-computed-other-root",
+      "sibling-getter-method"
+    ]
+  },
+  "table": {
+    "count": 26,
+    "unexpected": []
+  }
+}

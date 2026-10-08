@@ -1,0 +1,110 @@
+{
+  "origin": {
+    "id": "artifact-b46445caeaa7feb4193b6677",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Review-14 CE1/CE2 at-limit and exchange-9-to-10 schedules map to activation-identity.test.ts reviewer key at limit and reviewer exchange 9 to 10 tests. Namespace/key lengths differ to keep the same exact 65536/65537 identity edge. They cover holds, clear, protocol, takeover, terminal Outcome, replay/conflict and retained state; no old log is execution evidence.",
+      "targets": [
+        "suite.packages/kernel/tests/activation-identity.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.activation-identity.46.3.key-at-limit"
+        },
+        {
+          "kind": "target",
+          "id": "target.activation-identity.46.3.exchange-9-to-10"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/review-04/p2-review14.ts",
+          "start": 1,
+          "end": 32
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [],
+  "targets": [
+    {
+      "id": "target.activation-identity.46.3.key-at-limit",
+      "counterexample": "cx.activation-identity.46.3.key-at-limit",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/activation-identity.test.ts",
+      "test_path": [
+        "reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+      ],
+      "declaration": {
+        "line": 46,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const { who, driver, kernel, executionId, view } = setup(key, namespace, scope);",
+          "sha256": "c50b2c4cee31eb2f096f40342dcecbdf1380fa788816434c97cb87c66852a887",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(held.recoveryHolds.map(h => h.cause), [\"pinned_code_unavailable\"]);",
+          "sha256": "a513382d93afad454c23502d421fa7c2d7a50ee09aeac7aad9c13e57f6a44a64"
+        },
+        {
+          "anchor": "assert.equal(takeover.activationId, open.activationId);",
+          "sha256": "4edd56aaeb1f1428fb45a8e42b8741bc2f4423b74dd4864e4a40e4af46a3e994"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "The pinned-code hold must report pinned_code_unavailable, and takeover must keep the base progress revision of the last accepted Outcome."
+      }
+    },
+    {
+      "id": "target.activation-identity.46.3.exchange-9-to-10",
+      "counterexample": "cx.activation-identity.46.3.exchange-9-to-10",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/activation-identity.test.ts",
+      "test_path": [
+        "reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+      ],
+      "declaration": {
+        "line": 46,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const { who, driver, kernel, executionId, view } = setup(key, namespace, scope);",
+          "sha256": "c50b2c4cee31eb2f096f40342dcecbdf1380fa788816434c97cb87c66852a887",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(held.recoveryHolds.map(h => h.cause), [\"pinned_code_unavailable\"]);",
+          "sha256": "a513382d93afad454c23502d421fa7c2d7a50ee09aeac7aad9c13e57f6a44a64"
+        },
+        {
+          "anchor": "assert.equal(takeover.activationId, open.activationId);",
+          "sha256": "4edd56aaeb1f1428fb45a8e42b8741bc2f4423b74dd4864e4a40e4af46a3e994"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "The pinned-code hold must report pinned_code_unavailable, and takeover must keep the base progress revision of the last accepted Outcome."
+      }
+    }
+  ],
+  "counterexamples": []
+}

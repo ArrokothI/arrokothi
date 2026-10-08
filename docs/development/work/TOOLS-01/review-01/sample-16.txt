@@ -1,0 +1,15 @@
+docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs @ b759d0abc01915ea5abc94b4607c6f9101bbbcc7 lines 1:14
+1: // Reviewer probe (DESIGN-AUDIT-01 review 03; Claude Code, claude-opus-5-5). K11-R5-STATE-01's second
+2: // recorded witness (dispatch.test.ts:567 replaces Object.freeze from a coherent read), first hop
+3: // (property on the Object constructor) and binding hop (globalThis.Object), with and without the flag
+4: // and with the eight A-hard pins.
+5: const pinned = process.argv[2] === 'pinned';
+6: const saved = { Object, freeze: Object.freeze, JSON };
+7: if (pinned) for (const k of ['isNaN','isFinite','Object','Array','JSON','Set','Error','Symbol'])
+8:   saved.Object.defineProperty(globalThis, k, { value: globalThis[k], writable: false, configurable: false });
+9: const out = { reviewer: 'Claude Code claude-opus-5-5 (review 03)', node: process.version, frozen: process.execArgv.includes('--frozen-intrinsics'), pinned };
+10: try { Object.freeze = (v) => v; out.firstHop = Object.freeze === saved.freeze ? 'unchanged' : 'replaced'; } catch (e) { out.firstHop = e.name; }
+11: if (Object.freeze !== saved.freeze) saved.Object.defineProperty(saved.Object, 'freeze', { value: saved.freeze });
+12: try { globalThis.Object = { freeze: (v) => v }; out.bindingHop = 'replaced'; } catch (e) { out.bindingHop = e.name; }
+13: const o = {}; Object.freeze(o); out.liveFreezeWorks = saved.Object.isFrozen(o);
+14: process.stdout.write(saved.JSON.stringify(out) + '\n');

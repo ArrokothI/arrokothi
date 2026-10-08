@@ -1,0 +1,9 @@
+ENV node=v26.10.0 platform=darwin arch=arm64
+SCOPE 1 Kernel test files; 310 poisoned names on Object.prototype, Function.prototype, Array.prototype, String.prototype; modes off,reenter
+OUT /private/tmp/tools01-review1/sweep-recheck
+RUN off: {"exit":0,"tests":84,"pass":84,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":5}
+RUN reenter: {"exit":0,"tests":84,"pass":84,"fail":0,"cancelled":0,"skipped":0,"todo":0,"seconds":9}
+MODE off: {"windows":280,"calls":280,"liveProbes":0,"callerFirings":0,"handlerFirings":0,"reentries":0,"zoneFirings":0,"skippedSlots":0}
+MODE reenter: {"windows":280,"calls":280,"liveProbes":280,"callerFirings":2,"handlerFirings":96,"reentries":0,"zoneFirings":0,"skippedSlots":840}
+BOUNDARY 280 outermost windows; 280 traced calls per run
+POISON SWEEP PASSED

@@ -1,0 +1,52 @@
+{
+ "salt": "review-04/claude-opus-5-5/2026-10-07",
+ "method": "per stratum: sort keys by sha256(salt + \"\\n\" + key), take quota",
+ "strata": {
+  "A review 02 44": 44,
+  "B new case": 29,
+  "C1 new leaf, child-process only": 40,
+  "C2 new leaf, other detector kinds": 10,
+  "D former not_held": 2,
+  "E V-ENV before this round": 63
+ },
+ "quota": {
+  "A review 02 44": 3,
+  "B new case": 1,
+  "C1 new leaf, child-process only": 1,
+  "C2 new leaf, other detector kinds": 2,
+  "D former not_held": 1,
+  "E V-ENV before this round": 2
+ },
+ "held": {
+  "A review 02 44": [
+   "packages/kernel/tests/recovery-ambient.test.ts:259:7",
+   "packages/kernel/tests/values.test.ts:1323:3",
+   "packages/kernel/tests/host-members.test.ts:166:3"
+  ],
+  "B new case": [
+   "case:oracle.outcomeStepAt"
+  ],
+  "C1 new leaf, child-process only": [
+   "packages/kernel/tests/fault-oracle.test.ts:320:3"
+  ],
+  "C2 new leaf, other detector kinds": [
+   "packages/kernel/tests/dispatch.test.ts:178:3",
+   "packages/kernel/tests/dispatch.test.ts:1529:3"
+  ],
+  "D former not_held": [
+   "packages/kernel/tests/ingress.test.ts:459:3"
+  ],
+  "E V-ENV before this round": [
+   "case:realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+   "case:realm.kernel-lexical-shadow.Array"
+  ]
+ },
+ "relinked_population": 18,
+ "relinked": [
+  "artifact-a8dc74e516932f00626f70e1",
+  "artifact-febb180b453e17b8edab6893",
+  "artifact-510be2a0362710c9996c358a",
+  "artifact-ce2e69842afb779a3e70c0f5",
+  "artifact-210dd0aaaf1f9edcdcaa0600"
+ ]
+}

@@ -1,0 +1,179 @@
+docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc191c2e7cf88de198111e7d97c9 lines 1:88
+1: // Round 9 (contract revision 10): mutants of the DEC-9 fault sweep's own oracle (K12C1-R12-ORACLE-01).
+2: //
+3: // packages/kernel/tests/sweep/fault-oracle.ts makes every comparison through one table, `CHECKS`. This
+4: // runner finds the table's entries with the TypeScript parser, so a new comparison gets a mutant
+5: // without editing this file. For each entry it copies packages/kernel into a disposable directory
+6: // (node_modules linked back), replaces that entry's function with `() => true` — the comparison
+7: // always passes — and runs the oracle's negative controls, packages/kernel/tests/fault-oracle.test.ts.
+8: //
+9: // A mutant is KILLED when at least one negative control fails, and SURVIVES otherwise. A survivor is
+10: // acceptable only if it is listed in NOT_NEEDED below with the reason the comparison is not needed;
+11: // any other survivor fails the run. The unmutated copy must pass first (the clean control).
+12: // Run from the repository root: node docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs
+13: import assert from "node:assert/strict";
+14: import { spawnSync } from "node:child_process";
+15: import { cpSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+16: import { tmpdir } from "node:os";
+17: import { join, resolve } from "node:path";
+18: import ts from "typescript";
+19:
+20: const root = process.cwd();
+21: const ORACLE = "packages/kernel/tests/sweep/fault-oracle.ts";
+22: const CONTROLS = "packages/kernel/tests/fault-oracle.test.ts";
+23:
+24: /** Comparisons whose mutant may survive, with the reason. None is expected. */
+25: const NOT_NEEDED = new Map([]);
+26:
+27: const source = readFileSync(join(root, ORACLE), "utf8");
+28: const file = ts.createSourceFile(ORACLE, source, ts.ScriptTarget.Latest, true);
+29: const entries = [];
+30: for (const statement of file.statements) {
+31:   if (!ts.isVariableStatement(statement)) continue;
+32:   for (const declaration of statement.declarationList.declarations) {
+33:     if (!ts.isIdentifier(declaration.name) || declaration.name.text !== "CHECKS") continue;
+34:     const table = declaration.initializer;
+35:     assert.ok(table !== undefined && ts.isObjectLiteralExpression(table), "CHECKS is an object literal");
+36:     for (const property of table.properties) {
+37:       assert.ok(ts.isPropertyAssignment(property) && ts.isIdentifier(property.name), "every CHECKS entry is `name: function`");
+38:       entries.push({ name: property.name.text, start: property.initializer.getStart(file), end: property.initializer.getEnd() });
+39:     }
+40:   }
+41: }
+42: assert.ok(entries.length > 0, "CHECKS found");
+43: console.log(`ENV node=${process.version} platform=${process.platform} arch=${process.arch} oracle-comparisons=${entries.length}`);
+44: console.log(`CHECKS: ${entries.map((entry) => entry.name).join(", ")}`);
+45:
+46: const snapshot = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-"));
+47: cpSync(join(root, "packages/kernel"), join(snapshot, "packages/kernel"), { recursive: true });
+48: for (const name of ["package.json", "tsconfig.json"]) cpSync(join(root, name), join(snapshot, name));
+49:
+50: const controls = (replacement) => {
+51:   const dir = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-mutant-"));
+52:   try {
+53:     cpSync(join(snapshot, "packages/kernel"), join(dir, "packages/kernel"), { recursive: true });
+54:     for (const name of ["package.json", "tsconfig.json"]) cpSync(join(snapshot, name), join(dir, name));
+55:     symlinkSync(resolve(root, "node_modules"), join(dir, "node_modules"), "dir");
+56:     if (replacement !== null) writeFileSync(join(dir, ORACLE), replacement);
+57:     const run = spawnSync(process.execPath, ["--test", "--experimental-strip-types", "--test-reporter=spec", CONTROLS], { cwd: dir, encoding: "utf8", timeout: 1_200_000, maxBuffer: 256 * 1024 * 1024 });
+58:     const output = `${run.stdout ?? ""}${run.stderr ?? ""}`;
+59:     const failed = [...new Set([...output.matchAll(/^\s*✖ (.+?) \(\d/gm)].map((match) => match[1]))];
+60:     const count = (label) => Number(new RegExp(`^ℹ ${label} (\\d+)`, "m").exec(output)?.[1]);
+61:     return { status: run.status, signal: run.signal, failed, tests: count("tests"), fail: count("fail") };
+62:   } finally {
+63:     rmSync(dir, { recursive: true, force: true });
+64:   }
+65: };
+66:
+67: let failures = 0;
+68: try {
+69:   const clean = controls(null);
+70:   const cleanOk = clean.status === 0 && clean.fail === 0;
+71:   if (!cleanOk) failures += 1;
+72:   console.log(`${cleanOk ? "CONTROL" : "CONTROL FAILED"} unmutated oracle: exit=${clean.status} tests=${clean.tests} fail=${clean.fail}${cleanOk ? "" : ` ${clean.failed.slice(0, 5).join(" | ")}`}`);
+73:   for (const entry of entries) {
+74:     const mutant = `${source.slice(0, entry.start)}() => true${source.slice(entry.end)}`;
+75:     const result = controls(mutant);
+76:     const killed = result.status !== 0 && result.fail > 0;
+77:     const reason = NOT_NEEDED.get(entry.name);
+78:     const verdict = killed ? "KILLED" : reason === undefined ? "SURVIVED" : "SURVIVED (not needed)";
+79:     if (verdict === "SURVIVED") failures += 1;
+80:     console.log(`${verdict} CHECKS.${entry.name}: exit=${result.status} failing controls=${result.fail} of ${result.tests}`);
+81:     for (const name of result.failed.filter((name) => !/^(every |review 12|a recorded refusal|the reference|the exit)/.test(name)).slice(0, 4)) console.log(`  ✖ ${name}`);
+82:     if (reason !== undefined) console.log(`  not needed: ${reason}`);
+83:   }
+84: } finally {
+85:   rmSync(snapshot, { recursive: true, force: true });
+86: }
+87: console.log(failures === 0 ? "EVERY ORACLE COMPARISON IS NEEDED BY A NEGATIVE CONTROL; CLEAN CONTROL PASSED" : `${failures} clean-control failures or surviving comparisons`);
+88: process.exitCode = failures === 0 ? 0 : 1;
+
+docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs @ 66bc041175e6fc191c2e7cf88de198111e7d97c9 lines 1:88
+1: // Round 9 (contract revision 10): mutants of the DEC-9 fault sweep's own oracle (K12C1-R12-ORACLE-01).
+2: //
+3: // packages/kernel/tests/sweep/fault-oracle.ts makes every comparison through one table, `CHECKS`. This
+4: // runner finds the table's entries with the TypeScript parser, so a new comparison gets a mutant
+5: // without editing this file. For each entry it copies packages/kernel into a disposable directory
+6: // (node_modules linked back), replaces that entry's function with `() => true` — the comparison
+7: // always passes — and runs the oracle's negative controls, packages/kernel/tests/fault-oracle.test.ts.
+8: //
+9: // A mutant is KILLED when at least one negative control fails, and SURVIVES otherwise. A survivor is
+10: // acceptable only if it is listed in NOT_NEEDED below with the reason the comparison is not needed;
+11: // any other survivor fails the run. The unmutated copy must pass first (the clean control).
+12: // Run from the repository root: node docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs
+13: import assert from "node:assert/strict";
+14: import { spawnSync } from "node:child_process";
+15: import { cpSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+16: import { tmpdir } from "node:os";
+17: import { join, resolve } from "node:path";
+18: import ts from "typescript";
+19:
+20: const root = process.cwd();
+21: const ORACLE = "packages/kernel/tests/sweep/fault-oracle.ts";
+22: const CONTROLS = "packages/kernel/tests/fault-oracle.test.ts";
+23:
+24: /** Comparisons whose mutant may survive, with the reason. None is expected. */
+25: const NOT_NEEDED = new Map([]);
+26:
+27: const source = readFileSync(join(root, ORACLE), "utf8");
+28: const file = ts.createSourceFile(ORACLE, source, ts.ScriptTarget.Latest, true);
+29: const entries = [];
+30: for (const statement of file.statements) {
+31:   if (!ts.isVariableStatement(statement)) continue;
+32:   for (const declaration of statement.declarationList.declarations) {
+33:     if (!ts.isIdentifier(declaration.name) || declaration.name.text !== "CHECKS") continue;
+34:     const table = declaration.initializer;
+35:     assert.ok(table !== undefined && ts.isObjectLiteralExpression(table), "CHECKS is an object literal");
+36:     for (const property of table.properties) {
+37:       assert.ok(ts.isPropertyAssignment(property) && ts.isIdentifier(property.name), "every CHECKS entry is `name: function`");
+38:       entries.push({ name: property.name.text, start: property.initializer.getStart(file), end: property.initializer.getEnd() });
+39:     }
+40:   }
+41: }
+42: assert.ok(entries.length > 0, "CHECKS found");
+43: console.log(`ENV node=${process.version} platform=${process.platform} arch=${process.arch} oracle-comparisons=${entries.length}`);
+44: console.log(`CHECKS: ${entries.map((entry) => entry.name).join(", ")}`);
+45:
+46: const snapshot = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-"));
+47: cpSync(join(root, "packages/kernel"), join(snapshot, "packages/kernel"), { recursive: true });
+48: for (const name of ["package.json", "tsconfig.json"]) cpSync(join(root, name), join(snapshot, name));
+49:
+50: const controls = (replacement) => {
+51:   const dir = mkdtempSync(join(tmpdir(), "k12c1-r9-oracle-mutant-"));
+52:   try {
+53:     cpSync(join(snapshot, "packages/kernel"), join(dir, "packages/kernel"), { recursive: true });
+54:     for (const name of ["package.json", "tsconfig.json"]) cpSync(join(snapshot, name), join(dir, name));
+55:     symlinkSync(resolve(root, "node_modules"), join(dir, "node_modules"), "dir");
+56:     if (replacement !== null) writeFileSync(join(dir, ORACLE), replacement);
+57:     const run = spawnSync(process.execPath, ["--test", "--experimental-strip-types", "--test-reporter=spec", CONTROLS], { cwd: dir, encoding: "utf8", timeout: 1_200_000, maxBuffer: 256 * 1024 * 1024 });
+58:     const output = `${run.stdout ?? ""}${run.stderr ?? ""}`;
+59:     const failed = [...new Set([...output.matchAll(/^\s*✖ (.+?) \(\d/gm)].map((match) => match[1]))];
+60:     const count = (label) => Number(new RegExp(`^ℹ ${label} (\\d+)`, "m").exec(output)?.[1]);
+61:     return { status: run.status, signal: run.signal, failed, tests: count("tests"), fail: count("fail") };
+62:   } finally {
+63:     rmSync(dir, { recursive: true, force: true });
+64:   }
+65: };
+66:
+67: let failures = 0;
+68: try {
+69:   const clean = controls(null);
+70:   const cleanOk = clean.status === 0 && clean.fail === 0;
+71:   if (!cleanOk) failures += 1;
+72:   console.log(`${cleanOk ? "CONTROL" : "CONTROL FAILED"} unmutated oracle: exit=${clean.status} tests=${clean.tests} fail=${clean.fail}${cleanOk ? "" : ` ${clean.failed.slice(0, 5).join(" | ")}`}`);
+73:   for (const entry of entries) {
+74:     const mutant = `${source.slice(0, entry.start)}() => true${source.slice(entry.end)}`;
+75:     const result = controls(mutant);
+76:     const killed = result.status !== 0 && result.fail > 0;
+77:     const reason = NOT_NEEDED.get(entry.name);
+78:     const verdict = killed ? "KILLED" : reason === undefined ? "SURVIVED" : "SURVIVED (not needed)";
+79:     if (verdict === "SURVIVED") failures += 1;
+80:     console.log(`${verdict} CHECKS.${entry.name}: exit=${result.status} failing controls=${result.fail} of ${result.tests}`);
+81:     for (const name of result.failed.filter((name) => !/^(every |review 12|a recorded refusal|the reference|the exit)/.test(name)).slice(0, 4)) console.log(`  ✖ ${name}`);
+82:     if (reason !== undefined) console.log(`  not needed: ${reason}`);
+83:   }
+84: } finally {
+85:   rmSync(snapshot, { recursive: true, force: true });
+86: }
+87: console.log(failures === 0 ? "EVERY ORACLE COMPARISON IS NEEDED BY A NEGATIVE CONTROL; CLEAN CONTROL PASSED" : `${failures} clean-control failures or surviving comparisons`);
+88: process.exitCode = failures === 0 ? 0 : 1;

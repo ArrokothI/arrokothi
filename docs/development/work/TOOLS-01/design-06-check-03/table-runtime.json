@@ -1,0 +1,79 @@
+{
+  "node": "v26.10.0",
+  "observations": {
+    "Object.keys": {
+      "fresh": true,
+      "primitive_elements_only": true
+    },
+    "Object.getOwnPropertyNames": {
+      "fresh": true,
+      "primitive_elements_only": true
+    },
+    "Reflect.ownKeys": {
+      "fresh": true,
+      "primitive_elements_only": true
+    },
+    "Object.isFrozen": {
+      "primitive_boolean": true
+    },
+    "Object.hasOwn": {
+      "primitive_boolean": true
+    },
+    "Array.isArray": {
+      "primitive_boolean": true
+    },
+    "stringify": {
+      "intrinsic_argument_mutated_by_replacer": true,
+      "serialized": "{\"__check03\":42}"
+    },
+    "hasOwn": {
+      "argument_mutated_by_coercion": true
+    },
+    "parse": {
+      "reviver_can_return_existing_object": true
+    },
+    "regexp": {
+      "call_can_return_argument": true,
+      "new_is_distinct": true
+    },
+    "promiseResolve": {
+      "can_return_argument": true
+    },
+    "promiseAll": {
+      "calls_input_then_and_can_mutate_input": true
+    },
+    "error": {
+      "fresh_error_can_hold_cause_argument": true
+    },
+    "Number.NaN": {
+      "immutable_primitive": true
+    },
+    "Number.POSITIVE_INFINITY": {
+      "immutable_primitive": true
+    },
+    "Number.NEGATIVE_INFINITY": {
+      "immutable_primitive": true
+    },
+    "Symbol.iterator": {
+      "immutable_primitive": true
+    },
+    "Symbol.asyncIterator": {
+      "immutable_primitive": true
+    },
+    "Symbol.hasInstance": {
+      "immutable_primitive": true
+    },
+    "Symbol.isConcatSpreadable": {
+      "immutable_primitive": true
+    },
+    "Symbol.species": {
+      "immutable_primitive": true
+    },
+    "Symbol.toPrimitive": {
+      "immutable_primitive": true
+    },
+    "Symbol.toStringTag": {
+      "immutable_primitive": true
+    }
+  }
+}

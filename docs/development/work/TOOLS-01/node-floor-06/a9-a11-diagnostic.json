@@ -1,0 +1,235 @@
+{
+  "node": "v22.15.0",
+  "ordered_floor_result": false,
+  "results": [
+    {
+      "assumption": "A9",
+      "passed": true,
+      "facts": {
+        "subtest_full_path_selectable": false,
+        "full_path_pattern_counts": {
+          "tests": 1,
+          "suites": 0,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "parent_pattern_leaves": [
+          [
+            "parent",
+            "child"
+          ],
+          [
+            "parent",
+            "sibling"
+          ]
+        ],
+        "consequence": "a t.test subtest target is refused (design 05 A9)"
+      },
+      "runs": [
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--test-name-pattern=^parent child$",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/subtest.test.mjs"
+          ],
+          "exit": 0,
+          "extra_environment": {}
+        },
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--test-name-pattern=^parent$",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/subtest.test.mjs"
+          ],
+          "exit": 0,
+          "extra_environment": {}
+        }
+      ]
+    },
+    {
+      "assumption": "A10",
+      "passed": true,
+      "facts": {
+        "process_isolation": {
+          "files": 2,
+          "distinct_processes": true,
+          "runner_process_excluded": true,
+          "globals_shared": false
+        },
+        "orders": {
+          "synchronous": [
+            "load:top",
+            "load:after-a",
+            "load:suite",
+            "load:suite-end",
+            "load:bottom",
+            "a:start",
+            "a:end",
+            "suite:beforeEach",
+            "b:start",
+            "b:end",
+            "suite:afterEach",
+            "suite:beforeEach",
+            "c",
+            "suite:afterEach",
+            "d"
+          ],
+          "awaited": [
+            "load:top",
+            "load:suite-before-await",
+            "load:before-await",
+            "load:suite-after-await",
+            "a:start",
+            "load:after-await",
+            "a:end",
+            "b",
+            "c"
+          ],
+          "deferred": [
+            "y",
+            "x"
+          ]
+        },
+        "order_model": {
+          "synchronous_file_matches": true,
+          "load_after_await_completes_first": false,
+          "deferred_registration_runs_in_source_order": false
+        },
+        "order_model_holds": false,
+        "fallback": "every leaf counts as earlier (design 05 \u00a72.3 rule 1)"
+      },
+      "runs": [
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--experimental-strip-types",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/isolation-a.test.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/isolation-b.test.mjs"
+          ],
+          "exit": 0,
+          "extra_environment": {
+            "FLOOR_ORDER_LOG": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-order-x6pcj7zd/order.log"
+          }
+        },
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--experimental-strip-types",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/order.test.ts"
+          ],
+          "exit": 0,
+          "extra_environment": {
+            "FLOOR_ORDER_LOG": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-order-x6pcj7zd/order.log"
+          }
+        },
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--experimental-strip-types",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/order-await.test.ts"
+          ],
+          "exit": 0,
+          "extra_environment": {
+            "FLOOR_ORDER_LOG": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-order-x6pcj7zd/order.log"
+          }
+        },
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--experimental-strip-types",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/order-deferred.test.ts"
+          ],
+          "exit": 0,
+          "extra_environment": {
+            "FLOOR_ORDER_LOG": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-order-x6pcj7zd/order.log"
+          }
+        }
+      ]
+    },
+    {
+      "assumption": "A11",
+      "passed": true,
+      "facts": {
+        "forms_recorded": {
+          "default-sync": "readFileSync",
+          "named-sync": "readFileSync",
+          "missing": "existsSync",
+          "named-stat": "statSync",
+          "listing": "readdirSync",
+          "fs-promises-property": "promises.readFile",
+          "promises-named": "promises.readFile",
+          "promises-namespace": "promises.stat",
+          "callback": "readFile",
+          "require-sync": "readFileSync",
+          "stream": "createReadStream"
+        },
+        "child_preloads": 1,
+        "runner_preloads": 0,
+        "other_rows": [
+          "promises.readFile"
+        ],
+        "verdicts_equal_untraced": true,
+        "missing_destination_refused": true
+      },
+      "runs": [
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--experimental-strip-types",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/read-trace.test.ts"
+          ],
+          "exit": 0,
+          "extra_environment": {
+            "FLOOR_READ_DIR": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-reads-iylyrprb/data"
+          }
+        },
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--experimental-strip-types",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/read-trace.test.ts"
+          ],
+          "exit": 1,
+          "extra_environment": {
+            "FLOOR_READ_DIR": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-reads-iylyrprb/data",
+            "NODE_OPTIONS": "--import=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/read-trace.mjs"
+          }
+        },
+        {
+          "argv": [
+            "/Users/rex-shih/.local/share/arrokothi/node-v22.15.0-darwin-arm64/bin/node",
+            "--test",
+            "--experimental-strip-types",
+            "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+            "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/read-trace.test.ts"
+          ],
+          "exit": 0,
+          "extra_environment": {
+            "FLOOR_READ_DIR": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-reads-iylyrprb/data",
+            "NODE_OPTIONS": "--import=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/read-trace.mjs",
+            "ARROKOTHI_READ_TRACE": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/tools-01-floor-reads-iylyrprb/trace.jsonl"
+          }
+        }
+      ]
+    }
+  ]
+}

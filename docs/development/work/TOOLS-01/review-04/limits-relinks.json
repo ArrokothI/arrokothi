@@ -1,0 +1,1510 @@
+{
+ "figures": {
+  "origins_by_state": {
+   "complete": 110,
+   "pending_revalidation": 44,
+   "pending": 1395
+  },
+  "preserved_census": {
+   "preserved": 713,
+   "held": 183,
+   "refused": 302,
+   "superseded": 74
+  },
+  "preserved_census_previous_h": {
+   "preserved": 766,
+   "held": 125,
+   "refused": 307,
+   "superseded": 74
+  },
+  "suite_targets": 383,
+  "witness_records": {
+   "held_witness": 183,
+   "superseded_witness": 74
+  },
+  "closures": 110,
+  "context_ranges": 116,
+  "transferred_by_decision": {
+   "owner-choice-04.md": 4,
+   "owner-choice-05.md": 40
+  },
+  "families": 26,
+  "family_members": 415,
+  "registry_cases": 109,
+  "refusal_ablations": 307,
+  "targets_removed": [
+   "target.creation.516.3",
+   "target.dispatch.1496.3.5a8d958ffdab",
+   "target.dispatch.178.3.5a8d958ffdab",
+   "target.dispatch.612.3.5a8d958ffdab",
+   "target.fault-oracle.151.1",
+   "target.fault-sweep.49.1",
+   "target.poison-catalog.291.3",
+   "target.values.589.3.fb228bec8c58",
+   "target.values.606.3.fb228bec8c58"
+  ],
+  "targets_added": [
+   "target.dispatch.1363.3.5a8d958ffdab"
+  ]
+ },
+ "transfers": {
+  "pending_revalidation_equals_transferred": true,
+  "count": 44,
+  "each_list_digest_matches": true,
+  "each_list_equals_its_rows": true,
+  "unchanged_since_previous_h": true
+ },
+ "closed_origins": {
+  "complete_at_c": 110,
+  "same_set_as_previous_h": true,
+  "reopened": [],
+  "newly_closed": [],
+  "relinked_count": 18,
+  "defects": [],
+  "relinked": {
+   "artifact-0e16542de3087c0c508b3601": {
+    "path": null,
+    "links_before": 0,
+    "links_after": 38,
+    "members": {
+     "held": 38
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.fault-oracle.151.1.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:151:1"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.163.1.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:163:1"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.177.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:177:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.187.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:187:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.200.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:200:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.250.9.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:250:9"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.254.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:254:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.284.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:284:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.285.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:285:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.298.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:298:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.300.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:300:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.302.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:302:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.304.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:304:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.306.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:306:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.320.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:320:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.322.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:322:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.329.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:329:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.335.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:335:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.342.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:342:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.350.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:350:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.352.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:352:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.354.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:354:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.371.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:371:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.372.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:372:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.373.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:373:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.375.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:375:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.376.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:376:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.377.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:377:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.383.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:383:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.385.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:385:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.386.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:386:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.388.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:388:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.390.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:390:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.392.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:392:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.407.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:407:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.412.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:412:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.416.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:416:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-oracle.420.3.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:420:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-0f12d86d31f51cf923cb05e8": {
+    "path": null,
+    "links_before": 95,
+    "links_after": 100,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.creation.516.3",
+      "leaf": "packages/kernel/tests/creation.test.ts:516:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.dispatch.1426.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:1459:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": true
+     },
+     {
+      "removed_target": "target.dispatch.1496.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:1529:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.dispatch.178.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:178:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.dispatch.612.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:615:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.poison-catalog.291.3",
+      "leaf": "packages/kernel/tests/poison-catalog.test.ts:291:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.values.589.3.fb228bec8c58",
+      "leaf": "packages/kernel/tests/values.test.ts:893:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.values.606.3.fb228bec8c58",
+      "leaf": "packages/kernel/tests/values.test.ts:910:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.creation.516.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:516:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.1459.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1459:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.1496.3.5a8d958ffdab",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1529:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.1529.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1529:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.178.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:178:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.178.3.5a8d958ffdab",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:178:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.612.3.5a8d958ffdab",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:615:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.615.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:615:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.poison-catalog.291.3.46794b39598a",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/poison-catalog.test.ts:291:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.589.3.fb228bec8c58",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:893:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.606.3.fb228bec8c58",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:910:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.893.3.44b00a5bd3f1",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:893:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.910.3.44b00a5bd3f1",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:910:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-210dd0aaaf1f9edcdcaa0600": {
+    "path": null,
+    "links_before": 95,
+    "links_after": 100,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.creation.516.3",
+      "leaf": "packages/kernel/tests/creation.test.ts:516:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.dispatch.1426.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:1459:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": true
+     },
+     {
+      "removed_target": "target.dispatch.1496.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:1529:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.dispatch.178.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:178:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.dispatch.612.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:615:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.poison-catalog.291.3",
+      "leaf": "packages/kernel/tests/poison-catalog.test.ts:291:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.values.589.3.fb228bec8c58",
+      "leaf": "packages/kernel/tests/values.test.ts:893:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     },
+     {
+      "removed_target": "target.values.606.3.fb228bec8c58",
+      "leaf": "packages/kernel/tests/values.test.ts:910:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.creation.516.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:516:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.1459.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1459:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.1496.3.5a8d958ffdab",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1529:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.1529.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1529:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.178.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:178:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.178.3.5a8d958ffdab",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:178:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.612.3.5a8d958ffdab",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:615:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.dispatch.615.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:615:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.poison-catalog.291.3.46794b39598a",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/poison-catalog.test.ts:291:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.589.3.fb228bec8c58",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:893:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.606.3.fb228bec8c58",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:910:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.893.3.44b00a5bd3f1",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:893:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     },
+     {
+      "id": "witness.values.910.3.44b00a5bd3f1",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:910:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-30fdff7b12e937121758c7e7": {
+    "path": null,
+    "links_before": 1,
+    "links_after": 1,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.fault-sweep.49.1",
+      "leaf": "packages/kernel/tests/fault-sweep.test.ts:49:1",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.fault-sweep.49.1.41069e6126ee",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-sweep.test.ts:49:1"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-510be2a0362710c9996c358a": {
+    "path": null,
+    "links_before": 8,
+    "links_after": 9,
+    "members": {
+     "preserved": 25,
+     "held": 4,
+     "superseded": 5
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.ingress.459.3.dfc5a87bbd90",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/ingress.test.ts:459:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-55f842727285272a53a9e5d9": {
+    "path": null,
+    "links_before": 3,
+    "links_after": 3,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.dispatch.1426.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:1459:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": true
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.dispatch.1459.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1459:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-6c57cc9dd8febdefa65ed496": {
+    "path": null,
+    "links_before": 13,
+    "links_after": 16,
+    "members": {
+     "preserved": 21,
+     "held": 10,
+     "superseded": 6
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.creation.1009.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:1009:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.creation.333.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:333:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.creation.516.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:516:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-791d72837fcc45454f5b0ab6": {
+    "path": null,
+    "links_before": 0,
+    "links_after": 2,
+    "members": {
+     "held": 2
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.fault-sweep.49.1.41069e6126ee",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-sweep.test.ts:49:1"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.fault-sweep.78.1.41069e6126ee",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-sweep.test.ts:78:1"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-98679309de7791acf7f59c87": {
+    "path": null,
+    "links_before": 1,
+    "links_after": 3,
+    "members": {
+     "held": 3
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.poison-catalog.286.3.46794b39598a",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/poison-catalog.test.ts:286:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.poison-catalog.291.3.46794b39598a",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/poison-catalog.test.ts:291:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-a8dc74e516932f00626f70e1": {
+    "path": null,
+    "links_before": 1,
+    "links_after": 1,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.fault-sweep.49.1",
+      "leaf": "packages/kernel/tests/fault-sweep.test.ts:49:1",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.fault-sweep.49.1.41069e6126ee",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-sweep.test.ts:49:1"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-ae65d3df0a6ed394770ff256": {
+    "path": null,
+    "links_before": 1,
+    "links_after": 1,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.fault-oracle.151.1",
+      "leaf": "packages/kernel/tests/fault-oracle.test.ts:151:1",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.fault-oracle.151.1.e60e5e9ca3f4",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/fault-oracle.test.ts:151:1"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-b06e44e7a30c0b735cf084aa": {
+    "path": null,
+    "links_before": 3,
+    "links_after": 3,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.dispatch.1426.3.5a8d958ffdab",
+      "leaf": "packages/kernel/tests/dispatch.test.ts:1459:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": true
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.dispatch.1459.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1459:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-bca863b02ba3f5f894baa47d": {
+    "path": null,
+    "links_before": 12,
+    "links_after": 16,
+    "members": {
+     "preserved": 34,
+     "held": 14,
+     "superseded": 2
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.dispatch.1459.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1459:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.dispatch.1529.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:1529:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.dispatch.178.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:178:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.dispatch.615.3.41092809bb04",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/dispatch.test.ts:615:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-ce2e69842afb779a3e70c0f5": {
+    "path": null,
+    "links_before": 4,
+    "links_after": 4,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.creation.516.3",
+      "leaf": "packages/kernel/tests/creation.test.ts:516:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.creation.516.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:516:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-ebfa0eb36bcd33f72a4dffce": {
+    "path": null,
+    "links_before": 49,
+    "links_after": 51,
+    "members": {
+     "preserved": 33,
+     "held": 25,
+     "superseded": 26
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.values.893.3.44b00a5bd3f1",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:893:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.values.910.3.44b00a5bd3f1",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/values.test.ts:910:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-ecb10ef937e0612352e7c7ef": {
+    "path": null,
+    "links_before": 9,
+    "links_after": 10,
+    "members": {
+     "preserved": 24,
+     "refused": 1,
+     "held": 4,
+     "superseded": 5
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.ingress.461.3.61e8bde54da2",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/ingress.test.ts:459:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   },
+   "artifact-f5306a247782c53fd004e62d": {
+    "path": null,
+    "links_before": 1,
+    "links_after": 1,
+    "members": {},
+    "removed_targets": [
+     {
+      "removed_target": "target.poison-catalog.291.3",
+      "leaf": "packages/kernel/tests/poison-catalog.test.ts:291:3",
+      "held_witness_on_same_leaf": true,
+      "target_still_in_table": false
+     }
+    ],
+    "added_witnesses": [
+     {
+      "id": "witness.poison-catalog.291.3.46794b39598a",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/poison-catalog.test.ts:291:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": false
+     }
+    ]
+   },
+   "artifact-febb180b453e17b8edab6893": {
+    "path": null,
+    "links_before": 13,
+    "links_after": 16,
+    "members": {
+     "preserved": 21,
+     "held": 10,
+     "superseded": 6
+    },
+    "removed_targets": [],
+    "added_witnesses": [
+     {
+      "id": "witness.creation.1009.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:1009:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.creation.333.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:333:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     },
+     {
+      "id": "witness.creation.516.3.088207d1ce86",
+      "claim": "V-ENV",
+      "leaves": [
+       "packages/kernel/tests/creation.test.ts:516:3"
+      ],
+      "register": [
+       "owner-choice-08.md"
+      ],
+      "witness_names_this_origin": true
+     }
+    ]
+   }
+  }
+ },
+ "limited": {
+  "origins": {
+   "artifact-73555fe668cc180905b1e49a": {
+    "members": 50,
+    "refused": 36,
+    "unbound": 5,
+    "listed_24_in_origin": 3,
+    "unbound_equals_listed_plus_extras": true,
+    "extras": [
+     {
+      "member": "packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+      "target": "target.dispatch.1363.3.5a8d958ffdab",
+      "targets_naming_member": [
+       "target.dispatch.1363.3.5a8d958ffdab"
+      ],
+      "declared_at": "packages/kernel/tests/dispatch.test.ts:1390:3",
+      "register_at_declaration": {
+       "classification": "held",
+       "claim": "V-ENV",
+       "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
+      },
+      "title_kind_of_member": "literal",
+      "member_status": "refused"
+     },
+     {
+      "member": "packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+      "target": "target.dispatch.1426.3.5a8d958ffdab",
+      "targets_naming_member": [
+       "target.dispatch.1426.3.5a8d958ffdab"
+      ],
+      "declared_at": "packages/kernel/tests/dispatch.test.ts:1459:3",
+      "register_at_declaration": {
+       "classification": "held",
+       "claim": "V-ENV",
+       "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
+      },
+      "title_kind_of_member": "literal",
+      "member_status": "refused"
+     }
+    ],
+    "list_sha256_matches": true
+   },
+   "artifact-9fd619f5375d598ebb2b88aa": {
+    "members": 189,
+    "refused": 189,
+    "unbound": 18,
+    "listed_24_in_origin": 18,
+    "unbound_equals_listed_plus_extras": true,
+    "extras": [],
+    "list_sha256_matches": true
+   },
+   "artifact-d2153e36d9c7464883ecea0b": {
+    "members": 4,
+    "refused": 4,
+    "unbound": 1,
+    "listed_24_in_origin": 1,
+    "unbound_equals_listed_plus_extras": true,
+    "extras": [],
+    "list_sha256_matches": true
+   },
+   "artifact-ea5444a6d42154e413fe0f2e": {
+    "members": 74,
+    "refused": 31,
+    "unbound": 2,
+    "listed_24_in_origin": 2,
+    "unbound_equals_listed_plus_extras": true,
+    "extras": [],
+    "list_sha256_matches": true
+   }
+  },
+  "total_unbound": 26,
+  "listed": 24
+ },
+ "restored_target": {
+  "committed_record_refused": [],
+  "committed_reach_run": "valid",
+  "committed_credit": "target_reading",
+  "anchors": [
+   {
+    "role": "input",
+    "manifest_extends_committed_prefix": true,
+    "occurrences_at_c": 1,
+    "offset_at_c_equals_committed": true,
+    "inside_declared_leaf_span": true
+   },
+   {
+    "role": "assertion",
+    "manifest_extends_committed_prefix": true,
+    "occurrences_at_c": 1,
+    "offset_at_c_equals_committed": true,
+    "inside_declared_leaf_span": true
+   },
+   {
+    "role": "assertion",
+    "manifest_extends_committed_prefix": true,
+    "occurrences_at_c": 1,
+    "offset_at_c_equals_committed": true,
+    "inside_declared_leaf_span": true
+   },
+   {
+    "role": "assertion",
+    "manifest_extends_committed_prefix": true,
+    "occurrences_at_c": 1,
+    "offset_at_c_equals_committed": true,
+    "inside_declared_leaf_span": true
+   },
+   {
+    "role": "assertion",
+    "manifest_extends_committed_prefix": true,
+    "occurrences_at_c": 1,
+    "offset_at_c_equals_committed": true,
+    "inside_declared_leaf_span": true
+   }
+  ],
+  "member": "packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+  "declaration": {
+   "line": 1390,
+   "column": 3
+  },
+  "test_path": [
+   "KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)",
+   "Promise independence: hostile ambient constructor/species slots change nothing"
+  ]
+ }
+}

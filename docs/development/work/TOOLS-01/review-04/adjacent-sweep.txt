@@ -1,0 +1,4 @@
+credited leaves examined: 712; without a delimitable span: 0 []
+credited leaves with an in-span pattern or a named writer-helper call: 2
+  packages/kernel/tests/host-members.test.ts:159:3 register=not_held writes=['const driver = Object.assign(Object.create(shared) as object, bareDriver()) as ExecutionDriver;'] calls=[]
+  packages/kernel/tests/host-members.test.ts:224:3 register=not_held writes=['const who = Object.assign(Object.create(hostPrototype) as object, { namespace: "host-members", scopes: ["tenant-a"] }) a'] calls=[]

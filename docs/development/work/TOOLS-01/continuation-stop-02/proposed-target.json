@@ -1,0 +1,52 @@
+{
+  "counterexample": {
+    "id": "cx.values.1424.3.fb228bec8c58",
+    "kind": "behavior",
+    "origins": [
+      "artifact-ea5444a6d42154e413fe0f2e"
+    ],
+    "required_result": "Under an environment the serializer window cannot control, the refusal is located, no bytes are produced, and the borrowed slots are handed back.",
+    "members": [
+      "packages/kernel/tests/values.test.ts:1424:3@fb228bec8c58"
+    ]
+  },
+  "target": {
+    "id": "target.values.1424.3.fb228bec8c58",
+    "counterexample": "cx.values.1424.3.fb228bec8c58",
+    "member": "packages/kernel/tests/values.test.ts:1424:3@fb228bec8c58",
+    "command": "repository-tests",
+    "file": "packages/kernel/tests/values.test.ts",
+    "test_path": [
+      "K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never to wrong bytes",
+      "the refusal is located, the bytes are never wrong, and the borrowed slots are handed back"
+    ],
+    "declaration": {
+      "line": 1728,
+      "column": 3
+    },
+    "input_anchors": [
+      {
+        "anchor": "const probe = `\n      const { canonicalize } = await import(\"./packages/kernel/src/index.ts\");\n      const clean = canonicalize({ a: 1 });\n      Object.defineProperty(Array.prototype, \"0\", {\n        configurable: false,\n        get() { return String.fromCharCode(34) + \"HIJACKED\" + String.fromCharCode(34); },\n        set(_value) {},\n      });\n      let polluted;\n      try { polluted = canonicalize({ a: 1 }); } catch (error) { polluted = { escaped: String(error && error.name) }; }\n      console.log(JSON.stringify({\n        cleanCanonical: clean.ok ? clean.value.canonical : null,\n        ok: polluted.ok,\n        escaped: polluted.escaped ?? null,\n        code: polluted.ok === false ? polluted.issues[0].code : null,\n        canonical: polluted.ok === true ? polluted.value.canonical : null,\n        slotsRestored: typeof JSON.stringify === \"function\" && typeof Object.keys === \"function\" && typeof Object.getOwnPropertyDescriptor(Object, \"keys\").value === \"function\",\n      }));\n    `;",
+        "sha256": "ce982186a97d444e329539bba700b587969bd7f77f7bdf8365efcce2a6eddaeb",
+        "literals": [
+          {
+            "ordinal": 3,
+            "value": "\n      const { canonicalize } = await import(\"./packages/kernel/src/index.ts\");\n      const clean = canonicalize({ a: 1 });\n      Object.defineProperty(Array.prototype, \"0\", {\n        configurable: false,\n        get() { return String.fromCharCode(34) + \"HIJACKED\" + String.fromCharCode(34); },\n        set(_value) {},\n      });\n      let polluted;\n      try { polluted = canonicalize({ a: 1 }); } catch (error) { polluted = { escaped: String(error && error.name) }; }\n      console.log(JSON.stringify({\n        cleanCanonical: clean.ok ? clean.value.canonical : null,\n        ok: polluted.ok,\n        escaped: polluted.escaped ?? null,\n        code: polluted.ok === false ? polluted.issues[0].code : null,\n        canonical: polluted.ok === true ? polluted.value.canonical : null,\n        slotsRestored: typeof JSON.stringify === \"function\" && typeof Object.keys === \"function\" && typeof Object.getOwnPropertyDescriptor(Object, \"keys\").value === \"function\",\n      }));\n    "
+          }
+        ]
+      }
+    ],
+    "assertion_anchors": [
+      {
+        "anchor": "assert.equal(observed.slotsRestored, true, \"the named slots the window did install were handed back\");",
+        "sha256": "79b898e1f5b6df66079637cefccef485b72f875787d37441fa985ebbce33e40a"
+      }
+    ],
+    "relation": {
+      "kind": "exact_input"
+    },
+    "discrimination": {
+      "reading": "The input is the probe program run in a child process; the cited assertion requires the window's slots restored. Its other five assertions repeat statements found elsewhere in the file and cannot be anchored."
+    }
+  }
+}

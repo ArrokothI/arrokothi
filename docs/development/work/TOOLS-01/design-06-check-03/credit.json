@@ -1,0 +1,550 @@
+{
+  "node": "v26.10.0",
+  "cases": {
+    "destructure-member": {
+      "file": "tests/destructure-member.test.ts",
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nlet touched = false;\ntest('poison', () => {\n  const original = Object.keys;\n  function replacement(p) {\n    p.__check03 = 42;\n    assert.equal(p.__check03, 42);\n    delete p.__check03;\n    touched = true;\n    return original(p);\n  }\n  ({replacement: Object.keys} = {replacement: replacement});\n});\ntest('victim', () => {\n  Object.keys(Object.prototype);\n  assert.equal(touched, true);\n});\n",
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 poison (0.396541ms)\n\u2714 victim (0.376708ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 2\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 93.900916\n",
+      "runtime_stderr": "",
+      "matches": [
+        {
+          "key": "tests/destructure-member.test.ts:4:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "call@tests/destructure-member.test.ts:11",
+            "storage@tests/destructure-member.test.ts:13",
+            "storage@tests/destructure-member.test.ts:5"
+          ]
+        }
+      ]
+    },
+    "array-destructure-member": {
+      "file": "tests/array-destructure-member.test.ts",
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nlet touched = false;\ntest('poison', () => {\n  const original = Object.keys;\n  function replacement(p) {\n    p.__check03 = 42;\n    assert.equal(p.__check03, 42);\n    delete p.__check03;\n    touched = true;\n    return original(p);\n  }\n  [Object.keys] = [replacement];\n});\ntest('victim', () => {\n  Object.keys(Object.prototype);\n  assert.equal(touched, true);\n});\n",
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 poison (0.380833ms)\n\u2714 victim (0.104166ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 2\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 66.964875\n",
+      "runtime_stderr": "",
+      "matches": [
+        {
+          "key": "tests/array-destructure-member.test.ts:4:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "call@tests/array-destructure-member.test.ts:11",
+            "storage@tests/array-destructure-member.test.ts:13",
+            "storage@tests/array-destructure-member.test.ts:5"
+          ]
+        }
+      ]
+    },
+    "global-destructure-member": {
+      "file": "tests/global-destructure-member.test.ts",
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nlet touched = false;\ntest('poison', () => {\n  const original = Object.keys;\n  function replacement(p) {\n    p.__check03 = 42;\n    assert.equal(p.__check03, 42);\n    delete p.__check03;\n    touched = true;\n    return original(p);\n  }\n  ({replacement: global.Object.keys} = {replacement: replacement});\n});\ntest('victim', () => {\n  Object.keys(Object.prototype);\n  assert.equal(touched, true);\n});\n",
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 poison (0.375917ms)\n\u2714 victim (0.104375ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 2\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 68.018916\n",
+      "runtime_stderr": "",
+      "matches": [
+        {
+          "key": "tests/global-destructure-member.test.ts:4:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "call@tests/global-destructure-member.test.ts:11",
+            "storage@tests/global-destructure-member.test.ts:13",
+            "storage@tests/global-destructure-member.test.ts:5"
+          ]
+        }
+      ]
+    },
+    "json-replacer": {
+      "file": "tests/json-replacer.test.ts",
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\ntest('victim', () => {\n  const escaped = [];\n  JSON.stringify(Object.prototype, function(key, value) {\n    escaped.push(value);\n    return value;\n  });\n  escaped[0].__check03 = 42;\n  assert.equal(escaped[0].__check03, 42);\n  delete escaped[0].__check03;\n});\n",
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 victim (0.399125ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 67.440209\n",
+      "runtime_stderr": "",
+      "matches": []
+    },
+    "global-getter": {
+      "file": "tests/global-getter.test.ts",
+      "source": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nlet touched = false;\ntest('poison', () => {\n  const original = JSON.stringify;\n  const parse = JSON.parse;\n  function replacement(p) {\n    p.__check03 = 42;\n    assert.equal(p.__check03, 42);\n    delete p.__check03;\n    touched = true;\n    return original(p);\n  }\n  globalThis.__defineGetter__('JSON', () => ({stringify: replacement, parse}));\n});\ntest('victim', () => {\n  JSON.stringify(Object.prototype);\n  assert.equal(touched, true);\n});\n",
+      "runtime_exit": 0,
+      "runtime_stdout": "\u2714 poison (0.387125ms)\n\u2714 victim (0.119208ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 2\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 71.368459\n",
+      "runtime_stderr": "",
+      "matches": [
+        {
+          "key": "tests/global-getter.test.ts:4:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "call@tests/global-getter.test.ts:12",
+            "call@tests/global-getter.test.ts:14",
+            "storage@tests/global-getter.test.ts:14",
+            "storage@tests/global-getter.test.ts:5",
+            "storage@tests/global-getter.test.ts:6"
+          ]
+        }
+      ]
+    }
+  },
+  "preservation": {
+    "register": {
+      "tests/destructure-member.test.ts:4:1": {
+        "key": "tests/destructure-member.test.ts:4:1",
+        "matched": [
+          "V-ENV"
+        ],
+        "classification": "held",
+        "reason": "Fixture classification.",
+        "claim": "V-ENV",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
+      },
+      "tests/array-destructure-member.test.ts:4:1": {
+        "key": "tests/array-destructure-member.test.ts:4:1",
+        "matched": [
+          "V-ENV"
+        ],
+        "classification": "held",
+        "reason": "Fixture classification.",
+        "claim": "V-ENV",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
+      },
+      "tests/global-destructure-member.test.ts:4:1": {
+        "key": "tests/global-destructure-member.test.ts:4:1",
+        "matched": [
+          "V-ENV"
+        ],
+        "classification": "held",
+        "reason": "Fixture classification.",
+        "claim": "V-ENV",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
+      },
+      "tests/global-getter.test.ts:4:1": {
+        "key": "tests/global-getter.test.ts:4:1",
+        "matched": [
+          "V-ENV"
+        ],
+        "classification": "held",
+        "reason": "Fixture classification.",
+        "claim": "V-ENV",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
+      }
+    },
+    "members": [
+      {
+        "member": "tests/array-destructure-member.test.ts:4:1@c42f7a31983b",
+        "origins": [
+          "tests/array-destructure-member.test.ts"
+        ],
+        "file": "tests/array-destructure-member.test.ts",
+        "pin_blob": "c42f7a31983b473fc0fd0845df1f695778428c82",
+        "title": "poison",
+        "title_kind": "literal",
+        "status": "held",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          4,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/array-destructure-member.test.ts:15:1@c42f7a31983b",
+        "origins": [
+          "tests/array-destructure-member.test.ts"
+        ],
+        "file": "tests/array-destructure-member.test.ts",
+        "pin_blob": "c42f7a31983b473fc0fd0845df1f695778428c82",
+        "title": "victim",
+        "title_kind": "literal",
+        "status": "preserved",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          15,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/destructure-member.test.ts:4:1@d506d4cf4894",
+        "origins": [
+          "tests/destructure-member.test.ts"
+        ],
+        "file": "tests/destructure-member.test.ts",
+        "pin_blob": "d506d4cf4894f90c17bf70032033f1ba45bc5ed3",
+        "title": "poison",
+        "title_kind": "literal",
+        "status": "held",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          4,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/destructure-member.test.ts:15:1@d506d4cf4894",
+        "origins": [
+          "tests/destructure-member.test.ts"
+        ],
+        "file": "tests/destructure-member.test.ts",
+        "pin_blob": "d506d4cf4894f90c17bf70032033f1ba45bc5ed3",
+        "title": "victim",
+        "title_kind": "literal",
+        "status": "preserved",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          15,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/global-destructure-member.test.ts:4:1@f9d92ea85296",
+        "origins": [
+          "tests/global-destructure-member.test.ts"
+        ],
+        "file": "tests/global-destructure-member.test.ts",
+        "pin_blob": "f9d92ea85296ab080b66a007d0c614a7ff2a042c",
+        "title": "poison",
+        "title_kind": "literal",
+        "status": "held",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          4,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/global-destructure-member.test.ts:15:1@f9d92ea85296",
+        "origins": [
+          "tests/global-destructure-member.test.ts"
+        ],
+        "file": "tests/global-destructure-member.test.ts",
+        "pin_blob": "f9d92ea85296ab080b66a007d0c614a7ff2a042c",
+        "title": "victim",
+        "title_kind": "literal",
+        "status": "preserved",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          15,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/global-getter.test.ts:4:1@5c195618862e",
+        "origins": [
+          "tests/global-getter.test.ts"
+        ],
+        "file": "tests/global-getter.test.ts",
+        "pin_blob": "5c195618862e10b972667bf0ddd910967763fb7e",
+        "title": "poison",
+        "title_kind": "literal",
+        "status": "held",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          4,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/global-getter.test.ts:16:1@5c195618862e",
+        "origins": [
+          "tests/global-getter.test.ts"
+        ],
+        "file": "tests/global-getter.test.ts",
+        "pin_blob": "5c195618862e10b972667bf0ddd910967763fb7e",
+        "title": "victim",
+        "title_kind": "literal",
+        "status": "preserved",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          16,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "member": "tests/json-replacer.test.ts:3:1@10bdf252c11c",
+        "origins": [
+          "tests/json-replacer.test.ts"
+        ],
+        "file": "tests/json-replacer.test.ts",
+        "pin_blob": "10bdf252c11c37f69811428ae4975d89888cf3de",
+        "title": "victim",
+        "title_kind": "literal",
+        "status": "preserved",
+        "reasons": [],
+        "scope": "whole_file",
+        "current": [
+          3,
+          1
+        ],
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [],
+        "repository_read_changed": []
+      }
+    ],
+    "evaluations": [
+      {
+        "origin": "tests/destructure-member.test.ts",
+        "pin": [
+          "tests/destructure-member.test.ts",
+          "d506d4cf4894f90c17bf70032033f1ba45bc5ed3",
+          4,
+          1
+        ],
+        "file": "tests/destructure-member.test.ts",
+        "title": "poison",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          4,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/destructure-member.test.ts",
+        "pin": [
+          "tests/destructure-member.test.ts",
+          "d506d4cf4894f90c17bf70032033f1ba45bc5ed3",
+          15,
+          1
+        ],
+        "file": "tests/destructure-member.test.ts",
+        "title": "victim",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          15,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/array-destructure-member.test.ts",
+        "pin": [
+          "tests/array-destructure-member.test.ts",
+          "c42f7a31983b473fc0fd0845df1f695778428c82",
+          4,
+          1
+        ],
+        "file": "tests/array-destructure-member.test.ts",
+        "title": "poison",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          4,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/array-destructure-member.test.ts",
+        "pin": [
+          "tests/array-destructure-member.test.ts",
+          "c42f7a31983b473fc0fd0845df1f695778428c82",
+          15,
+          1
+        ],
+        "file": "tests/array-destructure-member.test.ts",
+        "title": "victim",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          15,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/global-destructure-member.test.ts",
+        "pin": [
+          "tests/global-destructure-member.test.ts",
+          "f9d92ea85296ab080b66a007d0c614a7ff2a042c",
+          4,
+          1
+        ],
+        "file": "tests/global-destructure-member.test.ts",
+        "title": "poison",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          4,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/global-destructure-member.test.ts",
+        "pin": [
+          "tests/global-destructure-member.test.ts",
+          "f9d92ea85296ab080b66a007d0c614a7ff2a042c",
+          15,
+          1
+        ],
+        "file": "tests/global-destructure-member.test.ts",
+        "title": "victim",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          15,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/json-replacer.test.ts",
+        "pin": [
+          "tests/json-replacer.test.ts",
+          "10bdf252c11c37f69811428ae4975d89888cf3de",
+          3,
+          1
+        ],
+        "file": "tests/json-replacer.test.ts",
+        "title": "victim",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          3,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/global-getter.test.ts",
+        "pin": [
+          "tests/global-getter.test.ts",
+          "5c195618862e10b972667bf0ddd910967763fb7e",
+          4,
+          1
+        ],
+        "file": "tests/global-getter.test.ts",
+        "title": "poison",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          4,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": "held",
+        "production_changed": [],
+        "repository_read_changed": []
+      },
+      {
+        "origin": "tests/global-getter.test.ts",
+        "pin": [
+          "tests/global-getter.test.ts",
+          "5c195618862e10b972667bf0ddd910967763fb7e",
+          16,
+          1
+        ],
+        "file": "tests/global-getter.test.ts",
+        "title": "victim",
+        "title_kind": "literal",
+        "scope": "whole_file",
+        "reasons": [],
+        "current": [
+          16,
+          1
+        ],
+        "helper_closure": "unchanged",
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "production_changed": [],
+        "repository_read_changed": []
+      }
+    ],
+    "false_preserved_victims": 5,
+    "floor_note": "Repository fixture A10 stub, order_model_holds=false; no production floor certification claimed."
+  }
+}

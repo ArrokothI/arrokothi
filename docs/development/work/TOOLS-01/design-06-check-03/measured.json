@@ -1,0 +1,867 @@
+{
+ "restored_1363": "already in the manifest",
+ "dropped": [],
+ "register": {
+  "entries": 393,
+  "new": 88,
+  "new_cases": 1,
+  "flipped": [
+   "packages/kernel/tests/creation.test.ts:579:3",
+   "packages/kernel/tests/creation.test.ts:1058:3",
+   "packages/kernel/tests/dispatch.test.ts:448:3",
+   "packages/kernel/tests/dispatch.test.ts:1302:3",
+   "packages/kernel/tests/dispatch.test.ts:1560:3",
+   "packages/kernel/tests/host-members.test.ts:159:3",
+   "packages/kernel/tests/host-members.test.ts:224:3",
+   "packages/kernel/tests/inspection.test.ts:118:3",
+   "packages/kernel/tests/receipts.test.ts:187:5",
+   "packages/kernel/tests/receipts.test.ts:210:5",
+   "packages/kernel/tests/receipts.test.ts:227:5",
+   "packages/kernel/tests/receipts.test.ts:241:5",
+   "packages/kernel/tests/receipts.test.ts:259:5",
+   "packages/kernel/tests/receipts.test.ts:295:5",
+   "packages/kernel/tests/values.test.ts:177:5",
+   "packages/kernel/tests/values.test.ts:207:5",
+   "packages/kernel/tests/values.test.ts:347:5",
+   "packages/kernel/tests/values.test.ts:388:5",
+   "packages/kernel/tests/values.test.ts:632:3"
+  ],
+  "rule_1": 295,
+  "by": {
+   "held:V-D1": 29,
+   "held:V-ENV": 295,
+   "superseded:Proxy": 46,
+   "held:Proxy": 11,
+   "not_held:-": 1,
+   "held:re-prototyped-built-in": 11
+  }
+ },
+ "census": {
+  "by_status": {
+   "held": 314,
+   "preserved": 616,
+   "refused": 268,
+   "superseded": 74
+  },
+  "moved": {
+   "preserved->held": 97,
+   "refused->held": 34
+  }
+ },
+ "targets": {
+  "rows": 315,
+  "removed": [
+   "target.activation-identity.46.3.exchange-9-to-10",
+   "target.activation-identity.46.3.key-at-limit",
+   "target.ambient-reads.79.3.4a94f4ea0361",
+   "target.control-commits.100.3.1cc0368ebe2d",
+   "target.control-commits.117.3.1cc0368ebe2d",
+   "target.control-commits.123.3.1cc0368ebe2d",
+   "target.control-commits.128.3.1cc0368ebe2d",
+   "target.control-commits.135.3.1cc0368ebe2d",
+   "target.control-commits.145.3.1cc0368ebe2d",
+   "target.control-commits.226.3.1cc0368ebe2d",
+   "target.control-commits.231.5.1cc0368ebe2d.1",
+   "target.control-commits.231.5.1cc0368ebe2d.10",
+   "target.control-commits.231.5.1cc0368ebe2d.11",
+   "target.control-commits.231.5.1cc0368ebe2d.12",
+   "target.control-commits.231.5.1cc0368ebe2d.13",
+   "target.control-commits.231.5.1cc0368ebe2d.14",
+   "target.control-commits.231.5.1cc0368ebe2d.15",
+   "target.control-commits.231.5.1cc0368ebe2d.16",
+   "target.control-commits.231.5.1cc0368ebe2d.17",
+   "target.control-commits.231.5.1cc0368ebe2d.18",
+   "target.control-commits.231.5.1cc0368ebe2d.19",
+   "target.control-commits.231.5.1cc0368ebe2d.2",
+   "target.control-commits.231.5.1cc0368ebe2d.20",
+   "target.control-commits.231.5.1cc0368ebe2d.21",
+   "target.control-commits.231.5.1cc0368ebe2d.22",
+   "target.control-commits.231.5.1cc0368ebe2d.23",
+   "target.control-commits.231.5.1cc0368ebe2d.24",
+   "target.control-commits.231.5.1cc0368ebe2d.25",
+   "target.control-commits.231.5.1cc0368ebe2d.26",
+   "target.control-commits.231.5.1cc0368ebe2d.27",
+   "target.control-commits.231.5.1cc0368ebe2d.28",
+   "target.control-commits.231.5.1cc0368ebe2d.29",
+   "target.control-commits.231.5.1cc0368ebe2d.3",
+   "target.control-commits.231.5.1cc0368ebe2d.30",
+   "target.control-commits.231.5.1cc0368ebe2d.31",
+   "target.control-commits.231.5.1cc0368ebe2d.4",
+   "target.control-commits.231.5.1cc0368ebe2d.5",
+   "target.control-commits.231.5.1cc0368ebe2d.6",
+   "target.control-commits.231.5.1cc0368ebe2d.7",
+   "target.control-commits.231.5.1cc0368ebe2d.8",
+   "target.control-commits.231.5.1cc0368ebe2d.9",
+   "target.control-commits.81.3.1cc0368ebe2d",
+   "target.control-commits.93.5.1cc0368ebe2d.1",
+   "target.control-commits.93.5.1cc0368ebe2d.2",
+   "target.control-commits.93.5.1cc0368ebe2d.3",
+   "target.dispatch.199.3.5a8d958ffdab",
+   "target.dispatch.209.3.5a8d958ffdab",
+   "target.dispatch.445.3.5a8d958ffdab",
+   "target.evidence.168.3",
+   "target.evidence.77.3",
+   "target.values.107.3.fb228bec8c58",
+   "target.values.128.3.fb228bec8c58",
+   "target.values.142.3.fb228bec8c58",
+   "target.values.159.3.fb228bec8c58",
+   "target.values.177.5.fb228bec8c58",
+   "target.values.207.5.fb228bec8c58",
+   "target.values.233.5.fb228bec8c58",
+   "target.values.347.5.fb228bec8c58",
+   "target.values.388.5.fb228bec8c58",
+   "target.values.451.3.fb228bec8c58",
+   "target.values.464.3.fb228bec8c58",
+   "target.values.470.3.fb228bec8c58",
+   "target.values.478.3.fb228bec8c58",
+   "target.values.488.3.fb228bec8c58",
+   "target.values.500.3.fb228bec8c58",
+   "target.values.529.3.fb228bec8c58",
+   "target.values.558.3.fb228bec8c58",
+   "target.values.98.3.fb228bec8c58"
+  ],
+  "kept_mapping": [
+   "target.dispatch.369.3.5a8d958ffdab",
+   "target.dispatch.1173.3.5a8d958ffdab",
+   "target.dispatch.1211.3.5a8d958ffdab",
+   "target.dispatch.1256.3.5a8d958ffdab",
+   "target.dispatch.1283.3.5a8d958ffdab",
+   "target.dispatch.1401.3.5a8d958ffdab",
+   "target.values.115.3.fb228bec8c58"
+  ]
+ },
+ "witnesses": {
+  "total": 388,
+  "created": 131
+ },
+ "closures": {
+  "relinked": 32,
+  "detail": [
+   {
+    "origin": "artifact-b06e44e7a30c0b735cf084aa",
+    "dropped": [
+     "target.dispatch.1401.3.5a8d958ffdab"
+    ],
+    "added": [
+     "witness.dispatch.1428.3.41092809bb04"
+    ]
+   },
+   {
+    "origin": "artifact-55f842727285272a53a9e5d9",
+    "dropped": [
+     "target.dispatch.1401.3.5a8d958ffdab"
+    ],
+    "added": [
+     "witness.dispatch.1428.3.41092809bb04"
+    ]
+   },
+   {
+    "origin": "artifact-ce2e69842afb779a3e70c0f5",
+    "dropped": [
+     "target.values.177.5.fb228bec8c58",
+     "target.values.207.5.fb228bec8c58",
+     "target.dispatch.445.3.5a8d958ffdab"
+    ],
+    "added": [
+     "witness.values.177.5.44b00a5bd3f1",
+     "witness.values.177.5.fb228bec8c58",
+     "witness.values.207.5.44b00a5bd3f1",
+     "witness.values.207.5.fb228bec8c58",
+     "witness.dispatch.448.3.41092809bb04",
+     "witness.dispatch.445.3.5a8d958ffdab"
+    ]
+   },
+   {
+    "origin": "artifact-70d6df0d9d69aeaa93cc8b66",
+    "dropped": [
+     "target.evidence.77.3",
+     "target.evidence.168.3"
+    ],
+    "added": [
+     "witness.evidence.77.3.6f11f8b27115",
+     "witness.evidence.168.3.6f11f8b27115"
+    ]
+   },
+   {
+    "origin": "artifact-6c57cc9dd8febdefa65ed496",
+    "dropped": [],
+    "added": [
+     "witness.creation.85.3.088207d1ce86",
+     "witness.creation.147.3.088207d1ce86",
+     "witness.creation.579.3.088207d1ce86",
+     "witness.creation.605.3.088207d1ce86",
+     "witness.creation.1058.3.088207d1ce86"
+    ]
+   },
+   {
+    "origin": "artifact-394a3572417fe81cafbd7097",
+    "dropped": [],
+    "added": [
+     "witness.evidence.77.3.6f11f8b27115",
+     "witness.evidence.93.3.6f11f8b27115",
+     "witness.evidence.111.3.6f11f8b27115",
+     "witness.evidence.128.3.6f11f8b27115",
+     "witness.evidence.145.3.6f11f8b27115",
+     "witness.evidence.168.3.6f11f8b27115",
+     "witness.evidence.184.3.6f11f8b27115",
+     "witness.evidence.199.3.6f11f8b27115",
+     "witness.evidence.215.3.6f11f8b27115",
+     "witness.evidence.303.3.6f11f8b27115",
+     "witness.evidence.329.3.6f11f8b27115"
+    ]
+   },
+   {
+    "origin": "artifact-210dd0aaaf1f9edcdcaa0600",
+    "dropped": [
+     "target.values.98.3.fb228bec8c58",
+     "target.values.107.3.fb228bec8c58",
+     "target.values.128.3.fb228bec8c58",
+     "target.values.142.3.fb228bec8c58",
+     "target.values.159.3.fb228bec8c58",
+     "target.values.177.5.fb228bec8c58",
+     "target.values.207.5.fb228bec8c58",
+     "target.values.233.5.fb228bec8c58",
+     "target.values.347.5.fb228bec8c58",
+     "target.values.388.5.fb228bec8c58",
+     "target.values.451.3.fb228bec8c58",
+     "target.values.464.3.fb228bec8c58",
+     "target.values.470.3.fb228bec8c58",
+     "target.values.478.3.fb228bec8c58",
+     "target.values.488.3.fb228bec8c58",
+     "target.values.500.3.fb228bec8c58",
+     "target.values.529.3.fb228bec8c58",
+     "target.values.558.3.fb228bec8c58",
+     "target.values.115.3.fb228bec8c58",
+     "target.dispatch.199.3.5a8d958ffdab",
+     "target.dispatch.209.3.5a8d958ffdab",
+     "target.dispatch.445.3.5a8d958ffdab",
+     "target.dispatch.369.3.5a8d958ffdab",
+     "target.dispatch.1173.3.5a8d958ffdab",
+     "target.dispatch.1211.3.5a8d958ffdab",
+     "target.dispatch.1256.3.5a8d958ffdab",
+     "target.dispatch.1283.3.5a8d958ffdab",
+     "target.dispatch.1401.3.5a8d958ffdab",
+     "target.evidence.77.3",
+     "target.evidence.168.3",
+     "target.activation-identity.46.3.key-at-limit",
+     "target.activation-identity.46.3.exchange-9-to-10"
+    ],
+    "added": [
+     "witness.values.98.3.44b00a5bd3f1",
+     "witness.values.98.3.fb228bec8c58",
+     "witness.values.107.3.44b00a5bd3f1",
+     "witness.values.107.3.fb228bec8c58",
+     "witness.values.128.3.44b00a5bd3f1",
+     "witness.values.128.3.fb228bec8c58",
+     "witness.values.142.3.44b00a5bd3f1",
+     "witness.values.142.3.fb228bec8c58",
+     "witness.values.159.3.44b00a5bd3f1",
+     "witness.values.159.3.fb228bec8c58",
+     "witness.values.177.5.44b00a5bd3f1",
+     "witness.values.177.5.fb228bec8c58",
+     "witness.values.207.5.44b00a5bd3f1",
+     "witness.values.207.5.fb228bec8c58",
+     "witness.values.233.5.44b00a5bd3f1",
+     "witness.values.233.5.fb228bec8c58",
+     "witness.values.347.5.44b00a5bd3f1",
+     "witness.values.347.5.fb228bec8c58",
+     "witness.values.388.5.44b00a5bd3f1",
+     "witness.values.388.5.fb228bec8c58",
+     "witness.values.451.3.44b00a5bd3f1",
+     "witness.values.451.3.fb228bec8c58",
+     "witness.values.464.3.44b00a5bd3f1",
+     "witness.values.464.3.fb228bec8c58",
+     "witness.values.470.3.44b00a5bd3f1",
+     "witness.values.470.3.fb228bec8c58",
+     "witness.values.478.3.44b00a5bd3f1",
+     "witness.values.478.3.fb228bec8c58",
+     "witness.values.488.3.44b00a5bd3f1",
+     "witness.values.488.3.fb228bec8c58",
+     "witness.values.500.3.44b00a5bd3f1",
+     "witness.values.500.3.fb228bec8c58",
+     "witness.values.529.3.44b00a5bd3f1",
+     "witness.values.529.3.fb228bec8c58",
+     "witness.values.558.3.44b00a5bd3f1",
+     "witness.values.558.3.fb228bec8c58",
+     "witness.values.115.3.44b00a5bd3f1",
+     "witness.dispatch.199.3.41092809bb04",
+     "witness.dispatch.199.3.5a8d958ffdab",
+     "witness.dispatch.209.3.41092809bb04",
+     "witness.dispatch.209.3.5a8d958ffdab",
+     "witness.dispatch.448.3.41092809bb04",
+     "witness.dispatch.445.3.5a8d958ffdab",
+     "witness.dispatch.372.3.41092809bb04",
+     "witness.dispatch.1184.3.41092809bb04",
+     "witness.dispatch.1222.3.41092809bb04",
+     "witness.dispatch.1269.3.41092809bb04",
+     "witness.dispatch.1302.3.41092809bb04",
+     "witness.dispatch.1428.3.41092809bb04",
+     "witness.evidence.77.3.6f11f8b27115",
+     "witness.evidence.168.3.6f11f8b27115",
+     "witness.activation-identity.46.3.c2dec471ae59"
+    ]
+   },
+   {
+    "origin": "artifact-ecb10ef937e0612352e7c7ef",
+    "dropped": [],
+    "added": [
+     "witness.ingress.408.3.61e8bde54da2",
+     "witness.ingress.565.3.61e8bde54da2"
+    ]
+   },
+   {
+    "origin": "artifact-a45b1c9d40d46e183ebd203d",
+    "dropped": [],
+    "added": [
+     "witness.inspection.89.3.6975f64c51ef",
+     "witness.inspection.118.3.6975f64c51ef"
+    ]
+   },
+   {
+    "origin": "artifact-f1a28bedebfe204b9687fa53",
+    "dropped": [],
+    "added": [
+     "witness.receipts.30.3.a0a1368492ff",
+     "witness.receipts.187.5.a0a1368492ff",
+     "witness.receipts.210.5.a0a1368492ff",
+     "witness.receipts.227.5.a0a1368492ff",
+     "witness.receipts.241.5.a0a1368492ff",
+     "witness.receipts.259.5.a0a1368492ff",
+     "witness.receipts.295.5.a0a1368492ff"
+    ]
+   },
+   {
+    "origin": "artifact-b46445caeaa7feb4193b6677",
+    "dropped": [
+     "target.activation-identity.46.3.key-at-limit",
+     "target.activation-identity.46.3.exchange-9-to-10"
+    ],
+    "added": [
+     "witness.activation-identity.46.3.c2dec471ae59"
+    ]
+   },
+   {
+    "origin": "artifact-bf8be457073b319f1d960816",
+    "dropped": [],
+    "added": [
+     "witness.activation-identity.46.3.c2dec471ae59",
+     "witness.activation-identity.140.9.c2dec471ae59",
+     "witness.activation-identity.169.9.c2dec471ae59",
+     "witness.activation-identity.190.3.c2dec471ae59",
+     "witness.activation-identity.208.5.c2dec471ae59",
+     "witness.activation-identity.234.9.c2dec471ae59",
+     "witness.activation-identity.269.3.c2dec471ae59"
+    ]
+   },
+   {
+    "origin": "artifact-21fb34d9cd3ad15575371064",
+    "dropped": [
+     "target.ambient-reads.79.3.4a94f4ea0361"
+    ],
+    "added": [
+     "witness.ambient-reads.79.3.4a94f4ea0361"
+    ]
+   },
+   {
+    "origin": "artifact-ada9f66cd74e3bc95eef93d6",
+    "dropped": [
+     "target.control-commits.81.3.1cc0368ebe2d",
+     "target.control-commits.93.5.1cc0368ebe2d.1",
+     "target.control-commits.93.5.1cc0368ebe2d.2",
+     "target.control-commits.93.5.1cc0368ebe2d.3",
+     "target.control-commits.100.3.1cc0368ebe2d",
+     "target.control-commits.117.3.1cc0368ebe2d",
+     "target.control-commits.123.3.1cc0368ebe2d",
+     "target.control-commits.128.3.1cc0368ebe2d",
+     "target.control-commits.135.3.1cc0368ebe2d",
+     "target.control-commits.145.3.1cc0368ebe2d",
+     "target.control-commits.226.3.1cc0368ebe2d",
+     "target.control-commits.231.5.1cc0368ebe2d.1",
+     "target.control-commits.231.5.1cc0368ebe2d.2",
+     "target.control-commits.231.5.1cc0368ebe2d.3",
+     "target.control-commits.231.5.1cc0368ebe2d.4",
+     "target.control-commits.231.5.1cc0368ebe2d.5",
+     "target.control-commits.231.5.1cc0368ebe2d.6",
+     "target.control-commits.231.5.1cc0368ebe2d.7",
+     "target.control-commits.231.5.1cc0368ebe2d.8",
+     "target.control-commits.231.5.1cc0368ebe2d.9",
+     "target.control-commits.231.5.1cc0368ebe2d.10",
+     "target.control-commits.231.5.1cc0368ebe2d.11",
+     "target.control-commits.231.5.1cc0368ebe2d.12",
+     "target.control-commits.231.5.1cc0368ebe2d.13",
+     "target.control-commits.231.5.1cc0368ebe2d.14",
+     "target.control-commits.231.5.1cc0368ebe2d.15",
+     "target.control-commits.231.5.1cc0368ebe2d.16",
+     "target.control-commits.231.5.1cc0368ebe2d.17",
+     "target.control-commits.231.5.1cc0368ebe2d.18",
+     "target.control-commits.231.5.1cc0368ebe2d.19",
+     "target.control-commits.231.5.1cc0368ebe2d.20",
+     "target.control-commits.231.5.1cc0368ebe2d.21",
+     "target.control-commits.231.5.1cc0368ebe2d.22",
+     "target.control-commits.231.5.1cc0368ebe2d.23",
+     "target.control-commits.231.5.1cc0368ebe2d.24",
+     "target.control-commits.231.5.1cc0368ebe2d.25",
+     "target.control-commits.231.5.1cc0368ebe2d.26",
+     "target.control-commits.231.5.1cc0368ebe2d.27",
+     "target.control-commits.231.5.1cc0368ebe2d.28",
+     "target.control-commits.231.5.1cc0368ebe2d.29",
+     "target.control-commits.231.5.1cc0368ebe2d.30",
+     "target.control-commits.231.5.1cc0368ebe2d.31"
+    ],
+    "added": [
+     "witness.control-commits.81.3.1cc0368ebe2d",
+     "witness.control-commits.93.5.1cc0368ebe2d",
+     "witness.control-commits.100.3.1cc0368ebe2d",
+     "witness.control-commits.117.3.1cc0368ebe2d",
+     "witness.control-commits.123.3.1cc0368ebe2d",
+     "witness.control-commits.128.3.1cc0368ebe2d",
+     "witness.control-commits.135.3.1cc0368ebe2d",
+     "witness.control-commits.145.3.1cc0368ebe2d",
+     "witness.control-commits.226.3.1cc0368ebe2d",
+     "witness.control-commits.231.5.1cc0368ebe2d"
+    ]
+   },
+   {
+    "origin": "artifact-febb180b453e17b8edab6893",
+    "dropped": [],
+    "added": [
+     "witness.creation.85.3.088207d1ce86",
+     "witness.creation.147.3.088207d1ce86",
+     "witness.creation.579.3.088207d1ce86",
+     "witness.creation.605.3.088207d1ce86",
+     "witness.creation.1058.3.088207d1ce86"
+    ]
+   },
+   {
+    "origin": "artifact-bca863b02ba3f5f894baa47d",
+    "dropped": [],
+    "added": [
+     "witness.dispatch.199.3.41092809bb04",
+     "witness.dispatch.209.3.41092809bb04",
+     "witness.dispatch.372.3.41092809bb04",
+     "witness.dispatch.448.3.41092809bb04",
+     "witness.dispatch.1184.3.41092809bb04",
+     "witness.dispatch.1222.3.41092809bb04",
+     "witness.dispatch.1269.3.41092809bb04",
+     "witness.dispatch.1302.3.41092809bb04",
+     "witness.dispatch.1428.3.41092809bb04",
+     "witness.dispatch.1560.3.41092809bb04"
+    ]
+   },
+   {
+    "origin": "artifact-41fff78d8c610a53b2aafa0e",
+    "dropped": [],
+    "added": [
+     "witness.evidence.77.3.6f11f8b27115",
+     "witness.evidence.93.3.6f11f8b27115",
+     "witness.evidence.111.3.6f11f8b27115",
+     "witness.evidence.128.3.6f11f8b27115",
+     "witness.evidence.145.3.6f11f8b27115",
+     "witness.evidence.168.3.6f11f8b27115",
+     "witness.evidence.184.3.6f11f8b27115",
+     "witness.evidence.199.3.6f11f8b27115",
+     "witness.evidence.215.3.6f11f8b27115",
+     "witness.evidence.303.3.6f11f8b27115",
+     "witness.evidence.329.3.6f11f8b27115"
+    ]
+   },
+   {
+    "origin": "artifact-0f12d86d31f51cf923cb05e8",
+    "dropped": [
+     "target.values.98.3.fb228bec8c58",
+     "target.values.107.3.fb228bec8c58",
+     "target.values.128.3.fb228bec8c58",
+     "target.values.142.3.fb228bec8c58",
+     "target.values.159.3.fb228bec8c58",
+     "target.values.177.5.fb228bec8c58",
+     "target.values.207.5.fb228bec8c58",
+     "target.values.233.5.fb228bec8c58",
+     "target.values.347.5.fb228bec8c58",
+     "target.values.388.5.fb228bec8c58",
+     "target.values.451.3.fb228bec8c58",
+     "target.values.464.3.fb228bec8c58",
+     "target.values.470.3.fb228bec8c58",
+     "target.values.478.3.fb228bec8c58",
+     "target.values.488.3.fb228bec8c58",
+     "target.values.500.3.fb228bec8c58",
+     "target.values.529.3.fb228bec8c58",
+     "target.values.558.3.fb228bec8c58",
+     "target.values.115.3.fb228bec8c58",
+     "target.dispatch.199.3.5a8d958ffdab",
+     "target.dispatch.209.3.5a8d958ffdab",
+     "target.dispatch.445.3.5a8d958ffdab",
+     "target.dispatch.369.3.5a8d958ffdab",
+     "target.dispatch.1173.3.5a8d958ffdab",
+     "target.dispatch.1211.3.5a8d958ffdab",
+     "target.dispatch.1256.3.5a8d958ffdab",
+     "target.dispatch.1283.3.5a8d958ffdab",
+     "target.dispatch.1401.3.5a8d958ffdab",
+     "target.evidence.77.3",
+     "target.evidence.168.3",
+     "target.activation-identity.46.3.key-at-limit",
+     "target.activation-identity.46.3.exchange-9-to-10"
+    ],
+    "added": [
+     "witness.values.98.3.44b00a5bd3f1",
+     "witness.values.98.3.fb228bec8c58",
+     "witness.values.107.3.44b00a5bd3f1",
+     "witness.values.107.3.fb228bec8c58",
+     "witness.values.128.3.44b00a5bd3f1",
+     "witness.values.128.3.fb228bec8c58",
+     "witness.values.142.3.44b00a5bd3f1",
+     "witness.values.142.3.fb228bec8c58",
+     "witness.values.159.3.44b00a5bd3f1",
+     "witness.values.159.3.fb228bec8c58",
+     "witness.values.177.5.44b00a5bd3f1",
+     "witness.values.177.5.fb228bec8c58",
+     "witness.values.207.5.44b00a5bd3f1",
+     "witness.values.207.5.fb228bec8c58",
+     "witness.values.233.5.44b00a5bd3f1",
+     "witness.values.233.5.fb228bec8c58",
+     "witness.values.347.5.44b00a5bd3f1",
+     "witness.values.347.5.fb228bec8c58",
+     "witness.values.388.5.44b00a5bd3f1",
+     "witness.values.388.5.fb228bec8c58",
+     "witness.values.451.3.44b00a5bd3f1",
+     "witness.values.451.3.fb228bec8c58",
+     "witness.values.464.3.44b00a5bd3f1",
+     "witness.values.464.3.fb228bec8c58",
+     "witness.values.470.3.44b00a5bd3f1",
+     "witness.values.470.3.fb228bec8c58",
+     "witness.values.478.3.44b00a5bd3f1",
+     "witness.values.478.3.fb228bec8c58",
+     "witness.values.488.3.44b00a5bd3f1",
+     "witness.values.488.3.fb228bec8c58",
+     "witness.values.500.3.44b00a5bd3f1",
+     "witness.values.500.3.fb228bec8c58",
+     "witness.values.529.3.44b00a5bd3f1",
+     "witness.values.529.3.fb228bec8c58",
+     "witness.values.558.3.44b00a5bd3f1",
+     "witness.values.558.3.fb228bec8c58",
+     "witness.values.115.3.44b00a5bd3f1",
+     "witness.dispatch.199.3.41092809bb04",
+     "witness.dispatch.199.3.5a8d958ffdab",
+     "witness.dispatch.209.3.41092809bb04",
+     "witness.dispatch.209.3.5a8d958ffdab",
+     "witness.dispatch.448.3.41092809bb04",
+     "witness.dispatch.445.3.5a8d958ffdab",
+     "witness.dispatch.372.3.41092809bb04",
+     "witness.dispatch.1184.3.41092809bb04",
+     "witness.dispatch.1222.3.41092809bb04",
+     "witness.dispatch.1269.3.41092809bb04",
+     "witness.dispatch.1302.3.41092809bb04",
+     "witness.dispatch.1428.3.41092809bb04",
+     "witness.evidence.77.3.6f11f8b27115",
+     "witness.evidence.168.3.6f11f8b27115",
+     "witness.activation-identity.46.3.c2dec471ae59"
+    ]
+   },
+   {
+    "origin": "artifact-3310e718c17bac5248395d3d",
+    "dropped": [],
+    "added": [
+     "witness.history-attribution.175.3.95831241cad7"
+    ]
+   },
+   {
+    "origin": "artifact-a4fa946d2759121d53f06ef8",
+    "dropped": [],
+    "added": [
+     "witness.host-members.139.3.0275df62ce13",
+     "witness.host-members.159.3.0275df62ce13",
+     "witness.host-members.224.3.0275df62ce13",
+     "witness.host-members.260.3.0275df62ce13"
+    ]
+   },
+   {
+    "origin": "artifact-510be2a0362710c9996c358a",
+    "dropped": [],
+    "added": [
+     "witness.ingress.406.3.dfc5a87bbd90",
+     "witness.ingress.563.3.dfc5a87bbd90"
+    ]
+   },
+   {
+    "origin": "artifact-c65a82c89661d8cb815b5b1b",
+    "dropped": [],
+    "added": [
+     "witness.inspection.89.3.6975f64c51ef",
+     "witness.inspection.118.3.6975f64c51ef"
+    ]
+   },
+   {
+    "origin": "artifact-e675d28451f3413582099c7a",
+    "dropped": [],
+    "added": [
+     "witness.outcome-acceptance.60.3.a83b53c2882d",
+     "witness.outcome-acceptance.331.3.a83b53c2882d",
+     "witness.outcome-acceptance.593.3.a83b53c2882d",
+     "witness.outcome-acceptance.625.3.a83b53c2882d"
+    ]
+   },
+   {
+    "origin": "artifact-58a5b7bc09b47ad262f7e4f5",
+    "dropped": [],
+    "added": [
+     "witness.outcome-evidence.38.3.1d6919314e67",
+     "witness.outcome-evidence.70.3.1d6919314e67",
+     "witness.outcome-evidence.90.3.1d6919314e67"
+    ]
+   },
+   {
+    "origin": "artifact-7902341bc00c3376b26ef71f",
+    "dropped": [],
+    "added": [
+     "witness.outcome-hostile.103.3.a66a34108666",
+     "witness.outcome-hostile.133.3.a66a34108666",
+     "witness.outcome-hostile.349.3.a66a34108666",
+     "witness.outcome-hostile.360.3.a66a34108666",
+     "witness.outcome-hostile.374.3.a66a34108666"
+    ]
+   },
+   {
+    "origin": "artifact-234036da40df72ad36095f4b",
+    "dropped": [],
+    "added": [
+     "witness.outcome-partial-claim.478.7.917f01e8c7cb",
+     "witness.outcome-partial-claim.499.7.917f01e8c7cb",
+     "witness.outcome-partial-claim.524.9.917f01e8c7cb",
+     "witness.outcome-partial-claim.553.9.917f01e8c7cb",
+     "witness.outcome-partial-claim.584.9.917f01e8c7cb",
+     "witness.outcome-partial-claim.607.7.917f01e8c7cb",
+     "witness.outcome-partial-claim.665.5.917f01e8c7cb",
+     "witness.outcome-partial-claim.690.5.917f01e8c7cb",
+     "witness.outcome-partial-claim.711.5.917f01e8c7cb",
+     "witness.outcome-partial-claim.734.5.917f01e8c7cb"
+    ]
+   },
+   {
+    "origin": "artifact-b303eed73b3e154fe6365c09",
+    "dropped": [],
+    "added": [
+     "witness.receipts.30.3.a0a1368492ff",
+     "witness.receipts.187.5.a0a1368492ff",
+     "witness.receipts.210.5.a0a1368492ff",
+     "witness.receipts.227.5.a0a1368492ff",
+     "witness.receipts.241.5.a0a1368492ff",
+     "witness.receipts.259.5.a0a1368492ff",
+     "witness.receipts.295.5.a0a1368492ff"
+    ]
+   },
+   {
+    "origin": "artifact-1ab5c124484bc58b2a471c96",
+    "dropped": [],
+    "added": [
+     "witness.submission-authority.420.3.17f297ab70a5"
+    ]
+   },
+   {
+    "origin": "artifact-fcbe9b87cbe87b398197c578",
+    "dropped": [],
+    "added": [
+     "witness.transaction.237.3.bbe0fb257476"
+    ]
+   },
+   {
+    "origin": "artifact-ebfa0eb36bcd33f72a4dffce",
+    "dropped": [],
+    "added": [
+     "witness.values.98.3.44b00a5bd3f1",
+     "witness.values.107.3.44b00a5bd3f1",
+     "witness.values.115.3.44b00a5bd3f1",
+     "witness.values.128.3.44b00a5bd3f1",
+     "witness.values.142.3.44b00a5bd3f1",
+     "witness.values.159.3.44b00a5bd3f1",
+     "witness.values.177.5.44b00a5bd3f1",
+     "witness.values.207.5.44b00a5bd3f1",
+     "witness.values.233.5.44b00a5bd3f1",
+     "witness.values.347.5.44b00a5bd3f1",
+     "witness.values.388.5.44b00a5bd3f1",
+     "witness.values.451.3.44b00a5bd3f1",
+     "witness.values.464.3.44b00a5bd3f1",
+     "witness.values.470.3.44b00a5bd3f1",
+     "witness.values.478.3.44b00a5bd3f1",
+     "witness.values.488.3.44b00a5bd3f1",
+     "witness.values.500.3.44b00a5bd3f1",
+     "witness.values.529.3.44b00a5bd3f1",
+     "witness.values.558.3.44b00a5bd3f1",
+     "witness.values.632.3.44b00a5bd3f1",
+     "witness.values.662.3.44b00a5bd3f1",
+     "witness.values.1039.3.44b00a5bd3f1"
+    ]
+   },
+   {
+    "origin": "artifact-b93fa92a81d4582fdc056ed6",
+    "dropped": [
+     "target.ambient-reads.79.3.4a94f4ea0361",
+     "target.control-commits.81.3.1cc0368ebe2d",
+     "target.control-commits.93.5.1cc0368ebe2d.1",
+     "target.control-commits.93.5.1cc0368ebe2d.2",
+     "target.control-commits.93.5.1cc0368ebe2d.3",
+     "target.control-commits.100.3.1cc0368ebe2d",
+     "target.control-commits.117.3.1cc0368ebe2d",
+     "target.control-commits.123.3.1cc0368ebe2d",
+     "target.control-commits.128.3.1cc0368ebe2d",
+     "target.control-commits.135.3.1cc0368ebe2d",
+     "target.control-commits.145.3.1cc0368ebe2d",
+     "target.control-commits.226.3.1cc0368ebe2d",
+     "target.control-commits.231.5.1cc0368ebe2d.1",
+     "target.control-commits.231.5.1cc0368ebe2d.2",
+     "target.control-commits.231.5.1cc0368ebe2d.3",
+     "target.control-commits.231.5.1cc0368ebe2d.4",
+     "target.control-commits.231.5.1cc0368ebe2d.5",
+     "target.control-commits.231.5.1cc0368ebe2d.6",
+     "target.control-commits.231.5.1cc0368ebe2d.7",
+     "target.control-commits.231.5.1cc0368ebe2d.8",
+     "target.control-commits.231.5.1cc0368ebe2d.9",
+     "target.control-commits.231.5.1cc0368ebe2d.10",
+     "target.control-commits.231.5.1cc0368ebe2d.11",
+     "target.control-commits.231.5.1cc0368ebe2d.12",
+     "target.control-commits.231.5.1cc0368ebe2d.13",
+     "target.control-commits.231.5.1cc0368ebe2d.14",
+     "target.control-commits.231.5.1cc0368ebe2d.15",
+     "target.control-commits.231.5.1cc0368ebe2d.16",
+     "target.control-commits.231.5.1cc0368ebe2d.17",
+     "target.control-commits.231.5.1cc0368ebe2d.18",
+     "target.control-commits.231.5.1cc0368ebe2d.19",
+     "target.control-commits.231.5.1cc0368ebe2d.20",
+     "target.control-commits.231.5.1cc0368ebe2d.21",
+     "target.control-commits.231.5.1cc0368ebe2d.22",
+     "target.control-commits.231.5.1cc0368ebe2d.23",
+     "target.control-commits.231.5.1cc0368ebe2d.24",
+     "target.control-commits.231.5.1cc0368ebe2d.25",
+     "target.control-commits.231.5.1cc0368ebe2d.26",
+     "target.control-commits.231.5.1cc0368ebe2d.27",
+     "target.control-commits.231.5.1cc0368ebe2d.28",
+     "target.control-commits.231.5.1cc0368ebe2d.29",
+     "target.control-commits.231.5.1cc0368ebe2d.30",
+     "target.control-commits.231.5.1cc0368ebe2d.31"
+    ],
+    "added": [
+     "witness.ambient-reads.79.3.4a94f4ea0361",
+     "witness.control-commits.81.3.1cc0368ebe2d",
+     "witness.control-commits.93.5.1cc0368ebe2d",
+     "witness.control-commits.100.3.1cc0368ebe2d",
+     "witness.control-commits.117.3.1cc0368ebe2d",
+     "witness.control-commits.123.3.1cc0368ebe2d",
+     "witness.control-commits.128.3.1cc0368ebe2d",
+     "witness.control-commits.135.3.1cc0368ebe2d",
+     "witness.control-commits.145.3.1cc0368ebe2d",
+     "witness.control-commits.226.3.1cc0368ebe2d",
+     "witness.control-commits.231.5.1cc0368ebe2d"
+    ]
+   },
+   {
+    "origin": "artifact-933874e859e8d7b79504af10",
+    "dropped": [
+     "target.ambient-reads.79.3.4a94f4ea0361",
+     "target.control-commits.81.3.1cc0368ebe2d",
+     "target.control-commits.93.5.1cc0368ebe2d.1",
+     "target.control-commits.93.5.1cc0368ebe2d.2",
+     "target.control-commits.93.5.1cc0368ebe2d.3",
+     "target.control-commits.100.3.1cc0368ebe2d",
+     "target.control-commits.117.3.1cc0368ebe2d",
+     "target.control-commits.123.3.1cc0368ebe2d",
+     "target.control-commits.128.3.1cc0368ebe2d",
+     "target.control-commits.135.3.1cc0368ebe2d",
+     "target.control-commits.145.3.1cc0368ebe2d",
+     "target.control-commits.226.3.1cc0368ebe2d",
+     "target.control-commits.231.5.1cc0368ebe2d.1",
+     "target.control-commits.231.5.1cc0368ebe2d.2",
+     "target.control-commits.231.5.1cc0368ebe2d.3",
+     "target.control-commits.231.5.1cc0368ebe2d.4",
+     "target.control-commits.231.5.1cc0368ebe2d.5",
+     "target.control-commits.231.5.1cc0368ebe2d.6",
+     "target.control-commits.231.5.1cc0368ebe2d.7",
+     "target.control-commits.231.5.1cc0368ebe2d.8",
+     "target.control-commits.231.5.1cc0368ebe2d.9",
+     "target.control-commits.231.5.1cc0368ebe2d.10",
+     "target.control-commits.231.5.1cc0368ebe2d.11",
+     "target.control-commits.231.5.1cc0368ebe2d.12",
+     "target.control-commits.231.5.1cc0368ebe2d.13",
+     "target.control-commits.231.5.1cc0368ebe2d.14",
+     "target.control-commits.231.5.1cc0368ebe2d.15",
+     "target.control-commits.231.5.1cc0368ebe2d.16",
+     "target.control-commits.231.5.1cc0368ebe2d.17",
+     "target.control-commits.231.5.1cc0368ebe2d.18",
+     "target.control-commits.231.5.1cc0368ebe2d.19",
+     "target.control-commits.231.5.1cc0368ebe2d.20",
+     "target.control-commits.231.5.1cc0368ebe2d.21",
+     "target.control-commits.231.5.1cc0368ebe2d.22",
+     "target.control-commits.231.5.1cc0368ebe2d.23",
+     "target.control-commits.231.5.1cc0368ebe2d.24",
+     "target.control-commits.231.5.1cc0368ebe2d.25",
+     "target.control-commits.231.5.1cc0368ebe2d.26",
+     "target.control-commits.231.5.1cc0368ebe2d.27",
+     "target.control-commits.231.5.1cc0368ebe2d.28",
+     "target.control-commits.231.5.1cc0368ebe2d.29",
+     "target.control-commits.231.5.1cc0368ebe2d.30",
+     "target.control-commits.231.5.1cc0368ebe2d.31"
+    ],
+    "added": [
+     "witness.ambient-reads.79.3.4a94f4ea0361",
+     "witness.control-commits.81.3.1cc0368ebe2d",
+     "witness.control-commits.93.5.1cc0368ebe2d",
+     "witness.control-commits.100.3.1cc0368ebe2d",
+     "witness.control-commits.117.3.1cc0368ebe2d",
+     "witness.control-commits.123.3.1cc0368ebe2d",
+     "witness.control-commits.128.3.1cc0368ebe2d",
+     "witness.control-commits.135.3.1cc0368ebe2d",
+     "witness.control-commits.145.3.1cc0368ebe2d",
+     "witness.control-commits.226.3.1cc0368ebe2d",
+     "witness.control-commits.231.5.1cc0368ebe2d"
+    ]
+   }
+  ]
+ },
+ "limited_listed_not_unbound": {
+  "artifact-73555fe668cc180905b1e49a": [],
+  "artifact-9fd619f5375d598ebb2b88aa": [],
+  "artifact-d2153e36d9c7464883ecea0b": [],
+  "artifact-ea5444a6d42154e413fe0f2e": []
+ },
+ "limited": {
+  "artifact-73555fe668cc180905b1e49a": [
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1173:3@5a8d958ffdab",
+    "target": "target.dispatch.1173.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1211:3@5a8d958ffdab",
+    "target": "target.dispatch.1211.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1256:3@5a8d958ffdab",
+    "target": "target.dispatch.1256.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1283:3@5a8d958ffdab",
+    "target": "target.dispatch.1283.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+    "target": "target.dispatch.1363.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1401:3@5a8d958ffdab",
+    "target": "target.dispatch.1401.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+    "target": "target.dispatch.1426.3.5a8d958ffdab"
+   },
+   {
+    "member": "packages/kernel/tests/dispatch.test.ts:369:3@5a8d958ffdab",
+    "target": "target.dispatch.369.3.5a8d958ffdab"
+   }
+  ],
+  "artifact-9fd619f5375d598ebb2b88aa": [],
+  "artifact-d2153e36d9c7464883ecea0b": [],
+  "artifact-ea5444a6d42154e413fe0f2e": [
+   {
+    "member": "packages/kernel/tests/values.test.ts:115:3@fb228bec8c58",
+    "target": "target.values.115.3.fb228bec8c58"
+   }
+  ]
+ }
+}

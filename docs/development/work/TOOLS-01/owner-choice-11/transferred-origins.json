@@ -1,0 +1,26 @@
+[
+ {
+  "origin": "artifact-ecb10ef937e0612352e7c7ef",
+  "path": "packages/kernel/tests/ingress.test.ts",
+  "line": 1,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "closure: refused member packages/kernel/tests/ingress.test.ts:381:3@61e8bde54da2 has only target target.ingress.381.3.61e8bde54da2, whose leaf packages/kernel/tests/ingress.test.ts:381:3 is rule-1 held under owner choice 10 §2's coarse rule (design 06 revision 5) because its helper accepted() constructs new Error(...) at packages/kernel/tests/harness.ts:548; no other contract route closes the origin"
+ },
+ {
+  "origin": "artifact-b21077d3d4d8265db9b7c7ab",
+  "path": "packages/kernel/tests/refusals.test.ts",
+  "line": 1,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "closure: refused member packages/kernel/tests/refusals.test.ts:47:3@39d0ccd292d8 has only target target.refusals.47.3.39d0ccd292d8, whose leaf packages/kernel/tests/refusals.test.ts:43:3 is rule-1 held under owner choice 10 §2's coarse rule (design 06 revision 5) because its helper accepted() constructs new Error(...) at packages/kernel/tests/harness.ts:548; no other contract route closes the origin"
+ },
+ {
+  "origin": "artifact-ee81a9215a4b627e88fda2d5",
+  "path": "packages/kernel/tests/unsupported.test.ts",
+  "line": 1,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "closure: refused member packages/kernel/tests/unsupported.test.ts:45:3@d2ca81b5d1ab has only target target.unsupported.45.3.d2ca81b5d1ab, whose leaf packages/kernel/tests/unsupported.test.ts:46:3 is rule-1 held under owner choice 10 §2's coarse rule (design 06 revision 5) because it calls Object.keys(surface) at lines 48 and 70; no other contract route closes the origin"
+ }
+]

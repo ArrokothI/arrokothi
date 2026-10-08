@@ -1,0 +1,680 @@
+{
+  "subject": "28258b282532b36eef8fb1571d79b6343b54427b",
+  "node": "v26.10.0",
+  "probes": {
+    "transfer": {
+      "candidate_exact_44_match": true,
+      "refused_45th": "artifact-394a3572417fe81cafbd7097",
+      "reason": "a transferred origin is in its decision's pinned list: artifact-394a3572417fe81cafbd7097",
+      "cited_decision": "owner-choice-04.md (does not name this origin)",
+      "full_fixture_corpus_refused": "a transferred origin is in its decision's pinned list: artifact-263fef7d65dfa3fe811af324",
+      "seconds": 3.8153942078351974
+    },
+    "context": {
+      "tilde_short": {
+        "accepted": false,
+        "error": "the context does not cover the minimum: artifact-1a78ef482dadf107c232fa84",
+        "minimum": [
+          2,
+          8
+        ],
+        "source": "# Review\n## Finding\n~~~js\nconst value = `\n## Embedded heading\n`;\n~~~\nRead [note](docs/records/note.md).\n## Next\nOther.\n",
+        "ranges": [
+          {
+            "revision": "ca75fde166fb279a8eff9993c0748fe0588c29c2",
+            "path": "source.md",
+            "start": 2,
+            "end": 4
+          }
+        ]
+      },
+      "backtick_short_control": {
+        "accepted": false,
+        "error": "the context does not cover the minimum: artifact-40f625501ee22268d28244c7",
+        "minimum": [
+          2,
+          8
+        ],
+        "source": "# Review\n## Finding\n```js\nconst value = `\n## Embedded heading\n`;\n```\nRead [note](docs/records/note.md).\n## Next\nOther.\n",
+        "ranges": [
+          {
+            "revision": "03f01bc1aef65055883c4a80650e4e09d9d1a7d2",
+            "path": "source.md",
+            "start": 2,
+            "end": 4
+          }
+        ]
+      },
+      "tilde_full_control": {
+        "accepted": true,
+        "result": "mappings_complete",
+        "closures": {
+          "complete": 1,
+          "context_ranges": 2,
+          "context_candidates": 1,
+          "context_reasoned": 0
+        },
+        "minimum": [
+          2,
+          8
+        ],
+        "source": "# Review\n## Finding\n~~~js\nconst value = `\n## Embedded heading\n`;\n~~~\nRead [note](docs/records/note.md).\n## Next\nOther.\n",
+        "ranges": [
+          {
+            "revision": "703dd974182dd22a5f0a7f71520cd27db069aedd",
+            "path": "source.md",
+            "start": 2,
+            "end": 8
+          },
+          {
+            "revision": "703dd974182dd22a5f0a7f71520cd27db069aedd",
+            "path": "docs/records/note.md",
+            "start": 1,
+            "end": 1
+          }
+        ]
+      },
+      "seconds": 4.8446055829990655
+    },
+    "kills": {
+      "result": "attention_required",
+      "counts": {
+        "observed": 3
+      },
+      "control": "passed",
+      "mutations": {
+        "assertion-control": {
+          "mutation": "assertion-control",
+          "status": "observed",
+          "run": {
+            "status": "finished",
+            "exit": 1,
+            "output": "",
+            "tree": {
+              "files": {
+                "tests/a.test.mjs": {
+                  "pairs": [
+                    {
+                      "path": [
+                        "compute adds one"
+                      ],
+                      "line": 4,
+                      "column": 1,
+                      "nesting": 0,
+                      "kind": "test",
+                      "parent": null,
+                      "verdict": "failed",
+                      "failure": {
+                        "type": "testCodeFailure",
+                        "cause_name": "AssertionError",
+                        "cause_code": "ERR_ASSERTION",
+                        "stack": {
+                          "type": "string",
+                          "frames": 5
+                        }
+                      },
+                      "leaf": true
+                    },
+                    {
+                      "path": [
+                        "other doubles"
+                      ],
+                      "line": 5,
+                      "column": 1,
+                      "nesting": 0,
+                      "kind": "test",
+                      "parent": null,
+                      "verdict": "passed",
+                      "leaf": true
+                    }
+                  ],
+                  "synthetic": 0
+                }
+              },
+              "refused": {},
+              "unselected": [],
+              "summary": {
+                "tests": 2,
+                "suites": 0,
+                "pass": 1,
+                "fail": 1,
+                "cancelled": 0,
+                "skipped": 0,
+                "todo": 0
+              },
+              "summary_consistent": true,
+              "valid": true
+            }
+          },
+          "invalid": false,
+          "targets": [
+            {
+              "target": "tests/a.test.mjs > compute adds one",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "content_key": "mutation-50ff89a7f8b55c9a0b8094c2b4703dc8c29a165dd9cad78a7a003fe1536c0c8b"
+        },
+        "type-error": {
+          "mutation": "type-error",
+          "status": "observed",
+          "run": {
+            "status": "finished",
+            "exit": 1,
+            "output": "",
+            "tree": {
+              "files": {
+                "tests/a.test.mjs": {
+                  "pairs": [
+                    {
+                      "path": [
+                        "compute adds one"
+                      ],
+                      "line": 4,
+                      "column": 1,
+                      "nesting": 0,
+                      "kind": "test",
+                      "parent": null,
+                      "verdict": "failed",
+                      "failure": {
+                        "type": "testCodeFailure",
+                        "cause_name": "TypeError",
+                        "cause_code": null,
+                        "stack": {
+                          "type": "string",
+                          "frames": 6
+                        }
+                      },
+                      "leaf": true
+                    },
+                    {
+                      "path": [
+                        "other doubles"
+                      ],
+                      "line": 5,
+                      "column": 1,
+                      "nesting": 0,
+                      "kind": "test",
+                      "parent": null,
+                      "verdict": "passed",
+                      "leaf": true
+                    }
+                  ],
+                  "synthetic": 0
+                }
+              },
+              "refused": {},
+              "unselected": [],
+              "summary": {
+                "tests": 2,
+                "suites": 0,
+                "pass": 1,
+                "fail": 1,
+                "cancelled": 0,
+                "skipped": 0,
+                "todo": 0
+              },
+              "summary_consistent": true,
+              "valid": true
+            }
+          },
+          "invalid": false,
+          "targets": [
+            {
+              "target": "tests/a.test.mjs > compute adds one",
+              "outcome": "error",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "TypeError",
+                "code": null
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "content_key": "mutation-0f85630529330ba386bf7ded42eaab7dd2d29fce6036df426c6dadeec4828a49"
+        },
+        "skip-target": {
+          "mutation": "skip-target",
+          "status": "observed",
+          "run": {
+            "status": "finished",
+            "exit": 0,
+            "output": "",
+            "tree": {
+              "files": {
+                "tests/a.test.mjs": {
+                  "pairs": [
+                    {
+                      "path": [
+                        "compute adds one"
+                      ],
+                      "line": 4,
+                      "column": 6,
+                      "nesting": 0,
+                      "kind": "test",
+                      "parent": null,
+                      "verdict": "skipped",
+                      "leaf": true
+                    },
+                    {
+                      "path": [
+                        "other doubles"
+                      ],
+                      "line": 5,
+                      "column": 1,
+                      "nesting": 0,
+                      "kind": "test",
+                      "parent": null,
+                      "verdict": "passed",
+                      "leaf": true
+                    }
+                  ],
+                  "synthetic": 0
+                }
+              },
+              "refused": {},
+              "unselected": [],
+              "summary": {
+                "tests": 2,
+                "suites": 0,
+                "pass": 1,
+                "fail": 0,
+                "cancelled": 0,
+                "skipped": 1,
+                "todo": 0
+              },
+              "summary_consistent": true,
+              "valid": true
+            }
+          },
+          "invalid": false,
+          "targets": [
+            {
+              "target": "tests/a.test.mjs > compute adds one",
+              "outcome": "skipped"
+            }
+          ],
+          "content_key": "mutation-07f80e878817dcfcff2da3a4284c2ec3b4d228121f689c71ab73af436053ff96"
+        }
+      },
+      "fixture_source": "export function compute(n) { return n + 1; }",
+      "assertion": "test('compute adds one', () => { assert.equal(compute(1), 2); });",
+      "checkout_clean_after": true,
+      "seconds": 1.0471169578377157
+    },
+    "holds": {
+      "actual_candidate": [
+        {
+          "key": "packages/kernel/tests/creation.test.ts:333:3",
+          "matched": true,
+          "entry": {
+            "key": "packages/kernel/tests/creation.test.ts:333:3",
+            "matched": [
+              "V-ENV"
+            ],
+            "classification": "held",
+            "claim": "V-ENV",
+            "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+            "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds assignment, delete in its run set; per-test classification is BINDING-01's."
+          },
+          "members": [
+            {
+              "member": "packages/kernel/tests/creation.test.ts:333:3@088207d1ce86",
+              "origins": [
+                "artifact-6c57cc9dd8febdefa65ed496",
+                "artifact-febb180b453e17b8edab6893"
+              ],
+              "file": "packages/kernel/tests/creation.test.ts",
+              "pin_blob": "088207d1ce869da3268363fd7a4b10723c9d1471",
+              "title": "K11-R2-VAL-02 creation under ambient toJSON still binds the retained payload and its replay",
+              "title_kind": "literal",
+              "status": "held",
+              "reasons": [],
+              "scope": "whole_file",
+              "current": [
+                333,
+                3
+              ],
+              "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "register": "held",
+              "helper_closure": {
+                "reviewed": [
+                  "review.harness.creation"
+                ]
+              },
+              "production_changed": [
+                "packages/kernel/src/coordinator.ts",
+                "packages/kernel/src/envelope.ts",
+                "packages/kernel/src/identity.ts",
+                "packages/kernel/src/index.ts",
+                "packages/kernel/src/lifecycle.ts",
+                "packages/kernel/src/outcome.ts",
+                "packages/kernel/src/own-array.ts",
+                "packages/kernel/src/refusal.ts",
+                "packages/kernel/src/result.ts",
+                "packages/kernel/src/unsupported.ts",
+                "packages/kernel/src/values.ts"
+              ],
+              "repository_read_changed": []
+            }
+          ],
+          "target_ids": []
+        },
+        {
+          "key": "packages/kernel/tests/dispatch.test.ts:615:3",
+          "matched": true,
+          "entry": {
+            "key": "packages/kernel/tests/dispatch.test.ts:615:3",
+            "matched": [
+              "V-ENV"
+            ],
+            "classification": "held",
+            "claim": "V-ENV",
+            "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+            "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds assignment, delete in its run set; per-test classification is BINDING-01's."
+          },
+          "members": [
+            {
+              "member": "packages/kernel/tests/dispatch.test.ts:615:3@41092809bb04",
+              "origins": [
+                "artifact-bca863b02ba3f5f894baa47d"
+              ],
+              "file": "packages/kernel/tests/dispatch.test.ts",
+              "pin_blob": "41092809bb040d6cdb45ea862d26c107169c0356",
+              "title": "K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution",
+              "title_kind": "literal",
+              "status": "held",
+              "reasons": [],
+              "scope": "whole_file",
+              "current": [
+                615,
+                3
+              ],
+              "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "register": "held",
+              "helper_closure": "unchanged",
+              "production_changed": [],
+              "repository_read_changed": []
+            },
+            {
+              "member": "packages/kernel/tests/dispatch.test.ts:612:3@5a8d958ffdab",
+              "origins": [
+                "artifact-73555fe668cc180905b1e49a"
+              ],
+              "file": "packages/kernel/tests/dispatch.test.ts",
+              "pin_blob": "5a8d958ffdabb11d96a49e41330bcd9aa9a8b5d0",
+              "title": "K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution",
+              "title_kind": "literal",
+              "status": "held",
+              "reasons": [
+                "changed leaf callback (current line 66, 17 more)",
+                "changed leaf callback (pin line 66, 17 more)",
+                "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+              ],
+              "scope": "span",
+              "current": [
+                615,
+                3
+              ],
+              "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "register": "held",
+              "helper_closure": "unchanged",
+              "production_changed": [
+                "packages/kernel/src/coordinator.ts",
+                "packages/kernel/src/envelope.ts",
+                "packages/kernel/src/identity.ts",
+                "packages/kernel/src/index.ts",
+                "packages/kernel/src/lifecycle.ts",
+                "packages/kernel/src/outcome.ts",
+                "packages/kernel/src/own-array.ts",
+                "packages/kernel/src/refusal.ts",
+                "packages/kernel/src/result.ts",
+                "packages/kernel/src/unsupported.ts",
+                "packages/kernel/src/values.ts"
+              ],
+              "repository_read_changed": [],
+              "prefix_differences": [
+                "head: registration head"
+              ]
+            }
+          ],
+          "target_ids": []
+        },
+        {
+          "key": "packages/kernel/tests/values.test.ts:893:3",
+          "matched": true,
+          "entry": {
+            "key": "packages/kernel/tests/values.test.ts:893:3",
+            "matched": [
+              "V-ENV"
+            ],
+            "classification": "held",
+            "claim": "V-ENV",
+            "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+            "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds assignment, delete in its run set; per-test classification is BINDING-01's."
+          },
+          "members": [
+            {
+              "member": "packages/kernel/tests/values.test.ts:893:3@44b00a5bd3f1",
+              "origins": [
+                "artifact-ebfa0eb36bcd33f72a4dffce"
+              ],
+              "file": "packages/kernel/tests/values.test.ts",
+              "pin_blob": "44b00a5bd3f1a478baf4a25b201947b66e5752cd",
+              "title": "an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot",
+              "title_kind": "literal",
+              "status": "held",
+              "reasons": [],
+              "scope": "whole_file",
+              "current": [
+                893,
+                3
+              ],
+              "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "register": "held",
+              "helper_closure": "unchanged",
+              "production_changed": [],
+              "repository_read_changed": []
+            },
+            {
+              "member": "packages/kernel/tests/values.test.ts:589:3@fb228bec8c58",
+              "origins": [
+                "artifact-ea5444a6d42154e413fe0f2e"
+              ],
+              "file": "packages/kernel/tests/values.test.ts",
+              "pin_blob": "fb228bec8c584451e0c6a40f4841a7cf949ad9e5",
+              "title": "an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot",
+              "title_kind": "literal",
+              "status": "held",
+              "reasons": [
+                "changed leaf callback (current line 115, 10 more)",
+                "changed leaf callback (pin line 115)",
+                "effectful initializer (current line 761)",
+                "referenced: countingCharCodeAt (current line 751)",
+                "referenced: inBoundedChild (current line 615)",
+                "referenced: paddedToExactBytes (current line 595)",
+                "referenced: restoreCharCodeAt (current line 759)",
+                "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+              ],
+              "scope": "span",
+              "current": [
+                893,
+                3
+              ],
+              "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "register": "held",
+              "helper_closure": "unchanged",
+              "production_changed": [
+                "packages/kernel/src/coordinator.ts",
+                "packages/kernel/src/envelope.ts",
+                "packages/kernel/src/identity.ts",
+                "packages/kernel/src/index.ts",
+                "packages/kernel/src/lifecycle.ts",
+                "packages/kernel/src/outcome.ts",
+                "packages/kernel/src/own-array.ts",
+                "packages/kernel/src/refusal.ts",
+                "packages/kernel/src/result.ts",
+                "packages/kernel/src/unsupported.ts",
+                "packages/kernel/src/values.ts"
+              ],
+              "repository_read_changed": [],
+              "prefix_differences": [
+                "head: registration head",
+                "load: declaration",
+                "load: type-only declaration"
+              ]
+            }
+          ],
+          "target_ids": []
+        },
+        {
+          "key": "packages/kernel/tests/values.test.ts:910:3",
+          "matched": true,
+          "entry": {
+            "key": "packages/kernel/tests/values.test.ts:910:3",
+            "matched": [
+              "V-ENV"
+            ],
+            "classification": "held",
+            "claim": "V-ENV",
+            "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+            "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds assignment, delete in its run set; per-test classification is BINDING-01's."
+          },
+          "members": [
+            {
+              "member": "packages/kernel/tests/values.test.ts:910:3@44b00a5bd3f1",
+              "origins": [
+                "artifact-ebfa0eb36bcd33f72a4dffce"
+              ],
+              "file": "packages/kernel/tests/values.test.ts",
+              "pin_blob": "44b00a5bd3f1a478baf4a25b201947b66e5752cd",
+              "title": "an inherited Array.prototype.toJSON cannot divert canonical bytes either",
+              "title_kind": "literal",
+              "status": "held",
+              "reasons": [],
+              "scope": "whole_file",
+              "current": [
+                910,
+                3
+              ],
+              "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "register": "held",
+              "helper_closure": "unchanged",
+              "production_changed": [],
+              "repository_read_changed": []
+            },
+            {
+              "member": "packages/kernel/tests/values.test.ts:606:3@fb228bec8c58",
+              "origins": [
+                "artifact-ea5444a6d42154e413fe0f2e"
+              ],
+              "file": "packages/kernel/tests/values.test.ts",
+              "pin_blob": "fb228bec8c584451e0c6a40f4841a7cf949ad9e5",
+              "title": "an inherited Array.prototype.toJSON cannot divert canonical bytes either",
+              "title_kind": "literal",
+              "status": "held",
+              "reasons": [
+                "changed leaf callback (current line 115, 10 more)",
+                "changed leaf callback (pin line 115)",
+                "effectful initializer (current line 761)",
+                "referenced: countingCharCodeAt (current line 751)",
+                "referenced: inBoundedChild (current line 615)",
+                "referenced: paddedToExactBytes (current line 595)",
+                "referenced: restoreCharCodeAt (current line 759)",
+                "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+              ],
+              "scope": "span",
+              "current": [
+                910,
+                3
+              ],
+              "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "register": "held",
+              "helper_closure": "unchanged",
+              "production_changed": [
+                "packages/kernel/src/coordinator.ts",
+                "packages/kernel/src/envelope.ts",
+                "packages/kernel/src/identity.ts",
+                "packages/kernel/src/index.ts",
+                "packages/kernel/src/lifecycle.ts",
+                "packages/kernel/src/outcome.ts",
+                "packages/kernel/src/own-array.ts",
+                "packages/kernel/src/refusal.ts",
+                "packages/kernel/src/result.ts",
+                "packages/kernel/src/unsupported.ts",
+                "packages/kernel/src/values.ts"
+              ],
+              "repository_read_changed": [],
+              "prefix_differences": [
+                "head: registration head",
+                "load: declaration",
+                "load: type-only declaration"
+              ]
+            }
+          ],
+          "target_ids": []
+        }
+      ],
+      "synthetic_source": "import { test } from 'node:test';\nimport { install } from './helper.mjs';\ntest('direct control', () => { Object.prototype.toJSON = () => 42; });\ntest('alias', () => { const p = Object.prototype; p.toJSON = () => 42; });\ntest('cast', () => { (Object.prototype as Record<string, unknown>).toJSON = () => 42; });\ntest('helper', () => { install(); });\ntest('generated', () => { const p = 'Object.prototype'; const source = `${p}.toJSON = () => 42;`; new Function(source)(); });\n",
+      "helper_source": "export function install() { const p = Array.prototype; p.toJSON = () => 99; }\n",
+      "synthetic_matches": [
+        {
+          "key": "tests/install.test.ts:3:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "assignment@tests/install.test.ts:3"
+          ]
+        },
+        {
+          "key": "tests/install.test.ts:4:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "assignment@tests/install.test.ts:4"
+          ]
+        },
+        {
+          "key": "tests/install.test.ts:5:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "assignment@tests/install.test.ts:5"
+          ]
+        },
+        {
+          "key": "tests/install.test.ts:6:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "assignment@tests/helper.mjs:1"
+          ]
+        },
+        {
+          "key": "tests/install.test.ts:7:1",
+          "claims": [
+            "V-ENV"
+          ],
+          "detector": [
+            "generated@tests/install.test.ts:7"
+          ]
+        }
+      ],
+      "minimums_not_narrowed": true,
+      "seconds": 4.188479749951512
+    }
+  },
+  "seconds": 13.895657083950937
+}

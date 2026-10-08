@@ -1,0 +1,73 @@
+packages/kernel/tests/unsupported.test.ts @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49 lines 1:72
+1: /**
+2:  * The target Kernel refuses what it has not built; it does not pretend.
+3:  *
+4:  * K1.0 introduced this mechanism when the package shipped no protocol at all. K1.1 keeps it for the
+5:  * surfaces later packets own, which is the failure 007 warns about in its other form: scaffolding
+6:  * that answers a caller with a silent no-op a later packet could mistake for working behaviour.
+7:  *
+8:  * The example surface changed with K1.1: `createExecution` is implemented now, so the refusal cases
+9:  * name `acceptOutcome`/`submitOutcome`, which K1.2 owns.
+10:  */
+11:
+12: import { test, describe } from "node:test";
+13: import assert from "node:assert/strict";
+14:
+15: import { UnsupportedKernelSurfaceError, refuseUnsupportedSurface } from "../src/index.ts";
+16:
+17: describe("target Kernel scaffolding", () => {
+18:   test("an unimplemented surface throws rather than returning anything", () => {
+19:     let returned: unknown = "sentinel";
+20:     assert.throws(() => {
+21:       returned = refuseUnsupportedSurface("acceptOutcome", "K1.2");
+22:     }, UnsupportedKernelSurfaceError);
+23:     assert.equal(returned, "sentinel", "the refusal never produced a value a caller could act on");
+24:   });
+25:
+26:   test("the refusal names the surface and the packet that owns implementing it", () => {
+27:     try {
+28:       refuseUnsupportedSurface("acceptOutcome", "K1.2");
+29:       assert.fail("expected a refusal");
+30:     } catch (error) {
+31:       assert.ok(error instanceof UnsupportedKernelSurfaceError);
+32:       assert.equal(error.name, "UnsupportedKernelSurfaceError");
+33:       assert.equal(error.surface, "acceptOutcome");
+34:       assert.equal(error.owner, "K1.2");
+35:       assert.match(error.message, /acceptOutcome is not implemented in @arrokothi\/kernel/);
+36:       assert.match(error.message, /K1\.2 owns this surface/);
+37:     }
+38:   });
+39:
+40:   test("the refusal points at the supported implementation instead of leaving a dead end", () => {
+41:     const error = new UnsupportedKernelSurfaceError("registerWait", "K1.3");
+42:     assert.match(error.message, /@arrokothi\/core, which is explicitly legacy/);
+43:   });
+44:
+45:   test("the package exports exactly the K1.1 surface and nothing that could look like a later packet's", async () => {
+46:     const surface = await import("../src/index.ts");
+47:     assert.deepEqual(Object.keys(surface).sort(), [
+48:       "BOUNDARY_LIMITS",
+49:       "ExecutionCoordinator",
+50:       "TERMINAL_STATES",
+51:       "UNKNOWN_DESTINATION_REASON",
+52:       "UnsupportedKernelSurfaceError",
+53:       "boundaryValueIssues",
+54:       "canonicalize",
+55:       "creationRequestIdKey",
+56:       "err",
+57:       "inputIdKey",
+58:       "isBoundaryValue",
+59:       "isTerminal",
+60:       "mayReachScope",
+61:       "mintReceipt",
+62:       "ok",
+63:       "refuseUnsupportedSurface",
+64:       "sameLogicalValue",
+65:     ]);
+66:     // Nothing named for a boundary no accepted packet has built. The list above is exact so adding
+67:     // one is a deliberate, reviewed change rather than a drift.
+68:     for (const name of Object.keys(surface)) {
+69:       assert.doesNotMatch(name, /outcome|effect|wait|deadline|child|takeover/i, `${name} would advertise an unbuilt boundary`);
+70:     }
+71:   });
+72: });

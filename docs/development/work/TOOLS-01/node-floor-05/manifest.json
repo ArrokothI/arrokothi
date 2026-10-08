@@ -1,0 +1,111 @@
+{
+  "base_revision": "2ae9112d2551e618107cbbae9a9888d155910c96",
+  "node": "v22.9.0",
+  "comparison_node": "v25.2.1",
+  "host": "macOS 26.6.2 arm64",
+  "python": "3.14.6",
+  "result": "stopped_at_A8_kernel_sweeps_registerHooks",
+  "remaining": [
+    "A8 inherited kernel-sweeps comparison",
+    "A9",
+    "A10",
+    "A11",
+    "design-05 steps 2-12"
+  ],
+  "environment": {
+    "pass_names": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "set": {
+      "LANG": "C.UTF-8"
+    },
+    "A8_set": {
+      "ARROKOTHI_EVIDENCE_ROOT": "verified temporary snapshot at 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+    },
+    "inherited_values_recorded": false
+  },
+  "executed_floor_source_sha256": {
+    "tests/tooling/check-node-floor.py": "c9a9df45e9cc607b70b00086fa52cd294a51f0370d13d8116f470e0746d59b30",
+    "tests/tooling/node-floor/archive-input-controls.py": "157c9442f111dc2ad2c5021e0f539e6e4b8d304dcc4ff8e123c37ce0152a7614",
+    "tests/tooling/node-floor/check-step-controls.py": "6ceb54f11954552a2d036a580d2b771fa7775fe01c3e956b77ceae0c54103c51",
+    "tests/tooling/node-floor/check-step.py": "c34494a6f1729a15fda24710013d55d377ba2696e0a153c7bd1dfea068be4c6a",
+    "tests/tooling/node-floor/events-reporter.mjs": "1613e001c5db146ded6a9944fd5d6ee0ed9bbfadaf629d6f00e7d5de18247214",
+    "tests/tooling/node-floor/events.test.mjs": "d086634abfe1029d584eec9acb987408a0b28c7d087e17dcc1a6a36a66e22525",
+    "tests/tooling/node-floor/parent.test.mjs": "b615c4da84ea573b7023469f72f1e5370b7e760e011919beafb3a0e0803df113",
+    "tests/tooling/node-floor/parser.mjs": "345099439f3e3eca2a83a8277ff1ebc6acde0f25b3cf0f0c988399b487829acc",
+    "tests/tooling/node-floor/offsets.ts": "5144aa6c422ee0663e5f420aeadbc2ef53bd61583bab277796818b6d36969124",
+    "tests/tooling/node-floor/reach.ts": "13415da91ee35ed9a8c46a21c53079dc1fc863620729630331cf6d8f64b94443",
+    "tests/tooling/node-floor/unref-budget.ts": "831c42697736270eee56e0073ebd7d59c0790e3e59b44d98f76283539eb17695"
+  },
+  "delivered_source_sha256": {
+    "tests/tooling/check-node-floor.py": "c9a9df45e9cc607b70b00086fa52cd294a51f0370d13d8116f470e0746d59b30",
+    "tests/tooling/node-floor/README.md": "06dd55767e7c922f987d2132884eef0a3a13df19a02c85dc21f0fc39d894c85a",
+    "tests/tooling/node-floor/archive-input-controls.py": "157c9442f111dc2ad2c5021e0f539e6e4b8d304dcc4ff8e123c37ce0152a7614",
+    "tests/tooling/node-floor/check-step-controls.py": "6ceb54f11954552a2d036a580d2b771fa7775fe01c3e956b77ceae0c54103c51",
+    "tests/tooling/node-floor/check-step.py": "c34494a6f1729a15fda24710013d55d377ba2696e0a153c7bd1dfea068be4c6a",
+    "tests/tooling/node-floor/events-reporter.mjs": "1613e001c5db146ded6a9944fd5d6ee0ed9bbfadaf629d6f00e7d5de18247214",
+    "tests/tooling/node-floor/events.test.mjs": "d086634abfe1029d584eec9acb987408a0b28c7d087e17dcc1a6a36a66e22525",
+    "tests/tooling/node-floor/offsets.ts": "5144aa6c422ee0663e5f420aeadbc2ef53bd61583bab277796818b6d36969124",
+    "tests/tooling/node-floor/parent.test.mjs": "b615c4da84ea573b7023469f72f1e5370b7e760e011919beafb3a0e0803df113",
+    "tests/tooling/node-floor/parser.mjs": "345099439f3e3eca2a83a8277ff1ebc6acde0f25b3cf0f0c988399b487829acc",
+    "tests/tooling/node-floor/reach.ts": "13415da91ee35ed9a8c46a21c53079dc1fc863620729630331cf6d8f64b94443",
+    "tests/tooling/node-floor/register-hooks.mjs": "b822522b8224cf8bf7571a8d313c6eb15557dc6b0a4e744215edf62c85d094d5",
+    "tests/tooling/node-floor/unref-budget.ts": "831c42697736270eee56e0073ebd7d59c0790e3e59b44d98f76283539eb17695"
+  },
+  "prerequisite_test_sha256": "7c1d877f94edf5abe124a7da0c2aaa7e3a1296f4767f9a775daa85ffcf7e33f8",
+  "attachments": {
+    "floor-a1-a8.json.gz": {
+      "sha256": "0a270609c79fa9d064b3d8cf1d6f7434f775e28bde37e0415644350ff019ae12",
+      "bytes": 483252,
+      "uncompressed_sha256": "c114fe21317e16bba371bbbbed6e184c8d8a63eb4d2a46ca5a50db281fc82fbb"
+    },
+    "runtime-comparison.json.gz": {
+      "sha256": "b6b25eebe72101110de853d5112ce7783df6a344939d57bdcf5cfbb17cbaf66c",
+      "bytes": 2636,
+      "uncompressed_sha256": "294b4e3adbdf3833bc561b8585edf857d57986fe796feb33b418562c33ee7087"
+    },
+    "archive-focused.json": {
+      "sha256": "af001860889697ca004412431301854d5a564c896f27e521ece44f2c99a9dd99",
+      "bytes": 1168
+    },
+    "archive-controls.json": {
+      "sha256": "796381655f9c07c9d90212dbe300b148814f9fcf7a7e25a21f9a7e0040af02bb",
+      "bytes": 436
+    },
+    "step-controls.json": {
+      "sha256": "0a88301803b35c8eabdbe0dc247feaae8bc6e8b6c4abe4168b5e0dd3613448ab",
+      "bytes": 186
+    },
+    "adoption-scan.json": {
+      "sha256": "d640c69c828d5304830f60d011388d7c5ba604ef3be6aafceb8a53d8c76c4e71",
+      "bytes": 340
+    },
+    "register-hooks.json": {
+      "sha256": "51372bcea97173de7682b4c7ee7b078b4fbe2266497666c798023e30c5d92e26",
+      "bytes": 1047
+    },
+    "poison-off.txt.gz": {
+      "sha256": "3c7b6b8aeefe114e7b392cb32db054f5b3e0c666fc9240e7a7a4c19f0af4f2fb",
+      "bytes": 1809,
+      "uncompressed_sha256": "9e8147b602cf91eb3048868c2b9edb083f92d2a7717ba0efbbf6640bef3058d8"
+    },
+    "poison-count.txt.gz": {
+      "sha256": "37122796b740018abce0c71e6f6cbcedec57126754fc71005d2e9737f03a94d4",
+      "bytes": 1820,
+      "uncompressed_sha256": "95a25efd972cfda6d07f0e2a126cb8199724bd6633eabcd7a307513d6cd76881"
+    },
+    "poison-throw.txt.gz": {
+      "sha256": "718cef035917a6e2b3490d68ee07e33a86ab0dc46aa07f6ecffd390aaf1334ad",
+      "bytes": 1816,
+      "uncompressed_sha256": "8669b710c1fa7dda84f824384178c1e14a21970441a193726e52e2a658d375f8"
+    },
+    "poison-reenter.txt.gz": {
+      "sha256": "cbaa843cc43a0d92161209048ab1f53a47c3f0fc98408d0ed25ec7d041b95c16",
+      "bytes": 1826,
+      "uncompressed_sha256": "c74c1b4ed19394c4090585da8837d8d7a046c509c6ac227cda3f1babf869ec0f"
+    }
+  },
+  "run_scope": "Ordered A1-A8 through failure at the declared kernel-sweeps step. No later assumption or migration step ran. Minimal API diagnostic added after the stop; older local runtime checks use byte-identical test and reproduction files. No clean-C or packet acceptance."
+}

@@ -1,0 +1,1289 @@
+{
+  "version": 1,
+  "registry": "tests/fixtures/packet-tools/mutations.json",
+  "negative_categories": [
+    "identity",
+    "oracle-decision-field",
+    "held-realm-witness",
+    "work-charge",
+    "tool-result",
+    "held-capture"
+  ],
+  "families": [
+    {
+      "id": "identity",
+      "domains": {
+        "shape": [
+          "ambiguous-concatenation"
+        ],
+        "environment": [
+          "ordinary"
+        ]
+      },
+      "cases": [
+        {
+          "case": "identity.parts",
+          "values": {
+            "shape": "ambiguous-concatenation",
+            "environment": "ordinary"
+          }
+        }
+      ]
+    },
+    {
+      "id": "oracle",
+      "domains": {
+        "comparison": [
+          "returned",
+          "view",
+          "nextRefusal",
+          "nextAcceptance",
+          "setupGrant",
+          "refusalPosition",
+          "refusalExecution",
+          "acceptingExit",
+          "fired",
+          "sameOperation",
+          "quietRepeat",
+          "callbackRan",
+          "deliveredAt",
+          "takeoverWindowAt",
+          "outcomeStepAt",
+          "outcomePrefix",
+          "applySequence",
+          "applyModel",
+          "referenceKind",
+          "referenceRefusal",
+          "referenceUnnamed",
+          "referenceUnchanged",
+          "referenceReplay",
+          "recoveryAnswer",
+          "takeoverAnswer",
+          "outcomeAnswer",
+          "declaredExit",
+          "attributed",
+          "exitReached"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "decision-validation"
+        ]
+      },
+      "cases": [
+        {
+          "case": "oracle.returned",
+          "values": {
+            "comparison": "returned",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.view",
+          "values": {
+            "comparison": "view",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.nextRefusal",
+          "values": {
+            "comparison": "nextRefusal",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.nextAcceptance",
+          "values": {
+            "comparison": "nextAcceptance",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.setupGrant",
+          "values": {
+            "comparison": "setupGrant",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.refusalPosition",
+          "values": {
+            "comparison": "refusalPosition",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.refusalExecution",
+          "values": {
+            "comparison": "refusalExecution",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.acceptingExit",
+          "values": {
+            "comparison": "acceptingExit",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.fired",
+          "values": {
+            "comparison": "fired",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.sameOperation",
+          "values": {
+            "comparison": "sameOperation",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.quietRepeat",
+          "values": {
+            "comparison": "quietRepeat",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.callbackRan",
+          "values": {
+            "comparison": "callbackRan",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.deliveredAt",
+          "values": {
+            "comparison": "deliveredAt",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.takeoverWindowAt",
+          "values": {
+            "comparison": "takeoverWindowAt",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.outcomeStepAt",
+          "values": {
+            "comparison": "outcomeStepAt",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.outcomePrefix",
+          "values": {
+            "comparison": "outcomePrefix",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.applySequence",
+          "values": {
+            "comparison": "applySequence",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.applyModel",
+          "values": {
+            "comparison": "applyModel",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.referenceKind",
+          "values": {
+            "comparison": "referenceKind",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.referenceRefusal",
+          "values": {
+            "comparison": "referenceRefusal",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.referenceUnnamed",
+          "values": {
+            "comparison": "referenceUnnamed",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.referenceUnchanged",
+          "values": {
+            "comparison": "referenceUnchanged",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.referenceReplay",
+          "values": {
+            "comparison": "referenceReplay",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.recoveryAnswer",
+          "values": {
+            "comparison": "recoveryAnswer",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.takeoverAnswer",
+          "values": {
+            "comparison": "takeoverAnswer",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.outcomeAnswer",
+          "values": {
+            "comparison": "outcomeAnswer",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.declaredExit",
+          "values": {
+            "comparison": "declaredExit",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.attributed",
+          "values": {
+            "comparison": "attributed",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.exitReached",
+          "values": {
+            "comparison": "exitReached",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "realm.kernel-lexical-shadow",
+      "domains": {
+        "target": [
+          "control",
+          "JSON",
+          "Object",
+          "Array"
+        ],
+        "form": [
+          "declare"
+        ],
+        "stage": [
+          "during-capture"
+        ],
+        "environment": [
+          "ordinary"
+        ]
+      },
+      "cases": [
+        {
+          "case": "realm.kernel-lexical-shadow.control",
+          "values": {
+            "target": "control",
+            "form": "declare",
+            "stage": "during-capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "realm.kernel-lexical-shadow.JSON",
+          "values": {
+            "target": "JSON",
+            "form": "declare",
+            "stage": "during-capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "realm.kernel-lexical-shadow.Object",
+          "values": {
+            "target": "Object",
+            "form": "declare",
+            "stage": "during-capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "realm.kernel-lexical-shadow.Array",
+          "values": {
+            "target": "Array",
+            "form": "declare",
+            "stage": "during-capture",
+            "environment": "ordinary"
+          }
+        }
+      ]
+    },
+    {
+      "id": "realm.kernel-lexical-creation",
+      "domains": {
+        "mode": [
+          "control",
+          "hop"
+        ],
+        "form": [
+          "declare"
+        ],
+        "stage": [
+          "during-capture"
+        ],
+        "environment": [
+          "ordinary"
+        ]
+      },
+      "cases": [
+        {
+          "case": "realm.kernel-lexical-creation.control",
+          "values": {
+            "mode": "control",
+            "form": "declare",
+            "stage": "during-capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "realm.kernel-lexical-creation.hop",
+          "values": {
+            "mode": "hop",
+            "form": "declare",
+            "stage": "during-capture",
+            "environment": "ordinary"
+          }
+        }
+      ]
+    },
+    {
+      "id": "realm.lexical-shadow",
+      "domains": {
+        "pin": [
+          "pinned",
+          "unpinned"
+        ],
+        "stage": [
+          "post-pin"
+        ],
+        "environment": [
+          "ordinary",
+          "frozen-intrinsics"
+        ],
+        "form": [
+          "declare"
+        ]
+      },
+      "cases": [
+        {
+          "case": "realm.lexical-shadow.unpinned.ordinary",
+          "values": {
+            "pin": "unpinned",
+            "stage": "post-pin",
+            "environment": "ordinary",
+            "form": "declare"
+          }
+        },
+        {
+          "case": "realm.lexical-shadow.unpinned.frozen-intrinsics",
+          "values": {
+            "pin": "unpinned",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics",
+            "form": "declare"
+          }
+        },
+        {
+          "case": "realm.lexical-shadow.pinned.frozen-intrinsics",
+          "values": {
+            "pin": "pinned",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics",
+            "form": "declare"
+          }
+        }
+      ]
+    },
+    {
+      "id": "realm.object-freeze-witness",
+      "domains": {
+        "pin": [
+          "pinned",
+          "unpinned"
+        ],
+        "stage": [
+          "post-pin"
+        ],
+        "environment": [
+          "ordinary",
+          "frozen-intrinsics"
+        ],
+        "form": [
+          "assign"
+        ]
+      },
+      "cases": [
+        {
+          "case": "realm.object-freeze-witness.unpinned.ordinary",
+          "values": {
+            "pin": "unpinned",
+            "stage": "post-pin",
+            "environment": "ordinary",
+            "form": "assign"
+          }
+        },
+        {
+          "case": "realm.object-freeze-witness.pinned.ordinary",
+          "values": {
+            "pin": "pinned",
+            "stage": "post-pin",
+            "environment": "ordinary",
+            "form": "assign"
+          }
+        },
+        {
+          "case": "realm.object-freeze-witness.unpinned.frozen-intrinsics",
+          "values": {
+            "pin": "unpinned",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics",
+            "form": "assign"
+          }
+        },
+        {
+          "case": "realm.object-freeze-witness.pinned.frozen-intrinsics",
+          "values": {
+            "pin": "pinned",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics",
+            "form": "assign"
+          }
+        }
+      ]
+    },
+    {
+      "id": "realm.pin-forms",
+      "domains": {
+        "target": [
+          "JSON",
+          "Object",
+          "Array"
+        ],
+        "form": [
+          "assign",
+          "define",
+          "declare",
+          "preexisting"
+        ],
+        "pin": [
+          "full",
+          "writableOnly"
+        ],
+        "stage": [
+          "pre-pin",
+          "post-pin"
+        ],
+        "environment": [
+          "frozen-intrinsics"
+        ]
+      },
+      "cases": [
+        {
+          "case": "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "assign",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.JSON.define.full.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "define",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.JSON.declare.full.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "declare",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "JSON",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.assign.full.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "assign",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.define.full.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "define",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.declare.full.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "declare",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Object",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.assign.full.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "assign",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.define.full.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "define",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.declare.full.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "declare",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Array",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        }
+      ]
+    },
+    {
+      "id": "realm.zone",
+      "domains": {
+        "target": [
+          "Map",
+          "Reflect"
+        ],
+        "form": [
+          "assign",
+          "define",
+          "declare",
+          "preexisting"
+        ],
+        "pin": [
+          "full",
+          "writableOnly"
+        ],
+        "stage": [
+          "pre-pin",
+          "post-pin"
+        ],
+        "environment": [
+          "frozen-intrinsics"
+        ]
+      },
+      "cases": [
+        {
+          "case": "realm.zone.Map.assign.full.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "assign",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Map.assign.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Map.define.full.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "define",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Map.define.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Map.declare.full.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "declare",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Map.declare.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Map.preexisting.full.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Map.preexisting.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Map",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.assign.full.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "assign",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.assign.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.define.full.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "define",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.define.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.declare.full.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "declare",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.declare.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.preexisting.full.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        },
+        {
+          "case": "realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics",
+          "values": {
+            "target": "Reflect",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          }
+        }
+      ]
+    },
+    {
+      "id": "work-charge",
+      "domains": {
+        "shape": [
+          "empty-array-surplus-256-repeated-4096"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "capture"
+        ]
+      },
+      "cases": [
+        {
+          "case": "work-charge.array-surplus",
+          "values": {
+            "shape": "empty-array-surplus-256-repeated-4096",
+            "environment": "ordinary",
+            "stage": "capture"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tool-result",
+      "domains": {
+        "failure": [
+          "stale-repeat",
+          "invalid-repeat",
+          "unstable-control",
+          "target-wrong-kill",
+          "target-uncovered",
+          "target-never-kills",
+          "target-absent",
+          "target-malformed",
+          "target-assertion-shape",
+          "venv-leaf",
+          "venv-load",
+          "venv-hooks",
+          "venv-unresolved",
+          "venv-case"
+        ],
+        "environment": [
+          "POSIX-Python"
+        ],
+        "stage": [
+          "result-classification"
+        ]
+      },
+      "cases": [
+        {
+          "case": "result.stale-repeat",
+          "values": {
+            "failure": "stale-repeat",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.invalid-repeat",
+          "values": {
+            "failure": "invalid-repeat",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.unstable-control",
+          "values": {
+            "failure": "unstable-control",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-wrong-kill",
+          "values": {
+            "failure": "target-wrong-kill",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-uncovered",
+          "values": {
+            "failure": "target-uncovered",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-never-kills",
+          "values": {
+            "failure": "target-never-kills",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-absent",
+          "values": {
+            "failure": "target-absent",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-malformed",
+          "values": {
+            "failure": "target-malformed",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-assertion-shape",
+          "values": {
+            "failure": "target-assertion-shape",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-leaf",
+          "values": {
+            "failure": "venv-leaf",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-load",
+          "values": {
+            "failure": "venv-load",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-hooks",
+          "values": {
+            "failure": "venv-hooks",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-unresolved",
+          "values": {
+            "failure": "venv-unresolved",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.venv-case",
+          "values": {
+            "failure": "venv-case",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        }
+      ]
+    },
+    {
+      "id": "held-capture",
+      "domains": {
+        "type": [
+          "Map",
+          "Date",
+          "Set",
+          "Uint8Array",
+          "ArrayBuffer",
+          "RegExp",
+          "Error",
+          "String",
+          "Boolean",
+          "WeakMap",
+          "Proxy"
+        ],
+        "prototype": [
+          "null",
+          "Object.prototype",
+          "unchanged"
+        ],
+        "stage": [
+          "capture"
+        ],
+        "environment": [
+          "ordinary"
+        ]
+      },
+      "cases": [
+        {
+          "case": "capture.current.Map",
+          "values": {
+            "type": "Map",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Date",
+          "values": {
+            "type": "Date",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Set",
+          "values": {
+            "type": "Set",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Uint8Array",
+          "values": {
+            "type": "Uint8Array",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.ArrayBuffer",
+          "values": {
+            "type": "ArrayBuffer",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.RegExp",
+          "values": {
+            "type": "RegExp",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Error",
+          "values": {
+            "type": "Error",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.String",
+          "values": {
+            "type": "String",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Boolean",
+          "values": {
+            "type": "Boolean",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.WeakMap",
+          "values": {
+            "type": "WeakMap",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        },
+        {
+          "case": "capture.current.Proxy",
+          "values": {
+            "type": "Proxy",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        }
+      ]
+    }
+  ],
+  "readings": [
+    {
+      "id": "audit.RM1",
+      "status": "closed_by_reading",
+      "reason": "Restored round-2 A-hard/B-hard prose omits the binding obligations. The validators check coverage/schema; review 03 compared the changed claims with the sources by reading.",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+    },
+    {
+      "id": "audit.RM2",
+      "status": "closed_by_reading",
+      "reason": "Identical generic responses retain IDs and minimum lengths but lose per-option semantic reconciliation. Review 03 read the option-specific responses; string shape is not semantic truth.",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+    },
+    {
+      "id": "audit.RM3",
+      "status": "closed_by_reading",
+      "reason": "Frozen intrinsics do not freeze the global Object binding. The original source and binding observations contradict poison-blocked; review 03 closed reach truth by reading.",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+    },
+    {
+      "id": "audit.RM5",
+      "status": "closed_by_reading",
+      "reason": "The flag and a startup check alone do not pin the bindings. Review 03 read the closure obligations; the schema guard does not claim to establish them.",
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+    }
+  ]
+}

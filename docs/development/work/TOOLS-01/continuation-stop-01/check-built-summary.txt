@@ -1,0 +1,11 @@
+nondisclosure 14 targets, 0 refused, 23 s
+values 41 targets, 0 refused, 17 s
+ambient_reads 46 targets, 0 refused, 101 s
+control_commits 42 targets, 0 refused, 90 s
+refusals 3 targets, 0 refused, 1 s
+unsupported 4 targets, 0 refused, 2 s
+ingress 1 targets, 0 refused, 1 s
+evidence_records 3 targets, 0 refused, 2 s
+dispatch 43 targets, 0 refused, 16 s
+dispatch_433 1 targets, 0 refused, 1 s
+klz 200 targets, 0 refused, 108 s

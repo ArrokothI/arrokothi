@@ -1,0 +1,33 @@
+{
+  "origin": {
+    "id": "mention-1793cc4c6b56d9fbfe29bf4c",
+    "state": "complete",
+    "legacy": {
+      "status": "non_executable",
+      "rationale": "Inspected K1.1/validation-13/MANIFEST.md:130 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete.",
+      "reason": "record"
+    },
+    "closure": {
+      "links": [],
+      "non_executable": {
+        "reason": "record",
+        "rationale": "Inspected K1.1/validation-13/MANIFEST.md:130 with surrounding paragraph: records historical candidate identity, detached-worktree execution/revert procedure, or comparison of historical counts. It supplies no new input or mutation definition at this locator. Historical exits/counts are not reused. Distinct battery definitions and counterexample locators in the same manifests stay separately pending until their semantic extraction is complete."
+      },
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1/validation-13/MANIFEST.md",
+          "start": 126,
+          "end": 137
+        }
+      ],
+      "context_reasons": {
+        "777b995": "A revision the text cites as provenance; this context reads the origin and its records at their pinned revisions.",
+        "packages/kernel/src": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  "members": [],
+  "targets": [],
+  "counterexamples": []
+}

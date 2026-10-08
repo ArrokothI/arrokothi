@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "test_count": 267,
+  "controls": {
+    "returned": [
+      "report: enter a protocol hold / completed / returned value"
+    ],
+    "view": [
+      "report: enter a protocol hold / completed / view"
+    ],
+    "nextRefusal": [
+      "report: enter a protocol hold / completed / next refusal position"
+    ],
+    "nextAcceptance": [
+      "report: enter a protocol hold / completed / next acceptance position"
+    ],
+    "setupGrant": [
+      "a refusal that leaves the setup grant unauthorized is a violation"
+    ],
+    "refusalPosition": [
+      "at another position, returned and retained alike"
+    ],
+    "refusalExecution": [
+      "naming another Execution, returned and retained alike"
+    ],
+    "acceptingExit": [
+      "a located exception in a scenario whose uninjected call does not accept"
+    ],
+    "fired": [
+      "a fault that did not fire, and a repeat in which one did"
+    ],
+    "sameOperation": [
+      "a run whose faulted operation is not the reference run's"
+    ],
+    "quietRepeat": [
+      "a fault that did not fire, and a repeat in which one did"
+    ],
+    "callbackRan": [
+      "a fault after the safety callback, in a run where it did not run"
+    ],
+    "deliveredAt": [
+      "a delivery row left absent, at the capability's freeze"
+    ],
+    "takeoverWindowAt": [
+      "the takeover window's receipt-only state, outside the clearing append"
+    ],
+    "outcomeStepAt": [
+      "an Outcome prefix, outside the apply window"
+    ],
+    "outcomePrefix": [
+      "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+    ],
+    "applySequence": [
+      "a declared apply sequence that no longer matches the source"
+    ],
+    "applyModel": [
+      "an Outcome decision the declared apply sequence cannot reproduce"
+    ],
+    "referenceKind": [
+      "an uninjected call that did not take its declared exit"
+    ],
+    "referenceRefusal": [
+      "a refusal that also revokes the grant"
+    ],
+    "referenceUnnamed": [
+      "a refusal naming no Execution that consumes a position"
+    ],
+    "referenceUnchanged": [
+      "an idempotent answer that changed the history"
+    ],
+    "referenceReplay": [
+      "an exact replay returning another decision"
+    ],
+    "recoveryAnswer": [
+      "a recovery answer that disagrees with the holds it left"
+    ],
+    "takeoverAnswer": [
+      "a takeover answer with another receipt"
+    ],
+    "outcomeAnswer": [
+      "an Outcome answer naming other Emissions"
+    ],
+    "declaredExit": [
+      "a scenario that does not take its declared exit"
+    ],
+    "attributed": [
+      "an exit no scenario takes"
+    ],
+    "exitReached": [
+      "an exit no scenario takes"
+    ]
+  }
+}

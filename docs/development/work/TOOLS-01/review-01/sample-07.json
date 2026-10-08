@@ -1,0 +1,154 @@
+{
+  "origin": {
+    "id": "artifact-bbe0c5a1782aa6f649f0a4a3",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "K11-R2-VAL-02 descriptor/read disagreement is refused; the named tests compare the retained snapshot with canonical identity.",
+      "targets": [
+        "suite.packages/kernel/tests/values.test.ts",
+        "suite.packages/kernel/tests/creation.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.creation.546.3.088207d1ce86"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.ingress.481.3.61e8bde54da2"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.ingress.479.3.dfc5a87bbd90"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.507.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.504.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.523.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.520.3.5a8d958ffdab"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1/review-02.md",
+          "start": 73,
+          "end": 119
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  "members": [],
+  "targets": [],
+  "counterexamples": [
+    {
+      "id": "witness.creation.546.3.088207d1ce86",
+      "kind": "superseded_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-bbe0c5a1782aa6f649f0a4a3",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:546:3@088207d1ce86"
+      ],
+      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation"
+    },
+    {
+      "id": "witness.ingress.481.3.61e8bde54da2",
+      "kind": "superseded_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-bbe0c5a1782aa6f649f0a4a3",
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:481:3@61e8bde54da2"
+      ],
+      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress"
+    },
+    {
+      "id": "witness.ingress.479.3.dfc5a87bbd90",
+      "kind": "superseded_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-510be2a0362710c9996c358a",
+        "artifact-bbe0c5a1782aa6f649f0a4a3"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:479:3@dfc5a87bbd90"
+      ],
+      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress"
+    },
+    {
+      "id": "witness.dispatch.507.3.41092809bb04",
+      "kind": "held_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-bbe0c5a1782aa6f649f0a4a3",
+        "artifact-bca863b02ba3f5f894baa47d"
+      ],
+      "members": [
+        "packages/kernel/tests/dispatch.test.ts:507:3@41092809bb04"
+      ],
+      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: K11-R2-VAL-02 a payload with no single reading never reaches a Driver"
+    },
+    {
+      "id": "witness.dispatch.504.3.5a8d958ffdab",
+      "kind": "held_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-73555fe668cc180905b1e49a",
+        "artifact-bbe0c5a1782aa6f649f0a4a3"
+      ],
+      "members": [
+        "packages/kernel/tests/dispatch.test.ts:504:3@5a8d958ffdab"
+      ],
+      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: K11-R2-VAL-02 a payload with no single reading never reaches a Driver"
+    },
+    {
+      "id": "witness.dispatch.523.3.41092809bb04",
+      "kind": "superseded_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-bbe0c5a1782aa6f649f0a4a3",
+        "artifact-bca863b02ba3f5f894baa47d"
+      ],
+      "members": [
+        "packages/kernel/tests/dispatch.test.ts:523:3@41092809bb04"
+      ],
+      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound"
+    },
+    {
+      "id": "witness.dispatch.520.3.5a8d958ffdab",
+      "kind": "superseded_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-73555fe668cc180905b1e49a",
+        "artifact-bbe0c5a1782aa6f649f0a4a3"
+      ],
+      "members": [
+        "packages/kernel/tests/dispatch.test.ts:520:3@5a8d958ffdab"
+      ],
+      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound"
+    }
+  ]
+}

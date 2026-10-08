@@ -1,0 +1,14 @@
+{
+  "B..H": {
+    "bytes": 13587197,
+    "sha256": "4dea4bc3391c7cf01bada05eaf89708a6074c9d2856961aad652e54e12fa1f7f"
+  },
+  "previous H..C": {
+    "bytes": 10346505,
+    "sha256": "5b42a9a123e9f3d5431d3f6b80c0633db7147f76906b2133dbeb4b9525ada159"
+  },
+  "C..H": {
+    "bytes": 23635,
+    "sha256": "a8c34fc2a117d556ff720c9f9ad1f3253964cd5cabc6dea4b6ab176dccaa6693"
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "revision": "f22c4ad550ed9c6938c06138b5a8bdd49d15b213",
+  "node": "v26.10.0",
+  "member_statuses": {
+    "held": 314,
+    "preserved": 616,
+    "refused": 268,
+    "superseded": 74
+  },
+  "register_entries": 393,
+  "rule_1": 295,
+  "closed_origins": 110,
+  "origin_states_unchanged": true,
+  "relinked": [
+    "artifact-b06e44e7a30c0b735cf084aa",
+    "artifact-55f842727285272a53a9e5d9",
+    "artifact-ce2e69842afb779a3e70c0f5",
+    "artifact-70d6df0d9d69aeaa93cc8b66",
+    "artifact-6c57cc9dd8febdefa65ed496",
+    "artifact-394a3572417fe81cafbd7097",
+    "artifact-210dd0aaaf1f9edcdcaa0600",
+    "artifact-ecb10ef937e0612352e7c7ef",
+    "artifact-a45b1c9d40d46e183ebd203d",
+    "artifact-f1a28bedebfe204b9687fa53",
+    "artifact-b46445caeaa7feb4193b6677",
+    "artifact-bf8be457073b319f1d960816",
+    "artifact-21fb34d9cd3ad15575371064",
+    "artifact-ada9f66cd74e3bc95eef93d6",
+    "artifact-febb180b453e17b8edab6893",
+    "artifact-bca863b02ba3f5f894baa47d",
+    "artifact-41fff78d8c610a53b2aafa0e",
+    "artifact-0f12d86d31f51cf923cb05e8",
+    "artifact-3310e718c17bac5248395d3d",
+    "artifact-a4fa946d2759121d53f06ef8",
+    "artifact-510be2a0362710c9996c358a",
+    "artifact-c65a82c89661d8cb815b5b1b",
+    "artifact-e675d28451f3413582099c7a",
+    "artifact-58a5b7bc09b47ad262f7e4f5",
+    "artifact-7902341bc00c3376b26ef71f",
+    "artifact-234036da40df72ad36095f4b",
+    "artifact-b303eed73b3e154fe6365c09",
+    "artifact-1ab5c124484bc58b2a471c96",
+    "artifact-fcbe9b87cbe87b398197c578",
+    "artifact-ebfa0eb36bcd33f72a4dffce",
+    "artifact-b93fa92a81d4582fdc056ed6",
+    "artifact-933874e859e8d7b79504af10"
+  ],
+  "closed_with_witness": [
+    "artifact-b06e44e7a30c0b735cf084aa",
+    "artifact-55f842727285272a53a9e5d9",
+    "artifact-ce2e69842afb779a3e70c0f5",
+    "artifact-bbe0c5a1782aa6f649f0a4a3",
+    "artifact-70d6df0d9d69aeaa93cc8b66",
+    "artifact-b344c9faf1272dd3033d4ccd",
+    "artifact-4e300ac8047fcf6b203072a1",
+    "artifact-7c99b94ca43cc08b3d970f63",
+    "artifact-dbf5c4bd47aafe731d44ac00",
+    "artifact-6c57cc9dd8febdefa65ed496",
+    "artifact-394a3572417fe81cafbd7097",
+    "artifact-210dd0aaaf1f9edcdcaa0600",
+    "artifact-ecb10ef937e0612352e7c7ef",
+    "artifact-a45b1c9d40d46e183ebd203d",
+    "artifact-f1a28bedebfe204b9687fa53",
+    "artifact-f50368fdd8385de10113f371",
+    "artifact-b46445caeaa7feb4193b6677",
+    "artifact-bf8be457073b319f1d960816",
+    "artifact-bb7722eb19e78f33e1f81a58",
+    "artifact-21fb34d9cd3ad15575371064",
+    "artifact-ada9f66cd74e3bc95eef93d6",
+    "artifact-febb180b453e17b8edab6893",
+    "artifact-bca863b02ba3f5f894baa47d",
+    "artifact-41fff78d8c610a53b2aafa0e",
+    "artifact-0e16542de3087c0c508b3601",
+    "artifact-791d72837fcc45454f5b0ab6",
+    "artifact-0f12d86d31f51cf923cb05e8",
+    "artifact-3310e718c17bac5248395d3d",
+    "artifact-a4fa946d2759121d53f06ef8",
+    "artifact-510be2a0362710c9996c358a",
+    "artifact-c65a82c89661d8cb815b5b1b",
+    "artifact-e675d28451f3413582099c7a",
+    "artifact-58a5b7bc09b47ad262f7e4f5",
+    "artifact-7902341bc00c3376b26ef71f",
+    "artifact-234036da40df72ad36095f4b",
+    "artifact-98679309de7791acf7f59c87",
+    "artifact-b303eed73b3e154fe6365c09",
+    "artifact-9252c2392294fb63ec0df4ed",
+    "artifact-4992d5c386175b80f363f169",
+    "artifact-1a82f8f5670f7437573c1084",
+    "artifact-1ab5c124484bc58b2a471c96",
+    "artifact-30fdff7b12e937121758c7e7",
+    "artifact-ae65d3df0a6ed394770ff256",
+    "artifact-a8dc74e516932f00626f70e1",
+    "artifact-6dcba4da5936b64c77a8b470",
+    "artifact-f5306a247782c53fd004e62d",
+    "artifact-fcbe9b87cbe87b398197c578",
+    "artifact-22eb339860078995989b5d5f",
+    "artifact-f468517ae332ead13530f5b1",
+    "artifact-ebfa0eb36bcd33f72a4dffce",
+    "artifact-5f5e6a66eb7e856dbfa74c1a",
+    "artifact-b93fa92a81d4582fdc056ed6",
+    "artifact-933874e859e8d7b79504af10"
+  ],
+  "operator_only_members": [
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:77:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:77:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:93:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:93:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:111:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:111:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:128:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:128:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:145:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:145:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:168:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:168:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:184:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:184:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:199:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:199:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/evidence.test.ts:215:3@6f11f8b27115",
+      "key": "packages/kernel/tests/evidence.test.ts:215:3",
+      "detector": [
+        "operator@packages/kernel/tests/evidence.test.ts:44"
+      ]
+    }
+  ],
+  "owner_answer_limited_members": [
+    {
+      "member": "packages/kernel/tests/dispatch.test.ts:1527:3@5a8d958ffdab",
+      "origins": [
+        "artifact-73555fe668cc180905b1e49a"
+      ],
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "pin_blob": "5a8d958ffdabb11d96a49e41330bcd9aa9a8b5d0",
+      "title": "a bound carried only by inheritance reads as missing",
+      "title_kind": "literal",
+      "status": "held",
+      "reasons": [
+        "changed leaf callback (current line 66, 17 more)",
+        "changed leaf callback (pin line 66, 17 more)",
+        "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+      ],
+      "scope": "span",
+      "current": [
+        1560,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "held",
+      "helper_closure": "unchanged",
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": [],
+      "prefix_differences": [
+        "head: registration head"
+      ]
+    },
+    {
+      "member": "packages/kernel/tests/values.test.ts:735:3@fb228bec8c58",
+      "origins": [
+        "artifact-ea5444a6d42154e413fe0f2e"
+      ],
+      "file": "packages/kernel/tests/values.test.ts",
+      "pin_blob": "fb228bec8c584451e0c6a40f4841a7cf949ad9e5",
+      "title": "exactly-at-limit passes and one-over refuses",
+      "title_kind": "literal",
+      "status": "held",
+      "reasons": [
+        "changed leaf callback (current line 115, 10 more)",
+        "changed leaf callback (pin line 115)",
+        "effectful initializer (current line 761)",
+        "referenced: countingCharCodeAt (current line 751)",
+        "referenced: inBoundedChild (current line 615)",
+        "referenced: paddedToExactBytes (current line 595)",
+        "referenced: restoreCharCodeAt (current line 759)",
+        "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+      ],
+      "scope": "span",
+      "current": [
+        1039,
+        3
+      ],
+      "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "register": "held",
+      "helper_closure": "unchanged",
+      "production_changed": [
+        "packages/kernel/src/coordinator.ts",
+        "packages/kernel/src/envelope.ts",
+        "packages/kernel/src/identity.ts",
+        "packages/kernel/src/index.ts",
+        "packages/kernel/src/lifecycle.ts",
+        "packages/kernel/src/outcome.ts",
+        "packages/kernel/src/own-array.ts",
+        "packages/kernel/src/refusal.ts",
+        "packages/kernel/src/result.ts",
+        "packages/kernel/src/unsupported.ts",
+        "packages/kernel/src/values.ts"
+      ],
+      "repository_read_changed": [],
+      "prefix_differences": [
+        "head: registration head",
+        "load: declaration",
+        "load: type-only declaration"
+      ]
+    }
+  ],
+  "transfer_origins_unchanged": true
+}

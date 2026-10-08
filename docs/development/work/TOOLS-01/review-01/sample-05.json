@@ -1,0 +1,157 @@
+{
+  "origin": {
+    "id": "artifact-b06e44e7a30c0b735cf084aa",
+    "state": "complete",
+    "legacy": {
+      "status": "suite",
+      "rationale": "Historical own-constructor rejected-Promise witness. KC1-ARCH-1 decision-01 explicitly retires Promise-return sanitation and forbids manufacturing an unhandled Promise as a passing test. dispatch.test.ts preserves the replacement obligations in Promise independence, inert hostile return misuse, and strict-subprocess Driver-internal rejection tests; it asserts pending after an ignored return and zero observations. No claim that the old unsafe API is safe.",
+      "targets": [
+        "suite.packages/kernel/tests/dispatch.test.ts"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.dispatch.1401.3.5a8d958ffdab"
+        },
+        {
+          "kind": "target",
+          "id": "target.dispatch.1426.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1390.3.41092809bb04"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1-correction-01/blocker-01.md",
+          "start": 74,
+          "end": 113
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [],
+  "targets": [
+    {
+      "id": "target.dispatch.1401.3.5a8d958ffdab",
+      "counterexample": "cx.dispatch.1401.3.5a8d958ffdab",
+      "member": "packages/kernel/tests/dispatch.test.ts:1401:3@5a8d958ffdab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "test_path": [
+        "KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)",
+        "return misuse: an inert hostile return is never observed; the attempt stays pending"
+      ],
+      "declaration": {
+        "line": 1428,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const misuse = {\n      driverId: \"fake-return-misuse\",\n      deliver(): unknown {\n        return hostile;\n      },\n    } as unknown as ExecutionDriver;",
+          "sha256": "d57a3ad0ae6c89e3770046b379d86f627202fdff1f9e832178a4161af288e16e",
+          "literals": [
+            {
+              "ordinal": 6,
+              "value": "fake-return-misuse"
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(thenCalls, 0, \"no return-object property is read\");",
+          "sha256": "c9a8e0006ec150255f88b5f30f44faff81686b9d1c1f76476404a2e3c0d5f0d4"
+        },
+        {
+          "anchor": "assert.deepEqual(\n      view.activation?.deliveries,\n      [\n        { attempt: 1, status: \"pending\", failure: null, activationId: view.activation?.activationId as string, writerEpoch: 1 },\n      ],\n      \"an absent explicit report remains pending\",\n    );",
+          "sha256": "aa971f286539ad0ebcbe43b3ef7915eb110c03d1243f331714d49e23783e64d2"
+        }
+      ],
+      "relation": {
+        "kind": "authorized_replacement",
+        "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+      },
+      "discrimination": {
+        "reading": "The returned object's then getter must never be read, and the delivery must stay pending. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+      }
+    },
+    {
+      "id": "target.dispatch.1426.3.5a8d958ffdab",
+      "counterexample": "cx.dispatch.1426.3.5a8d958ffdab",
+      "member": "packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/dispatch.test.ts",
+      "test_path": [
+        "KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)",
+        "Driver-internal asynchronous failure reports with zero unhandled (strict subprocess)"
+      ],
+      "declaration": {
+        "line": 1459,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const probe = `\n      const { ExecutionCoordinator } = await import(\"./packages/kernel/src/index.ts\");\n      const harness = await import(\"./packages/kernel/tests/harness.ts\");\n      const unhandled = [];\n      process.on(\"unhandledRejection\", (reason) => unhandled.push(String(reason?.message ?? reason)));\n      const kernel = new ExecutionCoordinator({ driver: harness.asyncFailingDriver(\"async lost\") });\n      const author = harness.caller(\"app-a\", \"tenant-a\");\n      const created = kernel.createExecution(author, harness.createRequest());\n      if (!created.ok) { console.log(\"SETUP FAILED\"); process.exit(2); }\n      const first = kernel.dispatch(author, created.value.executionId, { bound: 1 });\n      if (!first.ok) { console.log(\"DISPATCH REFUSED\"); process.exit(3); }\n      const again = kernel.redeliver(author, created.value.executionId);\n      if (!again.ok) { console.log(\"REDELIVER REFUSED\"); process.exit(4); }\n      await new Promise((resolve) => setTimeout(resolve, 150));\n      const view = kernel.inspect(author, created.value.executionId);\n      console.log(JSON.stringify({\n        unhandled: unhandled.length,\n        state: view.ok ? view.value.state : \"missing\",\n        activationId: view.ok && view.value.activation !== null ? view.value.activation.activationId : null,\n        batch: view.ok && view.value.activation !== null ? view.value.activation.batch : null,\n        deliveries: view.ok && view.value.activation !== null ? view.value.activation.deliveries : null,\n        acknowledged: view.ok ? view.value.acknowledged : null,\n      }));\n    `;",
+          "sha256": "af7f08e8970919b7828152e3dcef74cf62180c1b3bdb1204583c6f1f13c29b7c",
+          "literals": [
+            {
+              "ordinal": 3,
+              "value": "\n      const { ExecutionCoordinator } = await import(\"./packages/kernel/src/index.ts\");\n      const harness = await import(\"./packages/kernel/tests/harness.ts\");\n      const unhandled = [];\n      process.on(\"unhandledRejection\", (reason) => unhandled.push(String(reason?.message ?? reason)));\n      const kernel = new ExecutionCoordinator({ driver: harness.asyncFailingDriver(\"async lost\") });\n      const author = harness.caller(\"app-a\", \"tenant-a\");\n      const created = kernel.createExecution(author, harness.createRequest());\n      if (!created.ok) { console.log(\"SETUP FAILED\"); process.exit(2); }\n      const first = kernel.dispatch(author, created.value.executionId, { bound: 1 });\n      if (!first.ok) { console.log(\"DISPATCH REFUSED\"); process.exit(3); }\n      const again = kernel.redeliver(author, created.value.executionId);\n      if (!again.ok) { console.log(\"REDELIVER REFUSED\"); process.exit(4); }\n      await new Promise((resolve) => setTimeout(resolve, 150));\n      const view = kernel.inspect(author, created.value.executionId);\n      console.log(JSON.stringify({\n        unhandled: unhandled.length,\n        state: view.ok ? view.value.state : \"missing\",\n        activationId: view.ok && view.value.activation !== null ? view.value.activation.activationId : null,\n        batch: view.ok && view.value.activation !== null ? view.value.activation.batch : null,\n        deliveries: view.ok && view.value.activation !== null ? view.value.activation.deliveries : null,\n        acknowledged: view.ok ? view.value.acknowledged : null,\n      }));\n    "
+            }
+          ]
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(observed.unhandled, 0, \"the conforming Driver handled its own rejection on both attempts\");",
+          "sha256": "fb74d63e0077d4d96357ae4995a642287a9235a06ab7946646df1193a14c1158"
+        },
+        {
+          "anchor": "assert.equal(observed.state, \"RUNNING\", \"reports change no accepted state\");",
+          "sha256": "7415b891071dc2810a88487810810f53bd9745e45838f9aec7d8376124496df5"
+        },
+        {
+          "anchor": "assert.deepEqual(observed.deliveries, [\n      { attempt: 1, status: \"failed\", failure: \"Driver delivery failed\", activationId: observed.activationId, writerEpoch: 1 },\n      { attempt: 2, status: \"failed\", failure: \"Driver delivery failed\", activationId: observed.activationId, writerEpoch: 1 },\n    ]);",
+          "sha256": "e19ea30601d305b479b9d0fd167e821bfda2614f180ac5982f9588fb598c8ff4"
+        },
+        {
+          "anchor": "assert.equal((observed.batch ?? []).length, 1, \"the reserved batch is intact\");",
+          "sha256": "520e9fdaf15f219a91c0c334e1aa91c1af02ab01a1ffbca4ccf313ed6bb5f982"
+        },
+        {
+          "anchor": "assert.deepEqual(observed.acknowledged, [], \"a failure acknowledges nothing\");",
+          "sha256": "75c06ae5e75691017a44e3e0d9ad4b292ce0a689ea5aceb61d1f9650f6fa6712"
+        }
+      ],
+      "relation": {
+        "kind": "authorized_replacement",
+        "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+      },
+      "discrimination": {
+        "reading": "The child process must report no unhandled rejection, a RUNNING state, failed rows for both attempts, the batch intact and nothing acknowledged. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+      }
+    }
+  ],
+  "counterexamples": [
+    {
+      "id": "witness.dispatch.1390.3.41092809bb04",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-55f842727285272a53a9e5d9",
+        "artifact-b06e44e7a30c0b735cf084aa",
+        "artifact-bca863b02ba3f5f894baa47d"
+      ],
+      "members": [
+        "packages/kernel/tests/dispatch.test.ts:1390:3@41092809bb04"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: Promise independence: hostile ambient constructor/species slots change nothing"
+    }
+  ]
+}

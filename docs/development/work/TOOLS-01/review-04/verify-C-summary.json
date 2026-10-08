@@ -1,0 +1,419 @@
+{
+ "command": "python3 -B scripts/packet_tools.py verify --revision 28258b282532b36eef8fb1571d79b6343b54427b --spec docs/development/work/TOOLS-01/checks.json",
+ "output_sha256": "ba6908bc27f3263fde8de4e7349a5613d8856a954bd0bb29c03a493c97554d34",
+ "output_bytes": 3092631,
+ "result": "checks_passed",
+ "revision": "28258b282532b36eef8fb1571d79b6343b54427b",
+ "environment": {
+  "python": "3.13.5",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "node": "v26.10.0",
+  "git": "git version 2.39.5 (Apple Git-154)"
+ },
+ "profiles_not_run": [
+  {
+   "id": "live-provider",
+   "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
+   "checks": [
+    {
+     "id": "profile.gemini-provider-canary",
+     "argv": [
+      "npm",
+      "run",
+      "canary:gemini"
+     ]
+    },
+    {
+     "id": "profile.mcp-gemini-canary",
+     "argv": [
+      "npm",
+      "run",
+      "canary:mcp:gemini"
+     ]
+    },
+    {
+     "id": "profile.workflow-scenario-canary",
+     "argv": [
+      "npm",
+      "run",
+      "canary:workflow"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "large-memory-timing",
+   "reason": "Owner choice 01: historical engine-limit, heap and timing studies retained in the pinned inventory; individual semantic mappings/command adapters remain pending P1. No execution credit.",
+   "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+   "sources": [
+    "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+    "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+    "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+    "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+   ],
+   "checks": [
+    {
+     "id": "profile.probe-diagnostics-maxlen",
+     "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--expose-gc",
+      "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+     ],
+     "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+    },
+    {
+     "id": "profile.probe-maxlen",
+     "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--expose-gc",
+      "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+     ],
+     "environment": {
+      "TREE": "$ROOT"
+     },
+     "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+    },
+    {
+     "id": "profile.probe-namespace",
+     "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--expose-gc",
+      "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+     ],
+     "environment": {
+      "TREE": "$ROOT"
+     },
+     "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+    },
+    {
+     "id": "profile.refusal-cost-probe-04",
+     "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--expose-gc",
+      "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+     ],
+     "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+    }
+   ]
+  },
+  {
+   "id": "known-base-failure",
+   "reason": "Owner-reported pre-existing missing DESIGN-AUDIT-01 README on main. This builder-docs check is outside the required default profile and earns no execution credit here.",
+   "checks": [
+    {
+     "id": "builder-docs",
+     "argv": [
+      "npm",
+      "run",
+      "check:builder-docs"
+     ]
+    }
+   ]
+  }
+ ],
+ "steps": [
+  {
+   "id": "tool-tests",
+   "passed": true,
+   "status": "finished",
+   "exit": 0,
+   "counts": {
+    "tests": 561
+   }
+  },
+  {
+   "id": "inventory",
+   "passed": true,
+   "summary": {
+    "result": "provenance_verified",
+    "counts": {
+     "artifact": 208,
+     "mention": 1333,
+     "additional": 8
+    },
+    "origins": {
+     "items": 1549
+    }
+   }
+  },
+  {
+   "id": "adoption",
+   "passed": true,
+   "summary": {
+    "result": "revalidation_complete",
+    "transferred": {
+     "origins": 44,
+     "by_decision": {
+      "docs/development/work/TOOLS-01/owner-choice-04.md": 4,
+      "docs/development/work/TOOLS-01/owner-choice-05.md": 40
+     },
+     "limited": {
+      "artifact-73555fe668cc180905b1e49a": {
+       "listed": 3,
+       "extras": {
+        "items": 2
+       }
+      },
+      "artifact-9fd619f5375d598ebb2b88aa": {
+       "listed": 18,
+       "extras": {
+        "items": 0
+       }
+      },
+      "artifact-d2153e36d9c7464883ecea0b": {
+       "listed": 1,
+       "extras": {
+        "items": 0
+       }
+      },
+      "artifact-ea5444a6d42154e413fe0f2e": {
+       "listed": 2,
+       "extras": {
+        "items": 0
+       }
+      }
+     }
+    },
+    "origins": 1549,
+    "states": {
+     "complete": 110,
+     "pending_revalidation": 44,
+     "pending": 1395
+    },
+    "closures": {
+     "complete": 110,
+     "context_ranges": 116,
+     "context_candidates": 139,
+     "context_reasoned": 131
+    },
+    "counts": {
+     "origins": 1549,
+     "counterexamples": 640,
+     "families": 26,
+     "members": 415,
+     "suite_targets": 383,
+     "preserved": 713,
+     "kills": 0
+    },
+    "targets": {
+     "counts": {
+      "targets": 383,
+      "targets_refused": 2,
+      "anchors_bound": 1205,
+      "anchors_reached": 1092,
+      "anchors_not_observable": 7,
+      "input_tokens_matched": 345,
+      "input_computed": 38,
+      "input_module_scope": 113,
+      "credit": {
+       "target_reading": 381
+      }
+     },
+     "results": {
+      "items": 383
+     }
+    },
+    "preserved": {
+     "all_leaves_earlier": true,
+     "test_file_origins": 71,
+     "registrations": 1466,
+     "by_title_kind": {
+      "literal": 1399,
+      "computed": 10,
+      "template": 57
+     },
+     "identical_origins": 63,
+     "identical_distinct": 900,
+     "changed_origins": 8,
+     "changed_registrations": 372,
+     "changed_span_identical": 329,
+     "changed_kept_by_prefix": 33,
+     "changed_refused_by_prefix": 296,
+     "identical_fixture_refused": 21,
+     "identical_read_labelled": 272,
+     "members": 1272,
+     "by_status": {
+      "preserved": 713,
+      "held": 183,
+      "refused": 302,
+      "superseded": 74
+     },
+     "preserved_whole_file": 689,
+     "preserved_prefix_inert": 24,
+     "preserved_helper_reviewed": 81,
+     "preserved_production_changed": 81,
+     "preserved_repository_read_changed": 251,
+     "preserved_register_not_held": 20,
+     "preserved_refused": {
+      "changed test fixture read": 20,
+      "test-side module changed without a helper review": 273,
+      "span changed or removed": 43,
+      "changed leaf callback": 235,
+      "referenced": 217,
+      "effectful initializer": 33,
+      "import changes module requests": 4,
+      "effectful statement": 4
+     }
+    },
+    "register": {
+     "scope_files": 53,
+     "entries": 305,
+     "cases": 94,
+     "by_classification": {
+      "held:Proxy": 11,
+      "held:V-D1": 29,
+      "held:V-ENV": 188,
+      "held:re-prototyped-built-in": 11,
+      "not_held:-": 20,
+      "superseded:Proxy": 46
+     },
+     "rule_1": 188,
+     "detector": {
+      "assignment": 73,
+      "child-process": 136,
+      "delete": 31,
+      "escape": 158,
+      "generated": 14,
+      "unclassified": 3,
+      "writer-call": 51
+     },
+     "detector_entries": 235,
+     "unclassified": [
+      "packages/kernel/tests/poison-catalog.test.ts:273:5"
+     ]
+    },
+    "refused_targets": {
+     "target.dispatch.1363.3.5a8d958ffdab": [
+      "the target leaf is a registered held test (P1-H)"
+     ],
+     "target.dispatch.1426.3.5a8d958ffdab": [
+      "the target leaf is a registered held test (P1-H)"
+     ]
+    }
+   }
+  },
+  {
+   "id": "dimensions",
+   "passed": true,
+   "summary": {
+    "result": "coverage_reported"
+   }
+  },
+  {
+   "id": "registered-mutants",
+   "passed": true,
+   "summary": {
+    "result": "selected_cases_passed",
+    "counts": {
+     "killed": 109
+    },
+    "cases": {
+     "items": 109
+    },
+    "witnesses": {
+     "items": 94
+    }
+   }
+  },
+  {
+   "id": "refusal-mutants",
+   "passed": true,
+   "summary": {
+    "result": "selected_cases_passed",
+    "counts": {
+     "killed": 307
+    },
+    "cases": {
+     "items": 307
+    },
+    "witnesses": []
+   }
+  },
+  {
+   "id": "refusal-census",
+   "passed": true,
+   "status": "finished",
+   "exit": 0,
+   "counts": {}
+  },
+  {
+   "id": "oracle-census",
+   "passed": true,
+   "status": "finished",
+   "exit": 0,
+   "counts": {}
+  },
+  {
+   "id": "typecheck",
+   "passed": true,
+   "status": "finished",
+   "exit": 0,
+   "counts": {}
+  },
+  {
+   "id": "repository-tests",
+   "passed": true,
+   "status": "finished",
+   "exit": 0,
+   "counts": {
+    "tests": 3774,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+   }
+  },
+  {
+   "id": "archive-tests",
+   "passed": true,
+   "status": "finished",
+   "exit": 0,
+   "counts": {
+    "tests": 4,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+   }
+  },
+  {
+   "id": "kernel-sweeps",
+   "passed": true,
+   "status": "finished",
+   "exit": 0,
+   "counts": {}
+  },
+  {
+   "id": "area-gate",
+   "passed": true,
+   "summary": {
+    "result": "reported",
+    "changed_paths": 272,
+    "behaviour_paths": 68,
+    "touched_areas": [
+     "package-lock.json",
+     "package.json",
+     "tests/conformance/effects",
+     "tooling"
+    ],
+    "open_origins": 1439,
+    "reported": {
+     "open_origins": 69,
+     "by_state": {
+      "pending": 64,
+      "pending_revalidation": 5
+     },
+     "prose_pending": 0
+    },
+    "ungated": 664
+   }
+  }
+ ],
+ "started": "2026-10-07T05:11:08Z",
+ "finished": "2026-10-07T05:58:38Z",
+ "checkout": "fresh git clone of the repository at C (HEAD = C, clean before and after), npm ci from the lockfile; no other packet_tools process during the run"
+}

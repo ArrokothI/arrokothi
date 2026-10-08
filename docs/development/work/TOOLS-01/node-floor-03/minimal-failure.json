@@ -1,0 +1,441 @@
+[
+  {
+    "node": "v22.9.0",
+    "argv": [
+      "/Users/rex-shih/.local/share/arrokothi/node-v22.9.0-darwin-arm64/bin/node",
+      "--test",
+      "--experimental-strip-types",
+      "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+      "tests/tooling/node-floor/unref-budget.ts"
+    ],
+    "environment": {
+      "PATH": "/Users/rex-shih/.local/share/arrokothi/node-v22.9.0-darwin-arm64/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/Library/Caches/fnm_multishells/2513_1791000615767/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/rex-shih/.codex/tmp/arg0/codex-arg0AF9uug:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/anaconda3/bin:/Users/rex-shih/anaconda3/condabin:/Users/rex-shih/Library/Caches/fnm_multishells/6942_1790987258704/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/Users/rex-shih/.cargo/bin:/Users/rex-shih/dev/tool/flutter/bin:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/rex-shih/dev/tool/flutter/bin",
+      "HOME": "/Users/rex-shih",
+      "TMPDIR": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/",
+      "LANG": "C.UTF-8"
+    },
+    "exit": 1,
+    "events": [
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/tooling/node-floor/unref-budget.ts",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/tooling/node-floor/unref-budget.ts",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:stderr",
+        "data": {
+          "file": "tests/tooling/node-floor/unref-budget.ts",
+          "message": "(node:14883) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n"
+        }
+      },
+      {
+        "type": "test:stderr",
+        "data": {
+          "file": "tests/tooling/node-floor/unref-budget.ts",
+          "message": "(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "unreferenced timeout with outstanding work",
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "unreferenced timeout with outstanding work",
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "unreferenced timeout with outstanding work",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 2.371166,
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            },
+            "passed": false
+          },
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 0,
+          "name": "unreferenced timeout with outstanding work",
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:fail",
+        "data": {
+          "name": "unreferenced timeout with outstanding work",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 2.371166,
+            "error": {
+              "name": "Error",
+              "message": "Promise resolution is still pending but the event loop has already resolved",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "cancelledByParent",
+              "cause": "Promise resolution is still pending but the event loop has already resolved"
+            }
+          },
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "tests/tooling/node-floor/unref-budget.ts",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 110.763375,
+            "error": {
+              "name": "Error",
+              "message": "test failed",
+              "code": "ERR_TEST_FAILURE",
+              "failureType": "subtestsFailed",
+              "cause": "test failed"
+            },
+            "passed": false
+          },
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:plan",
+        "data": {
+          "nesting": 0,
+          "count": 1
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "tests 1"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "suites 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "pass 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "fail 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "cancelled 1"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "skipped 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "todo 0"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "duration_ms 126.242333"
+        }
+      }
+    ],
+    "stderr": "(node:14882) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+  },
+  {
+    "node": "v25.2.1",
+    "argv": [
+      "/opt/homebrew/bin/node",
+      "--test",
+      "--experimental-strip-types",
+      "--test-reporter=/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/events-reporter.mjs",
+      "tests/tooling/node-floor/unref-budget.ts"
+    ],
+    "environment": {
+      "PATH": "/opt/homebrew/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/Library/Caches/fnm_multishells/2513_1791000615767/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/rex-shih/.codex/tmp/arg0/codex-arg0AF9uug:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/rex-shih/Documents/2026 Fall/bigdata/google-cloud-sdk/bin:/Users/rex-shih/.local/bin:/Users/rex-shih/anaconda3/bin:/Users/rex-shih/anaconda3/condabin:/Users/rex-shih/Library/Caches/fnm_multishells/6942_1790987258704/bin:/Users/rex-shih/Library/Application Support/fnm:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/Users/rex-shih/.cargo/bin:/Users/rex-shih/dev/tool/flutter/bin:/Users/rex-shih/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/rex-shih/dev/tool/flutter/bin",
+      "HOME": "/Users/rex-shih",
+      "TMPDIR": "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/",
+      "LANG": "C.UTF-8"
+    },
+    "exit": 0,
+    "events": [
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/tooling/node-floor/unref-budget.ts",
+          "type": "test",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "tests/tooling/node-floor/unref-budget.ts",
+          "type": "test",
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:enqueue",
+        "data": {
+          "nesting": 0,
+          "name": "unreferenced timeout with outstanding work",
+          "type": "test",
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:dequeue",
+        "data": {
+          "nesting": 0,
+          "name": "unreferenced timeout with outstanding work",
+          "type": "test",
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "unreferenced timeout with outstanding work",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 52.618625,
+            "type": "test",
+            "passed": true
+          },
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:start",
+        "data": {
+          "nesting": 0,
+          "name": "unreferenced timeout with outstanding work",
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:pass",
+        "data": {
+          "name": "unreferenced timeout with outstanding work",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 52.618625,
+            "type": "test"
+          },
+          "line": 6,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:summary",
+        "data": {
+          "success": true,
+          "counts": {
+            "tests": 1,
+            "failed": 0,
+            "passed": 1,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0,
+            "topLevel": 1,
+            "suites": 0
+          },
+          "duration_ms": 55.726583,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:complete",
+        "data": {
+          "name": "tests/tooling/node-floor/unref-budget.ts",
+          "nesting": 0,
+          "testNumber": 1,
+          "details": {
+            "duration_ms": 175.520292,
+            "type": "test",
+            "passed": true
+          },
+          "line": 1,
+          "column": 1,
+          "file": "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/unref-budget.ts"
+        }
+      },
+      {
+        "type": "test:plan",
+        "data": {
+          "nesting": 0,
+          "count": 1
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "tests 1",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "suites 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "pass 1",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "fail 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "cancelled 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "skipped 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "todo 0",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:diagnostic",
+        "data": {
+          "nesting": 0,
+          "message": "duration_ms 193.649459",
+          "level": "info"
+        }
+      },
+      {
+        "type": "test:summary",
+        "data": {
+          "success": true,
+          "counts": {
+            "tests": 1,
+            "failed": 0,
+            "passed": 1,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0,
+            "topLevel": 1,
+            "suites": 0
+          },
+          "duration_ms": 193.649459
+        }
+      }
+    ],
+    "stderr": ""
+  }
+]

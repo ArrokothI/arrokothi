@@ -1,0 +1,73 @@
+{
+  "subject_revision": "3a5d78dda9152a9a6d6104287f62996926d0d9df",
+  "base_revision": "5b196bd0",
+  "node": "v26.10.0",
+  "node_install": {
+    "path": "/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64",
+    "shasums256_txt_sha256": "60588158620d74dd4b130f7ad972ad535571c476cdc4b17fcfd9c4155d3ed2e3",
+    "archive": "node-v26.10.0-darwin-arm64.tar.gz",
+    "archive_sha256": "751fdf7439f115d87ee2a8f3f18c065b6151852068e3e666ac60ac2996f75ac9",
+    "checked_before_extraction": true,
+    "signature_checked": false
+  },
+  "host": "macOS 26.6.2 (25G83) arm64",
+  "python": "3.13.5",
+  "result": "complete_A1_to_A11_passed",
+  "consequences": {
+    "A9": "subtest targets refused",
+    "A10": "order model fails; every leaf counts as earlier"
+  },
+  "remaining": [
+    "design-05 steps 2-12"
+  ],
+  "environment": {
+    "pass_names": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "set": {
+      "LANG": "C.UTF-8"
+    },
+    "path_prepend": "selected Node bin directory",
+    "A8_set": {
+      "ARROKOTHI_EVIDENCE_ROOT": "verified temporary snapshot at 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49"
+    },
+    "inherited_values_recorded": false
+  },
+  "executed_floor_source_sha256": {
+    "tests/tooling/check-node-floor.py": "5e83884327304edb171c436c72a9e2e6c1d97db3b891d0f923e7d2c7365fdd77",
+    "tests/tooling/read-trace.mjs": "25c0b05aaa3be3d61563badad91b18eca9dfdea0665d5fec7843ceea13088774",
+    "tests/tooling/node-floor/README.md": "eedc9462fd423006930efb2e8ec61b7a03ab97e52589c6ce0ed1372433719d5b",
+    "tests/tooling/node-floor/archive-input-controls.py": "157c9442f111dc2ad2c5021e0f539e6e4b8d304dcc4ff8e123c37ce0152a7614",
+    "tests/tooling/node-floor/check-step-controls.py": "6ceb54f11954552a2d036a580d2b771fa7775fe01c3e956b77ceae0c54103c51",
+    "tests/tooling/node-floor/check-step.py": "c34494a6f1729a15fda24710013d55d377ba2696e0a153c7bd1dfea068be4c6a",
+    "tests/tooling/node-floor/events-reporter.mjs": "1613e001c5db146ded6a9944fd5d6ee0ed9bbfadaf629d6f00e7d5de18247214",
+    "tests/tooling/node-floor/events.test.mjs": "d086634abfe1029d584eec9acb987408a0b28c7d087e17dcc1a6a36a66e22525",
+    "tests/tooling/node-floor/isolation-a.test.mjs": "b575ab5d7ba7d8156c2c079bd6bea8d229380b894992b584a9cca98136e96fbd",
+    "tests/tooling/node-floor/isolation-b.test.mjs": "5db53791eed47d867e7f3d06e001e2516e279173606acac18fd5ec1f4543cd16",
+    "tests/tooling/node-floor/offsets.ts": "5144aa6c422ee0663e5f420aeadbc2ef53bd61583bab277796818b6d36969124",
+    "tests/tooling/node-floor/order-await.test.ts": "3b8b96b54c032a748d310b88e341761bf9823f74438adf3d26b678fcbb43f6d3",
+    "tests/tooling/node-floor/order-deferred.test.ts": "60ce31975bd7711a759e1ce93497bd2aaed9ddb1042e433a740a244c0fc63648",
+    "tests/tooling/node-floor/order.test.ts": "6e3ad2c9004f9c516da8a8d04fc2efaf7f4bcd9fb94eb4fc880247f42d74db49",
+    "tests/tooling/node-floor/parent.test.mjs": "b615c4da84ea573b7023469f72f1e5370b7e760e011919beafb3a0e0803df113",
+    "tests/tooling/node-floor/parser.mjs": "345099439f3e3eca2a83a8277ff1ebc6acde0f25b3cf0f0c988399b487829acc",
+    "tests/tooling/node-floor/reach.ts": "13415da91ee35ed9a8c46a21c53079dc1fc863620729630331cf6d8f64b94443",
+    "tests/tooling/node-floor/read-trace.test.ts": "55a09f6ee3b604a3e6b00dafeed298cb60f35d22ce04b4945405ce81b6d429cf",
+    "tests/tooling/node-floor/register-hooks.mjs": "b822522b8224cf8bf7571a8d313c6eb15557dc6b0a4e744215edf62c85d094d5",
+    "tests/tooling/node-floor/subtest.test.mjs": "58b98b06f907ca1ec07f332297dcdd06c4951d24befe7d003cf50df215ae9d4a",
+    "tests/tooling/node-floor/unref-budget.ts": "831c42697736270eee56e0073ebd7d59c0790e3e59b44d98f76283539eb17695"
+  },
+  "attachments": {
+    "floor-a1-a11.json.gz": {
+      "sha256": "44fc74f1414ccfcfc4fb96d70fef08ed9131bfd97cd1ac702a4e9a0023ad3c41",
+      "bytes": 799402,
+      "uncompressed_sha256": "59c041ef4cb4a34963065766df41c50bc7e416ea365ff6cd06a6ad4f3bcf8b7f"
+    },
+    "sweep-timing.json": {
+      "sha256": "29cc3d8f3a231589a330e61a26b1a3818c7ddf430601a4a3798f7920f8fd1ab9",
+      "bytes": 2158
+    }
+  },
+  "run_scope": "Complete ordered A1-A11 run on the clean subject. sweep-timing.json is a diagnostic that ran before the run on the uncommitted floor edits; it is not a floor result."
+}

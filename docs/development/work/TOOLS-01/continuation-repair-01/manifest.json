@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "validation_fixture": {
+    "root": "/private/tmp/tools-01-repair-v3-6lz3eghi/repo",
+    "revision": "266de3beb620ac6e1df004d65e637d6e13fb769d",
+    "tree": "1930184ef258373cb30f6e673477004186cf2704"
+  },
+  "not_final_C": true,
+  "node": "v26.10.0",
+  "source_sha256": {
+    "docs/development/work/TOOLS-01/checks.json": "23d18030f4ad7e0b05a1f576c4e73439e95d92e898d4f483efd742b4a7f2f6e0",
+    "scripts/packet_tools.py": "0f74f15d09f386a2c5933e03f0265029826eaec54f0158b699287f30b80e1d40",
+    "tests/fixtures/packet-tools/adoption.json": "4db4db259bd8f8e93bf4fe71851e9c8bf779883c58691d7f3e49ada60299511d",
+    "tests/fixtures/packet-tools/refusal-guards.json": "6782fe43b3fc8ed8b40be47a327e034aa06ee924153b4f85a7d4c5902e627ad4",
+    "tests/tooling/README.md": "0ce63b97ca58ad0f91fcbba8da8a513abdb7e3a884bb9f4eec4e96f8b2c5bea8",
+    "tests/tooling/test_adoption_format.py": "2f889c8a40a0b009f6da2f8edf08d74b864cbdac3b9372b33fc6a1516419a872",
+    "tests/tooling/test_closure_tools.py": "a6def1777d7564770905f7c07c7b11847dc20e9c49824269854ca15a010578bc",
+    "tests/tooling/test_preserved_tools.py": "6a30390d34312cfd99a3464309d49176ccb76dbecef807c37981f2f0a1d54713",
+    "tests/tooling/test_source_lines.py": "bdc85b25d73e6af76f52bfe9cbfb61853a40adb56cabe95f3fcd7012f5c015db"
+  },
+  "reads_digest_changes": [
+    "packages/kernel/tests/ambient-reads.test.ts:46:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:50:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:57:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:67:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:79:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:138:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:160:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:298:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:304:5@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:316:3@4a94f4ea0361",
+    "packages/kernel/tests/ambient-reads.test.ts:323:3@4a94f4ea0361",
+    "packages/kernel/tests/control-commits.test.ts:81:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:93:5@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:100:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:117:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:123:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:128:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:135:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:145:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:226:3@1cc0368ebe2d",
+    "packages/kernel/tests/control-commits.test.ts:231:5@1cc0368ebe2d"
+  ],
+  "artifact_sha256": {
+    "census.json": "156ebf00b5da8fced6ecab77e0d08391b99f8b7ea63042779e8f76ce8e8b9a35",
+    "census.txt": "7bbd461bf47b48c6f43bdeb4760376d0cf1077d4f4671b144e675e1cde40e242",
+    "closure-probes.json": "f1ce221388df389a4788624299b12b6beee0f0d0337a23e309271c9bd7d20d25",
+    "context-lines-after.json": "9be1c09268a6a2e4d89cca0f86fe08b40db21d1250b068cb300ac54fd6db07d6",
+    "context-lines-before.json": "b242b206e73dd7fda1126b0d66c723cbf2c3c196a9d3825e0b8757edd0415ed3",
+    "inventory.json.gz": "cec8f9cc57fb1140c12ee68e2daa0208939cdd0e81f67eabd9d04aa24cf777b9",
+    "probe_context_lines.py": "ce1d14d26f28d884ce2b460746f0c332881af2709258bc1430a914bba8b7e5af",
+    "refusals.json.gz": "81a881e6cf78fc58c52cba192cb5707774ceeba6c66298430651d3f940d42f3b",
+    "registry.json": "f8e9c01997cdefc0b832fbcb9871f13734cf0364688c5eb290a6b7cb36115272",
+    "targets.json.gz": "e5df72cc9590c4108785d68f33183bafd88a6dd310c553cfa7cfe0c04076e85d",
+    "targets.txt": "69d4a4a7b342e9213d84c8363052a821504d67a63db1953b03a22bb10d3f849d",
+    "tooling-tests.txt": "db3f1c1b8eff5fa906796ca0d71295a5ad33f924c64ec1b4f8a5c98069ad9c92"
+  },
+  "acceptance": "not evaluated"
+}

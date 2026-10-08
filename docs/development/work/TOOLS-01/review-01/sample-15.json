@@ -1,0 +1,78 @@
+{
+  "origin": {
+    "id": "artifact-63378152d309b4564411b75b",
+    "state": "complete",
+    "legacy": {
+      "status": "case",
+      "rationale": "The ten literal re-prototyped built-in recipes are preserved as held current-behavior witnesses with comparison-removal controls. decision-01 supersedes acceptance and incidental member refusal: K1.1-correction-03 must refuse their type before own-key listing. No conformance, correction or hold-release credit.",
+      "targets": [
+        "capture.current.Map",
+        "capture.current.Date",
+        "capture.current.Set",
+        "capture.current.Uint8Array",
+        "capture.current.ArrayBuffer",
+        "capture.current.RegExp",
+        "capture.current.Error",
+        "capture.current.String",
+        "capture.current.Boolean",
+        "capture.current.WeakMap"
+      ]
+    },
+    "closure": {
+      "links": [
+        {
+          "kind": "case",
+          "id": "capture.current.Map"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.Date"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.Set"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.Uint8Array"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.ArrayBuffer"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.RegExp"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.Error"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.String"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.Boolean"
+        },
+        {
+          "kind": "case",
+          "id": "capture.current.WeakMap"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+          "start": 1,
+          "end": 12
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  "members": [],
+  "targets": [],
+  "counterexamples": []
+}

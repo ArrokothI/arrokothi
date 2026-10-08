@@ -1,0 +1,390 @@
+{
+  "version": 1,
+  "candidate": "docs/development/work/TOOLS-01/verification.json",
+  "environment": {
+    "pass": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "set": {
+      "LANG": "C.UTF-8"
+    },
+    "absent": [
+      {
+        "name": "NODE_OPTIONS",
+        "effect": "Never passed: an inherited preload or flag would change every Node child. Only the reads phase sets it, for its own traced runs."
+      },
+      {
+        "name": "NODE_TEST_CONTEXT",
+        "effect": "Never passed: the Node test runner sets it in its own children. read-trace.mjs reads it only to label a test child."
+      },
+      {
+        "name": "NODE_V8_COVERAGE",
+        "effect": "Never passed: reach runs set a temporary directory for their own children."
+      },
+      {
+        "name": "KERNEL_POISON_MODE",
+        "effect": "Absent from every declared command, so preload.ts stays inactive in repository tests. run-poison-sweep.ts sets it in each poison child it spawns."
+      },
+      {
+        "name": "KERNEL_POISON_OUT",
+        "effect": "Absent from every declared command; run-poison-sweep.ts sets it with KERNEL_POISON_MODE."
+      },
+      {
+        "name": "KERNEL_POISON_NAMES",
+        "effect": "Absent from every declared command; run-poison-sweep.ts sets it with KERNEL_POISON_MODE."
+      },
+      {
+        "name": "PACKET_ORACLE_CHECK",
+        "effect": "Absent from every declared command; oracle-probe.mjs sets it for the oracle child it spawns, the only process that loads oracle-reach.mjs."
+      },
+      {
+        "name": "PACKET_REACH_FILE",
+        "effect": "Absent from every declared command; oracle-probe.mjs sets it with PACKET_ORACLE_CHECK."
+      },
+      {
+        "name": "ARROKOTHI_READ_TRACE",
+        "effect": "Absent from verdict commands; the reads phase sets it together with NODE_OPTIONS."
+      },
+      {
+        "name": "GEMINI_MODEL",
+        "effect": "Read only by the live-provider canary scripts, which owner choice 01 keeps not run."
+      },
+      {
+        "name": "GEMINI_API_KEY",
+        "effect": "Never passed. Read only through geminiApiKeyFromEnv's default argument, which the live-provider canaries use; no selected test calls it."
+      },
+      {
+        "name": "GOOGLE_API_KEY",
+        "effect": "Never passed; the same fallback as GEMINI_API_KEY."
+      },
+      {
+        "name": "GOOGLE_GENERATIVE_AI_API_KEY",
+        "effect": "Never passed; the same fallback as GEMINI_API_KEY."
+      },
+      {
+        "name": "FLOOR_ORDER_LOG",
+        "effect": "node-floor A10 fixtures only; check-node-floor.py sets a temporary path. No declared command selects them."
+      },
+      {
+        "name": "FLOOR_READ_DIR",
+        "effect": "node-floor A11 fixture only; check-node-floor.py sets a temporary path. No declared command selects it."
+      }
+    ],
+    "census": {
+      "roots": [
+        "packages",
+        "tests",
+        "scripts",
+        "examples"
+      ],
+      "computed": [
+        {
+          "path": "packages/kernel/tests/sweep/run-poison-sweep.ts",
+          "text": "env: { ...process.env, KERNEL_POISON_MODE: mode, KERNEL_POISON_OUT: dir, KERNEL_POISON_NAMES: namesFile },",
+          "reason": "Passes the sweep's own declared environment to each poison child and adds the three poison names; reads no other name."
+        },
+        {
+          "path": "packages/models/gemini/src/index.ts",
+          "text": "export function geminiApiKeyFromEnv(env: Record<string, string | undefined> = process.env): string | undefined {",
+          "reason": "Production default argument; reads GEMINI_API_KEY, GOOGLE_API_KEY or GOOGLE_GENERATIVE_AI_API_KEY, all declared absent."
+        },
+        {
+          "path": "tests/tooling/oracle-probe.mjs",
+          "text": "env: { ...process.env, PACKET_ORACLE_CHECK: name, PACKET_REACH_FILE: witness },",
+          "reason": "Passes its declared environment to the oracle child and adds PACKET_ORACLE_CHECK and PACKET_REACH_FILE."
+        }
+      ]
+    }
+  },
+  "inputs": [
+    {
+      "id": "archive-snapshot",
+      "kind": "git_snapshot",
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "environment": "ARROKOTHI_EVIDENCE_ROOT",
+      "source": "docs/development/archive.md pinned Git fallback; verified against the tree before and after use"
+    }
+  ],
+  "checks": [
+    {
+      "id": "tool-tests",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/tooling",
+        "-p",
+        "test_*.py"
+      ],
+      "timeout_seconds": 600,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^Ran (\\d+) tests in "
+      },
+      "minimum_counts": {
+        "tests": 573
+      }
+    },
+    {
+      "id": "inventory",
+      "operation": "inventory",
+      "spec": "tests/fixtures/packet-tools/inventory.json",
+      "expected": "provenance_verified"
+    },
+    {
+      "id": "adoption",
+      "operation": "corpus",
+      "spec": "tests/fixtures/packet-tools/adoption.json",
+      "expected": "revalidation_complete"
+    },
+    {
+      "id": "dimensions",
+      "operation": "coverage",
+      "spec": "tests/fixtures/packet-tools/coverage.json",
+      "expected": "coverage_reported"
+    },
+    {
+      "id": "registered-mutants",
+      "operation": "mutations",
+      "spec": "tests/fixtures/packet-tools/mutations.json",
+      "expected": "selected_cases_passed"
+    },
+    {
+      "id": "refusal-mutants",
+      "operation": "mutations",
+      "spec": "tests/fixtures/packet-tools/refusal-guards.json",
+      "expected": "selected_cases_passed"
+    },
+    {
+      "id": "refusal-census",
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/check-refusal-registry.py"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "oracle-census",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/registry-check.mjs"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "typecheck",
+      "argv": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "repository-tests",
+      "catalog": {
+        "script": "test",
+        "script_text": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts packages/sdk/tests/*.test.ts",
+        "flags": [
+          "--test",
+          "--experimental-strip-types"
+        ],
+        "globs": [
+          "packages/core/tests/*.test.ts",
+          "packages/kernel/tests/*.test.ts",
+          "packages/models/gemini/tests/*.test.ts",
+          "packages/retrieval/local/tests/*.test.ts",
+          "packages/agents/strands/tests/*.test.ts",
+          "packages/interoperability/mcp/tests/*.test.ts",
+          "tests/conformance/*/*.test.ts",
+          "packages/sdk/tests/*.test.ts"
+        ]
+      },
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
+      },
+      "minimum_counts": {
+        "tests": 3774
+      },
+      "exact_counts": {
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "catalog": {
+        "script": "test:archive-evidence",
+        "script_text": "node --test --experimental-strip-types tests/archive/*.test.ts",
+        "flags": [
+          "--test",
+          "--experimental-strip-types"
+        ],
+        "globs": [
+          "tests/archive/*.test.ts"
+        ]
+      },
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
+      },
+      "minimum_counts": {
+        "tests": 1
+      },
+      "exact_counts": {
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "inputs": [
+        "archive-snapshot"
+      ]
+    },
+    {
+      "id": "kernel-sweeps",
+      "argv": [
+        "npm",
+        "run",
+        "test:kernel-sweeps"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    }
+  ],
+  "profiles_not_run": [
+    {
+      "id": "live-provider",
+      "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
+      "checks": [
+        {
+          "id": "profile.gemini-provider-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:gemini"
+          ]
+        },
+        {
+          "id": "profile.mcp-gemini-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:mcp:gemini"
+          ]
+        },
+        {
+          "id": "profile.workflow-scenario-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:workflow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "large-memory-timing",
+      "reason": "Owner choice 01: historical engine-limit, heap and timing studies retained in the pinned inventory; individual semantic mappings/command adapters remain pending P1. No execution credit.",
+      "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "sources": [
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ],
+      "checks": [
+        {
+          "id": "profile.probe-diagnostics-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-namespace",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.refusal-cost-probe-04",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        }
+      ]
+    },
+    {
+      "id": "known-base-failure",
+      "reason": "Owner-reported pre-existing missing DESIGN-AUDIT-01 README on main. This builder-docs check is outside the required default profile and earns no execution credit here.",
+      "checks": [
+        {
+          "id": "builder-docs",
+          "argv": [
+            "npm",
+            "run",
+            "check:builder-docs"
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "P1 adoption remains pending; a passing executed subset does not complete P1/P2.",
+    "No prior results reused; acceptance and hold release are not evaluated.",
+    "check:builder-docs has an owner-reported pre-existing missing DESIGN-AUDIT-01 README on main; report separately without repairing it.",
+    "Dimension gaps and closed-by-reading reasons are in the dimensions result; no universal coverage claim."
+  ]
+}

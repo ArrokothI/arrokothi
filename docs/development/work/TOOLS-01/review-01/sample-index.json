@@ -1,0 +1,225 @@
+[
+  {
+    "sample": 1,
+    "id": "artifact-ab4a0cceaeed3b426232f62f",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "packages/kernel/tests/boundary.test.ts",
+      "start": 1,
+      "end": 207
+    },
+    "member_statuses": {
+      "preserved": 9
+    },
+    "links": {}
+  },
+  {
+    "sample": 2,
+    "id": "artifact-394a3572417fe81cafbd7097",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "packages/kernel/tests/evidence.test.ts",
+      "start": 1,
+      "end": 351
+    },
+    "member_statuses": {
+      "preserved": 13
+    },
+    "links": {}
+  },
+  {
+    "sample": 3,
+    "id": "artifact-f1a28bedebfe204b9687fa53",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "packages/kernel/tests/receipts.test.ts",
+      "start": 1,
+      "end": 311
+    },
+    "member_statuses": {
+      "preserved": 15
+    },
+    "links": {}
+  },
+  {
+    "sample": 4,
+    "id": "artifact-ee81a9215a4b627e88fda2d5",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "packages/kernel/tests/unsupported.test.ts",
+      "start": 1,
+      "end": 72
+    },
+    "member_statuses": {
+      "refused": 4
+    },
+    "links": {
+      "target": 4
+    }
+  },
+  {
+    "sample": 5,
+    "id": "artifact-b06e44e7a30c0b735cf084aa",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "docs/development/work/K1.1-correction-01/blocker-01.md",
+      "start": 74,
+      "end": 113
+    },
+    "member_statuses": {},
+    "links": {
+      "target": 2,
+      "counterexample": 1
+    }
+  },
+  {
+    "sample": 6,
+    "id": "artifact-ce2e69842afb779a3e70c0f5",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "docs/development/work/K1.1/review-01.md",
+      "start": 53,
+      "end": 73
+    },
+    "member_statuses": {},
+    "links": {
+      "target": 4
+    }
+  },
+  {
+    "sample": 7,
+    "id": "artifact-bbe0c5a1782aa6f649f0a4a3",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "docs/development/work/K1.1/review-02.md",
+      "start": 73,
+      "end": 119
+    },
+    "member_statuses": {},
+    "links": {
+      "counterexample": 7
+    }
+  },
+  {
+    "sample": 8,
+    "id": "artifact-b46445caeaa7feb4193b6677",
+    "source": {
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "path": "docs/development/work/K1.2-correction-01/review-04/p2-review14.ts",
+      "start": 1,
+      "end": 32
+    },
+    "member_statuses": {},
+    "links": {
+      "target": 2
+    }
+  },
+  {
+    "sample": 9,
+    "id": "artifact-d5ce2b4c65a4f714507485f0",
+    "source": {
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "path": "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+      "start": 1,
+      "end": 84
+    },
+    "member_statuses": {},
+    "links": {
+      "target": 5
+    }
+  },
+  {
+    "sample": 10,
+    "id": "artifact-6dcba4da5936b64c77a8b470",
+    "source": {
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "path": "packages/kernel/tests/sweep/poison.ts",
+      "start": 1,
+      "end": 536
+    },
+    "member_statuses": {},
+    "links": {
+      "counterexample": 1
+    }
+  },
+  {
+    "sample": 11,
+    "id": "artifact-f5306a247782c53fd004e62d",
+    "source": {
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "path": "packages/kernel/tests/sweep/zone-names.ts",
+      "start": 1,
+      "end": 130
+    },
+    "member_statuses": {},
+    "links": {
+      "target": 1
+    }
+  },
+  {
+    "sample": 12,
+    "id": "artifact-91a16df2b59f363129b8a582",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "docs/development/work/K1.1-correction-01/contract.md",
+      "start": 235,
+      "end": 264
+    },
+    "member_statuses": {},
+    "links": {}
+  },
+  {
+    "sample": 13,
+    "id": "mention-1793cc4c6b56d9fbfe29bf4c",
+    "source": {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "path": "docs/development/work/K1.1/validation-13/MANIFEST.md",
+      "start": 126,
+      "end": 137
+    },
+    "member_statuses": {},
+    "links": {}
+  },
+  {
+    "sample": 14,
+    "id": "artifact-1bc6bdfb882a53a207254ef4",
+    "source": {
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "path": "docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs",
+      "start": 1,
+      "end": 88
+    },
+    "member_statuses": {},
+    "links": {
+      "case": 29
+    }
+  },
+  {
+    "sample": 15,
+    "id": "artifact-63378152d309b4564411b75b",
+    "source": {
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "path": "docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
+      "start": 1,
+      "end": 12
+    },
+    "member_statuses": {},
+    "links": {
+      "case": 10
+    }
+  },
+  {
+    "sample": 16,
+    "id": "additional-13c84103ae156ad2a2b93960",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
+      "start": 1,
+      "end": 14
+    },
+    "member_statuses": {},
+    "links": {
+      "case": 4
+    }
+  }
+]

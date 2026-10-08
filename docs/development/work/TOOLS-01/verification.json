@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "base": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+  "require_direct_parent": true,
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/TOOLS-01/implementation-04.md"
+  ],
+  "preserve": [
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "packages"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "mental-model"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "docs/development/work/DESIGN-AUDIT-01"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "docs/development/006-development-process.md"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "docs/development/008-implementation-report.md"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "docs/development/009-universal-prompts.md"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "docs/development/012-review-methods.md"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "docs/development/research"
+    },
+    {
+      "revision": "3a5d78dda9152a9a6d6104287f62996926d0d9df",
+      "path": "AGENTS.md"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": "docs/development/README.md"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": ".agents/skills/arrokothi-architecture"
+    },
+    {
+      "revision": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+      "path": ".agents/skills/arrokothi-slice-audit"
+    }
+  ],
+  "evidence": []
+}

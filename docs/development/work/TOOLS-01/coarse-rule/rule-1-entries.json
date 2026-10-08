@@ -1,0 +1,4267 @@
+[
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:185:1",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:160:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:516:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:579:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:883:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:1058:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:448:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:676:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:728:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:806:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:869:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:916:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:958:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1004:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1302:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1390:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1545:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1560:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:76:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:109:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:122:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:159:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:166:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:196:5",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:224:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:234:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:459:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:790:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:118:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:133:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:178:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:211:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:251:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:82:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:235:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:275:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:295:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/poison-catalog.test.ts:273:5",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:187:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:210:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:227:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:241:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:259:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:295:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-ambient.test.ts:259:7",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/recovery-ambient.test.ts:271:5",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/recovery-ambient.test.ts:286:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/recovery-ambient.test.ts:293:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/recovery-ambient.test.ts:327:7",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/review-11-probes.test.ts:24:5",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/transaction.test.ts:150:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:177:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:207:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:220:5",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:264:5",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:347:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:388:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:632:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1307:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1323:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1342:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1414:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1454:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1480:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1498:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1518:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1553:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1579:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1615:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1665:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1728:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1786:3",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1816:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1834:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1847:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/whole-view-ambient.test.ts:123:7",
+  "review_02": true,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.kernel-lexical-shadow.control",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.kernel-lexical-shadow.JSON",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.kernel-lexical-shadow.Object",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.kernel-lexical-shadow.Array",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.kernel-lexical-creation.control",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.kernel-lexical-creation.hop",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.lexical-shadow.unpinned.ordinary",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.lexical-shadow.unpinned.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.lexical-shadow.pinned.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.object-freeze-witness.unpinned.ordinary",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.object-freeze-witness.pinned.ordinary",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.object-freeze-witness.unpinned.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.object-freeze-witness.pinned.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.define.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.declare.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.assign.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.define.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.declare.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.assign.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.define.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.declare.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.assign.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.assign.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.define.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.define.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.declare.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.declare.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.preexisting.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Map.preexisting.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.assign.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.assign.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.define.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.define.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.declare.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.declare.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.preexisting.full.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.acceptingExit",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.applyModel",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.applySequence",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.attributed",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.callbackRan",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.declaredExit",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.deliveredAt",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.exitReached",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.fired",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.nextAcceptance",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.nextRefusal",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.outcomeAnswer",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.outcomePrefix",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.outcomeStepAt",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.quietRepeat",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.recoveryAnswer",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.referenceKind",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.referenceRefusal",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.referenceReplay",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.referenceUnchanged",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.referenceUnnamed",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.refusalExecution",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.refusalPosition",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.returned",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.sameOperation",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.setupGrant",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.takeoverAnswer",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.takeoverWindowAt",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:oracle.view",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:1009:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:333:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1459:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1529:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:178:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:615:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:151:1",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:163:1",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:177:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:187:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:200:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:250:9",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:254:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:284:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:285:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:298:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:300:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:302:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:304:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:306:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:320:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:322:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:329:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:335:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:342:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:350:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:352:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:354:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:371:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:372:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:373:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:375:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:376:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:377:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:383:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:385:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:386:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:388:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:390:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:392:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:407:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:412:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:416:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-oracle.test.ts:420:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-sweep.test.ts:49:1",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/fault-sweep.test.ts:78:1",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/poison-catalog.test.ts:286:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/poison-catalog.test.ts:291:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:893:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:910:3",
+  "review_02": false,
+  "implementation_03": true
+ },
+ {
+  "key": "case:identity.parts",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/activation-identity.test.ts:140:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/activation-identity.test.ts:169:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/activation-identity.test.ts:190:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/activation-identity.test.ts:208:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/activation-identity.test.ts:234:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/activation-identity.test.ts:269:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/activation-identity.test.ts:46:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:100:1",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:121:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:128:1",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:157:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:173:1",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:26:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:45:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/aggregate-refusal.test.ts:53:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:138:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:298:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:304:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:316:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:323:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:46:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:50:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:57:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:67:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ambient-reads.test.ts:79:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:101:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:135:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:157:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:191:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:55:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:69:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:77:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:84:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/boundary.test.ts:94:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:133:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:162:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:171:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:179:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:200:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:228:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:261:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:298:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:333:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:354:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:377:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:62:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:70:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-authority.test.ts:99:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:100:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:117:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:123:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:128:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:135:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:145:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:226:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:231:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:81:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/control-commits.test.ts:93:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:106:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:124:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:147:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:165:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:202:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:216:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:230:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:238:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:251:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:300:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:309:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:35:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:487:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:503:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:605:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:65:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:76:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:85:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/creation.test.ts:98:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/delivery-attribution.test.ts:167:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/delivery-attribution.test.ts:193:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/delivery-attribution.test.ts:31:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/delivery-attribution.test.ts:82:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1064:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1078:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1099:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1113:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:112:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1131:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1152:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1184:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1222:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1269:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1341:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1358:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:135:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:1428:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:157:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:199:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:209:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:233:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:247:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:265:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:281:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:294:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:335:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:354:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:372:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:416:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:423:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:436:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:468:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/dispatch.test.ts:66:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:111:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:128:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:145:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:168:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:184:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:199:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:215:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:229:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:275:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:303:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:329:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:77:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/evidence.test.ts:93:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/exact-coordinates.test.ts:17:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/history-attribution.test.ts:140:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/history-attribution.test.ts:155:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/history-attribution.test.ts:175:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/history-attribution.test.ts:57:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/history-attribution.test.ts:96:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/hold-permitted.test.ts:113:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/hold-permitted.test.ts:139:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/hold-permitted.test.ts:152:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/hold-permitted.test.ts:204:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/hold-permitted.test.ts:230:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/hold-permitted.test.ts:44:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/hold-permitted.test.ts:89:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:139:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/host-members.test.ts:260:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:114:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:131:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:153:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:164:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:178:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:190:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:209:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:235:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:253:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:287:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:299:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:311:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:330:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:340:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:367:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:381:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:406:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:413:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:432:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:446:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:511:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:563:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:58:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:79:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/ingress.test.ts:91:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:108:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:153:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:40:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:66:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:75:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/inspection.test.ts:89:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/late-reports.test.ts:109:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/late-reports.test.ts:45:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/late-reports.test.ts:60:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/late-reports.test.ts:75:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/late-reports.test.ts:97:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:180:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:187:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:196:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:209:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:228:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:247:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:267:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:285:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:306:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:324:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:360:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:394:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:421:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:460:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:586:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/nondisclosure.test.ts:590:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:114:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:128:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:145:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:160:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:184:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:195:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:207:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:217:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:230:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:241:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:258:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:292:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:303:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:331:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:336:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:354:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:420:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:441:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:450:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:469:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:483:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:519:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:542:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:554:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:593:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:608:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:60:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:625:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:647:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-acceptance.test.ts:94:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-evidence.test.ts:106:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-evidence.test.ts:38:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-evidence.test.ts:59:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-evidence.test.ts:70:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-evidence.test.ts:90:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:103:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:133:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:349:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:360:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-hostile.test.ts:374:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-limits.test.ts:105:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-limits.test.ts:83:7",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:117:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:146:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:159:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:187:7",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:211:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:238:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:255:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:274:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:295:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:309:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:331:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:346:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:370:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:394:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:478:7",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:499:7",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:524:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:553:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:584:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:607:7",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:665:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:690:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:711:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/outcome-partial-claim.test.ts:734:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:102:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:121:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:134:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:164:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:30:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:44:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:68:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/receipts.test.ts:84:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:190:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:196:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:238:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:298:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:370:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:436:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:504:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:548:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:627:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:814:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-evidence.test.ts:822:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-history.test.ts:123:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-history.test.ts:160:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-history.test.ts:187:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-history.test.ts:208:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-history.test.ts:252:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-history.test.ts:43:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery-history.test.ts:99:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:110:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:132:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:151:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:172:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:190:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:204:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:234:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:252:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:266:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:276:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:300:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:44:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:83:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/recovery.test.ts:97:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:106:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:138:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:182:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:192:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:231:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:24:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:250:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:280:1",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusal-diagnostics.test.ts:59:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusals.test.ts:43:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/refusals.test.ts:60:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:134:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:147:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:171:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:206:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:232:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:271:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:340:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:369:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:386:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:420:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:462:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:479:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:508:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:58:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-authority.test.ts:92:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-lifetime.test.ts:108:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/submission-lifetime.test.ts:49:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover-reentrancy.test.ts:110:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover-reentrancy.test.ts:173:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover-reentrancy.test.ts:225:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover-reentrancy.test.ts:50:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:104:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:120:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:127:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:140:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:153:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:162:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:168:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:198:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:34:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:70:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/takeover.test.ts:92:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:113:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:129:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:166:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:180:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:203:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:49:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:72:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:79:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/terminal.test.ts:90:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/transaction.test.ts:110:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/transaction.test.ts:237:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/transaction.test.ts:269:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/transaction.test.ts:317:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/transaction.test.ts:59:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/unsupported.test.ts:46:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:1039:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:107:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:115:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:128:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:142:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:159:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:233:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:451:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:464:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:470:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:478:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:488:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:500:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:529:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:558:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:662:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "packages/kernel/tests/values.test.ts:98:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/archive/evidence-records.test.ts:111:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/archive/evidence-records.test.ts:158:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/archive/evidence-records.test.ts:187:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/archive/evidence-records.test.ts:97:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:117:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:126:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:150:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:180:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:220:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:284:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:308:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:337:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:358:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:381:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:428:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:447:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:509:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:526:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:596:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/agent-boundaries.test.ts:629:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:122:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:131:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:147:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:176:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:216:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:248:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:267:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:288:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:319:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/composition-boundaries.test.ts:78:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:112:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:117:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:122:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:134:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:146:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:157:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:162:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:170:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:175:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:180:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:185:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:190:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:195:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:228:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:237:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:277:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:286:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:293:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:297:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:302:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:306:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:330:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:366:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:391:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:42:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:50:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:60:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:65:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:70:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/import-scanner.test.ts:80:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1003:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1027:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1050:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1078:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:116:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1181:11",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1205:9",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1221:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1242:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1288:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1309:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1334:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1368:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:136:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1384:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1400:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1416:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1427:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1440:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1450:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1468:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1485:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:149:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1507:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1526:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1560:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1568:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1576:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1584:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1597:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1606:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1615:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1628:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1641:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1652:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1682:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1698:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1714:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1732:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1748:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1764:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1784:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1811:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1827:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1840:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:184:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1870:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1888:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1903:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1916:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1935:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1950:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1963:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1979:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1994:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2023:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2036:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2049:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2066:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2087:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2100:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2113:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2130:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2157:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2182:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2211:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2233:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:226:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2289:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2299:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2309:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2327:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2335:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:234:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2353:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2374:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2393:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:243:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2446:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2471:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2489:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2505:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:251:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2531:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2558:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2572:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:259:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2657:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2675:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:267:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2693:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2709:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2731:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2758:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2777:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2796:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:281:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2828:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2861:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2882:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2899:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2916:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2937:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3004:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:300:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3025:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3041:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3056:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3087:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3104:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3143:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3156:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:315:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3193:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3210:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3235:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:323:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3259:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3281:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3309:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3381:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:341:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3423:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3480:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:351:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3521:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3566:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3601:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3628:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:362:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:370:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3725:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3753:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3770:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3798:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:379:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3825:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3860:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3884:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:390:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3942:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3964:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3997:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:399:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4008:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4021:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4032:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4045:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4056:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4078:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:407:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4088:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4119:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4130:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4143:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:415:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4160:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4199:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4212:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4228:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:424:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4267:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:431:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4337:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4353:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4373:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4386:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:439:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4404:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4423:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4438:5",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:447:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4489:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:464:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:477:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:494:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:527:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:544:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:606:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:615:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:624:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:763:7",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:826:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:860:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:885:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:895:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:924:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:941:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:973:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:134:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:140:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:149:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:161:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:213:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:239:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:259:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:281:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:300:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:325:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:339:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/legacy-core-boundaries.test.ts:350:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/mcp-boundaries.test.ts:102:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/mcp-boundaries.test.ts:112:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/mcp-boundaries.test.ts:143:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:102:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:111:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:130:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:145:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:158:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:166:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:184:3",
+  "review_02": false,
+  "implementation_03": false
+ },
+ {
+  "key": "tests/conformance/architecture/workflow-boundaries.test.ts:200:3",
+  "review_02": false,
+  "implementation_03": false
+ }
+]

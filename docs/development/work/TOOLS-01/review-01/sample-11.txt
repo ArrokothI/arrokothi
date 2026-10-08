@@ -1,0 +1,131 @@
+packages/kernel/tests/sweep/zone-names.ts @ 66bc041175e6fc191c2e7cf88de198111e7d97c9 lines 1:130
+1: /**
+2:  * The member names the poisoned-prototype sweep installs (correction DEC-8, contract revision 9).
+3:  *
+4:  * The sweep asks one runtime question: while a Kernel boundary call runs, does the zone ever
+5:  * resolve a member through `Object.prototype` or `Function.prototype`? It can only ask it for the
+6:  * names it poisons, so this module states how that name set is derived and why it reaches every
+7:  * member the zone can name:
+8:  *
+9:  * - **Spelled in the zone.** Every name the 13 zone sources spell in a member position: the name of
+10:  *   a property access, the literal key of an element access, every member declared by an interface,
+11:  *   type literal, class or object literal, and every identifier-like string literal (the zone passes
+12:  *   member names to `observeOwn`, `observeField` and `hostMember` as literals, and computed reads
+13:  *   such as `BOUNDARY_PREFIX[boundary]` take their key from a literal union). Declared members are
+14:  *   included even when no code reads them, so an optional member no code spells yet is still
+15:  *   covered. A name only the zone's comments mention is not.
+16:  * - **Read by the engine on the zone's behalf.** Operations the zone performs can read members it
+17:  *   never spells: conversion to a primitive (`Symbol.toPrimitive`, `toString`, `valueOf`), the
+18:  *   iteration protocol, promise assimilation (`then`), `JSON.stringify` (`toJSON`), `instanceof`,
+19:  *   species lookups, and the function protocol (`call`, `apply`, `bind`). `ENGINE_PROTOCOL_NAMES` lists
+20:  *   them with their reason.
+21:  * - **Small indices.** `"0"`–`"15"`: an ordinary read of a position a list does not own walks on to
+22:  *   `Object.prototype`. Larger indices are left to the inherited-index tests (K11-R6-STATE-02).
+23:  *
+24:  * What the set cannot contain is a name the zone builds at run time from something other than a
+25:  * literal. The zone builds exactly one kind: list positions (`${index}`), bounded above.
+26:  */
+27:
+28: import { readdirSync, readFileSync } from "node:fs";
+29: import { resolve } from "node:path";
+30: import ts from "typescript";
+31:
+32: /**
+33:  * Names the engine reads without the zone spelling them, with the operation that reads each.
+34:  * A zone read of any of them through a built-in prototype is a live prototype method or an implicit
+35:  * conversion, which DEC-8 and C13 both forbid after the first caller observation.
+36:  */
+37: export const ENGINE_PROTOCOL_NAMES: readonly (readonly [string | symbol, string])[] = [
+38:   [Symbol.toPrimitive, "conversion of an object to a primitive"],
+39:   ["toString", "ordinary conversion of an object to a string"],
+40:   ["valueOf", "ordinary conversion of an object to a number"],
+41:   ["toLocaleString", "locale conversion"],
+42:   [Symbol.iterator, "the iteration protocol (for...of, spread, destructuring)"],
+43:   [Symbol.asyncIterator, "the async iteration protocol"],
+44:   ["then", "promise assimilation"],
+45:   ["toJSON", "JSON.stringify"],
+46:   ["constructor", "species and constructor lookups"],
+47:   [Symbol.species, "species lookups"],
+48:   [Symbol.hasInstance, "instanceof"],
+49:   [Symbol.toStringTag, "Object.prototype.toString"],
+50:   [Symbol.isConcatSpreadable, "Array.prototype.concat"],
+51:   ["call", "the function protocol"],
+52:   ["apply", "the function protocol"],
+53:   ["bind", "the function protocol"],
+54:   ["length", "list and function length"],
+55:   ["name", "function and error names"],
+56:   ["message", "error messages"],
+57:   ["stack", "error stacks"],
+58:   ["cause", "error options"],
+59:   ["prototype", "constructor prototypes"],
+60: ];
+61:
+62: /** The small list positions the sweep poisons. */
+63: export const INDEX_NAMES: readonly string[] = Array.from({ length: 16 }, (_unused, index) => `${index}`);
+64:
+65: /**
+66:  * Never poisoned: `__proto__` is the accessor every ordinary `[[GetPrototypeOf]]` spelling goes
+67:  * through, and replacing it would change what `obj.__proto__` means for the test code the sweep
+68:  * runs, not only for the zone. The zone never spells it.
+69:  */
+70: export const NEVER_POISONED: ReadonlySet<string | symbol> = new Set(["__proto__"]);
+71:
+72: const IDENTIFIER_LIKE = /^[A-Za-z_$][\w$]*$/;
+73:
+74: /** Every name one zone source spells in a member position (see the module comment). */
+75: function spelledNames(fileName: string, text: string, into: Set<string>): void {
+76:   const source = ts.createSourceFile(fileName, text, ts.ScriptTarget.Latest, true);
+77:   const nameOf = (name: ts.Node | undefined): string | undefined =>
+78:     name !== undefined && (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) ? name.text : undefined;
+79:   const visit = (node: ts.Node): void => {
+80:     let name: string | undefined;
+81:     if (ts.isPropertyAccessExpression(node)) name = nameOf(node.name);
+82:     else if (ts.isElementAccessExpression(node)) name = nameOf(node.argumentExpression);
+83:     else if (
+84:       ts.isPropertyAssignment(node) ||
+85:       ts.isPropertySignature(node) ||
+86:       ts.isMethodSignature(node) ||
+87:       ts.isPropertyDeclaration(node) ||
+88:       ts.isMethodDeclaration(node) ||
+89:       ts.isGetAccessorDeclaration(node) ||
+90:       ts.isSetAccessorDeclaration(node) ||
+91:       ts.isShorthandPropertyAssignment(node) ||
+92:       ts.isBindingElement(node)
+93:     ) {
+94:       name = nameOf(ts.isBindingElement(node) ? (node.propertyName ?? node.name) : node.name);
+95:     } else if (ts.isStringLiteral(node) && IDENTIFIER_LIKE.test(node.text)) {
+96:       const parent = node.parent;
+97:       if (!ts.isImportDeclaration(parent) && !ts.isExportDeclaration(parent)) name = node.text;
+98:     }
+99:     if (name !== undefined) into.add(name);
+100:     ts.forEachChild(node, visit);
+101:   };
+102:   visit(source);
+103: }
+104:
+105: /** The zone's 13 sources, sorted, as absolute paths. */
+106: export const zoneSources = (sourceRoot: string): string[] =>
+107:   readdirSync(sourceRoot)
+108:     .filter((name) => name.endsWith(".ts"))
+109:     .sort()
+110:     .map((name) => resolve(sourceRoot, name));
+111:
+112: /** The complete poisoned name set for the zone at `sourceRoot`, spelled names first. */
+113: export function zoneMemberNames(sourceRoot: string): (string | symbol)[] {
+114:   const spelled = new Set<string>();
+115:   for (const file of zoneSources(sourceRoot)) spelledNames(file, readFileSync(file, "utf8"), spelled);
+116:   const names: (string | symbol)[] = [...spelled].sort();
+117:   for (const [name] of ENGINE_PROTOCOL_NAMES) if (!names.includes(name)) names.push(name);
+118:   for (const name of INDEX_NAMES) if (!names.includes(name)) names.push(name);
+119:   return names.filter((name) => !NEVER_POISONED.has(name));
+120: }
+121:
+122: /** The six property-descriptor fields, which the whole-suite sweep leaves to the catalog sweep. */
+123: export const DESCRIPTOR_FIELDS: readonly string[] = ["value", "writable", "get", "set", "enumerable", "configurable"];
+124:
+125: /** Names travel between processes as text; a well-known symbol as `@@<its name>`. */
+126: export const encodeName = (name: string | symbol): string =>
+127:   typeof name === "symbol" ? `@@${(name.description ?? "").replace(/^Symbol\./, "")}` : name;
+128:
+129: export const decodeName = (name: string): string | symbol =>
+130:   name.startsWith("@@") ? ((Symbol as unknown as Record<string, symbol>)[name.slice(2)] as symbol) : name;

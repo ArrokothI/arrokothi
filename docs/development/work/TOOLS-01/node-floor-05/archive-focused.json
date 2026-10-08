@@ -1,0 +1,48 @@
+{
+  "scope": "focused archive prerequisite; not the full A8 comparison",
+  "revision": "2ae9112d2551e618107cbbae9a9888d155910c96",
+  "node": "v22.9.0",
+  "argv": [
+    "python3",
+    "-B",
+    "tests/tooling/node-floor/check-step.py",
+    "--revision",
+    "2ae9112d2551e618107cbbae9a9888d155910c96",
+    "--step",
+    "archive-tests"
+  ],
+  "exit": 0,
+  "archive_input": {
+    "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "regular_files": 1238,
+    "symlinks": 4,
+    "content_manifest_sha256": "89be2e0728a835c5ecd943231c18d14ea7a1d207c6aea5e659d84935101887e7",
+    "environment_set": {
+      "ARROKOTHI_EVIDENCE_ROOT": "verified temporary Git snapshot"
+    },
+    "source": "docs/development/archive.md pinned Git fallback"
+  },
+  "observation": {
+    "id": "archive-tests",
+    "observation_valid": true,
+    "meets_final_spec": true,
+    "facts": {
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "pass": 4,
+        "suites": 1
+      }
+    },
+    "argv": [
+      "npm",
+      "run",
+      "test:archive-evidence"
+    ],
+    "status": "finished",
+    "exit": 0
+  }
+}

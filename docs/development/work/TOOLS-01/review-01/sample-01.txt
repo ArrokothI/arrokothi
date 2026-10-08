@@ -1,0 +1,208 @@
+packages/kernel/tests/boundary.test.ts @ 9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49 lines 1:207
+1: /**
+2:  * K1.1-C8 - no Agent or Workflow discriminator in the new boundary, and nothing reached from outside.
+3:  *
+4:  * 007's K1.1 acceptance: "no Agent/Workflow discriminator in the new boundary." `PC-1` says why it
+5:  * matters: the question the legacy `kind: "agent" | "workflow"` tag answered - which code can
+6:  * understand this progress - is answered here by the pinned Definition revision, Runtime contract
+7:  * revision and progress codec, and the closed controller port is refused (`DX-12`) rather than
+8:  * carried forward.
+9:  *
+10:  * `tests/conformance/architecture/kernel-landing-zone.test.ts` owns the transitive import guard for
+11:  * this zone. What is added here is the vocabulary check that guard does not make, held against the
+12:  * package's own sources rather than a documented list.
+13:  */
+14:
+15: import { test, describe } from "node:test";
+16: import assert from "node:assert/strict";
+17: import { readFile, readdir } from "node:fs/promises";
+18: import { dirname, resolve } from "node:path";
+19: import { fileURLToPath } from "node:url";
+20:
+21: const SOURCE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../src");
+22:
+23: /**
+24:  * Whether a source line is documentation rather than code.
+25:  *
+26:  * Deliberately narrow: only a line that is entirely a comment counts. A line that mixes code with a
+27:  * trailing comment is treated as code, so a forbidden word in either half is reported. Where two
+28:  * readings are defensible this takes the one that only ever adds reports - a too-strict rule costs a
+29:  * rewritten comment, while a too-loose one lets the discriminator back in behind a `//`.
+30:  */
+31: const isCommentLine = (line: string): boolean => {
+32:   const trimmed = line.trim();
+33:   return trimmed === "" || trimmed.startsWith("*") || trimmed.startsWith("//") || trimmed.startsWith("/*");
+34: };
+35:
+36: async function sourceFiles(): Promise<{ path: string; text: string }[]> {
+37:   const names = (await readdir(SOURCE_ROOT, { recursive: true, withFileTypes: true }))
+38:     .filter((entry) => entry.isFile() && entry.name.endsWith(".ts"))
+39:     .map((entry) => resolve(entry.parentPath, entry.name));
+40:   assert.ok(names.length > 0, "the scan found the zone's sources");
+41:   return Promise.all(names.map(async (path) => ({ path, text: await readFile(path, "utf8") })));
+42: }
+43:
+44: const occurrences = (files: { path: string; text: string }[], pattern: RegExp): { path: string; line: string; number: number }[] => {
+45:   const found: { path: string; line: string; number: number }[] = [];
+46:   for (const file of files) {
+47:     file.text.split("\n").forEach((line, index) => {
+48:       if (pattern.test(line)) found.push({ path: file.path, line, number: index + 1 });
+49:     });
+50:   }
+51:   return found;
+52: };
+53:
+54: describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () => {
+55:   test("neither word appears in the zone's executable text", async () => {
+56:     const files = await sourceFiles();
+57:     const all = occurrences(files, /\b(agents?|workflows?)\b/i);
+58:     const inCode = all.filter((hit) => !isCommentLine(hit.line));
+59:
+60:     assert.deepEqual(
+61:       inCode.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`),
+62:       [],
+63:       `Agent/Workflow vocabulary reached executable code: ${inCode.map((hit) => hit.line.trim()).join(" | ")}`,
+64:     );
+65:     // The scan is not vacuous: the words do occur, in the documentation that explains their absence.
+66:     assert.ok(all.length > 0, "the pattern really does match this repository's prose");
+67:   });
+68:
+69:   test("no legacy controller vocabulary is carried forward into code either", async () => {
+70:     const files = await sourceFiles();
+71:     const inCode = occurrences(files, /\b(DefinitionKind|ControllerProgress|ControllerResumption|Harness|controller)\b/).filter(
+72:       (hit) => !isCommentLine(hit.line),
+73:     );
+74:     assert.deepEqual(inCode.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`), []);
+75:   });
+76:
+77:   test("the exported surface names no Agent or Workflow concept", async () => {
+78:     const surface = await import("../src/index.ts");
+79:     for (const name of Object.keys(surface)) {
+80:       assert.doesNotMatch(name, /agent|workflow/i, `${name} would put a Runtime role in the Kernel boundary`);
+81:     }
+82:   });
+83:
+84:   test("the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)", async () => {
+85:     // values.md requires an unmodified conforming JCS implementation, not an almost-equivalent
+86:     // serializer. The owner approved exact `canonicalize@3.0.0`; this pins that decision
+87:     // structurally so a quiet swap of the substrate is a deliberate, reviewed change.
+88:     const manifest = JSON.parse(await readFile(resolve(SOURCE_ROOT, "../package.json"), "utf8")) as {
+89:       dependencies?: Record<string, string>;
+90:     };
+91:     assert.equal(manifest.dependencies?.["canonicalize"], "3.0.0", "exact pin, no range");
+92:   });
+93:
+94:   test("which code can read progress is answered only by pinned revisions and a codec", async () => {
+95:     const driver = await readFile(resolve(SOURCE_ROOT, "driver.ts"), "utf8");
+96:     for (const pinned of ["definitionRevision", "runtimeContractRevision", "progressCodec"]) {
+97:       assert.match(driver, new RegExp(`readonly ${pinned}: string;`), `the Activation pins ${pinned}`);
+98:     }
+99:   });
+100:
+101:   test("K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts", async () => {
+102:     // The round-7 reconstruction replaced the zone's live prototype methods with
+103:     // `list[list.length] = item` and argued completeness by inspection. That argument was the
+104:     // defect: an ordinary indexed write into a position a list does not own yet is `[[Set]]`, so it
+105:     // consults the prototype chain and a caller-installed inherited accessor receives it instead.
+106:     //
+107:     // This control states the replacement as a property of the zone's executable text rather than
+108:     // as a claim in a comment. `own-array.ts` is the one place `[[DefineOwnProperty]]` is applied to
+109:     // a list position; every other module must reach a list through it. The pattern requires a
+110:     // non-empty subscript immediately after an identifier, so `const out: ValueIssue[] = []`
+111:     // (an empty type-position bracket) and `const [a, b] = pair` (a destructuring pattern, which
+112:     // has whitespace before its bracket) are not assignments and are not matched.
+113:     const files = await sourceFiles();
+114:     const assignments = occurrences(files, /[A-Za-z0-9_$)\]]\[[^\]\n]+\][ \t]*=(?!=)/).filter(
+115:       (hit) => !isCommentLine(hit.line) && !hit.path.endsWith("own-array.ts"),
+116:     );
+117:     assert.deepEqual(
+118:       assignments.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`),
+119:       [],
+120:       `an ordinary indexed write is caller-steerable through an inherited accessor: ${assignments.map((hit) => hit.line.trim()).join(" | ")}`,
+121:     );
+122:
+123:     // Not vacuous: the pattern really does match this spelling where it is still discussed, and the
+124:     // module that owns the rule really exists.
+125:     assert.ok(
+126:       occurrences(files, /[A-Za-z0-9_$)\]]\[[^\]\n]+\][ \t]*=(?!=)/).length > 0,
+127:       "the pattern matches the spelling this rule is about",
+128:     );
+129:     assert.ok(
+130:       files.some((file) => file.path.endsWith("own-array.ts")),
+131:       "the zone has one owner for building and reading Kernel-owned lists",
+132:     );
+133:   });
+134:
+135:   test("K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list", async () => {
+136:     // `push`/`pop`/`shift`/`unshift`/`splice`/`fill`/`copyWithin` all perform `[[Set]]` or
+137:     // `[[Delete]]` on positions through the ordinary property path, so capturing the primordial
+138:     // function does not make them independent of an inherited indexed accessor. The zone builds
+139:     // lists with `own-array.ts` instead. `sort`/`join`/`map` are named here as well because the
+140:     // previous rounds' reason for avoiding them — a live, replaceable prototype method — still
+141:     // stands; the serializer sandbox restores them for the dependency's own use, which is a
+142:     // different thing from this zone calling them.
+143:     const files = await sourceFiles();
+144:     const pattern = /\.(push|pop|shift|unshift|splice|fill|copyWithin|sort|reverse|map|filter|slice|concat|includes|indexOf|forEach|flat|flatMap)\(/;
+145:     const all = occurrences(files, pattern);
+146:     const inCode = all.filter((hit) => !isCommentLine(hit.line));
+147:     assert.deepEqual(
+148:       inCode.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`),
+149:       [],
+150:       `an array prototype method reached executable code: ${inCode.map((hit) => hit.line.trim()).join(" | ")}`,
+151:     );
+152:     // Not vacuous: these spellings do occur in the zone, in the documentation explaining why the
+153:     // implementation does not use them.
+154:     assert.ok(all.length > 0, "the pattern really does match this zone's prose");
+155:   });
+156:
+157:   test("K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner", async () => {
+158:     // Capturing `Object.defineProperty` does not close the class: before the target's
+159:     // `[[DefineOwnProperty]]` runs, `ToPropertyDescriptor` reads the descriptor's fields through
+160:     // ordinary `[[Get]]`, so an ordinary descriptor literal is steerable through an inherited
+161:     // `get`/`set` (and runs an inherited getter inside the operation). No `defineProperty` call
+162:     // may therefore take an ordinary object anywhere in the zone: `own-array.ts` owns the two
+163:     // hardened forms — `defineData` for fresh data and `restoreDescriptor` for saved descriptors,
+164:     // both null-prototype — and every other module reaches definition through them. This control
+165:     // states that ownership as a property of the zone's executable text. It cannot see the
+166:     // descriptor's prototype on its own (the previous round's lesson about spelling checks), so it
+167:     // is paired with runtime cases that install the pollution and require the defined result; an
+168:     // ablation moving either hardened form back to a literal is rejected by those cases.
+169:     const files = await sourceFiles();
+170:     // `defineProperty` and `defineProperties` (including via `Reflect`): every one of them
+171:     // converts its descriptor argument before the target operation runs.
+172:     const all = occurrences(files, /[Dd]efinePropert(y|ies)\s*\(/);
+173:     const inCode = all.filter((hit) => !isCommentLine(hit.line));
+174:     const outside = inCode.filter((hit) => !hit.path.endsWith("own-array.ts"));
+175:     assert.deepEqual(
+176:       outside.map((hit) => `${hit.path.replace(SOURCE_ROOT, "")}:${hit.number}`),
+177:       [],
+178:       `a raw defineProperty call outside the owner takes an ordinary descriptor: ${outside.map((hit) => hit.line.trim()).join(" | ")}`,
+179:     );
+180:     // Not vacuous: the owned primitive really exists and really is called.
+181:     assert.ok(
+182:       inCode.length > 0,
+183:       "the pattern matches the owned primitive this rule is about",
+184:     );
+185:     assert.ok(
+186:       files.some((file) => file.path.endsWith("own-array.ts")),
+187:       "the zone has one owner for hardened property definition",
+188:     );
+189:   });
+190:
+191:   test("every import in the zone is internal, a node: builtin, or the approved JCS dependency", async () => {
+192:     const files = await sourceFiles();
+193:     const specifiers = files.flatMap((file) => [...file.text.matchAll(/from "([^"]+)"/g)].map((match) => match[1] as string));
+194:     assert.ok(specifiers.length > 0, "the scan found real imports");
+195:     for (const specifier of specifiers) {
+196:       assert.ok(
+197:         specifier.startsWith("./") ||
+198:           specifier.startsWith("../") ||
+199:           specifier.startsWith("node:") ||
+200:           specifier === "canonicalize",
+201:         `${specifier} is outside the zone; the transitive guard owns the full rule, this is its local twin`,
+202:       );
+203:     }
+204:     // The twin is not vacuous: the approved dependency is really imported exactly once, by values.ts.
+205:     assert.equal(specifiers.filter((specifier) => specifier === "canonicalize").length, 1);
+206:   });
+207: });

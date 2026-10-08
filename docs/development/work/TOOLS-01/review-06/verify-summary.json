@@ -1,0 +1,448 @@
+{
+  "revision": "83094969e591dba5c4f25d19c572522b78a7a396",
+  "result": "checks_passed",
+  "checks": [
+    {
+      "id": "tool-tests",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "counts": {
+        "tests": 573
+      }
+    },
+    {
+      "id": "inventory",
+      "passed": true,
+      "result": "provenance_verified",
+      "counts": {
+        "artifact": 208,
+        "mention": 1333,
+        "additional": 8
+      }
+    },
+    {
+      "id": "adoption",
+      "passed": true,
+      "result": "revalidation_complete",
+      "counts": {
+        "origins": 1549,
+        "counterexamples": 1221,
+        "families": 26,
+        "members": 415,
+        "suite_targets": 52,
+        "preserved": 49,
+        "kills": 0
+      }
+    },
+    {
+      "id": "dimensions",
+      "passed": true,
+      "result": "coverage_reported"
+    },
+    {
+      "id": "registered-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 109
+      }
+    },
+    {
+      "id": "refusal-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 314
+      }
+    },
+    {
+      "id": "refusal-census",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "counts": {},
+      "census": {
+        "refusal_checks": 314,
+        "registered_mutations": 314
+      }
+    },
+    {
+      "id": "oracle-census",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "counts": {},
+      "census": {
+        "oracle_comparisons": 29,
+        "registered_mutants": 29
+      }
+    },
+    {
+      "id": "typecheck",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "counts": {}
+    },
+    {
+      "id": "repository-tests",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "counts": {
+        "tests": 3774,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "kernel-sweeps",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "counts": {}
+    },
+    {
+      "id": "area-gate",
+      "passed": true,
+      "advisory": true,
+      "result": "reported"
+    }
+  ],
+  "start": "2026-10-07T22:13:32.503784+00:00",
+  "end": "2026-10-07T22:48:38.055264+00:00",
+  "seconds": 2105.55148,
+  "environment": {
+    "python": "3.14.6",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "node": "v26.10.0",
+    "git": "git version 2.39.5 (Apple Git-154)",
+    "declared": {
+      "passed": [
+        "PATH",
+        "HOME",
+        "TMPDIR"
+      ],
+      "unset_in_parent": [],
+      "set": {
+        "LANG": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "inputs": [],
+      "absent": [
+        "NODE_OPTIONS",
+        "NODE_TEST_CONTEXT",
+        "NODE_V8_COVERAGE",
+        "KERNEL_POISON_MODE",
+        "KERNEL_POISON_OUT",
+        "KERNEL_POISON_NAMES",
+        "PACKET_ORACLE_CHECK",
+        "PACKET_REACH_FILE",
+        "ARROKOTHI_READ_TRACE",
+        "GEMINI_MODEL",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "GOOGLE_GENERATIVE_AI_API_KEY",
+        "FLOOR_ORDER_LOG",
+        "FLOOR_READ_DIR"
+      ],
+      "inherited_values_recorded": false
+    },
+    "census": {
+      "roots": [
+        "packages",
+        "tests",
+        "scripts",
+        "examples"
+      ],
+      "files": 421,
+      "names": {
+        "ARROKOTHI_EVIDENCE_ROOT": [
+          "tests/archive/evidence-records.test.ts"
+        ],
+        "ARROKOTHI_READ_TRACE": [
+          "tests/tooling/read-trace.mjs"
+        ],
+        "FLOOR_ORDER_LOG": [
+          "tests/tooling/node-floor/isolation-a.test.mjs",
+          "tests/tooling/node-floor/isolation-b.test.mjs",
+          "tests/tooling/node-floor/order-await.test.ts",
+          "tests/tooling/node-floor/order-deferred.test.ts",
+          "tests/tooling/node-floor/order.test.ts"
+        ],
+        "FLOOR_READ_DIR": [
+          "tests/tooling/node-floor/read-trace.test.ts"
+        ],
+        "GEMINI_MODEL": [
+          "scripts/gemini-provider-canary.ts",
+          "scripts/mcp-gemini-canary.ts",
+          "scripts/workflow-scenario-canary.ts"
+        ],
+        "KERNEL_POISON_MODE": [
+          "packages/kernel/tests/sweep/preload.ts"
+        ],
+        "KERNEL_POISON_NAMES": [
+          "packages/kernel/tests/sweep/preload.ts"
+        ],
+        "KERNEL_POISON_OUT": [
+          "packages/kernel/tests/sweep/preload.ts"
+        ],
+        "NODE_TEST_CONTEXT": [
+          "tests/tooling/read-trace.mjs"
+        ],
+        "PACKET_ORACLE_CHECK": [
+          "tests/tooling/oracle-reach.mjs"
+        ],
+        "PACKET_REACH_FILE": [
+          "tests/tooling/oracle-reach.mjs"
+        ]
+      },
+      "computed": [
+        {
+          "path": "packages/kernel/tests/sweep/run-poison-sweep.ts",
+          "text": "env: { ...process.env, KERNEL_POISON_MODE: mode, KERNEL_POISON_OUT: dir, KERNEL_POISON_NAMES: namesFile },"
+        },
+        {
+          "path": "packages/models/gemini/src/index.ts",
+          "text": "export function geminiApiKeyFromEnv(env: Record<string, string | undefined> = process.env): string | undefined {"
+        },
+        {
+          "path": "tests/tooling/oracle-probe.mjs",
+          "text": "env: { ...process.env, PACKET_ORACLE_CHECK: name, PACKET_REACH_FILE: witness },"
+        }
+      ],
+      "declared_not_read": [
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "GOOGLE_GENERATIVE_AI_API_KEY",
+        "HOME",
+        "LANG",
+        "NODE_OPTIONS",
+        "NODE_V8_COVERAGE",
+        "PATH",
+        "TMPDIR"
+      ],
+      "limits": [
+        "Lexical: an alias of process.env that never spells it is not seen",
+        "Python tool code builds child environments only through command()"
+      ]
+    }
+  },
+  "adoption": {
+    "counts": {
+      "origins": 1549,
+      "counterexamples": 1221,
+      "families": 26,
+      "members": 415,
+      "suite_targets": 52,
+      "preserved": 49,
+      "kills": 0
+    },
+    "states": {
+      "complete": 107,
+      "pending_revalidation": 47,
+      "pending": 1395
+    },
+    "suite_credit": {
+      "target_reading": 15
+    },
+    "register": {
+      "scope_files": 53,
+      "entries": 950,
+      "cases": 95,
+      "by_classification": {
+        "held:Proxy": 11,
+        "held:V-D1": 29,
+        "held:V-ENV": 853,
+        "held:re-prototyped-built-in": 11,
+        "superseded:Proxy": 46
+      },
+      "rule_1": 853,
+      "detector": {
+        "child-process": 136,
+        "generated": 14,
+        "intrinsic": 8760
+      },
+      "detector_entries": 949,
+      "trace": {
+        "sites": 8910,
+        "keys": 949,
+        "cases": 95,
+        "members": 1167,
+        "targets": 37
+      }
+    },
+    "closures": {
+      "complete": 107,
+      "context_ranges": 113,
+      "context_candidates": 139,
+      "context_reasoned": 131
+    }
+  },
+  "transfer_counts": {
+    "origins": 47,
+    "by_decision": {
+      "docs/development/work/TOOLS-01/owner-choice-04.md": 4,
+      "docs/development/work/TOOLS-01/owner-choice-05.md": 40,
+      "docs/development/work/TOOLS-01/owner-choice-11.md": 3
+    }
+  },
+  "area_gate": {
+    "result": "reported",
+    "advisory": true,
+    "changed_paths": 345,
+    "behaviour_paths": 69,
+    "touched_areas": [
+      "package-lock.json",
+      "package.json",
+      "tests/conformance/effects",
+      "tooling"
+    ],
+    "areas": 68,
+    "open_origins": 1442,
+    "reported": {
+      "open_origins": 69,
+      "by_state": {
+        "pending": 64,
+        "pending_revalidation": 5
+      },
+      "prose_pending": 0
+    },
+    "ungated": 664
+  },
+  "profiles_not_run": [
+    {
+      "id": "live-provider",
+      "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
+      "checks": [
+        {
+          "id": "profile.gemini-provider-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:gemini"
+          ]
+        },
+        {
+          "id": "profile.mcp-gemini-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:mcp:gemini"
+          ]
+        },
+        {
+          "id": "profile.workflow-scenario-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:workflow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "large-memory-timing",
+      "reason": "Owner choice 01: historical engine-limit, heap and timing studies retained in the pinned inventory; individual semantic mappings/command adapters remain pending P1. No execution credit.",
+      "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "sources": [
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ],
+      "checks": [
+        {
+          "id": "profile.probe-diagnostics-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-namespace",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.refusal-cost-probe-04",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        }
+      ]
+    },
+    {
+      "id": "known-base-failure",
+      "reason": "Owner-reported pre-existing missing DESIGN-AUDIT-01 README on main. This builder-docs check is outside the required default profile and earns no execution credit here.",
+      "checks": [
+        {
+          "id": "builder-docs",
+          "argv": [
+            "npm",
+            "run",
+            "check:builder-docs"
+          ]
+        }
+      ]
+    }
+  ],
+  "result_reuse": false,
+  "acceptance": "not evaluated",
+  "limits": [
+    "P1 adoption remains pending; a passing executed subset does not complete P1/P2.",
+    "No prior results reused; acceptance and hold release are not evaluated.",
+    "check:builder-docs has an owner-reported pre-existing missing DESIGN-AUDIT-01 README on main; report separately without repairing it.",
+    "Dimension gaps and closed-by-reading reasons are in the dimensions result; no universal coverage claim."
+  ],
+  "raw_output": {
+    "path": "verify.json.gz",
+    "encoding": "gzip of unmodified UTF-8 JSON",
+    "uncompressed_bytes": 2508880,
+    "uncompressed_sha256": "83463d5f8272f22e2f11d45e109cb749a3fccdee77bb79e08f31e9e5ab63c65c"
+  }
+}

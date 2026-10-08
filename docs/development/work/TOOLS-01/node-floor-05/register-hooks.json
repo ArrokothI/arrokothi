@@ -1,0 +1,20 @@
+[
+  {
+    "argv": [
+      "/Users/rex-shih/.local/share/arrokothi/node-v22.9.0-darwin-arm64/bin/node",
+      "tests/tooling/node-floor/register-hooks.mjs"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "file:///Users/rex-shih/Documents/ArrokothI/arrokothi/tests/tooling/node-floor/register-hooks.mjs:2\nimport { registerHooks } from 'node:module';\n         ^^^^^^^^^^^^^\nSyntaxError: The requested module 'node:module' does not provide an export named 'registerHooks'\n    at ModuleJob._instantiate (node:internal/modules/esm/module_job:171:21)\n    at async ModuleJob.run (node:internal/modules/esm/module_job:254:5)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:483:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.9.0\n"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/bin/node",
+      "tests/tooling/node-floor/register-hooks.mjs"
+    ],
+    "exit": 0,
+    "stdout": "{\"node\":\"v25.2.1\",\"registerHooks\":\"function\"}\n",
+    "stderr": ""
+  }
+]

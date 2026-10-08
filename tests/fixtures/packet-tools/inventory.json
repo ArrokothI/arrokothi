@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "catalogs": [
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/evidence-inventory.json",
+      "sha256": "895ef4eb0f3838c27792e8c0505647ef537c532975378bd80631de9702ccaefa",
+      "kind": "artifact",
+      "count": 208
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/evidence-mentions.json",
+      "sha256": "92c456b845c9b4a26f61d5ae54261850d5b11bc6fc6323b903164bf1e5efd77a",
+      "kind": "mention",
+      "count": 1333
+    }
+  ],
+  "additional_sources": [
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/guards/round3_mutants.py",
+      "line": 1,
+      "sha256": "0eafce9f87097beafdc21e6b45ece93c3b01b3a717d0339e8331101a28a55e9b",
+      "disposition": "Preserve final-review evidence; adopt under P1. RM1/RM2/RM3/RM5 remain closed by reading; no executable kill claimed for them."
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/frozen-graph.mjs",
+      "line": 1,
+      "sha256": "6e276d7d3a8d4d87df7512b8baf6ed093cad9589c16a1c31a55e172c4c8fb9c1",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+      "line": 1,
+      "sha256": "69aec585c3a508ab481c93270f9a6db89e9037f8d5449334e64ca27990cc12f1",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+      "line": 1,
+      "sha256": "1bf9e15ca13da33acd25ef189d91c83308ae97a4fe31d860ad1fd725ebb68df9",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+      "line": 1,
+      "sha256": "b51a1bc1e9f37c23e66f4a51800cbba1af531211b44bc52e42e01308f9c74302",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/object-freeze-witness.mjs",
+      "line": 1,
+      "sha256": "bf5a7a37c056f06fd46a02b1fc56a4517f626a53b2a4855ab8bc945022b266c0",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+      "line": 1,
+      "sha256": "f1c447fee85fb4a0357ba9717b8fbb6efbc91aca8c4f97da0d54051e529075c8",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/cleanup-01.md",
+      "line": 1,
+      "sha256": "5485f5ae35856281fcbe39147fd051857c4a364dac319deafee340c5448f4a09",
+      "disposition": "Policy-only intake DA01-R3-PROXY-02: all-Proxy refusal scope stays an open owner decision."
+    }
+  ],
+  "mappings": []
+}

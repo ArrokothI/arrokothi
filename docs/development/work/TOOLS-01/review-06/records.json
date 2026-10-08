@@ -1,0 +1,2357 @@
+{
+  "base": "f62527e8d564a6e2f63b83cbb52e24053f333540",
+  "payload": "83094969e591dba5c4f25d19c572522b78a7a396",
+  "candidate": "a50c38867c93c63094f271d099cec71624382577",
+  "checks": [
+    {
+      "check": "choice 10 at 60af5db9: one diff",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 10 at 60af5db9: git apply previous revision",
+      "passed": true,
+      "facts": {
+        "exit": 0,
+        "stderr": "",
+        "result_sha256": "56519ca197759ca8a9b7d3629de576176e17e542dbf8d3eb97fa34d9d720173d"
+      }
+    },
+    {
+      "check": "choice 10 at 83094969e591dba5c4f25d19c572522b78a7a396: one diff",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 10 at 83094969e591dba5c4f25d19c572522b78a7a396: git apply previous revision",
+      "passed": true,
+      "facts": {
+        "exit": 0,
+        "stderr": "",
+        "result_sha256": "56519ca197759ca8a9b7d3629de576176e17e542dbf8d3eb97fa34d9d720173d"
+      }
+    },
+    {
+      "check": "choice 10 at a50c38867c93c63094f271d099cec71624382577: one diff",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 10 at a50c38867c93c63094f271d099cec71624382577: git apply previous revision",
+      "passed": true,
+      "facts": {
+        "exit": 0,
+        "stderr": "",
+        "result_sha256": "56519ca197759ca8a9b7d3629de576176e17e542dbf8d3eb97fa34d9d720173d"
+      }
+    },
+    {
+      "check": "choice 10 binding bytes preserved at C/H",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 11 at 4875f486: one diff",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 11 at 4875f486: git apply previous revision",
+      "passed": true,
+      "facts": {
+        "exit": 0,
+        "stderr": "",
+        "result_sha256": "fc0453fe93392d8721b41cf29a0b203650f1ba2d2f9bd2bc9ae2069a1cf5ebe3"
+      }
+    },
+    {
+      "check": "choice 11 at 83094969e591dba5c4f25d19c572522b78a7a396: one diff",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 11 at 83094969e591dba5c4f25d19c572522b78a7a396: git apply previous revision",
+      "passed": true,
+      "facts": {
+        "exit": 0,
+        "stderr": "",
+        "result_sha256": "fc0453fe93392d8721b41cf29a0b203650f1ba2d2f9bd2bc9ae2069a1cf5ebe3"
+      }
+    },
+    {
+      "check": "choice 11 at a50c38867c93c63094f271d099cec71624382577: one diff",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 11 at a50c38867c93c63094f271d099cec71624382577: git apply previous revision",
+      "passed": true,
+      "facts": {
+        "exit": 0,
+        "stderr": "",
+        "result_sha256": "fc0453fe93392d8721b41cf29a0b203650f1ba2d2f9bd2bc9ae2069a1cf5ebe3"
+      }
+    },
+    {
+      "check": "choice 11 binding bytes preserved at C/H",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "contract at C and H equals revision 11",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "C is H direct parent",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "C..H exact report/007 allowlist",
+      "passed": true,
+      "facts": [
+        "docs/development/007-work-packets.md",
+        "docs/development/work/TOOLS-01/implementation-04.md"
+      ]
+    },
+    {
+      "check": "no production or Layer-3 change",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "no pre-B sealed record modified",
+      "passed": true,
+      "facts": [
+        "AGENTS.md",
+        "README.md",
+        "docs/development/007-work-packets.md",
+        "package-lock.json",
+        "package.json",
+        "tests/conformance/effects/fast-slow-equivalence.test.ts"
+      ]
+    },
+    {
+      "check": "no another packet change",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "policy pin: 006-development-process.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "policy pin: 008-implementation-report.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "policy pin: 012-review-methods.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier disclosed whitespace repair scope",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-01.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-02.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-03.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-04.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-05.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-06.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-07.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-09.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-10.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-11.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-12.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-13.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/review-01/sample-14.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier repair only trailing spaces/tabs: docs/development/work/TOOLS-01/owner-choice-09.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: README.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: audit_tables.py",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: candidate.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: candidate.run.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: candidate.stderr",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: coverage-before-report.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: identity.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: isolation.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: kernel-sweeps.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: probe_isolation.py",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: probe_review.py",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: probes.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: probes.stderr",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: root-cause-and-owner-options.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-01.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-01.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-01.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-02.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-02.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-02.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-03.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-03.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-03.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-04.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-04.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-04.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-05.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-05.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-05.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-06.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-06.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-06.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-07.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-07.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-07.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-08.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-08.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-09.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-09.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-09.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-10.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-10.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-10.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-11.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-11.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-11.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-12.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-12.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-12.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-13.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-13.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-13.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-14.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair only bytes/digest: sample-14.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-14.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-15.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-15.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-16.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-16.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-index.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sample-notes.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sweep-original-names.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sweep-original-values.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sweep-recheck-off.txt.gz",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sweep-recheck-reenter.txt.gz",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sweep-recheck.run.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sweep-recheck.txt",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: sweep-reenter-original.txt.gz",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: tables.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: tables.run.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: verify-summary.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: verify.json.gz",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: verify.run.json",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "review-01 evidence digest: verify.stderr",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "earlier manifest repair exactly 13 rows",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "current round does not rewrite prior records",
+      "passed": true,
+      "facts": [
+        "docs/development/work/TOOLS-01/checks.json",
+        "docs/development/work/TOOLS-01/contract.md",
+        "docs/development/work/TOOLS-01/design-06.md",
+        "docs/development/work/TOOLS-01/verification.json"
+      ]
+    },
+    {
+      "check": "one proposed status row",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "scope insertion anchor unique",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "007 equals exactly both report proposals modulo wrapping",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "committed rule-1 list exact, no duplicate",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "rule-1 prior-membership flags exact",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "old 44 and 188 all retained",
+      "passed": true,
+      "facts": [
+        44,
+        188
+      ]
+    },
+    {
+      "check": "committed category overlap list exact",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "all category dispositions unchanged",
+      "passed": true,
+      "facts": 97
+    },
+    {
+      "check": "every rule-1 entry held, V-ENV-matched and owned",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "no preserved member at a held registered leaf",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "37 target leaves held, 15 unheld",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "all witnesses name a correctly classified member and claim",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "transfer pin/set: docs/development/work/TOOLS-01/owner-choice-04.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "transfer pin/set: docs/development/work/TOOLS-01/owner-choice-05.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "transfer pin/set: docs/development/work/TOOLS-01/owner-choice-11.md",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "open revalidation set equals all transfer lists",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "only choice 11 three reopened; no new closures",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "transferred three have no closure",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: additional-13c84103ae156ad2a2b93960",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-00894044eb58ada0e1dc436d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-051103a915c0dad065b3ff57",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-0ba43987a9b8ea49011674cc",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-0e16542de3087c0c508b3601",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-0f12d86d31f51cf923cb05e8",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-1082b30bb51b87ed10da586c",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-17b6d68525b36633eeaf1951",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-1a82f8f5670f7437573c1084",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-1ab5c124484bc58b2a471c96",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-1bc6bdfb882a53a207254ef4",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-1f79bb84e3dcff04b29998b3",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-210dd0aaaf1f9edcdcaa0600",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-21fb34d9cd3ad15575371064",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-22cf4ca80f2139455173765a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-22eb339860078995989b5d5f",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-234036da40df72ad36095f4b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-2805bf93c3eb6e0264775add",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-2851ce39da9cf13d84c1e0cb",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-29571c4db7cde3206ffea143",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-2a5873f1b32456e8b0225f31",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-30fdff7b12e937121758c7e7",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-3310e718c17bac5248395d3d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-334c2010f01b3ec6e0f741f2",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-3553544e78c5d13e863f4db3",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-3737bddc25971e833c283b6b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-394a3572417fe81cafbd7097",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-3e9674b46cfdc1ec8d739bec",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-41aacd591ea18aec11e47313",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-41fff78d8c610a53b2aafa0e",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-476c4cb998557258d01b848b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-48d893e3f817a4fe4400efad",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-4992d5c386175b80f363f169",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-4e300ac8047fcf6b203072a1",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-510be2a0362710c9996c358a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-55f842727285272a53a9e5d9",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-58a5b7bc09b47ad262f7e4f5",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-58bd5fa05308bf7be5582ac0",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-5aa5528a64998b98b9684b99",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-5f5e6a66eb7e856dbfa74c1a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-63378152d309b4564411b75b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-6c57cc9dd8febdefa65ed496",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-6dcba4da5936b64c77a8b470",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-706c556c17630ab723e3ad09",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-70d6df0d9d69aeaa93cc8b66",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-776df3f8f7169a5faed03faf",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-7902341bc00c3376b26ef71f",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-791d72837fcc45454f5b0ab6",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-7c993a80443a808b1935f25a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-7c99b94ca43cc08b3d970f63",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-7da3229588308934e8965a17",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-7f1385902cbb2efcd3978b7c",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-88c70bb20ca9f6fe9c05bbf5",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-893f58b7b13bd47ccf7f8f30",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-91a16df2b59f363129b8a582",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-9252c2392294fb63ec0df4ed",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-92a31c576b540156b21542df",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-933874e859e8d7b79504af10",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-98679309de7791acf7f59c87",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-9f1aff62363a7e5c975a5af2",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-a1391856426919155dd8d776",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-a18b918ab468d43e9b337c58",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-a45b1c9d40d46e183ebd203d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-a4fa946d2759121d53f06ef8",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-a7baf87132157c84897e9b47",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-a8dc74e516932f00626f70e1",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-ab4a0cceaeed3b426232f62f",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-accb88d01d3c1bd7a07f7a37",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-ad675d7ffcbba7ef72a017be",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-ada9f66cd74e3bc95eef93d6",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-ae65d3df0a6ed394770ff256",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-af2225209bd454f0def2f37a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-af6cc0ad3461d3504c14ba98",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-b06e44e7a30c0b735cf084aa",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-b303eed73b3e154fe6365c09",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-b344c9faf1272dd3033d4ccd",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-b46445caeaa7feb4193b6677",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-b93fa92a81d4582fdc056ed6",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-bb7722eb19e78f33e1f81a58",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-bbe0c5a1782aa6f649f0a4a3",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-bca863b02ba3f5f894baa47d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-bd475dc046932fc078173327",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-bf8be457073b319f1d960816",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-bfb0510b74096b5d2873eebd",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-c65a82c89661d8cb815b5b1b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-c7e2a337625d9c8c7fcaf429",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-ce2e69842afb779a3e70c0f5",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-cea7c714e6dd544a456b0612",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-cf86f4b9a38fe1c218b5593b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-d1cc3ec2a2b8302622953df0",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-d5ce2b4c65a4f714507485f0",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-dbf5c4bd47aafe731d44ac00",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-df8b3362021d66ba85efef15",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-e4b5e509ed4c9252343fc29c",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-e675d28451f3413582099c7a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-ebfa0eb36bcd33f72a4dffce",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-f1a28bedebfe204b9687fa53",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-f468517ae332ead13530f5b1",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-f50368fdd8385de10113f371",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-f5306a247782c53fd004e62d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-f57bc769e0c3bc07a00d9698",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-fcbe9b87cbe87b398197c578",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: artifact-febb180b453e17b8edab6893",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: mention-1793cc4c6b56d9fbfe29bf4c",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: mention-57a288b12c45c9df10f72c83",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: mention-8453525ddccc13469b3fe72f",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "closed-origin no held target; all member routes: mention-c796a853d25d5335659baf83",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 11 one member/four targets exact",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "choice 11 member list digest and decision text",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "24 original listed members: 22 held under rule 1",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "report expressly states 22 stay listed without credit",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1061:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1094:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1106:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1122:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1141:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1173:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1211:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1256:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1283:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1331:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1401:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:266:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:280:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:369:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:433:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/dispatch.test.ts:66:3@5a8d958ffdab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:1022:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:1045:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:1073:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:149:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:179:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:2999:5@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:3082:5@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:3376:5@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:3516:5@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:3561:5@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:855:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:880:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:919:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: tests/conformance/architecture/kernel-landing-zone.test.ts:936:3@deedd7950724",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "limited extra unique target/held leaf: packages/kernel/tests/values.test.ts:115:3@fb228bec8c58",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "R1-01 run-set and regex machinery retained byte-for-byte",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "unread-code visitor unchanged",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "no executable read-only/fresh-result exemption table remains",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink list equals independently diffed 18 and 70 plus choice 11 transfers",
+      "passed": true,
+      "facts": {
+        "round3": 18,
+        "round4": 70,
+        "union": 78,
+        "extra_transfers": [
+          "artifact-b21077d3d4d8265db9b7c7ab",
+          "artifact-ee81a9215a4b627e88fda2d5"
+        ]
+      }
+    },
+    {
+      "check": "relink contents: artifact-00894044eb58ada0e1dc436d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-051103a915c0dad065b3ff57",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-0ba43987a9b8ea49011674cc",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-0e16542de3087c0c508b3601",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-0f12d86d31f51cf923cb05e8",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-1082b30bb51b87ed10da586c",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-17b6d68525b36633eeaf1951",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-1ab5c124484bc58b2a471c96",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-1f79bb84e3dcff04b29998b3",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-210dd0aaaf1f9edcdcaa0600",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-21fb34d9cd3ad15575371064",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-22cf4ca80f2139455173765a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-234036da40df72ad36095f4b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-2805bf93c3eb6e0264775add",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-2851ce39da9cf13d84c1e0cb",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-29571c4db7cde3206ffea143",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-30fdff7b12e937121758c7e7",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-3310e718c17bac5248395d3d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-334c2010f01b3ec6e0f741f2",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-3553544e78c5d13e863f4db3",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-3737bddc25971e833c283b6b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-394a3572417fe81cafbd7097",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-3e9674b46cfdc1ec8d739bec",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-41aacd591ea18aec11e47313",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-41fff78d8c610a53b2aafa0e",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-4992d5c386175b80f363f169",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-510be2a0362710c9996c358a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-55f842727285272a53a9e5d9",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-58a5b7bc09b47ad262f7e4f5",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-5aa5528a64998b98b9684b99",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-6c57cc9dd8febdefa65ed496",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-706c556c17630ab723e3ad09",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-70d6df0d9d69aeaa93cc8b66",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-776df3f8f7169a5faed03faf",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-7902341bc00c3376b26ef71f",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-791d72837fcc45454f5b0ab6",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-7c993a80443a808b1935f25a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-7da3229588308934e8965a17",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-7f1385902cbb2efcd3978b7c",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-88c70bb20ca9f6fe9c05bbf5",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-893f58b7b13bd47ccf7f8f30",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-92a31c576b540156b21542df",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-933874e859e8d7b79504af10",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-98679309de7791acf7f59c87",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-9f1aff62363a7e5c975a5af2",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-a1391856426919155dd8d776",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-a45b1c9d40d46e183ebd203d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-a4fa946d2759121d53f06ef8",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-a7baf87132157c84897e9b47",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-a8dc74e516932f00626f70e1",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-ab4a0cceaeed3b426232f62f",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-accb88d01d3c1bd7a07f7a37",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-ada9f66cd74e3bc95eef93d6",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-ae65d3df0a6ed394770ff256",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-af2225209bd454f0def2f37a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-af6cc0ad3461d3504c14ba98",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-b06e44e7a30c0b735cf084aa",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-b21077d3d4d8265db9b7c7ab",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-b303eed73b3e154fe6365c09",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-b46445caeaa7feb4193b6677",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-b93fa92a81d4582fdc056ed6",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-bb7722eb19e78f33e1f81a58",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-bca863b02ba3f5f894baa47d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-bd475dc046932fc078173327",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-bf8be457073b319f1d960816",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-c65a82c89661d8cb815b5b1b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-ce2e69842afb779a3e70c0f5",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-cea7c714e6dd544a456b0612",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-cf86f4b9a38fe1c218b5593b",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-d5ce2b4c65a4f714507485f0",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-e4b5e509ed4c9252343fc29c",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-e675d28451f3413582099c7a",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-ebfa0eb36bcd33f72a4dffce",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-ecb10ef937e0612352e7c7ef",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-ee81a9215a4b627e88fda2d5",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-f1a28bedebfe204b9687fa53",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-f5306a247782c53fd004e62d",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-f57bc769e0c3bc07a00d9698",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-fcbe9b87cbe87b398197c578",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "relink contents: artifact-febb180b453e17b8edab6893",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "report census recomputes",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "report headline counts recompute",
+      "passed": true,
+      "facts": null
+    },
+    {
+      "check": "report area-gate count including declared administrative paths",
+      "passed": true,
+      "facts": null
+    }
+  ],
+  "figures": {
+    "member_status": {
+      "held": 1095,
+      "superseded": 74,
+      "preserved": 49,
+      "refused": 54
+    },
+    "transitioned_to_held": {
+      "preserved": 664,
+      "refused": 248
+    },
+    "register_entries": 950,
+    "rule_1": 853,
+    "not_held": 0,
+    "overlap": 96,
+    "target_rows": 52,
+    "witnesses": 1169,
+    "closed": 107,
+    "transferred": 47,
+    "listed": 25,
+    "held_listed": 22,
+    "extras_by_file": {
+      "packages/kernel/tests/dispatch.test.ts": 18,
+      "tests/conformance/architecture/kernel-landing-zone.test.ts": 14,
+      "packages/kernel/tests/values.test.ts": 1
+    },
+    "closure_contexts": 113,
+    "origin_states": {
+      "complete": 107,
+      "pending_revalidation": 47,
+      "pending": 1395
+    },
+    "B_C_changed_paths": 344,
+    "B_H_changed_paths": 345
+  },
+  "transfer_lists": [
+    {
+      "decision": "docs/development/work/TOOLS-01/owner-choice-04.md",
+      "origins": [
+        "artifact-73555fe668cc180905b1e49a",
+        "artifact-9fd619f5375d598ebb2b88aa",
+        "artifact-d2153e36d9c7464883ecea0b",
+        "artifact-ea5444a6d42154e413fe0f2e"
+      ],
+      "sha256": "9582ae389afc6fc53bb4e6106f1298a271a274278437190991831a94f6b83483"
+    },
+    {
+      "decision": "docs/development/work/TOOLS-01/owner-choice-05.md",
+      "origins": [
+        "additional-0b2b45755c80ff73e7789650",
+        "additional-1107d4b2a4d8c1365842b8ae",
+        "additional-4312cb8d9b027fa1ae60a720",
+        "additional-a11f3d5bded83b931874b438",
+        "additional-b60e2b509343b39e0bc4e392",
+        "additional-e0c4ff8aa1309ff5bc381c10",
+        "artifact-01c48e3f37efc92ef4c6e68a",
+        "artifact-097a4dcccf08b7048d523d00",
+        "artifact-0df304cfe45c7b0f825cd277",
+        "artifact-1e3d57f18b66af569805e605",
+        "artifact-29897c65553c4a7f4ffebc1d",
+        "artifact-2f673089a513f4cf2c46673b",
+        "artifact-30024d036d904400c4493029",
+        "artifact-5a99ec52d4f6731d34aa0926",
+        "artifact-876e74bca77cb8f0ac6939eb",
+        "artifact-9775fd62e0ec1b4d45f26d3f",
+        "artifact-aa61ddb0a0ed934d57775f7c",
+        "artifact-b7161892b7836d1e1d26c6bf",
+        "artifact-d3d0439b0de8a87606740816",
+        "artifact-e0445f9f19d3bcf95cfeba72",
+        "artifact-e6335377558b4902a5eb4ac8",
+        "artifact-f41bd3ffa4f36fdfd1a93870",
+        "artifact-f83cfd8c20c9d031c00c98ba",
+        "mention-123754e1ce6a38d94bac48cb",
+        "mention-167d41016e3bfd6e87aa3dd3",
+        "mention-5766105aef6599ba38977249",
+        "mention-60774315b70015a7b7cee227",
+        "mention-62c560a517e575f2b949edd4",
+        "mention-6a4805a0c843146b17bf61e8",
+        "mention-6d254abfc0140c6457376fe9",
+        "mention-6dbc2e2cb5e276f525858a95",
+        "mention-83736f96199f333886eadeb1",
+        "mention-84b823d6a693c7755df18806",
+        "mention-8648d15cb01fcde0d3866342",
+        "mention-91b13f72c5b91e7c2389a7f7",
+        "mention-ad9644cfe900aedf43d00e67",
+        "mention-afe1b89ed52e1140d4be4980",
+        "mention-b0062957544d82078ef2af96",
+        "mention-b4c2499cdb06a89b3b7f84c3",
+        "mention-ccaca9c2ac9e438d564a6762"
+      ],
+      "sha256": "f03135550c35a4a487ed4b800945bf4402c52e13deffd4ab244304dc9be23f3b"
+    },
+    {
+      "decision": "docs/development/work/TOOLS-01/owner-choice-11.md",
+      "origins": [
+        "artifact-b21077d3d4d8265db9b7c7ab",
+        "artifact-ecb10ef937e0612352e7c7ef",
+        "artifact-ee81a9215a4b627e88fda2d5"
+      ],
+      "sha256": "2ef864e600b2bdc308f6b35201ab479154b1d37e4d6405f1c7f6ac4d32a88ebc"
+    }
+  ],
+  "wording_observations": [
+    "The report calls 345 paths B..C; literal B..C has 344. The area gate includes the declared report path and correctly reports 345.",
+    "The 80 relink rows include the union of 18 prior and 70 current relinks (78 distinct), plus two other choice-11 transfers. The JSON accurately labels all three transfers pending_revalidation; 77 rows are currently complete."
+  ],
+  "held_listed_members": [
+    "packages/kernel/tests/dispatch.test.ts:1527:3@5a8d958ffdab",
+    "packages/kernel/tests/dispatch.test.ts:420:3@5a8d958ffdab",
+    "packages/kernel/tests/values.test.ts:735:3@fb228bec8c58",
+    "tests/conformance/architecture/evidence-records.test.ts:157:3@5d3f432848c3",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:1822:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:1865:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:1930:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:1974:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:2031:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:2044:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:2108:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:221:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:238:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:246:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:254:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:262:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:310:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:346:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:357:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:365:3@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:4138:5@deedd7950724",
+    "tests/conformance/architecture/kernel-landing-zone.test.ts:4207:5@deedd7950724"
+  ],
+  "changed_paths": [
+    "AGENTS.md",
+    "README.md",
+    "docs/development/007-work-packets.md",
+    "docs/development/work/TOOLS-01/brief-01.md",
+    "docs/development/work/TOOLS-01/checks.json",
+    "docs/development/work/TOOLS-01/closure-01.md",
+    "docs/development/work/TOOLS-01/coarse-rule/category-v-env-entries.json",
+    "docs/development/work/TOOLS-01/coarse-rule/relinked-origins.json",
+    "docs/development/work/TOOLS-01/coarse-rule/rule-1-entries.json",
+    "docs/development/work/TOOLS-01/continuation-01.md",
+    "docs/development/work/TOOLS-01/continuation-repair-01.md",
+    "docs/development/work/TOOLS-01/continuation-repair-01/census.json",
+    "docs/development/work/TOOLS-01/continuation-repair-01/census.txt",
+    "docs/development/work/TOOLS-01/continuation-repair-01/closure-probes.json",
+    "docs/development/work/TOOLS-01/continuation-repair-01/context-lines-after.json",
+    "docs/development/work/TOOLS-01/continuation-repair-01/context-lines-before.json",
+    "docs/development/work/TOOLS-01/continuation-repair-01/inventory.json.gz",
+    "docs/development/work/TOOLS-01/continuation-repair-01/manifest.json",
+    "docs/development/work/TOOLS-01/continuation-repair-01/probe_context_lines.py",
+    "docs/development/work/TOOLS-01/continuation-repair-01/refusals.json.gz",
+    "docs/development/work/TOOLS-01/continuation-repair-01/registry.json",
+    "docs/development/work/TOOLS-01/continuation-repair-01/targets.json.gz",
+    "docs/development/work/TOOLS-01/continuation-repair-01/targets.txt",
+    "docs/development/work/TOOLS-01/continuation-repair-01/tooling-tests.txt",
+    "docs/development/work/TOOLS-01/continuation-repair-02.md",
+    "docs/development/work/TOOLS-01/continuation-repair-03.md",
+    "docs/development/work/TOOLS-01/continuation-stop-01.md",
+    "docs/development/work/TOOLS-01/continuation-stop-01/check-built-results.json.gz",
+    "docs/development/work/TOOLS-01/continuation-stop-01/check-built-summary.txt",
+    "docs/development/work/TOOLS-01/continuation-stop-01/enumerate_unbound.mjs",
+    "docs/development/work/TOOLS-01/continuation-stop-01/manifest.json",
+    "docs/development/work/TOOLS-01/continuation-stop-01/probe-closure-result.json",
+    "docs/development/work/TOOLS-01/continuation-stop-01/probe_closure.py",
+    "docs/development/work/TOOLS-01/continuation-stop-01/tooling-tests.txt",
+    "docs/development/work/TOOLS-01/continuation-stop-01/unbound-members.json",
+    "docs/development/work/TOOLS-01/continuation-stop-01/unbound-requests.json",
+    "docs/development/work/TOOLS-01/continuation-stop-02.md",
+    "docs/development/work/TOOLS-01/continuation-stop-02/hold-credit-result.json",
+    "docs/development/work/TOOLS-01/continuation-stop-02/initial-corpus-fixture.json",
+    "docs/development/work/TOOLS-01/continuation-stop-02/initial-corpus-result.json.gz",
+    "docs/development/work/TOOLS-01/continuation-stop-02/manifest.json",
+    "docs/development/work/TOOLS-01/continuation-stop-02/pinned-link-examples.json",
+    "docs/development/work/TOOLS-01/continuation-stop-02/probe_hold_credit.py",
+    "docs/development/work/TOOLS-01/continuation-stop-02/probe_relative_context.py",
+    "docs/development/work/TOOLS-01/continuation-stop-02/proposed-target.json",
+    "docs/development/work/TOOLS-01/continuation-stop-02/relative-context-result.json",
+    "docs/development/work/TOOLS-01/continuation-stop-02/unadopted-context-samples.json",
+    "docs/development/work/TOOLS-01/contract.md",
+    "docs/development/work/TOOLS-01/design-01.md",
+    "docs/development/work/TOOLS-01/design-02.md",
+    "docs/development/work/TOOLS-01/design-03.md",
+    "docs/development/work/TOOLS-01/design-04-check.md",
+    "docs/development/work/TOOLS-01/design-04.md",
+    "docs/development/work/TOOLS-01/design-05-check.md",
+    "docs/development/work/TOOLS-01/design-05-review-02.md",
+    "docs/development/work/TOOLS-01/design-05-review.md",
+    "docs/development/work/TOOLS-01/design-05.md",
+    "docs/development/work/TOOLS-01/design-06-check-02.md",
+    "docs/development/work/TOOLS-01/design-06-check-03.md",
+    "docs/development/work/TOOLS-01/design-06-check-03/README.md",
+    "docs/development/work/TOOLS-01/design-06-check-03/check_figures.py",
+    "docs/development/work/TOOLS-01/design-06-check-03/corpus-summary.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/corpus.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/corpus.stderr",
+    "docs/development/work/TOOLS-01/design-06-check-03/credit.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/extended-summary.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/extended.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/figure-check.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/manifest.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/measure.txt",
+    "docs/development/work/TOOLS-01/design-06-check-03/measured.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/original-81.txt",
+    "docs/development/work/TOOLS-01/design-06-check-03/probe_credit.py",
+    "docs/development/work/TOOLS-01/design-06-check-03/probe_extended.py",
+    "docs/development/work/TOOLS-01/design-06-check-03/table-audit.md",
+    "docs/development/work/TOOLS-01/design-06-check-03/table-runtime.json",
+    "docs/development/work/TOOLS-01/design-06-check-03/table-runtime.mjs",
+    "docs/development/work/TOOLS-01/design-06-check.md",
+    "docs/development/work/TOOLS-01/design-06-check/assertion-frames.json",
+    "docs/development/work/TOOLS-01/design-06-check/probe_assertion_frames.py",
+    "docs/development/work/TOOLS-01/design-06-r4/README.md",
+    "docs/development/work/TOOLS-01/design-06-r4/measure.py",
+    "docs/development/work/TOOLS-01/design-06-r4/measured.json",
+    "docs/development/work/TOOLS-01/design-06-r4/probe_safe_positions.py",
+    "docs/development/work/TOOLS-01/design-06-r4/prototype.diff",
+    "docs/development/work/TOOLS-01/design-06.md",
+    "docs/development/work/TOOLS-01/families-census-01.md",
+    "docs/development/work/TOOLS-01/gate-design-01.md",
+    "docs/development/work/TOOLS-01/gate-stop-01.md",
+    "docs/development/work/TOOLS-01/gate-stop-01/blocking-origins.json.gz",
+    "docs/development/work/TOOLS-01/gate-stop-02.md",
+    "docs/development/work/TOOLS-01/gate-stop-02/measure.py",
+    "docs/development/work/TOOLS-01/gate-stop-02/measurement.json.gz",
+    "docs/development/work/TOOLS-01/implementation-01.md",
+    "docs/development/work/TOOLS-01/implementation-02.md",
+    "docs/development/work/TOOLS-01/implementation-03.md",
+    "docs/development/work/TOOLS-01/implementation-04.md",
+    "docs/development/work/TOOLS-01/node-floor-01.md",
+    "docs/development/work/TOOLS-01/node-floor-01/a1.json",
+    "docs/development/work/TOOLS-01/node-floor-02.md",
+    "docs/development/work/TOOLS-01/node-floor-03.md",
+    "docs/development/work/TOOLS-01/node-floor-03/floor-results.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-03/isolated-failure.json",
+    "docs/development/work/TOOLS-01/node-floor-03/manifest.json",
+    "docs/development/work/TOOLS-01/node-floor-03/minimal-failure.json",
+    "docs/development/work/TOOLS-01/node-floor-04.md",
+    "docs/development/work/TOOLS-01/node-floor-04/archive-failure.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-04/floor-a1-a7.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-04/floor-a8.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-04/manifest.json",
+    "docs/development/work/TOOLS-01/node-floor-04/probe-controls.json",
+    "docs/development/work/TOOLS-01/node-floor-04/runtime-comparison.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-05.md",
+    "docs/development/work/TOOLS-01/node-floor-05/adoption-scan.json",
+    "docs/development/work/TOOLS-01/node-floor-05/archive-controls.json",
+    "docs/development/work/TOOLS-01/node-floor-05/archive-focused.json",
+    "docs/development/work/TOOLS-01/node-floor-05/floor-a1-a8.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-05/manifest.json",
+    "docs/development/work/TOOLS-01/node-floor-05/poison-count.txt.gz",
+    "docs/development/work/TOOLS-01/node-floor-05/poison-off.txt.gz",
+    "docs/development/work/TOOLS-01/node-floor-05/poison-reenter.txt.gz",
+    "docs/development/work/TOOLS-01/node-floor-05/poison-throw.txt.gz",
+    "docs/development/work/TOOLS-01/node-floor-05/register-hooks.json",
+    "docs/development/work/TOOLS-01/node-floor-05/runtime-comparison.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-05/step-controls.json",
+    "docs/development/work/TOOLS-01/node-floor-06.md",
+    "docs/development/work/TOOLS-01/node-floor-06/a9-a11-diagnostic.json",
+    "docs/development/work/TOOLS-01/node-floor-06/archive-controls.json",
+    "docs/development/work/TOOLS-01/node-floor-06/floor-a1-a8.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-06/manifest.json",
+    "docs/development/work/TOOLS-01/node-floor-06/step-controls.json",
+    "docs/development/work/TOOLS-01/node-floor-06/sweep-diagnostics.json",
+    "docs/development/work/TOOLS-01/node-floor-07.md",
+    "docs/development/work/TOOLS-01/node-floor-07/floor-a1-a11.json.gz",
+    "docs/development/work/TOOLS-01/node-floor-07/manifest.json",
+    "docs/development/work/TOOLS-01/node-floor-07/sweep-timing.json",
+    "docs/development/work/TOOLS-01/owner-choice-01.md",
+    "docs/development/work/TOOLS-01/owner-choice-02.md",
+    "docs/development/work/TOOLS-01/owner-choice-03.md",
+    "docs/development/work/TOOLS-01/owner-choice-04.md",
+    "docs/development/work/TOOLS-01/owner-choice-04/limited-origins.json",
+    "docs/development/work/TOOLS-01/owner-choice-05.md",
+    "docs/development/work/TOOLS-01/owner-choice-05/transferred-origins.json",
+    "docs/development/work/TOOLS-01/owner-choice-06.md",
+    "docs/development/work/TOOLS-01/owner-choice-07.md",
+    "docs/development/work/TOOLS-01/owner-choice-08.md",
+    "docs/development/work/TOOLS-01/owner-choice-09.md",
+    "docs/development/work/TOOLS-01/owner-choice-10.md",
+    "docs/development/work/TOOLS-01/owner-choice-11.md",
+    "docs/development/work/TOOLS-01/owner-choice-11/limited-members.json",
+    "docs/development/work/TOOLS-01/owner-choice-11/transferred-origins.json",
+    "docs/development/work/TOOLS-01/pilot-01.md",
+    "docs/development/work/TOOLS-01/pilot-review-01.md",
+    "docs/development/work/TOOLS-01/preserved-census-01.md",
+    "docs/development/work/TOOLS-01/register-cases-01.md",
+    "docs/development/work/TOOLS-01/release-01.md",
+    "docs/development/work/TOOLS-01/review-01.md",
+    "docs/development/work/TOOLS-01/review-01/README.md",
+    "docs/development/work/TOOLS-01/review-01/audit_tables.py",
+    "docs/development/work/TOOLS-01/review-01/candidate.json",
+    "docs/development/work/TOOLS-01/review-01/candidate.run.json",
+    "docs/development/work/TOOLS-01/review-01/candidate.stderr",
+    "docs/development/work/TOOLS-01/review-01/coverage-before-report.md",
+    "docs/development/work/TOOLS-01/review-01/identity.json",
+    "docs/development/work/TOOLS-01/review-01/isolation.json",
+    "docs/development/work/TOOLS-01/review-01/kernel-sweeps.txt",
+    "docs/development/work/TOOLS-01/review-01/manifest.json",
+    "docs/development/work/TOOLS-01/review-01/probe_isolation.py",
+    "docs/development/work/TOOLS-01/review-01/probe_review.py",
+    "docs/development/work/TOOLS-01/review-01/probes.json",
+    "docs/development/work/TOOLS-01/review-01/probes.stderr",
+    "docs/development/work/TOOLS-01/review-01/root-cause-and-owner-options.md",
+    "docs/development/work/TOOLS-01/review-01/sample-01.json",
+    "docs/development/work/TOOLS-01/review-01/sample-01.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-02.json",
+    "docs/development/work/TOOLS-01/review-01/sample-02.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-03.json",
+    "docs/development/work/TOOLS-01/review-01/sample-03.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-04.json",
+    "docs/development/work/TOOLS-01/review-01/sample-04.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-05.json",
+    "docs/development/work/TOOLS-01/review-01/sample-05.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-06.json",
+    "docs/development/work/TOOLS-01/review-01/sample-06.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-07.json",
+    "docs/development/work/TOOLS-01/review-01/sample-07.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-08.json",
+    "docs/development/work/TOOLS-01/review-01/sample-08.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-09.json",
+    "docs/development/work/TOOLS-01/review-01/sample-09.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-10.json",
+    "docs/development/work/TOOLS-01/review-01/sample-10.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-11.json",
+    "docs/development/work/TOOLS-01/review-01/sample-11.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-12.json",
+    "docs/development/work/TOOLS-01/review-01/sample-12.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-13.json",
+    "docs/development/work/TOOLS-01/review-01/sample-13.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-14.json",
+    "docs/development/work/TOOLS-01/review-01/sample-14.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-15.json",
+    "docs/development/work/TOOLS-01/review-01/sample-15.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-16.json",
+    "docs/development/work/TOOLS-01/review-01/sample-16.txt",
+    "docs/development/work/TOOLS-01/review-01/sample-index.json",
+    "docs/development/work/TOOLS-01/review-01/sample-notes.md",
+    "docs/development/work/TOOLS-01/review-01/sweep-original-names.json",
+    "docs/development/work/TOOLS-01/review-01/sweep-original-values.json",
+    "docs/development/work/TOOLS-01/review-01/sweep-recheck-off.txt.gz",
+    "docs/development/work/TOOLS-01/review-01/sweep-recheck-reenter.txt.gz",
+    "docs/development/work/TOOLS-01/review-01/sweep-recheck.run.json",
+    "docs/development/work/TOOLS-01/review-01/sweep-recheck.txt",
+    "docs/development/work/TOOLS-01/review-01/sweep-reenter-original.txt.gz",
+    "docs/development/work/TOOLS-01/review-01/tables.json",
+    "docs/development/work/TOOLS-01/review-01/tables.run.json",
+    "docs/development/work/TOOLS-01/review-01/verify-summary.json",
+    "docs/development/work/TOOLS-01/review-01/verify.json.gz",
+    "docs/development/work/TOOLS-01/review-01/verify.run.json",
+    "docs/development/work/TOOLS-01/review-01/verify.stderr",
+    "docs/development/work/TOOLS-01/review-02.md",
+    "docs/development/work/TOOLS-01/review-02/README.md",
+    "docs/development/work/TOOLS-01/review-02/brief-02.md",
+    "docs/development/work/TOOLS-01/review-02/check_records.py",
+    "docs/development/work/TOOLS-01/review-02/closed-facts.txt",
+    "docs/development/work/TOOLS-01/review-02/gate-C.json",
+    "docs/development/work/TOOLS-01/review-02/gate-areas-C.json",
+    "docs/development/work/TOOLS-01/review-02/gate_areas.py",
+    "docs/development/work/TOOLS-01/review-02/origin_facts.py",
+    "docs/development/work/TOOLS-01/review-02/sample.json",
+    "docs/development/work/TOOLS-01/review-02/venv-bodies.txt",
+    "docs/development/work/TOOLS-01/review-02/venv-classification.json",
+    "docs/development/work/TOOLS-01/review-02/venv_bodies.py",
+    "docs/development/work/TOOLS-01/review-02/venv_classification.py",
+    "docs/development/work/TOOLS-01/review-02/verify-C-summary.json",
+    "docs/development/work/TOOLS-01/review-02/verify-C.json.gz",
+    "docs/development/work/TOOLS-01/review-03.md",
+    "docs/development/work/TOOLS-01/review-03/README.md",
+    "docs/development/work/TOOLS-01/review-03/audit.json",
+    "docs/development/work/TOOLS-01/review-03/audit_candidate.py",
+    "docs/development/work/TOOLS-01/review-03/audit_scope.py",
+    "docs/development/work/TOOLS-01/review-03/boundaries.json",
+    "docs/development/work/TOOLS-01/review-03/boundaries.stderr",
+    "docs/development/work/TOOLS-01/review-03/candidate.json",
+    "docs/development/work/TOOLS-01/review-03/detector.json",
+    "docs/development/work/TOOLS-01/review-03/inventory.json.gz",
+    "docs/development/work/TOOLS-01/review-03/isolation.json",
+    "docs/development/work/TOOLS-01/review-03/manifest.json",
+    "docs/development/work/TOOLS-01/review-03/original-probes.txt",
+    "docs/development/work/TOOLS-01/review-03/probe_boundaries.py",
+    "docs/development/work/TOOLS-01/review-03/probe_detector.py",
+    "docs/development/work/TOOLS-01/review-03/refusal-registry.txt",
+    "docs/development/work/TOOLS-01/review-03/replay.json",
+    "docs/development/work/TOOLS-01/review-03/replay.stderr",
+    "docs/development/work/TOOLS-01/review-03/replay_review01.py",
+    "docs/development/work/TOOLS-01/review-03/restored-target-source.json.gz",
+    "docs/development/work/TOOLS-01/review-03/root-cause-and-owner-options.md",
+    "docs/development/work/TOOLS-01/review-03/scope.json.gz",
+    "docs/development/work/TOOLS-01/review-03/tooling.txt",
+    "docs/development/work/TOOLS-01/review-04.md",
+    "docs/development/work/TOOLS-01/review-04/README.md",
+    "docs/development/work/TOOLS-01/review-04/adjacent-sweep.txt",
+    "docs/development/work/TOOLS-01/review-04/adjacent_sweep.py",
+    "docs/development/work/TOOLS-01/review-04/candidate.json",
+    "docs/development/work/TOOLS-01/review-04/check_records.py",
+    "docs/development/work/TOOLS-01/review-04/limits-relinks.json",
+    "docs/development/work/TOOLS-01/review-04/limits_relinks.py",
+    "docs/development/work/TOOLS-01/review-04/records.txt",
+    "docs/development/work/TOOLS-01/review-04/register.json",
+    "docs/development/work/TOOLS-01/review-04/register_checks.py",
+    "docs/development/work/TOOLS-01/review-04/sample-notes.md",
+    "docs/development/work/TOOLS-01/review-04/sample.json",
+    "docs/development/work/TOOLS-01/review-04/sample.py",
+    "docs/development/work/TOOLS-01/review-04/verify-C-summary.json",
+    "docs/development/work/TOOLS-01/review-04/verify-C.json.gz",
+    "docs/development/work/TOOLS-01/review-04/verify_summary.py",
+    "docs/development/work/TOOLS-01/verification.json",
+    "package-lock.json",
+    "package.json",
+    "scripts/packet_tools.py",
+    "tests/conformance/effects/fast-slow-equivalence.test.ts",
+    "tests/fixtures/packet-tools/adoption.json",
+    "tests/fixtures/packet-tools/coverage.json",
+    "tests/fixtures/packet-tools/inventory.json",
+    "tests/fixtures/packet-tools/mutations.json",
+    "tests/fixtures/packet-tools/oracle-controls.json",
+    "tests/fixtures/packet-tools/realm-cases.json",
+    "tests/fixtures/packet-tools/refusal-guards.json",
+    "tests/tooling/README.md",
+    "tests/tooling/assertion-reporter.mjs",
+    "tests/tooling/capture-witness.mjs",
+    "tests/tooling/catalog-reporter.mjs",
+    "tests/tooling/check-node-floor.py",
+    "tests/tooling/check-refusal-registry.py",
+    "tests/tooling/identity-probe.mjs",
+    "tests/tooling/node-floor/README.md",
+    "tests/tooling/node-floor/archive-input-controls.py",
+    "tests/tooling/node-floor/check-step-controls.py",
+    "tests/tooling/node-floor/check-step.py",
+    "tests/tooling/node-floor/events-reporter.mjs",
+    "tests/tooling/node-floor/events.test.mjs",
+    "tests/tooling/node-floor/isolation-a.test.mjs",
+    "tests/tooling/node-floor/isolation-b.test.mjs",
+    "tests/tooling/node-floor/offsets.ts",
+    "tests/tooling/node-floor/order-await.test.ts",
+    "tests/tooling/node-floor/order-deferred.test.ts",
+    "tests/tooling/node-floor/order.test.ts",
+    "tests/tooling/node-floor/parent.test.mjs",
+    "tests/tooling/node-floor/parser.mjs",
+    "tests/tooling/node-floor/reach.ts",
+    "tests/tooling/node-floor/read-trace.test.ts",
+    "tests/tooling/node-floor/register-hooks.mjs",
+    "tests/tooling/node-floor/subtest.test.mjs",
+    "tests/tooling/node-floor/unref-budget.ts",
+    "tests/tooling/oracle-probe.mjs",
+    "tests/tooling/oracle-reach.mjs",
+    "tests/tooling/python-probe.py",
+    "tests/tooling/reach-coverage.mjs",
+    "tests/tooling/read-trace.mjs",
+    "tests/tooling/realm-global-form.mjs",
+    "tests/tooling/realm-probe.mjs",
+    "tests/tooling/registry-check.mjs",
+    "tests/tooling/source-facts.mjs",
+    "tests/tooling/test_adapter_inputs.py",
+    "tests/tooling/test_adoption_format.py",
+    "tests/tooling/test_area_gate.py",
+    "tests/tooling/test_case_register.py",
+    "tests/tooling/test_catalog_tools.py",
+    "tests/tooling/test_closure_tools.py",
+    "tests/tooling/test_context_references.py",
+    "tests/tooling/test_corpus_tools.py",
+    "tests/tooling/test_environment_tools.py",
+    "tests/tooling/test_family_tools.py",
+    "tests/tooling/test_intrinsic_trace.py",
+    "tests/tooling/test_markdown_blocks.py",
+    "tests/tooling/test_packet_tools.py",
+    "tests/tooling/test_preserved_tools.py",
+    "tests/tooling/test_refusal_guards.py",
+    "tests/tooling/test_research_tools.py",
+    "tests/tooling/test_runner_targets.py",
+    "tests/tooling/test_source_lines.py",
+    "tests/tooling/test_target_tools.py",
+    "tests/tooling/test_transfer_limits.py",
+    "tests/tooling/test_venv_detector.py",
+    "tests/tooling/test_venv_register.py",
+    "tests/tooling/work-charge-probe.mjs"
+  ],
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/TOOLS-01/implementation-04.md"
+  ],
+  "summary": {
+    "passed": 363,
+    "failed": []
+  }
+}

@@ -1,0 +1,45 @@
+register matches 140 entries 140 missing [] extra [] claims differ []
+register 11 s
+census 83 s
+{
+ "all_leaves_earlier": true,
+ "test_file_origins": 71,
+ "registrations": 1466,
+ "by_title_kind": {
+  "literal": 1399,
+  "computed": 10,
+  "template": 57
+ },
+ "identical_origins": 63,
+ "identical_distinct": 900,
+ "changed_origins": 8,
+ "changed_registrations": 372,
+ "changed_span_identical": 329,
+ "changed_kept_by_prefix": 33,
+ "changed_refused_by_prefix": 296,
+ "identical_fixture_refused": 21,
+ "identical_read_labelled": 272,
+ "members": 1272,
+ "by_status": {
+  "preserved": 810,
+  "held": 62,
+  "refused": 326,
+  "superseded": 74
+ },
+ "preserved_whole_file": 784,
+ "preserved_prefix_inert": 26,
+ "preserved_helper_reviewed": 89,
+ "preserved_production_changed": 89,
+ "preserved_repository_read_changed": 251,
+ "preserved_register_not_held": 46,
+ "preserved_refused": {
+  "changed test fixture read": 21,
+  "span changed or removed": 43,
+  "test-side module changed without a helper review": 296,
+  "changed leaf callback": 258,
+  "referenced": 229,
+  "effectful initializer": 45,
+  "effectful statement": 4,
+  "import changes module requests": 4
+ }
+}

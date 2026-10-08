@@ -259,24 +259,30 @@ describe("fast and slow Effect completion are semantically identical", () => {
       { name: "never wait", budget: createNoInlineWaitBudget() },
     ];
 
-    for (const { name, budget } of budgets) {
-      const answered = await budget.race(Promise.resolve("done"));
-      if (name === "never wait") {
-        assert.equal(answered.settled, false, `${name}: refuses to wait even for an answer already available`);
-      } else {
-        assert.deepEqual(answered, { settled: true, value: "done" }, `${name}: an available answer is taken inline`);
+    // Stand in for the host handles that keep a real process alive; the budget's own timer stays unref'd.
+    const hostHandle = setInterval(() => {}, 1_000);
+    try {
+      for (const { name, budget } of budgets) {
+        const answered = await budget.race(Promise.resolve("done"));
+        if (name === "never wait") {
+          assert.equal(answered.settled, false, `${name}: refuses to wait even for an answer already available`);
+        } else {
+          assert.deepEqual(answered, { settled: true, value: "done" }, `${name}: an available answer is taken inline`);
+        }
+
+        let resolve!: (value: string) => void;
+        const outstanding = new Promise<string>((r) => {
+          resolve = r;
+        });
+        const yielded = await budget.race(outstanding);
+        assert.equal(yielded.settled, false, `${name}: work that has not answered yet does not hold the Activation`);
+
+        // And the work it stopped waiting for is untouched.
+        resolve("late");
+        assert.equal(await outstanding, "late", `${name}: the abandoned work still completes normally`);
       }
-
-      let resolve!: (value: string) => void;
-      const outstanding = new Promise<string>((r) => {
-        resolve = r;
-      });
-      const yielded = await budget.race(outstanding);
-      assert.equal(yielded.settled, false, `${name}: work that has not answered yet does not hold the Activation`);
-
-      // And the work it stopped waiting for is untouched.
-      resolve("late");
-      assert.equal(await outstanding, "late", `${name}: the abandoned work still completes normally`);
+    } finally {
+      clearInterval(hostHandle);
     }
   });
 

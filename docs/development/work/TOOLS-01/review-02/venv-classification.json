@@ -1,0 +1,334 @@
+{
+ "summary": {
+  "new": 21,
+  "reclassified": 23,
+  "still_held_at_C": 44,
+  "reason_excludes_value_capture": 19,
+  "by_file": {
+   "aggregate-refusal.test.ts": 1,
+   "ambient-reads.test.ts": 1,
+   "creation.test.ts": 1,
+   "dispatch.test.ts": 9,
+   "ingress.test.ts": 1,
+   "inspection.test.ts": 2,
+   "outcome-hostile.test.ts": 4,
+   "review-11-probes.test.ts": 1,
+   "values.test.ts": 10,
+   "host-members.test.ts": 6,
+   "poison-catalog.test.ts": 1,
+   "recovery-ambient.test.ts": 5,
+   "transaction.test.ts": 1,
+   "whole-view-ambient.test.ts": 1
+  }
+ },
+ "entries": [
+  {
+   "key": "packages/kernel/tests/aggregate-refusal.test.ts:185:1",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/ambient-reads.test.ts:160:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/creation.test.ts:883:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:1004:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:1390:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:1545:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:806:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:869:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/ingress.test.ts:790:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/inspection.test.ts:251:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/outcome-hostile.test.ts:275:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/outcome-hostile.test.ts:295:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/review-11-probes.test.ts:24:5",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1323:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1414:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1454:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1480:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1498:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1518:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1728:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:1786:3",
+   "group": "new",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:676:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:728:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:916:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/dispatch.test.ts:958:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/host-members.test.ts:109:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/host-members.test.ts:122:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/host-members.test.ts:166:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/host-members.test.ts:196:5",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/host-members.test.ts:234:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/host-members.test.ts:76:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/inspection.test.ts:178:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/outcome-hostile.test.ts:235:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/outcome-hostile.test.ts:82:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/poison-catalog.test.ts:273:5",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Was not_held for Proxy, re-prototyped-built-in (The DEC-8 poison catalog's own windows; no held claim decides its result). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/recovery-ambient.test.ts:259:7",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/recovery-ambient.test.ts:271:5",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/recovery-ambient.test.ts:286:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/recovery-ambient.test.ts:293:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/recovery-ambient.test.ts:327:7",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/transaction.test.ts:150:3",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Was not_held for re-prototyped-built-in (Commit atomicity under pollution of the commit path (Map.prototype.set, indexed setters, descriptor fields), not canonical bytes). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:220:5",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Was not_held for re-prototyped-built-in (An ordinary object with a null or custom prototype; ordinary objects are not the held re-prototyped built-ins). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/values.test.ts:264:5",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": false,
+   "reason": "Was not_held for re-prototyped-built-in (An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  },
+  {
+   "key": "packages/kernel/tests/whole-view-ambient.test.ts:123:7",
+   "group": "reclassified",
+   "held_at_C": true,
+   "reason_excludes_value_capture": true,
+   "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01."
+  }
+ ]
+}
