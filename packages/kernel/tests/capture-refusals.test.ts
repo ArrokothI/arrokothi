@@ -17,11 +17,9 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import vm from "node:vm";
 
-import { ExecutionCoordinator, type ExecutionView } from "../src/index.ts";
 import { boundaryValueIssues, canonicalize, captureWithWork, isBoundaryValue, type ValueIssue } from "../src/values.ts";
+import { CONSUMERS as SHARED_CONSUMERS, type Consumer } from "./capture-corpus.ts";
 import { countingProxy, inWrappedChild, revokedCountingProxy } from "./capture-instruments.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
 
 const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
 const BUILT_IN_MESSAGE = "expected a plain object, received a built-in object whose content is kept in internal slots";
@@ -89,18 +87,6 @@ const placed = (value: unknown, depth: number): { root: unknown; path: string } 
 
 const DEPTHS = [1, 2, 16, 31] as const;
 
-/** An Execution with one open exchange, and its view. */
-function setup() {
-  const who = caller("refusals");
-  const driver = recordingDriver();
-  const kernel = new ExecutionCoordinator({ driver });
-  const { executionId } = accepted(kernel.createExecution(who, createRequest()));
-  const open = accepted(kernel.dispatch(who, executionId, { bound: 1 }));
-  const grant = submissionFor(driver, open.activationId);
-  const view = (): ExecutionView => accepted(kernel.inspect(who, executionId));
-  return { who, driver, kernel, executionId, open, grant, view };
-}
-
 /** The value issues a direct capture reports for `root`. */
 const issuesOf = (root: unknown): ValueIssue[] => {
   const result = canonicalize(root);
@@ -109,10 +95,11 @@ const issuesOf = (root: unknown): ValueIssue[] => {
 };
 
 /**
- * Each root consumer, run once on `root` with the whole result checked. `detail` is the issue code and
- * path the consumer's reason must name (`null` when the consumer refuses before content diagnostics).
+ * The root consumers: the two direct ones checked here against the exact, single-issue result, and the
+ * coordinator consumers (creation, ingress, recovery and the eager Outcome roots) from the shared
+ * corpus, each with its whole-result check.
  */
-const CONSUMERS: readonly { name: string; run: (root: unknown, path: string, code: string, message: string) => void }[] = [
+const CONSUMERS: readonly Consumer[] = [
   {
     name: "canonicalize",
     run: (root, path, code, message) => assert.deepEqual(issuesOf(root), [{ path, code, message }]),
@@ -124,93 +111,7 @@ const CONSUMERS: readonly { name: string; run: (root: unknown, path: string, cod
       assert.equal(isBoundaryValue(root), false);
     },
   },
-  {
-    name: "creation authorityContext",
-    run: (root, path, code) => {
-      const who = caller("refusals-create");
-      const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
-      const refusal = refused(kernel.createExecution(who, createRequest({ authorityContext: root as never })));
-      assert.equal(refusal.classification, "malformed_value");
-      assert.ok(refusal.reason.includes(`${path === "" ? "authorityContext" : `authorityContext${path}`} ${code}`), refusal.reason);
-      assert.deepEqual(kernel.visibleExecutions(who), [], "nothing created");
-    },
-  },
-  {
-    name: "creation initial input payload",
-    run: (root, path, code) => {
-      const who = caller("refusals-create");
-      const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
-      const refusal = refused(kernel.createExecution(who, createRequest({ initialInput: { kind: "k", payload: root as never } })));
-      assert.equal(refusal.classification, "malformed_value");
-      assert.ok(refusal.reason.includes(`initialInput.payload${path} ${code}`), refusal.reason);
-      assert.deepEqual(kernel.visibleExecutions(who), [], "nothing created");
-    },
-  },
-  {
-    name: "ingress payload",
-    run: (root, path, code) => {
-      const s = setup();
-      const before = s.view();
-      const refusal = refused(s.kernel.submitInput(s.who, { destination: s.executionId, requestKey: "r", kind: "k", payload: root as never }));
-      assert.equal(refusal.classification, "malformed_value");
-      assert.ok(refusal.reason.includes(`payload${path} ${code}`), refusal.reason);
-      assertOnlyRefusal(before, s.view(), refusal);
-    },
-  },
-  {
-    name: "recovery availability list",
-    run: (root, path, code) => {
-      const s = setup();
-      const before = s.view();
-      const list = [root];
-      const refusal = refused(s.kernel.recoverExecution(s.who, s.executionId, {
-        activationId: s.open.activationId,
-        available: { definitionRevisions: list as never, runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] },
-      }));
-      assert.equal(refusal.classification, "malformed_value");
-      assert.ok(refusal.reason.includes(`available.definitionRevisions[0]${path} ${code}`), refusal.reason);
-      assertOnlyRefusal(before, s.view(), refusal);
-    },
-  },
-  ...(["progress", "emission value", "completed result", "failed error"] as const).map((field) => ({
-    name: `Outcome ${field}`,
-    run: (root: unknown, path: string, code: string) => {
-      const s = setup();
-      const overrides =
-        field === "progress" ? { progress: root }
-          : field === "emission value" ? { emissions: [{ emissionKey: "e", value: root }] }
-            : field === "completed result" ? { next: { step: "complete", result: root } }
-              : { next: { step: "fail", error: root } };
-      const label = field === "progress" ? "progress" : field === "emission value" ? "emissions[0].value" : field === "completed result" ? "next.result" : "next.error";
-      const before = s.view();
-      const delivered = s.driver.seen.length;
-      const refusal = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, overrides), s.grant));
-      assert.equal(refusal.classification, "malformed_envelope");
-      assert.ok(refusal.reason.includes(`${label}${path} ${code}`), refusal.reason);
-      assertOnlyRefusal(before, s.view(), refusal);
-      assert.equal(s.driver.seen.length, delivered);
-      accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
-    },
-  })),
-  {
-    name: "eight eager Outcome roots from a visible caller with no grant",
-    run: (root) => {
-      const s = setup();
-      const proposal = outcomeFor(s.executionId, s.open, {
-        progress: root,
-        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: `e${index}`, value: root })),
-        next: { step: "complete", result: root },
-      });
-      const before = s.view();
-      const delivered = s.driver.seen.length;
-      const refusal = refused(s.kernel.submitOutcome(observer("visible"), proposal, undefined as never));
-      assert.equal(refusal.classification, "unauthorized_submission");
-      assert.doesNotMatch(refusal.reason, /unsupported_form/);
-      assertOnlyRefusal(before, s.view(), refusal);
-      assert.equal(s.driver.seen.length, delivered);
-      accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
-    },
-  },
+  ...SHARED_CONSUMERS.slice(2),
 ];
 
 describe("KC3-7 every Proxy is refused first, with no trap run, in every root consumer", () => {
@@ -281,7 +182,7 @@ const BRANDED: readonly [string, () => object][] = [
 /** Objects that keep internal slots although their own prototype is already plain (design check Q4). */
 const NATURALLY_PLAIN: readonly [string, () => object][] = [
   ["an arguments object", function (this: unknown) { return (function (..._a: unknown[]) { return arguments; })(1, 2); }],
-  ["a raw JSON object (SELF-K113-RAWJSON-01)", () => JSON.rawJSON("1") as object],
+  ["a raw JSON object (SELF-K113-RAWJSON-01)", () => (JSON as unknown as { rawJSON(text: string): object }).rawJSON("1")],
 ];
 
 describe("KC3-8 built-ins that keep content in internal slots are refused by internal-slot checks", () => {
@@ -383,7 +284,7 @@ describe("design check Q6: kinds with no usable predicate are a declared limit, 
     ["Intl.Locale", () => new Intl.Locale("en")],
     ["an array iterator", () => [1][Symbol.iterator]()],
     ["DisposableStack", () => new (globalThis as unknown as { DisposableStack: new () => object }).DisposableStack()],
-    ["WebAssembly.Memory", () => new WebAssembly.Memory({ initial: 0 })],
+    ["WebAssembly.Memory", () => new (globalThis as unknown as { WebAssembly: { Memory: new (descriptor: { initial: number }) => object } }).WebAssembly.Memory({ initial: 0 })],
   ];
   for (const [kind, make] of UNDETECTABLE) {
     test(`re-prototyped ${kind} is captured as {}`, () => {
