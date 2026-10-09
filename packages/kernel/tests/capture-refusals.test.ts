@@ -15,6 +15,7 @@
  */
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
+import { createSecretKey, webcrypto } from "node:crypto";
 import vm from "node:vm";
 
 import { boundaryValueIssues, canonicalize, captureWithWork, isBoundaryValue, type ValueIssue } from "../src/values.ts";
@@ -177,6 +178,7 @@ const BRANDED: readonly [string, () => object][] = [
   ["async generator object", () => (async function* () { yield 1; })()],
   ["Map iterator", () => new Map([[1, 2]]).entries()],
   ["Set iterator", () => new Set([1]).values()],
+  ["KeyObject", () => createSecretKey(Buffer.from("key"))],
 ];
 
 /** Objects that keep internal slots although their own prototype is already plain (design check Q4). */
@@ -203,6 +205,12 @@ describe("KC3-8 built-ins that keep content in internal slots are refused by int
       assert.deepEqual(issuesOf(make()), [{ path: "", code: "unsupported_form", message: BUILT_IN_MESSAGE }]);
     });
   }
+
+  test("a re-prototyped CryptoKey is refused by its internal slot", async () => {
+    const key = await webcrypto.subtle.generateKey({ name: "HMAC", hash: "SHA-256" }, true, ["sign"]);
+    assert.deepEqual(issuesOf(Object.setPrototypeOf(key, null)), [{ path: "", code: "unsupported_form", message: BUILT_IN_MESSAGE }]);
+    assert.deepEqual(issuesOf(Object.setPrototypeOf(key, Object.prototype)), [{ path: "", code: "unsupported_form", message: BUILT_IN_MESSAGE }]);
+  });
 
   test("a module namespace object is refused by its internal slot (owner design check Q4)", async () => {
     const namespace = await import("node:path");

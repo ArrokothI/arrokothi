@@ -306,9 +306,27 @@ describe("KC3-1 runtime oracle: wrapped engine operations are accounted for by t
       reset();
       values.captureWithWork(null);
       const window = snapshot();
+      // Track every non-Proxy object of a shape, so observations of caller objects are counted apart
+      // from the Kernel's own lists. The walk runs before capture, with the globals restored.
+      const { types: realTypes } = await import("node:util");
+      const trackAll = (root) => {
+        const seen = new Set();
+        const stack = [root];
+        while (stack.length > 0) {
+          const value = stack.pop();
+          if (value === null || (typeof value !== "object" && typeof value !== "function") || seen.has(value) || realTypes.isProxy(value)) continue;
+          seen.add(value);
+          track(value);
+          for (const key of Reflect.ownKeys(value)) {
+            const descriptor = Object.getOwnPropertyDescriptor(value, key);
+            if (descriptor !== undefined && "value" in descriptor) stack.push(descriptor.value);
+          }
+        }
+      };
       const out = [];
       for (const [name, make] of shapes) {
         const value = make();
+        trackAll(value);
         reset();
         const { result, work } = values.captureWithWork(value);
         out.push({ name, counts: snapshot(), work, ok: result.ok, windowListing, window });
@@ -331,6 +349,11 @@ describe("KC3-1 runtime oracle: wrapped engine operations are accounted for by t
         assert.ok(counts[field] <= bound, `${name}: ${field} ${counts[field]} <= ${bound}`);
       }
       assert.equal(counts.setAdd, counts.setDelete, `${name}: every opened container is closed`);
+      // Observations of caller objects, exactly bounded: an array's length belongs to its visit, each
+      // position to an element or descriptor unit, and each prototype observation to a visit.
+      assert.ok(counts.descriptorTracked <= w.visit + w.element + w.descriptor, `${name}: caller descriptors ${counts.descriptorTracked}`);
+      assert.ok(counts.prototypeTracked <= w.visit, `${name}: caller prototypes ${counts.prototypeTracked}`);
+      assert.ok(counts.namesTracked + counts.symbolsTracked <= w.listing, `${name}: caller listings`);
       assert.ok(counts.brand <= 18 * w.visit, `${name}: brand predicates`);
       // charCodeAt: the string scans plus at most ten reads per listed array-index name.
       assert.ok(counts.charCodeAt <= w.string + 10 * w.listing, `${name}: character reads`);
@@ -344,4 +367,100 @@ describe("KC3-1 runtime oracle: wrapped engine operations are accounted for by t
       assert.ok(w.units <= B + 1 || w.stop === "work", `${name}: within B + 1`);
     }
   });
+});
+
+/**
+ * KC3-5 (K12C1-R8-EVID-01): every byte charge of capture is pinned by an exact whole result.
+ *
+ * Each shape shares one refused container (or string) `width` times in a root array, so the root's
+ * structure charges `width + 1` bytes and each visit charges the shape's own bytes; the byte stop fires
+ * on the first visit that takes the count past 1,048,576. Removing or weakening the charge lets the
+ * shape run on to the meter or to completion, which changes the result.
+ */
+describe("KC3-5 every byte charge is pinned by its exact byte-stop position", () => {
+  const LIMIT = BOUNDARY_LIMITS.canonicalBytes;
+  /** The visit at which a root of `width` shared shapes, each charging `perVisit` bytes, stops. */
+  const stopVisit = (width: number, perVisit: number): number => Math.floor((LIMIT - (width + 1)) / perVisit) + 1;
+
+  const sharedArrayWithNames = (extra: number): unknown[] => {
+    const shared: unknown[] = [];
+    for (let index = 0; index < extra; index += 1) (shared as unknown as Record<string, number>)[`x${index}`] = 0;
+    return shared;
+  };
+
+  for (const extra of [256, 4_096, 20_000]) {
+    test(`N15 array surplus names: ${extra} extra names ${extra + 1 > 4_097 ? "(above" : "(below"} the overlong threshold)`, () => {
+      // An empty array with `extra` own names: structure 2 bytes plus a surplus of `extra` names.
+      const visits = stopVisit(4_096, 2 + extra);
+      assert.ok(visits < 4_096, "the byte stop fires before the root is exhausted");
+      const { result, work: counted } = captureWithWork(Array(4_096).fill(sharedArrayWithNames(extra)));
+      assert.equal(result.ok, false);
+      if (result.ok) return;
+      assert.equal(counted.stop, "bytes");
+      assert.deepEqual(result.issues.slice(8).map((issue) => [issue.code, issue.occurrences]), [["unrepresentable_member", visits - 8], ["too_many_bytes", 1]]);
+      // Root: a visit, names (1 + 4,096 + 1) and symbols (1); then each visit up to the stop: its element
+      // unit in the root, its visit, its names listing (1 + extra + 1) and a diagnostic, but no symbols
+      // listing (the array has an extra name). Elements past the stop are never observed.
+      assert.equal(counted.units, 1 + 4_098 + 1 + visits * (1 + 1 + (extra + 2) + 1));
+    });
+  }
+
+  test("N16 object structure: an over-named object is charged for every listed name", () => {
+    // 4,097 members k0..k4096 with value 0: structure 2·4097 + 1, then each member's quoted name and
+    // its value `0` until the byte stop; refused for too many entries.
+    const members = 4_097;
+    const shared = Object.fromEntries(Array.from({ length: members }, (_, index) => [`k${index}`, 0]));
+    const perVisit = 2 * members + 1 + Array.from({ length: members }, (_, index) => `"k${index}"`.length + 1).reduce((a, b) => a + b, 0);
+    const visits = stopVisit(4_096, perVisit);
+    const { result, work: counted } = captureWithWork(Array(4_096).fill(shared));
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(counted.stop, "bytes");
+    const tooMany = result.issues.filter((issue) => issue.code === "too_many_entries").reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0);
+    assert.equal(tooMany, visits, "one too_many_entries per visit up to the stop");
+    assert.equal(result.issues.filter((issue) => issue.code === "too_many_bytes").length, 1);
+  });
+
+  for (const [name, text, code] of [
+    ["a refused long string", "x".repeat(65_537), "string_too_long"],
+    ["a string with a lone surrogate", `${"x".repeat(1_000)}\ud800`, "lone_surrogate"],
+  ] as const) {
+    test(`${name} is charged its full length`, () => {
+      const visits = stopVisit(4_096, text.length);
+      const { result, work: counted } = captureWithWork(Array(4_096).fill(text));
+      assert.equal(result.ok, false);
+      if (result.ok) return;
+      assert.equal(counted.stop, "bytes");
+      assert.deepEqual(result.issues.slice(8).map((issue) => [issue.code, issue.occurrences]), [[code, visits - 8], ["too_many_bytes", 1]]);
+    });
+  }
+
+  for (const [name, key, code] of [
+    ["a refused long member name", "x".repeat(65_537), "string_too_long"],
+    ["a member name with a lone surrogate", `${"x".repeat(1_000)}\ud800`, "lone_surrogate"],
+  ] as const) {
+    test(`${name} is charged its full length`, () => {
+      // { [key]: 1 }: structure 2 + 1 (one member: brackets and a colon), then the refused key's length.
+      const visits = stopVisit(4_096, 3 + key.length);
+      const { result, work: counted } = captureWithWork(Array(4_096).fill({ [key]: 1 }));
+      assert.equal(result.ok, false);
+      if (result.ok) return;
+      assert.equal(counted.stop, "bytes");
+      assert.deepEqual(result.issues.slice(8).map((issue) => [issue.code, issue.occurrences]), [[code, visits - 8], ["too_many_bytes", 1]]);
+    });
+  }
+
+  for (const kind of ["object", "array"] as const) {
+    test(`an ${kind} with 4,096 symbol-keyed members is charged one byte per symbol`, () => {
+      const shared: object = kind === "object" ? {} : [];
+      for (let index = 0; index < 4_096; index += 1) (shared as Record<symbol, number>)[Symbol(`s${index}`)] = 0;
+      // Structure 2 bytes (no string-keyed member or element) plus one per symbol.
+      const visits = stopVisit(4_096, 2 + 4_096);
+      const { result, work: counted } = captureWithWork(Array(4_096).fill(shared));
+      assert.equal(result.ok, false);
+      if (result.ok) return;
+      assert.equal(counted.stop, "bytes");
+      assert.deepEqual(result.issues.slice(8).map((issue) => [issue.code, issue.occurrences]), [["unrepresentable_member", visits - 8], ["too_many_bytes", 1]]);
+    });
+  }
 });
