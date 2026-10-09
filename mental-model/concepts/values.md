@@ -194,21 +194,45 @@ A value over a limit is refused in the same way as any other malformed value. It
 
 Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
 
-In the in-process binding, engine own-key enumeration and execution of caller traps are outside
-the cost claim. The caller-code boundary also excludes all engine-internal work attributable to a
-live Proxy (an object whose internal methods are caller-defined) reached while observing a value.
-This includes trap discovery, absent-trap forwarding, nested targets and array classification,
-invariant checks and their induced target/handler operations, and conversion of trap results.
-No time bound is claimed for values containing live Proxies. Protection against hostile
-in-process code requires isolation or transport containment; these semantic limits do not provide it.
+In the in-process binding, "cost" means **metered Kernel work**, not wall-clock time or heap
+samples. Each root is captured with its own work meter. Every operation the Kernel chooses to perform
+while capturing charges it: each observation of the caller's value, each piece of Kernel bookkeeping
+whose amount depends on that value, and each diagnostic it records. An operation whose engine work
+grows with a length charges that length. A string is charged before it is scanned, and an own-key
+listing is charged as soon as it returns. The budget `B` is derived from the four limits: it is at
+least the number of units any value within them consumes when it is accepted. So the meter never
+refuses a valid value, and the four limits alone still decide validity. Once a root's meter passes
+`B`, capture stops reading that root and refuses it. Refusing a root therefore costs at most `B`
+units plus the one operation that crossed it, which is no more than an acceptance at the limits may
+cost. The same holds for every root a request carries, including roots captured before the request's
+authority is decided. Each root has its own budget, and no aggregate budget applies. Timing and heap
+measurements remain useful observations. They are not part of the claim.
 
-Every lookup the Kernel itself chooses to perform remains bound, on any value. The refusal-cost
-requirement remains unchanged for values containing no Proxy, including ordinary objects and
-arrays with any prototype chain. Counts bound the observations and invocations selected by Kernel
-code: at most one observation per position, the fixed per-container structural observations, and
-the byte stop and four limits. Callbacks induced by the engine inside one selected operation are
-not counted or promised. This boundary changes neither exact accepted values, coherent-Proxy
-acceptance, ambient safety nor diagnostic occurrence counts, and permits no reuse of observations.
+Every unit stands for engine work bounded by a constant that depends only on the limits, because
+capture never runs code the caller defined for the value. **Every Proxy is refused before it is
+observed.** A Proxy is an object whose internal methods are caller-defined, so observing it would
+run caller code inside an operation the Kernel cannot size. The binding tests for a Proxy before any
+other observation of an object or function, at every depth. The test refuses it whatever its target
+or handler, and also when it is revoked or callable, and no trap runs. Accessors are refused from
+their descriptors without being called. This is a claim about capturing a boundary value, not about
+the whole call into the Kernel. The [request envelope](#in-process-value-capture) is read under its
+own rule, which lets an own accessor or a Proxy envelope run caller code between root captures.
+Removing caller code from that path belongs to the binding that moves capture to the caller's side
+(BINDING-01). These limits do not provide it.
+
+Three residuals remain outside the per-unit constant, and each is stated rather than claimed:
+
+- **(R1)** One own-key listing per root whose length is not known until it returns. Its charge
+  stops the root if the listing passes `B`. A listing that completes within `B` sorts integer keys,
+  at most a logarithmic factor per listed name.
+- **(R2)** Host objects whose internal methods the host defines, such as interceptor-backed host
+  objects.
+- **(R3)** Member lookups in hash tables, which are expected rather than proven to cost a constant.
+
+Protection against hostile in-process code requires isolation or transport containment, and these
+semantic limits do not provide it. The binding provides neither CPU preemption nor physical
+containment. The meter changes no accepted value, canonical byte or diagnostic weight, and permits
+no reuse of observations: each position is still observed at most once.
 
 The cost also includes materializing a string during a character read. A bounded number of reads
 does not suffice if the first read materializes an oversized representation in full.
@@ -219,16 +243,22 @@ refused position must not leave a separate unbounded path or message in memory f
 in a shared graph. Diagnostic compression may retain bounded details plus exact counts of the
 remaining reasons; it does not make an invalid value valid, change any accepted bytes, or waive
 single observation. A summary describes the positions actually examined, never positions beyond a
-traversal stop. The same cost obligation applies when several roots are captured eagerly before a
-request's authority is decided; their semantic budgets remain separate.
-<!-- OPEN(implementation): diagnostic storage for bounded refusal cost. The in-process binding
-retains the first eight bounded details per root followed by exact occurrence counts per remaining
-code, ordered by first remaining occurrence; paths are bounded before construction and messages
-before retention. Type labels use only null/typeof classification, without another structural or
-property observation of the caller value. Traversal and byte-budget stopping are unchanged. The choice is recorded in
-BASELINE #value-refusal-diagnostics. Other bindings may choose a different representation meeting
-V-D1; record a binding choice here and in its baseline without changing semantic limits. Leave this
-marker while representation remains an implementation choice. rewrite-index.md §4 -->
+traversal stop, whether the size limit or the work meter stopped it. The same cost obligation
+applies when several roots are captured eagerly before a request's authority is decided; their
+semantic budgets remain separate.
+<!-- OPEN(implementation): diagnostic storage and the work meter for bounded refusal cost. The
+in-process binding retains the first eight bounded details per root followed by exact occurrence
+counts per remaining code, ordered by first remaining occurrence; paths are bounded before
+construction and messages before retention. Type labels use only null/typeof classification, without
+another structural or property observation of the caller value. Its unit table: visit 1, own-key
+listing 1 + length, array element 1, object member descriptor 1, object member read 1, string its
+UTF-16 length (at most 131,072; a longer string is refused by length at no string cost), diagnostic
+1. B = 3 × 1,048,576 = 3,145,728, derived from at most three units per canonical byte of each
+accepted node; the costliest acceptance found costs 3,094,930 units, so B is a proven bound, not an
+attained maximum. The meter stop is the issue code too_much_work. The choices are recorded in
+BASELINE #value-refusal-diagnostics. Other bindings may choose a different representation and unit
+table meeting V-D1; record a binding choice here and in its baseline without changing semantic
+limits. Leave this marker while representation remains an implementation choice. rewrite-index.md §4 -->
 
 These are *semantic* limits: they decide which values are valid. They make no promise about messages or bytes on the wire. No semantic limit applies to the sum of a message's roots, and no transport's byte size is guaranteed. A deployment may impose tighter limits on its transport, such as a smaller maximum request body. It may not silently redefine these four. If a transport limit could change which values the protocol considers valid, two deployments of the same protocol could disagree about validity. These numbers change only through an explicit, versioned amendment to the protocol.
 
@@ -270,7 +300,12 @@ A member named `__proto__` is an ordinary member, and the snapshot keeps it as d
 
 Anything else is refused rather than silently dropped:
 
+- every Proxy, before anything else about it is observed;
 - forms outside those two, such as class instances, Maps, Dates and typed arrays;
+- built-in objects that keep their content in internal slots, whatever their prototype: a Map, Date,
+  typed array, boxed primitive or error given a plain prototype, an arguments object, a module
+  namespace, a raw JSON object. These are recognized by engine tests of the internal slots, before
+  any of their keys is listed, and never by a prototype, a constructor name or `Symbol.toStringTag`;
 - accessor members, meaning getters and setters;
 - array holes, and own array members outside its indices;
 - symbol-keyed members, and non-enumerable members;
@@ -278,6 +313,14 @@ Anything else is refused rather than silently dropped:
 - members that are present with the value `undefined`.
 
 Each refusal answers one of the three differences above. The `undefined` case also matters for equality: quietly dropping the member would turn it into an absent one, and [rule 6](#the-rules) says absent is a different value.
+
+One gap is declared rather than closed. Some engine kinds keep content in internal slots that no
+side-effect-free test can recognize. They are WeakRef and FinalizationRegistry objects, Temporal and
+Intl objects, disposable stacks, iterators other than Map and Set iterators, iterator helpers,
+WebAssembly objects, and platform classes whose state is in private fields. Given a plain prototype,
+such an object is captured by its own data like any other plain object, usually as `{}`. This is a
+limit of the cooperative in-process contract, not a guarantee. A caller who re-prototypes one of
+these objects has handed over the plain data it now presents.
 
 **One reading or none.** An object can present two different stories about itself. A member's own data descriptor can disagree with what an ordinary property read returns. An array's length can claim a position the array does not own. Merely observing the structure can throw. The binding refuses such a value. It does not pick whichever reading happened to come first, and it does not repair the disagreement. A value that has no single reading has no single content to give an identity to.
 

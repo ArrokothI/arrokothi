@@ -63,9 +63,14 @@ class AdapterInputTests(unittest.TestCase):
         self.assertEqual(seen['actual'], {'marker': 7})
 
     def test_capture_values_consumed_as_held_observation(self):
+        # K1.1-correction-03: converted from "a changed Proxy target changes the observation"; every Proxy is
+        # now refused before its target is observed (DESIGN-AUDIT-01 decision-01 item 2), so the recipe is
+        # shown to be consumed through its type instead.
         seen = self.run_adapter('capture.current.Proxy', lambda data: data['recipe'].update(target={'x': 1}))
-        self.assertFalse(seen['passed'])
-        self.assertEqual(seen['actual'], {'accepted': True, 'canonical': '{"x":1}'})
+        self.assertTrue(seen['passed'])
+        self.assertEqual(seen['actual'], {'accepted': False, 'codes': ['unsupported_form']})
+        with self.assertRaisesRegex(tool.CheckError, 'one JSON observation'):
+            self.run_adapter('capture.current.Map', lambda data: data['recipe'].update(type='NoSuchConstructor'))
 
 
 class AttributionTests(unittest.TestCase):

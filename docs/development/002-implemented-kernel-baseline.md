@@ -22,7 +22,10 @@ while it reads and stops once that count passes the 1 MiB limit, so a live objec
 shared member is refused without being expanded in full. Within one visit, a string or member name
 is read only until one scalar value past the length limit, and a container's own-names listing is
 classified only until it exceeds what an accepted container owns (K1.1-correction-02).
-[Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+Each root also carries a work meter and stops once it passes the budget every acceptable value fits
+within. Capture refuses every Proxy before observing it, and refuses built-ins that keep content in
+internal slots before listing their keys (K1.1-correction-03).
+[Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention and work during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
 reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
@@ -51,23 +54,92 @@ counts. Creation/ingress render suffix multiplicity explicitly; Outcome/control 
 the weighted roots into DEC-5's first eight details and exact remaining counts without expansion.
 No aggregate semantic size cap is introduced. This records the in-process choice at
 [values' diagnostic-storage marker](../../mental-model/concepts/values.md#fixed-semantic-limits).
-The cost claim excludes engine own-key enumeration, execution of caller traps, and all engine-internal
-work attributable to a live Proxy reached while observing a value. No time bound is claimed for
-values containing live Proxies. [Owner decision-04](work/K1.2/decision-04.md) supersedes item 1 of
-[decision-03](work/K1.2/decision-03.md); the boundary is stated once in
-[values](../../mental-model/concepts/values.md#fixed-semantic-limits). The KC2-1/V-D1 claim for
-plain data and Kernel-selected lookups is **held**. Review 08 of K1.2-correction-01
-(`K12C1-R8-VALUE-DEPTH-01`) found that refusing foreign-prototype containers at nesting depth costs
-about 1.5× the costliest at-limit acceptance. Owner [decision-05](work/K1.2/decision-05.md) redefines
-V-D1 for this binding as a metered-work bound, which K1.1-correction-03 implements. Counts cover Kernel-selected observations and
-invocations, including each position and fixed structural observations; engine-induced callbacks
-inside those operations are not counted or promised. The byte stop, all four limits, exact values,
-coherent-Proxy acceptance, ambient safety and DEC-7 weights remain unchanged. Descriptor- and
-handler-chain tests pin those counts; their timing probes are observations only. Protection against
-hostile in-process code requires isolation or transport containment, not V-D1. This binding provides
-neither CPU preemption nor physical containment. [Blocker-01](work/K1.2-correction-01/blocker-01.md)
-and [blocker-02](work/K1.2-correction-01/blocker-02.md) retain the counterexamples and owner resolutions.
-Acceptance status and the V-D1 claim hold are recorded in 007.
+
+**Work meter (K1.1-correction-03).** V-D1 is a metered-work bound for this binding
+([decision-05](work/K1.2/decision-05.md); the meaning is stated once in
+[values](../../mental-model/concepts/values.md#fixed-semantic-limits)). Each `accept` call creates one
+capture state, so every root has its own meter. Units, each charged before its work except a listing,
+which is charged as soon as it returns:
+
+| Unit | Charged for | Units |
+|---|---|---|
+| visit | one value: typeof classification; for an object, the Proxy test, cycle and depth tests, `IsArray`, prototype observation, the internal-slot tests and an array's `length` | 1 |
+| listing | one own-names or own-symbols listing | 1 + its length |
+| element | one array position: its own descriptor and its one ordinary read | 1 |
+| descriptor | one object member's own descriptor | 1 |
+| read | one object member's ordinary read | 1 |
+| string | scanning one string value or member name of at most 131,072 UTF-16 units; a longer one is refused by its length and costs no string units | its length |
+| diagnostic | recording one issue | 1 |
+
+The budget is `CAPTURE_WORK_BUDGET` = B = 3 × 1,048,576 = 3,145,728. Derivation: the canonical form
+of an accepted value splits into disjoint parts per node, and each node's own units are at most three
+times its own bytes. An array of n ≥ 1 entries costs 2n + 4 units for n + 1 bytes, which is at most
+3n + 3. An object of n members with name lengths ℓᵢ costs 3n + 3 + Σℓᵢ units for at least
+4n + 1 + Σℓᵢ bytes. A string of ℓ units costs 1 + ℓ for at least ℓ + 2 bytes, and every other scalar
+costs 1 for at least 1. Units only grow during a capture, so an accepted value is within B at every
+point and the meter never refuses one. B is a proven upper bound, not an attained maximum. The
+costliest acceptance found is a root array of four mid arrays of 4,096 chains, each chain 30 singleton
+arrays around `0`, plus a partial mid array of 528 chains. It is 1,048,555 bytes and costs exactly
+3,094,930 units, 98.4% of B. The 50,798-unit gap is open; the exact maximum is a large integer
+optimization. `capture-work.test.ts` asserts this witness and the other at-limit families exactly.
+`encode` runs only on an accepted, Kernel-owned snapshot and is outside the meter. It adds the same
+work to every acceptance and none to any refusal.
+
+A charge that passes B stops reading the root and records one root-located issue, which is not
+charged: code `too_much_work`, message "reading this value passed the work budget of 3145728 units
+that bounds every acceptable value; the rest of the value was not read". The meter stop and the byte
+stop (`too_many_bytes`) are exclusive; whichever comes first ends reading, and diagnostics describe
+the positions examined up to it. `too_much_work` is an addition to the exported `ValueIssueCode`
+type, which `index.ts` re-exports as a type from the private `@arrokothi/kernel` package. Review 08's
+family (`K12C1-R8-VALUE-DEPTH-01`: 4,096 × 256 foreign objects at nesting depth) now stops at B + 1
+units, after 786,025 refused positions at depth 2 and 785,967 at depth 31 (owner design check Q1,
+under decision-05 item 2). Per refused position it charges the same units at every depth, because
+cycle detection uses a Kernel-created `Set` reached through load-time methods. That set never holds
+more than 32 entries. `captureWithWork` in `values.ts` returns the result with its per-kind counts.
+Tests use it, and `index.ts` does not re-export it.
+
+**Proxy and internal-slot refusal.** Every Proxy, including revoked and callable ones, is refused at
+every depth before any other observation, by `util.types.isProxy` read at load: `unsupported_form`,
+"value is a Proxy; capture refuses every Proxy before observing it". No trap runs. A non-array object
+whose prototype is `Object.prototype` or `null` is then tested for internal slots before any own-key
+listing. The tests are `util.types.isMap`, `isSet`, `isWeakMap`, `isWeakSet`, `isDate`, `isRegExp`,
+`isAnyArrayBuffer`, `isArrayBufferView`, `isBoxedPrimitive`, `isNativeError`, `isPromise`,
+`isGeneratorObject`, `isMapIterator`, `isSetIterator`, `isArgumentsObject`,
+`isModuleNamespaceObject`, `isKeyObject`, `isCryptoKey` and `isExternal`, plus `JSON.isRawJSON`, all
+read at load. A match is refused with `unsupported_form`, "expected a plain object, received a
+built-in object whose content is kept in internal slots". A built-in with its own non-plain
+prototype is still refused by the prototype check, unchanged. Arguments objects, module namespaces
+and raw JSON objects are refused even with their natural prototypes (design check Q4). This closes
+`SELF-K113-RAWJSON-01`: `JSON.rawJSON("1")` was accepted at base as `{"rawJSON":"1"}`. Detection
+never uses prototype identity, constructor names or `Symbol.toStringTag`.
+
+**Declared limits.** The meter's per-unit constants rest on capture running no caller-defined
+internal method of a value. Three residuals are outside them: (R1) one own-key listing per root,
+whose length is unknown until it returns and whose charge then stops the root, with at most a
+logarithmic sorting factor per name for a listing within B; (R2) host objects with interceptors;
+(R3) hash-table member lookups, which are expected constant. Kinds with no side-effect-free
+internal-slot test stay accepted as their own data when given a plain prototype, usually as `{}`,
+under the cooperative contract (design check Q6). These kinds are WeakRef, FinalizationRegistry,
+the Temporal types, Intl objects, DisposableStack, AsyncDisposableStack, Array, String and
+RegExp-string iterators, iterator helpers, WebAssembly objects and private-field platform classes.
+This narrows the claim to detectable kinds. Request envelopes stay under the envelope rule, so an
+envelope accessor or Proxy can still run caller code in the Kernel between root captures.
+BINDING-01 owns that gap. Protection against hostile in-process code requires isolation or
+transport containment, not V-D1, and this binding provides neither CPU preemption nor physical
+containment. Decision-03/04 item 5's prohibition on Proxy refusal and decision-04 item 1's live-Proxy
+exclusion are superseded for capture by [DESIGN-AUDIT-01 decision-01](work/DESIGN-AUDIT-01/decision-01.md)
+items 2–3. [Blocker-01](work/K1.2-correction-01/blocker-01.md) and
+[blocker-02](work/K1.2-correction-01/blocker-02.md) keep their counterexamples, which are now refused
+with zero trap calls.
+
+The byte stop and its exact charges, the four limits, exact accepted values and DEC-7 weights are
+unchanged. `capture-metering.test.ts` checks statically that capture observes caller values only
+through metered helpers. `capture-work.test.ts` compares wrapped engine operations with the units
+charged, and `capture-corpus.test.ts` runs the declared generated corpus. Timing is an observation
+only. The V-D1 claim stays held under [invalidation-02](work/K1.2/invalidation-02.md) until this
+packet is accepted, and the classification hold of [invalidation-01](work/K1.2/invalidation-01.md)
+likewise. 007 records acceptance status and both holds; V-ENV ("ambient safety") stays held by
+[invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) for BINDING-01.
 
 Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit
 cannot fit even if every scalar uses a surrogate pair; refusing there avoids an engine flattening

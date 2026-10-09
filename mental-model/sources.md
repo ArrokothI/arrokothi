@@ -54,6 +54,20 @@ live Proxies. It clarified Kernel-selected observation counts and the absence of
 values containing live Proxies. Neither decision authorizes Proxy rejection, observation reuse or
 out-of-process capture.
 
+On 2026-09-28 [K1.2 decision 05](../docs/development/work/K1.2/decision-05.md) redefined the
+in-process refusal-cost claim as a metered-work bound: one work meter per root, a budget derived from
+the four limits, and refusal at most that budget plus one operation. On 2026-10-02
+[DESIGN-AUDIT-01 decision 01](../docs/development/work/DESIGN-AUDIT-01/decision-01.md) items 2–3
+decided that capture refuses every Proxy before observing it and refuses built-ins with internal
+slots before listing them. Those items lift decision-03/04 item 5's prohibition on Proxy refusal
+for capture. K1.1-correction-03 implements both. Its
+[design check](../docs/development/work/K1.1-correction-03/design-01-check.md) of 2026-10-09
+authorized the meter stop for refusal-heavy values and the `too_much_work` code, refused arguments
+objects, module namespaces and raw JSON objects, and accepted residuals R1–R3 and the undetectable
+kinds as declared limits. [Values](concepts/values.md#fixed-semantic-limits) states the result and
+retires decision-04 item 1's live-Proxy exclusion. It does not cover request envelopes, which
+BINDING-01 owns.
+
 ## Misunderstandings that shaped these pages
 
 | Evidence | Comprehension problem | Structural correction |

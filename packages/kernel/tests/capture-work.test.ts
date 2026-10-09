@@ -68,6 +68,8 @@ describe("KC3-1/KC3-5 every unit kind is charged exactly", () => {
     ["[0] with an extra member", Object.assign([0], { x: 1 }), { units: 8, visit: 2, listing: 4, element: 1, diagnostic: 1 }],
     // An object with a non-enumerable member: symbols (1) + names (2) + descriptor (1) + diagnostic (1).
     ["{} with a non-enumerable member", Object.defineProperty({}, "h", { value: 1 }), { units: 6, visit: 1, listing: 3, descriptor: 1, diagnostic: 1 }],
+    // An object with two symbol members: symbols (1 + 2) + diagnostic (1) + names (1).
+    ["{} with two symbol members", { [Symbol("s")]: 1, [Symbol("t")]: 2 }, { units: 6, visit: 1, listing: 4, diagnostic: 1 }],
     // A cycle: the outer array 2·1 + 4 = 6, then the inner visit refuses as a cycle (visit + diagnostic).
     ["a cycle", (() => { const a: unknown[] = []; a.push(a); return a; })(), { units: 8, visit: 2, listing: 4, element: 1, diagnostic: 1 }],
   ];
@@ -419,6 +421,22 @@ describe("KC3-5 every byte charge is pinned by its exact byte-stop position", ()
     const tooMany = result.issues.filter((issue) => issue.code === "too_many_entries").reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0);
     assert.equal(tooMany, visits, "one too_many_entries per visit up to the stop");
     assert.equal(result.issues.filter((issue) => issue.code === "too_many_bytes").length, 1);
+  });
+
+  test("N16 object structure: listed non-enumerable names are charged although no member is read", () => {
+    // 4,096 non-enumerable members: structure 2·4096 + 1 bytes for the names listed, no member bytes.
+    // Charging only enumerable members (none) would charge 2 bytes and run on to the meter instead.
+    const shared = {};
+    for (let index = 0; index < 4_096; index += 1) Object.defineProperty(shared, `h${index}`, { value: 0 });
+    const visits = stopVisit(4_096, 2 * 4_096 + 1);
+    const { result, work: counted } = captureWithWork(Array(4_096).fill(shared));
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(counted.stop, "bytes");
+    assert.deepEqual(result.issues.slice(8).map((issue) => [issue.code, issue.occurrences]), [["unrepresentable_member", visits - 8], ["too_many_bytes", 1]]);
+    // Root: a visit, names (1 + 4,096 + 1) and symbols (1); then per visit: its element unit, its visit,
+    // symbols (1), names (1 + 4,096), 4,096 descriptors and a diagnostic.
+    assert.equal(counted.units, 1 + 4_098 + 1 + visits * (1 + 1 + 1 + 4_097 + 4_096 + 1));
   });
 
   for (const [name, text, code] of [

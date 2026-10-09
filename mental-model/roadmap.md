@@ -107,8 +107,10 @@ to [K1.1-correction-03](#k11-correction-03).
 
 Metered value refusal cost. Expected owner: [values](concepts/values.md#fixed-semantic-limits), whose
 V-D1 wording changes to the metered bound of [decision-05](../docs/development/work/K1.2/decision-05.md)
-only in this packet. Inspect every value-root consumer: creation, ingress, recovery lists and eager
-Outcome roots.
+only in this packet, and whose [in-process capture](concepts/values.md#in-process-value-capture)
+refuses every Proxy and every built-in with internal slots under
+[DESIGN-AUDIT-01 decision-01](../docs/development/work/DESIGN-AUDIT-01/decision-01.md) items 2–3.
+Inspect every value-root consumer: creation, ingress, recovery lists and eager Outcome roots.
 [Scope and dependencies](../docs/development/007-work-packets.md#k11-correction-03--metered-value-refusal-cost).
 
 ## K1.3

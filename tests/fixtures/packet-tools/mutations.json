@@ -4317,8 +4317,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4326,7 +4328,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4365,8 +4367,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4374,7 +4378,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4416,8 +4420,10 @@
           "prototype": "Object.prototype"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4425,7 +4431,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4468,8 +4474,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{\"0\":7,\"1\":8,\"2\":9}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4477,7 +4485,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4516,8 +4524,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4525,7 +4535,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4567,7 +4577,7 @@
         "recorded_observation": {
           "accepted": false,
           "codes": [
-            "unrepresentable_member"
+            "unsupported_form"
           ]
         }
       },
@@ -4576,7 +4586,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4617,7 +4627,7 @@
         "recorded_observation": {
           "accepted": false,
           "codes": [
-            "unrepresentable_member"
+            "unsupported_form"
           ]
         }
       },
@@ -4626,7 +4636,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4667,7 +4677,7 @@
         "recorded_observation": {
           "accepted": false,
           "codes": [
-            "unrepresentable_member"
+            "unsupported_form"
           ]
         }
       },
@@ -4676,7 +4686,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4715,8 +4725,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4724,7 +4736,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4761,8 +4773,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4770,7 +4784,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4806,8 +4820,10 @@
           "target": {}
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "TOOLS-01 owner continuation: coherent Proxy accepted as {}; decision-01",
@@ -4815,7 +4831,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: every Proxy is refused before any observation of it, with no trap run (DESIGN-AUDIT-01 decision-01 item 2). The zero-trap order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
