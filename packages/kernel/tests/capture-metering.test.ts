@@ -1,7 +1,7 @@
 /**
  * K1.1-correction-03 KC3-1: capture observes caller values only through metered helpers.
  *
- * `capture-metering.ts` holds the eight rules and their stated gaps. This file runs them on the real
+ * `capture-metering.ts` holds the nine rules and their stated gaps. This file runs them on the real
  * `values.ts` (the clean control) and on one seeded bypass per rule: each bypass is a plausible
  * maintainer mistake, typechecks, and must be reported. The registered mutants in
  * `tests/fixtures/packet-tools/value-cost.json` apply the same shapes to the real file.
@@ -98,6 +98,26 @@ describe("KC3-1 static metering check", () => {
       name: "the serializer window reached from the traversal",
       before: "  if (refused || state.stopped) return REFUSED;\n  return finishObject(prototype, captured);",
       after: "  if (refused || state.stopped || encode(null) === \"\") return REFUSED;\n  return finishObject(prototype, captured);",
+    },
+    {
+      // Packet review MS-03: with the length guard after the loop, an all-digit name of any length is
+      // read in full; the loop's own cap is what keeps it at ten reads.
+      rule: "SC9",
+      name: "an index-name loop whose bound rests only on the guard",
+      before: "  for (let index = 0; index < name.length && index < 10; index += 1) {\n    const unit = name[index] as string;",
+      after: "  for (let index = 0; index < name.length; index += 1) {\n    const unit = name[index] as string;",
+    },
+    {
+      rule: "SC9",
+      name: "a suffix search without its code-count cap",
+      before: "  for (let index = 8; index < issues.length && index < 8 + 12; index += 1) {",
+      after: "  for (let index = 8; index < issues.length; index += 1) {",
+    },
+    {
+      rule: "SC9",
+      name: "a snapshot loop over for...of",
+      before: "  for (let entryIndex = 0; entryIndex < captured.length && entryIndex < BOUNDARY_LIMITS.containerEntries; entryIndex += 1) {\n    const pair = readAt(captured, entryIndex) as readonly [string, BoundaryValue];",
+      after: "  for (const pair of captured) {",
     },
   ];
 

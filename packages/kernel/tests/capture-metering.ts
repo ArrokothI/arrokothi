@@ -3,7 +3,7 @@
  * owner decision-05 item 3: "A maintained static check fails if capture code bypasses them").
  *
  * It reuses `zone-analysis.ts`'s program and checker (the repository's compiler options), not its DEC-8
- * inventory, and applies eight syntactic rules to `values.ts` only:
+ * inventory, and applies nine syntactic rules to `values.ts` only:
  *
  * - SC1 confinement: a binding of an engine observation (`OBSERVATION_PRIMORDIALS`) is referenced only
  *   at module load or inside a declared helper (`HELPERS`).
@@ -20,6 +20,9 @@
  * - SC7 per-name and string internals: `arrayIndexValue` runs only in a loop bounded by a charged
  *   listing; `scanBoundaryString` is called only by `scanText`.
  * - SC8 the serializer window is not reachable from the traversal or the helpers.
+ * - SC9 every loop outside the traversal and the serializer window carries its own cap: its condition
+ *   includes a `<` or `<=` comparison against a numeric literal or a `BOUNDARY_LIMITS` member, so its
+ *   bound never rests on a guard elsewhere in the function (packet review MS-03).
  *
  * It is a regression guard for plausible maintainer mistakes, not a soundness proof (K1.2-correction-01
  * amendment 03; 012). Stated gaps: an alias of a primordial made inside a helper and called elsewhere;
@@ -194,6 +197,31 @@ const boundedByListing = (loop: ts.IterationStatement, fn: Fn): boolean => {
 };
 
 /** Whether a direct statement of the loop body calls a charged helper unconditionally. */
+/** A literal cap: numeric literals and `BOUNDARY_LIMITS` members joined by arithmetic. */
+const isCap = (node: ts.Expression): boolean => {
+  if (ts.isParenthesizedExpression(node)) return isCap(node.expression);
+  if (ts.isNumericLiteral(node)) return true;
+  if (ts.isPropertyAccessExpression(node)) return ts.isIdentifier(node.expression) && node.expression.text === "BOUNDARY_LIMITS";
+  return ts.isBinaryExpression(node) && [ts.SyntaxKind.PlusToken, ts.SyntaxKind.AsteriskToken].includes(node.operatorToken.kind) &&
+    isCap(node.left) && isCap(node.right);
+};
+
+/** Whether a loop's condition is a conjunction one of whose terms compares against a literal cap. */
+const capped = (loop: ts.IterationStatement): boolean => {
+  const condition = ts.isForStatement(loop) ? loop.condition : ts.isWhileStatement(loop) || ts.isDoStatement(loop) ? loop.expression : undefined;
+  const terms: ts.Expression[] = [];
+  const split = (node: ts.Expression): void => {
+    if (ts.isParenthesizedExpression(node)) split(node.expression);
+    else if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
+      split(node.left);
+      split(node.right);
+    } else terms.push(node);
+  };
+  if (condition !== undefined) split(condition);
+  return terms.some((term) => ts.isBinaryExpression(term) &&
+    [ts.SyntaxKind.LessThanToken, ts.SyntaxKind.LessThanEqualsToken].includes(term.operatorToken.kind) && isCap(term.right));
+};
+
 const chargesEachIteration = (loop: ts.IterationStatement): boolean => {
   const body = loop.statement;
   const statements = ts.isBlock(body) ? body.statements : [body];
@@ -215,7 +243,7 @@ const isGlobalValue = (checker: ts.TypeChecker, identifier: ts.Identifier): bool
 };
 
 /**
- * Runs SC1–SC8 over `values.ts`, or over `override` text in its place, and returns each violation.
+ * Runs SC1–SC9 over `values.ts`, or over `override` text in its place, and returns each violation.
  * An override that does not typecheck is itself reported, so a negative control cannot pass vacuously.
  */
 export function meteringViolations(override?: string): string[] {
@@ -300,6 +328,17 @@ export function meteringViolations(override?: string): string[] {
         out.push(`SC3 ${name} types its caller value as ${text}`);
       }
     }
+  }
+
+  // SC9
+  for (const [name, fn] of functions) {
+    if (TRAVERSAL.includes(name) || (HELPERS.serializer as readonly string[]).includes(name)) continue;
+    ownNodes(fn, (node) => {
+      if (ts.isForOfStatement(node) || ts.isForInStatement(node)) out.push(`SC9 ${name} uses for...of/in`);
+      else if ((ts.isForStatement(node) || ts.isWhileStatement(node) || ts.isDoStatement(node)) && !capped(node)) {
+        out.push(`SC9 ${name} has a loop without its own cap: ${node.getText().split("\n")[0]}`);
+      }
+    });
   }
 
   // SC5

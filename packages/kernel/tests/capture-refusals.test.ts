@@ -18,9 +18,12 @@ import { describe, test } from "node:test";
 import { createSecretKey, webcrypto } from "node:crypto";
 import vm from "node:vm";
 
+import { acceptIdentityText, type LocatedIssue } from "../src/envelope.ts";
 import { boundaryValueIssues, canonicalize, captureWithWork, isBoundaryValue, type ValueIssue } from "../src/values.ts";
-import { CONSUMERS as SHARED_CONSUMERS, type Consumer } from "./capture-corpus.ts";
+import { CONSUMERS as SHARED_CONSUMERS, openExecution, type Consumer } from "./capture-corpus.ts";
 import { countingProxy, inWrappedChild, revokedCountingProxy } from "./capture-instruments.ts";
+import { observer, outcomeFor, refused } from "./harness.ts";
+import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
 
 const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
 const BUILT_IN_MESSAGE = "expected a plain object, received a built-in object whose content is kept in internal slots";
@@ -178,7 +181,6 @@ const BRANDED: readonly [string, () => object][] = [
   ["async generator object", () => (async function* () { yield 1; })()],
   ["Map iterator", () => new Map([[1, 2]]).entries()],
   ["Set iterator", () => new Set([1]).values()],
-  ["KeyObject", () => createSecretKey(Buffer.from("key"))],
 ];
 
 /** Objects that keep internal slots although their own prototype is already plain (design check Q4). */
@@ -206,10 +208,22 @@ describe("KC3-8 built-ins that keep content in internal slots are refused by int
     });
   }
 
-  test("a re-prototyped CryptoKey is refused by its internal slot", async () => {
-    const key = await webcrypto.subtle.generateKey({ name: "HMAC", hash: "SHA-256" }, true, ["sign"]);
-    assert.deepEqual(issuesOf(Object.setPrototypeOf(key, null)), [{ path: "", code: "unsupported_form", message: BUILT_IN_MESSAGE }]);
-    assert.deepEqual(issuesOf(Object.setPrototypeOf(key, Object.prototype)), [{ path: "", code: "unsupported_form", message: BUILT_IN_MESSAGE }]);
+  test("no ambient process.versions read: the brand checks run no code a caller can install (packet review PXS-1)", () => {
+    // util.types.isKeyObject and isCryptoKey are JavaScript functions that read process.versions.openssl on
+    // every call. Capture does not use them, so a getter installed before the call is never reached and a
+    // throwing one changes nothing.
+    const saved = Object.getOwnPropertyDescriptor(process, "versions")!;
+    let reads = 0;
+    Object.defineProperty(process, "versions", { configurable: true, enumerable: true, get() { reads += 1; throw new Error("ambient"); } });
+    try {
+      const result = canonicalize({ a: { b: [{ c: 1 }] }, d: {} });
+      assert.ok(result.ok, "plain objects are still accepted");
+      assert.equal(result.value.canonical, '{"a":{"b":[{"c":1}]},"d":{}}');
+      assert.deepEqual(issuesOf(Object.setPrototypeOf(new Map(), null)), [{ path: "", code: "unsupported_form", message: BUILT_IN_MESSAGE }]);
+    } finally {
+      Object.defineProperty(process, "versions", saved);
+    }
+    assert.equal(reads, 0, "the getter never ran");
   });
 
   test("a module namespace object is refused by its internal slot (owner design check Q4)", async () => {
@@ -293,6 +307,9 @@ describe("design check Q6: kinds with no usable predicate are a declared limit, 
     ["an array iterator", () => [1][Symbol.iterator]()],
     ["DisposableStack", () => new (globalThis as unknown as { DisposableStack: new () => object }).DisposableStack()],
     ["WebAssembly.Memory", () => new (globalThis as unknown as { WebAssembly: { Memory: new (descriptor: { initial: number }) => object } }).WebAssembly.Memory({ initial: 0 })],
+    // Node's KeyObject keeps its key outside own properties, and util.types.isKeyObject is a JavaScript
+    // function that reads the configurable process.versions, so capture does not call it (PXS-1).
+    ["KeyObject", () => createSecretKey(Buffer.from("key"))],
   ];
   for (const [kind, make] of UNDETECTABLE) {
     test(`re-prototyped ${kind} is captured as {}`, () => {
@@ -301,4 +318,115 @@ describe("design check Q6: kinds with no usable predicate are a declared limit, 
       assert.equal(result.value.canonical, "{}");
     });
   }
+
+  test("re-prototyped CryptoKey is captured as {} (its predicate reads process.versions, PXS-1)", async () => {
+    const key = await webcrypto.subtle.generateKey({ name: "HMAC", hash: "SHA-256" }, true, ["sign"]);
+    for (const prototype of [null, Object.prototype]) {
+      const result = canonicalize(Object.setPrototypeOf(key, prototype));
+      assert.ok(result.ok);
+      assert.equal(result.value.canonical, "{}");
+    }
+  });
+
+  test("residual R2: a contextified vm global over a Proxy sandbox forwards to the sandbox's traps (packet review PXS-3)", () => {
+    // The global of a context made from a Proxy is a host object with interceptors, not a Proxy: the
+    // Proxy test cannot see it, and its interceptors forward to the caller's traps. Natural, it is refused
+    // by its prototype with no trap; re-prototyped to null, it is listed and its traps run. values.md and
+    // BASELINE declare this as residual R2; this test keeps it visible.
+    let traps = 0;
+    const sandbox = new Proxy({}, {
+      ownKeys(target) { traps += 1; return Reflect.ownKeys(target); },
+      getOwnPropertyDescriptor(target, key) { traps += 1; return Reflect.getOwnPropertyDescriptor(target, key); },
+    });
+    const global = vm.runInContext("this", vm.createContext(sandbox)) as object;
+    traps = 0;
+    assert.deepEqual(issuesOf(global), [{ path: "", code: "unsupported_form", message: "expected a plain object, received object" }]);
+    assert.equal(traps, 0, "refused by its prototype before any listing");
+    Object.setPrototypeOf(global, null);
+    traps = 0;
+    const result = canonicalize(global);
+    assert.equal(result.ok, false);
+    assert.ok(traps > 0, "the sandbox's traps run through the interceptors");
+  });
+});
+
+describe("KC3-7 identity text: a Proxy is named as one before any other observation (packet review PXS-2)", () => {
+  const PROXY_LABEL = "expected text that can name a request, received a Proxy";
+  const witnesses = (): { name: string; proxy: unknown; calls: () => number }[] => {
+    let chain: object = [];
+    for (let level = 0; level < 10_000; level += 1) chain = new Proxy(chain, {});
+    return [
+      { name: "a Proxy over an array", ...countingProxy([] as object) },
+      { name: "a revoked Proxy", ...revokedCountingProxy() },
+      { name: "a callable Proxy", ...countingProxy(() => 1) },
+      { name: "a chain of 10,000 Proxies over an array", proxy: chain, calls: () => 0 },
+    ];
+  };
+
+  test("acceptIdentityText labels every Proxy as a Proxy with zero traps; other values keep their labels", () => {
+    for (const witness of witnesses()) {
+      const issues: LocatedIssue[] = [];
+      assert.equal(acceptIdentityText(witness.proxy, "creationKey", issues), false);
+      assert.deepEqual(issues, [{ path: "creationKey", code: "unsupported_form", message: PROXY_LABEL }], witness.name);
+      assert.equal(witness.calls(), 0, `${witness.name}: no trap ran`);
+    }
+    for (const [value, label] of [[null, "null"], [[], "array"], [{}, "object"], [7, "number"], [() => 1, "function"]] as const) {
+      const issues: LocatedIssue[] = [];
+      acceptIdentityText(value, "requestKey", issues);
+      assert.deepEqual(issues, [{ path: "requestKey", code: "unsupported_form", message: `expected text that can name a request, received ${label}` }]);
+    }
+  });
+
+  test("creation, ingress and Emission keys: a Proxy identity field is refused with no trap and no IsArray", () => {
+    const observed = inWrappedChild<{ field: string; isArray: number; isProxy: number; classification: string; reason: string }[]>(`
+      const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
+      const out = [];
+      const chain = () => { let value = []; for (let level = 0; level < 10_000; level += 1) value = new Proxy(value, {}); return value; };
+      const run = (field, value) => {
+        const coordinator = new kernel.ExecutionCoordinator({ driver: h.recordingDriver() });
+        const request = h.createRequest({ [field]: value });
+        reset();
+        const result = coordinator.createExecution(h.caller("app-a", "tenant-a"), request);
+        return { counted: snapshot(), result };
+      };
+      for (const field of ["scope", "creationKey", "definitionRevision"]) {
+        // The control is a plain object in the same field: its label costs exactly one IsArray.
+        const control = run(field, {});
+        const { counted, result } = run(field, chain());
+        out.push({ field, isArray: counted.isArray - (control.counted.isArray - 1), isProxy: counted.isProxy, classification: result.ok ? "accepted" : result.error.classification, reason: result.ok ? "" : result.error.reason });
+      }
+      emit(out);
+    `);
+    assert.equal(observed.length, 3);
+    for (const row of observed) {
+      assert.equal(row.classification, "malformed_value", row.field);
+      assert.ok(row.reason.includes(`${row.field} unsupported_form`), row.reason);
+      assert.equal(row.isArray, 0, `${row.field}: IsArray never reached the chain`);
+      assert.ok(row.isProxy >= 1, `${row.field}: the Proxy test ran`);
+    }
+
+    // Ingress request key and kind, and an Emission key in the eight-root Outcome before authority.
+    for (const witness of witnesses()) {
+      const s = openExecution();
+      for (const field of ["requestKey", "kind"] as const) {
+        const refusal = refused(s.kernel.submitInput(s.who, { destination: s.executionId, requestKey: "r", kind: "k", payload: 1, [field]: witness.proxy as never }));
+        assert.equal(refusal.classification, "malformed_value", `${witness.name} ${field}`);
+        assert.ok(refusal.reason.includes(`${field} unsupported_form`), refusal.reason);
+      }
+      const proposal = outcomeFor(s.executionId, s.open, {
+        emissions: Array.from({ length: 6 }, () => ({ emissionKey: witness.proxy as never, value: 1 })),
+      });
+      const before = s.view();
+      const delivered = s.driver.seen.length;
+      const refusal = refused(s.kernel.submitOutcome(observer("visible"), proposal, undefined as never));
+      assert.equal(refusal.classification, "unauthorized_submission", witness.name);
+      assertOnlyRefusal(before, s.view(), refusal);
+      assert.equal(s.driver.seen.length, delivered, "no delivery");
+      assert.equal(witness.calls(), 0, `${witness.name}: no trap ran`);
+      const own = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, { emissions: [{ emissionKey: witness.proxy as never, value: 1 }] }), s.grant));
+      assert.equal(own.classification, "malformed_envelope", witness.name);
+      assert.ok(own.reason.includes("emissions[0].emissionKey unsupported_form"), own.reason);
+      assert.equal(witness.calls(), 0, `${witness.name}: no trap ran`);
+    }
+  });
 });

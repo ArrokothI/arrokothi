@@ -228,11 +228,14 @@ const PrimordialGlobalThis = globalThis;
 /**
  * The Proxy and internal-slot predicates, read once at load (owner decision-01 items 2–3).
  *
- * `util.types` reads the engine's object kind: it runs no trap and consults no prototype, global or
- * `Symbol.toStringTag`, and it recognizes revoked Proxies and cross-realm built-ins. Looking the
- * predicates up at call time would itself be a global hop, so each is captured here. `JSON.isRawJSON`
- * (ECMAScript 2026, missing from this repository's ES2023 type library, hence `JSONWithRawJSON`) tests the
- * `[[IsRawJSON]]` slot.
+ * Each of these `util.types` predicates is native: it reads the engine's object kind, runs no trap and
+ * consults no prototype, global or `Symbol.toStringTag`, and it recognizes revoked Proxies and cross-realm
+ * built-ins. Looking the predicates up at call time would itself be a global hop, so each is captured here.
+ * `JSON.isRawJSON` (ECMAScript 2026, missing from this repository's ES2023 type library, hence
+ * `JSONWithRawJSON`) tests the `[[IsRawJSON]]` slot. `util.types.isKeyObject` and `isCryptoKey` are not
+ * used: in Node v26.10.0 they are JavaScript functions that read the configurable `process.versions` on
+ * every call, so they would run ambient code inside capture. KeyObject and CryptoKey keep their state
+ * outside own properties and join the kinds no side-effect-free test recognizes (BASELINE, declared limits).
  */
 const PrimordialIsProxy = UtilTypes.isProxy;
 const PrimordialIsMap = UtilTypes.isMap;
@@ -251,8 +254,6 @@ const PrimordialIsMapIterator = UtilTypes.isMapIterator;
 const PrimordialIsSetIterator = UtilTypes.isSetIterator;
 const PrimordialIsArgumentsObject = UtilTypes.isArgumentsObject;
 const PrimordialIsModuleNamespaceObject = UtilTypes.isModuleNamespaceObject;
-const PrimordialIsKeyObject = UtilTypes.isKeyObject;
-const PrimordialIsCryptoKey = UtilTypes.isCryptoKey;
 const PrimordialIsExternal = UtilTypes.isExternal;
 interface JSONWithRawJSON extends JSON {
   readonly isRawJSON: (value: unknown) => boolean;
@@ -362,7 +363,7 @@ const childElement = (path: string, suffix: string): string =>
 /** Bounded diagnostics only; never used for accepted content or identity. */
 const issueText = (text: string, limit: number, omitted: string): string => {
   if (text.length > limit) return omitted;
-  for (let index = 0; index < text.length; index += 1) {
+  for (let index = 0; index < text.length && index < 1_024; index += 1) {
     if (text[index]! < " " || text[index]! > "~") return omitted;
   }
   return text;
@@ -412,7 +413,7 @@ const scanBoundaryString = (input: string): StringScan => {
   if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;
   let scalars = 0;
   let bytes = 2;
-  for (let index = 0; index < units; index += 1) {
+  for (let index = 0; index < units && index < 2 * BOUNDARY_LIMITS.stringScalarValues; index += 1) {
     scalars += 1;
     if (scalars > BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;
     const unit = PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index]) as number;
@@ -463,7 +464,8 @@ const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
     });
     return;
   }
-  for (let index = 8; index < issues.length; index += 1) {
+  // At most one suffix entry per code: 8 details plus 12 codes bound the search.
+  for (let index = 8; index < issues.length && index < 8 + 12; index += 1) {
     const entry = readAt(issues, index) as ValueIssue;
     if (entry.code === issue.code) {
       // Every suffix entry owns occurrences; no caller or inherited value is consulted.
@@ -643,7 +645,8 @@ const containerStructureBytes = (entries: number, isObject: boolean): number =>
 // - per-name: constant work on one listed name, called only inside loops bounded by a charged listing.
 
 /** Whether an object or function is a Proxy. Reads only the engine's object kind; runs no trap. */
-const isProxyValue = (value: object): boolean => PrimordialIsProxy(value);
+/** The Proxy test, through the load-time `util.types.isProxy`; `envelope.ts` uses it for identity text. */
+export const isProxyValue = (value: object): boolean => PrimordialIsProxy(value);
 
 /** Whether a container is open on the current path (cycle test), through the load-time `has`. */
 const isOpenContainer = (state: CaptureState, container: object): boolean =>
@@ -695,8 +698,6 @@ const isBuiltInWithSlots = (container: object): boolean =>
   PrimordialIsSetIterator(container) ||
   PrimordialIsArgumentsObject(container) ||
   PrimordialIsModuleNamespaceObject(container) ||
-  PrimordialIsKeyObject(container) ||
-  PrimordialIsCryptoKey(container) ||
   PrimordialIsExternal(container) ||
   PrimordialIsRawJSON(container);
 
@@ -806,7 +807,7 @@ const finishArray = (out: BoundaryValue[]): BoundaryValue => PrimordialObjectFre
  */
 const finishObject = (prototype: object | null, captured: readonly (readonly [string, BoundaryValue])[]): BoundaryValue => {
   const snapshot = PrimordialObjectCreate(prototype) as Record<string, BoundaryValue>;
-  for (let entryIndex = 0; entryIndex < captured.length; entryIndex += 1) {
+  for (let entryIndex = 0; entryIndex < captured.length && entryIndex < BOUNDARY_LIMITS.containerEntries; entryIndex += 1) {
     const pair = readAt(captured, entryIndex) as readonly [string, BoundaryValue];
     defineData(snapshot, pair[0], pair[1], false, true, false);
   }
@@ -831,9 +832,10 @@ const finishObject = (prototype: object | null, captured: readonly (readonly [st
  * requires. Per-name work: at most ten reads, paid by the listing that produced the name.
  */
 const isArrayIndex = (name: string): boolean => {
-  // Length first, so a caller-supplied name of any size is classified after at most ten reads.
+  // Length first, so a caller-supplied name of any size is classified after at most ten reads. The loop
+  // also carries the cap itself, so its bound does not rest on the guard above (KC3-1, static rule SC9).
   if (name.length === 0 || name.length > 10) return false;
-  for (let index = 0; index < name.length; index += 1) {
+  for (let index = 0; index < name.length && index < 10; index += 1) {
     const unit = name[index] as string;
     if (unit < "0" || unit > "9") return false;
   }
@@ -850,7 +852,7 @@ const isArrayIndex = (name: string): boolean => {
  */
 const arrayIndexValue = (name: string): number => {
   let value = 0;
-  for (let index = 0; index < name.length; index += 1) {
+  for (let index = 0; index < name.length && index < 10; index += 1) {
     value = value * 10 + ((PrimordialReflectApply(PrimordialStringCharCodeAt, name, [index]) as number) - 48);
   }
   return value;
@@ -1059,12 +1061,13 @@ function captureArray(container: object, path: string, entered: number, state: C
       break;
     }
   }
-  let symbolCount = 0;
-  if (!hasExtra) {
-    const listed = listOwnSymbols(state, container);
-    if (listed === STOPPED) return REFUSED;
-    symbolCount = listed;
-  }
+  // The symbols listing is taken, and metered, even when an extra name already refuses the array: the
+  // names listing walked every symbol-keyed member without charging it, and this charge pays for that
+  // walk on every occurrence. Only an array with no extra name counts its symbols toward the byte charge
+  // and the diagnostic, exactly as before the meter, so byte-stop positions and reasons are unchanged.
+  const listed = listOwnSymbols(state, container);
+  if (listed === STOPPED) return REFUSED;
+  const symbolCount = hasExtra ? 0 : listed;
   if (overlong) {
     record(state, {
       path,

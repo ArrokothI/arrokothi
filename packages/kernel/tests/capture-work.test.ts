@@ -63,9 +63,10 @@ describe("KC3-1/KC3-5 every unit kind is charged exactly", () => {
     ["a string of twice the scalar limit", "x".repeat(2 * BOUNDARY_LIMITS.stringScalarValues), { units: 1 + 131_072 + 1, visit: 1, string: 131_072, diagnostic: 1 }],
     // [undefined]: array 2·1 + 4 = 6 (the element unit included), then one diagnostic; no child visit.
     ["[undefined]", [undefined], { units: 7, visit: 1, listing: 4, element: 1, diagnostic: 1 }],
-    // An array with an extra name: names ["0","length","x"] (1 + 3), no symbols listing (it has an extra
-    // name), one diagnostic, then the element and its visit.
-    ["[0] with an extra member", Object.assign([0], { x: 1 }), { units: 8, visit: 2, listing: 4, element: 1, diagnostic: 1 }],
+    // An array with an extra name: names ["0","length","x"] (1 + 3), symbols (1; listed and metered although
+    // the extra name already refuses the array, packet review MS-02), one diagnostic, then the element and
+    // its visit.
+    ["[0] with an extra member", Object.assign([0], { x: 1 }), { units: 9, visit: 2, listing: 5, element: 1, diagnostic: 1 }],
     // An object with a non-enumerable member: symbols (1) + names (2) + descriptor (1) + diagnostic (1).
     ["{} with a non-enumerable member", Object.defineProperty({}, "h", { value: 1 }), { units: 6, visit: 1, listing: 3, descriptor: 1, diagnostic: 1 }],
     // An object with two symbol members: symbols (1 + 2) + diagnostic (1) + names (1).
@@ -401,9 +402,10 @@ describe("KC3-5 every byte charge is pinned by its exact byte-stop position", ()
       assert.equal(counted.stop, "bytes");
       assert.deepEqual(result.issues.slice(8).map((issue) => [issue.code, issue.occurrences]), [["unrepresentable_member", visits - 8], ["too_many_bytes", 1]]);
       // Root: a visit, names (1 + 4,096 + 1) and symbols (1); then each visit up to the stop: its element
-      // unit in the root, its visit, its names listing (1 + extra + 1) and a diagnostic, but no symbols
-      // listing (the array has an extra name). Elements past the stop are never observed.
-      assert.equal(counted.units, 1 + 4_098 + 1 + visits * (1 + 1 + (extra + 2) + 1));
+      // unit in the root, its visit, its names listing (1 + extra + 1), its symbols listing (1, metered
+      // although the extra names refuse the array; MS-02) and a diagnostic. Elements past the stop are never
+      // observed.
+      assert.equal(counted.units, 1 + 4_098 + 1 + visits * (1 + 1 + (extra + 2) + 1 + 1));
     });
   }
 

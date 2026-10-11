@@ -14,7 +14,7 @@
  */
 
 import { appendAllOwn, appendOwn, descriptorGetter, descriptorValue, isDataDescriptor, readAt } from "./own-array.ts";
-import { canonicalize, type ValueIssue } from "./values.ts";
+import { canonicalize, isProxyValue, type ValueIssue } from "./values.ts";
 
 const PrimordialArrayIsArray = Array.isArray;
 /**
@@ -176,12 +176,21 @@ export const explain = (issues: readonly LocatedIssue[]): string => {
  */
 export function acceptIdentityText(value: unknown, label: string, issues: LocatedIssue[]): value is string {
   if (typeof value !== "string") {
-    // Total classification (K11-R16-ID-01): `Array.isArray` performs `IsArray`, which throws a
-    // `TypeError` on a revoked Proxy. The classifier runs on caller-owned values, so that throw
-    // must become the same located refusal — never an exception escaping the boundary.
+    // A Proxy is named as one before anything else observes it (K1.1-correction-03, owner decision-01
+    // item 2): `Array.isArray` would forward `IsArray` through its target chain, and the label would
+    // then describe the target. Total classification (K11-R16-ID-01): the classifier runs on
+    // caller-owned values, so any throw must become the same located refusal — never an exception
+    // escaping the boundary.
     let received: string;
     try {
-      received = value === null ? "null" : PrimordialArrayIsArray(value) ? "array" : typeof value;
+      received =
+        value === null
+          ? "null"
+          : (typeof value === "object" || typeof value === "function") && isProxyValue(value)
+            ? "a Proxy"
+            : PrimordialArrayIsArray(value)
+              ? "array"
+              : typeof value;
     } catch {
       received = "an uninspectable value";
     }
