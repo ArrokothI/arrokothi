@@ -153,8 +153,8 @@ wrap(Set.prototype, "has", (original) => function (value) { counts.setHas += 1; 
 wrap(Set.prototype, "add", (original) => function (value) { counts.setAdd += 1; return Reflect.apply(original, this, [value]); });
 wrap(Set.prototype, "delete", (original) => function (value) { counts.setDelete += 1; return Reflect.apply(original, this, [value]); });
 wrap(String.prototype, "charCodeAt", (original) => function (index) { counts.charCodeAt += 1; return Reflect.apply(original, this, [index]); });
-const values = await import(${JSON.stringify(new URL("../src/values.ts", import.meta.url).href)});
-const kernel = await import(${JSON.stringify(new URL("../src/index.ts", import.meta.url).href)});
+const values = await import(VALUES_URL);
+const kernel = await import(KERNEL_URL);
 for (const undo of restore.reverse()) undo();
 const reset = () => { for (const key of Object.keys(counts)) counts[key] = 0; };
 const snapshot = () => ({ ...counts, unwrapped: [...unwrapped] });
@@ -169,7 +169,11 @@ const emit = (value) => { console.log(JSON.stringify(value)); };
  * probe that must prepare state the Kernel never sees as caller code).
  */
 export function inWrappedChild<T>(body: string, options: { readonly timeout?: number; readonly before?: string } = {}): T {
-  const probe = `${options.before ?? ""}\n${PRELUDE}\n${body}`;
+  // The module URLs are resolved here, not in the module-level prelude text, so a test file that imports
+  // this module keeps no intrinsic reference in its load-time code (the P1-H V-ENV detector reads it).
+  const urls = `const VALUES_URL = ${JSON.stringify(new URL("../src/values.ts", import.meta.url).href)};\n` +
+    `const KERNEL_URL = ${JSON.stringify(new URL("../src/index.ts", import.meta.url).href)};`;
+  const probe = `${options.before ?? ""}\n${urls}\n${PRELUDE}\n${body}`;
   const output = execFileSync(
     process.execPath,
     ["--experimental-strip-types", "--no-warnings", "--input-type=module", "-e", probe],
