@@ -15,11 +15,13 @@
  *   of a tracked root in the middle of the capture (capture-time twin).
  *
  * An ordinary [[Get]] of own data on a genuine array runs no caller code and cannot be counted. Where the
- * original counted reads, three checks replace the count: the meter's element unit (one own descriptor and
- * its one read); a disagreement witness, whose own descriptor says `undefined` while the element holds 0,
- * so every position whose read happens is refused as unstable and a position that skipped its read would
- * be refused as `undefined_member` instead; and a local structural pin (`helperReadSites`) that the element
- * helper has exactly one read site and no loop, so no position is read twice.
+ * original counted reads, two checks replace the count: a disagreement witness, whose own descriptor says
+ * `undefined` while the element holds 0, so every position whose read happens is refused as unstable and
+ * a position that skipped its read would be refused as `undefined_member` instead; and a local structural
+ * pin (`helperContainerUses`) that inside the element helper, and the member helper, the caller value
+ * appears only as the argument of the one descriptor primordial call and in the one element read, with no
+ * loop, so no position is read twice or reached any other way. The meter's element unit is a cost pin
+ * only: it is charged before the position's descriptor, whether or not the read follows.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -162,21 +164,26 @@ const ghostArrayProxy = (backed: boolean) => countingProxy([] as unknown[], {
     : Reflect.getOwnPropertyDescriptor(target, key),
 });
 
-const hookFamilies: Record<string, HookFamily> = {
+/**
+ * Named families in registration order: an array of pairs, so registering their tests reads no intrinsic
+ * at load time (the TOOLS-01 V-ENV detector).
+ */
+const hookFamilies: readonly (readonly [string, HookFamily])[] = [
   // Original: a revoked Proxy, whose first structural observation (IsArray) threw a TypeError.
-  "revoked structure": {
+  ["revoked structure", {
     witness: () => revokedCountingProxy(),
     subject: "{}",
     hooks: `hooks.prototype = (target, real) => { if (target === subject) throw new TypeError("revoked"); return real; };`,
     code: "unstable_representation",
     message: threw("object"),
     path: index => `[${index}]`,
-    // The first structural observation throws, so nothing is listed.
+    // The hook throws at the prototype observation, which follows the Proxy test, the cycle-set check and
+    // IsArray; no listing or descriptor follows it.
     tracked: { prototype: 1, symbols: 0, names: 0, descriptor: 0 },
     work: familyWork({ visit: 1, diagnostic: 1 }),
-  },
+  }],
   // Original: a Proxy whose `ownKeys` threw `null` at the object's first listing (its own symbols).
-  "throwing structure": {
+  ["throwing structure", {
     witness: () => countingProxy({}, { ownKeys() { throw null; } }),
     subject: "{}",
     hooks: `hooks.symbols = (target, real) => { if (target === subject) throw null; return real; };`,
@@ -186,9 +193,9 @@ const hookFamilies: Record<string, HookFamily> = {
     // A listing is charged only after it returns; this one throws, so it costs no listing unit.
     tracked: { prototype: 1, symbols: 1, names: 0, descriptor: 0 },
     work: familyWork({ visit: 1, diagnostic: 1 }),
-  },
+  }],
   // Original: a Proxy listing `ghost` with no own descriptor behind it.
-  "object ghost descriptor": {
+  ["object ghost descriptor", {
     witness: () => countingProxy({}, { ownKeys: () => ["ghost"], getOwnPropertyDescriptor: () => undefined }),
     subject: "{}",
     hooks: `hooks.names = (target, real) => target === subject ? ["ghost"] : real;`,
@@ -198,9 +205,9 @@ const hookFamilies: Record<string, HookFamily> = {
     // Symbols listing 1, names listing 1 + 1, the ghost's one descriptor; the unowned name is never scanned.
     tracked: { prototype: 1, symbols: 1, names: 1, descriptor: 1 },
     work: familyWork({ visit: 1, listing: 1 + 2, descriptor: 1, diagnostic: 1 }),
-  },
+  }],
   // Original: a Proxy over [] listing index 1 at length 0, with no own descriptor for it.
-  "array ghost index": {
+  ["array ghost index", {
     witness: () => ghostArrayProxy(false),
     subject: "[]",
     hooks: ghostArrayHooks(false),
@@ -210,9 +217,9 @@ const hookFamilies: Record<string, HookFamily> = {
     // `length` and index 1 descriptors; names listing 1 + 2, symbols listing 1; no position below length 0.
     tracked: { prototype: 1, symbols: 1, names: 1, descriptor: 2 },
     work: familyWork({ visit: 1, listing: 3 + 1, descriptor: 1, diagnostic: 1 }),
-  },
+  }],
   // Original: the same Proxy with index 1 backed by an own data descriptor.
-  "array out-of-range index": {
+  ["array out-of-range index", {
     witness: () => ghostArrayProxy(true),
     subject: "[]",
     hooks: ghostArrayHooks(true),
@@ -221,9 +228,9 @@ const hookFamilies: Record<string, HookFamily> = {
     path: index => `[${index}][1]`,
     tracked: { prototype: 1, symbols: 1, names: 1, descriptor: 2 },
     work: familyWork({ visit: 1, listing: 3 + 1, descriptor: 1, diagnostic: 1 }),
-  },
+  }],
   // Original: a Proxy over [] whose `get` answered 1 for `length` while the own descriptor said 0.
-  "array unstable length": {
+  ["array unstable length", {
     witness: () => countingProxy([] as unknown[], { get: () => 1 }),
     subject: "[]",
     hooks: `hooks.descriptor = (target, key, real) => target === subject && key === "length"
@@ -235,9 +242,9 @@ const hookFamilies: Record<string, HookFamily> = {
     // Refused at its length, before any listing.
     tracked: { prototype: 1, symbols: 0, names: 0, descriptor: 1 },
     work: familyWork({ visit: 1, diagnostic: 1 }),
-  },
+  }],
   // Original: a Proxy over { a: 1 } whose `get` answered 2 while the own descriptor said 1.
-  "descriptor/read mismatch": {
+  ["descriptor/read mismatch", {
     witness: () => countingProxy({ a: 1 }, { get: () => 2 }),
     subject: "{ a: 1 }",
     hooks: `hooks.descriptor = (target, key, real) => target === subject && key === "a"
@@ -249,8 +256,8 @@ const hookFamilies: Record<string, HookFamily> = {
     // Symbols 1, names 1 + 1, one descriptor, the name "a" scanned (1), one read.
     tracked: { prototype: 1, symbols: 1, names: 1, descriptor: 1 },
     work: familyWork({ visit: 1, listing: 1 + 2, descriptor: 1, string: 1, read: 1, diagnostic: 1 }),
-  },
-};
+  }],
+];
 
 interface HookFamilyRun {
   readonly ok: boolean;
@@ -277,7 +284,7 @@ function runHookFamily(family: HookFamily): HookFamilyRun {
   `);
 }
 
-for (const [name, family] of Object.entries(hookFamilies)) {
+for (const [name, family] of hookFamilies) {
   test(`V-D1 every issue family: ${name}`, () => {
     // K1.1-correction-03: converted from a Proxy family value (owner decision-01 item 2). The Proxy is now
     // refused before any trap; a hook on a tracked plain value reaches the refusal path it reached.
@@ -341,27 +348,36 @@ test("V-D1 P5: 532480 invalid positions retain nine records and exact ordered de
 test("V-D1 bounded paths include phantom names, long ancestors, and literal omission text", () => {
   // K1.1-correction-03: converted from a Proxy listing a 1,000,000-character phantom name (owner decision-01
   // item 2). That Proxy is refused at the root before any trap, so its name is never listed; the phantom
-  // name is listed instead by a hook on a tracked plain object that does not own it.
+  // name is listed instead by a hook on a tracked plain object that does not own it. A short phantom name,
+  // added with the conversion, shows that an unowned name is never scanned.
   const name = "x".repeat(1_000_000);
   const witness = countingProxy({}, { ownKeys: () => [name], getOwnPropertyDescriptor: () => undefined });
   assert.deepEqual(issuesOf(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
   assert.equal(witness.calls(), 0, "refused before any trap ran");
 
-  const phantom = inWrappedChild<{ ok: boolean; issues: ValueIssue[] | null; names: number; descriptors: number; work: CaptureWork }>(`
-    const subject = track({});
-    hooks.names = (target, real) => target === subject ? ["x".repeat(1_000_000)] : real;
-    reset();
-    const result = values.canonicalize(subject);
-    const { namesTracked: names, descriptorTracked: descriptors } = snapshot();
-    emit({ ok: result.ok, issues: result.ok ? null : result.issues, names, descriptors, work: values.captureWithWork(subject).work });
+  interface Phantom { readonly ok: boolean; readonly issues: ValueIssue[] | null; readonly names: number; readonly descriptors: number; readonly work: CaptureWork }
+  const phantoms = inWrappedChild<{ long: Phantom; short: Phantom }>(`
+    const phantom = (name) => {
+      const subject = track({});
+      hooks.names = (target, real) => target === subject ? [name] : real;
+      reset();
+      const result = values.canonicalize(subject);
+      const { namesTracked: names, descriptorTracked: descriptors } = snapshot();
+      return { ok: result.ok, issues: result.ok ? null : result.issues, names, descriptors, work: values.captureWithWork(subject).work };
+    };
+    emit({ long: phantom("x".repeat(1_000_000)), short: phantom("ghost") });
   `);
-  assert.equal(phantom.ok, false);
-  assertBounded(phantom.issues ?? []);
-  assert.deepEqual(phantom.issues, [{ path: "<omitted>", code: "unstable_representation", message: GHOST_MEMBER }]);
-  assert.deepEqual([phantom.names, phantom.descriptors], [1, 1], "one listing, one descriptor for the phantom name");
-  // Visit 1; symbols listing 1 and names listing 1 + 1; one descriptor; one diagnostic. The unowned name
-  // is never scanned (no string units), so its length never reaches the path or the meter.
-  assert.deepEqual(phantom.work, work({ visit: 1, listing: 1 + 2, descriptor: 1, diagnostic: 1 }));
+  // Visit 1; symbols listing 1 and names listing 1 + 1; one descriptor; one diagnostic; no string units.
+  const phantomWork = work({ visit: 1, listing: 1 + 2, descriptor: 1, diagnostic: 1 });
+  for (const [phantom, path] of [[phantoms.long, "<omitted>"], [phantoms.short, "ghost"]] as const) {
+    assert.equal(phantom.ok, false);
+    assertBounded(phantom.issues ?? []);
+    assert.deepEqual(phantom.issues, [{ path, code: "unstable_representation", message: GHOST_MEMBER }]);
+    assert.deepEqual([phantom.names, phantom.descriptors], [1, 1], "one listing, one descriptor for the phantom name");
+    assert.deepEqual(phantom.work, phantomWork);
+  }
+  // The long name's length never reaches the path. It is past the scan limit, so it would cost no string
+  // units even if scanned; the short name, which would cost 5, shows that the unowned name is never scanned.
 
   for (const value of [{ ["x".repeat(65536)]: { a: undefined } }, { ["x".repeat(128)]: Array(32).fill(undefined) }]) {
     assert.equal(issuesOf(value)[0]?.path, "<omitted>");
@@ -461,36 +477,59 @@ function setup() {
   return { who, driver, kernel, executionId, open, grant: submissionFor(driver, open.activationId), view: () => accepted(kernel.inspect(who, executionId)) };
 }
 
+/** How one metered helper of `values.ts` uses its `container` parameter, the caller value. */
+interface ContainerUses {
+  /** As the first argument of a `PrimordialGetOwnPropertyDescriptor` call: one own-descriptor observation. */
+  readonly descriptor: number;
+  /** As the object of an element access: one ordinary read. */
+  readonly read: number;
+  /** Any other reference: a property access, any other call's argument, an alias, a return. */
+  readonly other: number;
+  /** Loops in the helper, which would repeat one of the above. */
+  readonly loops: number;
+}
+
 /**
- * The ordinary reads of the caller value inside one metered helper of `values.ts`: element and property
- * accesses on its `container` parameter, through casts and parentheses, plus loops (which would repeat
- * one). A local instrument (K1.1-correction-03): an own-data [[Get]] on a genuine array runs no caller
- * code and no Proxy may count it any more, so the one read per position the original Proxy counted is
- * pinned at its only site, `observeElement`, while the wrapped child counts that helper's one descriptor
- * per position and the read witness shows the read is taken at every position.
+ * Every reference to the `container` parameter inside one metered helper of `values.ts`, classified
+ * through casts, non-null assertions and parentheses. A local instrument (K1.1-correction-03): an own-data
+ * [[Get]] on a genuine array runs no caller code and no Proxy may count it any more, so the one read per
+ * position the original Proxy counted is pinned where it is taken. In the helper the caller value may
+ * appear only in its one descriptor call and its one element read; any other reference (`Reflect.get`, a
+ * helper call, an alias, a second read) is a way to reach it that the wrapped child's counts and the read
+ * witness cannot see.
  */
-function helperReadSites(helper: string): { readonly reads: number; readonly loops: number } {
+function helperContainerUses(helper: string): ContainerUses {
   const source = ts.createSourceFile("values.ts", readFileSync(new URL("../src/values.ts", import.meta.url), "utf8"), ts.ScriptTarget.Latest, true);
-  let body: ts.Node | undefined;
+  let declared: ts.Expression | undefined;
   const find = (node: ts.Node): void => {
-    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === helper) body = node.initializer;
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === helper) declared = node.initializer;
     else ts.forEachChild(node, find);
   };
   find(source);
-  assert.ok(body, `${helper} is declared in values.ts`);
-  const unwrap = (node: ts.Expression): ts.Expression =>
-    ts.isParenthesizedExpression(node) || ts.isAsExpression(node) || ts.isTypeAssertionExpression(node) || ts.isNonNullExpression(node) ? unwrap(node.expression) : node;
-  let reads = 0, loops = 0;
+  assert.ok(declared !== undefined && ts.isArrowFunction(declared), `${helper} is declared in values.ts as an arrow function`);
+  const helperFunction = declared as ts.ArrowFunction;
+  assert.ok(helperFunction.parameters.some(parameter => ts.isIdentifier(parameter.name) && parameter.name.text === "container"), `${helper} takes the caller value as \`container\``);
+  const wrapped = (node: ts.Node): ts.Node => {
+    const parent = node.parent;
+    return ts.isParenthesizedExpression(parent) || ts.isAsExpression(parent) || ts.isTypeAssertionExpression(parent) ||
+      ts.isNonNullExpression(parent) || ts.isSatisfiesExpression(parent) ? wrapped(parent) : node;
+  };
+  let descriptor = 0, read = 0, other = 0, loops = 0;
   const visit = (node: ts.Node): void => {
-    if (ts.isElementAccessExpression(node) || ts.isPropertyAccessExpression(node)) {
-      const target = unwrap(node.expression);
-      if (ts.isIdentifier(target) && target.text === "container") reads += 1;
+    if (ts.isIdentifier(node) && node.text === "container") {
+      const use = wrapped(node), parent = use.parent;
+      if (ts.isParameter(parent) && parent.name === use) {
+        // The declaration itself, not a use.
+      } else if (ts.isCallExpression(parent) && ts.isIdentifier(parent.expression) &&
+          parent.expression.text === "PrimordialGetOwnPropertyDescriptor" && parent.arguments[0] === use) descriptor += 1;
+      else if (ts.isElementAccessExpression(parent) && parent.expression === use) read += 1;
+      else other += 1;
     }
     if (ts.isIterationStatement(node, false)) loops += 1;
     ts.forEachChild(node, visit);
   };
-  visit(body!);
-  return { reads, loops };
+  visit(helperFunction);
+  return { descriptor, read, other, loops };
 }
 
 interface EagerArm {
@@ -504,8 +543,9 @@ interface EagerArm {
 test("V-D1 eight eager roots before authority: every position once, no forbidden mutation", () => {
   // K1.1-correction-03: converted from a Proxy root counting its descriptors and reads (owner decision-01
   // item 2). The Proxy is now refused at each of the eight root positions before any trap (witness below).
-  // A tracked genuine array in a wrapped child counts every Kernel observation of it, per position; the
-  // meter's element unit and a read witness replace the read count, which a genuine array cannot expose.
+  // A tracked genuine array in a wrapped child counts every Kernel observation of it, per position; a read
+  // witness and a structural pin on the element helper replace the read count, which a genuine array
+  // cannot expose. The meter's element unit below is a cost pin only.
   const s = setup();
   const proxyRoot = countingProxy(Array(4096).fill(undefined));
   const proxyProposal = outcomeFor(s.executionId, s.open, { progress: proxyRoot.proxy, emissions: Array.from({ length: 6 }, (_, i) => ({ emissionKey: `e${i}`, value: proxyRoot.proxy })), next: { step: "complete", result: proxyRoot.proxy } });
@@ -600,12 +640,16 @@ test("V-D1 eight eager roots before authority: every position once, no forbidden
   assert.deepEqual(probe.capture, { issues: 8 * 9, total: 8 * 4096, observed: everyPositionOnce });
 
   // One root on the meter: its visit, names listing (4,096 indices and length: 1 + 4,097) and symbols
-  // listing (1), then per position one element unit (its one descriptor and one read) and one diagnostic.
+  // listing (1), then per position one element unit and one diagnostic. The element unit is a cost pin
+  // only: it is charged before the position's descriptor, whether or not the read follows.
   const metered = captureWithWork(Array(4096).fill(undefined));
   assert.equal(metered.result.ok, false);
   assert.deepEqual(metered.work, work({ visit: 1, listing: (1 + 4097) + 1, element: 4096, diagnostic: 4096 }));
-  // That element unit takes the position's one read at the helper's only read site, with no loop.
-  assert.deepEqual(helperReadSites("observeElement"), { reads: 1, loops: 0 });
+  // The element helper reaches the caller value only through its one descriptor call and its one element
+  // read, with no loop, so no position is read twice or reached any other way; the member helper only
+  // through its one read.
+  assert.deepEqual(helperContainerUses("observeElement"), { descriptor: 1, read: 1, other: 0, loops: 0 });
+  assert.deepEqual(helperContainerUses("readMember"), { descriptor: 0, read: 1, other: 0, loops: 0 });
 });
 
 test("V-D1 creation, ingress, all recovery roots, complete and fail consume weighted evidence", () => {

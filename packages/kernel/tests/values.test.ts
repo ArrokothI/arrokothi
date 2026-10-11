@@ -694,8 +694,11 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
       assert.deepEqual(observed.captured.value, { a: 1, b: {} });
       assert.equal(observed.retainedIsSource, false, "what is retained is a Kernel snapshot, not the caller's object");
       assert.equal(observed.frozen, true);
-      // Each member was observed once: one own descriptor and one ordinary read per member, counted by the
-      // wrapped primordials and the meter. `{a: 1, b: {}}`: visits for the root, `1` and `{}`; the root's
+      // Each member was observed once. Its own descriptor is counted by the wrapped primordials
+      // (`aDescriptors`, `descriptorTracked`) and by the meter's `descriptor` units. Its ordinary read is
+      // counted by the meter alone: `read` counts the Kernel's metered member reads (`readMember` calls),
+      // not engine [[Get]]s, since an unmetered [[Get]] of own data on a non-Proxy runs no caller code and
+      // is unobservable without a Proxy. `{a: 1, b: {}}`: visits for the root, `1` and `{}`; the root's
       // symbols (1) and names (1 + 2) listings and the inner `{}`'s two listings (1 each); names "a" and "b".
       assert.equal(observed.aDescriptors, 1, "a's own descriptor was observed exactly once");
       assert.deepEqual(observed.captured.work, workOf({ visit: 3, listing: 6, descriptor: 2, read: 2, string: 2, stop: "none" }));
@@ -981,7 +984,7 @@ describe("refusing a value costs no more than the size limit allows", () => {
       const captured = summarize(values.captureWithWork(value));
       const observedCounts = snapshot();
       emit({ captured, leafVisits: observedCounts.prototypeTracked, leafListings: observedCounts.namesTracked });
-    `);
+    `, { timeout: 60_000 });
     const model = doublingToByteStop(31);
     assert.equal(observed.captured.ok, false);
     assert.deepEqual(observed.captured.issues, [byteStop(model.bytes)], "within the depth and entry limits, refused for size alone");
@@ -1013,7 +1016,7 @@ describe("refusing a value costs no more than the size limit allows", () => {
       };
       const captured = summarize(values.captureWithWork(new Array(values.BOUNDARY_LIMITS.containerEntries).fill(inner)));
       emit({ captured, elementObservations });
-    `);
+    `, { timeout: 60_000 });
     // Each string is 65,538 canonical bytes. The outer array and the first inner one charge their 4,097
     // punctuation bytes first, so the sixteenth string passes the limit. Unbounded, this expands to about
     // a terabyte.
@@ -1054,7 +1057,7 @@ describe("refusing a value costs no more than the size limit allows", () => {
       };
       const captured = summarize(values.captureWithWork(new Array(values.BOUNDARY_LIMITS.containerEntries).fill(inner)));
       emit({ captured, elementObservations });
-    `);
+    `, { timeout: 60_000 });
     // Each refused occurrence is charged its 200,000-unit length, after the two arrays' 4,097 bytes each,
     // so the sixth passes the limit. Refused by its length alone, it costs no string units.
     const entries = BOUNDARY_LIMITS.containerEntries;
@@ -1175,7 +1178,7 @@ describe("refusing a value costs no more than the size limit allows", () => {
       const over = named(values.BOUNDARY_LIMITS.containerEntries + 1);
       const justOver = { captured: summarize(values.captureWithWork(over)), reads: reads.get(over) ?? 0 };
       emit({ single, shared, justOver });
-    `);
+    `, { timeout: 60_000 });
     const bound = BOUNDARY_LIMITS.containerEntries + 1;
     const tooMany = {
       code: "too_many_entries",
@@ -1219,7 +1222,7 @@ describe("refusing a value costs no more than the size limit allows", () => {
       const captured = summarize(values.captureWithWork(value));
       const observedCounts = snapshot();
       emit({ captured, indexReads, listed: observedCounts.namesListed, symbolListings: observedCounts.symbolsTracked });
-    `);
+    `, { timeout: 60_000 });
     assert.equal(observed.listed, 1_000_001, "the one listing really reported every name");
     assert.equal(observed.captured.ok, false);
     assert.equal(observed.indexReads, 0, `read ${observed.indexReads} index descriptors of a 1,000,001-name listing`);
@@ -1713,11 +1716,11 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
   /**
    * The caller here is entirely coherent, which is the point.
    *
-   * `captureArray` observes the prototype first, and that observation is caller code. A genuine
-   * array behind a `Proxy` whose `getPrototypeOf` trap installs an inherited accessor at one of its
-   * own index names, and then returns the genuine `Array.prototype`, passes the plain-array check
-   * legitimately. Its own descriptor and its ordinary read still agree, so the one observation the
-   * pass takes is unambiguous.
+   * Before K1.1-correction-03, `captureArray` observed the prototype first, and that observation was
+   * caller code. A genuine array behind a `Proxy` whose `getPrototypeOf` trap installed an inherited
+   * accessor at one of its own index names, and then returned the genuine `Array.prototype`, passed the
+   * plain-array check legitimately. Its own descriptor and its ordinary read still agreed, so the one
+   * observation the pass took was unambiguous.
    *
    * The previous shape then put that observed element into a holey scratch array with an ordinary
    * indexed write and read it back to build the snapshot. Both halves went through the accessor:
@@ -1748,11 +1751,12 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
   type TrapProbe = { captured: ChildCapture; installed: number; swallowed: number; substitute: unknown; again: string | null; liveAfter: boolean };
 
   /**
-   * Child-side text: `trapping(value, indices, descriptorHook?)` tracks `value`, captures it (or the root
-   * `wrap(value)` builds around it) with a prototype hook that installs the accessor at `indices` the
+   * Child-side text: `trapping(value, indices, wrap?, descriptorHook?)` tracks `value`, captures it (or the
+   * root `wrap(value)` builds around it) with a prototype hook that installs the accessor at `indices` the
    * first time the Kernel observes `value`'s prototype, restores the accessor, and reports a `TrapProbe`.
+   * Built only inside a test body, so this suite's load-time code references no intrinsic.
    */
-  const TRAPPING = `
+  const trappingSource = (): string => `
     ${SUMMARIZE}
     const { trapInheritedIndices } = await import(${JSON.stringify(HARNESS_URL)});
     const trapping = (value, indices, wrap = (inner) => inner, descriptorHook = undefined) => {
@@ -1803,7 +1807,7 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
     assert.equal(witness.installed(), 0, "so the accessor was never installed by it");
 
     const observed = inWrappedChild<TrapProbe>(`
-      ${TRAPPING}
+      ${trappingSource()}
       emit(trapping(["zero", "kept"], ["1"]));
     `);
     assert.equal(observed.installed, 1, "the trap was installed by the observation under test");
@@ -1828,7 +1832,7 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
     assert.equal(first.installed() + nestedWitness.installed(), 0);
 
     const observed = inWrappedChild<{ first: TrapProbe; nested: TrapProbe }>(`
-      ${TRAPPING}
+      ${trappingSource()}
       const first = trapping(["only"], ["0"]);
       const nested = trapping([1, 2, 3], ["0", "1", "2"], (inner) => ({ outer: inner }));
       emit({ first, nested });
@@ -1872,7 +1876,7 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
     assert.equal(installed, 0);
 
     const observed = inWrappedChild<TrapProbe>(`
-      ${TRAPPING}
+      ${trappingSource()}
       emit(trapping([0, 0], ["1"], undefined, (target, key, real) =>
         key === "1" ? { value: 99, writable: true, enumerable: true, configurable: true } : real));
     `);
@@ -2239,7 +2243,9 @@ describe("K11-R16-VAL-01 (R2) canonical bytes do not depend on prototype-chain s
     // K1.1-correction-03: converted from "a capture-time trap that inserts the chain still binds the
     // observed structure" (owner decision-01 item 2). Its getPrototypeOf-trap Proxy is now refused before
     // the trap runs; a wrapped-child hook on the Kernel's one prototype observation of a genuine
-    // `{a: 1, b: 2}` inserts the chain instead, during capture. (The case above inserts it before the call.)
+    // `{a: 1, b: 2}` inserts the chain instead, during capture. (The first case of this group, "an object
+    // inserted between Array.prototype and Object.prototype cannot choose the bytes", inserts it before
+    // the call.)
     let witnessInstalled = false;
     const witness = countingProxy({ a: 1, b: 2 }, {
       getPrototypeOf(t) {

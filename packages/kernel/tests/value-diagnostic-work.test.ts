@@ -6,7 +6,9 @@
  * decision-01 item 2). Each converted test keeps a witness that its original Proxy is now refused with
  * zero trap calls, and keeps the production mechanism it protected exercised without a Proxy:
  * - a deep caller-built prototype chain whose terminal `constructor` getter counts every diagnostic
- *   [[Get]], on plain foreign objects and arrays and on the thrown value;
+ *   [[Get]], on plain foreign objects and arrays and on the thrown value. A foreign value's prototype
+ *   is a `countingProxy` over that chain: capture observes the value's own [[Prototype]] once, which
+ *   runs no trap, while any walk of the chain (`instanceof`, `isPrototypeOf`) runs one;
  * - `inWrappedChild` (capture-instruments.ts): the Kernel captures counting wrappers of its observation
  *   primordials, so a tracked plain object's observations are counted exactly, and a hook makes one
  *   observation throw (the catch path) or hand the Kernel a different descriptor (the descriptor/read
@@ -16,7 +18,11 @@
  * An ordinary [[Get]] of own data on a plain object runs no caller code and cannot be counted. Where the
  * original counted reads, a disagreement witness replaces the count: the own descriptor names one value
  * and the element holds another, so every position whose read happens is refused, and a position that
- * skipped its read would capture the descriptor's value instead.
+ * skipped its read would capture the descriptor's value instead. A length witness does the same for an
+ * array's `length` read.
+ *
+ * Load-time code (module scope) references no intrinsic: probe text, key lists and expected rows that
+ * need one are built by functions that only test bodies call (TOOLS-01 V-ENV, owner choice 08).
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -107,21 +113,25 @@ const refusedPositionsWork = (count: number): CaptureWork =>
 
 // -- The wrapped-child probe library --------------------------------------------------------------
 
-const HARNESS_URL = new URL("./harness.ts", import.meta.url).href;
-const FIXTURE_URL = new URL("./refusal-diagnostics-fixture.ts", import.meta.url).href;
-
 /**
  * Shared probe code, run after `inWrappedChild`'s prelude. `answer` routes the wrapped observations of
  * one tracked object to that object's own hook. `fixture` is the Proxy-free twin of the original
- * fixture: a foreign object or array on the deep chain whose one prototype observation is counted, or a
- * plain object whose own-symbols listing (its first listing) throws an ordinary object on the deep chain.
+ * fixture: a foreign object or array whose one prototype observation is counted and whose prototype is a
+ * `countingProxy` over the deep chain (`prototypeCalls`), or a plain object whose own-symbols listing
+ * (its first listing) throws an ordinary object on the deep chain (`prototypeCalls` null).
  * `rowFixture` is the Proxy-free twin of decisions 03/04's 4,096-position rows, every Kernel observation
  * of which is counted; `answerFor(key, real)` may hand the Kernel a different descriptor.
+ *
+ * A function, not a module constant, so the module URLs are resolved only when a test body asks for the
+ * probe text and the file's load-time code keeps no intrinsic reference.
  */
-const CHILD = `
+function child(): string {
+  const url = (path: string): string => JSON.stringify(new URL(path, import.meta.url).href);
+  return `
 const { default: assert } = await import("node:assert/strict");
-const h = await import(${JSON.stringify(HARNESS_URL)});
-const { assertOnlyRefusal } = await import(${JSON.stringify(FIXTURE_URL)});
+const h = await import(${url("./harness.ts")});
+const { assertOnlyRefusal } = await import(${url("./refusal-diagnostics-fixture.ts")});
+const { countingProxy } = await import(${url("./capture-instruments.ts")});
 const answer = { descriptor: new Map(), names: new Map(), symbols: new Map(), prototype: new Map() };
 hooks.descriptor = (target, key, real) => answer.descriptor.has(target) ? answer.descriptor.get(target)(key, real) : real;
 hooks.names = (target, real) => answer.names.has(target) ? answer.names.get(target)(real) : real;
@@ -143,12 +153,16 @@ const fixture = (kind, depth = 10000) => {
     const thrown = Object.create(prototype);
     const value = track({});
     answer.symbols.set(value, () => { counts.structural++; throw thrown; });
-    return { counts, value };
+    return { counts, value, prototypeCalls: null };
   }
-  const value = track(kind === "foreign array" ? Object.setPrototypeOf([], prototype) : Object.create(prototype));
+  // Built after the liveness check, so that check runs no trap. The value itself stays a plain non-Proxy
+  // object: reading its [[Prototype]] runs nothing, and any walk past it runs a trap of this Proxy.
+  const chain = countingProxy(prototype);
+  const value = track(kind === "foreign array" ? Object.setPrototypeOf([], chain.proxy) : Object.create(chain.proxy));
   answer.prototype.set(value, (real) => { counts.structural++; return real; });
-  return { counts, value };
+  return { counts, value, prototypeCalls: chain.calls };
 };
+const prototypeCallsOf = (f) => f.prototypeCalls === null ? null : f.prototypeCalls();
 const setup = () => {
   const who = h.caller("diagnostic-work"), driver = h.recordingDriver(), coordinator = new kernel.ExecutionCoordinator({ driver });
   const { executionId } = h.accepted(coordinator.createExecution(who, h.createRequest()));
@@ -192,6 +206,7 @@ const run = (value) => {
   return { ok: result.ok, issues: result.ok ? null : result.issues, work };
 };
 `;
+}
 
 interface Captured {
   readonly ok: boolean;
@@ -204,6 +219,8 @@ interface FixtureRow {
   readonly count: number;
   readonly issues: ValueIssue[] | null;
   readonly counts: Counts;
+  /** Trap calls of a foreign value's Proxy prototype, cumulative over the fixture; null for a thrown value. */
+  readonly prototypeCalls: number | null;
   readonly work: CaptureWork;
   readonly operations: OperationCounts;
 }
@@ -211,7 +228,8 @@ interface FixtureRow {
 for (const kind of ["foreign object", "foreign array", "thrown object"] as const) {
   test(`V-D1 ${kind}: deep prototype diagnostics do zero lookups before and after detail eight`, () => {
     // K1.1-correction-03: converted from a Proxy fixture counting getPrototypeOf or throwing a deep-chain object from ownKeys (owner decision-01 item 2; design-01 §7.2).
-    // The original Proxy is now a refused witness; plain twins in a wrapped child keep the structural count, the throw and the diagnostic count.
+    // The original Proxy is now a refused witness; plain twins in a wrapped child keep the structural count, the throw and the diagnostic count,
+    // and a foreign twin's Proxy prototype keeps the trap count's witness that nothing walks the chain.
     const witness = proxyWitness(kind);
     for (const count of [1, 8, 9, 4_096]) {
       assertWeighted(issuesOf(Array(count).fill(witness.value)), count, "unsupported_form", PROXY_MESSAGE);
@@ -219,7 +237,7 @@ for (const kind of ["foreign object", "foreign array", "thrown object"] as const
     }
 
     const { code, message } = EXPECTED[kind];
-    const rows = inWrappedChild<FixtureRow[]>(`${CHILD}
+    const rows = inWrappedChild<FixtureRow[]>(`${child()}
       const rows = [];
       for (const depth of [0, 1000, 10000]) {
         const f = fixture(${JSON.stringify(kind)}, depth);
@@ -227,7 +245,7 @@ for (const kind of ["foreign object", "foreign array", "thrown object"] as const
           f.counts.structural = f.counts.diagnostic = 0;
           reset();
           const captured = run(Array(count).fill(f.value));
-          rows.push({ depth, count, issues: captured.issues, counts: { ...f.counts }, work: captured.work, operations: snapshot() });
+          rows.push({ depth, count, issues: captured.issues, counts: { ...f.counts }, prototypeCalls: prototypeCallsOf(f), work: captured.work, operations: snapshot() });
         }
       }
       emit(rows);
@@ -237,6 +255,9 @@ for (const kind of ["foreign object", "foreign array", "thrown object"] as const
       assertWeighted(row.issues, row.count, code, message);
       assert.equal(row.counts.structural, row.count, "each position still gets its required structural observation");
       assert.equal(row.counts.diagnostic, 0, "no diagnostic [[Get]] can walk the caller-built chain");
+      // Replaces the original trap count's other half: the one prototype observation reads the value's
+      // own [[Prototype]], and nothing (no instanceof, no isPrototypeOf) walks on into the chain's Proxy.
+      assert.equal(row.prototypeCalls, kind === "thrown object" ? null : 0, "no walk of a foreign value's prototype chain");
       assert.deepEqual(row.work, refusedPositionsWork(row.count));
       // One prototype observation per position; a foreign value is never listed, and a throwing listing
       // is the thrown value's only listing. No descriptor of the value is ever requested.
@@ -248,8 +269,11 @@ for (const kind of ["foreign object", "foreign array", "thrown object"] as const
   });
 }
 
-/** Keys a type label could plausibly consult on a function, each guarded by a counting getter. */
-const DIAGNOSTIC_KEYS: readonly PropertyKey[] = [
+/**
+ * Keys a type label could plausibly consult on a function, each guarded by a counting getter. A function,
+ * not a module constant, so the well-known symbols are read only by test bodies.
+ */
+const diagnosticKeys = (): readonly PropertyKey[] => [
   "constructor", "name", "length", "message", "stack", "description", "toString", "valueOf", "then", "prototype",
   Symbol.toPrimitive, Symbol.toStringTag, Symbol.hasInstance,
 ];
@@ -258,7 +282,7 @@ const DIAGNOSTIC_KEYS: readonly PropertyKey[] = [
 function tripwireFunction(onRead: () => void): () => undefined {
   const fn = (): undefined => undefined;
   const inherited = Object.create(null) as object;
-  for (const key of DIAGNOSTIC_KEYS) {
+  for (const key of diagnosticKeys()) {
     const tripwire = { get() { onRead(); throw Error(`diagnostic property read: ${String(key)}`); }, configurable: true };
     Object.defineProperty(fn, key, tripwire);
     Object.defineProperty(inherited, key, tripwire);
@@ -269,11 +293,13 @@ function tripwireFunction(onRead: () => void): () => undefined {
 
 test("V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched", () => {
   // K1.1-correction-03: converted from "V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label" (owner decision-01 item 2).
-  // A callable Proxy is now refused as a Proxy before typeof decides "function", so a plain function full of tripwires exercises the label rule.
+  // A callable Proxy is now refused as a Proxy before typeof decides "function", so a plain function full of tripwires exercises the label rule,
+  // and a wrapped child counts the plain function's observations.
   let reads = 0;
   const fn = tripwireFunction(() => { reads++; });
-  for (const key of DIAGNOSTIC_KEYS) assert.throws(() => Reflect.get(fn, key), /diagnostic property read/);
-  assert.equal(reads, DIAGNOSTIC_KEYS.length, "every tripwire is live");
+  const keys = diagnosticKeys();
+  for (const key of keys) assert.throws(() => Reflect.get(fn, key), /diagnostic property read/);
+  assert.equal(reads, keys.length, "every tripwire is live");
   reads = 0;
   for (const value of [undefined, 1n, Symbol("caller"), fn]) {
     assert.deepEqual(issuesOf(value), [{ path: "", code: "unsupported_form", message: `expected a boundary value, received ${typeof value}` }]);
@@ -281,6 +307,27 @@ test("V-D1 every unsupported primitive and plain function has a type-only label;
   assert.equal(reads, 0);
   // One visit and one diagnostic: the label costs nothing beyond its own issue.
   assert.deepEqual(captureWithWork(fn).work, work({ visit: 1, diagnostic: 1 }));
+
+  // Replaces the revoked function Proxy's witness that the label makes no structural observation (an
+  // IsArray of a revoked Proxy threw): a plain function's capture makes exactly one observation, its
+  // Proxy test, and the label asks the engine nothing more (no IsArray, prototype, descriptor or listing).
+  const labelled = inWrappedChild<Captured & { readonly operations: OperationCounts }>(`${child()}
+    reset();
+    const captured = run(() => undefined);
+    emit({ ...captured, operations: snapshot() });
+  `);
+  assert.deepEqual(labelled.issues, [{ path: "", code: "unsupported_form", message: "expected a boundary value, received function" }]);
+  assert.deepEqual(labelled.work, work({ visit: 1, diagnostic: 1 }));
+  const { unwrapped: _unwrapped, ...totals } = labelled.operations;
+  assert.deepEqual(totals, {
+    descriptor: 0, descriptorTracked: 0,
+    names: 0, namesTracked: 0, namesListed: 0,
+    symbols: 0, symbolsTracked: 0, symbolsListed: 0,
+    prototype: 0, prototypeTracked: 0,
+    isArray: 0, isProxy: 1, brand: 0,
+    setHas: 0, setAdd: 0, setDelete: 0,
+    charCodeAt: 0,
+  });
 
   const callable = countingProxy((): undefined => undefined, { get() { reads++; throw Error("diagnostic property read"); } });
   const revoked = revokedCountingProxy((): undefined => undefined);
@@ -321,7 +368,7 @@ test("V-D1 own constructor, constructor.name, and thrown-value properties are ne
   const hugeName = "N".repeat(1_000_000);
   assert.equal(issuesOf(Object.create({ constructor: { name: hugeName } }))[0]?.message, "expected a plain object, received object");
 
-  const rows = inWrappedChild<{ property: string; live: number; reads: number; structural: number; issues: ValueIssue[] | null; work: CaptureWork }[]>(`${CHILD}
+  const rows = inWrappedChild<{ property: string; live: number; reads: number; structural: number; issues: ValueIssue[] | null; work: CaptureWork }[]>(`${child()}
     const rows = [];
     for (const property of ["constructor", "name", "message", "then", "toPrimitive"]) {
       let reads = 0;
@@ -358,8 +405,19 @@ test("V-D1 own constructor, constructor.name, and thrown-value properties are ne
 
 test("V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation", () => {
   // K1.1-correction-03: converted from a Proxy carrier whose ownKeys trap threw each value (owner decision-01 item 2; design-01 §7.2).
+  // The carrier is a refused witness; the throw now comes from a wrapped own-symbols listing of a plain object.
   // The thrown revoked Proxies are thrown values, never captured: any structural observation of them in the catch path would throw out of the boundary.
-  const rows = inWrappedChild<{ name: string; label: string; calls: number; issues: ValueIssue[] | null; work: CaptureWork; operations: OperationCounts }[]>(`${CHILD}
+  {
+    const revokedObject = revokedCountingProxy(), revokedFunction = revokedCountingProxy((): undefined => undefined);
+    for (const thrown of [null, [], 1n, Symbol(), revokedObject.proxy, revokedFunction.proxy]) {
+      const carrier = countingProxy({}, { ownKeys() { throw thrown; } });
+      assertWeighted(issuesOf(Array(17).fill(carrier.proxy)), 17, "unsupported_form", PROXY_MESSAGE);
+      assert.equal(carrier.calls(), 0, "the original throwing carrier is refused before any trap");
+    }
+    assert.deepEqual([revokedObject.calls(), revokedFunction.calls()], [0, 0]);
+  }
+
+  const rows = inWrappedChild<{ name: string; label: string; calls: number; issues: ValueIssue[] | null; work: CaptureWork; operations: OperationCounts }[]>(`${child()}
     const revokedObject = Proxy.revocable({}, {});
     revokedObject.revoke();
     const revokedFunction = Proxy.revocable(() => undefined, {});
@@ -412,13 +470,16 @@ interface OutcomeRow {
   readonly descriptors: number;
   readonly structural: number;
   readonly diagnostic: number;
+  /** Trap calls of the foreign value's Proxy prototype, cumulative; null for a thrown value. */
+  readonly prototypeCalls: number | null;
   readonly delivered: number;
 }
 
 for (const kind of ["foreign object", "thrown object"] as const) {
   test(`V-D1 ${kind}: eight eager Outcome roots preserve observations and whole refusal state`, () => {
     // K1.1-correction-03: converted from a Proxy root counting descriptors and reads over Proxy positions (owner decision-01 item 2; design-01 §7.2).
-    // The original payload is a refused witness; the counts move to wrapped primordials on plain roots, and the read count to a disagreement witness.
+    // The original payload is a refused witness; the counts move to wrapped primordials on plain roots, and the read count to a disagreement witness;
+    // a foreign value's Proxy prototype witnesses that no root walks its chain.
     {
       const s = setup(), inner = proxyWitness(kind), root = countingProxy(Array(64).fill(inner.value));
       for (const step of ["complete", "fail"] as const) {
@@ -446,7 +507,7 @@ for (const kind of ["foreign object", "thrown object"] as const) {
       accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
     }
 
-    const rows = inWrappedChild<OutcomeRow[]>(`${CHILD}
+    const rows = inWrappedChild<OutcomeRow[]>(`${child()}
       const s = setup(), f = fixture(${JSON.stringify(kind)});
       let descriptors = 0;
       const root = track(Array(64).fill(f.value));
@@ -462,12 +523,12 @@ for (const kind of ["foreign object", "thrown object"] as const) {
         const beforeHidden = s.view();
         const hidden = h.refused(s.coordinator.submitOutcome(h.observer("hidden", "other-scope"), proposal, s.grant));
         assert.deepEqual(s.view(), beforeHidden);
-        rows.push({ step, arm: "hidden", classification: hidden.classification, reason: hidden.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, delivered: 0 });
+        rows.push({ step, arm: "hidden", classification: hidden.classification, reason: hidden.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f), delivered: 0 });
         for (const grant of [undefined, s.grant]) {
           const before = s.view(), delivered = s.driver.seen.length;
           const result = h.refused(s.coordinator.submitOutcome(h.observer("visible"), proposal, grant));
           assertOnlyRefusal(before, s.view(), result);
-          rows.push({ step, arm: grant ? "grant" : "none", classification: result.classification, reason: result.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, delivered: s.driver.seen.length - delivered });
+          rows.push({ step, arm: grant ? "grant" : "none", classification: result.classification, reason: result.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f), delivered: s.driver.seen.length - delivered });
           descriptors = f.counts.structural = f.counts.diagnostic = 0;
         }
       }
@@ -482,7 +543,7 @@ for (const kind of ["foreign object", "thrown object"] as const) {
       const before = s.view(), delivered = s.driver.seen.length;
       const witness = h.refused(s.coordinator.submitOutcome(h.observer("visible"), proposalOf(witnessRoot, "complete"), s.grant));
       assertOnlyRefusal(before, s.view(), witness);
-      rows.push({ step: "complete", arm: "read witness", classification: witness.classification, reason: witness.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, delivered: s.driver.seen.length - delivered });
+      rows.push({ step: "complete", arm: "read witness", classification: witness.classification, reason: witness.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f), delivered: s.driver.seen.length - delivered });
       h.accepted(s.coordinator.submitOutcome(s.who, h.outcomeFor(s.executionId, s.open), s.grant));
       emit(rows);
     `);
@@ -493,6 +554,7 @@ for (const kind of ["foreign object", "thrown object"] as const) {
     for (const row of rows) {
       assert.equal(row.delivered, 0);
       assert.equal(row.diagnostic, 0);
+      assert.equal(row.prototypeCalls, kind === "thrown object" ? null : 0, "no root walks a foreign value's prototype chain");
       if (row.arm === "hidden") {
         assert.equal(row.classification, "unknown_destination");
         assert.equal(row.descriptors + row.structural, 0, "scope precedes all root observation");
@@ -513,7 +575,8 @@ for (const kind of ["foreign object", "thrown object"] as const) {
 
   test(`V-D1 ${kind}: creation, ingress and recovery use the same zero-lookup diagnostics`, () => {
     // K1.1-correction-03: converted from Proxy positions counting getPrototypeOf or throwing from ownKeys (owner decision-01 item 2; design-01 §7.2).
-    // The original payload is a refused witness; plain twins in a wrapped child keep the structural and diagnostic counts.
+    // The original payload is a refused witness; plain twins in a wrapped child keep the structural and diagnostic counts,
+    // and a foreign twin's Proxy prototype witnesses that no boundary walks its chain.
     {
       const s = setup(), witness = proxyWitness(kind), root = Array(64).fill(witness.value) as never;
       const beforeCreation = s.view(), deliveries = s.driver.seen.length;
@@ -546,11 +609,11 @@ for (const kind of ["foreign object", "thrown object"] as const) {
       assert.deepEqual([witness.calls(), witness.counts.structural, witness.counts.diagnostic], [0, 0, 0]);
     }
 
-    interface Step { classification: string; reason: string; structural: number; diagnostic: number }
+    interface Step { classification: string; reason: string; structural: number; diagnostic: number; prototypeCalls: number | null }
     const out = inWrappedChild<{
       creation: Step & { executionId: string | null; position: number }; retryPosition: number; creationDeliveries: number;
       ingress: Step; recovery: Step; deliveries: number;
-    }>(`${CHILD}
+    }>(`${child()}
       const s = setup(), f = fixture(${JSON.stringify(kind)}), root = Array(64).fill(f.value);
       const out = {};
       const beforeCreation = s.view(), deliveries = s.driver.seen.length;
@@ -558,7 +621,7 @@ for (const kind of ["foreign object", "thrown object"] as const) {
         creationKey: "refused-create", authorityContext: root,
         initialInput: { kind: "application.message", payload: root },
       })));
-      out.creation = { classification: creation.classification, reason: creation.reason, executionId: creation.executionId, position: creation.position, structural: f.counts.structural, diagnostic: f.counts.diagnostic };
+      out.creation = { classification: creation.classification, reason: creation.reason, executionId: creation.executionId, position: creation.position, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f) };
       assert.deepEqual(s.view(), beforeCreation);
       out.retryPosition = h.accepted(s.coordinator.createExecution(s.who, h.createRequest({ creationKey: "refused-create" }))).receipt.position;
       out.creationDeliveries = s.driver.seen.length - deliveries;
@@ -567,7 +630,7 @@ for (const kind of ["foreign object", "thrown object"] as const) {
       const beforeIngress = s.view();
       const ingress = h.refused(s.coordinator.submitInput(s.who, { destination: s.executionId, requestKey: "refused-input", kind: "application.message", payload: root }));
       assertOnlyRefusal(beforeIngress, s.view(), ingress);
-      out.ingress = { classification: ingress.classification, reason: ingress.reason, structural: f.counts.structural, diagnostic: f.counts.diagnostic };
+      out.ingress = { classification: ingress.classification, reason: ingress.reason, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f) };
 
       f.counts.structural = 0;
       const beforeRecovery = s.view();
@@ -575,13 +638,16 @@ for (const kind of ["foreign object", "thrown object"] as const) {
         definitionRevisions: root, runtimeContractRevisions: root, progressCodecs: root,
       } }));
       assertOnlyRefusal(beforeRecovery, s.view(), recovery);
-      out.recovery = { classification: recovery.classification, reason: recovery.reason, structural: f.counts.structural, diagnostic: f.counts.diagnostic };
+      out.recovery = { classification: recovery.classification, reason: recovery.reason, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f) };
       out.deliveries = s.driver.seen.length - deliveries;
       h.accepted(s.coordinator.submitInput(s.who, { destination: s.executionId, requestKey: "refused-input", kind: "application.message", payload: null }));
       h.accepted(s.coordinator.submitOutcome(s.who, h.outcomeFor(s.executionId, s.open), s.grant));
       emit(out);
     `);
     const { code } = EXPECTED[kind];
+    // Cumulative over the three boundaries, so each reading of 0 covers every boundary before it.
+    const noWalk = kind === "thrown object" ? null : 0;
+    assert.deepEqual([out.creation.prototypeCalls, out.ingress.prototypeCalls, out.recovery.prototypeCalls], [noWalk, noWalk, noWalk]);
     assert.equal(out.creation.classification, "malformed_value");
     assert.equal(out.creation.executionId, null);
     assert.equal(out.creation.position, 0);
@@ -695,8 +761,11 @@ function assertUntouched(f: ProbeFixture): void {
   assert.ok(Object.values(f.counts).every(count => count === 0), `no observation reached the probe: ${JSON.stringify(f.counts)}`);
 }
 
-/** The probe rows after fifteen valid strings: seventeen refused Proxies, which charge no canonical bytes. */
-const PROXY_ROWS_AFTER_PREFIX: ValueIssue[] = [
+/**
+ * The probe rows after fifteen valid strings: seventeen refused Proxies, which charge no canonical bytes.
+ * A function, not a module constant, so only test bodies build it.
+ */
+const proxyRowsAfterPrefix = (): ValueIssue[] => [
   ...Array.from({ length: 8 }, (_, index) => ({ path: `[${15 + index}]`, code: "unsupported_form" as const, message: PROXY_MESSAGE })),
   { path: "", code: "unsupported_form", message: "additional occurrences (locations omitted)", occurrences: 9 },
 ];
@@ -760,6 +829,18 @@ const BYTE_STOP_WORK = work({
   diagnostic: 15 * 4_096,
 }, "bytes");
 
+/**
+ * The same prefix with seventeen length-witness rows. Root and strings as above, root elements 15 + 17;
+ * each row one visit and one diagnostic, refused before any listing or byte charge, so no stop.
+ */
+const BYTE_STOP_LENGTH_WORK = work({
+  visit: 1 + 15 + 17,
+  listing: (1 + 33) + 1,
+  element: 15 + 17,
+  string: 15 * 65_536,
+  diagnostic: 17,
+});
+
 const UNDEFINED_ELEMENT = "array element is undefined; an array has no absent positions";
 const DISAGREEING_MEMBER = "member is supplied differently by its own data descriptor and by ordinary property access, so it has no single content";
 const UNSTABLE_LENGTH = "array length is not one stable own data property, so which positions exist cannot be established";
@@ -788,7 +869,7 @@ interface AcceptanceProbe {
  * the Kernel: engine-created (`undefined`) or decision-03's deep-prototype prebuilt data.
  */
 function acceptanceProbe(answerOf: (value: string) => string): AcceptanceProbe {
-  return inWrappedChild<AcceptanceProbe>(`${CHILD}
+  return inWrappedChild<AcceptanceProbe>(`${child()}
     const out = {};
     const invalid = rowFixture(undefined, ${answerOf("undefined")});
     out.invalid = { ...run(invalid.root), observed: invalid.observed() };
@@ -839,8 +920,13 @@ function assertAcceptanceProbe(probe: AcceptanceProbe): void {
   assert.deepEqual(probe.lengthWitness.work, LENGTH_WITNESS_WORK);
 }
 
-interface ByteStopProbe extends Captured {
-  readonly observed: RowObservation;
+/** One capture of the byte-stop root, with its tracked row's observations over all seventeen positions. */
+type ByteStopRun = Captured & { readonly observed: RowObservation };
+
+interface ByteStopProbe {
+  readonly invalid: ByteStopRun;
+  readonly readWitness: ByteStopRun;
+  readonly lengthWitness: ByteStopRun;
 }
 
 /**
@@ -848,27 +934,48 @@ interface ByteStopProbe extends Captured {
  * punctuation bytes. Each refused inner array charges 4,097 punctuation bytes and no scalar bytes. Thus
  * exactly floor((1,048,576 - 983,103) / 4,097) = 15 complete inner rows fit; row16 stops after its
  * structure, and row17 is never observed.
+ *
+ * The same prefix and seventeen rows three ways: invalid rows (4,096 undefined), a read witness (each own
+ * descriptor says 1 while each element is 0) and a length witness (the own `length` descriptor says 4,095
+ * while the read says 4,096). `answerOf(value)` names the descriptor each row hands the Kernel.
  */
-function byteStopProbe(answer: string): ByteStopProbe {
-  return inWrappedChild<ByteStopProbe>(`${CHILD}
-    const f = rowFixture(undefined, ${answer});
+function byteStopProbe(answerOf: (value: string) => string): ByteStopProbe {
+  return inWrappedChild<ByteStopProbe>(`${child()}
     const prefix = Array(15).fill("x".repeat(65536));
-    emit({ ...run([...prefix, ...Array(17).fill(f.target)]), observed: f.observed() });
+    const capture = (f) => ({ ...run([...prefix, ...Array(17).fill(f.target)]), observed: f.observed() });
+    const invalid = capture(rowFixture(undefined, ${answerOf("undefined")}));
+    const readWitness = capture(rowFixture(0, ${answerOf("1")}));
+    const lengthWitness = capture(rowFixture(0, disagreeingLength));
+    emit({ invalid, readWitness, lengthWitness });
   `);
 }
 
-function assertByteStop(probe: ByteStopProbe): void {
-  assertRowObservations(probe.observed, 15, 16);
-  assert.ok(probe.issues !== null);
-  assert.equal(probe.issues.length, 10);
-  assert.deepEqual(probe.issues.slice(0, 8).map(issue => issue.path), Array.from({ length: 8 }, (_, index) => `[15][${index}]`));
-  assert.deepEqual(probe.issues.slice(8), [
-    { path: "", code: "undefined_member", message: "additional occurrences (locations omitted)", occurrences: 61_432 },
+/** Rows 1-15 refused at all 4,096 positions (eight located in [15]), row16 stopped, row17 unobserved. */
+function assertByteStopRun(run: ByteStopRun, code: ValueIssueCode, message: string): void {
+  assertRowObservations(run.observed, 15, 16);
+  assert.deepEqual(run.issues, [
+    ...Array.from({ length: 8 }, (_, index) => ({ path: `[15][${index}]`, code, message })),
+    { path: "", code, message: "additional occurrences (locations omitted)", occurrences: 15 * 4_096 - 8 },
     { path: "", code: "too_many_bytes", message: "additional occurrences (locations omitted)", occurrences: 1 },
   ]);
-  assert.equal(probe.issues.reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0), 61_441);
   // The meter stays far below B (3,145,728): the byte stop ends this root, as before.
-  assert.deepEqual(probe.work, BYTE_STOP_WORK);
+  assert.deepEqual(run.work, BYTE_STOP_WORK);
+}
+
+function assertByteStop(probe: ByteStopProbe): void {
+  assertByteStopRun(probe.invalid, "undefined_member", UNDEFINED_ELEMENT);
+  // Replaces the read count: each position of rows 1-15 is refused only because it is read once and
+  // compared with its own descriptor. A skipped read would accept the descriptor's 1 and charge its
+  // byte, so fewer rows would fit before the stop.
+  assertByteStopRun(probe.readWitness, "unstable_representation", DISAGREEING_MEMBER);
+  // Replaces the length-read count: each of the seventeen rows has its length read once and compared
+  // before any listing, so no row is listed or charged and the root ends without a stop.
+  assert.deepEqual(probe.lengthWitness.observed, { prototypes: 17, ownKeys: 0, lengthDescriptors: 17, descriptors: 0, unexpected: 0, positionMin: 0, positionMax: 0 });
+  assert.deepEqual(probe.lengthWitness.issues, [
+    ...Array.from({ length: 8 }, (_, index) => ({ path: `[${15 + index}]`, code: "unstable_representation", message: UNSTABLE_LENGTH })),
+    { path: "", code: "unstable_representation", message: "additional occurrences (locations omitted)", occurrences: 17 - 8 },
+  ]);
+  assert.deepEqual(probe.lengthWitness.work, BYTE_STOP_LENGTH_WORK);
 }
 
 interface EagerRow {
@@ -886,7 +993,7 @@ interface EagerRow {
  * arm checks the whole refusal state in the child.
  */
 function eagerRootsProbe(answerOf: (value: string) => string): EagerRow[] {
-  return inWrappedChild<EagerRow[]>(`${CHILD}
+  return inWrappedChild<EagerRow[]>(`${child()}
     const s = setup();
     const rows = [];
     const submit = (roots, arm, grant, f) => {
@@ -982,12 +1089,14 @@ test("decision-03 descriptor probe (item 5 superseded by decision-01 item 2): th
 
 test("decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the byte stop bounds observations before later rows", () => {
   // K1.1-correction-03: converted from "decision-03 descriptor probe: the byte stop bounds trap calls before later rows" (owner decision-01 item 2 supersedes decision-03 item 5).
+  // The probe's Proxy is a refused witness; plain tracked rows keep the structure and descriptor counts, and a read witness and a length witness
+  // replace the read and length-read counts.
   const f = descriptorFixture(32, undefined);
   const issues = issuesOf([...Array(15).fill("x".repeat(65_536)), ...Array(17).fill(f.inner)]);
   assertUntouched(f);
   // A refused Proxy charges no canonical bytes, so the seventeen are all examined and none reaches the limit.
-  assert.deepEqual(issues, PROXY_ROWS_AFTER_PREFIX);
-  assertByteStop(byteStopProbe("deepAnswer(32, undefined)"));
+  assert.deepEqual(issues, proxyRowsAfterPrefix());
+  assertByteStop(byteStopProbe(deepAnswer(32)));
 });
 
 test("decision-03 descriptor probe (item 5 superseded by decision-01 item 2): one and eight eager roots keep bounded observations before authority", () => {
@@ -1017,7 +1126,7 @@ test("decision-03 ordinary objects and arrays retain zero diagnostic lookups wit
     assert.deepEqual([carrier.calls(), counts.structural, counts.diagnostic], [0, 0, 0]);
   }
 
-  const rows = inWrappedChild<{ depth: number; issues: ValueIssue[] | null; counts: Counts; work: CaptureWork }[]>(`${CHILD}
+  const rows = inWrappedChild<{ depth: number; issues: ValueIssue[] | null; counts: Counts; work: CaptureWork }[]>(`${child()}
     const rows = [];
     for (const depth of [0, 10000]) {
       const counts = { structural: 0, diagnostic: 0 };
@@ -1051,16 +1160,18 @@ test("decision-04 handler probe (item 5 superseded by decision-01 item 2): a han
 
 test("decision-04 handler probe (item 5 superseded by decision-01 item 2): the byte stop bounds Kernel-selected observations", () => {
   // K1.1-correction-03: converted from "decision-04 handler probe: the byte stop bounds Kernel-selected observations" (owner decision-01 item 2 supersedes decision-04 item 5).
+  // The handler-chain Proxy is a refused witness; plain tracked rows keep the structure and descriptor counts, and a read witness and a length
+  // witness replace the read and length-read counts.
   for (const depth of [0, 32]) {
     const f = handlerFixture(depth, undefined);
     const issues = issuesOf([...Array(15).fill("x".repeat(65_536)), ...Array(17).fill(f.inner)]);
     assertUntouched(f);
-    assert.deepEqual(issues, PROXY_ROWS_AFTER_PREFIX);
+    assert.deepEqual(issues, proxyRowsAfterPrefix());
   }
   // This uses the independently derived budget in the descriptor-stop test: 983,103
   // bytes before the rows, then 4,097 bytes per row. Fifteen rows fit, the sixteenth
   // charges past the limit before any index read, and the seventeenth stays unobserved.
-  assertByteStop(byteStopProbe("undefined"));
+  assertByteStop(byteStopProbe(engineAnswer));
 });
 
 test("decision-04 handler probe (item 5 superseded by decision-01 item 2): eager roots preserve selected counts and whole state before authority", () => {

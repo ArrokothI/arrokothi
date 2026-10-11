@@ -21,6 +21,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator, type ExecutionView, type OutcomeEnvelope } from "../src/index.ts";
+import { inWrappedChild } from "./capture-instruments.ts";
 import {
   accepted,
   caller,
@@ -202,13 +203,25 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
   });
 
   test("a field whose observation throws is a located refusal, not an escaping exception", () => {
+    // K1.1-correction-03: converted from a revoked progress Proxy witness (owner decision-01 item 2).
+    // Title unchanged. A revoked progress Proxy used to reach capture's catch path through a throwing
+    // `IsArray`; capture now refuses every Proxy, revoked ones included, before observing it, with the
+    // fixed Proxy message. A revoked Proxy runs no trap whatever capture does, so a trap count proves
+    // nothing here; the check is the exact message, which only capture's Proxy test records (a revoked
+    // Proxy reaching `IsArray` would throw and be reported as `unstable_representation`). The catch path
+    // itself — an observation of a value root that throws — is reached below in a wrapped child, on a
+    // genuine progress object whose prototype observation throws.
     const { kernel, driver, executionId, dispatched } = open();
     const grant = submissionFor(driver, dispatched.activationId);
     const cases: [string, Record<string, unknown>, RegExp][] = [
       ["a throwing progress getter", Object.defineProperty({ ...outcomeFor(executionId, dispatched) }, "progress", { get() { throw new Error("boom"); }, enumerable: true }), /progress unstable_representation/],
       ["a revoked next", { ...outcomeFor(executionId, dispatched), next: revokedProxy() }, /next unsupported_form/],
       ["a revoked Emission list", { ...outcomeFor(executionId, dispatched), emissions: revokedProxy() }, /emissions unsupported_form/],
-      ["a revoked progress value", { ...outcomeFor(executionId, dispatched), progress: revokedProxy() }, /progress unstable_representation/],
+      [
+        "a revoked progress value",
+        { ...outcomeFor(executionId, dispatched), progress: revokedProxy() },
+        /progress unsupported_form \(value is a Proxy; capture refuses every Proxy before observing it\)/,
+      ],
       [
         "an envelope whose keys cannot be listed",
         new Proxy({ ...outcomeFor(executionId, dispatched) }, { ownKeys() { throw new Error("no keys"); } }),
@@ -228,6 +241,66 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
     assert.equal(refused(kernel.submitOutcome(author, revokedProxy() as OutcomeEnvelope, grant)).classification, "unknown_destination");
     assert.equal(refused(kernel.submitOutcome(author, null as unknown as OutcomeEnvelope, grant)).classification, "unknown_destination");
     assert.equal(view(kernel, executionId).progressRevision, 0);
+
+    // A genuine progress object whose one structural observation throws: the same located
+    // `unstable_representation` the revoked progress value used to produce, carrying only the thrown
+    // value's `typeof`, never its text, and no exception escaping the Outcome boundary.
+    const probe = inWrappedChild<{ escaped: string | null; refusal: unknown; observations: number; progressRevision: number }>(`
+      const submissions = [];
+      const driver = {
+        driverId: "fake-child",
+        deliver(activation, settlement, submission) { submissions.push(submission); settlement.delivered(); return undefined; },
+        isSafeToReplace() { return true; },
+      };
+      const author = { namespace: "app-a", scopes: ["tenant-a"], controlScopes: ["tenant-a"] };
+      const coordinator = new kernel.ExecutionCoordinator({ driver });
+      const created = coordinator.createExecution(author, {
+        creationKey: "report-17",
+        scope: "tenant-a",
+        definitionRevision: "weekly-report@3",
+        runtimeContractRevision: "runtime-contract@1",
+        progressCodec: "inline-json@1",
+        authorityContext: { tenant: "a" },
+        initialInput: { kind: "application.request", payload: { text: "report for week 37" } },
+      }).value;
+      const dispatched = coordinator.dispatch(author, created.executionId, { bound: 1 }).value;
+      const progress = track({ phase: "draft", draftRef: "draft-1" });
+      let observations = 0;
+      hooks.prototype = (target, real) => {
+        if (target === progress) {
+          observations += 1;
+          throw new Error("boom: secret progress text");
+        }
+        return real;
+      };
+      let refusal = null;
+      let escaped = null;
+      try {
+        refusal = coordinator.submitOutcome(author, {
+          executionId: created.executionId,
+          activationId: dispatched.activationId,
+          writerEpoch: dispatched.writerEpoch,
+          baseProgressRevision: dispatched.baseProgressRevision,
+          progress,
+          next: { step: "continue" },
+        }, submissions[0]);
+      } catch (error) {
+        escaped = error instanceof Error ? error.message : typeof error;
+      }
+      hooks.prototype = undefined;
+      emit({ escaped, refusal, observations, progressRevision: coordinator.inspect(author, created.executionId).value.progressRevision });
+    `);
+    assert.equal(probe.escaped, null, "no exception escaped the Outcome boundary");
+    assert.equal(probe.observations, 1, "the progress object's structure was observed once, and threw");
+    const thrown = probe.refusal as { ok: boolean; error: { classification: string; reason: string } };
+    assert.equal(thrown.ok, false);
+    assert.equal(thrown.error.classification, "malformed_envelope");
+    assert.match(
+      thrown.error.reason,
+      /refused whole: progress unstable_representation \(observing this value's structure threw \(object\), so it presents no readable content\)$/,
+    );
+    assert.doesNotMatch(thrown.error.reason, /boom|secret/, "the thrown value's text never reaches the reason");
+    assert.equal(probe.progressRevision, 0);
   });
 });
 
