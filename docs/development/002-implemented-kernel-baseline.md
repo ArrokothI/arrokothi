@@ -105,24 +105,41 @@ whose prototype is `Object.prototype` or `null` is then tested for internal slot
 listing. The tests are `util.types.isMap`, `isSet`, `isWeakMap`, `isWeakSet`, `isDate`, `isRegExp`,
 `isAnyArrayBuffer`, `isArrayBufferView`, `isBoxedPrimitive`, `isNativeError`, `isPromise`,
 `isGeneratorObject`, `isMapIterator`, `isSetIterator`, `isArgumentsObject`,
-`isModuleNamespaceObject`, `isKeyObject`, `isCryptoKey` and `isExternal`, plus `JSON.isRawJSON`, all
-read at load. A match is refused with `unsupported_form`, "expected a plain object, received a
+`isModuleNamespaceObject` and `isExternal`, plus `JSON.isRawJSON`. All are native and read at load.
+`util.types.isKeyObject` and `isCryptoKey` are not used: in Node v26.10.0 they are JavaScript
+functions that read the configurable `process.versions` on every call, so calling them would run
+ambient code inside capture. `isExternal` has no maintained witness, because no JavaScript value is
+an External without a native addon. A match is refused with `unsupported_form`, "expected a plain object, received a
 built-in object whose content is kept in internal slots". A built-in with its own non-plain
 prototype is still refused by the prototype check, unchanged. Arguments objects, module namespaces
 and raw JSON objects are refused even with their natural prototypes (design check Q4). This closes
 `SELF-K113-RAWJSON-01`: `JSON.rawJSON("1")` was accepted at base as `{"rawJSON":"1"}`. Detection
-never uses prototype identity, constructor names or `Symbol.toStringTag`.
+never uses prototype identity, constructor names or `Symbol.toStringTag`. Identity text
+(`acceptIdentityText`) also tests for a Proxy first. A Proxy in an identity field is refused as
+"expected text that can name a request, received a Proxy" before `Array.isArray` could forward
+through its target chain. Every other label is unchanged.
 
-**Declared limits.** The meter's per-unit constants rest on capture running no caller-defined
-internal method of a value. Three residuals are outside them: (R1) one own-key listing per root,
-whose length is unknown until it returns and whose charge then stops the root, with at most a
-logarithmic sorting factor per name for a listing within B; (R2) host objects with interceptors;
-(R3) hash-table member lookups, which are expected constant. Kinds with no side-effect-free
-internal-slot test stay accepted as their own data when given a plain prototype, usually as `{}`,
-under the cooperative contract (design check Q6). These kinds are WeakRef, FinalizationRegistry,
-the Temporal types, Intl objects, DisposableStack, AsyncDisposableStack, Array, String and
-RegExp-string iterators, iterator helpers, WebAssembly objects and private-field platform classes.
-This narrows the claim to detectable kinds. Request envelopes stay under the envelope rule, so an
+**Declared limits.** The meter's per-unit constants rest on capture never running a trap of a
+value that is itself a Proxy and never invoking an accessor. Four residuals are outside them:
+- **(R1)** The own-key listings of one object per root, its symbols then its names. Their lengths
+  are unknown until they return, and their charge then stops the root. A listing within B adds at
+  most a logarithmic sorting factor per name.
+- **(R2)** Host objects with interceptors. These can forward to caller-defined code: the global of
+  a `vm` context created from a Proxy is not a Proxy, and its listings run that Proxy's traps.
+  `capture-refusals.test.ts` pins this.
+- **(R3)** Hash-table member lookups, which are expected to cost a constant, not proven to.
+- **(R4)** Own entries that a listing walks but does not return, such as private names, or
+  element storage left by deleted indices. No observation reports their number, so they are
+  not metered, and a shared object repeats their cost on every occurrence. For example, an
+  object carrying 100,000 private fields, shared 1,024 times, costs 5,122 units and about 5 s.
+  The owner question in implementation-01 asks whether to accept R4.
+
+Kinds with no side-effect-free internal-slot test stay accepted as their own data when given a
+plain prototype, usually as `{}`, under the cooperative contract (design check Q6). These kinds are
+WeakRef, FinalizationRegistry, the Temporal types, Intl objects, DisposableStack,
+AsyncDisposableStack, Array, String and RegExp-string iterators, iterator helpers, WebAssembly
+objects, private-field platform classes, and Node's `KeyObject` and `CryptoKey`. This narrows the
+claim to detectable kinds. Request envelopes stay under the envelope rule, so an
 envelope accessor or Proxy can still run caller code in the Kernel between root captures.
 BINDING-01 owns that gap. Protection against hostile in-process code requires isolation or
 transport containment, not V-D1, and this binding provides neither CPU preemption nor physical
@@ -134,11 +151,11 @@ with zero trap calls.
 
 The byte stop and its exact charges, the four limits, exact accepted values and DEC-7 weights are
 unchanged. `capture-metering.test.ts` checks statically that capture observes caller values only
-through metered helpers. `capture-work.test.ts` compares wrapped engine operations with the units
+through metered helpers, and that every other loop in `values.ts` carries its own cap. `capture-work.test.ts` compares wrapped engine operations with the units
 charged, and `capture-corpus.test.ts` runs the declared generated corpus. Timing is an observation
 only. The V-D1 claim stays held under [invalidation-02](work/K1.2/invalidation-02.md) until this
-packet is accepted, and the classification hold of [invalidation-01](work/K1.2/invalidation-01.md)
-likewise. 007 records acceptance status and both holds; V-ENV ("ambient safety") stays held by
+packet is accepted, and the classification hold of
+[DESIGN-AUDIT-01 invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md) likewise. 007 records acceptance status and both holds; V-ENV ("ambient safety") stays held by
 [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) for BINDING-01.
 
 Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit

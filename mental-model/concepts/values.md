@@ -208,9 +208,9 @@ cost. The same holds for every root a request carries, including roots captured 
 authority is decided. Each root has its own budget, and no aggregate budget applies. Timing and heap
 measurements remain useful observations. They are not part of the claim.
 
-Every unit stands for engine work bounded by a constant that depends only on the limits, because
-capture never runs code the caller defined for the value. **Every Proxy is refused before it is
-observed.** A Proxy is an object whose internal methods are caller-defined, so observing it would
+Every unit stands for engine work bounded by a constant that depends only on the limits, apart
+from the residuals below, because capture never runs a trap of a value that is itself a Proxy and
+never invokes an accessor. **Every Proxy is refused before it is observed.** A Proxy is an object whose internal methods are caller-defined, so observing it would
 run caller code inside an operation the Kernel cannot size. The binding tests for a Proxy before any
 other observation of an object or function, at every depth. The test refuses it whatever its target
 or handler, and also when it is revoked or callable, and no trap runs. Accessors are refused from
@@ -220,14 +220,21 @@ own rule, which lets an own accessor or a Proxy envelope run caller code between
 Removing caller code from that path belongs to the binding that moves capture to the caller's side
 (BINDING-01). These limits do not provide it.
 
-Three residuals remain outside the per-unit constant, and each is stated rather than claimed:
+Four residuals remain outside the per-unit constant, and each is stated rather than claimed:
 
-- **(R1)** One own-key listing per root whose length is not known until it returns. Its charge
-  stops the root if the listing passes `B`. A listing that completes within `B` sorts integer keys,
-  at most a logarithmic factor per listed name.
+- **(R1)** The own-key listings of one object per root whose lengths are not known until they
+  return: its symbols, then its names. Their charge stops the root if they pass `B`. A listing that
+  completes within `B` sorts integer keys, at most a logarithmic factor per listed name.
 - **(R2)** Host objects whose internal methods the host defines, such as interceptor-backed host
-  objects.
+  objects. Their interceptors can forward to caller-defined code. For example, the global of a
+  `vm` context created from a Proxy forwards its key listing and descriptors to that Proxy's traps.
+  It is not itself a Proxy, so the Proxy test cannot see it.
 - **(R3)** Member lookups in hash tables, which are expected rather than proven to cost a constant.
+- **(R4)** Own entries that a listing walks but does not return, such as private names, or element
+  storage that deleted indices leave behind. A listing is charged for the names it returns, so an
+  object carrying many such entries costs more engine work per unit. With sharing, that cost
+  repeats on every occurrence. No observation reports how many such entries an object has, so
+  this binding cannot meter them.
 
 Protection against hostile in-process code requires isolation or transport containment, and these
 semantic limits do not provide it. The binding provides neither CPU preemption nor physical
@@ -317,7 +324,8 @@ Each refusal answers one of the three differences above. The `undefined` case al
 One gap is declared rather than closed. Some engine kinds keep content in internal slots that no
 side-effect-free test can recognize. They are WeakRef and FinalizationRegistry objects, Temporal and
 Intl objects, disposable stacks, iterators other than Map and Set iterators, iterator helpers,
-WebAssembly objects, and platform classes whose state is in private fields. Given a plain prototype,
+WebAssembly objects, and platform classes whose state is in private fields or outside own
+properties, such as Node's `KeyObject` and `CryptoKey`. Given a plain prototype,
 such an object is captured by its own data like any other plain object, usually as `{}`. This is a
 limit of the cooperative in-process contract, not a guarantee. A caller who re-prototypes one of
 these objects has handed over the plain data it now presents.

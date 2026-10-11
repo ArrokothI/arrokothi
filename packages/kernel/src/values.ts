@@ -495,6 +495,9 @@ const STOPPED: unique symbol = Symbol("capture stopped");
  * `values.md`, fixed semantic limits: refusal cost is compared in metered Kernel work. Each unit below is
  * an abstract operation whose engine work is bounded by a constant that depends only on the four limits,
  * because no Proxy is ever observed (`capture` refuses every Proxy first) and no accessor is ever invoked.
+ * The residuals outside that constant (an object's listings before their length is known, host objects
+ * with interceptors, hash-table lookups, and own entries a listing walks but does not return) are declared
+ * in `values.md` and BASELINE `#value-refusal-diagnostics`.
  *
  * | Unit | Charged for | Units |
  * |---|---|---|

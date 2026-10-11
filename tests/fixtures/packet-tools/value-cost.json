@@ -7,16 +7,16 @@
     "package.json",
     "tsconfig.json",
     "tests/fixtures/packet-tools/value-cost.json",
+    "packages/kernel/tests/capture-corpus.test.ts",
+    "packages/kernel/tests/capture-corpus.ts",
+    "packages/kernel/tests/capture-instruments.ts",
+    "packages/kernel/tests/capture-metering.test.ts",
+    "packages/kernel/tests/capture-metering.ts",
+    "packages/kernel/tests/capture-refusals.test.ts",
+    "packages/kernel/tests/capture-work.test.ts",
     "packages/kernel/tests/harness.ts",
     "packages/kernel/tests/refusal-diagnostics-fixture.ts",
-    "packages/kernel/tests/capture-instruments.ts",
-    "packages/kernel/tests/capture-corpus.ts",
-    "packages/kernel/tests/capture-metering.ts",
-    "packages/kernel/tests/zone-analysis.ts",
-    "packages/kernel/tests/capture-work.test.ts",
-    "packages/kernel/tests/capture-refusals.test.ts",
-    "packages/kernel/tests/capture-corpus.test.ts",
-    "packages/kernel/tests/capture-metering.test.ts"
+    "packages/kernel/tests/zone-analysis.ts"
   ],
   "dependencies": [
     {
@@ -316,6 +316,14 @@
           "after": "else if (kind === \"read\") state.descriptorUnits += units;",
           "operator": "misfile-work-charge",
           "name": "read units filed as descriptor units"
+        },
+        {
+          "id": "mutation-b086cfae6bd1b04bcdc761ae3b8bdd00308468b17fe7d7661484ceb48151ba96",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const listed = listOwnSymbols(state, container);\n  if (listed === STOPPED) return REFUSED;\n  const symbolCount = hasExtra ? 0 : listed;",
+          "after": "  let symbolCount = 0;\n  if (!hasExtra) {\n    const listed = listOwnSymbols(state, container);\n    if (listed === STOPPED) return REFUSED;\n    symbolCount = listed;\n  }",
+          "operator": "remove-work-charge",
+          "name": "symbols listing skipped for an array with an extra name (packet review MS-02)"
         }
       ]
     },
@@ -576,6 +584,30 @@
           "after": "  if (refused || state.stopped || encode(null) === \"\") return REFUSED;\n  return finishObject(prototype, captured);",
           "operator": "bypass-helper",
           "name": "SC8 serializer reached from the traversal"
+        },
+        {
+          "id": "mutation-202853439a9677a62905337319225eea91d1790c2bcbc47da3098adee9c7e788",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  for (let index = 0; index < name.length && index < 10; index += 1) {\n    const unit = name[index] as string;",
+          "after": "  for (let index = 0; index < name.length; index += 1) {\n    const unit = name[index] as string;",
+          "operator": "remove-loop-cap",
+          "name": "SC9 index-name loop bounded only by the guard (packet review MS-03)"
+        },
+        {
+          "id": "mutation-2694639f69feba8e4eef2e17a92704f2728ca4a7ce4646301351c5ba093079d7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  for (let index = 8; index < issues.length && index < 8 + 12; index += 1) {",
+          "after": "  for (let index = 8; index < issues.length; index += 1) {",
+          "operator": "remove-loop-cap",
+          "name": "SC9 suffix search without its code-count cap"
+        },
+        {
+          "id": "mutation-fdd0ac098b82b62bf4abbabc32abec647f9ab8ae750af2d0c25cfc274185d593",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  for (let index = 0; index < text.length && index < 1_024; index += 1) {",
+          "after": "  for (let index = 0; index < text.length; index += 1) {",
+          "operator": "remove-loop-cap",
+          "name": "SC9 diagnostic text loop without its cap"
         }
       ]
     },
@@ -708,6 +740,14 @@
           "after": "typeof value === \"function\") && false && isProxyValue(value)) {",
           "operator": "remove-refusal-check",
           "name": "Proxy test removed"
+        },
+        {
+          "id": "mutation-2cb4fc0ccd53a89806d749f1f762788e4d312df3b65c2cfb51457d0c3e2c246e",
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "          : (typeof value === \"object\" || typeof value === \"function\") && isProxyValue(value)",
+          "after": "          : false",
+          "operator": "reorder-proxy-test",
+          "name": "identity text classified by IsArray before the Proxy test (packet review PXS-2)"
         },
         {
           "id": "mutation-82cca2664decbc5a2cd86effe568281a6a7f4879747cf8f04f0ed15cd63173fa",
@@ -920,20 +960,12 @@
           "name": "ModuleNamespaceObject predicate dropped"
         },
         {
-          "id": "mutation-99f1ec521958f48f1401cc4edb28a7f84532d65129aa1c75450cae65b06807e3",
+          "id": "mutation-89f2ca2bf777ff49658e22f9eeaffc873aaaab01293e28af6d9c45ee3eb41d56",
           "path": "packages/kernel/src/values.ts",
-          "before": "  PrimordialIsKeyObject(container) ||\n",
-          "after": "",
-          "operator": "remove-refusal-check",
-          "name": "KeyObject predicate dropped"
-        },
-        {
-          "id": "mutation-063eb6d0bcc4dbfba5f470611f1865387af1855077279962805d00b48ddaf9b9",
-          "path": "packages/kernel/src/values.ts",
-          "before": "  PrimordialIsCryptoKey(container) ||\n",
-          "after": "",
-          "operator": "remove-refusal-check",
-          "name": "CryptoKey predicate dropped"
+          "before": "  PrimordialIsExternal(container) ||\n  PrimordialIsRawJSON(container);",
+          "after": "  PrimordialIsExternal(container) ||\n  UtilTypes.isKeyObject(container) ||\n  PrimordialIsRawJSON(container);",
+          "operator": "ambient-predicate",
+          "name": "JavaScript isKeyObject predicate reintroduced (packet review PXS-1)"
         },
         {
           "id": "mutation-c3d8e7b695f6295656ab86065da8c87d00b42e6810d31f68ef8cf92374ef663d",
