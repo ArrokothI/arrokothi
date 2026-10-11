@@ -258,7 +258,8 @@ in-process binding retains the first eight bounded details per root followed by 
 counts per remaining code, ordered by first remaining occurrence; paths are bounded before
 construction and messages before retention. Type labels use only null/typeof classification, without
 another structural or property observation of the caller value. Its unit table: visit 1, own-key
-listing 1 + length, array element 1, object member descriptor 1, object member read 1, string its
+listing 1 + length, array element 1, object member (or listed out-of-range array index)
+descriptor 1, object member read 1, string its
 UTF-16 length (at most 131,072; a longer string is refused by length at no string cost), diagnostic
 1. B = 3 × 1,048,576 = 3,145,728, derived from at most three units per canonical byte of each
 accepted node; the costliest acceptance found costs 3,094,930 units, so B is a proven bound, not an

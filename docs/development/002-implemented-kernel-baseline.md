@@ -66,7 +66,7 @@ which is charged as soon as it returns:
 | visit | one value: typeof classification; for an object, the Proxy test, cycle and depth tests, `IsArray`, prototype observation, the internal-slot tests and an array's `length` | 1 |
 | listing | one own-names or own-symbols listing | 1 + its length |
 | element | one array position: its own descriptor and its one ordinary read | 1 |
-| descriptor | one object member's own descriptor | 1 |
+| descriptor | one object member's own descriptor, or a listed array index at or past `length` (on an array already refused) | 1 |
 | read | one object member's ordinary read | 1 |
 | string | scanning one string value or member name of at most 131,072 UTF-16 units; a longer one is refused by its length and costs no string units | its length |
 | diagnostic | recording one issue | 1 |
@@ -74,9 +74,10 @@ which is charged as soon as it returns:
 The budget is `CAPTURE_WORK_BUDGET` = B = 3 × 1,048,576 = 3,145,728. Derivation: the canonical form
 of an accepted value splits into disjoint parts per node, and each node's own units are at most three
 times its own bytes. An array of n ≥ 1 entries costs 2n + 4 units for n + 1 bytes, which is at most
-3n + 3. An object of n members with name lengths ℓᵢ costs 3n + 3 + Σℓᵢ units for at least
-4n + 1 + Σℓᵢ bytes. A string of ℓ units costs 1 + ℓ for at least ℓ + 2 bytes, and every other scalar
-costs 1 for at least 1. Units only grow during a capture, so an accepted value is within B at every
+3n + 3; an empty array costs 4 units for 2 bytes. An object of n ≥ 1 members with name lengths ℓᵢ
+costs 3n + 3 + Σℓᵢ units for at least 4n + 1 + Σℓᵢ bytes; an empty object costs 3 units for 2 bytes.
+A string of ℓ units costs 1 + ℓ for at least ℓ + 2 bytes, and every other scalar costs 1 for at
+least 1. Units only grow during a capture, so an accepted value is within B at every
 point and the meter never refuses one. B is a proven upper bound, not an attained maximum. The
 costliest acceptance found is a root array of four mid arrays of 4,096 chains, each chain 30 singleton
 arrays around `0`, plus a partial mid array of 528 chains. It is 1,048,555 bytes and costs exactly
@@ -89,7 +90,9 @@ A charge that passes B stops reading the root and records one root-located issue
 charged: code `too_much_work`, message "reading this value passed the work budget of 3145728 units
 that bounds every acceptable value; the rest of the value was not read". The meter stop and the byte
 stop (`too_many_bytes`) are exclusive; whichever comes first ends reading, and diagnostics describe
-the positions examined up to it. `too_much_work` is an addition to the exported `ValueIssueCode`
+the positions examined up to it. One alignment is the exception: when the stop lands on a refused
+position's own diagnostic unit, that position was examined but the stop issue takes its place, so the
+diagnostic units exceed the counted occurrences by one (`capture-work.test.ts` pins it). `too_much_work` is an addition to the exported `ValueIssueCode`
 type, which `index.ts` re-exports as a type from the private `@arrokothi/kernel` package. Review 08's
 family (`K12C1-R8-VALUE-DEPTH-01`: 4,096 × 256 foreign objects at nesting depth) now stops at B + 1
 units, after 786,025 refused positions at depth 2 and 785,967 at depth 31 (owner design check Q1,

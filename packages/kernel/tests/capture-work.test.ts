@@ -157,7 +157,8 @@ describe("KC3-2 B is derived from the limits and covers the costliest acceptance
   });
 
   test("one byte past the size limit is refused by the byte stop, not the meter", () => {
-    // The costliest witness plus 22 more `0` bytes: a 22-character string pushes it over 1,048,576.
+    // The costliest witness plus 22 more canonical bytes: a 19-character string (21 bytes with its quotes)
+    // and its comma push it to 1,048,577.
     const value = chains(30, 0, 4, 528);
     value.push("x".repeat(1_048_576 - 1_048_555 - 2));
     const { result, work: counted } = captureWithWork(value);
@@ -166,6 +167,25 @@ describe("KC3-2 B is derived from the limits and covers the costliest acceptance
     assert.deepEqual(result.issues.map((issue) => issue.code), ["too_many_bytes"]);
     assert.equal(counted.stop, "bytes");
     assert.ok(counted.units <= B);
+  });
+
+  test("a meter stop before any other issue is one root-located detail (packet review BM-01)", () => {
+    // The costliest witness plus a 60,000-unit string: the root's one more element costs 2 units (a
+    // listed name and an element), the string's visit 1, and its 60,000 string units are charged before
+    // its scan and before its bytes, so the meter passes B with no other issue recorded.
+    const value: unknown[] = chains(30, 0, 4, 528);
+    value.push("x".repeat(60_000));
+    const { result, work: counted } = captureWithWork(value);
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.deepEqual(result.issues, [{
+      path: "",
+      code: "too_much_work",
+      message: "reading this value passed the work budget of 3145728 units that bounds every acceptable value; the rest of the value was not read",
+    }]);
+    assert.equal(counted.stop, "work");
+    assert.equal(counted.units, 3_094_930 + 2 + 1 + 60_000);
+    assert.equal(counted.string, 60_000);
   });
 });
 
@@ -260,6 +280,71 @@ describe("KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on ne
     }
     // Each refused position: exactly one prototype observation of the tracked object.
     assert.equal(base.counts.prototypeTracked, 16 * 4096);
+  });
+
+  test("a stop on a position's diagnostic unit leaves that one examined position uncounted (packet review BM-05)", () => {
+    // 255 rows: the top array costs 1 + (1 + 256) + 1 = 259 units, so the meter's remainder lands on a
+    // diagnostic unit. That position was visited and classified foreign; the stop records too_much_work
+    // instead of its unsupported_form, so the diagnostic units exceed the counted occurrences by one.
+    const foreign = Object.create(null) as object;
+    const row = Array.from({ length: 4096 }, () => Object.create(foreign) as object);
+    const { result, work: counted } = captureWithWork(Array(255).fill(row));
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(counted.stop, "work");
+    assert.equal(counted.units, B + 1);
+    assert.equal(counted.diagnostic, 786_026);
+    assert.equal(total(result.issues.filter((issue) => issue.code === "unsupported_form")), 786_025);
+    assert.equal(total(result.issues.filter((issue) => issue.code === "too_much_work")), 1);
+  });
+
+  test("each of the eight eager Outcome roots does the work of one direct capture, no more (packet review BM-03)", () => {
+    // In one wrapped child: a direct capture of review 08's family (depth 2) stops at B + 1, and the
+    // eight-root Outcome from a visible caller with no grant runs the Proxy test exactly eight times as
+    // often (every value of this family is an object, so the Proxy test runs once per completed visit),
+    // over the envelope work of the same Outcome whose eight roots are a small refused value (one foreign
+    // object in an array), measured the same way.
+    const observed = inWrappedChild<{ direct: { units: number; stop: string; isProxy: number; prototype: number }; small: { isProxy: number; prototype: number }; outcome: { classification: string; isProxy: number; prototype: number }; control: { classification: string; isProxy: number; prototype: number } }>(`
+      const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
+      const foreign = Object.create(null);
+      const row = Array.from({ length: 4096 }, () => Object.create(foreign));
+      const root = Array(256).fill(row);
+      const small = [Object.create(foreign)];
+      reset();
+      const direct = values.captureWithWork(root);
+      const directCounts = snapshot();
+      reset();
+      values.captureWithWork(small);
+      const smallCounts = snapshot();
+      const who = h.caller("depth");
+      const driver = h.recordingDriver();
+      const coordinator = new kernel.ExecutionCoordinator({ driver });
+      const { executionId } = h.accepted(coordinator.createExecution(who, h.createRequest()));
+      const open = h.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));
+      const submit = (value) => {
+        const proposal = h.outcomeFor(executionId, open, {
+          progress: value,
+          emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: "e" + index, value })),
+          next: { step: "complete", result: value },
+        });
+        reset();
+        const answer = coordinator.submitOutcome(h.observer("visible"), proposal, undefined);
+        const counted = snapshot();
+        return { classification: answer.ok ? "accepted" : answer.error.classification, isProxy: counted.isProxy, prototype: counted.prototype };
+      };
+      emit({
+        direct: { units: direct.work.units, stop: direct.work.stop, isProxy: directCounts.isProxy, prototype: directCounts.prototype },
+        small: { isProxy: smallCounts.isProxy, prototype: smallCounts.prototype },
+        control: submit(small),
+        outcome: submit(root),
+      });
+    `, { timeout: 600_000 });
+    assert.equal(observed.direct.stop, "work");
+    assert.equal(observed.direct.units, B + 1);
+    assert.equal(observed.control.classification, "unauthorized_submission");
+    assert.equal(observed.outcome.classification, "unauthorized_submission");
+    assert.equal(observed.outcome.isProxy - observed.control.isProxy, 8 * (observed.direct.isProxy - observed.small.isProxy));
+    assert.equal(observed.outcome.prototype - observed.control.prototype, 8 * (observed.direct.prototype - observed.small.prototype));
   });
 
   test("eight such roots from a visible caller with no grant: unauthorized_submission, nothing changed", () => {
@@ -367,7 +452,9 @@ describe("KC3-1 runtime oracle: wrapped engine operations are accounted for by t
       const captureBound = w.visit + w.element + w.descriptor + 2 * w.read + 11 * w.diagnostic;
       const encodeBound = ok ? 4 * (w.visit + w.element + w.read) + window.descriptor : 0;
       assert.ok(counts.descriptor <= captureBound + encodeBound, `${name}: descriptors ${counts.descriptor} <= ${captureBound + encodeBound}`);
-      assert.ok(w.units <= B + 1 || w.stop === "work", `${name}: within B + 1`);
+      // No shape here reaches the meter (packet review BM-02): each stays within B and never stops on it.
+      assert.notEqual(w.stop, "work", `${name}: no meter stop`);
+      assert.ok(w.units <= B, `${name}: within B`);
     }
   });
 });
