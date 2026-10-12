@@ -1,0 +1,146 @@
+[
+ {
+  "origin": "artifact-73555fe668cc180905b1e49a",
+  "member": "packages/kernel/tests/dispatch.test.ts:504:3@5a8d958ffdab",
+  "title": "K11-R2-VAL-02 a payload with no single reading never reaches a Driver",
+  "cause": "held at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-73555fe668cc180905b1e49a",
+  "member": "packages/kernel/tests/dispatch.test.ts:520:3@5a8d958ffdab",
+  "title": "K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-73555fe668cc180905b1e49a",
+  "member": "packages/kernel/tests/dispatch.test.ts:564:3@5a8d958ffdab",
+  "title": "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:1327:3@fb228bec8c58",
+  "title": "a capture-time trap that inserts the chain still binds the observed structure",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:308:5@fb228bec8c58",
+  "title": "an array position read differently than it is owned is refused, not silently picked",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:320:5@fb228bec8c58",
+  "title": "an object member read differently than it is owned is refused the same way",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:328:5@fb228bec8c58",
+  "title": "the disagreement is refused at depth and under a valid root",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:334:5@fb228bec8c58",
+  "title": "an array position supplied only by a dynamic read, owning nothing, is refused",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:357:5@fb228bec8c58",
+  "title": "a length that does not agree with itself cannot decide which positions exist",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:363:5@fb228bec8c58",
+  "title": "a structure that cannot be observed is refused rather than thrown out of the boundary",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:376:5@fb228bec8c58",
+  "title": "an object listing an own member it does not own is refused",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:419:5@fb228bec8c58",
+  "title": "a value that answers differently on each read is bound to the one reading that was taken",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:622:3@fb228bec8c58",
+  "title": "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:657:3@fb228bec8c58",
+  "title": "an own-name listing reporting a canonical index outside length with no backing property is refused",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:687:3@fb228bec8c58",
+  "title": "a backed canonical index outside length is also refused rather than silently dropped",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:711:3@fb228bec8c58",
+  "title": "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:741:3@fb228bec8c58",
+  "title": "a deliberately huge sparse length refuses bounded without traversing its extent",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:761:3@fb228bec8c58",
+  "title": "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:791:3@fb228bec8c58",
+  "title": "a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:822:3@fb228bec8c58",
+  "title": "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:843:3@fb228bec8c58",
+  "title": "K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:921:3@fb228bec8c58",
+  "title": "the retained structure and the canonical bytes are exactly the one value observed",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:935:3@fb228bec8c58",
+  "title": "the index the accessor picks is not special: position zero and a nested array behave the same",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ },
+ {
+  "origin": "artifact-ea5444a6d42154e413fe0f2e",
+  "member": "packages/kernel/tests/values.test.ts:949:3@fb228bec8c58",
+  "title": "a value the rules do refuse is still refused with the accessor live, not normalized",
+  "cause": "superseded at B; its test was converted by K1.1-correction-03 (DESIGN-AUDIT-01 decision-01 item 2), so it is refused at C with no credited target"
+ }
+]

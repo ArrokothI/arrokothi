@@ -5,6 +5,7 @@ from test_adoption_format import FormatTwoTests
 from test_packet_tools import RepositoryFixture, tool
 
 P1H = tool.P1H_TARGET_REFUSAL.format('held')
+LATER_DECISION = 'docs/development/work/K1.1-correction-03/owner-choice-01.md'
 
 
 class TransferListTests(RepositoryFixture):
@@ -233,16 +234,113 @@ class LimitTests(RepositoryFixture):
                 self.refuses(message, self.limit)
 
 
+    # K1.1-correction-03 owner choice 01: a later decision lists members whose tests a packet changed.
+    def later_list(self, items, decision='later.md', path='later/limited-members.json', row=0):
+        self.write(decision, 'Later owner decision fixture.\n')
+        self.document(path, items)
+        self.rev = self.commit('later limit list')
+        entry = {'decision': decision, 'members': path, 'sha256': tool.digest((self.root / path).read_bytes())}
+        self.rows[row]['limited'].setdefault('added', []).append(entry)
+        return entry
+
+    def changed_member(self):
+        """A member of the limited origin whose test a later packet changed: refused, with no credited target."""
+        self.members['m.changed'] = {'member': 'm.changed', 'origins': ['o.limited'], 'status': 'refused'}
+        self.lists[tool.LIMIT_DECISION]['o.limited']['members'] = 5
+
+    def second_limited_origin(self):
+        self.members['m.second'] = {'member': 'm.second', 'origins': ['o.second'], 'status': 'refused'}
+        self.rows.append({'origin': 'o.second', 'decision': tool.LIMIT_DECISION,
+                          'limited': {'members': tool.LIMIT_MEMBERS, 'sha256': self.sha, 'extras': []}})
+        self.lists[tool.LIMIT_DECISION]['o.second'] = {'origin': 'o.second', 'members': 1}
+
+    def test_a_later_decision_lists_a_changed_member(self):
+        self.changed_member()
+        self.refuses('the refused members without a credited target differ from the limit', self.limit)
+        self.later_list([{'origin': 'o.limited', 'member': 'm.changed', 'cause': 'test changed by a later packet'}])
+        self.assertEqual(self.limit(), {'o.limited': {'listed': 2, 'extras': ['m.extra']}})
+
+    def test_one_later_list_serves_two_limited_origins(self):
+        self.changed_member()
+        self.second_limited_origin()
+        entry = self.later_list([{'origin': 'o.limited', 'member': 'm.changed'}, {'origin': 'o.second', 'member': 'm.second'}])
+        self.rows[2]['limited']['added'] = [dict(entry)]
+        self.assertEqual(self.limit(), {'o.limited': {'listed': 2, 'extras': ['m.extra']}, 'o.second': {'listed': 1, 'extras': []}})
+
+    def test_a_later_member_still_bound_is_refused(self):
+        """A later list cannot excuse a member that has a credited target: listed members must be unbound."""
+        self.later_list([{'origin': 'o.limited', 'member': 'm.bound'}])
+        self.refuses('the refused members without a credited target differ from the limit', self.limit)
+
+    def test_later_limit_refusals(self):
+        valid = [{'origin': 'o.limited', 'member': 'm.changed'}]
+        for index, (message, items, change) in enumerate([
+                ("a later limit names its decision, its member list in the decision's attachment directory and its SHA-256",
+                 valid, lambda: self.rows[0]['limited']['added'][0].pop('sha256')),
+                ("a later limit names its decision, its member list in the decision's attachment directory and its SHA-256",
+                 valid, lambda: self.rows[0]['limited']['added'][0].update(members='elsewhere/limited-members.json')),
+                ('a later limit list digest differs', valid, lambda: self.rows[0]['limited']['added'][0].update(sha256='0' * 64)),
+                ('a later limit list names each member once, with its origin', [{'origin': 'o.limited'}], None),
+                ('a later limit list names each member once, with its origin', valid + valid, None),
+                ('a limited origin cites each later decision once', valid,
+                 lambda: self.rows[0]['limited']['added'].append(dict(self.rows[0]['limited']['added'][0]))),
+                ('a later decision lists further members of its limited origin', valid + [{'origin': 'o.limited', 'member': 'm.listed'}], None),
+                ('a later decision lists further members of its limited origin', valid + [{'origin': 'o.limited', 'member': 'm.other'}], None),
+                ("a later decision's listed members lie in limited origins that cite it",
+                 valid + [{'origin': 'o.other', 'member': 'm.other'}], None)]):
+            with self.subTest(index=index, message=message):
+                self.setUp()
+                self.changed_member()
+                self.later_list(items)
+                if change:
+                    change()
+                self.refuses(message, self.limit)
+
+    def test_a_later_decision_must_exist_at_c(self):
+        self.changed_member()
+        self.later_list([{'origin': 'o.limited', 'member': 'm.changed'}])
+        (self.root / 'later.md').unlink()
+        self.rev = self.commit('later decision removed, its list kept')
+        self.refuses('missing regular source', self.limit)
+
+    def test_a_malformed_later_decision_is_a_declared_refusal(self):
+        """A non-text decision is refused by the later limit's shape check, never a raw exception."""
+        for decision in (['later.md'], {'x': 1}, None):
+            with self.subTest(decision=decision):
+                self.setUp()
+                self.changed_member()
+                self.later_list([{'origin': 'o.limited', 'member': 'm.changed'}])
+                self.rows[0]['limited']['added'][0]['decision'] = decision
+                self.refuses("a later limit names its decision, its member list in the decision's attachment directory",
+                             self.limit)
+
+    def test_a_later_list_that_is_not_json_is_refused(self):
+        self.changed_member()
+        self.later_list([])
+        (self.root / 'later/limited-members.json').write_text('not json\n')
+        self.rev = self.commit('broken later list')
+        self.rows[0]['limited']['added'][0]['sha256'] = tool.digest(b'not json\n')
+        self.refuses('a later limit list is not JSON', self.limit)
+
+    def test_two_origins_citing_one_decision_cite_one_list(self):
+        self.changed_member()
+        self.second_limited_origin()
+        self.later_list([{'origin': 'o.limited', 'member': 'm.changed'}])
+        self.later_list([{'origin': 'o.second', 'member': 'm.second'}], path='later/second.json', row=2)
+        self.refuses('every limited origin citing a later decision cites its one pinned list', self.limit)
+
+
 class RepositoryLimitTests(RepositoryFixture):
     """The maintained manifest: owner choices 04, 05 and 11 pin their lists; owner choice 04's limit admits each
-    extra through its only target record, design 06's two extras among them; owner choice 11 lists one member."""
+    extra through its only target record, design 06's two extras among them; owner choice 11 lists one member;
+    K1.1-correction-03 owner choice 01 pins its transferred origins and lists the members its conversions changed."""
 
     def test_the_manifest_pins_its_lists_and_maps_every_extra(self):
         import json
         from test_target_tools import ROOT
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         lists = {row['decision']: row for row in manifest['transfer_lists']}
-        self.assertEqual(sorted(lists), [tool.LIMIT_DECISION, 'docs/development/work/TOOLS-01/owner-choice-05.md',
+        self.assertEqual(sorted(lists), [LATER_DECISION, tool.LIMIT_DECISION, 'docs/development/work/TOOLS-01/owner-choice-05.md',
                                          tool.LISTED_DECISION])
         for decision, row in lists.items():
             listed = {item['origin'] for item in json.loads((ROOT / row['list']).read_text())}
@@ -259,8 +357,17 @@ class RepositoryLimitTests(RepositoryFixture):
         self.assertEqual({key: [targets[dispatch[key]]['declaration']['line'], targets[dispatch[key]]['declaration']['column']]
                           for key in ('packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab',
                                       'packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab')},
-                         {'packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab': [1390, 3],
-                          'packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab': [1459, 3]})
+                         {'packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab': [1535, 3],
+                          'packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab': [1604, 3]})
         pinned = {origin: limit['listed'] for origin, limit in limits.items() if 'listed' in limit}
         self.assertEqual(pinned, {'artifact-9fd619f5375d598ebb2b88aa': {
             'members': tool.LISTED_MEMBERS, 'sha256': tool.digest((ROOT / tool.LISTED_MEMBERS).read_bytes())}})
+        # K1.1-correction-03 owner choice 01 lists the 24 members its test conversions changed in two limited origins.
+        later = {origin: limit['added'] for origin, limit in limits.items() if 'added' in limit}
+        later_list = LATER_DECISION[:-len('.md')] + '/limited-members.json'
+        entry = {'decision': LATER_DECISION, 'members': later_list, 'sha256': tool.digest((ROOT / later_list).read_bytes())}
+        self.assertEqual(later, {'artifact-73555fe668cc180905b1e49a': [entry], 'artifact-ea5444a6d42154e413fe0f2e': [entry]})
+        counts = {}
+        for item in json.loads((ROOT / later_list).read_text()):
+            counts[item['origin']] = counts.get(item['origin'], 0) + 1
+        self.assertEqual(counts, {'artifact-73555fe668cc180905b1e49a': 3, 'artifact-ea5444a6d42154e413fe0f2e': 21})

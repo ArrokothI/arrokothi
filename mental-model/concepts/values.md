@@ -234,7 +234,9 @@ Four residuals remain outside the per-unit constant, and each is stated rather t
   storage that deleted indices leave behind. A listing is charged for the names it returns, so an
   object carrying many such entries costs more engine work per unit. With sharing, that cost
   repeats on every occurrence. No observation reports how many such entries an object has, so
-  this binding cannot meter them.
+  this binding cannot meter them. BINDING-01's bytes core removes R4 from the Kernel: the core
+  receives canonical bytes and never lists a caller object. The caller-side wrapper that then lists
+  caller objects carries it under the wrapper's cooperative contract.
 
 Protection against hostile in-process code requires isolation or transport containment, and these
 semantic limits do not provide it. The binding provides neither CPU preemption nor physical

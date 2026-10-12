@@ -4,9 +4,7 @@
   "require_direct_parent": true,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.1-correction-03/c1-ablation-01.jsonl",
-    "docs/development/work/K1.1-correction-03/c1-ablation-01.md",
-    "docs/development/work/K1.1-correction-03/implementation-01.md"
+    "docs/development/work/K1.1-correction-03/implementation-02.md"
   ],
   "preserve": [
     {
@@ -67,15 +65,23 @@
     },
     {
       "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
-      "path": "scripts"
+      "path": "scripts/check-builder-docs.ts"
+    },
+    {
+      "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+      "path": "scripts/gemini-provider-canary.ts"
+    },
+    {
+      "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+      "path": "scripts/mcp-gemini-canary.ts"
+    },
+    {
+      "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+      "path": "scripts/workflow-scenario-canary.ts"
     },
     {
       "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
       "path": "tests/fixtures/packet-tools/inventory.json"
-    },
-    {
-      "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
-      "path": "tests/fixtures/packet-tools/refusal-guards.json"
     },
     {
       "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
@@ -96,6 +102,18 @@
     {
       "revision": "02e55bdcf247865b746cf415070e5f50f7fb3fd6",
       "path": "docs/development/work/K1.1-correction-03/design-01-check.md"
+    },
+    {
+      "revision": "53a9f607b8b38f89540db1e2324a2c7430d62026",
+      "path": "docs/development/work/K1.1-correction-03/implementation-01.md"
+    },
+    {
+      "revision": "53a9f607b8b38f89540db1e2324a2c7430d62026",
+      "path": "docs/development/work/K1.1-correction-03/c1-ablation-01.md"
+    },
+    {
+      "revision": "53a9f607b8b38f89540db1e2324a2c7430d62026",
+      "path": "docs/development/work/K1.1-correction-03/c1-ablation-01.jsonl"
     }
   ],
   "evidence": [],
@@ -226,7 +244,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 573
+        "tests": 581
       }
     },
     {
@@ -493,6 +511,7 @@
     "value-cost.json mutants run named maintained tests through a probe; a killed mutant shows a selected test fails, not that the claim is complete. B is a proven bound; the costliest acceptance found is not proven maximal.",
     "Timing and heap measurements are observations only (decision-05 item 3); no gate uses them.",
     "Dimension gaps and closed-by-reading reasons are in the dimensions result; no universal coverage claim.",
-    "The value-cost.c1.* cases maintain design check C1 at group level: each runs a conversion group's tests by name against the C analogues of the mutants those tests killed at B and at C. The per-test matrix behind them (c1-ablation-01.md, 783 runs per side) is a one-time measurement, not rerun here."
+    "The value-cost.c1.* cases maintain design check C1 at group level: each runs a conversion group's tests by name against the C analogues of the mutants those tests killed at B and at C. The per-test matrix behind them (c1-ablation-01.md, 783 runs per side) is a one-time measurement, not rerun here.",
+    "scripts/packet_tools.py and refusal-guards.json change in this packet (K1.1-correction-03 owner choice 01, follow-up): C2-LIMIT accepts a later owner decision's pinned list of further limited members, with tool tests and registered refusal guards; the four other files in scripts/ are preserved at B."
   ]
 }

@@ -64,7 +64,9 @@ for capture. K1.1-correction-03 implements both. Its
 [design check](../docs/development/work/K1.1-correction-03/design-01-check.md) of 2026-10-09
 authorized the meter stop for refusal-heavy values and the `too_much_work` code, refused arguments
 objects, module namespaces and raw JSON objects, and accepted residuals R1–R3 and the undetectable
-kinds as declared limits. [Values](concepts/values.md#fixed-semantic-limits) states the result and
+kinds as declared limits. Its [owner choice 01](../docs/development/work/K1.1-correction-03/owner-choice-01.md)
+of 2026-10-12 accepted R4, hidden own entries, as the fourth residual, and named BINDING-01's bytes core
+as what removes it from the Kernel. [Values](concepts/values.md#fixed-semantic-limits) states the result and
 retires decision-04 item 1's live-Proxy exclusion. It does not cover request envelopes, which
 BINDING-01 owns.
 

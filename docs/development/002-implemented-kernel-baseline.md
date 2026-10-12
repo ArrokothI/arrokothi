@@ -135,7 +135,10 @@ value that is itself a Proxy and never invoking an accessor. Four residuals are 
   element storage left by deleted indices. No observation reports their number, so they are
   not metered, and a shared object repeats their cost on every occurrence. For example, an
   object carrying 100,000 private fields, shared 1,024 times, costs 5,122 units and about 5 s.
-  The owner question in implementation-01 asks whether to accept R4.
+  The owner accepted R4 as the fourth residual
+  ([owner choice 01](work/K1.1-correction-03/owner-choice-01.md)). BINDING-01's bytes core removes
+  it from the Kernel: the core receives canonical bytes and never lists a caller object. The
+  caller-side wrapper then carries it under its cooperative contract.
 
 Kinds with no side-effect-free internal-slot test stay accepted as their own data when given a
 plain prototype, usually as `{}`, under the cooperative contract (design check Q6). These kinds are

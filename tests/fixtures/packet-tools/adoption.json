@@ -292,7 +292,7 @@
     },
     {
       "id": "artifact-bbe0c5a1782aa6f649f0a4a3",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "K11-R2-VAL-02 descriptor/read disagreement is refused; the named tests compare the retained snapshot with canonical identity.",
@@ -300,50 +300,6 @@
           "suite.packages/kernel/tests/values.test.ts",
           "suite.packages/kernel/tests/creation.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.546.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.481.3.61e8bde54da2"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.479.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.507.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.504.3.5a8d958ffdab"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.523.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.520.3.5a8d958ffdab"
-          }
-        ],
-        "context": [
-          {
-            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
-            "path": "docs/development/work/K1.1/review-02.md",
-            "start": 73,
-            "end": 119
-          }
-        ],
-        "context_reasons": {
-          "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
-          "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
-        }
       }
     },
     {
@@ -384,7 +340,7 @@
     },
     {
       "id": "artifact-b344c9faf1272dd3033d4ccd",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "K11-R5-VAL-03 live prototype-comparison replacement is exercised at direct capture and creation boundaries; later realm holds remain separate.",
@@ -392,191 +348,28 @@
           "suite.packages/kernel/tests/values.test.ts",
           "suite.packages/kernel/tests/creation.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.415.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1147.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.843.3.fb228bec8c58"
-          }
-        ],
-        "context": [
-          {
-            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
-            "path": "docs/development/work/K1.1/review-05.md",
-            "start": 77,
-            "end": 98
-          }
-        ],
-        "context_reasons": {
-          "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
-        }
       }
     },
     {
       "id": "artifact-4e300ac8047fcf6b203072a1",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "K11-R6-VAL-04 coherent caller values under inherited indexed accessors test exact retained values; no scratch-copy fix is made here.",
         "targets": [
           "suite.packages/kernel/tests/values.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.630.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1225.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.921.3.fb228bec8c58"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1239.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.935.3.fb228bec8c58"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1253.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.949.3.fb228bec8c58"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.600.3.61e8bde54da2"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.598.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.663.3.61e8bde54da2"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.661.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.728.3.61e8bde54da2"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.726.3.dfc5a87bbd90"
-          }
-        ],
-        "context": [
-          {
-            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
-            "path": "docs/development/work/K1.1/review-06-supplement-01.md",
-            "start": 82,
-            "end": 112
-          }
-        ],
-        "context_reasons": {
-          "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
-          "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
-        }
       }
     },
     {
       "id": "artifact-7c99b94ca43cc08b3d970f63",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Second excerpt of K11-R6-VAL-04: final own-data installation is covered with the preceding capture witness.",
         "targets": [
           "suite.packages/kernel/tests/values.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.630.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1225.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.921.3.fb228bec8c58"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1239.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.935.3.fb228bec8c58"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1253.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.949.3.fb228bec8c58"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.600.3.61e8bde54da2"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.598.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.663.3.61e8bde54da2"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.661.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.728.3.61e8bde54da2"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.726.3.dfc5a87bbd90"
-          }
-        ],
-        "context": [
-          {
-            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
-            "path": "docs/development/work/K1.1/review-06-supplement-01.md",
-            "start": 82,
-            "end": 112
-          }
-        ],
-        "context_reasons": {
-          "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
-          "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
-        }
       }
     },
     {
@@ -712,176 +505,13 @@
     },
     {
       "id": "artifact-6c57cc9dd8febdefa65ed496",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/creation.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/creation.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.362.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.415.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.441.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.546.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.630.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.742.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.823.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.883.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.922.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.944.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.958.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.979.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.1031.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.333.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.516.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.1009.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.35.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.65.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.76.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.85.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.98.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.106.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.124.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.147.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.165.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.202.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.216.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.230.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.238.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.251.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.300.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.309.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.487.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.503.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.579.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.605.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.1058.3.088207d1ce86"
-          }
-        ],
-        "context": [
-          {
-            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
-            "path": "packages/kernel/tests/creation.test.ts",
-            "start": 1,
-            "end": 1067
-          }
-        ],
-        "context_reasons": {
-          "mental-model/mechanisms/creation.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
-        }
       }
     },
     {
@@ -6018,74 +5648,13 @@
     },
     {
       "id": "artifact-bb7722eb19e78f33e1f81a58",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/aggregate-refusal.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/aggregate-refusal.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.69.3.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.85.3.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.139.1.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.185.1.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.26.5.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.45.3.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.53.3.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.100.1.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.121.3.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.128.1.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.157.3.19af122ffc40"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.aggregate-refusal.173.1.19af122ffc40"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/aggregate-refusal.test.ts",
-            "start": 1,
-            "end": 193
-          }
-        ],
-        "context_reasons": {}
       }
     },
     {
@@ -6364,176 +5933,13 @@
     },
     {
       "id": "artifact-febb180b453e17b8edab6893",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/creation.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/creation.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.362.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.415.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.441.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.546.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.630.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.742.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.823.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.883.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.922.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.944.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.958.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.979.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.1031.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.333.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.516.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.1009.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.35.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.65.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.76.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.85.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.98.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.106.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.124.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.147.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.165.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.202.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.216.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.230.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.238.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.251.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.300.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.309.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.487.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.503.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.579.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.605.3.088207d1ce86"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.creation.1058.3.088207d1ce86"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/creation.test.ts",
-            "start": 1,
-            "end": 1067
-          }
-        ],
-        "context_reasons": {
-          "mental-model/mechanisms/creation.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
-        }
       }
     },
     {
@@ -6580,224 +5986,13 @@
     },
     {
       "id": "artifact-bca863b02ba3f5f894baa47d",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/dispatch.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/dispatch.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.507.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.523.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.567.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.676.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.728.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.806.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.869.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.916.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.958.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1004.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1390.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1545.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.178.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.615.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1459.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1529.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.66.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.112.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.135.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.157.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.199.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.209.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.233.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.247.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.265.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.281.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.294.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.335.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.354.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.372.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.416.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.423.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.436.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.448.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.468.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1064.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1078.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1099.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1113.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1131.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1152.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1184.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1222.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1269.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1302.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1341.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1358.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1428.3.41092809bb04"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.dispatch.1560.3.41092809bb04"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/dispatch.test.ts",
-            "start": 1,
-            "end": 1566
-          }
-        ],
-        "context_reasons": {
-          "mental-model/mechanisms/execution-cycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
-        }
       }
     },
     {
@@ -7885,162 +7080,13 @@
     },
     {
       "id": "artifact-510be2a0362710c9996c358a",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/ingress.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/ingress.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.479.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.535.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.598.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.661.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.726.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.790.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.819.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.847.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.459.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.58.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.79.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.91.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.114.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.131.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.153.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.164.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.178.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.190.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.209.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.235.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.253.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.287.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.299.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.311.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.330.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.340.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.367.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.381.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.406.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.413.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.432.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.446.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.511.3.dfc5a87bbd90"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ingress.563.3.dfc5a87bbd90"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/ingress.test.ts",
-            "start": 1,
-            "end": 864
-          }
-        ],
-        "context_reasons": {}
       }
     },
     {
@@ -8444,66 +7490,13 @@
     },
     {
       "id": "artifact-7902341bc00c3376b26ef71f",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/outcome-hostile.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/outcome-hostile.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.82.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.204.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.235.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.275.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.295.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.103.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.133.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.349.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.360.3.a66a34108666"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.outcome-hostile.374.3.a66a34108666"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/outcome-hostile.test.ts",
-            "start": 1,
-            "end": 383
-          }
-        ],
-        "context_reasons": {}
       }
     },
     {
@@ -8662,38 +7655,13 @@
     },
     {
       "id": "artifact-98679309de7791acf7f59c87",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/poison-catalog.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/poison-catalog.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.poison-catalog.273.5.46794b39598a"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.poison-catalog.286.3.46794b39598a"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.poison-catalog.291.3.46794b39598a"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/poison-catalog.test.ts",
-            "start": 1,
-            "end": 296
-          }
-        ],
-        "context_reasons": {}
       }
     },
     {
@@ -9393,30 +8361,13 @@
     },
     {
       "id": "artifact-6dcba4da5936b64c77a8b470",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/sweep/poison.ts is retained at the current profile; its executable consumer is kernel-sweeps. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/sweep/poison.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.poison-catalog.273.5.46794b39598a"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/sweep/poison.ts",
-            "start": 1,
-            "end": 536
-          }
-        ],
-        "context_reasons": {}
       }
     },
     {
@@ -9719,476 +8670,35 @@
     },
     {
       "id": "artifact-22eb339860078995989b5d5f",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/value-diagnostic-work.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/value-diagnostic-work.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.61.3.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.75.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.87.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.114.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.134.3.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.170.3.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.269.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.299.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.317.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.342.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.406.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.434.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.452.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.508.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.541.1.95a131a2acfa"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-diagnostic-work.573.1.95a131a2acfa"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/value-diagnostic-work.test.ts",
-            "start": 1,
-            "end": 618
-          }
-        ],
-        "context_reasons": {}
       }
     },
     {
       "id": "artifact-f468517ae332ead13530f5b1",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/value-refusal-cost.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/value-refusal-cost.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.56.3.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.64.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.74.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.84.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.92.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.100.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.110.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.120.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.147.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.173.1.beb911787bf3"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.value-refusal-cost.193.1.beb911787bf3"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/value-refusal-cost.test.ts",
-            "start": 1,
-            "end": 202
-          }
-        ],
-        "context_reasons": {}
       }
     },
     {
       "id": "artifact-ebfa0eb36bcd33f72a4dffce",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/values.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.packages/kernel/tests/values.test.ts"
         ]
-      },
-      "closure": {
-        "links": [
-          {
-            "kind": "counterexample",
-            "id": "witness.values.220.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.251.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.264.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.308.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.320.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.328.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.334.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.357.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.363.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.376.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.419.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.672.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.694.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.722.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.763.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.781.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.799.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.826.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.863.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.926.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.961.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.991.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1015.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1045.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1065.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1095.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1126.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1147.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1225.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1239.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1253.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1307.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1323.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1342.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1414.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1454.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1480.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1498.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1518.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1553.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1579.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1615.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1631.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1665.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1728.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1786.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1816.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1834.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1847.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.893.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.910.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.98.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.107.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.115.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.128.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.142.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.159.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.177.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.207.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.233.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.347.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.388.5.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.451.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.464.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.470.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.478.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.488.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.500.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.529.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.558.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.632.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.662.3.44b00a5bd3f1"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.values.1039.3.44b00a5bd3f1"
-          }
-        ],
-        "context": [
-          {
-            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
-            "path": "packages/kernel/tests/values.test.ts",
-            "start": 1,
-            "end": 1874
-          }
-        ],
-        "context_reasons": {
-          "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
-        }
       }
     },
     {
@@ -20001,101 +18511,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: an accessor installed on Error.prototype.name receives nothing, and the error still names itself"
     },
     {
-      "id": "witness.creation.362.3.088207d1ce86",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:362:3@088207d1ce86"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement"
-    },
-    {
-      "id": "witness.creation.415.3.088207d1ce86",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-b344c9faf1272dd3033d4ccd",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:415:3@088207d1ce86"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding"
-    },
-    {
-      "id": "witness.creation.441.3.088207d1ce86",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:441:3@088207d1ce86"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit"
-    },
-    {
-      "id": "witness.creation.546.3.088207d1ce86",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-bbe0c5a1782aa6f649f0a4a3",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:546:3@088207d1ce86"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation"
-    },
-    {
-      "id": "witness.creation.630.3.088207d1ce86",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:630:3@088207d1ce86"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a coherent array whose prototype observation installs an indexed accessor binds its own value"
-    },
-    {
-      "id": "witness.creation.742.3.088207d1ce86",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:742:3@088207d1ce86"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a payload observation that installs get/set still creates the exact Execution"
-    },
-    {
-      "id": "witness.creation.823.3.088207d1ce86",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:823:3@088207d1ce86"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: an ordinary handler broken by its own pollution is refused, never accepted or leaked"
-    },
-    {
       "id": "witness.creation.883.3.088207d1ce86",
       "kind": "held_witness",
       "claim": "V-ENV",
@@ -20109,45 +18524,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: retry still replays and changed content still conflicts"
     },
     {
-      "id": "witness.creation.922.3.088207d1ce86",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:922:3@088207d1ce86"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: a revoked Proxy in any identity-text field is a located malformed_value refusal"
-    },
-    {
-      "id": "witness.creation.944.3.088207d1ce86",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:944:3@088207d1ce86"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: a revoked Proxy in initial-input identity fields is located under initialInput"
-    },
-    {
-      "id": "witness.creation.958.3.088207d1ce86",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:958:3@088207d1ce86"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: an unreadable or absent creation envelope is malformed, and scope still precedes authorization"
-    },
-    {
       "id": "witness.creation.979.3.088207d1ce86",
       "kind": "held_witness",
       "claim": "Proxy",
@@ -20159,57 +18535,6 @@
         "packages/kernel/tests/creation.test.ts:979:3@088207d1ce86"
       ],
       "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: a revoked initialInput envelope is a located refusal"
-    },
-    {
-      "id": "witness.creation.1031.3.088207d1ce86",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-6c57cc9dd8febdefa65ed496",
-        "artifact-febb180b453e17b8edab6893"
-      ],
-      "members": [
-        "packages/kernel/tests/creation.test.ts:1031:3@088207d1ce86"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an earlier-field trap cannot steer a later field through ambient state in the same tick"
-    },
-    {
-      "id": "witness.dispatch.507.3.41092809bb04",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-bbe0c5a1782aa6f649f0a4a3",
-        "artifact-bca863b02ba3f5f894baa47d"
-      ],
-      "members": [
-        "packages/kernel/tests/dispatch.test.ts:507:3@41092809bb04"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: K11-R2-VAL-02 a payload with no single reading never reaches a Driver"
-    },
-    {
-      "id": "witness.dispatch.523.3.41092809bb04",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-bbe0c5a1782aa6f649f0a4a3",
-        "artifact-bca863b02ba3f5f894baa47d"
-      ],
-      "members": [
-        "packages/kernel/tests/dispatch.test.ts:523:3@41092809bb04"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound"
-    },
-    {
-      "id": "witness.dispatch.567.3.41092809bb04",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-bca863b02ba3f5f894baa47d"
-      ],
-      "members": [
-        "packages/kernel/tests/dispatch.test.ts:567:3@41092809bb04"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable"
     },
     {
       "id": "witness.dispatch.676.3.41092809bb04",
@@ -20322,44 +18647,6 @@
         "packages/kernel/tests/dispatch.test.ts:1545:3@41092809bb04"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: an array envelope cannot inherit its bound through the Array.prototype chain"
-    },
-    {
-      "id": "witness.dispatch.504.3.5a8d958ffdab",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-73555fe668cc180905b1e49a",
-        "artifact-bbe0c5a1782aa6f649f0a4a3"
-      ],
-      "members": [
-        "packages/kernel/tests/dispatch.test.ts:504:3@5a8d958ffdab"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: K11-R2-VAL-02 a payload with no single reading never reaches a Driver"
-    },
-    {
-      "id": "witness.dispatch.520.3.5a8d958ffdab",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-73555fe668cc180905b1e49a",
-        "artifact-bbe0c5a1782aa6f649f0a4a3"
-      ],
-      "members": [
-        "packages/kernel/tests/dispatch.test.ts:520:3@5a8d958ffdab"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound"
-    },
-    {
-      "id": "witness.dispatch.564.3.5a8d958ffdab",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-73555fe668cc180905b1e49a"
-      ],
-      "members": [
-        "packages/kernel/tests/dispatch.test.ts:564:3@5a8d958ffdab"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable"
     },
     {
       "id": "witness.dispatch.673.3.5a8d958ffdab",
@@ -20536,73 +18823,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
     },
     {
-      "id": "witness.ingress.481.3.61e8bde54da2",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-bbe0c5a1782aa6f649f0a4a3",
-        "artifact-ecb10ef937e0612352e7c7ef"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:481:3@61e8bde54da2"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress"
-    },
-    {
-      "id": "witness.ingress.537.3.61e8bde54da2",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ecb10ef937e0612352e7c7ef"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:537:3@61e8bde54da2"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement"
-    },
-    {
-      "id": "witness.ingress.600.3.61e8bde54da2",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ecb10ef937e0612352e7c7ef"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:600:3@61e8bde54da2"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an inherited setter at the next mailbox index cannot make an accepted Event go unretained"
-    },
-    {
-      "id": "witness.ingress.663.3.61e8bde54da2",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ecb10ef937e0612352e7c7ef"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:663:3@61e8bde54da2"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a creation whose payload traps the first mailbox index still binds its initial Event"
-    },
-    {
-      "id": "witness.ingress.728.3.61e8bde54da2",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ecb10ef937e0612352e7c7ef"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:728:3@61e8bde54da2"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a payload observation that installs get/set still retains the accepted Event"
-    },
-    {
       "id": "witness.ingress.792.3.61e8bde54da2",
       "kind": "held_witness",
       "claim": "V-ENV",
@@ -20613,18 +18833,6 @@
         "packages/kernel/tests/ingress.test.ts:792:3@61e8bde54da2"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: replay returns the retained disposition and changed content conflicts"
-    },
-    {
-      "id": "witness.ingress.821.3.61e8bde54da2",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ecb10ef937e0612352e7c7ef"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:821:3@61e8bde54da2"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: a revoked Proxy in requestKey, kind or subscriptionClass is a located refusal"
     },
     {
       "id": "witness.ingress.849.3.61e8bde54da2",
@@ -20639,73 +18847,6 @@
       "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: an unreadable or absent ingress envelope answers as an unknown destination"
     },
     {
-      "id": "witness.ingress.479.3.dfc5a87bbd90",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-510be2a0362710c9996c358a",
-        "artifact-bbe0c5a1782aa6f649f0a4a3"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:479:3@dfc5a87bbd90"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress"
-    },
-    {
-      "id": "witness.ingress.535.3.dfc5a87bbd90",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-510be2a0362710c9996c358a"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:535:3@dfc5a87bbd90"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement"
-    },
-    {
-      "id": "witness.ingress.598.3.dfc5a87bbd90",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-510be2a0362710c9996c358a",
-        "artifact-7c99b94ca43cc08b3d970f63"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:598:3@dfc5a87bbd90"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an inherited setter at the next mailbox index cannot make an accepted Event go unretained"
-    },
-    {
-      "id": "witness.ingress.661.3.dfc5a87bbd90",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-510be2a0362710c9996c358a",
-        "artifact-7c99b94ca43cc08b3d970f63"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:661:3@dfc5a87bbd90"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a creation whose payload traps the first mailbox index still binds its initial Event"
-    },
-    {
-      "id": "witness.ingress.726.3.dfc5a87bbd90",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-510be2a0362710c9996c358a",
-        "artifact-7c99b94ca43cc08b3d970f63"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:726:3@dfc5a87bbd90"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a payload observation that installs get/set still retains the accepted Event"
-    },
-    {
       "id": "witness.ingress.790.3.dfc5a87bbd90",
       "kind": "held_witness",
       "claim": "V-ENV",
@@ -20716,18 +18857,6 @@
         "packages/kernel/tests/ingress.test.ts:790:3@dfc5a87bbd90"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: replay returns the retained disposition and changed content conflicts"
-    },
-    {
-      "id": "witness.ingress.819.3.dfc5a87bbd90",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-510be2a0362710c9996c358a"
-      ],
-      "members": [
-        "packages/kernel/tests/ingress.test.ts:819:3@dfc5a87bbd90"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: a revoked Proxy in requestKey, kind or subscriptionClass is a located refusal"
     },
     {
       "id": "witness.ingress.847.3.dfc5a87bbd90",
@@ -20805,18 +18934,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: a field present only on a prototype reads as missing, never as the caller's"
     },
     {
-      "id": "witness.outcome-hostile.204.3.a66a34108666",
-      "kind": "held_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-7902341bc00c3376b26ef71f"
-      ],
-      "members": [
-        "packages/kernel/tests/outcome-hostile.test.ts:204:3@a66a34108666"
-      ],
-      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: a field whose observation throws is a located refusal, not an escaping exception"
-    },
-    {
       "id": "witness.outcome-hostile.235.3.a66a34108666",
       "kind": "held_witness",
       "claim": "V-ENV",
@@ -20851,19 +18968,6 @@
         "packages/kernel/tests/outcome-hostile.test.ts:295:3@a66a34108666"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: builtins replaced mid-observation are not consulted by the checks or the commit"
-    },
-    {
-      "id": "witness.poison-catalog.273.5.46794b39598a",
-      "kind": "held_witness",
-      "claim": "V-ENV",
-      "origins": [
-        "artifact-6dcba4da5936b64c77a8b470",
-        "artifact-98679309de7791acf7f59c87"
-      ],
-      "members": [
-        "packages/kernel/tests/poison-catalog.test.ts:273:5@46794b39598a"
-      ],
-      "required_result": "Held for BINDING-01 under V-ENV: Was not_held for Proxy, re-prototyped-built-in (The DEC-8 poison catalog's own windows; no held claim decides its result). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: `${mode}: no zone frame reaches a poisoned member; every window was live`"
     },
     {
       "id": "witness.recovery-ambient.259.7.b2dae76319e5",
@@ -20962,162 +19066,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Was not_held for re-prototyped-built-in (Commit atomicity under pollution of the commit path (Map.prototype.set, indexed setters, descriptor fields), not canonical bytes). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: Test C \"hostile pollution during observation cannot split the commit\""
     },
     {
-      "id": "witness.value-diagnostic-work.61.3.95a131a2acfa",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:61:3@95a131a2acfa"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: `V-D1 ${kind}: deep prototype diagnostics do zero lookups before and after detail eight`"
-    },
-    {
-      "id": "witness.value-diagnostic-work.75.1.95a131a2acfa",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:75:1@95a131a2acfa"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label"
-    },
-    {
-      "id": "witness.value-diagnostic-work.87.1.95a131a2acfa",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:87:1@95a131a2acfa"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
-    },
-    {
-      "id": "witness.value-diagnostic-work.114.1.95a131a2acfa",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:114:1@95a131a2acfa"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation"
-    },
-    {
-      "id": "witness.value-diagnostic-work.134.3.95a131a2acfa",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:134:3@95a131a2acfa"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: `V-D1 ${kind}: eight eager Outcome roots preserve observations and whole refusal state`"
-    },
-    {
-      "id": "witness.value-diagnostic-work.170.3.95a131a2acfa",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:170:3@95a131a2acfa"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: `V-D1 ${kind}: creation, ingress and recovery use the same zero-lookup diagnostics`"
-    },
-    {
-      "id": "witness.value-diagnostic-work.269.1.95a131a2acfa",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:269:1@95a131a2acfa"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance"
-    },
-    {
-      "id": "witness.value-diagnostic-work.299.1.95a131a2acfa",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:299:1@95a131a2acfa"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: decision-03 descriptor probe: the byte stop bounds trap calls before later rows"
-    },
-    {
-      "id": "witness.value-diagnostic-work.317.1.95a131a2acfa",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:317:1@95a131a2acfa"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority"
-    },
-    {
-      "id": "witness.value-diagnostic-work.342.1.95a131a2acfa",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:342:1@95a131a2acfa"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
-    },
-    {
-      "id": "witness.value-diagnostic-work.406.1.95a131a2acfa",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:406:1@95a131a2acfa"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth"
-    },
-    {
-      "id": "witness.value-diagnostic-work.434.1.95a131a2acfa",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:434:1@95a131a2acfa"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: decision-04 handler probe: the byte stop bounds Kernel-selected observations"
-    },
-    {
-      "id": "witness.value-diagnostic-work.452.1.95a131a2acfa",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-22eb339860078995989b5d5f"
-      ],
-      "members": [
-        "packages/kernel/tests/value-diagnostic-work.test.ts:452:1@95a131a2acfa"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: decision-04 handler probe: eager roots preserve selected counts and whole state before authority"
-    },
-    {
       "id": "witness.value-diagnostic-work.508.1.95a131a2acfa",
       "kind": "held_witness",
       "claim": "V-D1",
@@ -21214,18 +19162,6 @@
       "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 P5: 532480 invalid positions retain nine records and exact ordered details"
     },
     {
-      "id": "witness.value-refusal-cost.100.1.beb911787bf3",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-f468517ae332ead13530f5b1"
-      ],
-      "members": [
-        "packages/kernel/tests/value-refusal-cost.test.ts:100:1@beb911787bf3"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 bounded paths include phantom names, long ancestors, and literal omission text"
-    },
-    {
       "id": "witness.value-refusal-cost.110.1.beb911787bf3",
       "kind": "held_witness",
       "claim": "V-D1",
@@ -21236,30 +19172,6 @@
         "packages/kernel/tests/value-refusal-cost.test.ts:110:1@beb911787bf3"
       ],
       "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
-    },
-    {
-      "id": "witness.value-refusal-cost.120.1.beb911787bf3",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-f468517ae332ead13530f5b1"
-      ],
-      "members": [
-        "packages/kernel/tests/value-refusal-cost.test.ts:120:1@beb911787bf3"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 own-only multiplicity under ambient pollution and capture-time mutation"
-    },
-    {
-      "id": "witness.value-refusal-cost.147.1.beb911787bf3",
-      "kind": "held_witness",
-      "claim": "V-D1",
-      "origins": [
-        "artifact-f468517ae332ead13530f5b1"
-      ],
-      "members": [
-        "packages/kernel/tests/value-refusal-cost.test.ts:147:1@beb911787bf3"
-      ],
-      "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: V-D1 eight eager roots before authority: every position once, no forbidden mutation"
     },
     {
       "id": "witness.value-refusal-cost.173.1.beb911787bf3",
@@ -21322,138 +19234,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Was not_held for re-prototyped-built-in (An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: acceptance detaches and freezes without invoking any accessor"
     },
     {
-      "id": "witness.values.308.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:308:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an array position read differently than it is owned is refused, not silently picked"
-    },
-    {
-      "id": "witness.values.320.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:320:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an object member read differently than it is owned is refused the same way"
-    },
-    {
-      "id": "witness.values.328.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:328:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: the disagreement is refused at depth and under a valid root"
-    },
-    {
-      "id": "witness.values.334.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:334:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an array position supplied only by a dynamic read, owning nothing, is refused"
-    },
-    {
-      "id": "witness.values.357.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:357:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a length that does not agree with itself cannot decide which positions exist"
-    },
-    {
-      "id": "witness.values.363.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:363:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a structure that cannot be observed is refused rather than thrown out of the boundary"
-    },
-    {
-      "id": "witness.values.376.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:376:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an object listing an own member it does not own is refused"
-    },
-    {
-      "id": "witness.values.419.5.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:419:5@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a value that answers differently on each read is bound to the one reading that was taken"
-    },
-    {
-      "id": "witness.values.672.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:672:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: thirty-two arrays standing for four billion are refused after reading about a megabyte"
-    },
-    {
-      "id": "witness.values.694.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:694:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: one long string shared across shared arrays is refused before a second megabyte is read"
-    },
-    {
-      "id": "witness.values.722.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:722:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a shared member refused for another reason is not re-read without bound either"
-    },
-    {
       "id": "witness.values.763.3.44b00a5bd3f1",
       "kind": "held_witness",
       "claim": "V-D1",
@@ -21488,181 +19268,6 @@
         "packages/kernel/tests/values.test.ts:799:3@44b00a5bd3f1"
       ],
       "required_result": "Held for K1.1-correction-03 under V-D1: A refusal read, diagnostic or unit bound under the V-D1 hold (K1.2 invalidation-02, decision-05) for K1.1-correction-03. Test: a shared oversized string is read about once, and a shared long one only until the byte limit"
-    },
-    {
-      "id": "witness.values.826.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:826:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an oversized own-names listing is classified after at most one descriptor past the entry limit"
-    },
-    {
-      "id": "witness.values.863.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:863:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an array listing more names than any accepted array owns is refused without classifying each"
-    },
-    {
-      "id": "witness.values.926.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:926:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time side effect installing Object.prototype.toJSON still binds the observed structure"
-    },
-    {
-      "id": "witness.values.961.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:961:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an own-name listing reporting a canonical index outside length with no backing property is refused"
-    },
-    {
-      "id": "witness.values.991.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:991:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a backed canonical index outside length is also refused rather than silently dropped"
-    },
-    {
-      "id": "witness.values.1015.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1015:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal"
-    },
-    {
-      "id": "witness.values.1045.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1045:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a deliberately huge sparse length refuses bounded without traversing its extent"
-    },
-    {
-      "id": "witness.values.1065.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1065:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time one-shot Object.keys replacement cannot change canonical bytes"
-    },
-    {
-      "id": "witness.values.1095.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1095:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes"
-    },
-    {
-      "id": "witness.values.1126.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1126:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time Array.prototype.join replacement cannot change canonical bytes either"
-    },
-    {
-      "id": "witness.values.1147.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-b344c9faf1272dd3033d4ccd",
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1147:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain"
-    },
-    {
-      "id": "witness.values.1225.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1225:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: the retained structure and the canonical bytes are exactly the one value observed"
-    },
-    {
-      "id": "witness.values.1239.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1239:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: the index the accessor picks is not special: position zero and a nested array behave the same"
-    },
-    {
-      "id": "witness.values.1253.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1253:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a value the rules do refuse is still refused with the accessor live, not normalized"
     },
     {
       "id": "witness.values.1307.3.44b00a5bd3f1",
@@ -21797,18 +19402,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Serializer-window output independence, refusal or restoration under environment pollution: held by invalidation-03 for BINDING-01. Test: an object inserted on the iterator chain cannot supply next"
     },
     {
-      "id": "witness.values.1631.3.44b00a5bd3f1",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ebfa0eb36bcd33f72a4dffce"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1631:3@44b00a5bd3f1"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time trap that inserts the chain still binds the observed structure"
-    },
-    {
       "id": "witness.values.1665.3.44b00a5bd3f1",
       "kind": "held_witness",
       "claim": "V-ENV",
@@ -21918,253 +19511,6 @@
         "packages/kernel/tests/values.test.ts:264:5@fb228bec8c58"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Was not_held for re-prototyped-built-in (An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: acceptance detaches and freezes without invoking any accessor"
-    },
-    {
-      "id": "witness.values.308.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:308:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an array position read differently than it is owned is refused, not silently picked"
-    },
-    {
-      "id": "witness.values.320.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:320:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an object member read differently than it is owned is refused the same way"
-    },
-    {
-      "id": "witness.values.328.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:328:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: the disagreement is refused at depth and under a valid root"
-    },
-    {
-      "id": "witness.values.334.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:334:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an array position supplied only by a dynamic read, owning nothing, is refused"
-    },
-    {
-      "id": "witness.values.357.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:357:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a length that does not agree with itself cannot decide which positions exist"
-    },
-    {
-      "id": "witness.values.363.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:363:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a structure that cannot be observed is refused rather than thrown out of the boundary"
-    },
-    {
-      "id": "witness.values.376.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:376:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an object listing an own member it does not own is refused"
-    },
-    {
-      "id": "witness.values.419.5.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:419:5@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a value that answers differently on each read is bound to the one reading that was taken"
-    },
-    {
-      "id": "witness.values.622.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:622:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time side effect installing Object.prototype.toJSON still binds the observed structure"
-    },
-    {
-      "id": "witness.values.657.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:657:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: an own-name listing reporting a canonical index outside length with no backing property is refused"
-    },
-    {
-      "id": "witness.values.687.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:687:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a backed canonical index outside length is also refused rather than silently dropped"
-    },
-    {
-      "id": "witness.values.711.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:711:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal"
-    },
-    {
-      "id": "witness.values.741.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:741:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a deliberately huge sparse length refuses bounded without traversing its extent"
-    },
-    {
-      "id": "witness.values.761.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:761:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time one-shot Object.keys replacement cannot change canonical bytes"
-    },
-    {
-      "id": "witness.values.791.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:791:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes"
-    },
-    {
-      "id": "witness.values.822.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:822:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time Array.prototype.join replacement cannot change canonical bytes either"
-    },
-    {
-      "id": "witness.values.843.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-b344c9faf1272dd3033d4ccd",
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:843:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain"
-    },
-    {
-      "id": "witness.values.921.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:921:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: the retained structure and the canonical bytes are exactly the one value observed"
-    },
-    {
-      "id": "witness.values.935.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:935:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: the index the accessor picks is not special: position zero and a nested array behave the same"
-    },
-    {
-      "id": "witness.values.949.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-4e300ac8047fcf6b203072a1",
-        "artifact-7c99b94ca43cc08b3d970f63",
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:949:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a value the rules do refuse is still refused with the accessor live, not normalized"
     },
     {
       "id": "witness.values.1003.3.fb228bec8c58",
@@ -22297,18 +19643,6 @@
         "packages/kernel/tests/values.test.ts:1311:3@fb228bec8c58"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Serializer-window output independence, refusal or restoration under environment pollution: held by invalidation-03 for BINDING-01. Test: an object inserted on the iterator chain cannot supply next"
-    },
-    {
-      "id": "witness.values.1327.3.fb228bec8c58",
-      "kind": "superseded_witness",
-      "claim": "Proxy",
-      "origins": [
-        "artifact-ea5444a6d42154e413fe0f2e"
-      ],
-      "members": [
-        "packages/kernel/tests/values.test.ts:1327:3@fb228bec8c58"
-      ],
-      "required_result": "Superseded under Proxy: Requires accepting a Proxy, or a result computed by observing its traps; decision-01 \u00a72 refuses every Proxy before any observation. Test: a capture-time trap that inserts the chain still binds the observed structure"
     },
     {
       "id": "witness.values.1361.3.fb228bec8c58",
@@ -23036,18 +20370,6 @@
       "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds assignment in its run set. Earlier reading, kept as a note for BINDING-01: An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector. Test: K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection"
     },
     {
-      "id": "witness.poison-catalog.286.3.46794b39598a",
-      "kind": "held_witness",
-      "claim": "V-ENV",
-      "origins": [
-        "artifact-98679309de7791acf7f59c87"
-      ],
-      "members": [
-        "packages/kernel/tests/poison-catalog.test.ts:286:3@46794b39598a"
-      ],
-      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds escape in its run set; per-test classification is BINDING-01's. Test: every poisoned run returned exactly what the unpoisoned run returned"
-    },
-    {
       "id": "witness.poison-catalog.291.3.46794b39598a",
       "kind": "held_witness",
       "claim": "V-ENV",
@@ -23274,18 +20596,6 @@
         "packages/kernel/tests/aggregate-refusal.test.ts:157:3@19af122ffc40"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: `O-R2-2 redelivery ${cause} hold bounds minted Activation but preserves explicit payload`"
-    },
-    {
-      "id": "witness.aggregate-refusal.173.1.19af122ffc40",
-      "kind": "held_witness",
-      "claim": "V-ENV",
-      "origins": [
-        "artifact-bb7722eb19e78f33e1f81a58"
-      ],
-      "members": [
-        "packages/kernel/tests/aggregate-refusal.test.ts:173:1@19af122ffc40"
-      ],
-      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes"
     },
     {
       "id": "witness.ambient-reads.46.3.4a94f4ea0361",
@@ -34208,7 +31518,7 @@
         "the Activation carries exactly the facts creation bound, and the Execution is RUNNING"
       ],
       "declaration": {
-        "line": 66,
+        "line": 117,
         "column": 3
       },
       "input_anchors": [
@@ -34295,7 +31605,7 @@
         "a Driver that throws leaves the accepted intent standing"
       ],
       "declaration": {
-        "line": 265,
+        "line": 316,
         "column": 3
       },
       "input_anchors": [
@@ -34334,7 +31644,7 @@
         "a Driver that reports failure records an operational failure, not a state change"
       ],
       "declaration": {
-        "line": 281,
+        "line": 332,
         "column": 3
       },
       "input_anchors": [
@@ -34377,7 +31687,7 @@
         "identity, epoch, base revision and batch are preserved, and nothing is re-selected"
       ],
       "declaration": {
-        "line": 372,
+        "line": 423,
         "column": 3
       },
       "input_anchors": [
@@ -34461,7 +31771,7 @@
         "report during invocation settles the attempt with intent intact"
       ],
       "declaration": {
-        "line": 1064,
+        "line": 1209,
         "column": 3
       },
       "input_anchors": [
@@ -34512,7 +31822,7 @@
         "synchronous throw is an implicit failure report with a total diagnostic"
       ],
       "declaration": {
-        "line": 1099,
+        "line": 1244,
         "column": 3
       },
       "input_anchors": [
@@ -34551,7 +31861,7 @@
         "a report followed by a throw retains the report"
       ],
       "declaration": {
-        "line": 1113,
+        "line": 1258,
         "column": 3
       },
       "input_anchors": [
@@ -34595,7 +31905,7 @@
         "a throw followed by a late report retains the failure"
       ],
       "declaration": {
-        "line": 1131,
+        "line": 1276,
         "column": 3
       },
       "input_anchors": [
@@ -34639,7 +31949,7 @@
         "duplicate and conflicting reports are inert after the first"
       ],
       "declaration": {
-        "line": 1152,
+        "line": 1297,
         "column": 3
       },
       "input_anchors": [
@@ -34683,7 +31993,7 @@
         "capability integrity: frozen, detached, and bound to its own attempt"
       ],
       "declaration": {
-        "line": 1184,
+        "line": 1329,
         "column": 3
       },
       "input_anchors": [
@@ -34743,7 +32053,7 @@
         "hostile failure reasons are never invoked and stay bounded"
       ],
       "declaration": {
-        "line": 1222,
+        "line": 1367,
         "column": 3
       },
       "input_anchors": [
@@ -34795,7 +32105,7 @@
         "a poisoned Error message is never read"
       ],
       "declaration": {
-        "line": 1269,
+        "line": 1414,
         "column": 3
       },
       "input_anchors": [
@@ -34847,7 +32157,7 @@
         "revoked Proxy, symbol, function, and boxed-string reasons collapse to the fixed text"
       ],
       "declaration": {
-        "line": 1302,
+        "line": 1447,
         "column": 3
       },
       "input_anchors": [
@@ -34919,7 +32229,7 @@
         "redelivery overlap: out-of-order reports settle only their own attempts"
       ],
       "declaration": {
-        "line": 1358,
+        "line": 1503,
         "column": 3
       },
       "input_anchors": [
@@ -34975,7 +32285,7 @@
         "Promise independence: hostile ambient constructor/species slots change nothing"
       ],
       "declaration": {
-        "line": 1390,
+        "line": 1535,
         "column": 3
       },
       "input_anchors": [
@@ -35027,7 +32337,7 @@
         "return misuse: an inert hostile return is never observed; the attempt stays pending"
       ],
       "declaration": {
-        "line": 1428,
+        "line": 1573,
         "column": 3
       },
       "input_anchors": [
@@ -35071,7 +32381,7 @@
         "Driver-internal asynchronous failure reports with zero unhandled (strict subprocess)"
       ],
       "declaration": {
-        "line": 1459,
+        "line": 1604,
         "column": 3
       },
       "input_anchors": [
@@ -35433,7 +32743,7 @@
         "values with no boundary form are refused with their form named"
       ],
       "declaration": {
-        "line": 115,
+        "line": 183,
         "column": 3
       },
       "input_anchors": [
@@ -52109,6 +49419,11 @@
       "decision": "docs/development/work/TOOLS-01/owner-choice-11.md",
       "list": "docs/development/work/TOOLS-01/owner-choice-11/transferred-origins.json",
       "sha256": "2ef864e600b2bdc308f6b35201ab479154b1d37e4d6405f1c7f6ac4d32a88ebc"
+    },
+    {
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md",
+      "list": "docs/development/work/K1.1-correction-03/owner-choice-01/transferred-origins.json",
+      "sha256": "3c8e99fdbb1a9f894744b512535dc3c0d252dcd3cb5d0714e65d25f50cf3def4"
     }
   ],
   "transferred": [
@@ -52190,6 +49505,13 @@
           {
             "member": "packages/kernel/tests/dispatch.test.ts:66:3@5a8d958ffdab",
             "target": "target.dispatch.66.3.5a8d958ffdab"
+          }
+        ],
+        "added": [
+          {
+            "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md",
+            "members": "docs/development/work/K1.1-correction-03/owner-choice-01/limited-members.json",
+            "sha256": "d29336f35a541506baf3af0c4197d25038fe5f6d29e6aeae23d94e2799dbeb30"
           }
         ]
       }
@@ -52283,6 +49605,13 @@
           {
             "member": "packages/kernel/tests/values.test.ts:115:3@fb228bec8c58",
             "target": "target.values.115.3.fb228bec8c58"
+          }
+        ],
+        "added": [
+          {
+            "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md",
+            "members": "docs/development/work/K1.1-correction-03/owner-choice-01/limited-members.json",
+            "sha256": "d29336f35a541506baf3af0c4197d25038fe5f6d29e6aeae23d94e2799dbeb30"
           }
         ]
       }
@@ -52458,6 +49787,66 @@
     {
       "origin": "artifact-ee81a9215a4b627e88fda2d5",
       "decision": "docs/development/work/TOOLS-01/owner-choice-11.md"
+    },
+    {
+      "origin": "artifact-22eb339860078995989b5d5f",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-4e300ac8047fcf6b203072a1",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-510be2a0362710c9996c358a",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-6c57cc9dd8febdefa65ed496",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-6dcba4da5936b64c77a8b470",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-7902341bc00c3376b26ef71f",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-7c99b94ca43cc08b3d970f63",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-98679309de7791acf7f59c87",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-b344c9faf1272dd3033d4ccd",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-bb7722eb19e78f33e1f81a58",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-bbe0c5a1782aa6f649f0a4a3",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-bca863b02ba3f5f894baa47d",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-ebfa0eb36bcd33f72a4dffce",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-f468517ae332ead13530f5b1",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
+    },
+    {
+      "origin": "artifact-febb180b453e17b8edab6893",
+      "decision": "docs/development/work/K1.1-correction-03/owner-choice-01.md"
     }
   ]
 }

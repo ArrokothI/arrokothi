@@ -343,6 +343,11 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   the only suite target naming the member, at a rule-1 held leaf with a literal title, refused by P1-H
   alone — never by title. Owner choice 11 lists one further member by name: its pinned list sits under
   `limited.listed` for that member's origin, and its admission rule is unchanged for every other extra.
+  A later owner decision may list further members of a limited origin whose tests a packet changed
+  (K1.1-correction-03 owner choice 01). The origin lists it under `limited.added`, one
+  `{decision, members, sha256}` entry per decision, with the list of `{origin, member}` in the
+  decision's attachment directory. Every origin that cites the decision cites the same list, the list names only further
+  members of origins that cite it, and each named member counts as listed.
   A listed member counts while it is refused without a credited target, or held by rule 1 (owner
   answers to design 06 revision 4). Per origin, those members must equal the listed members plus the
   admitted extras, and owner choice 04's list restates each origin's member count. Which list a
