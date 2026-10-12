@@ -1,0 +1,265 @@
+# Implementation report — K1.1-correction-03, round 2
+
+This round applies [owner choice 01](owner-choice-01.md) to the candidate of
+[implementation 01](implementation-01.md), which was not reviewed. Implementation 01 stays the record for
+every part of the packet this round does not change:
+- the change groups;
+- the KC3-9 changed assertions and their authority;
+- condition C1 and [its ablation](c1-ablation-01.md);
+- the corpus and the self-found defects.
+
+This report gives the current state of every criterion.
+
+## Identity
+
+- **Packet:** K1.1-correction-03, metered value refusal cost.
+  - Governing records: [release 01](release-01.md), [brief 01](brief-01.md), [design 01](design-01.md), the
+    [design check](design-01-check.md) and [owner choice 01](owner-choice-01.md). The last holds the owner's
+    answers to implementation 01's two questions, the standing reopen-and-transfer rule, and the owner's choice
+    on one follow-up question.
+  - Process baseline: 006, 008, 009 and 012 as at B.
+- **State:** WAITING_FOR_REVIEW, recorded in H. No owner question is open, and verify on clean C returns
+  `checks_passed`.
+- **Owner release:** [release 01](release-01.md), 2026-10-08, from main
+  `b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b`. Its prerequisites are as stated in implementation 01.
+- **Branch:** `claude/k1.1-correction-03` on `origin` (`https://github.com/ArrokothI/arrokothi`).
+  - Base B: `b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b`.
+  - Payload C: `ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb`.
+  - Payload commits between `ed461d20` and C: `4c736b4fead13a1988870b0522a60dd1a1553371` (this round's
+    changes) and `40f57cf9fe843b5e89879df5e4ae56369eaa154f` (the sweep timeout). C itself corrects one word in
+    that limit sentence.
+  - Previous H: `53a9f607b8b38f89540db1e2324a2c7430d62026` (implementation 01, over C
+    `ed461d20edb4bb06868302a76e1a786dfa278d29`). It was not reviewed, and C descends from it.
+  - The preserve list pins implementation 01 and its C1 attachments at that H.
+- **Candidate H:** the commit that contains this report. Its full SHA is in the external handoff.
+- **C..H administrative allowlist** (exactly): `docs/development/007-work-packets.md` and
+  `docs/development/work/K1.1-correction-03/implementation-02.md`.
+- **Session:** the same Claude Code cloud session as implementation 01.
+  - `claude-opus-5-5`, on an Anthropic-hosted Ubuntu 24.04 x86_64 VM (Ubuntu 24.04.5 LTS, 4 vCPUs).
+  - Node v26.10.0 and Python 3.13.16.
+  - Outbound HTTPS only, through the environment's agent proxy.
+  - `git fetch` and `git push` to `origin` for this branch only. No `gh` CLI, and no pull request.
+  - The session's worker process restarted twice in this round, and a usage limit paused the work once.
+    Nothing was lost: the working tree was intact each time, and every interrupted run was repeated.
+  - This round's review workflow ran eight subagents in the same environment, read-only.
+- **Working tree:** clean at C and at H. Push status is in the handoff.
+
+## Changes since implementation 01 (`ed461d20`..C)
+
+1. **Owner choice 01 recorded.** [owner-choice-01.md](owner-choice-01.md) holds the owner's message verbatim and
+   the follow-up choice. Its two pinned lists sit beside it:
+   - [transferred-origins.json](owner-choice-01/transferred-origins.json): the 15 reopened origins;
+   - [limited-members.json](owner-choice-01/limited-members.json): 24 members of two limited origins.
+2. **R4 is the fourth residual** (item 1). `values.md` and BASELINE name BINDING-01's bytes core as what removes
+   R4 from the Kernel: the core receives canonical bytes and never lists a caller object. The caller-side
+   wrapper then carries R4 under its cooperative contract (DESIGN-AUDIT-01 decision-02). `mental-model/sources.md`
+   records owner choice 01. No code changes.
+3. **Adoption corpus, reopened and transferred** (item 2 and the standing rule). In
+   `tests/fixtures/packet-tools/adoption.json`:
+   - The 15 complete origins listed below go to `pending_revalidation`, lose their closures (kept in the pinned
+     list), and are transferred under owner choice 01 through `transferred` and `transfer_lists`.
+   - 96 stale witness rows are removed: every held or superseded witness whose member this packet's conversions
+     made `refused`. 76 are linked by the reopened closures. The other 20 belong to origins that were already
+     transferred: 17 of `artifact-ea5444a6…`, 1 of `artifact-73555fe6…` and 2 of `artifact-ecb10ef9…`.
+   - 18 more suite targets move to their tests' current lines: 17 in `dispatch.test.ts` and 1 in
+     `values.test.ts`. They are owner choice 04's extras, whose declarations the test conversions shifted.
+     Implementation 01's C had moved the first 11.
+4. **C2-LIMIT extension** (the follow-up choice). This is an additive change to `scripts/packet_tools.py`.
+   - A limited origin of owner choice 04 may cite later owner decisions under `limited.added`, one
+     `{decision, members, sha256}` entry per decision, and each member listed there counts as listed.
+   - The new `later_limit_list` refuses:
+     - a malformed entry;
+     - a decision record missing at C;
+     - a list outside the decision's attachment directory;
+     - a digest mismatch;
+     - a non-JSON list;
+     - a list that names a member twice or without its origin.
+   - `limited_origins` refuses:
+     - an origin citing one decision twice;
+     - two origins citing one decision through different lists;
+     - a member already listed by owner choice 04 or 11, or not in its origin;
+     - a listed member whose origin does not cite the decision.
+   - Members are still counted only while unbound.
+   - Origins without `added` behave exactly as before.
+   - The two limited origins whose members this packet changed cite `limited-members.json`.
+5. **Tool tests and registrations.**
+   - `test_transfer_limits.py` gains 8 tests: the positive case, the shared-list case, a still-bound member, the
+     refusal sub-tests, a missing decision, a malformed decision and a non-JSON list.
+   - The repository-manifest test now pins this decision's lists and the extras' new lines.
+   - `tests/tooling/README.md` describes `limited.added`.
+   - `refusal-guards.json` registers the 7 new `require` checks and replaces the guard of the one changed check.
+     That gives 321 guards, each killed by its named test.
+6. **Verify specification.**
+   - `administrative_files` is now 007 and this report.
+   - `preserve` no longer pins `scripts` or `refusal-guards.json`, which this round changes. It pins the four
+     other files in `scripts/` at B, and implementation 01 with its attachments at the previous H.
+   - `minimum_counts`: tool tests `581 (was 573)`.
+   - `kernel-sweeps` runs with a 2,400 s timeout instead of 900 s.
+     - Verify at `4c736b4f` passed every other check, and that step hit its timeout in the poison sweep's last
+       mode.
+     - The sweep now also runs this packet's heavy `capture-*` tests. At `4c736b4f` its `count` and `throw` modes
+       took 321 s and 314 s, and its `off` mode 69 s.
+     - It had passed every mode it finished.
+   - Two added limit sentences describe the tool change and the timeout.
+
+No production code and no Kernel test changes in this round.
+
+### Origins reopened and transferred (standing rule)
+
+| Origin | Source | Members this packet changed | Stale witnesses its closure linked |
+|---|---|---|---|
+| `artifact-22eb339860078995989b5d5f` | `packages/kernel/tests/value-diagnostic-work.test.ts` | 13 | 13 |
+| `artifact-4e300ac8047fcf6b203072a1` | `docs/development/work/K1.1/review-06-supplement-01.md`:90 | 0 | 13 |
+| `artifact-510be2a0362710c9996c358a` | `packages/kernel/tests/ingress.test.ts` | 6 | 6 |
+| `artifact-6c57cc9dd8febdefa65ed496` | `packages/kernel/tests/creation.test.ts` | 11 | 11 |
+| `artifact-6dcba4da5936b64c77a8b470` | `packages/kernel/tests/sweep/poison.ts` | 0 | 1 |
+| `artifact-7902341bc00c3376b26ef71f` | `packages/kernel/tests/outcome-hostile.test.ts` | 1 | 1 |
+| `artifact-7c99b94ca43cc08b3d970f63` | `docs/development/work/K1.1/review-06-supplement-01.md`:98 | 0 | 13 |
+| `artifact-98679309de7791acf7f59c87` | `packages/kernel/tests/poison-catalog.test.ts` | 2 | 2 |
+| `artifact-b344c9faf1272dd3033d4ccd` | `docs/development/work/K1.1/review-05.md`:84 | 0 | 3 |
+| `artifact-bb7722eb19e78f33e1f81a58` | `packages/kernel/tests/aggregate-refusal.test.ts` | 1 | 1 |
+| `artifact-bbe0c5a1782aa6f649f0a4a3` | `docs/development/work/K1.1/review-02.md`:84 | 0 | 7 |
+| `artifact-bca863b02ba3f5f894baa47d` | `packages/kernel/tests/dispatch.test.ts` | 4 | 3 |
+| `artifact-ebfa0eb36bcd33f72a4dffce` | `packages/kernel/tests/values.test.ts` | 37 | 26 |
+| `artifact-f468517ae332ead13530f5b1` | `packages/kernel/tests/value-refusal-cost.test.ts` | 3 | 3 |
+| `artifact-febb180b453e17b8edab6893` | `packages/kernel/tests/creation.test.ts` | 11 | 11 |
+
+**Selection rule.** A complete origin is reopened when one of its members changed preserved status between B and
+C, or when its closure linked a witness whose member's status changed.
+
+Two complete origins are not reopened:
+- `artifact-21fb34d9…` (`ambient-reads.test.ts`);
+- `artifact-ada9f66c…` (`control-commits.test.ts`).
+
+Their witnessed tests are unchanged, and only helper modules they import changed (`zone-analysis.ts`,
+`zone-inventory.ts`). Their members stay held, and their closures still pass the tool. This report reads the
+standing rule as covering a changed test, not a changed helper. The owner may read it more broadly.
+
+**Effect on the census.** After the reopening, 92 origins are complete, 62 are `pending_revalidation` (all
+transferred) and 1,395 are `pending`. The `adoption` step reports `revalidation_complete`.
+
+## Criteria (current state)
+
+| ID | State at this C | Evidence |
+|---|---|---|
+| KC3-1, KC3-2, KC3-4 … KC3-8 | Met, unchanged since implementation 01. | Implementation 01's criteria table. Its tests and registered mutants are re-run by verify at this C. |
+| KC3-3 | **Met.** R1–R4 are the declared residuals: R1–R3 under design check Q5, R4 under owner choice 01 item 1. | `values.md` and BASELINE, *Declared limits*. |
+| KC3-9 | Met, under the authority line in implementation 01 (condition C2). | This round changes no Kernel test assertion. |
+| KC3-10 | Met. The R4 text now names BINDING-01. | `check:builder-docs` keeps only its failure that predates this packet. |
+| KC3-11 | **Met.** Verify on clean C returns `checks_passed`: all 14 steps pass, including the advisory area gate. | Verify below. |
+
+## Validation
+
+### Verify on clean C
+
+```text
+Command (detached, the only verify job running), at C ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb:
+  python3 -B scripts/packet_tools.py verify --revision ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb \
+    --spec docs/development/work/K1.1-correction-03/verification.json
+Node v26.10.0, Python 3.13.16, LANG=C.UTF-8, NODE_OPTIONS unset. Exit 0, 19:46:10 to 20:50:01 UTC.
+
+result: checks_passed   (result_reuse: false; acceptance: not evaluated)
+tool-tests           passed   581 tests
+inventory            provenance_verified   artifact 208, mention 1333, additional 8
+adoption             revalidation_complete   origins 1549, counterexamples 1125, families 26, members 415,
+                                             suite_targets 52, preserved 37
+dimensions           coverage_reported
+registered-mutants   selected_cases_passed   109 killed
+refusal-mutants      selected_cases_passed   321 killed
+value-cost-mutants   selected_cases_passed   227 killed
+refusal-census       passed   (refusal_checks 321, registered_mutations 321)
+oracle-census        passed
+typecheck            passed
+repository-tests     passed   tests 4080, fail 0, cancelled 0, skipped 0, todo 0
+archive-tests        passed   tests 4, fail 0, cancelled 0, skipped 0, todo 0
+kernel-sweeps        passed   exit inventory 57/57, 0 violations; fault sweep 66 scenarios, 54260 runs,
+                              0 violations; poison sweep 47 files, 345 names, 2018 tests per mode:
+                              off 65 s, count 312 s, throw 309 s, reenter 315 s; POISON SWEEP PASSED
+area-gate            reported (advisory)
+```
+
+### Advisory area report (verify output, copied)
+
+- **Scope.** 66 changed paths and 31 behaviour paths since B. The touched areas are
+  `packages/kernel` and `tooling`, out of 68.
+- **Open origins in the touched areas:** 342 of the 1457 open origins
+  (296 `pending`, 46 `pending_revalidation`), with
+  0 prose items pending.
+  - `packages/kernel` has 341: 75 artifacts, 265 mentions and 1 additional.
+  - `tooling` has 10.
+- **The 46 `pending_revalidation` origins** were all transferred to TOOLS-02:
+  - 25 by TOOLS-01 owner choice 05;
+  - 15 by this packet's owner choice 01;
+  - 3 by owner choice 11;
+  - 3 by owner choice 04.
+- **Tool limits, verbatim:** "Advisory (owner choice 07): the report fails nothing and requires no triage";
+  "Areas are derived lexically from minimum contexts and over-include; they are not a semantic impact analysis";
+  "Origins that name no path are ungated and counted, not listed by area".
+
+<details><summary>Open origins by area, as listed by the gate</summary>
+
+`packages/kernel` (341): `additional-e0c4ff8aa1309ff5bc381c10`, `artifact-0371a0638a275e4aaa462599`, `artifact-0df304cfe45c7b0f825cd277`, `artifact-1abf88792a382e41d20b4303`, `artifact-1ad2b2a0e120c37b9ce6ec26`, `artifact-1e3d57f18b66af569805e605`, `artifact-21c568ca0763aa60737754d6`, `artifact-220ad77c85f99945ea0da3ed`, `artifact-22eb339860078995989b5d5f`, `artifact-29897c65553c4a7f4ffebc1d`, `artifact-2f673089a513f4cf2c46673b`, `artifact-30024d036d904400c4493029`, `artifact-38627d8cff9585853ff81a51`, `artifact-3d28b841cb049f74205b0b5c`, `artifact-3e0e417da3928120db360908`, `artifact-3e2c3a822fd99541b52f06e5`, `artifact-3eb9629042a621ad563fb657`, `artifact-4821cb047b2a86e5f24f93ef`, `artifact-49458504964b90d677c180d8`, `artifact-4e300ac8047fcf6b203072a1`, `artifact-510be2a0362710c9996c358a`, `artifact-5354ca6e028547cc6e88a7e4`, `artifact-580251cfb343edeaf49a8661`, `artifact-5c7504be929674a25bef0e04`, `artifact-6c57cc9dd8febdefa65ed496`, `artifact-6dcba4da5936b64c77a8b470`, `artifact-6e44f915a6be34088efe33d8`, `artifact-73555fe668cc180905b1e49a`, `artifact-74f187edb9be085354d88e8c`, `artifact-783beb792ce98eaed9702962`, `artifact-7902341bc00c3376b26ef71f`, `artifact-793a993ed2290db00aa7b9d7`, `artifact-7c99b94ca43cc08b3d970f63`, `artifact-7e86db304c1eca97401a83b3`, `artifact-7fcd24fd4de8e2db87f8ec5f`, `artifact-81e241a96919041de351b11f`, `artifact-877aada38cc20e894783c9d4`, `artifact-89a6c743f27e1e2697eab84d`, `artifact-9730c5d55db69b66d093534d`, `artifact-9775fd62e0ec1b4d45f26d3f`, `artifact-98679309de7791acf7f59c87`, `artifact-9f0622023057578b9b1210b6`, `artifact-9fd619f5375d598ebb2b88aa`, `artifact-a244b971c7f1c400284a09bf`, `artifact-aa61ddb0a0ed934d57775f7c`, `artifact-b1506bf0d7600059504353b7`, `artifact-b21077d3d4d8265db9b7c7ab`, `artifact-b344c9faf1272dd3033d4ccd`, `artifact-b4c10e4ecf81929f09fe147e`, `artifact-b7161892b7836d1e1d26c6bf`, `artifact-b97aa4171cd0c84fed4d5bdc`, `artifact-bb7722eb19e78f33e1f81a58`, `artifact-bbe0c5a1782aa6f649f0a4a3`, `artifact-bca863b02ba3f5f894baa47d`, `artifact-c5f3c68d2707859b074dcf66`, `artifact-ca6184769b762384a49e1d67`, `artifact-d3c77a74ad17db7c908e8b60`, `artifact-d3d0439b0de8a87606740816`, `artifact-defc1c19533790036d5d14f3`, `artifact-df2537864f7163e488daff7e`, `artifact-e0445f9f19d3bcf95cfeba72`, `artifact-e122b0baefbfb6850805f341`, `artifact-e6335377558b4902a5eb4ac8`, `artifact-e95b67c1005fb210addcf4ae`, `artifact-ea5444a6d42154e413fe0f2e`, `artifact-eae297591ad36f0ad9b494d1`, `artifact-ebfa0eb36bcd33f72a4dffce`, `artifact-ecb10ef937e0612352e7c7ef`, `artifact-ee81a9215a4b627e88fda2d5`, `artifact-f41bd3ffa4f36fdfd1a93870`, `artifact-f42eca5e311c78031c27cfe2`, `artifact-f468517ae332ead13530f5b1`, `artifact-f46f2cacc6a5b8a104a0f706`, `artifact-f83cfd8c20c9d031c00c98ba`, `artifact-fb7a16748e389543ef6bf980`, `artifact-febb180b453e17b8edab6893`, `mention-0262ef8c81cd6ceef5dd4011`, `mention-0390564e65ddfd97e0cf6aca`, `mention-0560b2a3f10a394c75d7895b`, `mention-05e548a1d1544f47729dcacf`, `mention-060997ad9290154491d0f88d`, `mention-06846ff8f1a752dd0ab7f0a8`, `mention-081c8415f51b30a5450afd37`, `mention-09b1cc20a1286f38be46f7f7`, `mention-0a6eeff31453270478e00c4d`, `mention-0b8a1d7ed23f60fdadb91cc9`, `mention-0c4ae314d52801899fbb24b3`, `mention-0c55283e33abfe7bb1ea4415`, `mention-0c96f26cf6f8f8a50c06cbce`, `mention-0da9d0c36cb43e9b2a39216a`, `mention-0fbf43fd015523897ec6e86a`, `mention-1032f07b0d8fa6ad7c0422e4`, `mention-1070f2fb6b19b0aa9e2be684`, `mention-12431f4808cd3e311bb27f6a`, `mention-124faa3ce55d5350e39ecaf6`, `mention-127bc266c74bee98ed9c8d9b`, `mention-13177ca02c5dc97cc784af69`, `mention-13ca477cfb474394bc07a84d`, `mention-14f76a514ea044bf344b3d57`, `mention-167d41016e3bfd6e87aa3dd3`, `mention-17421d7ff0194ec25119f971`, `mention-176be3e810d98618e812b7c3`, `mention-18c11b6203f44c60e52ffb5d`, `mention-194ad35e98b1396a9d84c97f`, `mention-19a4e3ae8c7f8168388e1a46`, `mention-1a5f978499fefbab13d33b79`, `mention-1c3ed826f975879299547a1d`, `mention-1e610d25c42f8c81af654879`, `mention-1ee50d613005b33496f0deb6`, `mention-1eef83217b2f3406e51e8740`, `mention-20f2d41d77780395cc7606ef`, `mention-24879e4c83d820cc41ab9e8f`, `mention-24890bc13084884b6f00adeb`, `mention-252f63cd5689e839506bf458`, `mention-2560a40e2a6b51410badc6a4`, `mention-257be5ce00f7f87a48205d23`, `mention-25c2cbd41711d72f636317ca`, `mention-2680aedbbc29a8b0e3bf7fae`, `mention-26e0d797cd15cabe168482b4`, `mention-286a93d96f3b8228d5ab1d9d`, `mention-2a2e30a5ce94aade227d8bca`, `mention-2b510754473f7c08a83ef296`, `mention-2be44b244cc844f7d90397a6`, `mention-2dfd84a58ad18f9ffcc53a0f`, `mention-2e27068ffbc5cce511210c75`, `mention-2fb56648d65f71cf51f8c4a3`, `mention-3015696f766247ff4c5a6222`, `mention-3231ed24d41c6a33dbbbce6a`, `mention-355bece8c78cc74647434c6c`, `mention-364cf744da4479b0826e5079`, `mention-3658c31dd47e5494e53f6bea`, `mention-36f61b2e6d0d171529e11991`, `mention-3a7b9f6b9274306307638bea`, `mention-3b25ceaa5b517241c1c4c07b`, `mention-3ba74d63ec4d9890c72ac092`, `mention-3d55b4d1b7e69ed5f52e626d`, `mention-40b67ce136d06ebf3b8366a2`, `mention-41296c46c257a0ded5aa4afd`, `mention-41a8f81173bee60c22ac607f`, `mention-424a9a106d47696da7b40513`, `mention-425842bc8de017502fd76c09`, `mention-42652a02b5cf8207f107dbc7`, `mention-437ae2f35edee5b800aea0d2`, `mention-48017e5a81931cb348c758da`, `mention-4a7a1fcb82be65803c6c76a3`, `mention-4b2f62765259bcb153a8d2cf`, `mention-4b657d8c734dcf083f54df05`, `mention-4c1d5edf2623c39fd6cdee20`, `mention-4c1eabfde7565b4d572771c1`, `mention-4d210a4535400bfd823e49e7`, `mention-4ef4e757129b99c0a9014801`, `mention-4f43b483fa039b66370603aa`, `mention-50198776dc74289a4871e0e5`, `mention-506720910970fa6fa8eaec50`, `mention-51574691de14e677ad7cf068`, `mention-51ed282952a0ff6c8f367d02`, `mention-522feda80e9982aae1ee6fdd`, `mention-52835ffa31cd3c1f76c69e9d`, `mention-52c33d00143e32ef185d43c8`, `mention-54715f68e196734121dc6bc2`, `mention-55343abf2814592eeef528a6`, `mention-5610976dab1a662f60ce6194`, `mention-5613fd4122d90ed2bc135317`, `mention-5714f02bbc1c8a960eb1cc4e`, `mention-57775374f1b8e952a7d11964`, `mention-586323c9f30e08aef64ee6ca`, `mention-5867216741f94de515d5cb58`, `mention-58f869bdc1560cfff88c15b1`, `mention-5a7c7170d26d3eb5f11a3a9d`, `mention-5b74744b8699ebace1b4c0c3`, `mention-5bbc44327807bd9a9a95eb00`, `mention-5cace9b733d6ce21dd3bf8aa`, `mention-5d5f47daf22d5d1b15a27949`, `mention-5e97449850d8e261b9fa6423`, `mention-604f1b6ea9378205c7ad2fbc`, `mention-60774315b70015a7b7cee227`, `mention-60d0b0db8d5da2649e3661bb`, `mention-60da88709c316e1289c0b56d`, `mention-61a4ae20c926f3e0efa9107d`, `mention-61b0fa159a65df6ec02bb3f9`, `mention-61b72dedb37ae6773d32a3de`, `mention-61dff328b27f4a565fd66d76`, `mention-6213fe6824ea303b9a95ec60`, `mention-623317489159c749133436b1`, `mention-638b0c9b835f9a8048565339`, `mention-66391524a3d9c36797d6f0c2`, `mention-669485facc1011ff54a9fee3`, `mention-67ec7d0be0ac894390c8faa0`, `mention-6a4805a0c843146b17bf61e8`, `mention-6c548599e7f9c126d9e61c87`, `mention-6d254abfc0140c6457376fe9`, `mention-6d8ee672d0d1565714d35307`, `mention-6e833b9254cdf6ee19fae9ee`, `mention-6f550bdd9b57a5f7e9ab08ec`, `mention-73adac7ecfd60d64a2af57ad`, `mention-7528eff9dfcdf640ebb5678a`, `mention-755d2255f07b501b7368ec6f`, `mention-7570ece9385ceb8ff51a5463`, `mention-759a9cdf5cf7fe707d0d3060`, `mention-78f243b6918757215e41ed9a`, `mention-79ac69e1fa401d4d3a749f53`, `mention-79f5e7f1d00203225236278a`, `mention-7eaac981b07eeecad32f844d`, `mention-7fcbd483f27666a6d680e25f`, `mention-8222d6544c49a8ac311f3607`, `mention-8227268ace946fb96146d2fe`, `mention-83736f96199f333886eadeb1`, `mention-83d153d3c40f09e62535d1fe`, `mention-84b823d6a693c7755df18806`, `mention-8580c051668497e58a0378ab`, `mention-86b9630ec574b2388d1bfa22`, `mention-86cb0e38f1da2d6cde8b84a0`, `mention-882017f63f8fe0199a6ef998`, `mention-886f0612eaa9f08f176d21ef`, `mention-88eca380a37d4398997d9b8b`, `mention-88f9cc6d2e7d59f9ee0ac838`, `mention-8a237a0375d047757da48b73`, `mention-8b8a2f79f5dae8bcbc2ff99c`, `mention-8c2b0d45d5d34c880ec58696`, `mention-8ceaf4a9e348d9732f6474aa`, `mention-8d27f2828d8cca113b831364`, `mention-8d4cc8a4fd1a9dfd8a055e01`, `mention-8eeff962a334739af81c6fff`, `mention-8f065a802e48ee36bb6c4819`, `mention-8f6c4d635d99c314f6610406`, `mention-915538f2926a37adef43f710`, `mention-915c2393a7e16001eae9e633`, `mention-91d2c3397d719b929ca3cf61`, `mention-91ee21e6e3344b30233b8347`, `mention-927f05394ee9ffb82abb8ba1`, `mention-933538175f6e91c6d1d640d2`, `mention-96d19102e657bedee70e435a`, `mention-977bc197f3a2da29038824b6`, `mention-994ba4f869ca734a1895c21b`, `mention-99790b4a79aa59ed654e7c3b`, `mention-9a03f207fd0c3cc6e24362a0`, `mention-9b112eff21a9c887ca426e36`, `mention-9b2124af1ace05cb0d8d459a`, `mention-9bd56e3b2218c38cb2e86fa3`, `mention-9c0f46ff615b906056a7ac18`, `mention-9c250c7a7c94afee5d61166f`, `mention-9d84d340776d6f3e33f66c48`, `mention-9dbb768e4553a19afe59dad8`, `mention-9ddde42fcda8aedeb8abc13f`, `mention-9de8af7e5af4c10be896ff58`, `mention-9eaaa33d925b4f2a876333bd`, `mention-9f0e9f8c9ba818402e6e8a9f`, `mention-9f30de783411661edb9cc6f7`, `mention-9f62cf1c1d9dea8cc07f7f95`, `mention-a0800e9b800aea8e83ed6a69`, `mention-a285418ca5465100c9395772`, `mention-a2d32773fda23f7984fb067e`, `mention-a3d8338537e358118a54b61a`, `mention-a4640d77b23d0327e4906c39`, `mention-a4f89d27a2b2fda9e14bebf4`, `mention-a54cecfe02fa2cae143b0819`, `mention-a72df5f6ad9ac74382728f6a`, `mention-a7a95c9d79febdf409ceced2`, `mention-ab59c682f779f43d3d4fbae2`, `mention-ac4405e350d5f9577fa28ba9`, `mention-ad9644cfe900aedf43d00e67`, `mention-adea733aa8f88aaf0bd95c19`, `mention-ae5d80f7b3337155087853da`, `mention-af5ef59c38eb3765a1781ac6`, `mention-afe1b89ed52e1140d4be4980`, `mention-b0062957544d82078ef2af96`, `mention-b0776ab0c164ec1a271db4e2`, `mention-b0c41fbcaade9e8948060edf`, `mention-b0d9d94d03cc64e87a368010`, `mention-b3949fe11fcc98fa502fe206`, `mention-b43188cfa39f39ae809510de`, `mention-b49670adc86a2f502d17fa98`, `mention-b4c2499cdb06a89b3b7f84c3`, `mention-b4e7e96f9033795155b4c7bc`, `mention-b9d094000ff915e727c54c55`, `mention-ba1c13888b991ac2bae9bec0`, `mention-ba2bcc556031987e751750f9`, `mention-baee849a521ffe2a2d6f806a`, `mention-bb26cd824126bb6802087794`, `mention-bbf5eb1b159cf89a4b4a0e7f`, `mention-bcd1270ef44a61605794ccae`, `mention-bd7b51530762d1ea31016f35`, `mention-bfb75be1c59744824a7abd8b`, `mention-c3bfc4ba3bccf33a5306c5b2`, `mention-c49d86f3ba18f2dbb061de97`, `mention-c854038e7f7095bfc4cf11df`, `mention-cb8d21008e249cba0d44d17e`, `mention-ccd71dc7c4d2b0ca945ea54d`, `mention-cd81b99419b347ddb7c608e3`, `mention-cebbe080a5c84d363b8ab2c9`, `mention-d0d7d262b057e1479ad7c7e1`, `mention-d12d8245b1021470440f4fbf`, `mention-d1b7e7b035055501f621a1c8`, `mention-d28f30021cee83bdfd38b974`, `mention-d2dff267d1d31e7de5ceb242`, `mention-d416e41dca83009947d1c378`, `mention-d58d3669af4892ae4a41bfcd`, `mention-d81b907fe5d57c2f3536451a`, `mention-d8f9d209d1fb24a157883cdb`, `mention-da3b61a850f8806c6f4784e2`, `mention-db22ab93d8717daa2eef6c51`, `mention-db7c66e919e8d66a8192b9c1`, `mention-dc58678794fe791c6cba1c1e`, `mention-dc5d0d023a95b969790ec693`, `mention-dd8ed9414489124875a77796`, `mention-ddabc82cebedeb11c141ef4b`, `mention-de3de6927a7d9d31bb8a4e05`, `mention-df1584e217546f2e757f5ba0`, `mention-df964f91a4850c7f93448024`, `mention-e4a98dbeabb49d5416eccc47`, `mention-e4e7ce3a85240afd3a8e745a`, `mention-e52538f3527fc3fc658fda8d`, `mention-e5ccbdaaa17db0b6925dd426`, `mention-e9335209ef089771506f861e`, `mention-ea8b0de138636c7a14131504`, `mention-eb89e5115c455caa3087a36d`, `mention-ebc9f960b67992baba1aadd7`, `mention-ec96ca4fdb7118aea1d2db97`, `mention-ed3893c698a33ac0754a9f1b`, `mention-edbc145b6469d4d8a36c1d07`, `mention-ede89c02c457e33adfee3c76`, `mention-ef0a66f21c775a0fc7901788`, `mention-eff2e39ab332185c1a15decb`, `mention-effbf6d268f2e1a69ed47391`, `mention-f178fb03881c014434defd08`, `mention-f1d6b97390452c6d4211ee1d`, `mention-f586b8a0a50ad13bfe8441ff`, `mention-f5ab82ad9a4de6ed146d1290`, `mention-f5e29586400a3ecc5ddecaa8`, `mention-f5fb001137c0e5b827e9a273`, `mention-f6f49f6c4ed88c4cc10c29c8`, `mention-f7acd2dc46145a0e3c8049bd`, `mention-fa4dbe65776344193c995aca`, `mention-fca580c1b8411c1e7e3aa88f`, `mention-fdce827752ecaf7944c1992c`, `mention-fdfe3c3dfd0473e7010b3e3a`, `mention-fe7d9936766eac17b96f2879`, `mention-fe9ebe10b4adfbef31dbe127`, `mention-feff26f5eaed943fb7e9c24d`, `mention-ffb2e2bc91ed4b9ad4b05024`, `mention-ffdbd3acc3158a7d311cc5f3`
+
+`tooling` (10): `artifact-01c48e3f37efc92ef4c6e68a`, `mention-0c4ae314d52801899fbb24b3`, `mention-176be3e810d98618e812b7c3`, `mention-1e610d25c42f8c81af654879`, `mention-4c1d5edf2623c39fd6cdee20`, `mention-88eca380a37d4398997d9b8b`, `mention-b9d094000ff915e727c54c55`, `mention-bb26cd824126bb6802087794`, `mention-db22ab93d8717daa2eef6c51`, `mention-effbf6d268f2e1a69ed47391`
+
+</details>
+
+### Runs before C
+
+| Run | Result |
+|---|---|
+| Tool tests at a scratch commit with this C's tree | 581 tests, OK |
+| `mutations` over `refusal-guards.json` at that scratch commit | `selected_cases_passed`, 321 of 321 killed |
+| `corpus` over `adoption.json` with every `require` logged rather than raised, at a scratch commit with this round's adoption data | `revalidation_complete`; 0 violations |
+| `python3 -B tests/tooling/check-refusal-registry.py` | `{"refusal_checks": 321, "registered_mutations": 321}` |
+
+### Review of this round
+
+Before C, an eight-agent adversarial workflow reviewed this round's diff through four lenses: the tool change,
+the adoption edits against the owner's text, the docs and specification, and anything else that could fail
+verify. A skeptic then tried to refute each finding.
+
+- **Confirmed and fixed.**
+  - A non-text `decision` raised `TypeError` instead of a declared refusal.
+  - No test pinned that a later decision's record exists at C.
+  - Owner choice 01's attachment did not split the 96 removed witnesses (76 + 20).
+  - 007's TOOLS-02 scope did not mention this transfer or the standing rule. It is fixed in H.
+- **Fixed although refuted or marked a nit.**
+  - The follow-up section of owner choice 01 is relabelled, to separate the implementer's question from the
+    owner's choice.
+  - `sources.md`, the README, the `verification.json` limit sentence and the R4 wrapper sentence were reworded.
+- **Refuted.**
+  - A second later decision could re-list a member: harmless, because listing is a set.
+  - The two helper-only origins above should be reopened: a reading of the standing rule, stated above.
+
+### Self-found in this round
+
+- **Stale extras targets.** After the conversions, 18 owner choice 04 extras targets named their tests' old
+  lines. Implementation 01's census regen and target fix covered only targets whose member has a current line.
+- **A local artifact.** A `scripts/__pycache__` directory, left by a Python import run without `-B`, changed the
+  census's repository-read digests for 21 members. It was removed. Every run since uses `-B`.
+- **The limited-origin conflict.** It led to the follow-up question to the owner.
+- **The sweep timeout.** The sweep outgrew the 900 s that this packet's specification had copied from TOOLS-01,
+  and it is raised as above. The sweep result is unchanged: no zone firing and no divergence in the modes that
+  finished.
+
+### Checks not run
+
+- The live-provider and large-memory/timing profiles, which `verification.json` declares as not run.
+- `check:builder-docs` as a gate (`known-base-failure`).
+- No independent review of this candidate has taken place.
+
+### Third-party review (AGENTS.md)
+
+None. No third-party code, dependency or service was added, copied or adapted.
+
+## Handoff
+
+- **Ready for independent review.** 007 moves to WAITING_FOR_REVIEW in H.
+- **Requested on acceptance (not lifted here):**
+  - release of the [invalidation-02](../K1.2/invalidation-02.md) V-D1 claim hold, under the metered meaning
+    with residuals R1–R4 named (owner choice 01 item 1);
+  - release of the [DESIGN-AUDIT-01 invalidation-01](../DESIGN-AUDIT-01/invalidation-01.md) classification
+    hold, against the narrowed claim (detectable kinds only, design check Q6).
+- **External handoff:** B, C and H, with the verified push SHA.
+- **No self-acceptance.** Successor release stays with the owner.
