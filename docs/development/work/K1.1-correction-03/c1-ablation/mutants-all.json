@@ -1,0 +1,2740 @@
+[
+ {
+  "id": "MD1-describe-reads-constructor",
+  "ids": [
+   "MD1-describe-reads-constructor"
+  ],
+  "mechanism": "typeof-only diagnostic label (describe): no [[Get]] of constructor on a caller value",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight",
+    [
+     "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight",
+    [
+     "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight",
+    [
+     "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label",
+    [
+     "V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected",
+    [
+     "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics",
+    [
+     "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption",
+    [
+     "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MD2-describe-observes-prototype",
+  "ids": [
+   "MD2-describe-observes-prototype"
+  ],
+  "mechanism": "single structural observation per foreign position: the label adds no prototype observation",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" && PrimordialGetPrototypeOf(value) === null ? \"null-prototype object\" : typeof value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" && PrimordialGetPrototypeOf(value) === null ? \"null-prototype object\" : typeof value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight",
+    [
+     "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight",
+    [
+     "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MD3-catch-label-reads-constructor-name",
+  "ids": [
+   "MD3-catch-label-reads-constructor-name"
+  ],
+  "mechanism": "catch path typeof-only label: no constructor.name read on the thrown value",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "observing this value's structure threw (${describe(error)})",
+   "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "observing this value's structure threw (${describe(error)})",
+   "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight",
+    [
+     "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected",
+    [
+     "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics",
+    [
+     "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption",
+    [
+     "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MD4-describe-reads-function-name",
+  "ids": [
+   "MD4-describe-reads-function-name"
+  ],
+  "mechanism": "typeof-only label for unsupported primitives and functions: no name read",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"function\" && typeof (value as { name?: unknown }).name === \"string\" ? \"function\" : typeof value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"function\" && typeof (value as { name?: unknown }).name === \"string\" ? \"function\" : typeof value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label",
+    [
+     "V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MD6-catch-label-reads-message",
+  "ids": [
+   "MD6-catch-label-reads-message"
+  ],
+  "mechanism": "catch path typeof-only label: no message read on the thrown value",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "observing this value's structure threw (${describe(error)})",
+   "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { message?: unknown }).message === \"string\" ? (error as { message: string }).message : describe(error)})"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "observing this value's structure threw (${describe(error)})",
+   "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { message?: unknown }).message === \"string\" ? (error as { message: string }).message : describe(error)})"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected",
+    [
+     "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MD7-describe-classifies-arrays",
+  "ids": [
+   "MD7-describe-classifies-arrays"
+  ],
+  "mechanism": "typeof-only label: no IsArray (a structural observation that throws on a revoked Proxy) of the thrown value",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : PrimordialArrayIsArray(value) ? \"array\" : typeof value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : PrimordialArrayIsArray(value) ? \"array\" : typeof value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation",
+    [
+     "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MD8-catch-label-describes-container",
+  "ids": [
+   "MD8-catch-label-describes-container"
+  ],
+  "mechanism": "catch path labels the thrown value, not the container",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "observing this value's structure threw (${describe(error)})",
+   "after": "observing this value's structure threw (${describe(container)})"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "observing this value's structure threw (${describe(error)})",
+   "after": "observing this value's structure threw (${describe(value)})"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation",
+    [
+     "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MO1-outcome-captured-before-visibility",
+  "ids": [
+   "MO1-outcome-captured-before-visibility"
+  ],
+  "mechanism": "Outcome scope/visibility precedes all root observation",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    const record = this.#visible(caller, executionSeen.observed as string);",
+   "after": "    captureOutcome(envelope as object, this.#emissionsPerOutcome);\n    const record = this.#visible(caller, executionSeen.observed as string);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    const record = this.#visible(caller, executionSeen.observed as string);",
+   "after": "    captureOutcome(envelope as object, this.#emissionsPerOutcome);\n    const record = this.#visible(caller, executionSeen.observed as string);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+    [
+     "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state",
+    [
+     "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MO2-emissions-skipped-after-refused-progress",
+  "ids": [
+   "MO2-emissions-skipped-after-refused-progress"
+  ],
+  "mechanism": "eager capture of every Outcome root before authority (no short-circuit after a refused root)",
+  "at_b": {
+   "path": "packages/kernel/src/outcome.ts",
+   "before": "  const captured = emissionsField.ok ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+   "after": "  const captured = emissionsField.ok && progress !== null ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/outcome.ts",
+   "before": "  const captured = emissionsField.ok ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+   "after": "  const captured = emissionsField.ok && progress !== null ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+    [
+     "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state",
+    [
+     "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): one and eight eager roots keep bounded observations before authority"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: eager roots preserve selected counts and whole state before authority",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): eager roots preserve selected counts and whole state before authority"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MV1-element-read-replaced-by-descriptor-value",
+  "ids": [
+   "MV1-element-read-replaced-by-descriptor-value",
+   "VAL-array-read-from-descriptor"
+  ],
+  "mechanism": "descriptor/read disagreement check: one ordinary read per position, compared with its own descriptor",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const read = (container as Record<string, unknown>)[key];",
+   "after": "  const read = descriptor.value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+   "after": "  return { descriptor, read: descriptor.value };"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+    [
+     "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state",
+    [
+     "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): one and eight eager roots keep bounded observations before authority"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: eager roots preserve selected counts and whole state before authority",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): eager roots preserve selected counts and whole state before authority"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "an array position read differently than it is owned is refused, not silently picked",
+    [
+     "an array position read differently than it is owned is refused, not silently picked"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MC1-creation-fails-fast-on-authority-context",
+  "ids": [
+   "MC1-creation-fails-fast-on-authority-context"
+  ],
+  "mechanism": "creation captures both roots (authorityContext and initial payload) before refusing",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, \"authorityContext\"));",
+   "after": "  if (!authorityContext.ok) { appendIssues(issues, located(authorityContext.issues, \"authorityContext\")); return err(issues); }"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, \"authorityContext\"));",
+   "after": "  if (!authorityContext.ok) { appendIssues(issues, located(authorityContext.issues, \"authorityContext\")); return err(issues); }"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics",
+    [
+     "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics",
+    [
+     "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MR1-recovery-short-circuits-lists",
+  "ids": [
+   "MR1-recovery-short-circuits-lists"
+  ],
+  "mechanism": "recovery captures all three availability roots eagerly",
+  "at_b": {
+   "path": "packages/kernel/src/outcome.ts",
+   "before": "  const runtimeContractRevisions = captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);",
+   "after": "  const runtimeContractRevisions = definitionRevisions === null ? null : captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/outcome.ts",
+   "before": "  const runtimeContractRevisions = captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);",
+   "after": "  const runtimeContractRevisions = definitionRevisions === null ? null : captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics",
+    [
+     "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics",
+    [
+     "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MV2-length-read-replaced-by-descriptor-value",
+  "ids": [
+   "MV2-length-read-replaced-by-descriptor-value",
+   "VAL-length-read-from-descriptor"
+  ],
+  "mechanism": "array length held to one own data descriptor and one agreeing read",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+   "after": "  const lengthRead: unknown = lengthDescriptor?.value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+   "after": "  const lengthRead: unknown = lengthDescriptor?.value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): one and eight eager roots keep bounded observations before authority"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: eager roots preserve selected counts and whole state before authority",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): eager roots preserve selected counts and whole state before authority"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a length that does not agree with itself cannot decide which positions exist",
+    [
+     "a length that does not agree with itself cannot decide which positions exist"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MV3-array-symbols-listing-skipped",
+  "ids": [
+   "MV3-array-symbols-listing-skipped"
+  ],
+  "mechanism": "arrays list own symbols (second own-key listing) before acceptance",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const symbolCount = hasExtra ? 0 : PrimordialGetOwnPropertySymbols(container).length;",
+   "after": "  const symbolCount = 0;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (!hasExtra) {\n    const listed = listOwnSymbols(state, container);",
+   "after": "  if (false) {\n    const listed = listOwnSymbols(state, container);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MB1-byte-stop-does-not-stop",
+  "ids": [
+   "MB1-byte-stop-does-not-stop"
+  ],
+  "mechanism": "the byte stop ends reading of the whole root",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    state.stopped = true;\n",
+   "after": ""
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+   "after": "    state.stop = \"bytes\";"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the byte stop bounds observations before later rows"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: the byte stop bounds Kernel-selected observations",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): the byte stop bounds Kernel-selected observations"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "MB2-array-punctuation-undercharged",
+  "ids": [
+   "MB2-array-punctuation-undercharged"
+  ],
+  "mechanism": "container punctuation byte charge before elements (commas)",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
+   "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
+   "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+    [
+     "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the byte stop bounds observations before later rows"
+    ]
+   ],
+   [
+    "value-diagnostic-work.test.ts",
+    "decision-04 handler probe: the byte stop bounds Kernel-selected observations",
+    [
+     "decision-04 handler probe (item 5 superseded by decision-01 item 2): the byte stop bounds Kernel-selected observations"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-disagree-check-removed",
+  "ids": [
+   "VAL-disagree-check-removed"
+  ],
+  "mechanism": "descriptor/read disagreement check (checkMember / describedValue) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+   "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+   "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an array position read differently than it is owned is refused, not silently picked",
+    [
+     "an array position read differently than it is owned is refused, not silently picked"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "an object member read differently than it is owned is refused the same way",
+    [
+     "an object member read differently than it is owned is refused the same way"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "the disagreement is refused at depth and under a valid root",
+    [
+     "the disagreement is refused at depth and under a valid root"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a value the rules do refuse is still refused with the accessor live, not normalized",
+    [
+     "a value the rules do refuse is still refused with the accessor live, not normalized"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-object-read-from-descriptor",
+  "ids": [
+   "VAL-object-read-from-descriptor",
+   "RC-MISMATCH-NOREAD"
+  ],
+  "mechanism": "object member's one ordinary read replaced by the descriptor value [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const read = (container as Record<string, unknown>)[key];",
+   "after": "  const read = descriptor.value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      read = observed.read;",
+   "after": "      read = descriptor.value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an object member read differently than it is owned is refused the same way",
+    [
+     "an object member read differently than it is owned is refused the same way"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: descriptor/read mismatch",
+    [
+     "V-D1 every issue family: descriptor/read mismatch"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-member-path-flattened",
+  "ids": [
+   "VAL-member-path-flattened"
+  ],
+  "mechanism": "located path of an object member [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    const where = child(path, key);",
+   "after": "    const where = key;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    const where = child(path, key);",
+   "after": "    const where = key;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "the disagreement is refused at depth and under a valid root",
+    [
+     "the disagreement is refused at depth and under a valid root"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-missing-descriptor-branch-removed",
+  "ids": [
+   "VAL-missing-descriptor-branch-removed"
+  ],
+  "mechanism": "missing own descriptor at a structurally existing position (undefined_member) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
+   "after": "  if (false) {\n    // The structure said this member exists"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
+   "after": "  if (false) {\n    // The structure said this member exists"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an array position supplied only by a dynamic read, owning nothing, is refused",
+    [
+     "an array position supplied only by a dynamic read, owning nothing, is refused"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-element-path-dropped",
+  "ids": [
+   "VAL-element-path-dropped"
+  ],
+  "mechanism": "located path of an array position [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    const where = element(path, index);",
+   "after": "    const where = path;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    const where = element(path, index);",
+   "after": "    const where = path;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an array position supplied only by a dynamic read, owning nothing, is refused",
+    [
+     "an array position supplied only by a dynamic read, owning nothing, is refused"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a value the rules do refuse is still refused with the accessor live, not normalized",
+    [
+     "a value the rules do refuse is still refused with the accessor live, not normalized"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-length-agreement-removed",
+  "ids": [
+   "VAL-length-agreement-removed",
+   "RC-LENGTH-CMP"
+  ],
+  "mechanism": "array length descriptor/read agreement [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
+   "after": ""
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
+   "after": ""
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a length that does not agree with itself cannot decide which positions exist",
+    [
+     "a length that does not agree with itself cannot decide which positions exist"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: array unstable length",
+    [
+     "V-D1 every issue family: array unstable length"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-catch-rethrows",
+  "ids": [
+   "VAL-catch-rethrows"
+  ],
+  "mechanism": "capture's catch path turns a throwing observation into a refusal [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  } catch (error) {\n    pushIssue(state.issues, {",
+   "after": "  } catch (error) {\n    throw error;\n    pushIssue(state.issues, {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  } catch (error) {\n    record(state, {",
+   "after": "  } catch (error) {\n    throw error;\n    record(state, {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a structure that cannot be observed is refused rather than thrown out of the boundary",
+    [
+     "a structure that cannot be observed is refused rather than thrown out of the boundary"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal",
+    [
+     "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-catch-code-changed",
+  "ids": [
+   "VAL-catch-code-changed",
+   "RC-CATCH-CODE"
+  ],
+  "mechanism": "the catch path refuses an unobservable structure as unstable_representation [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+   "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+   "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a structure that cannot be observed is refused rather than thrown out of the boundary",
+    [
+     "a structure that cannot be observed is refused rather than thrown out of the boundary"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: revoked structure",
+    [
+     "V-D1 every issue family: revoked structure"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: throwing structure",
+    [
+     "V-D1 every issue family: throwing structure"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-listed-not-owned-skipped",
+  "ids": [
+   "VAL-listed-not-owned-skipped"
+  ],
+  "mechanism": "listed-but-not-owned object member check [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+   "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept."
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+   "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept."
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an object listing an own member it does not own is refused",
+    [
+     "an object listing an own member it does not own is refused"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-listed-not-owned-misclassified",
+  "ids": [
+   "VAL-listed-not-owned-misclassified",
+   "RC-GHOST-CODE"
+  ],
+  "mechanism": "a listed-but-not-owned member is unstable_representation, not a hole [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
+   "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
+   "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an object listing an own member it does not own is refused",
+    [
+     "an object listing an own member it does not own is refused"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: object ghost descriptor",
+    [
+     "V-D1 every issue family: object ghost descriptor"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-snapshot-is-caller-object",
+  "ids": [
+   "VAL-snapshot-is-caller-object"
+  ],
+  "mechanism": "the retained snapshot is a Kernel copy taken from the one reading, never the caller's object [ablation: B original KILLED; C converted KILLED; at C the mutant binds {\"a\":2,\"b\":{}}]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return PrimordialObjectFreeze(snapshot);\n}",
+   "after": "  return container as unknown as BoundaryValue;\n}"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return finishObject(prototype, captured);\n}",
+   "after": "  return container as unknown as BoundaryValue;\n}"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a value that answers differently on each read is bound to the one reading that was taken",
+    [
+     "a value that answers differently on each read is bound to the one reading that was taken"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-snapshot-rereads-caller",
+  "ids": [
+   "VAL-snapshot-rereads-caller"
+  ],
+  "mechanism": "snapshot members come from the one reading, not a later ordinary read of the caller [ablation: B original KILLED; C converted KILLED; at C the mutant binds {\"a\":2,\"b\":{}}]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+   "after": "    defineData(snapshot, pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue, false, true, false);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return finishObject(prototype, captured);\n}",
+   "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a value that answers differently on each read is bound to the one reading that was taken",
+    [
+     "a value that answers differently on each read is bound to the one reading that was taken"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-array-structure-charge-dropped",
+  "ids": [
+   "COST-array-structure-charge-dropped"
+  ],
+  "mechanism": "byte charge of an array's structure at every occurrence of a shared member [ablation: B original KILLED (its child hit the 60 s timeout); C converted KILLED (meter stop too_much_work instead of the byte stop)]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+   "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+   "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "thirty-two arrays standing for four billion are refused after reading about a megabyte",
+    [
+     "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-byte-stop-not-sticky",
+  "ids": [
+   "COST-byte-stop-not-sticky"
+  ],
+  "mechanism": "the byte stop ends reading (stopped flag) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    state.stopped = true;\n    pushIssue(state.issues, {\n      path: \"\",\n      code: \"too_many_bytes\",",
+   "after": "    pushIssue(state.issues, {\n      path: \"\",\n      code: \"too_many_bytes\","
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+   "after": "    state.stop = \"bytes\";"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "thirty-two arrays standing for four billion are refused after reading about a megabyte",
+    [
+     "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-string-bytes-uncharged",
+  "ids": [
+   "COST-string-bytes-uncharged"
+  ],
+  "mechanism": "byte charge of an accepted string at every occurrence [ablation: B original KILLED (its child hit the 60 s timeout); C converted KILLED (meter stop too_much_work)]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    return charge(state, scan.bytes) ? text : REFUSED;",
+   "after": "    return text;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    return charge(state, scan.bytes) ? value : REFUSED;",
+   "after": "    return value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "one long string shared across shared arrays is refused before a second megabyte is read",
+    [
+     "one long string shared across shared arrays is refused before a second megabyte is read"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-refused-string-uncharged",
+  "ids": [
+   "COST-refused-string-uncharged"
+  ],
+  "mechanism": "byte charge of a refused (too long) string at every occurrence [ablation: B original KILLED (read 1,040,384 strings); C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      // did, so repeated occurrences of one refused string exhaust the budget quickly.\n      charge(state, text.length);\n",
+   "after": "      // did, so repeated occurrences of one refused string exhaust the budget quickly.\n"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      charge(state, value.length);\n",
+   "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a shared member refused for another reason is not re-read without bound either",
+    [
+     "a shared member refused for another reason is not re-read without bound either"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-descriptor-reads-unbounded",
+  "ids": [
+   "COST-descriptor-reads-unbounded"
+  ],
+  "mechanism": "object descriptor reads bounded by the entry limit plus one (KC2-R1-01) [ablation: B original KILLED (read 550,000 descriptors); C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+   "after": "  const readable = names.length;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+   "after": "  const readable = names.length;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an oversized own-names listing is classified after at most one descriptor past the entry limit",
+    [
+     "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-descriptor-bound-off-by-one",
+  "ids": [
+   "COST-descriptor-bound-off-by-one"
+  ],
+  "mechanism": "object descriptor read bound is exactly entry limit plus one [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+   "after": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries : names.length;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+   "after": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries : names.length;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an oversized own-names listing is classified after at most one descriptor past the entry limit",
+    [
+     "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-phantom-scan-not-bounded",
+  "ids": [
+   "COST-phantom-scan-not-bounded"
+  ],
+  "mechanism": "an over-named array listing is refused without classifying each name (phantom-index scan skipped when overlong) [ablation: B original KILLED (1,000,000 index descriptors); C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex] as string;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
+   "after": "  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex] as string;\n    if (name === \"length\" || !isArrayIndex(name)) continue;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
+   "after": "  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an array listing more names than any accepted array owns is refused without classifying each",
+    [
+     "an array listing more names than any accepted array owns is refused without classifying each"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "COST-overlong-guard-removed",
+  "ids": [
+   "COST-overlong-guard-removed"
+  ],
+  "mechanism": "aggregate refusal of an over-named array listing [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;",
+   "after": "  const overlong = false;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;",
+   "after": "  const overlong = false;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an array listing more names than any accepted array owns is refused without classifying each",
+    [
+     "an array listing more names than any accepted array owns is refused without classifying each"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-clone-inherits-object-prototype",
+  "ids": [
+   "SER-clone-inherits-object-prototype"
+  ],
+  "mechanism": "serializer clone of an object is null-prototype, so an inherited toJSON is off the lookup path [ablation: B original KILLED; C converted KILLED (canonical '42')]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);",
+   "after": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(PrimordialObjectPrototype);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);",
+   "after": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(PrimordialObjectPrototype);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure",
+    [
+     "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-snapshot-handed-to-dependency",
+  "ids": [
+   "SER-snapshot-handed-to-dependency"
+  ],
+  "mechanism": "encode hands only the serialization-safe clone to the dependency [ablation: B original KILLED; C converted KILLED (canonical '42')]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(toSerializationSafe(value)) as string | undefined);",
+   "after": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(value) as string | undefined);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(toSerializationSafe(value)) as string | undefined);",
+   "after": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(value) as string | undefined);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure",
+    [
+     "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-phantom-index-check-removed",
+  "ids": [
+   "VAL-phantom-index-check-removed",
+   "RC-PHANTOM-INDEX-OFF"
+  ],
+  "mechanism": "listed canonical index at or beyond length must cohere or refuse (K11-R2-VAL-02 supplement) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    if (numeric >= length) {",
+   "after": "    if (false) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    if (numeric >= length) {",
+   "after": "    if (false) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an own-name listing reporting a canonical index outside length with no backing property is refused",
+    [
+     "an own-name listing reporting a canonical index outside length with no backing property is refused"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a backed canonical index outside length is also refused rather than silently dropped",
+    [
+     "a backed canonical index outside length is also refused rather than silently dropped"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: array ghost index",
+    [
+     "V-D1 every issue family: array ghost index"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: array out-of-range index",
+    [
+     "V-D1 every issue family: array out-of-range index"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-phantom-unbacked-misclassified",
+  "ids": [
+   "VAL-phantom-unbacked-misclassified"
+  ],
+  "mechanism": "an unbacked listed index is unstable_representation, a backed one unrepresentable_member [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      if (backing === undefined) {",
+   "after": "      if (backing === null) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      if (backing === undefined) {",
+   "after": "      if (backing === null) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "an own-name listing reporting a canonical index outside length with no backing property is refused",
+    [
+     "an own-name listing reporting a canonical index outside length with no backing property is refused"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-backed-outside-index-unlocated",
+  "ids": [
+   "VAL-backed-outside-index-unlocated"
+  ],
+  "mechanism": "a backed index outside length is located at its element path [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "          path: element(path, numeric),\n          code: \"unrepresentable_member\",",
+   "after": "          path,\n          code: \"unrepresentable_member\","
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "          path: element(path, numeric),\n          code: \"unrepresentable_member\",",
+   "after": "          path,\n          code: \"unrepresentable_member\","
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a backed canonical index outside length is also refused rather than silently dropped",
+    [
+     "a backed canonical index outside length is also refused rather than silently dropped"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-catch-label-inspects-thrown-value",
+  "ids": [
+   "VAL-catch-label-inspects-thrown-value"
+  ],
+  "mechanism": "the catch path's typeof-only label (describe) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+   "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal",
+    [
+     "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "LIMIT-early-entries-refusal-removed",
+  "ids": [
+   "LIMIT-early-entries-refusal-removed"
+  ],
+  "mechanism": "array length above the entry limit refused before listing or traversal (K11-R3-LIMIT-01) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (length > BOUNDARY_LIMITS.containerEntries) {",
+   "after": "  if (false) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (length > BOUNDARY_LIMITS.containerEntries) {",
+   "after": "  if (false) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a deliberately huge sparse length refuses bounded without traversing its extent",
+    [
+     "a deliberately huge sparse length refuses bounded without traversing its extent"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-keys-slot-dropped",
+  "ids": [
+   "SER-keys-slot-dropped",
+   "V-KEYS-SLOT"
+  ],
+  "mechanism": "serializer window reinstalls Object.keys for the dependency [ablation: B original KILLED; C converted KILLED (bytes '{}')]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+   "after": ""
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+   "after": ""
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+    [
+     "K11-R2-VAL-02 round 6: a one-shot Object.keys replacement live across the call cannot change canonical bytes"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes",
+    [
+     "K11-R2-VAL-02 round 6: an Object.keys replacement that throws, live across the call, neither leaks nor diverts bytes"
+    ]
+   ],
+   [
+    "creation.test.ts",
+    "K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement",
+    [
+     "K11-R2-VAL-02 creation identity and replay agree under an Object.keys replacement installed in the same call"
+    ]
+   ],
+   [
+    "ingress.test.ts",
+    "K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement",
+    [
+     "K11-R2-VAL-02 ingress identity and replay agree under an Object.keys replacement installed in the same call"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-slots-not-installed",
+  "ids": [
+   "SER-slots-not-installed"
+  ],
+  "mechanism": "serializer window installs the load-time primordial in every named slot [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+   "after": "      // slot not installed"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+   "after": "      // slot not installed"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+    [
+     "K11-R2-VAL-02 round 6: a one-shot Object.keys replacement live across the call cannot change canonical bytes"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes",
+    [
+     "K11-R2-VAL-02 round 6: an Object.keys replacement that throws, live across the call, neither leaks nor diverts bytes"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-slots-not-handed-back",
+  "ids": [
+   "SER-slots-not-handed-back"
+  ],
+  "mechanism": "serializer window hands each named slot back after the call [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      } else {\n        restoreDescriptor(entry.holder, entry.key, entry.descriptor);",
+   "after": "      } else {\n        // not handed back"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      } else {\n        restoreDescriptor(entry.holder, entry.key, entry.descriptor);",
+   "after": "      } else {\n        // not handed back"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+    [
+     "K11-R2-VAL-02 round 6: a one-shot Object.keys replacement live across the call cannot change canonical bytes"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+    [
+     "K11-R2-VAL-02 round 6: an Array.prototype.join replacement live across the call cannot change canonical bytes either"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-join-slot-dropped",
+  "ids": [
+   "SER-join-slot-dropped"
+  ],
+  "mechanism": "serializer window reinstalls Array.prototype.join for the dependency [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  slot(PrimordialArrayPrototype, \"join\", PrimordialArrayJoin);\n",
+   "after": ""
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  slot(PrimordialArrayPrototype, \"join\", PrimordialArrayJoin);\n",
+   "after": ""
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+    [
+     "K11-R2-VAL-02 round 6: an Array.prototype.join replacement live across the call cannot change canonical bytes either"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "VAL-plain-prototype-live-global",
+  "ids": [
+   "VAL-plain-prototype-live-global"
+  ],
+  "mechanism": "plain-prototype check compares with the load-time Object.prototype, not a live global read (K11-R5-VAL-03) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+   "after": "  if (prototype !== Object.prototype && prototype !== null) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+   "after": "  if (prototype !== Object.prototype && prototype !== null) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain",
+    [
+     "K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "OWN-element-install-by-set",
+  "ids": [
+   "OWN-element-install-by-set",
+   "V-DEFINEAT-OUT"
+  ],
+  "mechanism": "snapshot elements installed with [[DefineOwnProperty]], never [[Set]] (K11-R6-VAL-04) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    defineAt(out, index, item as BoundaryValue);",
+   "after": "    out[index] = item as BoundaryValue;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    defineAt(out, index, item);",
+   "after": "    out[index] = item;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "the retained structure and the canonical bytes are exactly the one value observed",
+    [
+     "the retained structure and the canonical bytes are exactly the one value observed"
+    ]
+   ],
+   [
+    "values.test.ts",
+    "the index the accessor picks is not special: position zero and a nested array behave the same",
+    [
+     "the index the accessor picks is not special: position zero and a nested array behave the same"
+    ]
+   ],
+   [
+    "creation.test.ts",
+    "a coherent array whose prototype observation installs an indexed accessor binds its own value",
+    [
+     "a coherent array captured while an indexed accessor installed in the same call is live binds its own value"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-index-shadows-kept",
+  "ids": [
+   "SER-index-shadows-kept"
+  ],
+  "mechanism": "serializer window removes inherited index shadows for the call (K11-R6-VAL-05) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      const entry = readAt(shadows, index) as SavedSlot;\n      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];",
+   "after": "      const entry = readAt(shadows, index) as SavedSlot;\n      void entry;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      const entry = readAt(shadows, index) as SavedSlot;\n      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];",
+   "after": "      const entry = readAt(shadows, index) as SavedSlot;\n      void entry;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "the index the accessor picks is not special: position zero and a nested array behave the same",
+    [
+     "the index the accessor picks is not special: position zero and a nested array behave the same"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-array-chain-link-dropped",
+  "ids": [
+   "SER-array-chain-link-dropped"
+  ],
+  "mechanism": "serializer window resets the Array.prototype chain link (K11-R16-VAL-01 R2) [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);\n",
+   "after": ""
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);\n",
+   "after": ""
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time trap that inserts the chain still binds the observed structure",
+    [
+     "a capture-time observation that inserts the chain still binds the observed structure"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "SER-chain-reset-skipped",
+  "ids": [
+   "SER-chain-reset-skipped"
+  ],
+  "mechanism": "serializer window resets every chain link for the call [ablation: B original KILLED; C converted KILLED]",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);",
+   "after": "      void entry;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);",
+   "after": "      void entry;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "values.test.ts",
+    "a capture-time trap that inserts the chain still binds the observed structure",
+    [
+     "a capture-time observation that inserts the chain still binds the observed structure"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-CATCH-RETHROW",
+  "ids": [
+   "RC-CATCH-RETHROW"
+  ],
+  "mechanism": "the catch path of capture (a structure whose observation throws is refused, not propagated)",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  } catch (error) {\n    pushIssue(state.issues, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+   "after": "  } catch (error) {\n    throw error;\n    pushIssue(state.issues, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+   "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: revoked structure",
+    [
+     "V-D1 every issue family: revoked structure"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: throwing structure",
+    [
+     "V-D1 every issue family: throwing structure"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-CATCH-LABEL",
+  "ids": [
+   "RC-CATCH-LABEL"
+  ],
+  "mechanism": "the catch path's typeof-only label (no member of the thrown value is read)",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "threw (${describe(error)})",
+   "after": "threw (${(error as Error).constructor.name})"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "threw (${describe(error)})",
+   "after": "threw (${(error as Error).constructor.name})"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: throwing structure",
+    [
+     "V-D1 every issue family: throwing structure"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-GHOST-CONTINUE",
+  "ids": [
+   "RC-GHOST-CONTINUE"
+  ],
+  "mechanism": "the listed-but-not-owned check ends that name's examination",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor]);",
+   "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor]);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
+   "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: object ghost descriptor",
+    [
+     "V-D1 every issue family: object ghost descriptor"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-PHANTOM-INDEX-SWAP",
+  "ids": [
+   "RC-PHANTOM-INDEX-SWAP"
+  ],
+  "mechanism": "the phantom-index check's backed/unbacked classification",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      if (backing === undefined) {",
+   "after": "      if (backing !== undefined) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      if (backing === undefined) {",
+   "after": "      if (backing !== undefined) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: array ghost index",
+    [
+     "V-D1 every issue family: array ghost index"
+    ]
+   ],
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: array out-of-range index",
+    [
+     "V-D1 every issue family: array out-of-range index"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-LENGTH-CODE",
+  "ids": [
+   "RC-LENGTH-CODE"
+  ],
+  "mechanism": "the unstable-length check's classification",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
+   "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
+   "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: array unstable length",
+    [
+     "V-D1 every issue family: array unstable length"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-MISMATCH-OFF",
+  "ids": [
+   "RC-MISMATCH-OFF",
+   "V-DISAGREE"
+  ],
+  "mechanism": "the descriptor/read disagreement check",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+   "after": "  if (false) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+   "after": "  if (false) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 every issue family: descriptor/read mismatch",
+    [
+     "V-D1 every issue family: descriptor/read mismatch"
+    ]
+   ],
+   [
+    "creation.test.ts",
+    "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation",
+    [
+     "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation"
+    ]
+   ],
+   [
+    "ingress.test.ts",
+    "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress",
+    [
+     "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-PHANTOM-NAME-CHECK",
+  "ids": [
+   "RC-PHANTOM-NAME-CHECK"
+  ],
+  "mechanism": "the listed-but-not-owned check on a phantom name",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own.",
+   "after": "    if (false) {\n      // The object listed an own name it does not own."
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own.",
+   "after": "    if (false) {\n      // The object listed an own name it does not own."
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 bounded paths include phantom names, long ancestors, and literal omission text",
+    [
+     "V-D1 bounded paths include phantom names, long ancestors, and literal omission text"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-PHANTOM-NAME-PATH",
+  "ids": [
+   "RC-PHANTOM-NAME-PATH"
+  ],
+  "mechanism": "the phantom name's bounded member path",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "        path: child(path, name),\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
+   "after": "        path,\n        code: \"unstable_representation\",\n        message: \"object lists an own member"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "        path: child(path, name),\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
+   "after": "        path,\n        code: \"unstable_representation\",\n        message: \"object lists an own member"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 bounded paths include phantom names, long ancestors, and literal omission text",
+    [
+     "V-D1 bounded paths include phantom names, long ancestors, and literal omission text"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-ISSUE-TEXT-BOUND",
+  "ids": [
+   "RC-ISSUE-TEXT-BOUND"
+  ],
+  "mechanism": "the diagnostic path bound (issueText length limit)",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (text.length > limit) return omitted;\n",
+   "after": ""
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (text.length > limit) return omitted;\n",
+   "after": ""
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 bounded paths include phantom names, long ancestors, and literal omission text",
+    [
+     "V-D1 bounded paths include phantom names, long ancestors, and literal omission text"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-OWN-SUFFIX",
+  "ids": [
+   "RC-OWN-SUFFIX"
+  ],
+  "mechanism": "pushIssue creates each suffix entry with its own count",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
+   "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
+   "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 own-only multiplicity under ambient pollution and capture-time mutation",
+    [
+     "V-D1 own-only multiplicity under ambient pollution and capture-time mutation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-OWN-EXPLAIN",
+  "ids": [
+   "RC-OWN-EXPLAIN"
+  ],
+  "mechanism": "explainDiagnosticIssues reads occurrences own-only",
+  "at_b": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {",
+   "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {",
+   "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 own-only multiplicity under ambient pollution and capture-time mutation",
+    [
+     "V-D1 own-only multiplicity under ambient pollution and capture-time mutation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-OWN-RENDER",
+  "ids": [
+   "RC-OWN-RENDER"
+  ],
+  "mechanism": "explain() reads occurrences own-only",
+  "at_b": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    out += occurrences === undefined",
+   "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    out += occurrences === undefined"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    out += occurrences === undefined",
+   "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    out += occurrences === undefined"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 own-only multiplicity under ambient pollution and capture-time mutation",
+    [
+     "V-D1 own-only multiplicity under ambient pollution and capture-time mutation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-EAGER-EMISSIONS",
+  "ids": [
+   "RC-EAGER-EMISSIONS"
+  ],
+  "mechanism": "every Emission root is captured eagerly (no stop at the first refused one)",
+  "at_b": {
+   "path": "packages/kernel/src/outcome.ts",
+   "before": "    if (!keyOk || value === null) continue;",
+   "after": "    if (!keyOk || value === null) break;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/outcome.ts",
+   "before": "    if (!keyOk || value === null) continue;",
+   "after": "    if (!keyOk || value === null) break;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 eight eager roots before authority: every position once, no forbidden mutation",
+    [
+     "V-D1 eight eager roots before authority: every position once, no forbidden mutation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-ELEMENT-READ",
+  "ids": [
+   "RC-ELEMENT-READ"
+  ],
+  "mechanism": "each array position's one ordinary read is taken (not skipped)",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const read = (container as Record<string, unknown>)[key];",
+   "after": "  const read: unknown = undefined;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+   "after": "  return { descriptor, read: undefined };"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 eight eager roots before authority: every position once, no forbidden mutation",
+    [
+     "V-D1 eight eager roots before authority: every position once, no forbidden mutation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "RC-ELEMENT-READ-TWICE",
+  "ids": [
+   "RC-ELEMENT-READ-TWICE"
+  ],
+  "mechanism": "each array position is read at most once",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const read = (container as Record<string, unknown>)[key];",
+   "after": "  const read = ((container as Record<string, unknown>)[key], (container as Record<string, unknown>)[key]);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+   "after": "  (container as Record<string, unknown>)[key];\n  return { descriptor, read: (container as Record<string, unknown>)[key] };"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "value-refusal-cost.test.ts",
+    "V-D1 eight eager roots before authority: every position once, no forbidden mutation",
+    [
+     "V-D1 eight eager roots before authority: every position once, no forbidden mutation"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-MAPSET-CREATION-KEY",
+  "ids": [
+   "C-MAPSET-CREATION-KEY"
+  ],
+  "mechanism": "creation-key index commit through load-time Map.set",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
+   "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
+   "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+    [
+     "K11-R5-STATE-01 a Map.prototype.set no-op installed in the same call cannot drop the creation commit"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-MAPSET-EXECUTIONS",
+  "ids": [
+   "C-MAPSET-EXECUTIONS"
+  ],
+  "mechanism": "Execution registry commit through load-time Map.set",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    mapSet(this.#executions, executionId, record);",
+   "after": "    this.#executions.set(executionId, record);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    mapSet(this.#executions, executionId, record);",
+   "after": "    this.#executions.set(executionId, record);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+    [
+     "K11-R5-STATE-01 a Map.prototype.set no-op installed in the same call cannot drop the creation commit"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "O-APPENDOWN-PUSH",
+  "ids": [
+   "O-APPENDOWN-PUSH"
+  ],
+  "mechanism": "own-array appendOwn",
+  "at_b": {
+   "path": "packages/kernel/src/own-array.ts",
+   "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+   "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/own-array.ts",
+   "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+   "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "a coherent array whose prototype observation installs an indexed accessor binds its own value",
+    [
+     "a coherent array captured while an indexed accessor installed in the same call is live binds its own value"
+    ]
+   ],
+   [
+    "ingress.test.ts",
+    "a creation whose payload traps the first mailbox index still binds its initial Event",
+    [
+     "a creation whose initial-input payload field traps the first mailbox index still binds its initial Event"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "V-SNAPSHOT-LITERAL",
+  "ids": [
+   "V-SNAPSHOT-LITERAL"
+  ],
+  "mechanism": "snapshot member installation through null-prototype descriptor",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+   "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+   "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "a payload observation that installs get/set still creates the exact Execution",
+    [
+     "an initial-input payload field whose observation installs get/set still creates the exact Execution"
+    ]
+   ],
+   [
+    "ingress.test.ts",
+    "a payload observation that installs get/set still retains the accepted Event",
+    [
+     "a payload field whose observation installs get/set still retains the accepted Event"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "O-DEFINEDATA-LITERAL",
+  "ids": [
+   "O-DEFINEDATA-LITERAL"
+  ],
+  "mechanism": "own-array defineData null-prototype descriptor",
+  "at_b": {
+   "path": "packages/kernel/src/own-array.ts",
+   "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+   "after": "  const descriptor = {} as {\n    value: unknown;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/own-array.ts",
+   "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+   "after": "  const descriptor = {} as {\n    value: unknown;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "a payload observation that installs get/set still creates the exact Execution",
+    [
+     "an initial-input payload field whose observation installs get/set still creates the exact Execution"
+    ]
+   ],
+   [
+    "creation.test.ts",
+    "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+    [
+     "a payload whose observation throws under the get/set it installed is refused, never accepted or leaked"
+    ]
+   ],
+   [
+    "ingress.test.ts",
+    "a payload observation that installs get/set still retains the accepted Event",
+    [
+     "a payload field whose observation installs get/set still retains the accepted Event"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "V-CATCH",
+  "ids": [
+   "V-CATCH"
+  ],
+  "mechanism": "capture catch path containment",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  } catch (error) {",
+   "after": "  } catch (error) {\n    throw error;"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  } catch (error) {",
+   "after": "  } catch (error) {\n    throw error;"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+    [
+     "a payload whose observation throws under the get/set it installed is refused, never accepted or leaked"
+    ]
+   ],
+   [
+    "outcome-hostile.test.ts",
+    "a field whose observation throws is a located refusal, not an escaping exception",
+    [
+     "a field whose observation throws is a located refusal, not an escaping exception"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "E-OWN-ONLY",
+  "ids": [
+   "E-OWN-ONLY"
+  ],
+  "mechanism": "own-only envelope observation",
+  "at_b": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
+   "after": ""
+  },
+  "at_c": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
+   "after": ""
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "an earlier-field trap cannot steer a later field through ambient state in the same tick",
+    [
+     "an earlier-field getter cannot steer a later field through ambient state in the same tick"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-KIND-ORDINARY",
+  "ids": [
+   "C-KIND-ORDINARY"
+  ],
+  "mechanism": "kind observed through observeField, not an ordinary read",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
+   "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
+   "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "creation.test.ts",
+    "an earlier-field trap cannot steer a later field through ambient state in the same tick",
+    [
+     "an earlier-field getter cannot steer a later field through ambient state in the same tick"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "V-SYNTH-DESCRIPTOR",
+  "ids": [
+   "V-SYNTH-DESCRIPTOR"
+  ],
+  "mechanism": "missing own position synthesized from the ordinary read",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    const member = describedValue(container, key, PrimordialGetOwnPropertyDescriptor(container, key), where, state);",
+   "after": "    const member = describedValue(container, key, PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true }, where, state);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
+   "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true };\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs."
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "ingress.test.ts",
+    "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress",
+    [
+     "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-MAILBOX-PUSH",
+  "ids": [
+   "C-MAILBOX-PUSH"
+  ],
+  "mechanism": "mailbox append as own data",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    appendOwn(record.mailbox, entry);",
+   "after": "    record.mailbox.push(entry);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    appendOwn(record.mailbox, entry);",
+   "after": "    record.mailbox.push(entry);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "ingress.test.ts",
+    "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+    [
+     "an inherited setter at the next mailbox index cannot make an accepted Event go unretained"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-INGRESS-RECEIPT-PUSH",
+  "ids": [
+   "C-INGRESS-RECEIPT-PUSH"
+  ],
+  "mechanism": "ingress receipt append as own data",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
+   "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
+   "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "ingress.test.ts",
+    "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+    [
+     "an inherited setter at the next mailbox index cannot make an accepted Event go unretained"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "V-CAPTURED-PUSH",
+  "ids": [
+   "V-CAPTURED-PUSH"
+  ],
+  "mechanism": "captured member list grown as own data",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    appendOwn(captured, [key, item]);",
+   "after": "    captured.push([key, item]);"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    appendOwn(captured, [key, item] as const);",
+   "after": "    captured.push([key, item] as const);"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "ingress.test.ts",
+    "a creation whose payload traps the first mailbox index still binds its initial Event",
+    [
+     "a creation whose initial-input payload field traps the first mailbox index still binds its initial Event"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-ACTIVATION-PAYLOAD-COPY",
+  "ids": [
+   "C-ACTIVATION-PAYLOAD-COPY"
+  ],
+  "mechanism": "Activation carries the retained payload, not a copy",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    payload: entry.payload,",
+   "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    payload: entry.payload,",
+   "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "dispatch.test.ts",
+    "K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound",
+    [
+     "K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-VIEW-PAYLOAD-COPY",
+  "ids": [
+   "C-VIEW-PAYLOAD-COPY"
+  ],
+  "mechanism": "inspection projects the retained payload, not a copy",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
+   "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
+   "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "dispatch.test.ts",
+    "K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound",
+    [
+     "K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-FREEZE-ACTIVATION",
+  "ids": [
+   "C-FREEZE-ACTIVATION"
+  ],
+  "mechanism": "Activation frozen by load-time freeze",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
+   "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
+   "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "dispatch.test.ts",
+    "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+    [
+     "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-FREEZE-EVENTS",
+  "ids": [
+   "C-FREEZE-EVENTS"
+  ],
+  "mechanism": "Activation event batch frozen by load-time freeze",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "      events: PrimordialObjectFreeze(carriedEvents),",
+   "after": "      events: Object.freeze(carriedEvents),"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "      events: PrimordialObjectFreeze(carriedEvents),",
+   "after": "      events: Object.freeze(carriedEvents),"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "dispatch.test.ts",
+    "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+    [
+     "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "C-FREEZE-EVENT",
+  "ids": [
+   "C-FREEZE-EVENT"
+  ],
+  "mechanism": "each carried Event frozen by load-time freeze",
+  "at_b": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+   "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/coordinator.ts",
+   "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+   "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });"
+  },
+  "absent": null,
+  "claimed": [
+   [
+    "dispatch.test.ts",
+    "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+    [
+     "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "V-FOREIGN-PROTO",
+  "ids": [
+   "V-FOREIGN-PROTO"
+  ],
+  "mechanism": "plain-prototype check disabled (coordinator review)",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+   "after": "  if (false) {"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+   "after": "  if (false) {"
+  },
+  "claimed": []
+ },
+ {
+  "id": "X1-foreign-object-instanceof",
+  "ids": [
+   "X1"
+  ],
+  "mechanism": "foreign-object label walks the prototype chain with instanceof (diagnostic-work review)",
+  "at_b": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    pushIssue(state.issues, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
+   "after": "    pushIssue(state.issues, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
+   "after": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });"
+  },
+  "claimed": []
+ },
+ {
+  "id": "E-IDTEXT-CATCH",
+  "ids": [
+   "E-IDTEXT-CATCH"
+  ],
+  "mechanism": "identity-text classifier throw escapes instead of a located refusal (coordinator review)",
+  "at_b": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "      received = \"an uninspectable value\";",
+   "after": "      throw new Error(\"classifier threw\");"
+  },
+  "at_c": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "      received = \"an uninspectable value\";",
+   "after": "      throw new Error(\"classifier threw\");"
+  },
+  "claimed": []
+ }
+]

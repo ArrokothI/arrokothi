@@ -744,8 +744,6 @@ export const PRIMORDIAL_EFFECTS: ReadonlyMap<string, { readonly mutates?: 0 | "t
     ["UtilTypes.isSetIterator", { returns: "none" }],
     ["UtilTypes.isArgumentsObject", { returns: "none" }],
     ["UtilTypes.isModuleNamespaceObject", { returns: "none" }],
-    ["UtilTypes.isKeyObject", { returns: "none" }],
-    ["UtilTypes.isCryptoKey", { returns: "none" }],
     ["UtilTypes.isExternal", { returns: "none" }],
     ["PrimordialJSONWithRawJSON.isRawJSON", { returns: "none" }],
     ["Map", { returns: "fresh" }],

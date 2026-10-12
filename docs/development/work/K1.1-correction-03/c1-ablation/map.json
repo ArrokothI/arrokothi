@@ -1,0 +1,485 @@
+[
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight",
+  "converted": [
+   "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight",
+  "converted": [
+   "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight",
+  "converted": [
+   "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 every unsupported primitive, including a revoked function Proxy, has a type-only label",
+  "converted": [
+   "V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected",
+  "converted": [
+   "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation",
+  "converted": [
+   "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+  "converted": [
+   "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics",
+  "converted": [
+   "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state",
+  "converted": [
+   "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics",
+  "converted": [
+   "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+  "converted": [
+   "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+  "converted": [
+   "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the byte stop bounds observations before later rows"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+  "converted": [
+   "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): one and eight eager roots keep bounded observations before authority"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption",
+  "converted": [
+   "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+  "converted": [
+   "decision-04 handler probe (item 5 superseded by decision-01 item 2): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "decision-04 handler probe: the byte stop bounds Kernel-selected observations",
+  "converted": [
+   "decision-04 handler probe (item 5 superseded by decision-01 item 2): the byte stop bounds Kernel-selected observations"
+  ]
+ },
+ {
+  "file": "value-diagnostic-work.test.ts",
+  "original": "decision-04 handler probe: eager roots preserve selected counts and whole state before authority",
+  "converted": [
+   "decision-04 handler probe (item 5 superseded by decision-01 item 2): eager roots preserve selected counts and whole state before authority"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "an array position read differently than it is owned is refused, not silently picked",
+  "converted": [
+   "an array position read differently than it is owned is refused, not silently picked"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "an object member read differently than it is owned is refused the same way",
+  "converted": [
+   "an object member read differently than it is owned is refused the same way"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "the disagreement is refused at depth and under a valid root",
+  "converted": [
+   "the disagreement is refused at depth and under a valid root"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "an array position supplied only by a dynamic read, owning nothing, is refused",
+  "converted": [
+   "an array position supplied only by a dynamic read, owning nothing, is refused"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a length that does not agree with itself cannot decide which positions exist",
+  "converted": [
+   "a length that does not agree with itself cannot decide which positions exist"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a structure that cannot be observed is refused rather than thrown out of the boundary",
+  "converted": [
+   "a structure that cannot be observed is refused rather than thrown out of the boundary"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "an object listing an own member it does not own is refused",
+  "converted": [
+   "an object listing an own member it does not own is refused"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a value that answers differently on each read is bound to the one reading that was taken",
+  "converted": [
+   "a value that answers differently on each read is bound to the one reading that was taken"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "thirty-two arrays standing for four billion are refused after reading about a megabyte",
+  "converted": [
+   "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "one long string shared across shared arrays is refused before a second megabyte is read",
+  "converted": [
+   "one long string shared across shared arrays is refused before a second megabyte is read"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a shared member refused for another reason is not re-read without bound either",
+  "converted": [
+   "a shared member refused for another reason is not re-read without bound either"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "an oversized own-names listing is classified after at most one descriptor past the entry limit",
+  "converted": [
+   "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "an array listing more names than any accepted array owns is refused without classifying each",
+  "converted": [
+   "an array listing more names than any accepted array owns is refused without classifying each"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure",
+  "converted": [
+   "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "an own-name listing reporting a canonical index outside length with no backing property is refused",
+  "converted": [
+   "an own-name listing reporting a canonical index outside length with no backing property is refused"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a backed canonical index outside length is also refused rather than silently dropped",
+  "converted": [
+   "a backed canonical index outside length is also refused rather than silently dropped"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal",
+  "converted": [
+   "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a deliberately huge sparse length refuses bounded without traversing its extent",
+  "converted": [
+   "a deliberately huge sparse length refuses bounded without traversing its extent"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+  "converted": [
+   "K11-R2-VAL-02 round 6: a one-shot Object.keys replacement live across the call cannot change canonical bytes"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes",
+  "converted": [
+   "K11-R2-VAL-02 round 6: an Object.keys replacement that throws, live across the call, neither leaks nor diverts bytes"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+  "converted": [
+   "K11-R2-VAL-02 round 6: an Array.prototype.join replacement live across the call cannot change canonical bytes either"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain",
+  "converted": [
+   "K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "the retained structure and the canonical bytes are exactly the one value observed",
+  "converted": [
+   "the retained structure and the canonical bytes are exactly the one value observed"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "the index the accessor picks is not special: position zero and a nested array behave the same",
+  "converted": [
+   "the index the accessor picks is not special: position zero and a nested array behave the same"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a value the rules do refuse is still refused with the accessor live, not normalized",
+  "converted": [
+   "a value the rules do refuse is still refused with the accessor live, not normalized"
+  ]
+ },
+ {
+  "file": "values.test.ts",
+  "original": "a capture-time trap that inserts the chain still binds the observed structure",
+  "converted": [
+   "a capture-time observation that inserts the chain still binds the observed structure"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 every issue family: revoked structure",
+  "converted": [
+   "V-D1 every issue family: revoked structure"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 every issue family: throwing structure",
+  "converted": [
+   "V-D1 every issue family: throwing structure"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 every issue family: object ghost descriptor",
+  "converted": [
+   "V-D1 every issue family: object ghost descriptor"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 every issue family: array ghost index",
+  "converted": [
+   "V-D1 every issue family: array ghost index"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 every issue family: array out-of-range index",
+  "converted": [
+   "V-D1 every issue family: array out-of-range index"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 every issue family: array unstable length",
+  "converted": [
+   "V-D1 every issue family: array unstable length"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 every issue family: descriptor/read mismatch",
+  "converted": [
+   "V-D1 every issue family: descriptor/read mismatch"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 bounded paths include phantom names, long ancestors, and literal omission text",
+  "converted": [
+   "V-D1 bounded paths include phantom names, long ancestors, and literal omission text"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 own-only multiplicity under ambient pollution and capture-time mutation",
+  "converted": [
+   "V-D1 own-only multiplicity under ambient pollution and capture-time mutation"
+  ]
+ },
+ {
+  "file": "value-refusal-cost.test.ts",
+  "original": "V-D1 eight eager roots before authority: every position once, no forbidden mutation",
+  "converted": [
+   "V-D1 eight eager roots before authority: every position once, no forbidden mutation"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement",
+  "converted": [
+   "K11-R2-VAL-02 creation identity and replay agree under an Object.keys replacement installed in the same call"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+  "converted": [
+   "K11-R5-STATE-01 a Map.prototype.set no-op installed in the same call cannot drop the creation commit"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation",
+  "converted": [
+   "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "a coherent array whose prototype observation installs an indexed accessor binds its own value",
+  "converted": [
+   "a coherent array captured while an indexed accessor installed in the same call is live binds its own value"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "a payload observation that installs get/set still creates the exact Execution",
+  "converted": [
+   "an initial-input payload field whose observation installs get/set still creates the exact Execution"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+  "converted": [
+   "a payload whose observation throws under the get/set it installed is refused, never accepted or leaked"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "an earlier-field trap cannot steer a later field through ambient state in the same tick",
+  "converted": [
+   "an earlier-field getter cannot steer a later field through ambient state in the same tick"
+  ]
+ },
+ {
+  "file": "ingress.test.ts",
+  "original": "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress",
+  "converted": [
+   "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress"
+  ]
+ },
+ {
+  "file": "ingress.test.ts",
+  "original": "K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement",
+  "converted": [
+   "K11-R2-VAL-02 ingress identity and replay agree under an Object.keys replacement installed in the same call"
+  ]
+ },
+ {
+  "file": "ingress.test.ts",
+  "original": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+  "converted": [
+   "an inherited setter at the next mailbox index cannot make an accepted Event go unretained"
+  ]
+ },
+ {
+  "file": "ingress.test.ts",
+  "original": "a creation whose payload traps the first mailbox index still binds its initial Event",
+  "converted": [
+   "a creation whose initial-input payload field traps the first mailbox index still binds its initial Event"
+  ]
+ },
+ {
+  "file": "ingress.test.ts",
+  "original": "a payload observation that installs get/set still retains the accepted Event",
+  "converted": [
+   "a payload field whose observation installs get/set still retains the accepted Event"
+  ]
+ },
+ {
+  "file": "dispatch.test.ts",
+  "original": "K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound",
+  "converted": [
+   "K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound"
+  ]
+ },
+ {
+  "file": "dispatch.test.ts",
+  "original": "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+  "converted": [
+   "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable"
+  ]
+ },
+ {
+  "file": "outcome-hostile.test.ts",
+  "original": "a field whose observation throws is a located refusal, not an escaping exception",
+  "converted": [
+   "a field whose observation throws is a located refusal, not an escaping exception"
+  ]
+ },
+ {
+  "file": "creation.test.ts",
+  "original": "K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding",
+  "converted": [
+   "K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped"
+  ]
+ }
+]

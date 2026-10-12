@@ -1,0 +1,64 @@
+[
+ {
+  "id": "SPLIT-READ-FROM-DESCRIPTOR",
+  "at_c": [
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+    "after": "  return { descriptor, read: descriptor.value };"
+   },
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "      read = observed.read;",
+    "after": "      read = descriptor.value;"
+   }
+  ]
+ },
+ {
+  "id": "SPLIT-RC-ELEMENT-READ-TWICE",
+  "at_c": [
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+    "after": "  (container as Record<string, unknown>)[key];\n  return { descriptor, read: (container as Record<string, unknown>)[key] };"
+   },
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { read: (container as Record<string, unknown>)[key] };",
+    "after": "  (container as Record<string, unknown>)[key];\n  return { read: (container as Record<string, unknown>)[key] };"
+   }
+  ]
+ },
+ {
+  "id": "MV3-AT-C",
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  const symbolCount = hasExtra ? 0 : listed;",
+   "after": "  const symbolCount = 0;"
+  }
+ },
+ {
+  "id": "VAL-snapshot-is-caller-object",
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return finishObject(prototype, captured);\n}",
+   "after": "  return container as unknown as BoundaryValue;\n}"
+  }
+ },
+ {
+  "id": "VAL-snapshot-rereads-caller",
+  "at_c": {
+   "path": "packages/kernel/src/values.ts",
+   "before": "  return finishObject(prototype, captured);\n}",
+   "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}"
+  }
+ },
+ {
+  "id": "E-IDTEXT-CATCH",
+  "at_c": {
+   "path": "packages/kernel/src/envelope.ts",
+   "before": "      received = \"an uninspectable value\";",
+   "after": "      throw new Error(\"classifier threw\");"
+  }
+ }
+]

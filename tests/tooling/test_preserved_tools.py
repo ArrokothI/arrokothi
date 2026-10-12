@@ -372,13 +372,17 @@ class PreservedCensusTests(unittest.TestCase):
 
 class RepositoryRegisterTests(unittest.TestCase):
     def test_the_register_holds_the_d05_chk_05_fixtures(self):
-        """The helper-built Proxy acceptances D05-CHK-05 names, and a harness revokedProxy user."""
+        """The helper-built Proxy acceptances D05-CHK-05 names, and a harness revokedProxy user.
+
+        K1.1-correction-03 converted the three acceptances: their Proxies are now refused before any trap
+        (DESIGN-AUDIT-01 decision-01 item 2), so their register entries are held for Proxy, no longer
+        superseded, until that packet's acceptance. The creation case was retitled by its conversion."""
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         entries = {row['key']: row for row in manifest['holds']['register']['entries']}
-        expected = {'packages/kernel/tests/values.test.ts:1225:3': 'superseded',
-                    'packages/kernel/tests/values.test.ts:1239:3': 'superseded',
-                    'packages/kernel/tests/creation.test.ts:742:3': 'superseded',
-                    'packages/kernel/tests/ingress.test.ts:819:3': 'held'}
+        expected = {'packages/kernel/tests/values.test.ts:1801:3': 'held',
+                    'packages/kernel/tests/values.test.ts:1824:3': 'held',
+                    'packages/kernel/tests/creation.test.ts:948:3': 'held',
+                    'packages/kernel/tests/ingress.test.ts:1074:3': 'held'}
         self.assertEqual({key: entries[key]['classification'] for key in expected}, expected)
         self.assertEqual(manifest['holds']['register']['recipes'], tool.REGISTER_MINIMUM)
 

@@ -793,9 +793,10 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
     const installedByWitness: InheritedIndexTrap | undefined = trap;
     assert.equal(installedByWitness, undefined, "so the setter was never installed");
 
+    const observedPayload = { n: 2, inner: { m: 1 } };
     const sneaky = withPayloadGetter(
-      { destination: created.executionId, requestKey: "traps-its-own-slot", kind: "application.request", payload: { n: 2 } },
-      { n: 2 },
+      { destination: created.executionId, requestKey: "traps-its-own-slot", kind: "application.request", payload: { n: 2, inner: { m: 1 } } },
+      observedPayload,
       () => {
         trap = trapInheritedIndices(["1", "2"]);
       },
@@ -825,7 +826,7 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
       view.mailbox.map((entry) => entry.eventId),
       [created.initialEventId, submitted!.eventId],
     );
-    assert.deepEqual(view.mailbox[1]?.payload, { n: 2 }, "the retained payload is the observed value");
+    assert.deepEqual(view.mailbox[1]?.payload, { n: 2, inner: { m: 1 } }, "the retained payload is the observed value");
     assert.deepEqual(view.queued, [created.initialEventId, submitted!.eventId]);
     assert.deepEqual(
       view.receipts.map((receipt) => receipt.token),
@@ -840,13 +841,20 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
         destination: created.executionId,
         requestKey: "traps-its-own-slot",
         kind: "application.request",
-        payload: { n: 2 },
+        payload: { n: 2, inner: { m: 1 } },
       }),
     );
     assert.equal(replay.replayed, true);
     assert.equal(replay.eventId, submitted!.eventId);
     assert.equal(replay.acceptancePosition, 2);
     assert.equal(replay.receipt, submitted!.receipt);
+
+    // The retained payload is the Kernel's own copy, taken from the one observation: changing the object
+    // the getter returned, at either level, changes nothing retained. (The Proxy this case used before
+    // checked the same thing by answering differently on a later read; C1 of the design check.)
+    observedPayload.n = 3;
+    observedPayload.inner.m = 3;
+    assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).mailbox[1]?.payload, { n: 2, inner: { m: 1 } });
 
     // And the retained Event is selectable: reservation sees it in acceptance order.
     const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
@@ -885,7 +893,8 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
     const installedByWitness: InheritedIndexTrap | undefined = trap;
     assert.equal(installedByWitness, undefined, "so the setter was never installed");
 
-    const initial = withPayloadGetter({ kind: "application.request", payload: { n: 1 } }, { n: 1 }, () => {
+    const observedPayload = { n: 1, inner: { m: 1 } };
+    const initial = withPayloadGetter({ kind: "application.request", payload: { n: 1, inner: { m: 1 } } }, observedPayload, () => {
       trap = trapInheritedIndices(["0", "1"]);
     });
     let created: { executionId: string; initialEventId: string; replayed: boolean };
@@ -902,9 +911,14 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
     assert.equal(view.state, "READY");
     assert.equal(view.mailbox.length, 1, "creation's own atomic Event is retained");
     assert.equal(view.mailbox[0]?.eventId, created!.initialEventId);
-    assert.deepEqual(view.mailbox[0]?.payload, { n: 1 });
+    assert.deepEqual(view.mailbox[0]?.payload, { n: 1, inner: { m: 1 } });
     assert.deepEqual(view.receipts.length, 1);
     assert.deepEqual(kernel.visibleExecutions(author), [created!.executionId]);
+
+    // The retained initial payload is the Kernel's own copy, taken from the one observation (as above).
+    observedPayload.n = 3;
+    observedPayload.inner.m = 3;
+    assert.deepEqual(accepted(kernel.inspect(author, created!.executionId)).mailbox[0]?.payload, { n: 1, inner: { m: 1 } });
   });
 });
 

@@ -1,0 +1,1 @@
+[{"id": "MV3-AT-C", "at_c": {"path": "packages/kernel/src/values.ts", "before": "  const symbolCount = hasExtra ? 0 : listed;", "after": "  const symbolCount = 0;"}}]

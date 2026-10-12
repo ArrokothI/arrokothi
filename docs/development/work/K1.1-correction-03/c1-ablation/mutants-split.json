@@ -1,0 +1,47 @@
+[
+ {
+  "id": "SPLIT-RC-ELEMENT-READ",
+  "at_c": [
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+    "after": "  return { descriptor, read: undefined };"
+   },
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { read: (container as Record<string, unknown>)[key] };",
+    "after": "  return { read: undefined };"
+   }
+  ]
+ },
+ {
+  "id": "SPLIT-RC-ELEMENT-READ-TWICE",
+  "at_c": [
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+    "after": "  (container as Record<string, unknown>)[key];\n  return { descriptor, read: (container as Record<string, unknown>)[key] };"
+   },
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { read: (container as Record<string, unknown>)[key] };",
+    "after": "  (container as Record<string, unknown>)[key];\n  return { read: (container as Record<string, unknown>)[key] };"
+   }
+  ]
+ },
+ {
+  "id": "SPLIT-READ-FROM-DESCRIPTOR",
+  "at_c": [
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+    "after": "  return { descriptor, read: descriptor.value };"
+   },
+   {
+    "path": "packages/kernel/src/values.ts",
+    "before": "      read = observed.read;",
+    "after": "      read = descriptor.value;"
+   }
+  ]
+ }
+]

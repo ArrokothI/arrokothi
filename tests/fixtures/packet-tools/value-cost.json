@@ -14,8 +14,15 @@
     "packages/kernel/tests/capture-metering.ts",
     "packages/kernel/tests/capture-refusals.test.ts",
     "packages/kernel/tests/capture-work.test.ts",
+    "packages/kernel/tests/creation.test.ts",
+    "packages/kernel/tests/dispatch.test.ts",
     "packages/kernel/tests/harness.ts",
+    "packages/kernel/tests/ingress.test.ts",
+    "packages/kernel/tests/outcome-hostile.test.ts",
     "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+    "packages/kernel/tests/value-diagnostic-work.test.ts",
+    "packages/kernel/tests/value-refusal-cost.test.ts",
+    "packages/kernel/tests/values.test.ts",
     "packages/kernel/tests/zone-analysis.ts"
   ],
   "dependencies": [
@@ -382,6 +389,14 @@
           "after": "",
           "operator": "remove-stop-issue",
           "name": "meter stop records no issue"
+        },
+        {
+          "id": "mutation-13189a67fbe3c100ce08f98911db0d7196ba3f489bb32cb5eea226bbad5c6d90",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    pushIssue(state.issues, { path: \"\", code: \"too_much_work\", message: TOO_MUCH_WORK_MESSAGE });",
+          "after": "    pushIssue(state.issues, { path: \"[0]\", code: \"too_much_work\", message: TOO_MUCH_WORK_MESSAGE });",
+          "operator": "mislocate-stop-issue",
+          "name": "meter stop issue located at a position (packet review BM-01)"
         }
       ]
     },
@@ -1033,6 +1048,1601 @@
           "after": "  const entered = level + 1;\n  if (isOpenContainer(state, value) && entered <= BOUNDARY_LIMITS.containerDepth) {\n    record(state, { path, code: \"cycle\", message: \"value refers to itself and has no canonical form\" });\n    return REFUSED;\n  }\n\n  if (entered > BOUNDARY_LIMITS.containerDepth) {",
           "operator": "reorder-refusal-check",
           "name": "depth tested before the cycle"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.c1.creation",
+      "category": "value-cost",
+      "assertion": "value-cost.c1.creation.converted-tests",
+      "source": "K1.1-correction-03 design check C1: the 8 converted Proxy-instrument tests of packages/kernel/tests/creation.test.ts still kill the mutants their originals killed at B",
+      "input": {
+        "file": "packages/kernel/tests/creation.test.ts",
+        "pattern": "^(?:K11-R2-VAL-02 creation identity and replay agree under an Object\\.keys replacement installed in the same call|K11-R5-STATE-01 a Map\\.prototype\\.set no-op installed in the same call cannot drop the creation commit|K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation|a coherent array captured while an indexed accessor installed in the same call is live binds its own value|an initial-input payload field whose observation installs get\\/set still creates the exact Execution|a payload whose observation throws under the get\\/set it installed is refused, never accepted or leaked|an earlier-field getter cannot steer a later field through ambient state in the same tick|K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped)$",
+        "timeout_ms": 170000
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.c1.creation"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    payload: entry.payload,",
+          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "operator": "c1-ablation",
+          "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-f259c3f416d01bb2c17efe9ec6e5ffe709e2e65e298f4715bf0de35f6e72278b",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
+          "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };",
+          "operator": "c1-ablation",
+          "name": "C-KIND-ORDINARY (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-4737cc2855a9a9a53c3044b8528860a4807e445fbb481363ec7d6ba601052755",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
+          "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);",
+          "operator": "c1-ablation",
+          "name": "C-MAPSET-CREATION-KEY (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-49a0843576c5fe717a4193ceb629a7e6e57efb415244c780e0a00726b3a7e7c0",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    mapSet(this.#executions, executionId, record);",
+          "after": "    this.#executions.set(executionId, record);",
+          "operator": "c1-ablation",
+          "name": "C-MAPSET-EXECUTIONS (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
+          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "operator": "c1-ablation",
+          "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-5c30ab6a2ff6a47f9a18fc1ac255f50f6a7c79d7c7996bfdcddd393c03692d38",
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "E-OWN-ONLY (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: descriptor.value };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "      read = observed.read;",
+              "after": "      read = descriptor.value;"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+          "path": "packages/kernel/src/own-array.ts",
+          "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+          "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);",
+          "operator": "c1-ablation",
+          "name": "O-APPENDOWN-PUSH (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19",
+          "path": "packages/kernel/src/own-array.ts",
+          "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+          "after": "  const descriptor = {} as {\n    value: unknown;",
+          "operator": "c1-ablation",
+          "name": "O-DEFINEDATA-LITERAL (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    defineAt(out, index, item);",
+          "after": "    out[index] = item;",
+          "operator": "c1-ablation",
+          "name": "OWN-element-install-by-set (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-RETHROW (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: undefined };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { read: undefined };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "RC-MISMATCH-OFF (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "SER-keys-slot-dropped (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+          "after": "      // slot not installed",
+          "operator": "c1-ablation",
+          "name": "SER-slots-not-installed (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {",
+          "after": "  } catch (error) {\n    throw error;",
+          "operator": "c1-ablation",
+          "name": "V-CATCH (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "V-FOREIGN-PROTO (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+          "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });",
+          "operator": "c1-ablation",
+          "name": "V-SNAPSHOT-LITERAL (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-rethrows (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
+          "operator": "c1-ablation",
+          "name": "VAL-disagree-check-removed (C1: killed by the creation converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+          "after": "  if (prototype !== Object.prototype && prototype !== null) {",
+          "operator": "c1-ablation",
+          "name": "VAL-plain-prototype-live-global (C1: killed by the creation converted tests at B and at C)"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.c1.dispatch",
+      "category": "value-cost",
+      "assertion": "value-cost.c1.dispatch.converted-tests",
+      "source": "K1.1-correction-03 design check C1: the 2 converted Proxy-instrument tests of packages/kernel/tests/dispatch.test.ts still kill the mutants their originals killed at B",
+      "input": {
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "pattern": "^(?:K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound|K11-R5-STATE-01 an Object\\.freeze replacement installed in the creation call cannot leave the Activation mutable)$",
+        "timeout_ms": 170000
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.c1.dispatch"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    payload: entry.payload,",
+          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "operator": "c1-ablation",
+          "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-0380416e35590c512cae18c3c884ed74ee53083c7ade8db46d147a397742515a",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
+          "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,",
+          "operator": "c1-ablation",
+          "name": "C-FREEZE-ACTIVATION (C1: killed by the dispatch converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-247688fb864948eb6791c408b4efdcdd0ef721b2ffcd7f809a5a41d56b126034",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+          "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+          "operator": "c1-ablation",
+          "name": "C-FREEZE-EVENT (C1: killed by the dispatch converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-804c808dde9ba06ebd022b87abd89654573f67b25adbabe2848a50c685711b65",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      events: PrimordialObjectFreeze(carriedEvents),",
+          "after": "      events: Object.freeze(carriedEvents),",
+          "operator": "c1-ablation",
+          "name": "C-FREEZE-EVENTS (C1: killed by the dispatch converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
+          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "operator": "c1-ablation",
+          "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: undefined };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { read: undefined };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ (C1: killed by the dispatch converted tests at B and at C)"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.c1.ingress",
+      "category": "value-cost",
+      "assertion": "value-cost.c1.ingress.converted-tests",
+      "source": "K1.1-correction-03 design check C1: the 5 converted Proxy-instrument tests of packages/kernel/tests/ingress.test.ts still kill the mutants their originals killed at B",
+      "input": {
+        "file": "packages/kernel/tests/ingress.test.ts",
+        "pattern": "^(?:K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress|K11-R2-VAL-02 ingress identity and replay agree under an Object\\.keys replacement installed in the same call|an inherited setter at the next mailbox index cannot make an accepted Event go unretained|a creation whose initial-input payload field traps the first mailbox index still binds its initial Event|a payload field whose observation installs get\\/set still retains the accepted Event)$",
+        "timeout_ms": 170000
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.c1.ingress"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-5d1c7d87cb781c6bb2abdd5eec05fb3c8ae121dbc9655c3089375cd95586e263",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
+          "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);",
+          "operator": "c1-ablation",
+          "name": "C-INGRESS-RECEIPT-PUSH (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-00f410e88769bb3aa2385091f5268bed18b04ddd6f4352d0c401c6c30dc0b855",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    appendOwn(record.mailbox, entry);",
+          "after": "    record.mailbox.push(entry);",
+          "operator": "c1-ablation",
+          "name": "C-MAILBOX-PUSH (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: descriptor.value };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "      read = observed.read;",
+              "after": "      read = descriptor.value;"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+          "path": "packages/kernel/src/own-array.ts",
+          "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+          "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);",
+          "operator": "c1-ablation",
+          "name": "O-APPENDOWN-PUSH (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19",
+          "path": "packages/kernel/src/own-array.ts",
+          "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+          "after": "  const descriptor = {} as {\n    value: unknown;",
+          "operator": "c1-ablation",
+          "name": "O-DEFINEDATA-LITERAL (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: undefined };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { read: undefined };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "RC-MISMATCH-OFF (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "SER-keys-slot-dropped (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+          "after": "      // slot not installed",
+          "operator": "c1-ablation",
+          "name": "SER-slots-not-installed (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    appendOwn(captured, [key, item] as const);",
+          "after": "    captured.push([key, item] as const);",
+          "operator": "c1-ablation",
+          "name": "V-CAPTURED-PUSH (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+          "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });",
+          "operator": "c1-ablation",
+          "name": "V-SNAPSHOT-LITERAL (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
+          "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true };\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
+          "operator": "c1-ablation",
+          "name": "V-SYNTH-DESCRIPTOR (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
+          "operator": "c1-ablation",
+          "name": "VAL-disagree-check-removed (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    const where = element(path, index);",
+          "after": "    const where = path;",
+          "operator": "c1-ablation",
+          "name": "VAL-element-path-dropped (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
+          "after": "  if (false) {\n    // The structure said this member exists",
+          "operator": "c1-ablation",
+          "name": "VAL-missing-descriptor-branch-removed (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  return finishObject(prototype, captured);\n}",
+          "after": "  return container as unknown as BoundaryValue;\n}",
+          "operator": "c1-ablation",
+          "name": "VAL-snapshot-is-caller-object (C1: killed by the ingress converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  return finishObject(prototype, captured);\n}",
+          "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}",
+          "operator": "c1-ablation",
+          "name": "VAL-snapshot-rereads-caller (C1: killed by the ingress converted tests at B and at C)"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.c1.outcome-hostile",
+      "category": "value-cost",
+      "assertion": "value-cost.c1.outcome-hostile.converted-tests",
+      "source": "K1.1-correction-03 design check C1: the 1 converted Proxy-instrument tests of packages/kernel/tests/outcome-hostile.test.ts still kill the mutants their originals killed at B",
+      "input": {
+        "file": "packages/kernel/tests/outcome-hostile.test.ts",
+        "pattern": "^(?:a field whose observation throws is a located refusal, not an escaping exception)$",
+        "timeout_ms": 170000
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.c1.outcome-hostile"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-RETHROW (C1: killed by the outcome-hostile converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: undefined };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { read: undefined };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ (C1: killed by the outcome-hostile converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {",
+          "after": "  } catch (error) {\n    throw error;",
+          "operator": "c1-ablation",
+          "name": "V-CATCH (C1: killed by the outcome-hostile converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-code-changed (C1: killed by the outcome-hostile converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-rethrows (C1: killed by the outcome-hostile converted tests at B and at C)"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.c1.value-diagnostic-work",
+      "category": "value-cost",
+      "assertion": "value-cost.c1.value-diagnostic-work.converted-tests",
+      "source": "K1.1-correction-03 design check C1: the 17 converted Proxy-instrument tests of packages/kernel/tests/value-diagnostic-work.test.ts still kill the mutants their originals killed at B",
+      "input": {
+        "file": "packages/kernel/tests/value-diagnostic-work.test.ts",
+        "pattern": "^(?:V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched|V-D1 own constructor, constructor\\.name, and thrown-value properties are never inspected|V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation|V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics|V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds observations before later rows|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): one and eight eager roots keep bounded observations before authority|decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds Kernel-selected observations|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): eager roots preserve selected counts and whole state before authority)$",
+        "timeout_ms": 170000
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.c1.value-diagnostic-work"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+          "operator": "c1-ablation",
+          "name": "COST-array-structure-charge-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+          "after": "    state.stop = \"bytes\";",
+          "operator": "c1-ablation",
+          "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    return charge(state, scan.bytes) ? value : REFUSED;",
+          "after": "    return value;",
+          "operator": "c1-ablation",
+          "name": "COST-string-bytes-uncharged (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
+          "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);",
+          "operator": "c1-ablation",
+          "name": "MB2-array-punctuation-undercharged (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-e409001229dd0faad12e5a72efa8a0f7ef0fb88a98a11f046ee8d045635b040f",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, \"authorityContext\"));",
+          "after": "  if (!authorityContext.ok) { appendIssues(issues, located(authorityContext.issues, \"authorityContext\")); return err(issues); }",
+          "operator": "c1-ablation",
+          "name": "MC1-creation-fails-fast-on-authority-context (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;",
+          "operator": "c1-ablation",
+          "name": "MD1-describe-reads-constructor (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ebebb55d55c5b38ed0e178c65a85c41b376ed8925009009d7925be15f9045564",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" && PrimordialGetPrototypeOf(value) === null ? \"null-prototype object\" : typeof value;",
+          "operator": "c1-ablation",
+          "name": "MD2-describe-observes-prototype (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf",
+          "path": "packages/kernel/src/values.ts",
+          "before": "observing this value's structure threw (${describe(error)})",
+          "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})",
+          "operator": "c1-ablation",
+          "name": "MD3-catch-label-reads-constructor-name (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-6b169eb2546bc88acfb1c33ef24122deccacbc74bec1efa66e404ccc7c33d3c4",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"function\" && typeof (value as { name?: unknown }).name === \"string\" ? \"function\" : typeof value;",
+          "operator": "c1-ablation",
+          "name": "MD4-describe-reads-function-name (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-389b656ca1a4020c9648e18d11628aba533c010aadcdd7bcfe9dab0e57290841",
+          "path": "packages/kernel/src/values.ts",
+          "before": "observing this value's structure threw (${describe(error)})",
+          "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { message?: unknown }).message === \"string\" ? (error as { message: string }).message : describe(error)})",
+          "operator": "c1-ablation",
+          "name": "MD6-catch-label-reads-message (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-98cee7b687732cf0b5bb48ebe57f874eb163eb25157b119bfa2f9bc8cf98331a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : PrimordialArrayIsArray(value) ? \"array\" : typeof value;",
+          "operator": "c1-ablation",
+          "name": "MD7-describe-classifies-arrays (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-36e50b3e02c880ac99e1832d2d59cad94dd93371ede148829e4e7b5d9fac1765",
+          "path": "packages/kernel/src/values.ts",
+          "before": "observing this value's structure threw (${describe(error)})",
+          "after": "observing this value's structure threw (${describe(value)})",
+          "operator": "c1-ablation",
+          "name": "MD8-catch-label-describes-container (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-0c93b43b203b3054b6fcb0821020d05ff53d576198f7d184a466e1482eb65173",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const record = this.#visible(caller, executionSeen.observed as string);",
+          "after": "    captureOutcome(envelope as object, this.#emissionsPerOutcome);\n    const record = this.#visible(caller, executionSeen.observed as string);",
+          "operator": "c1-ablation",
+          "name": "MO1-outcome-captured-before-visibility (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-11892856c44d73242036d8e886d9180fac7d7d79f455901e71f4097d2a594cd2",
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "  const captured = emissionsField.ok ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+          "after": "  const captured = emissionsField.ok && progress !== null ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+          "operator": "c1-ablation",
+          "name": "MO2-emissions-skipped-after-refused-progress (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-45f82a5c0362a2761040a8291410d67166ab6ce5c53815d4f7c637569b6dc1af",
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "  const runtimeContractRevisions = captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);",
+          "after": "  const runtimeContractRevisions = definitionRevisions === null ? null : captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);",
+          "operator": "c1-ablation",
+          "name": "MR1-recovery-short-circuits-lists (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: descriptor.value };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "      read = observed.read;",
+              "after": "      read = descriptor.value;"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+          "after": "  const lengthRead: unknown = lengthDescriptor?.value;",
+          "operator": "c1-ablation",
+          "name": "MV2-length-read-replaced-by-descriptor-value (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
+          "path": "packages/kernel/src/values.ts",
+          "before": "threw (${describe(error)})",
+          "after": "threw (${(error as Error).constructor.name})",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-LABEL (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-RETHROW (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c2d305d8e38dacc1da976fcca738514610779b260af6d095d38f0e20770b6b39",
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "    if (!keyOk || value === null) continue;",
+          "after": "    if (!keyOk || value === null) break;",
+          "operator": "c1-ablation",
+          "name": "RC-EAGER-EMISSIONS (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: undefined };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { read: undefined };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6",
+          "path": "packages/kernel/src/values.ts",
+          "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
+          "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);",
+          "operator": "c1-ablation",
+          "name": "RC-OWN-SUFFIX (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {",
+          "after": "  } catch (error) {\n    throw error;",
+          "operator": "c1-ablation",
+          "name": "V-CATCH (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "V-FOREIGN-PROTO (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-code-changed (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-rethrows (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    const where = element(path, index);",
+          "after": "    const where = path;",
+          "operator": "c1-ablation",
+          "name": "VAL-element-path-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-0bab68334a085e9e6a992d9835bce2a47f763a05797cca8c1afd0fcdeed8f4d2",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
+          "after": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });",
+          "operator": "c1-ablation",
+          "name": "X1-foreign-object-instanceof (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.c1.value-refusal-cost",
+      "category": "value-cost",
+      "assertion": "value-cost.c1.value-refusal-cost.converted-tests",
+      "source": "K1.1-correction-03 design check C1: the 10 converted Proxy-instrument tests of packages/kernel/tests/value-refusal-cost.test.ts still kill the mutants their originals killed at B",
+      "input": {
+        "file": "packages/kernel/tests/value-refusal-cost.test.ts",
+        "pattern": "^(?:V-D1 every issue family: revoked structure|V-D1 every issue family: throwing structure|V-D1 every issue family: object ghost descriptor|V-D1 every issue family: array ghost index|V-D1 every issue family: array out-of-range index|V-D1 every issue family: array unstable length|V-D1 every issue family: descriptor\\/read mismatch|V-D1 bounded paths include phantom names, long ancestors, and literal omission text|V-D1 own-only multiplicity under ambient pollution and capture-time mutation|V-D1 eight eager roots before authority: every position once, no forbidden mutation)$",
+        "timeout_ms": 170000
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.c1.value-refusal-cost"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-0c93b43b203b3054b6fcb0821020d05ff53d576198f7d184a466e1482eb65173",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const record = this.#visible(caller, executionSeen.observed as string);",
+          "after": "    captureOutcome(envelope as object, this.#emissionsPerOutcome);\n    const record = this.#visible(caller, executionSeen.observed as string);",
+          "operator": "c1-ablation",
+          "name": "MO1-outcome-captured-before-visibility (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-11892856c44d73242036d8e886d9180fac7d7d79f455901e71f4097d2a594cd2",
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "  const captured = emissionsField.ok ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+          "after": "  const captured = emissionsField.ok && progress !== null ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+          "operator": "c1-ablation",
+          "name": "MO2-emissions-skipped-after-refused-progress (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: descriptor.value };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "      read = observed.read;",
+              "after": "      read = descriptor.value;"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+          "after": "  const lengthRead: unknown = lengthDescriptor?.value;",
+          "operator": "c1-ablation",
+          "name": "MV2-length-read-replaced-by-descriptor-value (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
+          "path": "packages/kernel/src/values.ts",
+          "before": "threw (${describe(error)})",
+          "after": "threw (${(error as Error).constructor.name})",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-LABEL (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-RETHROW (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c2d305d8e38dacc1da976fcca738514610779b260af6d095d38f0e20770b6b39",
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "    if (!keyOk || value === null) continue;",
+          "after": "    if (!keyOk || value === null) break;",
+          "operator": "c1-ablation",
+          "name": "RC-EAGER-EMISSIONS (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: undefined };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { read: undefined };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c44f45c7614de66e128d96a2b66fc5d697341cbe5abcb4563b58428cc7ee3f62",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  (container as Record<string, unknown>)[key];\n  return { descriptor, read: (container as Record<string, unknown>)[key] };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  (container as Record<string, unknown>)[key];\n  return { read: (container as Record<string, unknown>)[key] };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ-TWICE (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
+          "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
+          "operator": "c1-ablation",
+          "name": "RC-GHOST-CONTINUE (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-29940f7da7279c2c784adfd031254b8ece0aee158432cacd1e4812b3768e17c2",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (text.length > limit) return omitted;\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "RC-ISSUE-TEXT-BOUND (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
+          "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property",
+          "operator": "c1-ablation",
+          "name": "RC-LENGTH-CODE (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "RC-MISMATCH-OFF (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ef1e0ac8aa132af66ea63212690248f2b10d640abaf449abce8e08fc1d12f135",
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {",
+          "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {",
+          "operator": "c1-ablation",
+          "name": "RC-OWN-EXPLAIN (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-d8b17191a0167123f13f34f82f44533f45e56794a512b4734cc06fe52b8c9f68",
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    out += occurrences === undefined",
+          "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    out += occurrences === undefined",
+          "operator": "c1-ablation",
+          "name": "RC-OWN-RENDER (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6",
+          "path": "packages/kernel/src/values.ts",
+          "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
+          "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);",
+          "operator": "c1-ablation",
+          "name": "RC-OWN-SUFFIX (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      if (backing === undefined) {",
+          "after": "      if (backing !== undefined) {",
+          "operator": "c1-ablation",
+          "name": "RC-PHANTOM-INDEX-SWAP (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-41e35f67761d98196cec9c2232d9413f3469e786c033e68b7a8edebc2e207000",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own.",
+          "after": "    if (false) {\n      // The object listed an own name it does not own.",
+          "operator": "c1-ablation",
+          "name": "RC-PHANTOM-NAME-CHECK (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-9be95bd8d92b93e7ed723fd2d483a5bb58c493996518533e5b8358117d336e1e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "        path: child(path, name),\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
+          "after": "        path,\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
+          "operator": "c1-ablation",
+          "name": "RC-PHANTOM-NAME-PATH (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {",
+          "after": "  } catch (error) {\n    throw error;",
+          "operator": "c1-ablation",
+          "name": "V-CATCH (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "V-FOREIGN-PROTO (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-code-changed (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-rethrows (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
+          "operator": "c1-ablation",
+          "name": "VAL-disagree-check-removed (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    const where = element(path, index);",
+          "after": "    const where = path;",
+          "operator": "c1-ablation",
+          "name": "VAL-element-path-dropped (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "VAL-length-agreement-removed (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+          "path": "packages/kernel/src/values.ts",
+          "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
+          "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own",
+          "operator": "c1-ablation",
+          "name": "VAL-listed-not-owned-misclassified (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+          "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+          "operator": "c1-ablation",
+          "name": "VAL-listed-not-owned-skipped (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    const where = child(path, key);",
+          "after": "    const where = key;",
+          "operator": "c1-ablation",
+          "name": "VAL-member-path-flattened (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    if (numeric >= length) {",
+          "after": "    if (false) {",
+          "operator": "c1-ablation",
+          "name": "VAL-phantom-index-check-removed (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      if (backing === undefined) {",
+          "after": "      if (backing === null) {",
+          "operator": "c1-ablation",
+          "name": "VAL-phantom-unbacked-misclassified (C1: killed by the value-refusal-cost converted tests at B and at C)"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.c1.values",
+      "category": "value-cost",
+      "assertion": "value-cost.c1.values.converted-tests",
+      "source": "K1.1-correction-03 design check C1: the 26 converted Proxy-instrument tests of packages/kernel/tests/values.test.ts still kill the mutants their originals killed at B",
+      "input": {
+        "file": "packages/kernel/tests/values.test.ts",
+        "pattern": "^(?:an array position read differently than it is owned is refused, not silently picked|an object member read differently than it is owned is refused the same way|the disagreement is refused at depth and under a valid root|an array position supplied only by a dynamic read, owning nothing, is refused|a length that does not agree with itself cannot decide which positions exist|a structure that cannot be observed is refused rather than thrown out of the boundary|an object listing an own member it does not own is refused|a value that answers differently on each read is bound to the one reading that was taken|thirty-two arrays standing for four billion are refused after reading about a megabyte|one long string shared across shared arrays is refused before a second megabyte is read|a shared member refused for another reason is not re-read without bound either|an oversized own-names listing is classified after at most one descriptor past the entry limit|an array listing more names than any accepted array owns is refused without classifying each|a capture-time side effect installing Object\\.prototype\\.toJSON still binds the observed structure|an own-name listing reporting a canonical index outside length with no backing property is refused|a backed canonical index outside length is also refused rather than silently dropped|a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal|a deliberately huge sparse length refuses bounded without traversing its extent|K11-R2-VAL-02 round 6: a one-shot Object\\.keys replacement live across the call cannot change canonical bytes|K11-R2-VAL-02 round 6: an Object\\.keys replacement that throws, live across the call, neither leaks nor diverts bytes|K11-R2-VAL-02 round 6: an Array\\.prototype\\.join replacement live across the call cannot change canonical bytes either|K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain|the retained structure and the canonical bytes are exactly the one value observed|the index the accessor picks is not special: position zero and a nested array behave the same|a value the rules do refuse is still refused with the accessor live, not normalized|a capture-time observation that inserts the chain still binds the observed structure)$",
+        "timeout_ms": 170000
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.c1.values"
+      ],
+      "timeout_seconds": 180,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+          "operator": "c1-ablation",
+          "name": "COST-array-structure-charge-dropped (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+          "after": "    state.stop = \"bytes\";",
+          "operator": "c1-ablation",
+          "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ac35b6009c09d764bbb9d054f3af422ba9a38adbb4b5dcc64a8b1624663c0f5f",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+          "after": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries : names.length;",
+          "operator": "c1-ablation",
+          "name": "COST-descriptor-bound-off-by-one (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-12ccb7eebc398bc116159e6cc75d3e2887e8348ca2d982172d73da375e7b114c",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+          "after": "  const readable = names.length;",
+          "operator": "c1-ablation",
+          "name": "COST-descriptor-reads-unbounded (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-2260b5eaec556d1b268396f04eedf6a9698cb4bfb06ccd2df4a48e9952e27d51",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;",
+          "after": "  const overlong = false;",
+          "operator": "c1-ablation",
+          "name": "COST-overlong-guard-removed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-0bb7417db10ae24d04e255e2821b4133bfb27e18ccee91fb93f13ab3fe01fb19",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
+          "after": "  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
+          "operator": "c1-ablation",
+          "name": "COST-phantom-scan-not-bounded (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c1264fa7c0b915f87dc3ed689a4a068047bf9207209665729e5eb8312156b533",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      charge(state, value.length);\n",
+          "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n",
+          "operator": "c1-ablation",
+          "name": "COST-refused-string-uncharged (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    return charge(state, scan.bytes) ? value : REFUSED;",
+          "after": "    return value;",
+          "operator": "c1-ablation",
+          "name": "COST-string-bytes-uncharged (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-47f46f8d435797f01e3d6853772c3f0b790562394ffb54d5f51f1307f9f01b67",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (length > BOUNDARY_LIMITS.containerEntries) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "LIMIT-early-entries-refusal-removed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
+          "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);",
+          "operator": "c1-ablation",
+          "name": "MB2-array-punctuation-undercharged (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;",
+          "operator": "c1-ablation",
+          "name": "MD1-describe-reads-constructor (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf",
+          "path": "packages/kernel/src/values.ts",
+          "before": "observing this value's structure threw (${describe(error)})",
+          "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})",
+          "operator": "c1-ablation",
+          "name": "MD3-catch-label-reads-constructor-name (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: descriptor.value };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "      read = observed.read;",
+              "after": "      read = descriptor.value;"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+          "after": "  const lengthRead: unknown = lengthDescriptor?.value;",
+          "operator": "c1-ablation",
+          "name": "MV2-length-read-replaced-by-descriptor-value (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+          "path": "packages/kernel/src/own-array.ts",
+          "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+          "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);",
+          "operator": "c1-ablation",
+          "name": "O-APPENDOWN-PUSH (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    defineAt(out, index, item);",
+          "after": "    out[index] = item;",
+          "operator": "c1-ablation",
+          "name": "OWN-element-install-by-set (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
+          "path": "packages/kernel/src/values.ts",
+          "before": "threw (${describe(error)})",
+          "after": "threw (${(error as Error).constructor.name})",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-LABEL (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "RC-CATCH-RETHROW (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { descriptor, read: undefined };"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  return { read: (container as Record<string, unknown>)[key] };",
+              "after": "  return { read: undefined };"
+            }
+          ],
+          "operator": "c1-ablation",
+          "name": "RC-ELEMENT-READ (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
+          "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
+          "operator": "c1-ablation",
+          "name": "RC-GHOST-CONTINUE (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
+          "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property",
+          "operator": "c1-ablation",
+          "name": "RC-LENGTH-CODE (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "RC-MISMATCH-OFF (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      if (backing === undefined) {",
+          "after": "      if (backing !== undefined) {",
+          "operator": "c1-ablation",
+          "name": "RC-PHANTOM-INDEX-SWAP (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-f0a07f1789af0a1616ee53afe4b7ea0b17199be8808b02a82bf632e3049f2315",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "SER-array-chain-link-dropped (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-471c38e8974d4ddb066e7e5f24f16d75b5ef72532b9085c90ffed63540ad7b5d",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);",
+          "after": "      void entry;",
+          "operator": "c1-ablation",
+          "name": "SER-chain-reset-skipped (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-78877ac7d1bfe8b5369de406897aa80eabe8779a82e3412773dc04c89614d4df",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);",
+          "after": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(PrimordialObjectPrototype);",
+          "operator": "c1-ablation",
+          "name": "SER-clone-inherits-object-prototype (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ae83e7bb9b75bf0d47f07224927be770c7295b6ad9f69d21914851ad90653bc9",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      const entry = readAt(shadows, index) as SavedSlot;\n      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];",
+          "after": "      const entry = readAt(shadows, index) as SavedSlot;\n      void entry;",
+          "operator": "c1-ablation",
+          "name": "SER-index-shadows-kept (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-bf5bac39bb5893b2e06fe5c787152630df599057e045c84d3a1e18a719e09be0",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  slot(PrimordialArrayPrototype, \"join\", PrimordialArrayJoin);\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "SER-join-slot-dropped (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "SER-keys-slot-dropped (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c53171d42820ac2383f7c65dda01115ecff9a333c27818fb7206b3ea83d8628c",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      } else {\n        restoreDescriptor(entry.holder, entry.key, entry.descriptor);",
+          "after": "      } else {\n        // not handed back",
+          "operator": "c1-ablation",
+          "name": "SER-slots-not-handed-back (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+          "after": "      // slot not installed",
+          "operator": "c1-ablation",
+          "name": "SER-slots-not-installed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-8ba25905e7bc2cd5b64e5680ab5805e231043c9d0c4115007eb68cf6d99e6433",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(toSerializationSafe(value)) as string | undefined);",
+          "after": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(value) as string | undefined);",
+          "operator": "c1-ablation",
+          "name": "SER-snapshot-handed-to-dependency (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    appendOwn(captured, [key, item] as const);",
+          "after": "    captured.push([key, item] as const);",
+          "operator": "c1-ablation",
+          "name": "V-CAPTURED-PUSH (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {",
+          "after": "  } catch (error) {\n    throw error;",
+          "operator": "c1-ablation",
+          "name": "V-CATCH (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+          "after": "  if (false) {",
+          "operator": "c1-ablation",
+          "name": "V-FOREIGN-PROTO (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
+          "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true };\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
+          "operator": "c1-ablation",
+          "name": "V-SYNTH-DESCRIPTOR (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-5364e5ea25d2caec9892bef88328122e4ad05cacc0e5e97057e2572c6f1ac2d7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "          path: element(path, numeric),\n          code: \"unrepresentable_member\",",
+          "after": "          path,\n          code: \"unrepresentable_member\",",
+          "operator": "c1-ablation",
+          "name": "VAL-backed-outside-index-unlocated (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-code-changed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+          "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  } catch (error) {\n    record(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "operator": "c1-ablation",
+          "name": "VAL-catch-rethrows (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+          "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
+          "operator": "c1-ablation",
+          "name": "VAL-disagree-check-removed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    const where = element(path, index);",
+          "after": "    const where = path;",
+          "operator": "c1-ablation",
+          "name": "VAL-element-path-dropped (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
+          "after": "",
+          "operator": "c1-ablation",
+          "name": "VAL-length-agreement-removed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+          "path": "packages/kernel/src/values.ts",
+          "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
+          "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own",
+          "operator": "c1-ablation",
+          "name": "VAL-listed-not-owned-misclassified (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+          "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+          "operator": "c1-ablation",
+          "name": "VAL-listed-not-owned-skipped (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    const where = child(path, key);",
+          "after": "    const where = key;",
+          "operator": "c1-ablation",
+          "name": "VAL-member-path-flattened (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
+          "after": "  if (false) {\n    // The structure said this member exists",
+          "operator": "c1-ablation",
+          "name": "VAL-missing-descriptor-branch-removed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    if (numeric >= length) {",
+          "after": "    if (false) {",
+          "operator": "c1-ablation",
+          "name": "VAL-phantom-index-check-removed (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465",
+          "path": "packages/kernel/src/values.ts",
+          "before": "      if (backing === undefined) {",
+          "after": "      if (backing === null) {",
+          "operator": "c1-ablation",
+          "name": "VAL-phantom-unbacked-misclassified (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+          "after": "  if (prototype !== Object.prototype && prototype !== null) {",
+          "operator": "c1-ablation",
+          "name": "VAL-plain-prototype-live-global (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  return finishObject(prototype, captured);\n}",
+          "after": "  return container as unknown as BoundaryValue;\n}",
+          "operator": "c1-ablation",
+          "name": "VAL-snapshot-is-caller-object (C1: killed by the values converted tests at B and at C)"
+        },
+        {
+          "id": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  return finishObject(prototype, captured);\n}",
+          "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}",
+          "operator": "c1-ablation",
+          "name": "VAL-snapshot-rereads-caller (C1: killed by the values converted tests at B and at C)"
         }
       ]
     }
