@@ -35127,7 +35127,7 @@
         "type boundary: an async deliver is not assignable; a sync undefined deliver compiles"
       ],
       "declaration": {
-        "line": 1510,
+        "line": 1655,
         "column": 3
       },
       "input_anchors": [
@@ -35492,7 +35492,7 @@
         "a cycle has no canonical form and is reported as one"
       ],
       "declaration": {
-        "line": 151,
+        "line": 219,
         "column": 3
       },
       "input_anchors": [
@@ -35535,7 +35535,7 @@
         "isBoundaryValue agrees with the issue list"
       ],
       "declaration": {
-        "line": 171,
+        "line": 239,
         "column": 3
       },
       "input_anchors": [
@@ -35582,7 +35582,7 @@
         "array order stays semantic"
       ],
       "declaration": {
-        "line": 459,
+        "line": 727,
         "column": 3
       },
       "input_anchors": [
@@ -35637,7 +35637,7 @@
         "equality is over canonical bytes, so two honest spellings of one value agree"
       ],
       "declaration": {
-        "line": 505,
+        "line": 773,
         "column": 3
       },
       "input_anchors": [
@@ -35700,7 +35700,7 @@
         "decoded string length counts Unicode scalar values"
       ],
       "declaration": {
-        "line": 512,
+        "line": 780,
         "column": 3
       },
       "input_anchors": [
@@ -35759,7 +35759,7 @@
         "the same limit applies to member names"
       ],
       "declaration": {
-        "line": 523,
+        "line": 791,
         "column": 3
       },
       "input_anchors": [
@@ -35810,7 +35810,7 @@
         "depth counts containers on a path, with empty containers counting"
       ],
       "declaration": {
-        "line": 543,
+        "line": 811,
         "column": 3
       },
       "input_anchors": [
@@ -35869,7 +35869,7 @@
         "a value nested far past the limit is refused rather than exhausting the stack"
       ],
       "declaration": {
-        "line": 554,
+        "line": 822,
         "column": 3
       },
       "input_anchors": [
@@ -35912,7 +35912,7 @@
         "the reported canonical byte length is the UTF-8 length, not the UTF-16 one"
       ],
       "declaration": {
-        "line": 580,
+        "line": 848,
         "column": 3
       },
       "input_anchors": [
@@ -35955,7 +35955,7 @@
         "a legitimate own toJSON data member is still content, not a hook"
       ],
       "declaration": {
-        "line": 955,
+        "line": 1342,
         "column": 3
       },
       "input_anchors": [
