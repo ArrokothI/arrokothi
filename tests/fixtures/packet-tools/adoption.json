@@ -42315,7 +42315,7 @@
           ],
           "classification": "held",
           "claim": "V-ENV",
-          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03.",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7).",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
@@ -42325,7 +42325,7 @@
           ],
           "classification": "held",
           "claim": "V-ENV",
-          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03.",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7).",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
@@ -42335,7 +42335,7 @@
           ],
           "classification": "held",
           "claim": "V-ENV",
-          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03.",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7).",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
@@ -42345,7 +42345,7 @@
           ],
           "classification": "held",
           "claim": "V-ENV",
-          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03.",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7).",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
@@ -42355,7 +42355,7 @@
           ],
           "classification": "held",
           "claim": "V-ENV",
-          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03.",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7).",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
@@ -42365,7 +42365,7 @@
           ],
           "classification": "held",
           "claim": "V-ENV",
-          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03.",
+          "reason": "Registry case attributed held_witness to BINDING-01: Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7).",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
