@@ -24,8 +24,10 @@
  */
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 
+import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork } from "../src/values.ts";
 import { inWrappedChild, REPO_ROOT, type OperationCounts } from "./capture-instruments.ts";
 
 const B = 3 * 1_048_576;
@@ -259,6 +261,28 @@ describe("KC3-R1-STOP-01 the same boundary through every root consumer, each roo
       assert.ok(row.refusalsKept, "earlier refusal records kept");
     });
   }
+});
+
+describe("KC3-R1-STOP-01 the lower-threshold seam is evidence only", () => {
+  test("it can only lower B and the size limit, and a lowered run stops exactly where that threshold is passed", () => {
+    assert.throws(() => captureWithWork(null, CAPTURE_WORK_BUDGET + 1), RangeError);
+    assert.throws(() => captureWithWork(null, CAPTURE_WORK_BUDGET, BOUNDARY_LIMITS.canonicalBytes + 1), RangeError);
+    assert.throws(() => captureWithWork(null, 1.5), RangeError);
+    // [0] costs visit 1, listing 1 + 2, symbols 1, element 1, child visit 1 = 7 units, and 3 bytes.
+    assert.deepEqual(captureWithWork([0], 7).work, captureWithWork([0]).work);
+    const stopped = captureWithWork([0], 6);
+    assert.equal(stopped.work.stop, "work");
+    assert.equal(stopped.work.units, 7);
+    assert.equal(stopped.end.crossing, "visit");
+    assert.equal(captureWithWork([0], CAPTURE_WORK_BUDGET, 2).work.stop, "bytes");
+    assert.equal(captureWithWork([0], CAPTURE_WORK_BUDGET, 3).result.ok, true);
+  });
+
+  test("no Kernel module but values.ts names it, and the package entry does not export it", () => {
+    const source = new URL("../src/", import.meta.url);
+    const naming = readdirSync(source).filter((name) => name.endsWith(".ts") && readFileSync(new URL(name, source), "utf8").includes("captureWithWork"));
+    assert.deepEqual(naming, ["values.ts"]);
+  });
 });
 
 /** One run of the stop-position search, as the wrapped child reports it. */

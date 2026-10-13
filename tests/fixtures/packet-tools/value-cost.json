@@ -792,6 +792,14 @@
           "after": "      refused = true;\n      continue;\n    }\n    // The member name",
           "operator": "remove-work-charge",
           "name": "overlong member name uncharged"
+        },
+        {
+          "id": "mutation-dfaf00db54a392ac10944d8112d1f45266693fe4886cc8c25f03f9c391a29c41",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  const symbolCount = hasExtra ? 0 : listed;",
+          "after": "  const symbolCount = 0;",
+          "operator": "c1-ablation",
+          "name": "MV3-array-symbols-listing-skipped (C1: no longer reached by the value-diagnostic-work group's converted tests; registered here, where the exact charge of 4,096 symbol members kills it)"
         }
       ]
     },
