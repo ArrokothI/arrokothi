@@ -203,6 +203,10 @@
       {
         "name": "FLOOR_READ_DIR",
         "effect": "node-floor A11 fixture only; check-node-floor.py sets a temporary path. No declared command selects it."
+      },
+      {
+        "name": "ARROKOTHI_VALUE_COST_LOAD",
+        "effect": "Absent from every declared command; value-cost-probe.mjs sets it for the test process it spawns, the only process that loads value-cost-witness.mjs, which writes a load failure to that path (KC3-R1-EVID-02)."
       }
     ],
     "census": {
@@ -227,6 +231,11 @@
           "path": "tests/tooling/oracle-probe.mjs",
           "text": "env: { ...process.env, PACKET_ORACLE_CHECK: name, PACKET_REACH_FILE: witness },",
           "reason": "Passes its declared environment to the oracle child and adds PACKET_ORACLE_CHECK and PACKET_REACH_FILE."
+        },
+        {
+          "path": "tests/tooling/value-cost-probe.mjs",
+          "text": "], { encoding: 'utf8', maxBuffer: innerOutput, env: { ...process.env, ARROKOTHI_VALUE_COST_LOAD: load } });",
+          "reason": "Passes its declared environment to the selected test process and adds ARROKOTHI_VALUE_COST_LOAD."
         }
       ]
     }
