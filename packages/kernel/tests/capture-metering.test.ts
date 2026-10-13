@@ -1,7 +1,7 @@
 /**
  * K1.1-correction-03 KC3-1: capture observes caller values only through metered helpers.
  *
- * `capture-metering.ts` holds the nine rules and their stated gaps. This file runs them on the real
+ * `capture-metering.ts` holds the eleven rules and their stated gaps. This file runs them on the real
  * `values.ts` (the clean control) and on one seeded bypass per rule: each bypass is a plausible
  * maintainer mistake, typechecks, and must be reported. The registered mutants in
  * `tests/fixtures/packet-tools/value-cost.json` apply the same shapes to the real file.
@@ -30,7 +30,7 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC1",
       name: "an element observed by a direct descriptor call in the traversal",
-      before: "    const observed = observeElement(state, container, `${index}`);\n    if (observed === STOPPED) return REFUSED;",
+      before: "    const observed = observeElement(state, container, `${index}`);\n    if (observed === STOPPED) return STOPPED;",
       after: "    const raw = PrimordialGetOwnPropertyDescriptor(container, `${index}`);\n    const observed = { descriptor: raw, read: raw === undefined ? undefined : raw.value };",
     },
     {
@@ -66,8 +66,8 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC4",
       name: "an unmetered loop in the traversal",
-      before: "  if (refused || state.stopped) return REFUSED;\n  return finishObject(prototype, captured);",
-      after: "  let scanned = 0;\n  for (let index = 0; index < captured.length; index += 1) scanned += index;\n  if (refused || state.stopped || scanned < 0) return REFUSED;\n  return finishObject(prototype, captured);",
+      before: "  if (refused) return REFUSED;\n  return finishObject(prototype, captured);",
+      after: "  let scanned = 0;\n  for (let index = 0; index < captured.length; index += 1) scanned += index;\n  if (refused || scanned < 0) return REFUSED;\n  return finishObject(prototype, captured);",
     },
     {
       rule: "SC5",
@@ -78,8 +78,8 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC5",
       name: "a visit that is not charged first",
-      before: '  if (!spend(state, "visit", 1)) return REFUSED;\n  if (value === null) return charge(state, 4) ? null : REFUSED;',
-      after: '  if (value === null) return charge(state, 4) ? null : REFUSED;\n  if (!spend(state, "visit", 1)) return REFUSED;',
+      before: '  if (!spend(state, "visit", 1)) return STOPPED;\n  if (value === null) return charge(state, 4) ? null : STOPPED;',
+      after: '  if (value === null) return charge(state, 4) ? null : STOPPED;\n  if (!spend(state, "visit", 1)) return STOPPED;',
     },
     {
       rule: "SC6",
@@ -90,14 +90,14 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC7",
       name: "a string scanned directly, bypassing scanText",
-      before: "    const scan = scanText(state, value);\n    if (scan === STOPPED) return REFUSED;",
+      before: "    const scan = scanText(state, value);\n    if (scan === STOPPED) return STOPPED;",
       after: "    const scan = scanBoundaryString(value);",
     },
     {
       rule: "SC8",
       name: "the serializer window reached from the traversal",
-      before: "  if (refused || state.stopped) return REFUSED;\n  return finishObject(prototype, captured);",
-      after: "  if (refused || state.stopped || encode(null) === \"\") return REFUSED;\n  return finishObject(prototype, captured);",
+      before: "  if (refused) return REFUSED;\n  return finishObject(prototype, captured);",
+      after: "  if (refused || encode(null) === \"\") return REFUSED;\n  return finishObject(prototype, captured);",
     },
     {
       // Packet review MS-03: with the length guard after the loop, an all-digit name of any length is
@@ -112,6 +112,51 @@ describe("KC3-1 static metering check", () => {
       name: "a suffix search without its code-count cap",
       before: "  for (let index = 8; index < issues.length && index < 8 + 12; index += 1) {",
       after: "  for (let index = 8; index < issues.length; index += 1) {",
+    },
+    // Review 01, KC3-R1-STOP-01: one layer of the stop mechanism removed at a time. Each is invisible at
+    // run time while the other layer holds, so the static rules are what reject it; `capture-stop.test.ts`
+    // rejects the two-layer shapes at run time.
+    {
+      rule: "SC2",
+      name: "a names listing that no longer tests the stop first",
+      before: "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
+      after: "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n",
+    },
+    {
+      rule: "SC10",
+      name: "a symbol diagnostic whose stop is not propagated (review 01's counterexample site)",
+      before: '    if (!record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" })) return STOPPED;',
+      after: '    record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" });',
+    },
+    {
+      rule: "SC10",
+      name: "a diagnostic whose stop branch returns REFUSED",
+      before: '    if (!record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" })) return STOPPED;',
+      after: '    if (!record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" })) return REFUSED;',
+    },
+    {
+      rule: "SC10",
+      name: "a nested stop folded into a refused member",
+      before: "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    appendOwn",
+      after: "    const item = capture(member.value, where, entered, state);\n    if (item === REFUSED || item === STOPPED) {\n      refused = true;\n      continue;\n    }\n    appendOwn",
+    },
+    {
+      rule: "SC10",
+      name: "a terminal refusal that drops its diagnostic's stop",
+      before: "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) ? REFUSED : STOPPED);",
+      after: "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue), REFUSED);",
+    },
+    {
+      rule: "SC10",
+      name: "a failed byte charge reported as a refusal",
+      before: "  if (value === null) return charge(state, 4) ? null : STOPPED;",
+      after: "  if (value === null) return charge(state, 4) ? null : REFUSED;",
+    },
+    {
+      rule: "SC11",
+      name: "the stop state written outside spend and charge",
+      before: "  let refused = false;\n  const symbolCount = listOwnSymbols(state, container);",
+      after: "  let refused = false;\n  state.stopped = false;\n  const symbolCount = listOwnSymbols(state, container);",
     },
     {
       rule: "SC9",

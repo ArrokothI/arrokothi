@@ -159,6 +159,8 @@ const PrimordialGetOwnPropertySymbols = Object.getOwnPropertySymbols;
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialJSONStringify = JSON.stringify;
 const PrimordialNumberIsFinite = Number.isFinite;
+const PrimordialNumberIsInteger = Number.isInteger;
+const PrimordialRangeError = RangeError;
 const PrimordialArrayPrototype = Array.prototype;
 const PrimordialSetPrototype = Set.prototype;
 const PrimordialArrayMap = Array.prototype.map;
@@ -486,8 +488,21 @@ const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
 const REFUSED: unique symbol = Symbol("refused boundary value");
 type Captured = BoundaryValue | typeof REFUSED;
 
-/** What a metered helper returns once the root has stopped: nothing further is observed or charged. */
+/**
+ * What a stop-capable function returns once the root has stopped: nothing further is observed or charged.
+ *
+ * Only `spend` (the work stop) and `charge` (the byte stop) change the stop state, and each reports it in
+ * its result. Every function that calls one of them, directly or through another, is stop-capable and
+ * reports the stop to its own caller — as `STOPPED`, distinct from `REFUSED`, or as `false` — and every
+ * caller tests that result at once and returns (K1.1-correction-03 review 01, KC3-R1-STOP-01). So once a
+ * root stops, no helper, listing, allocation, per-name loop, diagnostic or charge runs: only the stop
+ * issue, the test that detects the stop in each active frame and that frame's `finally`.
+ * `tests/capture-metering.test.ts` (SC10, SC11) keeps every call in that form.
+ */
 const STOPPED: unique symbol = Symbol("capture stopped");
+
+/** What one traversal step returns: an accepted snapshot, a recorded refusal, or the root's stop. */
+type Visited = Captured | typeof STOPPED;
 
 /**
  * The work budget B of one root: the most units any acceptable value can consume, as a proven bound.
@@ -567,20 +582,22 @@ interface CaptureState {
   diagnosticUnits: number;
   /** Which stop ended reading, if any: the byte limit or the work budget. They are exclusive. */
   stop: "none" | "bytes" | "work";
+  /** For a work stop, the kind of the charge that passed B (evidence for the stop oracle); otherwise `null`. */
+  crossing: UnitKind | null;
   /** Set once either stop fires; from then on nothing further is read or charged. */
   stopped: boolean;
 }
 
-type UnitKind = "visit" | "listing" | "element" | "descriptor" | "read" | "string" | "diagnostic";
+export type UnitKind = "visit" | "listing" | "element" | "descriptor" | "read" | "string" | "diagnostic";
 
 /**
  * Charges `units` of one kind to the root's work meter and reports whether reading may continue.
  *
- * The first charge that takes the meter past B records one root-located `too_much_work` issue and stops
- * the root: every later helper returns at once and every container loop ends. Every charge is made
- * before the work it pays for, except a listing, which is charged right after it returns because its
- * length is not known before; that listing is the one operation a refusal may perform past B. `state` is
- * a Kernel-created literal and its counters are own data properties, so these writes consult no prototype.
+ * The first charge that takes the meter past B records one root-located `too_much_work` issue, stops the
+ * root and returns `false`, which its caller propagates (`STOPPED`). Every charge is made before the work
+ * it pays for, except a listing, which is charged right after it returns because its length is not known
+ * before; that listing is the one operation a refusal may perform past B. `state` is a Kernel-created
+ * literal and its counters are own data properties, so these writes consult no prototype.
  */
 const spend = (state: CaptureState, kind: UnitKind, units: number): boolean => {
   if (state.stopped) return false;
@@ -595,22 +612,33 @@ const spend = (state: CaptureState, kind: UnitKind, units: number): boolean => {
   if (state.units > CAPTURE_WORK_BUDGET) {
     state.stopped = true;
     state.stop = "work";
+    state.crossing = kind;
     pushIssue(state.issues, { path: "", code: "too_much_work", message: TOO_MUCH_WORK_MESSAGE });
     return false;
   }
   return true;
 };
 
-/** Records one located issue as one diagnostic unit; past B the stop issue is recorded instead. */
-const record = (state: CaptureState, issue: ValueIssue): void => {
-  if (spend(state, "diagnostic", 1)) pushIssue(state.issues, issue);
+/**
+ * Records one located issue as one diagnostic unit and reports whether reading may continue.
+ *
+ * `false` means this diagnostic took the meter past B: the stop issue was recorded instead, and the caller
+ * must return `STOPPED` at once rather than go on to its next observation (KC3-R1-STOP-01).
+ */
+const record = (state: CaptureState, issue: ValueIssue): boolean => {
+  if (!spend(state, "diagnostic", 1)) return false;
+  pushIssue(state.issues, issue);
+  return true;
 };
+
+/** A terminal refusal: records the issue and returns `REFUSED`, or `STOPPED` if that diagnostic stopped the root. */
+const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) ? REFUSED : STOPPED);
 
 /**
  * Adds `bytes` to the root's running canonical size and reports whether reading may continue.
  *
- * The first time the count passes the limit, one root-located `too_many_bytes` issue is recorded and
- * the pass stops: every later `capture` returns at once and every container loop ends. The reported
+ * The first time the count passes the limit, one root-located `too_many_bytes` issue is recorded, the
+ * root stops and this returns `false`, which its caller propagates (`STOPPED`), as for `spend`. The reported
  * size is a lower bound — the part of the value read before stopping. This is the semantic size limit
  * and is not a work charge: the work every read performs is charged to the meter (`spend`), whose
  * budget B bounds refusal cost (`values.md` V-D1, owner decision-05).
@@ -643,8 +671,11 @@ const containerStructureBytes = (entries: number, isObject: boolean): number =>
 // These are the only functions that observe a caller value or grow value-dependent bookkeeping
 // (`tests/capture-metering.test.ts` enforces it). Three kinds:
 // - visit-covered: constant work, called at most once per visit and never inside a loop, paid by the
-//   visit unit `capture` charges first;
-// - charged: the first statement charges the unit (a listing charges its length right after it returns);
+//   visit unit `capture` charges first, and reached only while the root has not stopped (every
+//   stop-capable call before them returned on a stop);
+// - charged: the first statement charges the unit, and the charge refuses once the root has stopped; a
+//   listing, whose length is known only after it returns, first tests the stop itself, then lists, then
+//   charges its length;
 // - per-name: constant work on one listed name, called only inside loops bounded by a charged listing.
 
 /** Whether an object or function is a Proxy. Reads only the engine's object kind; runs no trap. */
@@ -736,15 +767,19 @@ const allocateElements = (length: number): BoundaryValue[] => sizedList<Boundary
  *
  * `names` is engine-built (`CreateArrayFromList`), so it is dense own data and its element reads consult
  * no prototype. The listing itself is the one step whose engine work is not known before it runs
- * (`values.md`, the narrowed own-key exclusion): its charge stops the root if it passes B.
+ * (`values.md`, the narrowed own-key exclusion): its charge stops the root if it passes B. Because it
+ * cannot be charged before it runs, it tests the stop first: no listing starts once the root has stopped,
+ * so the one listing past B is the one whose own charge crossed it (KC3-R1-STOP-01).
  */
 const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {
+  if (state.stopped) return STOPPED;
   const names = PrimordialGetOwnPropertyNames(container) as string[];
   return spend(state, "listing", 1 + names.length) ? names : STOPPED;
 };
 
-/** One own-symbols listing, charged `1 + length` right after it returns; only its count is used. */
+/** One own-symbols listing, gated on the stop and charged `1 + length` right after it returns; only its count is used. */
 const listOwnSymbols = (state: CaptureState, container: object): number | typeof STOPPED => {
+  if (state.stopped) return STOPPED;
   const symbols = PrimordialGetOwnPropertySymbols(container);
   return spend(state, "listing", 1 + symbols.length) ? symbols.length : STOPPED;
 };
@@ -874,35 +909,44 @@ const arrayIndexValue = (name: string): number => {
  * object these are the same thing by construction. Where they differ, the value has no single
  * content: one reading would decide identity and the other would be retained. `values.md` rejects
  * unsupported values rather than repairing them, so the disagreement is refused and neither reading
- * is preferred. An accessor or a missing position was never read.
+ * is preferred. An accessor or a missing position was never read. `STOPPED` when the refusal's diagnostic
+ * stopped the root.
  */
 function checkMember(
   descriptor: PropertyDescriptor | undefined,
   read: unknown,
   path: string,
   state: CaptureState,
-): { readonly ok: true; readonly value: unknown } | { readonly ok: false } {
+): { readonly ok: true; readonly value: unknown } | { readonly ok: false } | typeof STOPPED {
   if (descriptor === undefined) {
     // The structure said this member exists — an own-names listing, or an array position below
     // `length` — but it owns no property there. Anything a read would return comes from somewhere
     // else (a prototype), so there is no own content to accept.
-    record(state, {
-      path,
-      code: "undefined_member",
-      message: "position has no own property; a value supplied only through a prototype or a dynamic read is not accepted content",
-    });
+    if (
+      !record(state, {
+        path,
+        code: "undefined_member",
+        message: "position has no own property; a value supplied only through a prototype or a dynamic read is not accepted content",
+      })
+    ) {
+      return STOPPED;
+    }
     return { ok: false };
   }
   if (!hasOwnValue(descriptor)) {
-    record(state, { path, code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" });
+    if (!record(state, { path, code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" })) return STOPPED;
     return { ok: false };
   }
   if (!PrimordialObjectIs(descriptor.value, read)) {
-    record(state, {
-      path,
-      code: "unstable_representation",
-      message: "member is supplied differently by its own data descriptor and by ordinary property access, so it has no single content",
-    });
+    if (
+      !record(state, {
+        path,
+        code: "unstable_representation",
+        message: "member is supplied differently by its own data descriptor and by ordinary property access, so it has no single content",
+      })
+    ) {
+      return STOPPED;
+    }
     return { ok: false };
   }
   return { ok: true, value: descriptor.value };
@@ -924,67 +968,65 @@ function checkMember(
  * Refusals are collected rather than thrown: eight bounded located details, followed by exact
  * counts for every remaining code. A refused position stops contributing to the snapshot but does
  * not stop its siblings from being examined — until a stop: once the running canonical size passes
- * the limit (`charge`) or the work meter passes B (`spend`), reading stops outright. Reasons past a
- * stop are not collected; counts describe the positions examined.
+ * the limit (`charge`) or the work meter passes B (`spend`), reading stops outright. Every frame returns
+ * `STOPPED` at once, so nothing past a stop is observed and no reason past it is collected; counts
+ * describe the positions examined.
  */
-function capture(value: unknown, path: string, level: number, state: CaptureState): Captured {
-  if (state.stopped) return REFUSED;
-  if (!spend(state, "visit", 1)) return REFUSED;
-  if (value === null) return charge(state, 4) ? null : REFUSED;
-  if (typeof value === "boolean") return charge(state, value ? 4 : 5) ? value : REFUSED;
+function capture(value: unknown, path: string, level: number, state: CaptureState): Visited {
+  if (state.stopped) return STOPPED;
+  if (!spend(state, "visit", 1)) return STOPPED;
+  if (value === null) return charge(state, 4) ? null : STOPPED;
+  if (typeof value === "boolean") return charge(state, value ? 4 : 5) ? value : STOPPED;
   if (typeof value === "number") {
     if (!PrimordialNumberIsFinite(value)) {
-      record(state, { path, code: "non_finite_number", message: "expected a finite number, received a non-finite number" });
-      return REFUSED;
+      return refuse(state, { path, code: "non_finite_number", message: "expected a finite number, received a non-finite number" });
     }
     // A template literal applies the abstract `ToString` to a number primitive — the same
     // `Number::toString` spelling `JSON.stringify` emits for a finite number, `-0` as `0` — and
     // consults no prototype or global on the way.
-    return charge(state, `${value}`.length) ? value : REFUSED;
+    return charge(state, `${value}`.length) ? value : STOPPED;
   }
   if (typeof value === "string") {
     const scan = scanText(state, value);
-    if (scan === STOPPED) return REFUSED;
+    if (scan === STOPPED) return STOPPED;
     if (scan.kind === "lone_surrogate") {
-      record(state, { path, code: "lone_surrogate", message: "string contains an unpaired surrogate and has no UTF-8 encoding" });
-      charge(state, value.length);
-      return REFUSED;
+      if (!record(state, { path, code: "lone_surrogate", message: "string contains an unpaired surrogate and has no UTF-8 encoding" })) return STOPPED;
+      return charge(state, value.length) ? REFUSED : STOPPED;
     }
     if (scan.kind === "too_long") {
-      record(state, {
-        path,
-        code: "string_too_long",
-        message: `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
-      });
+      if (
+        !record(state, {
+          path,
+          code: "string_too_long",
+          message: `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
+        })
+      ) {
+        return STOPPED;
+      }
       // Charged at its full length, which is free to read and never less than the reading the scan
       // did, so repeated occurrences of one refused string exhaust the size budget quickly.
-      charge(state, value.length);
-      return REFUSED;
+      return charge(state, value.length) ? REFUSED : STOPPED;
     }
-    return charge(state, scan.bytes) ? value : REFUSED;
+    return charge(state, scan.bytes) ? value : STOPPED;
   }
   if ((typeof value === "object" || typeof value === "function") && isProxyValue(value)) {
-    record(state, { path, code: "unsupported_form", message: PROXY_MESSAGE });
-    return REFUSED;
+    return refuse(state, { path, code: "unsupported_form", message: PROXY_MESSAGE });
   }
   if (typeof value !== "object") {
-    record(state, { path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
-    return REFUSED;
+    return refuse(state, { path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
   }
 
   if (isOpenContainer(state, value)) {
-    record(state, { path, code: "cycle", message: "value refers to itself and has no canonical form" });
-    return REFUSED;
+    return refuse(state, { path, code: "cycle", message: "value refers to itself and has no canonical form" });
   }
 
   const entered = level + 1;
   if (entered > BOUNDARY_LIMITS.containerDepth) {
-    record(state, {
+    return refuse(state, {
       path,
       code: "too_deep",
       message: `container nesting passes the depth limit of ${BOUNDARY_LIMITS.containerDepth}`,
     });
-    return REFUSED;
   }
 
   openContainer(state, value);
@@ -995,38 +1037,35 @@ function capture(value: unknown, path: string, level: number, state: CaptureStat
     // Proxy refused above, this is reached only by host objects and engine errors.
     return isArrayValue(value) ? captureArray(value, path, entered, state) : captureObject(value, path, entered, state);
   } catch (error) {
-    record(state, {
+    return refuse(state, {
       path,
       code: "unstable_representation",
       message: `observing this value's structure threw (${describe(error)}), so it presents no readable content`,
     });
-    return REFUSED;
   } finally {
     closeContainer(state, value);
   }
 }
 
 /** The array half of `capture`. Positions come from own data properties below `length`, only. */
-function captureArray(container: object, path: string, entered: number, state: CaptureState): Captured {
+function captureArray(container: object, path: string, entered: number, state: CaptureState): Visited {
   // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
   // canonicalize as a plain array and lose its exotic identity, so refuse it instead.
   // `Array.prototype` itself is non-writable and non-configurable, so this reference cannot be
   // swapped; only its *properties* are mutable, and those are handled by the serializer sandbox below.
   if (prototypeOf(container) !== PrimordialArrayPrototype) {
-    record(state, { path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
-    return REFUSED;
+    return refuse(state, { path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
   }
 
   // `length` decides which positions exist, so it is held to the same one-stable-structure rule as
   // any other member before it is trusted to bound the loop.
   const length = observeArrayLength(container);
   if (length === null) {
-    record(state, {
+    return refuse(state, {
       path,
       code: "unstable_representation",
       message: "array length is not one stable own data property, so which positions exist cannot be established",
     });
-    return REFUSED;
   }
 
   // K11-R3-LIMIT-01: the trusted observed length has already decided this root cannot be
@@ -1034,12 +1073,11 @@ function captureArray(container: object, path: string, entered: number, state: C
   // A declared sparse length can be as large as 2**32 - 1. Exactly-at-limit still proceeds below;
   // one-over refuses here with no traversal.
   if (length > BOUNDARY_LIMITS.containerEntries) {
-    record(state, {
+    return refuse(state, {
       path,
       code: "too_many_entries",
       message: `array has ${length} entries, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
     });
-    return REFUSED;
   }
 
   let refused = false;
@@ -1054,7 +1092,7 @@ function captureArray(container: object, path: string, entered: number, state: C
   // aggregate reason without classifying each name. Each name the scans do classify was paid for by
   // the listing's charge.
   const names = listOwnNames(state, container);
-  if (names === STOPPED) return REFUSED;
+  if (names === STOPPED) return STOPPED;
   const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;
   let hasExtra = overlong;
   for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {
@@ -1069,17 +1107,21 @@ function captureArray(container: object, path: string, entered: number, state: C
   // walk on every occurrence. Only an array with no extra name counts its symbols toward the byte charge
   // and the diagnostic, exactly as before the meter, so byte-stop positions and reasons are unchanged.
   const listed = listOwnSymbols(state, container);
-  if (listed === STOPPED) return REFUSED;
+  if (listed === STOPPED) return STOPPED;
   const symbolCount = hasExtra ? 0 : listed;
   if (overlong) {
-    record(state, {
-      path,
-      code: "unrepresentable_member",
-      message: `array lists ${names.length} own names, more than an array of at most ${BOUNDARY_LIMITS.containerEntries} entries owns; canonical form would silently drop the rest`,
-    });
+    if (
+      !record(state, {
+        path,
+        code: "unrepresentable_member",
+        message: `array lists ${names.length} own names, more than an array of at most ${BOUNDARY_LIMITS.containerEntries} entries owns; canonical form would silently drop the rest`,
+      })
+    ) {
+      return STOPPED;
+    }
     refused = true;
   } else if (hasExtra || symbolCount > 0) {
-    record(state, { path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
+    if (!record(state, { path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" })) return STOPPED;
     refused = true;
   }
 
@@ -1096,19 +1138,25 @@ function captureArray(container: object, path: string, entered: number, state: C
     const numeric = arrayIndexValue(name);
     if (numeric >= length) {
       const backing = observeDescriptor(state, container, name);
-      if (backing === STOPPED) return REFUSED;
+      if (backing === STOPPED) return STOPPED;
       if (backing === undefined) {
-        record(state, {
-          path: element(path, numeric),
-          code: "unstable_representation",
-          message: "array lists an own index it does not own, so its structure has no single reading",
-        });
-      } else {
-        record(state, {
+        if (
+          !record(state, {
+            path: element(path, numeric),
+            code: "unstable_representation",
+            message: "array lists an own index it does not own, so its structure has no single reading",
+          })
+        ) {
+          return STOPPED;
+        }
+      } else if (
+        !record(state, {
           path: element(path, numeric),
           code: "unrepresentable_member",
           message: "array has an own index outside its length, which canonical form would silently drop",
-        });
+        })
+      ) {
+        return STOPPED;
       }
       refused = true;
     }
@@ -1119,24 +1167,26 @@ function captureArray(container: object, path: string, entered: number, state: C
   // `length`, so the surplus and symbol terms are zero for it and the charge is its exact
   // punctuation; they are non-zero only on an array already refused above.
   const surplus = names.length - (length + 1);
-  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;
+  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;
 
   const out = allocateElements(length);
   for (let index = 0; index < length; index += 1) {
     const observed = observeElement(state, container, `${index}`);
-    if (observed === STOPPED) return REFUSED;
+    if (observed === STOPPED) return STOPPED;
     const where = element(path, index);
     const member = checkMember(observed.descriptor, observed.read, where, state);
+    if (member === STOPPED) return STOPPED;
     if (!member.ok) {
       refused = true;
       continue;
     }
     if (member.value === undefined) {
-      record(state, { path: where, code: "undefined_member", message: "array element is undefined; an array has no absent positions" });
+      if (!record(state, { path: where, code: "undefined_member", message: "array element is undefined; an array has no absent positions" })) return STOPPED;
       refused = true;
       continue;
     }
     const item = capture(member.value, where, entered, state);
+    if (item === STOPPED) return STOPPED;
     if (item === REFUSED) {
       refused = true;
       continue;
@@ -1144,36 +1194,37 @@ function captureArray(container: object, path: string, entered: number, state: C
     defineAt(out, index, item);
   }
 
-  if (refused || state.stopped) return REFUSED;
+  // Every stop above has already returned `STOPPED`, so the root has not stopped here.
+  if (refused) return REFUSED;
   // Freezing reduces every element installed above to the non-writable, non-configurable own data
   // the snapshot contract requires, and fixes `length` with it.
   return finishArray(out);
 }
 
 /** The object half of `capture`. Members come from own enumerable string-keyed data properties. */
-function captureObject(container: object, path: string, entered: number, state: CaptureState): Captured {
+function captureObject(container: object, path: string, entered: number, state: CaptureState): Visited {
   // Both sides of this comparison are independent of caller-mutable state: the observation uses
   // the load-time `getPrototypeOf`, and the plain prototype is the load-time object, not a live
   // `globalThis.Object` read (K11-R5-VAL-03). A non-primordial, non-null prototype is refused here
   // rather than normalized, exactly as before; a built-in keeping its own prototype is refused here too.
   const prototype = prototypeOf(container);
   if (prototype !== PrimordialObjectPrototype && prototype !== null) {
-    record(state, { path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
-    return REFUSED;
+    return refuse(state, { path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
   }
   // A plain-looking prototype does not make a built-in plain: a re-prototyped Map, Date or typed array
   // (and an arguments object, a module namespace or a raw JSON object) keeps its content in internal
   // slots. Refused by internal-slot type checks before any own-key listing (owner decision-01 item 3).
   if (isBuiltInWithSlots(container)) {
-    record(state, { path, code: "unsupported_form", message: BUILT_IN_MESSAGE });
-    return REFUSED;
+    return refuse(state, { path, code: "unsupported_form", message: BUILT_IN_MESSAGE });
   }
 
   let refused = false;
   const symbolCount = listOwnSymbols(state, container);
-  if (symbolCount === STOPPED) return REFUSED;
+  if (symbolCount === STOPPED) return STOPPED;
   if (symbolCount > 0) {
-    record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" });
+    // A diagnostic can be the charge that passes B; the names listing below must then not start
+    // (KC3-R1-STOP-01, review 01's counterexample).
+    if (!record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" })) return STOPPED;
     refused = true;
   }
 
@@ -1189,21 +1240,25 @@ function captureObject(container: object, path: string, entered: number, state: 
   // either more than `containerEntries` of them were enumerable, or one was non-enumerable or not
   // owned. The remaining names are not read.
   const names = listOwnNames(state, container);
-  if (names === STOPPED) return REFUSED;
+  if (names === STOPPED) return STOPPED;
   const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;
   const enumerable: (readonly [string, PropertyDescriptor])[] = [];
   let nonEnumerable = false;
   for (let nameIndex = 0; nameIndex < readable; nameIndex += 1) {
     const descriptor = observeDescriptor(state, container, names[nameIndex]!);
-    if (descriptor === STOPPED) return REFUSED;
+    if (descriptor === STOPPED) return STOPPED;
     const name = names[nameIndex]!;
     if (descriptor === undefined) {
       // The object listed an own name it does not own. There is no content behind it to accept.
-      record(state, {
-        path: child(path, name),
-        code: "unstable_representation",
-        message: "object lists an own member it does not own, so its structure has no single reading",
-      });
+      if (
+        !record(state, {
+          path: child(path, name),
+          code: "unstable_representation",
+          message: "object lists an own member it does not own, so its structure has no single reading",
+        })
+      ) {
+        return STOPPED;
+      }
       refused = true;
       continue;
     }
@@ -1211,73 +1266,87 @@ function captureObject(container: object, path: string, entered: number, state: 
     else nonEnumerable = true;
   }
   if (nonEnumerable) {
-    record(state, { path, code: "unrepresentable_member", message: "object has non-enumerable own members, which canonical form would silently drop" });
+    if (!record(state, { path, code: "unrepresentable_member", message: "object has non-enumerable own members, which canonical form would silently drop" })) return STOPPED;
     refused = true;
   }
   if (enumerable.length > BOUNDARY_LIMITS.containerEntries) {
-    record(state, {
-      path,
-      code: "too_many_entries",
-      message:
-        readable < names.length
-          ? `object has more than ${BOUNDARY_LIMITS.containerEntries} members, the limit; it lists ${names.length} own names`
-          : `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
-    });
+    if (
+      !record(state, {
+        path,
+        code: "too_many_entries",
+        message:
+          readable < names.length
+            ? `object has more than ${BOUNDARY_LIMITS.containerEntries} members, the limit; it lists ${names.length} own names`
+            : `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
+      })
+    ) {
+      return STOPPED;
+    }
     refused = true;
   }
 
   // Charged before any member is read, as for arrays. An accepted object's own names are exactly
   // its enumerable members and it owns no symbols, so this is its exact punctuation; a larger
   // listing, or any symbol, belongs to an object already refused above.
-  if (!charge(state, containerStructureBytes(names.length, true) + symbolCount)) return REFUSED;
+  if (!charge(state, containerStructureBytes(names.length, true) + symbolCount)) return STOPPED;
 
   const captured: (readonly [string, BoundaryValue])[] = [];
   for (let entryIndex = 0; entryIndex < enumerable.length; entryIndex += 1) {
     const pair = readAt(enumerable, entryIndex)!;
     const keyScan = scanText(state, pair[0]);
-    if (keyScan === STOPPED) return REFUSED;
+    if (keyScan === STOPPED) return STOPPED;
     const key = pair[0];
     const descriptor = pair[1];
     const where = child(path, key);
     if (keyScan.kind === "lone_surrogate") {
-      record(state, { path: where, code: "lone_surrogate", message: "member name contains an unpaired surrogate" });
+      if (!record(state, { path: where, code: "lone_surrogate", message: "member name contains an unpaired surrogate" })) return STOPPED;
       refused = true;
-      if (!charge(state, key.length)) return REFUSED;
+      if (!charge(state, key.length)) return STOPPED;
       continue;
     }
     if (keyScan.kind === "too_long") {
-      record(state, {
-        path: where,
-        code: "string_too_long",
-        message: `member name cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
-      });
+      if (
+        !record(state, {
+          path: where,
+          code: "string_too_long",
+          message: `member name cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
+        })
+      ) {
+        return STOPPED;
+      }
       refused = true;
-      if (!charge(state, key.length)) return REFUSED;
+      if (!charge(state, key.length)) return STOPPED;
       continue;
     }
     // The member name's quoted, escaped bytes, exactly as the member will be spelled.
-    if (!charge(state, keyScan.bytes)) return REFUSED;
+    if (!charge(state, keyScan.bytes)) return STOPPED;
     let read: unknown = undefined;
     if (hasOwnValue(descriptor)) {
       const observed = readMember(state, container, key);
-      if (observed === STOPPED) return REFUSED;
+      if (observed === STOPPED) return STOPPED;
       read = observed.read;
     }
     const member = checkMember(descriptor, read, where, state);
+    if (member === STOPPED) return STOPPED;
     if (!member.ok) {
       refused = true;
       continue;
     }
     if (member.value === undefined) {
-      record(state, {
-        path: where,
-        code: "undefined_member",
-        message: "member is present with no value; omit the member instead, since absent and null are different values",
-      });
+      if (
+        !record(state, {
+          path: where,
+          code: "undefined_member",
+          message: "member is present with no value; omit the member instead, since absent and null are different values",
+        })
+      ) {
+        return STOPPED;
+      }
       refused = true;
       continue;
     }
     const item = capture(member.value, where, entered, state);
+    if (item === STOPPED) return STOPPED;
     if (item === REFUSED) {
       refused = true;
       continue;
@@ -1285,7 +1354,8 @@ function captureObject(container: object, path: string, entered: number, state: 
     appendOwn(captured, [key, item] as const);
   }
 
-  if (refused || state.stopped) return REFUSED;
+  // Every stop above has already returned `STOPPED`, so the root has not stopped here.
+  if (refused) return REFUSED;
   return finishObject(prototype, captured);
 }
 
@@ -1723,6 +1793,22 @@ export interface CaptureWork {
 }
 
 /**
+ * How one capture ended, for the stop oracle (KC3-R1-STOP-01): the running canonical size when reading
+ * ended, and on a work stop the kind of the charge that passed B (`null` otherwise).
+ */
+export interface CaptureEnd {
+  readonly bytes: number;
+  readonly crossing: UnitKind | null;
+}
+
+/** What the evidence path returns: the result, the meter's counts and how reading ended. */
+export interface MeteredAcceptance {
+  readonly result: Acceptance;
+  readonly work: CaptureWork;
+  readonly end: CaptureEnd;
+}
+
+/**
  * The whole acceptance path, run once: capture, canonicalize the capture, measure its bytes.
  *
  * Every public entry point goes through this, so "what was refused" and "what was accepted" can never
@@ -1730,13 +1816,17 @@ export interface CaptureWork {
  * work meter and its own budget; eager multi-root consumers call it once per root (owner decision-05
  * item 5). `encode` runs only on a snapshot capture accepted, outside the meter: it is the same for
  * every acceptance and no refusal reaches it.
+ *
+ * `workSpent` and `bytesSpent` are what the meter and the size count start at: 0 on every consumer path
+ * (`accept`). Only the evidence export below starts them higher, which stops the root exactly where a lower
+ * B or size limit would; the counts it reports leave the head start out.
  */
-function acceptMetered(value: unknown): { readonly result: Acceptance; readonly work: CaptureWork } {
+function acceptMetered(value: unknown, workSpent: number, bytesSpent: number): MeteredAcceptance {
   const state: CaptureState = {
     issues: [],
     open: new PrimordialSet<object>(),
-    bytes: 0,
-    units: 0,
+    bytes: bytesSpent,
+    units: workSpent,
     visitUnits: 0,
     listingUnits: 0,
     elementUnits: 0,
@@ -1745,11 +1835,14 @@ function acceptMetered(value: unknown): { readonly result: Acceptance; readonly 
     stringUnits: 0,
     diagnosticUnits: 0,
     stop: "none",
+    crossing: null,
     stopped: false,
   };
-  const snapshot = capture(value, "", 0, state);
+  // The root: a stop has already recorded its stop issue, so it is this root's refusal.
+  const visited = capture(value, "", 0, state);
+  const snapshot: Captured = visited === STOPPED ? REFUSED : visited;
   const work: CaptureWork = PrimordialObjectFreeze({
-    units: state.units,
+    units: state.units - workSpent,
     visit: state.visitUnits,
     listing: state.listingUnits,
     element: state.elementUnits,
@@ -1759,7 +1852,8 @@ function acceptMetered(value: unknown): { readonly result: Acceptance; readonly 
     diagnostic: state.diagnosticUnits,
     stop: state.stop,
   });
-  return { result: finishAcceptance(snapshot, state), work };
+  const end: CaptureEnd = PrimordialObjectFreeze({ bytes: state.bytes - bytesSpent, crossing: state.crossing });
+  return { result: finishAcceptance(snapshot, state), work, end };
 }
 
 function finishAcceptance(snapshot: Captured, state: CaptureState): Acceptance {
@@ -1814,16 +1908,33 @@ function finishAcceptance(snapshot: Captured, state: CaptureState): Acceptance {
   return { ok: true, value: PrimordialObjectFreeze({ value: snapshot, canonical, canonicalBytes }) };
 }
 
-const accept = (value: unknown): Acceptance => acceptMetered(value).result;
+const accept = (value: unknown): Acceptance => acceptMetered(value, 0, 0).result;
 
 /**
  * Evidence only: one capture's result together with what it charged to the work meter.
  *
- * The maintained tests and the TOOLS-01 probes read meter counts through this. It runs exactly the
- * path `canonicalize` runs. `index.ts` does not re-export it, so it is no part of the package surface;
- * it is the test-only path owner decision-02 anticipates for the capture module.
+ * The maintained tests and the TOOLS-01 probes read meter counts through this. With no thresholds it runs
+ * exactly the path `canonicalize` runs. `workBudget` and `byteLimit` may only lower B and the size limit,
+ * so the stop oracle can place a stop at every charge of a small value (KC3-R1-STOP-01); a value this path
+ * accepts is one the consumer path accepts. A lower threshold starts the meter (or the size count) that far
+ * along, so the stop is the consumer path's own comparison against B; the stop messages therefore still
+ * name B and the size limit, and a byte stop's reported size includes the head start. `index.ts` does not
+ * re-export it, so it is no part of the package surface; it is the test-only path owner decision-02
+ * anticipates for the capture module.
  */
-export const captureWithWork = (value: unknown): { readonly result: Acceptance; readonly work: CaptureWork } => acceptMetered(value);
+export const captureWithWork = (
+  value: unknown,
+  workBudget: number = CAPTURE_WORK_BUDGET,
+  byteLimit: number = BOUNDARY_LIMITS.canonicalBytes,
+): MeteredAcceptance => {
+  if (!PrimordialNumberIsInteger(workBudget) || workBudget < 0 || workBudget > CAPTURE_WORK_BUDGET) {
+    throw new PrimordialRangeError("captureWithWork: workBudget must be an integer in [0, CAPTURE_WORK_BUDGET]");
+  }
+  if (!PrimordialNumberIsInteger(byteLimit) || byteLimit < 0 || byteLimit > BOUNDARY_LIMITS.canonicalBytes) {
+    throw new PrimordialRangeError("captureWithWork: byteLimit must be an integer in [0, BOUNDARY_LIMITS.canonicalBytes]");
+  }
+  return acceptMetered(value, CAPTURE_WORK_BUDGET - workBudget, BOUNDARY_LIMITS.canonicalBytes - byteLimit);
+};
 
 /** Bounded details and exact suffix code counts for a refused root. Empty means valid. */
 export function boundaryValueIssues(value: unknown): ValueIssue[] {

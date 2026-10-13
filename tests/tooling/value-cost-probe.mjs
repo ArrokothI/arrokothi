@@ -1,27 +1,98 @@
 // K1.1-correction-03 registry probe (tests/fixtures/packet-tools/value-cost.json): runs the named
-// maintained tests of one case and reports one JSON observation. The assertions live in the maintained
-// test files only; a mutant is killed when a selected test fails, and a case with no selected test is
-// reported unreached rather than passed.
+// maintained tests of one case and reports one JSON observation.
+//
+// Evidence contract (review 01, KC3-R1-EVID-02; design 02 §1.2). A kill needs a reached qualifying
+// assertion: a selected test ran in a process that loaded and completed, and it failed with
+// `testCodeFailure` whose cause is an `AssertionError` thrown by an assertion function that a test-side
+// module imported (`value-cost-witness.mjs`). Exactly one state is reported per run:
+//
+//   passed            a selected test ran, every one passed, nothing failed, exit 0     -> exit 0
+//   assertion_failed  a selected test failed at a witnessed assertion                    -> exit 17, reached
+//   no_selection      the run completed and no selected test ran                         -> exit 17, unreached
+//   anything else     spawn_error, output_limit, parse_error, load_error, setup_error,   -> exit 3
+//                     hook_failure, cancelled, test_timeout, subject_exception,
+//                     unattributed_failure
+//
+// Exit 3 is neither 0 nor the case's failure_exit, so TOOLS-01's parser refuses the observation and the
+// runner records a non-credit `setup_error`; this JSON, which the runner keeps, names the precise state.
+// The probe sets no timeout of its own: the runner's case timeout kills the process group and records
+// `timeout`. The assertions live in the maintained test files only.
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
+const NONQUALIFYING_EXIT = 3;
 const id = process.argv[2];
-const entry = JSON.parse(readFileSync('tests/fixtures/packet-tools/value-cost.json', 'utf8'))
-  .cases.find(row => row.id === id);
-const { file, pattern, timeout_ms: timeout } = entry.input;
+const entry = JSON.parse(readFileSync('tests/fixtures/packet-tools/value-cost.json', 'utf8')).cases.find((row) => row.id === id);
+const { file, pattern } = entry.input;
+const innerOutput = entry.input.inner_output_bytes ?? 64 * 1024 * 1024;
+const side = mkdtempSync(join(tmpdir(), 'value-cost-probe-'));
+const events = join(side, 'events.jsonl');
+const load = join(side, 'load.json');
+
 const run = spawnSync(process.execPath, [
-  '--test', '--experimental-strip-types', '--no-warnings', '--test-reporter=tap',
+  '--experimental-strip-types', '--no-warnings',
+  '--import', './tests/tooling/value-cost-witness.mjs',
+  '--test-reporter=./tests/tooling/value-cost-reporter.mjs', `--test-reporter-destination=${events}`,
   `--test-name-pattern=${pattern}`, file,
-], { encoding: 'utf8', timeout, maxBuffer: 64 * 1024 * 1024 });
-const count = name => {
-  const found = (run.stdout ?? '').match(new RegExp(`^# ${name} (\\d+)$`, 'm'));
-  return found === null ? -1 : Number(found[1]);
+], { encoding: 'utf8', maxBuffer: innerOutput, env: { ...process.env, ARROKOTHI_VALUE_COST_LOAD: load } });
+
+const readLines = (path) => {
+  try {
+    return readFileSync(path, 'utf8').split('\n').filter((line) => line !== '').map((line) => JSON.parse(line));
+  } catch {
+    return null;
+  }
 };
-const pass = count('pass');
-const fail = count('fail');
-const reached = pass + fail > 0;
-const passed = reached && fail === 0 && run.status === 0 && run.signal === null;
-const failures = passed ? [] : [entry.assertion];
-console.log(JSON.stringify({ case: id, assertion: entry.assertion, reached, passed, pass, fail,
-  status: run.status, signal: run.signal, failures, claim: entry.claim }));
-process.exitCode = passed ? 0 : 17;
+const readJson = (path) => {
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+};
+const lines = readLines(events);
+const loadFailure = readJson(load);
+rmSync(side, { recursive: true, force: true });
+
+const bounded = (list) => list.slice(0, 20);
+const leaf = (line) => line.type === 'test';
+const executed = (lines ?? []).filter((line) => (line.event === 'pass' || line.event === 'fail') && leaf(line) && !line.skip && !line.todo);
+const witnessed = executed.filter((line) => line.event === 'fail' && line.failureType === 'testCodeFailure' && line.witnessed !== null);
+// A suite (or a test with subtests) fails with `subtestsFailed` because a child did; that is not a failure of its own.
+const failures = (lines ?? []).filter((line) => line.event === 'fail' && line.failureType !== 'subtestsFailed');
+const nonqualifying = failures.filter((line) => !witnessed.includes(line));
+const summary = (lines ?? []).find((line) => line.event === 'summary');
+const started = (lines ?? []).some((line) => line.event === 'start');
+
+let state;
+if (run.error !== undefined) state = run.error.code === 'ENOBUFS' ? 'output_limit' : 'spawn_error';
+else if (lines === null || summary === undefined) state = started ? 'setup_error' : loadFailure?.syntax === true ? 'parse_error' : loadFailure !== null ? 'load_error' : 'setup_error';
+else if (witnessed.length > 0) state = 'assertion_failed';
+else if (executed.length === 0 && failures.length === 0) state = 'no_selection';
+else if (failures.length === 0 && run.status === 0 && run.signal === null) state = 'passed';
+else {
+  const first = nonqualifying[0];
+  state = first === undefined ? 'unattributed_failure'
+    : first.failureType === 'hookFailed' ? 'hook_failure'
+    : first.failureType === 'cancelledByParent' ? 'cancelled'
+    : first.failureType === 'testTimeoutFailure' ? 'test_timeout'
+    : first.failureType === 'testCodeFailure' && leaf(first) ? 'subject_exception'
+    : 'unattributed_failure';
+}
+
+const reached = state === 'passed' || state === 'assertion_failed';
+const passed = state === 'passed';
+const exit = state === 'passed' ? 0 : state === 'assertion_failed' || state === 'no_selection' ? entry.failure_exit : NONQUALIFYING_EXIT;
+const named = state === 'assertion_failed'
+  ? bounded(witnessed.map((line) => `${file} > ${line.name} [${line.witnessed}]`))
+  : state === 'passed' ? [] : [`${entry.assertion}: ${state}`];
+console.log(JSON.stringify({
+  case: id, assertion: entry.assertion, reached, passed, state,
+  leaves: executed.length, pass: executed.filter((line) => line.event === 'pass').length, fail: executed.filter((line) => line.event === 'fail').length,
+  failures: named,
+  nonqualifying: bounded(nonqualifying.map((line) => ({ name: line.name, type: line.type, failureType: line.failureType, cause: line.cause }))),
+  load: loadFailure, status: run.status, signal: run.signal, claim: entry.claim,
+}));
+process.exitCode = exit;

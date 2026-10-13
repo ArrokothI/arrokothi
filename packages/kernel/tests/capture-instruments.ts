@@ -82,6 +82,10 @@ export function revokedCountingProxy(target: object = {}): { proxy: object; call
  * `hooks.symbols(target, real)`, `hooks.prototype(target, real)`; a hook may throw.
  */
 const PRELUDE = `
+const realIsArray = Array.isArray;
+// Kept apart from \`counts\`, whose whole shape some tests compare: a genuine array's length descriptor,
+// which belongs to its visit rather than to an element or descriptor unit (capture-stop.test.ts).
+const lengthDescriptors = { tracked: 0 };
 const counts = {
   descriptor: 0, descriptorTracked: 0,
   names: 0, namesTracked: 0, namesListed: 0,
@@ -109,6 +113,8 @@ wrap(Object, "getOwnPropertyDescriptor", (original) => function (target, key) {
   counts.descriptor += 1;
   if (isTracked(target)) {
     counts.descriptorTracked += 1;
+    // A genuine array's length descriptor belongs to its visit; every other one to an element or descriptor unit.
+    if (key === "length" && realIsArray(target)) lengthDescriptors.tracked += 1;
     if (hooks.descriptor) return hooks.descriptor(target, key, Reflect.apply(original, this, [target, key]));
   }
   return Reflect.apply(original, this, [target, key]);
@@ -156,7 +162,7 @@ wrap(String.prototype, "charCodeAt", (original) => function (index) { counts.cha
 const values = await import(VALUES_URL);
 const kernel = await import(KERNEL_URL);
 for (const undo of restore.reverse()) undo();
-const reset = () => { for (const key of Object.keys(counts)) counts[key] = 0; };
+const reset = () => { for (const key of Object.keys(counts)) counts[key] = 0; lengthDescriptors.tracked = 0; };
 const snapshot = () => ({ ...counts, unwrapped: [...unwrapped] });
 const emit = (value) => { console.log(JSON.stringify(value)); };
 `;
@@ -165,8 +171,10 @@ const emit = (value) => { console.log(JSON.stringify(value)); };
  * Runs `body` in a fresh Node process after the prelude above and returns the JSON it emits last.
  *
  * `body` sees `counts`, `reset`, `snapshot`, `track`, `hooks`, `values` (the `values.ts` module) and
- * `kernel` (the package entry), and calls `emit(result)`. `prelude` runs before the wrappers (for a
- * probe that must prepare state the Kernel never sees as caller code).
+ * `kernel` (the package entry), and calls `emit(result)`. `lengthDescriptors.tracked` counts the share of
+ * `descriptorTracked` that observed a genuine array's `length`, which belongs to that array's visit.
+ * `prelude` runs before the wrappers (for a probe that must prepare state the Kernel never sees as caller
+ * code).
  */
 export function inWrappedChild<T>(body: string, options: { readonly timeout?: number; readonly before?: string } = {}): T {
   // The module URLs are resolved here, not in the module-level prelude text, so a test file that imports

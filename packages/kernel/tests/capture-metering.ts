@@ -3,12 +3,13 @@
  * owner decision-05 item 3: "A maintained static check fails if capture code bypasses them").
  *
  * It reuses `zone-analysis.ts`'s program and checker (the repository's compiler options), not its DEC-8
- * inventory, and applies nine syntactic rules to `values.ts` only:
+ * inventory, and applies eleven syntactic rules to `values.ts` only:
  *
  * - SC1 confinement: a binding of an engine observation (`OBSERVATION_PRIMORDIALS`) is referenced only
  *   at module load or inside a declared helper (`HELPERS`).
  * - SC2 charge first: a charged helper charges (`spend`) before its first observation; a listing helper
- *   charges the returned list's length in the statement right after the listing.
+ *   first tests the stop (`if (state.stopped) return STOPPED;`), then lists, then charges the returned
+ *   list's length in the statement right after the listing (KC3-R1-STOP-01).
  * - SC3 no reads in the traversal: `TRAVERSAL` functions hold caller values only as `unknown`/`object`
  *   and contain no type assertion other than `as const`, no `any` and no reference to a global value,
  *   so strict TypeScript rejects any member read of a caller value there.
@@ -23,12 +24,24 @@
  * - SC9 every loop outside the traversal and the serializer window carries its own cap: its condition
  *   includes a `<` or `<=` comparison against a numeric literal or a `BOUNDARY_LIMITS` member, so its
  *   bound never rests on a guard elsewhere in the function (packet review MS-03).
+ * - SC10 stop propagation (review 01, KC3-R1-STOP-01): the stop-capable functions are `spend`, `charge`
+ *   and, by fixpoint, every function that calls one, apart from the root `acceptMetered`, which turns a
+ *   stop into the root's refusal. Every call of one is consumed where it stands, so a frame returns at once
+ *   when the root stops: it is the returned expression (or a branch of a returned conditional); or the test
+ *   of a returned conditional whose other branch is `STOPPED` or `false`; or `if (!call) return STOPPED;`
+ *   (or `return false;`); or a `const` whose next statement is `if (name === STOPPED) return STOPPED;`.
+ *   Anything else is reported: a bare call, a call used as an argument, a stop branch that returns
+ *   `REFUSED`, or a test that is not the next statement. `acceptMetered`'s one call maps `STOPPED` to
+ *   `REFUSED` in the statement after it.
+ * - SC11 one writer: `stopped` and `stop` on the capture state are assigned only in `spend` and `charge`.
  *
  * It is a regression guard for plausible maintainer mistakes, not a soundness proof (K1.2-correction-01
  * amendment 03; 012). Stated gaps: an alias of a primordial made inside a helper and called elsewhere;
  * the size of a charge; extra work inside a helper; caller-sized string building; recursion that avoids
- * `capture`. `capture-work.test.ts` covers them at run time by counting every wrapped engine operation
- * against the meter's units, and pins each charge with exact unit counts.
+ * `capture`; a stop-capable function reached through an alias, which SC10's call-graph fixpoint does not
+ * see. `capture-work.test.ts` covers them at run time by counting every wrapped engine operation against
+ * the meter's units, and pins each charge with exact unit counts; `capture-stop.test.ts` places the stop at
+ * every charge of a declared set of shapes and requires exact accounting there.
  */
 
 import { resolve } from "node:path";
@@ -232,6 +245,111 @@ const chargesEachIteration = (loop: ts.IterationStatement): boolean => {
   );
 };
 
+const normalized = (node: ts.Node): string => node.getText().replace(/\s+/g, " ");
+
+const unparenthesized = (node: ts.Node): ts.Node => {
+  let current = node;
+  while (current.parent !== undefined && ts.isParenthesizedExpression(current.parent)) current = current.parent;
+  return current;
+};
+
+/** The root that turns a stop into the root's refusal; its callers see an `Acceptance`, never a stop. */
+const STOP_ROOT = "acceptMetered";
+
+/** `spend`, `charge` and, by fixpoint over the file's call graph, every function that calls one (SC10). */
+export function stopCapable(functions: ReadonlyMap<string, Fn>): Set<string> {
+  const out = new Set(["spend", "charge"]);
+  const callees = new Map<string, Set<string>>();
+  for (const [name, fn] of functions) {
+    const names = new Set<string>();
+    const walk = (node: ts.Node): void => {
+      if (ts.isCallExpression(node)) {
+        const callee = calleeName(node);
+        if (callee !== undefined) names.add(callee);
+      }
+      ts.forEachChild(node, walk);
+    };
+    if (fn.body !== undefined) walk(fn.body);
+    callees.set(name, names);
+  }
+  for (let changed = true; changed; ) {
+    changed = false;
+    for (const [name, names] of callees) {
+      if (out.has(name) || name === STOP_ROOT) continue;
+      if ([...names].some((callee) => out.has(callee))) {
+        out.add(name);
+        changed = true;
+      }
+    }
+  }
+  return out;
+}
+
+/** Whether `node` is what its function returns: a `return` operand or a concise arrow body. */
+const isReturned = (node: ts.Node): boolean => {
+  const parent = node.parent;
+  if (parent === undefined) return false;
+  if (ts.isReturnStatement(parent) && parent.expression === node) return true;
+  if (ts.isArrowFunction(parent) && parent.body === node) return true;
+  // A branch of a returned conditional is returned as well.
+  if (ts.isConditionalExpression(parent) && (parent.whenTrue === node || parent.whenFalse === node)) return isReturned(unparenthesized(parent));
+  return false;
+};
+
+const isStopValue = (node: ts.Expression): boolean => {
+  let current: ts.Expression = node;
+  while (ts.isParenthesizedExpression(current)) current = current.expression;
+  return (ts.isIdentifier(current) && current.text === "STOPPED") || current.kind === ts.SyntaxKind.FalseKeyword;
+};
+
+/** `return STOPPED;` or `return false;`, alone or as the only statement of a block. */
+const returnsStop = (statement: ts.Statement): boolean => {
+  const only = ts.isBlock(statement) && statement.statements.length === 1 ? statement.statements[0]! : statement;
+  return ts.isReturnStatement(only) && only.expression !== undefined && isStopValue(only.expression);
+};
+
+/** The statement that follows `statement` in its enclosing block or source file, if any. */
+const nextStatement = (statement: ts.Statement): ts.Statement | undefined => {
+  const parent = statement.parent;
+  const list = ts.isBlock(parent) || ts.isSourceFile(parent) || ts.isModuleBlock(parent) ? parent.statements : undefined;
+  if (list === undefined) return undefined;
+  const at = list.indexOf(statement);
+  return at >= 0 ? list[at + 1] : undefined;
+};
+
+/** Why a call of a stop-capable function does not return at once on a stop, or `undefined` when it does (SC10). */
+const unconsumedStop = (call: ts.CallExpression, owner: string | undefined): string | undefined => {
+  const node = unparenthesized(call);
+  if (isReturned(node)) return undefined;
+  const parent = node.parent;
+  // `return call(...) ? value : STOPPED;`
+  if (parent !== undefined && ts.isConditionalExpression(parent) && parent.condition === node) {
+    return isReturned(unparenthesized(parent)) && isStopValue(parent.whenFalse) ? undefined : "its conditional does not return STOPPED or false on a stop";
+  }
+  // `if (!call(...)) return STOPPED;`
+  if (parent !== undefined && ts.isPrefixUnaryExpression(parent) && parent.operator === ts.SyntaxKind.ExclamationToken) {
+    const test = unparenthesized(parent);
+    const statement = test.parent;
+    if (statement !== undefined && ts.isIfStatement(statement) && statement.expression === test) {
+      return returnsStop(statement.thenStatement) ? undefined : "its if statement does not return STOPPED or false on a stop";
+    }
+    return "its negation is not an if statement's whole test";
+  }
+  // `const name = call(...);` then `if (name === STOPPED) return STOPPED;`
+  if (parent !== undefined && ts.isVariableDeclaration(parent) && parent.initializer === node && ts.isIdentifier(parent.name)) {
+    const statement = parent.parent.parent;
+    if (ts.isVariableStatement(statement) && (statement.declarationList.flags & ts.NodeFlags.Const) !== 0) {
+      const next = nextStatement(statement);
+      const name = parent.name.text;
+      if (owner === STOP_ROOT) {
+        return next !== undefined && normalized(next).includes(`${name} === STOPPED ? REFUSED :`) ? undefined : "the root does not map STOPPED to its refusal next";
+      }
+      return next !== undefined && normalized(next) === `if (${name} === STOPPED) return STOPPED;` ? undefined : `the next statement does not return STOPPED when ${name} is STOPPED`;
+    }
+  }
+  return "its result is not tested where it stands";
+};
+
 const isGlobalValue = (checker: ts.TypeChecker, identifier: ts.Identifier): boolean => {
   const parent = identifier.parent;
   if (ts.isPropertyAccessExpression(parent) && parent.name === identifier) return false;
@@ -273,8 +391,11 @@ export function meteringViolations(override?: string): string[] {
     if (fn === undefined) continue;
     const statements = bodyStatements(fn);
     if ((HELPERS.listing as readonly string[]).includes(name)) {
-      const first = statements[0];
-      const second = statements[1];
+      const gate = statements[0];
+      const gated = gate !== undefined && normalized(gate) === "if (state.stopped) return STOPPED;";
+      if (!gated) out.push(`SC2 ${name} lists without first testing the stop`);
+      const first = statements[gated ? 1 : 0];
+      const second = statements[gated ? 2 : 1];
       const listed =
         first !== undefined && ts.isVariableStatement(first) ? first.declarationList.declarations[0] : undefined;
       const listedName = listed !== undefined && ts.isIdentifier(listed.name) ? listed.name.text : undefined;
@@ -345,7 +466,7 @@ export function meteringViolations(override?: string): string[] {
   const capture = functions.get("capture");
   if (capture !== undefined) {
     const statements = bodyStatements(capture);
-    if (statements[0]?.getText().replace(/\s+/g, " ") !== "if (state.stopped) return REFUSED;") out.push("SC5 capture does not begin with its stop check");
+    if (statements[0] === undefined || normalized(statements[0]) !== "if (state.stopped) return STOPPED;") out.push("SC5 capture does not begin with its stop check");
     const second = statements[1];
     if (second === undefined || !callsIn(second).some((call) => calleeName(call) === "spend" && call.getText().includes('"visit"'))) {
       out.push("SC5 capture does not charge its visit unit before any other work");
@@ -389,5 +510,35 @@ export function meteringViolations(override?: string): string[] {
       out.push(`SC8 ${owner} reaches the serializer window through ${callee}`);
     }
   }
+
+  // SC10: every call of a stop-capable function returns at once when the root stops.
+  const capable = stopCapable(functions);
+  for (const required of ["record", "refuse", "listOwnNames", "listOwnSymbols", "observeElement", "observeDescriptor", "readMember", "scanText", "checkMember", "capture", "captureArray", "captureObject"]) {
+    if (!capable.has(required)) out.push(`SC10 ${required} is expected to be stop-capable but calls no stop-capable function`);
+  }
+  for (const call of allCalls) {
+    const callee = calleeName(call);
+    if (callee === undefined || !capable.has(callee)) continue;
+    const owner = ownerOf(call, byNode);
+    const why = unconsumedStop(call, owner);
+    if (why !== undefined) out.push(`SC10 ${owner ?? "module"} calls the stop-capable ${callee} but ${why}: ${normalized(call).slice(0, 80)}`);
+  }
+
+  // SC11: only the two stop transitions write the stop state.
+  const writes = (node: ts.Node): void => {
+    const target =
+      ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && node.operatorToken.kind <= ts.SyntaxKind.LastAssignment
+        ? node.left
+        : (ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
+            (node.operator === ts.SyntaxKind.PlusPlusToken || node.operator === ts.SyntaxKind.MinusMinusToken)
+          ? node.operand
+          : undefined;
+    if (target !== undefined && ts.isPropertyAccessExpression(target) && (target.name.text === "stopped" || target.name.text === "stop")) {
+      const owner = ownerOf(node, byNode);
+      if (owner !== "spend" && owner !== "charge") out.push(`SC11 ${owner ?? "module"} writes the stop state: ${normalized(node).slice(0, 80)}`);
+    }
+    ts.forEachChild(node, writes);
+  };
+  writes(source);
   return out;
 }

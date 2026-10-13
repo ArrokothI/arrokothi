@@ -13,6 +13,7 @@
     "packages/kernel/tests/capture-metering.test.ts",
     "packages/kernel/tests/capture-metering.ts",
     "packages/kernel/tests/capture-refusals.test.ts",
+    "packages/kernel/tests/capture-stop.test.ts",
     "packages/kernel/tests/capture-work.test.ts",
     "packages/kernel/tests/creation.test.ts",
     "packages/kernel/tests/dispatch.test.ts",
@@ -235,11 +236,12 @@
       "source": "K1.1-correction-03: every unit kind is charged exactly (KC3-1, KC3-5); maintained tests packages/kernel/tests/capture-work.test.ts matching /KC3-1/KC3-5 every unit kind is charged exactly/",
       "input": {
         "file": "packages/kernel/tests/capture-work.test.ts",
-        "pattern": "KC3-1/KC3-5 every unit kind is charged exactly",
-        "timeout_ms": 170000
+        "pattern": "KC3-1/KC3-5 every unit kind is charged exactly"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -253,9 +255,9 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-e9f0216f2bbb8eccd449b4cca6e709f0fdf6a2b9ea5ffb6fd4376c8dafd19a81",
+          "id": "mutation-d726935886bfa5c121a916fc19db61ab8c3adcc55fb8afb0abc8eb999331d737",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"visit\", 1)) return REFUSED;\n  if (value === null)",
+          "before": "  if (!spend(state, \"visit\", 1)) return STOPPED;\n  if (value === null)",
           "after": "  if (value === null)",
           "operator": "remove-work-charge",
           "name": "visit unit uncharged"
@@ -309,9 +311,9 @@
           "name": "symbols listing charged as one"
         },
         {
-          "id": "mutation-da5069a35a82b37c3270d42e33f8ca4a29a9dc3b90db84a20f7e524e7996b996",
+          "id": "mutation-2f2e957da4e3f66d482649f832f1c252a0feecd7851b99ee6a640ae41fe1c1eb",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (spend(state, \"diagnostic\", 1)) pushIssue(state.issues, issue);",
+          "before": "  if (!spend(state, \"diagnostic\", 1)) return false;\n  pushIssue(state.issues, issue);",
           "after": "  pushIssue(state.issues, issue);",
           "operator": "remove-work-charge",
           "name": "diagnostic unit uncharged"
@@ -325,10 +327,10 @@
           "name": "read units filed as descriptor units"
         },
         {
-          "id": "mutation-b086cfae6bd1b04bcdc761ae3b8bdd00308468b17fe7d7661484ceb48151ba96",
+          "id": "mutation-acf80342553ae87654f57ed23705b959b95abd8aeb1a692e9426077d3284be36",
           "path": "packages/kernel/src/values.ts",
-          "before": "  const listed = listOwnSymbols(state, container);\n  if (listed === STOPPED) return REFUSED;\n  const symbolCount = hasExtra ? 0 : listed;",
-          "after": "  let symbolCount = 0;\n  if (!hasExtra) {\n    const listed = listOwnSymbols(state, container);\n    if (listed === STOPPED) return REFUSED;\n    symbolCount = listed;\n  }",
+          "before": "  const listed = listOwnSymbols(state, container);\n  if (listed === STOPPED) return STOPPED;\n  const symbolCount = hasExtra ? 0 : listed;",
+          "after": "  let symbolCount = 0;\n  if (!hasExtra) {\n    const listed = listOwnSymbols(state, container);\n    if (listed === STOPPED) return STOPPED;\n    symbolCount = listed;\n  }",
           "operator": "remove-work-charge",
           "name": "symbols listing skipped for an array with an extra name (packet review MS-02)"
         }
@@ -341,11 +343,12 @@
       "source": "K1.1-correction-03: B is derived from the limits and the meter stops at B + 1 (KC3-2, KC3-4); maintained tests packages/kernel/tests/capture-work.test.ts matching /KC3-2|KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth$|refused at the meter/",
       "input": {
         "file": "packages/kernel/tests/capture-work.test.ts",
-        "pattern": "KC3-2|KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth$|refused at the meter",
-        "timeout_ms": 170000
+        "pattern": "KC3-2|KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth$|refused at the meter"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -407,11 +410,12 @@
       "source": "K1.1-correction-03: per-position Kernel work does not depend on nesting depth (KC3-4); maintained tests packages/kernel/tests/capture-work.test.ts matching /wrapped engine operations per refused position/",
       "input": {
         "file": "packages/kernel/tests/capture-work.test.ts",
-        "pattern": "wrapped engine operations per refused position",
-        "timeout_ms": 170000
+        "pattern": "wrapped engine operations per refused position"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -460,11 +464,12 @@
       "source": "K1.1-correction-03: wrapped engine operations are accounted for by the units charged (KC3-1); maintained tests packages/kernel/tests/capture-work.test.ts matching /runtime oracle/",
       "input": {
         "file": "packages/kernel/tests/capture-work.test.ts",
-        "pattern": "runtime oracle",
-        "timeout_ms": 170000
+        "pattern": "runtime oracle"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -478,10 +483,10 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-0e2a5ea66d5d8c5d3013b4c30516940291839fa9360a1f2c118f0bd9737629a1",
+          "id": "mutation-53edb649b9d16bf8c51151a5c10835f811b6c817df86fbc32f7213acbd7c99c5",
           "path": "packages/kernel/src/values.ts",
-          "before": "  const symbolCount = listOwnSymbols(state, container);\n  if (symbolCount === STOPPED) return REFUSED;",
-          "after": "  const symbolCount = listOwnSymbols(state, container);\n  PrimordialGetOwnPropertyNames(container);\n  if (symbolCount === STOPPED) return REFUSED;",
+          "before": "  const symbolCount = listOwnSymbols(state, container);\n  if (symbolCount === STOPPED) return STOPPED;",
+          "after": "  const symbolCount = listOwnSymbols(state, container);\n  PrimordialGetOwnPropertyNames(container);\n  if (symbolCount === STOPPED) return STOPPED;",
           "operator": "unmetered-observation",
           "name": "an uncharged extra names listing"
         },
@@ -511,11 +516,12 @@
       "source": "K1.1-correction-03: capture observes caller values only through metered helpers (KC3-1, static); maintained tests packages/kernel/tests/capture-metering.test.ts matching /the real values.ts passes every rule/",
       "input": {
         "file": "packages/kernel/tests/capture-metering.test.ts",
-        "pattern": "the real values.ts passes every rule",
-        "timeout_ms": 170000
+        "pattern": "the real values.ts passes every rule"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -529,9 +535,9 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-fb1d0b164fb3ae62b05329d7bd6c4901408db0f0c72cf7b652bc1fc73db16e43",
+          "id": "mutation-6955531df09922a60e5c24a295be7d6b26a9e343495a8ce306a7c1e02ab1f282",
           "path": "packages/kernel/src/values.ts",
-          "before": "    const observed = observeElement(state, container, `${index}`);\n    if (observed === STOPPED) return REFUSED;",
+          "before": "    const observed = observeElement(state, container, `${index}`);\n    if (observed === STOPPED) return STOPPED;",
           "after": "    const raw = PrimordialGetOwnPropertyDescriptor(container, `${index}`);\n    const observed = { descriptor: raw, read: raw === undefined ? undefined : raw.value };",
           "operator": "bypass-helper",
           "name": "SC1 element observed by a direct descriptor call"
@@ -561,10 +567,10 @@
           "name": "SC3 global built-in in the traversal"
         },
         {
-          "id": "mutation-2c68b86ab444e572b9862f4b4c58b4b9da8cc205dbc4e3c1d1d9e467708757a3",
+          "id": "mutation-a8bf8f3e96df4eb572f78a5ba9268af2aa698e659dc047587e18d7504420df06",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (refused || state.stopped) return REFUSED;\n  return finishObject(prototype, captured);",
-          "after": "  let scanned = 0;\n  for (let index = 0; index < captured.length; index += 1) scanned += index;\n  if (refused || state.stopped || scanned < 0) return REFUSED;\n  return finishObject(prototype, captured);",
+          "before": "  if (refused) return REFUSED;\n  return finishObject(prototype, captured);",
+          "after": "  let scanned = 0;\n  for (let index = 0; index < captured.length; index += 1) scanned += index;\n  if (refused || scanned < 0) return REFUSED;\n  return finishObject(prototype, captured);",
           "operator": "unmetered-loop",
           "name": "SC4 unmetered loop in the traversal"
         },
@@ -585,18 +591,18 @@
           "name": "SC6 visit-covered helper inside the element loop"
         },
         {
-          "id": "mutation-654fcd29636b221327f87725e476642445cfa6d517706cf8f50dbfa2695ae0c9",
+          "id": "mutation-0d68278d040871c34124d65c4e4fef11b008af72e4ce5f51f214f273d7cd6729",
           "path": "packages/kernel/src/values.ts",
-          "before": "    const scan = scanText(state, value);\n    if (scan === STOPPED) return REFUSED;",
+          "before": "    const scan = scanText(state, value);\n    if (scan === STOPPED) return STOPPED;",
           "after": "    const scan = scanBoundaryString(value);",
           "operator": "bypass-helper",
           "name": "SC7 string scanned directly"
         },
         {
-          "id": "mutation-ece3e2a2f5b3d0223f2001190758cf34e77eb9fe2546a2ff89973f1c1debc23e",
+          "id": "mutation-94a95ac554df26dd4285243e7d1774dbda3b99eb8907c0e493a8d422c6771de7",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (refused || state.stopped) return REFUSED;\n  return finishObject(prototype, captured);",
-          "after": "  if (refused || state.stopped || encode(null) === \"\") return REFUSED;\n  return finishObject(prototype, captured);",
+          "before": "  if (refused) return REFUSED;\n  return finishObject(prototype, captured);",
+          "after": "  if (refused || encode(null) === \"\") return REFUSED;\n  return finishObject(prototype, captured);",
           "operator": "bypass-helper",
           "name": "SC8 serializer reached from the traversal"
         },
@@ -623,6 +629,70 @@
           "after": "  for (let index = 0; index < text.length; index += 1) {",
           "operator": "remove-loop-cap",
           "name": "SC9 diagnostic text loop without its cap"
+        },
+        {
+          "id": "mutation-29317a4c6578a4afff9b4b2caf0f75e5690b84a81f47202afffe7757c3687b15",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return STOPPED;",
+          "after": "    record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" });",
+          "operator": "drop-stop-propagation",
+          "name": "SC10 symbol diagnostic whose stop is not propagated (review 01 KC3-R1-STOP-01 site, one layer)"
+        },
+        {
+          "id": "mutation-3bb8ce5a1dafe27d1d7e9434f4c8dd12b68c5d27d0b06deccff0057eefad222a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return STOPPED;",
+          "after": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return REFUSED;",
+          "operator": "drop-stop-propagation",
+          "name": "SC10 symbol diagnostic whose stop branch returns REFUSED"
+        },
+        {
+          "id": "mutation-ac78dd0f9a36a3a34e0b8ade621183f3797b101a1357ec09b119ef7cbe71f8b8",
+          "path": "packages/kernel/src/values.ts",
+          "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt",
+          "after": "    const item = capture(member.value, where, entered, state);\n    if (item === REFUSED || item === STOPPED) {\n      refused = true;\n      continue;\n    }\n    defineAt",
+          "operator": "drop-stop-propagation",
+          "name": "SC10 nested stop folded into a refused element"
+        },
+        {
+          "id": "mutation-e8b246ccba34a523ce05c95232ff33905d905cf44e33433dc808202dd885d92d",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) ? REFUSED : STOPPED);",
+          "after": "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue), REFUSED);",
+          "operator": "drop-stop-propagation",
+          "name": "SC10 terminal refusal that drops its diagnostic stop"
+        },
+        {
+          "id": "mutation-f25c1ea7b3f4d3ce0455f50dc906b7cf9a988f51da025e5c8abb5d0ecdc4a44a",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
+          "after": "  charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount);",
+          "operator": "drop-stop-propagation",
+          "name": "SC10 failed array structure charge not propagated"
+        },
+        {
+          "id": "mutation-d664b207c4534e8b003a2e351ac975f75db46e0311569a699e9020245b68f8c9",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
+          "after": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n",
+          "operator": "remove-stop-gate",
+          "name": "SC2 names listing not gated on the stop (one layer)"
+        },
+        {
+          "id": "mutation-9bbe53a1a7db12ad87ef1b39cd9e290c0a0cf3ee283897019dd0de5de8dd8fce",
+          "path": "packages/kernel/src/values.ts",
+          "before": "const listOwnSymbols = (state: CaptureState, container: object): number | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
+          "after": "const listOwnSymbols = (state: CaptureState, container: object): number | typeof STOPPED => {\n",
+          "operator": "remove-stop-gate",
+          "name": "SC2 symbols listing not gated on the stop (one layer)"
+        },
+        {
+          "id": "mutation-a9c2861bb5528d8d5d9169c94451249c8199bede2da3cb5067ebc1fd3408edb5",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  let refused = false;\n  const symbolCount = listOwnSymbols(state, container);",
+          "after": "  let refused = false;\n  state.stopped = false;\n  const symbolCount = listOwnSymbols(state, container);",
+          "operator": "stale-stop-state",
+          "name": "SC11 stop state reset outside spend and charge"
         }
       ]
     },
@@ -633,11 +703,12 @@
       "source": "K1.1-correction-03: every byte charge is pinned by its exact byte-stop position (KC3-5, K12C1-R8-EVID-01); maintained tests packages/kernel/tests/capture-work.test.ts matching /KC3-5 every byte charge/",
       "input": {
         "file": "packages/kernel/tests/capture-work.test.ts",
-        "pattern": "KC3-5 every byte charge",
-        "timeout_ms": 170000
+        "pattern": "KC3-5 every byte charge"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -691,33 +762,33 @@
           "name": "object symbols uncharged"
         },
         {
-          "id": "mutation-0e7ad37599d6019eecdcce8ff54511f9ff647a75e18cd437142329ffbf16c528",
+          "id": "mutation-8b507339ab4747cb5183c87c48fb95bb3856df616d709d9b853fa0a88dde7ccd",
           "path": "packages/kernel/src/values.ts",
-          "before": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" });\n      charge(state, value.length);",
-          "after": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" });",
+          "before": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" })) return STOPPED;\n      return charge(state, value.length) ? REFUSED : STOPPED;",
+          "after": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" })) return STOPPED;\n      return REFUSED;",
           "operator": "remove-work-charge",
           "name": "lone-surrogate string uncharged"
         },
         {
-          "id": "mutation-163072b7020ea0dc851e1a2b05c460d1a50c182a6bc51ed9f5537790102b8992",
+          "id": "mutation-602ef1fd35f4628103845c354ada5cccddbdcad8e67d0d5ca8f4efaf66f90b00",
           "path": "packages/kernel/src/values.ts",
-          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      charge(state, value.length);",
-          "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.",
+          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) ? REFUSED : STOPPED;",
+          "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return REFUSED;",
           "operator": "remove-work-charge",
           "name": "overlong string uncharged"
         },
         {
-          "id": "mutation-73f9f34342de03f48cd0ad2c1306fc9b4f3c83fed482ab0033ac92705f0e1b4e",
+          "id": "mutation-d2a6549c96e2f3a131adc4f9af9271abf6d6cff5b6ba39e5e43dae2b4d740608",
           "path": "packages/kernel/src/values.ts",
-          "before": "message: \"member name contains an unpaired surrogate\" });\n      refused = true;\n      if (!charge(state, key.length)) return REFUSED;",
-          "after": "message: \"member name contains an unpaired surrogate\" });\n      refused = true;",
+          "before": "message: \"member name contains an unpaired surrogate\" })) return STOPPED;\n      refused = true;\n      if (!charge(state, key.length)) return STOPPED;",
+          "after": "message: \"member name contains an unpaired surrogate\" })) return STOPPED;\n      refused = true;",
           "operator": "remove-work-charge",
           "name": "lone-surrogate member name uncharged"
         },
         {
-          "id": "mutation-1531ac2020a6407360a60f8fc1542680ae269a8173a4a64c9739c9c66ef9ca7f",
+          "id": "mutation-8c6d9aa774fdb26e8c026c07a4aebf95e68c4b415cb76d134a21f88644abc084",
           "path": "packages/kernel/src/values.ts",
-          "before": "      refused = true;\n      if (!charge(state, key.length)) return REFUSED;\n      continue;\n    }\n    // The member name",
+          "before": "      refused = true;\n      if (!charge(state, key.length)) return STOPPED;\n      continue;\n    }\n    // The member name",
           "after": "      refused = true;\n      continue;\n    }\n    // The member name",
           "operator": "remove-work-charge",
           "name": "overlong member name uncharged"
@@ -731,11 +802,12 @@
       "source": "K1.1-correction-03: every Proxy is refused first with no trap run (KC3-7); maintained tests packages/kernel/tests/capture-refusals.test.ts matching /KC3-7/",
       "input": {
         "file": "packages/kernel/tests/capture-refusals.test.ts",
-        "pattern": "KC3-7",
-        "timeout_ms": 170000
+        "pattern": "KC3-7"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -829,11 +901,12 @@
       "source": "K1.1-correction-03: built-ins with internal slots are refused by internal-slot checks before any listing (KC3-8); maintained tests packages/kernel/tests/capture-refusals.test.ts matching /KC3-8/",
       "input": {
         "file": "packages/kernel/tests/capture-refusals.test.ts",
-        "pattern": "KC3-8",
-        "timeout_ms": 170000
+        "pattern": "KC3-8"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -999,7 +1072,7 @@
           "name": "internal-slot check removed"
         },
         {
-          "id": "mutation-5562b7fb70456a5c37ef08de0d6356934f4d0dcadd21fc468fb6df627ace6130",
+          "id": "mutation-205c1cec1e62262f341b7464656aec129488e59a017c009975a59de0dda044f5",
           "edits": [
             {
               "path": "packages/kernel/src/values.ts",
@@ -1008,8 +1081,8 @@
             },
             {
               "path": "packages/kernel/src/values.ts",
-              "before": "  if (symbolCount === STOPPED) return REFUSED;\n  if (symbolCount > 0) {",
-              "after": "  if (symbolCount === STOPPED) return REFUSED;\n  if (isBuiltInWithSlots(container)) {\n    record(state, { path, code: \"unsupported_form\", message: BUILT_IN_MESSAGE });\n    return REFUSED;\n  }\n  if (symbolCount > 0) {"
+              "before": "  if (symbolCount === STOPPED) return STOPPED;\n  if (symbolCount > 0) {",
+              "after": "  if (symbolCount === STOPPED) return STOPPED;\n  if (isBuiltInWithSlots(container)) {\n    return refuse(state, { path, code: \"unsupported_form\", message: BUILT_IN_MESSAGE });\n  }\n  if (symbolCount > 0) {"
             }
           ],
           "operator": "reorder-refusal-check",
@@ -1024,11 +1097,12 @@
       "source": "K1.1-correction-03: cycle, too_deep and foreign classification keep their order (KC3-9); maintained tests packages/kernel/tests/capture-corpus.test.ts matching /^cycle, /",
       "input": {
         "file": "packages/kernel/tests/capture-corpus.test.ts",
-        "pattern": "^cycle, ",
-        "timeout_ms": 170000
+        "pattern": "^cycle, "
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -1042,12 +1116,89 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-c707887fe9811082fe8ee8185fb046ed4bb9a95f720c7a0574fc2ad161691605",
+          "id": "mutation-dceb130e6012ae09e57cbf6c07efbd28662073a35e3932ed0dc19a933716f0ec",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (isOpenContainer(state, value)) {\n    record(state, { path, code: \"cycle\", message: \"value refers to itself and has no canonical form\" });\n    return REFUSED;\n  }\n\n  const entered = level + 1;\n  if (entered > BOUNDARY_LIMITS.containerDepth) {",
-          "after": "  const entered = level + 1;\n  if (isOpenContainer(state, value) && entered <= BOUNDARY_LIMITS.containerDepth) {\n    record(state, { path, code: \"cycle\", message: \"value refers to itself and has no canonical form\" });\n    return REFUSED;\n  }\n\n  if (entered > BOUNDARY_LIMITS.containerDepth) {",
+          "before": "  if (isOpenContainer(state, value)) {\n    return refuse(state, { path, code: \"cycle\", message: \"value refers to itself and has no canonical form\" });\n  }\n\n  const entered = level + 1;\n  if (entered > BOUNDARY_LIMITS.containerDepth) {",
+          "after": "  const entered = level + 1;\n  if (isOpenContainer(state, value) && entered <= BOUNDARY_LIMITS.containerDepth) {\n    return refuse(state, { path, code: \"cycle\", message: \"value refers to itself and has no canonical form\" });\n  }\n\n  if (entered > BOUNDARY_LIMITS.containerDepth) {",
           "operator": "reorder-refusal-check",
           "name": "depth tested before the cycle"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.stop",
+      "category": "value-cost",
+      "assertion": "value-cost.stop.selected-tests",
+      "source": "K1.1-correction-03 review 01 KC3-R1-STOP-01: once a root stops nothing more is observed; maintained tests packages/kernel/tests/capture-stop.test.ts matching /KC3-R1-STOP-01/ (review 01 probe-stop-boundary.mjs family, its 14 consumers, and every stop position of the declared shapes)",
+      "input": {
+        "file": "packages/kernel/tests/capture-stop.test.ts",
+        "pattern": "KC3-R1-STOP-01"
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.stop"
+      ],
+      "timeout_seconds": 300,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-90d8e3e3494bb4d9e7e3405702532be9a0cc6a3fb96c0dd2763a442de3ceaab3",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
+              "after": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return STOPPED;",
+              "after": "    record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" });"
+            }
+          ],
+          "operator": "post-stop-observation",
+          "name": "H's shape: an unpropagated symbol diagnostic and an ungated names listing (review 01 KC3-R1-STOP-01)"
+        },
+        {
+          "id": "mutation-255713900201f172147d102295628af66f961d74754f3fea669f471ba87204ec",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "  if (!spend(state, \"diagnostic\", 1)) return false;\n  pushIssue(state.issues, issue);\n  return true;",
+              "after": "  if (spend(state, \"diagnostic\", 1)) pushIssue(state.issues, issue);\n  return true;"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
+              "after": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n"
+            }
+          ],
+          "operator": "post-stop-observation",
+          "name": "a diagnostic that always reports success and an ungated names listing"
+        },
+        {
+          "id": "mutation-71523b6f66ad66a82b3f2f05cb326174856324eedce862ec986536b7c9f82850",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!spend(state, \"element\", 1)) return STOPPED;\n  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);",
+          "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  if (!spend(state, \"element\", 1)) return STOPPED;",
+          "operator": "post-stop-observation",
+          "name": "an element descriptor taken before its charge (late charge)"
+        },
+        {
+          "id": "mutation-ea3ea93d529841c571d4be8a4104c0e60c9096049eb9ddce1dc9bf44644b7305",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (!spend(state, \"descriptor\", 1)) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
+          "after": "  const observed = PrimordialGetOwnPropertyDescriptor(container, name);\n  if (!spend(state, \"descriptor\", 1)) return STOPPED;\n  return observed;",
+          "operator": "post-stop-observation",
+          "name": "a member descriptor taken before its charge (late charge)"
         }
       ]
     },
@@ -1058,11 +1209,12 @@
       "source": "K1.1-correction-03 design check C1: the 8 converted Proxy-instrument tests of packages/kernel/tests/creation.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/creation.test.ts",
-        "pattern": "^(?:K11-R2-VAL-02 creation identity and replay agree under an Object\\.keys replacement installed in the same call|K11-R5-STATE-01 a Map\\.prototype\\.set no-op installed in the same call cannot drop the creation commit|K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation|a coherent array captured while an indexed accessor installed in the same call is live binds its own value|an initial-input payload field whose observation installs get\\/set still creates the exact Execution|a payload whose observation throws under the get\\/set it installed is refused, never accepted or leaked|an earlier-field getter cannot steer a later field through ambient state in the same tick|K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped)$",
-        "timeout_ms": 170000
+        "pattern": "^(?:K11-R2-VAL-02 creation identity and replay agree under an Object\\.keys replacement installed in the same call|K11-R5-STATE-01 a Map\\.prototype\\.set no-op installed in the same call cannot drop the creation commit|K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation|a coherent array captured while an indexed accessor installed in the same call is live binds its own value|an initial-input payload field whose observation installs get\\/set still creates the exact Execution|a payload whose observation throws under the get\\/set it installed is refused, never accepted or leaked|an earlier-field getter cannot steer a later field through ambient state in the same tick|K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped)$"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -1165,10 +1317,10 @@
           "name": "OWN-element-install-by-set (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the creation converted tests at B and at C)"
         },
@@ -1238,10 +1390,10 @@
           "name": "V-SNAPSHOT-LITERAL (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "before": "  } catch (error) {\n    return refuse(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
           "name": "VAL-catch-rethrows (C1: killed by the creation converted tests at B and at C)"
         },
@@ -1270,11 +1422,12 @@
       "source": "K1.1-correction-03 design check C1: the 2 converted Proxy-instrument tests of packages/kernel/tests/dispatch.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/dispatch.test.ts",
-        "pattern": "^(?:K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound|K11-R5-STATE-01 an Object\\.freeze replacement installed in the creation call cannot leave the Activation mutable)$",
-        "timeout_ms": 170000
+        "pattern": "^(?:K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound|K11-R5-STATE-01 an Object\\.freeze replacement installed in the creation call cannot leave the Activation mutable)$"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -1353,11 +1506,12 @@
       "source": "K1.1-correction-03 design check C1: the 5 converted Proxy-instrument tests of packages/kernel/tests/ingress.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/ingress.test.ts",
-        "pattern": "^(?:K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress|K11-R2-VAL-02 ingress identity and replay agree under an Object\\.keys replacement installed in the same call|an inherited setter at the next mailbox index cannot make an accepted Event go unretained|a creation whose initial-input payload field traps the first mailbox index still binds its initial Event|a payload field whose observation installs get\\/set still retains the accepted Event)$",
-        "timeout_ms": 170000
+        "pattern": "^(?:K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress|K11-R2-VAL-02 ingress identity and replay agree under an Object\\.keys replacement installed in the same call|an inherited setter at the next mailbox index cannot make an accepted Event go unretained|a creation whose initial-input payload field traps the first mailbox index still binds its initial Event|a payload field whose observation installs get\\/set still retains the accepted Event)$"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -1533,11 +1687,12 @@
       "source": "K1.1-correction-03 design check C1: the 1 converted Proxy-instrument tests of packages/kernel/tests/outcome-hostile.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/outcome-hostile.test.ts",
-        "pattern": "^(?:a field whose observation throws is a located refusal, not an escaping exception)$",
-        "timeout_ms": 170000
+        "pattern": "^(?:a field whose observation throws is a located refusal, not an escaping exception)$"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -1551,10 +1706,10 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the outcome-hostile converted tests at B and at C)"
         },
@@ -1592,10 +1747,10 @@
           "name": "VAL-catch-code-changed (C1: killed by the outcome-hostile converted tests at B and at C)"
         },
         {
-          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "before": "  } catch (error) {\n    return refuse(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
           "name": "VAL-catch-rethrows (C1: killed by the outcome-hostile converted tests at B and at C)"
         }
@@ -1608,11 +1763,12 @@
       "source": "K1.1-correction-03 design check C1: the 17 converted Proxy-instrument tests of packages/kernel/tests/value-diagnostic-work.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/value-diagnostic-work.test.ts",
-        "pattern": "^(?:V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched|V-D1 own constructor, constructor\\.name, and thrown-value properties are never inspected|V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation|V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics|V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds observations before later rows|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): one and eight eager roots keep bounded observations before authority|decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds Kernel-selected observations|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): eager roots preserve selected counts and whole state before authority)$",
-        "timeout_ms": 170000
+        "pattern": "^(?:V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched|V-D1 own constructor, constructor\\.name, and thrown-value properties are never inspected|V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation|V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics|V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds observations before later rows|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): one and eight eager roots keep bounded observations before authority|decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds Kernel-selected observations|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): eager roots preserve selected counts and whole state before authority)$"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -1626,10 +1782,10 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+          "id": "mutation-ae88c9fe0575b01596e36221a9b9da4055f755abceaccaa242c8fee3ce355f07",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
-          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
+          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
           "operator": "c1-ablation",
           "name": "COST-array-structure-charge-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
@@ -1642,9 +1798,9 @@
           "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+          "id": "mutation-302be644b3c6a1f21498c0f0cc888344da769e6bab8d86c4c3b0d3836d6257be",
           "path": "packages/kernel/src/values.ts",
-          "before": "    return charge(state, scan.bytes) ? value : REFUSED;",
+          "before": "    return charge(state, scan.bytes) ? value : STOPPED;",
           "after": "    return value;",
           "operator": "c1-ablation",
           "name": "COST-string-bytes-uncharged (C1: killed by the value-diagnostic-work converted tests at B and at C)"
@@ -1779,10 +1935,10 @@
           "name": "RC-CATCH-LABEL (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
@@ -1852,10 +2008,10 @@
           "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "before": "  } catch (error) {\n    return refuse(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
           "name": "VAL-catch-rethrows (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
@@ -1868,10 +2024,10 @@
           "name": "VAL-element-path-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-0bab68334a085e9e6a992d9835bce2a47f763a05797cca8c1afd0fcdeed8f4d2",
+          "id": "mutation-e5108030a9ed4c737f138051eb6f8c0df616ab059fd060e964da8a0a09102f12",
           "path": "packages/kernel/src/values.ts",
-          "before": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
-          "after": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });",
+          "before": "    return refuse(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
+          "after": "    return refuse(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });",
           "operator": "c1-ablation",
           "name": "X1-foreign-object-instanceof (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         }
@@ -1884,11 +2040,12 @@
       "source": "K1.1-correction-03 design check C1: the 10 converted Proxy-instrument tests of packages/kernel/tests/value-refusal-cost.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/value-refusal-cost.test.ts",
-        "pattern": "^(?:V-D1 every issue family: revoked structure|V-D1 every issue family: throwing structure|V-D1 every issue family: object ghost descriptor|V-D1 every issue family: array ghost index|V-D1 every issue family: array out-of-range index|V-D1 every issue family: array unstable length|V-D1 every issue family: descriptor\\/read mismatch|V-D1 bounded paths include phantom names, long ancestors, and literal omission text|V-D1 own-only multiplicity under ambient pollution and capture-time mutation|V-D1 eight eager roots before authority: every position once, no forbidden mutation)$",
-        "timeout_ms": 170000
+        "pattern": "^(?:V-D1 every issue family: revoked structure|V-D1 every issue family: throwing structure|V-D1 every issue family: object ghost descriptor|V-D1 every issue family: array ghost index|V-D1 every issue family: array out-of-range index|V-D1 every issue family: array unstable length|V-D1 every issue family: descriptor\\/read mismatch|V-D1 bounded paths include phantom names, long ancestors, and literal omission text|V-D1 own-only multiplicity under ambient pollution and capture-time mutation|V-D1 eight eager roots before authority: every position once, no forbidden mutation)$"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -1951,10 +2108,10 @@
           "name": "RC-CATCH-LABEL (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
@@ -2073,10 +2230,10 @@
           "name": "RC-PHANTOM-NAME-CHECK (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-9be95bd8d92b93e7ed723fd2d483a5bb58c493996518533e5b8358117d336e1e",
+          "id": "mutation-d97be062e406a3aaa50fd70b927b4b23e9e2ba563f8efcfcaefd2bb9f1a59e37",
           "path": "packages/kernel/src/values.ts",
-          "before": "        path: child(path, name),\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
-          "after": "        path,\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
+          "before": "          path: child(path, name),\n          code: \"unstable_representation\",\n          message: \"object lists an own member",
+          "after": "          path,\n          code: \"unstable_representation\",\n          message: \"object lists an own member",
           "operator": "c1-ablation",
           "name": "RC-PHANTOM-NAME-PATH (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
@@ -2113,10 +2270,10 @@
           "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "before": "  } catch (error) {\n    return refuse(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
           "name": "VAL-catch-rethrows (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
@@ -2145,10 +2302,10 @@
           "name": "VAL-length-agreement-removed (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+          "id": "mutation-6f6572d981da18fb98eb82d9f978745ae091a0d914b819970966049437e577f2",
           "path": "packages/kernel/src/values.ts",
-          "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
-          "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own",
+          "before": "          code: \"unstable_representation\",\n          message: \"object lists an own member it does not own",
+          "after": "          code: \"undefined_member\",\n          message: \"object lists an own member it does not own",
           "operator": "c1-ablation",
           "name": "VAL-listed-not-owned-misclassified (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
@@ -2193,11 +2350,12 @@
       "source": "K1.1-correction-03 design check C1: the 26 converted Proxy-instrument tests of packages/kernel/tests/values.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/values.test.ts",
-        "pattern": "^(?:an array position read differently than it is owned is refused, not silently picked|an object member read differently than it is owned is refused the same way|the disagreement is refused at depth and under a valid root|an array position supplied only by a dynamic read, owning nothing, is refused|a length that does not agree with itself cannot decide which positions exist|a structure that cannot be observed is refused rather than thrown out of the boundary|an object listing an own member it does not own is refused|a value that answers differently on each read is bound to the one reading that was taken|thirty-two arrays standing for four billion are refused after reading about a megabyte|one long string shared across shared arrays is refused before a second megabyte is read|a shared member refused for another reason is not re-read without bound either|an oversized own-names listing is classified after at most one descriptor past the entry limit|an array listing more names than any accepted array owns is refused without classifying each|a capture-time side effect installing Object\\.prototype\\.toJSON still binds the observed structure|an own-name listing reporting a canonical index outside length with no backing property is refused|a backed canonical index outside length is also refused rather than silently dropped|a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal|a deliberately huge sparse length refuses bounded without traversing its extent|K11-R2-VAL-02 round 6: a one-shot Object\\.keys replacement live across the call cannot change canonical bytes|K11-R2-VAL-02 round 6: an Object\\.keys replacement that throws, live across the call, neither leaks nor diverts bytes|K11-R2-VAL-02 round 6: an Array\\.prototype\\.join replacement live across the call cannot change canonical bytes either|K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain|the retained structure and the canonical bytes are exactly the one value observed|the index the accessor picks is not special: position zero and a nested array behave the same|a value the rules do refuse is still refused with the accessor live, not normalized|a capture-time observation that inserts the chain still binds the observed structure)$",
-        "timeout_ms": 170000
+        "pattern": "^(?:an array position read differently than it is owned is refused, not silently picked|an object member read differently than it is owned is refused the same way|the disagreement is refused at depth and under a valid root|an array position supplied only by a dynamic read, owning nothing, is refused|a length that does not agree with itself cannot decide which positions exist|a structure that cannot be observed is refused rather than thrown out of the boundary|an object listing an own member it does not own is refused|a value that answers differently on each read is bound to the one reading that was taken|thirty-two arrays standing for four billion are refused after reading about a megabyte|one long string shared across shared arrays is refused before a second megabyte is read|a shared member refused for another reason is not re-read without bound either|an oversized own-names listing is classified after at most one descriptor past the entry limit|an array listing more names than any accepted array owns is refused without classifying each|a capture-time side effect installing Object\\.prototype\\.toJSON still binds the observed structure|an own-name listing reporting a canonical index outside length with no backing property is refused|a backed canonical index outside length is also refused rather than silently dropped|a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal|a deliberately huge sparse length refuses bounded without traversing its extent|K11-R2-VAL-02 round 6: a one-shot Object\\.keys replacement live across the call cannot change canonical bytes|K11-R2-VAL-02 round 6: an Object\\.keys replacement that throws, live across the call, neither leaks nor diverts bytes|K11-R2-VAL-02 round 6: an Array\\.prototype\\.join replacement live across the call cannot change canonical bytes either|K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain|the retained structure and the canonical bytes are exactly the one value observed|the index the accessor picks is not special: position zero and a nested array behave the same|a value the rules do refuse is still refused with the accessor live, not normalized|a capture-time observation that inserts the chain still binds the observed structure)$"
       },
       "files": [
-        "tests/tooling/value-cost-probe.mjs"
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs"
       ],
       "argv": [
         "node",
@@ -2211,10 +2369,10 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+          "id": "mutation-ae88c9fe0575b01596e36221a9b9da4055f755abceaccaa242c8fee3ce355f07",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
-          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
+          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
           "operator": "c1-ablation",
           "name": "COST-array-structure-charge-dropped (C1: killed by the values converted tests at B and at C)"
         },
@@ -2259,17 +2417,17 @@
           "name": "COST-phantom-scan-not-bounded (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-c1264fa7c0b915f87dc3ed689a4a068047bf9207209665729e5eb8312156b533",
+          "id": "mutation-08d73b5737d6162172e66833f59e7fa5ed11d1c439cba0872a16d8df1e3f2ed2",
           "path": "packages/kernel/src/values.ts",
-          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      charge(state, value.length);\n",
-          "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n",
+          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) ? REFUSED : STOPPED;\n",
+          "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return REFUSED;\n",
           "operator": "c1-ablation",
           "name": "COST-refused-string-uncharged (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+          "id": "mutation-302be644b3c6a1f21498c0f0cc888344da769e6bab8d86c4c3b0d3836d6257be",
           "path": "packages/kernel/src/values.ts",
-          "before": "    return charge(state, scan.bytes) ? value : REFUSED;",
+          "before": "    return charge(state, scan.bytes) ? value : STOPPED;",
           "after": "    return value;",
           "operator": "c1-ablation",
           "name": "COST-string-bytes-uncharged (C1: killed by the values converted tests at B and at C)"
@@ -2356,10 +2514,10 @@
           "name": "RC-CATCH-LABEL (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the values converted tests at B and at C)"
         },
@@ -2541,10 +2699,10 @@
           "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
           "path": "packages/kernel/src/values.ts",
-          "before": "  } catch (error) {\n    record(state, {",
-          "after": "  } catch (error) {\n    throw error;\n    record(state, {",
+          "before": "  } catch (error) {\n    return refuse(state, {",
+          "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
           "name": "VAL-catch-rethrows (C1: killed by the values converted tests at B and at C)"
         },
@@ -2573,10 +2731,10 @@
           "name": "VAL-length-agreement-removed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+          "id": "mutation-6f6572d981da18fb98eb82d9f978745ae091a0d914b819970966049437e577f2",
           "path": "packages/kernel/src/values.ts",
-          "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
-          "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own",
+          "before": "          code: \"unstable_representation\",\n          message: \"object lists an own member it does not own",
+          "after": "          code: \"undefined_member\",\n          message: \"object lists an own member it does not own",
           "operator": "c1-ablation",
           "name": "VAL-listed-not-owned-misclassified (C1: killed by the values converted tests at B and at C)"
         },
