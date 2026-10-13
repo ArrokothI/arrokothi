@@ -432,6 +432,17 @@ wrong test counts invalidate the run. A malformed-input test can assert that a t
 returns its declared CheckError rather than an accidental IndexError/KeyError; that is a named
 boundary assertion, not a harness crash promoted to a kill.
 
+The value-cost probe (`value-cost-probe.mjs`, K1.1-correction-03) runs named maintained tests in one
+process. It reports a failure only for a selected test that failed at an assertion a test-side module
+imported. `value-cost-witness.mjs` records those by import site, never by a stack frame or an error
+class: `node:assert` as test-side modules import it, and the harness's `accepted`/`refused` when their
+own condition fails. Every other outcome exits 3, outside the probe's declared exits, so the runner
+records `setup_error`. That covers a parse or load failure, a hook failure, a cancellation, an
+exception raised by the code under test (including one raised while an assertion's arguments are
+evaluated), an error the subject constructs, and an output overflow. A run with no selected test is
+`uncovered` and a hang is the runner's `timeout`. The probe's JSON names the precise state.
+`test_value_cost_probe.py` keeps a control for each state (review 01, KC3-R1-EVID-02).
+
 The refusal registry pairs every `require` call in packet_tools.py with a malformed input and
 removal mutation. check-refusal-registry.py reconciles the whole finite set and refuses stale or
 empty registration. registry-check.mjs reconciles all 29 complete-decision comparisons with their

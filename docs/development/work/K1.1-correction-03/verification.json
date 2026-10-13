@@ -4,7 +4,7 @@
   "require_direct_parent": true,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.1-correction-03/implementation-02.md"
+    "docs/development/work/K1.1-correction-03/implementation-03.md"
   ],
   "preserve": [
     {
@@ -114,6 +114,22 @@
     {
       "revision": "53a9f607b8b38f89540db1e2324a2c7430d62026",
       "path": "docs/development/work/K1.1-correction-03/c1-ablation-01.jsonl"
+    },
+    {
+      "revision": "5f586b176089987fa3667e4c03f26b3dac0a5bfb",
+      "path": "docs/development/work/K1.1-correction-03/implementation-02.md"
+    },
+    {
+      "revision": "c91b82d0fe6c2db04f2683d71873eec7618b643b",
+      "path": "docs/development/work/K1.1-correction-03/review-01.md"
+    },
+    {
+      "revision": "c91b82d0fe6c2db04f2683d71873eec7618b643b",
+      "path": "docs/development/work/K1.1-correction-03/review-01"
+    },
+    {
+      "revision": "35177b28258fcfb38d73012ae46089f6d766539e",
+      "path": "docs/development/work/K1.1-correction-03/design-02.md"
     }
   ],
   "evidence": [],
@@ -244,7 +260,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 581
+        "tests": 599
       }
     },
     {
@@ -508,11 +524,12 @@
     "P1 adoption remains pending; this packet closes no adoption origin (design check Q7), and a passing executed subset does not complete P1/P2.",
     "No prior results reused; acceptance and hold release are not evaluated.",
     "check:builder-docs has an owner-reported pre-existing missing DESIGN-AUDIT-01 README on main; report separately without repairing it.",
-    "value-cost.json mutants run named maintained tests through a probe; a killed mutant shows a selected test fails, not that the claim is complete. B is a proven bound; the costliest acceptance found is not proven maximal.",
+    "value-cost.json mutants run named maintained tests through value-cost-probe.mjs. A kill needs a selected test that failed at an assertion a test-side module imported (value-cost-witness.mjs, by import site); a parse or load failure, hook, cancellation, subject exception or output overflow exits 3 and is a setup_error, never a kill (review 01, KC3-R1-EVID-02). A kill shows that a selected assertion fails, not that the claim is complete. B is a proven bound; the costliest acceptance found is not proven maximal.",
     "Timing and heap measurements are observations only (decision-05 item 3); no gate uses them.",
     "Dimension gaps and closed-by-reading reasons are in the dimensions result; no universal coverage claim.",
-    "The value-cost.c1.* cases maintain design check C1 at group level: each runs a conversion group's tests by name against the C analogues of the mutants those tests killed at B and at C. The per-test matrix behind them (c1-ablation-01.md, 783 runs per side) is a one-time measurement, not rerun here.",
+    "The value-cost.c1.* cases maintain design check C1 at group level: each runs a conversion group's tests by name against the C analogues of the mutants those tests killed at B and at C. Implementation 03 requalified them under the probe's evidence contract: 153 registrations remain, and the nine withdrawn ones (a subject exception at C, not an assertion) stay killed by a witnessed assertion in another registered case. The per-test matrix behind them (c1-ablation-01.md, 783 runs per side) is a one-time measurement, not rerun here.",
     "scripts/packet_tools.py and refusal-guards.json change in this packet (K1.1-correction-03 owner choice 01, follow-up): C2-LIMIT accepts a later owner decision's pinned list of further limited members, with tool tests and registered refusal guards; the four other files in scripts/ are preserved at B.",
-    "kernel-sweeps runs with a 2,400 s timeout: the poison sweep now also covers this packet's capture-* tests (B-scale witnesses, generated corpus), and at 4c736b4f its count and throw modes alone took 321 s and 314 s, past the earlier 900 s."
+    "kernel-sweeps runs with a 2,400 s timeout: the poison sweep now also covers this packet's capture-* tests (B-scale witnesses, generated corpus), and at 4c736b4f its count and throw modes alone took 321 s and 314 s, past the earlier 900 s.",
+    "capture-stop.test.ts places the stop at every charge of a declared set of 21 shapes through captureWithWork's lower thresholds (exhaustively up to 2,000 units and 4,000 bytes, sampled above) and replays review 01's real-B family through every root consumer; it is a declared bounded search, not a proof over all values (review 01, KC3-R1-STOP-01)."
   ]
 }
