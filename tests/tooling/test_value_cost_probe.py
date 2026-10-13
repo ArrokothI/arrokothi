@@ -9,10 +9,11 @@ exits 3, which the runner's unchanged parser refuses (`setup_error`), and the pr
 Each control runs the real probe and the real runner (`command`, `execution_outcome`) on a temporary tree:
 - the review's two negative controls and a passing control, on a copy of the repository's capture code
   with the real `value-cost.unit-table` case, plus a genuine kill by that case's registered mutant;
-- synthetic cases for every other state: a test-side assertion, a harness helper's `assert.fail`, an async
-  assertion, a subject exception raised while an assertion's arguments are evaluated, an `AssertionError`
-  thrown by the subject or built by it and rethrown by the test, a hook failure, a cancelled subtest, no
-  selection, a hang and an inner output overflow.
+- synthetic cases for every other state: a test-side assertion, a helper's `assert.fail`, the harness's
+  `accepted`/`refused` failing on their own condition (and not credited when they throw for another
+  reason), an async assertion, a subject exception raised while an assertion's arguments are evaluated, an
+  `AssertionError` thrown by the subject or built by it and rethrown by the test, a hook failure, a
+  cancelled subtest, no selection, a hang and an inner output overflow.
 """
 from pathlib import Path
 import json
@@ -111,20 +112,35 @@ export const madeAssertion = () => new assert.AssertionError({ message: 'built b
 """
 
 HELPER = """import assert from 'node:assert/strict';
-export function accepted(result) {
+export function unwrap(result) {
   if (!result.ok) assert.fail(`expected acceptance, got ${result.error}`);
   return result.value;
+}
+"""
+
+# The shape of the real harness's unwrappers: a plain Error, no node:assert.
+HARNESS = """export function accepted(result) {
+  if (!result.ok) throw new Error(`expected acceptance, got ${result.error.classification}: ${result.error.reason}`);
+  return result.value;
+}
+export function refused(result) {
+  if (result.ok) throw new Error('expected a refusal, but the request was accepted');
+  return result.error;
 }
 """
 
 TESTS = """import assert from 'node:assert/strict';
 import { describe, test, beforeEach } from 'node:test';
 import { throwing, internalAssertion, madeAssertion } from '../src/subject.mjs';
-import { accepted } from './helper.mjs';
+import { unwrap } from './helper.mjs';
+import { accepted, refused } from './harness.ts';
 
 test('control passes', () => { assert.equal(1, 1); });
 test('a selected assertion fails', () => { assert.equal(1, 2); });
-test('a harness helper fails through assert.fail', () => { accepted({ ok: false, error: 'refused' }); });
+test('a helper fails through assert.fail', () => { unwrap({ ok: false, error: 'refused' }); });
+test('the harness accepted() fails on a refusal', () => { accepted({ ok: false, error: { classification: 'malformed_value', reason: 'r' } }); });
+test('the harness refused() fails on an acceptance', () => { refused({ ok: true, value: 1 }); });
+test('the harness accepted() throws for another reason', () => { accepted(null); });
 test('an async assertion rejects', async () => { await assert.rejects(Promise.resolve(1)); });
 test('the subject throws while an assertion argument is evaluated', () => { assert.equal(throwing(), 1); });
 test('the subject throws its own assertion error', () => { internalAssertion(); });
@@ -145,7 +161,7 @@ class SyntheticControls(ProbeFixture):
     def synthetic(self, *entries):
         root = self.tree()
         for relative, text in [('packages/kernel/src/subject.mjs', SUBJECT), ('packages/kernel/tests/helper.mjs', HELPER),
-                               ('packages/kernel/tests/synthetic.test.mjs', TESTS)]:
+                               ('packages/kernel/tests/harness.ts', HARNESS), ('packages/kernel/tests/synthetic.test.mjs', TESTS)]:
             (root / relative).parent.mkdir(parents=True, exist_ok=True)
             (root / relative).write_text(text)
         (root / REGISTRY).parent.mkdir(parents=True, exist_ok=True)
@@ -169,9 +185,19 @@ class SyntheticControls(ProbeFixture):
         observation = self.assertState('^a selected assertion fails$', 'assertion_failed', 'killed', 17)
         self.assertEqual(observation['failures'], ['packages/kernel/tests/synthetic.test.mjs > a selected assertion fails [assert.equal]'])
 
-    def test_a_harness_helper_assertion_is_a_kill(self):
-        observation = self.assertState('^a harness helper fails through assert.fail$', 'assertion_failed', 'killed', 17)
+    def test_a_helper_assertion_is_a_kill(self):
+        observation = self.assertState('^a helper fails through assert.fail$', 'assertion_failed', 'killed', 17)
         self.assertTrue(observation['failures'][0].endswith('[assert.fail]'))
+
+    def test_the_harness_unwrappers_are_kills_on_their_own_condition(self):
+        """Review 01 found 15 of 23 runs without ERR_ASSERTION failing through these; they are assertions."""
+        observation = self.assertState('^the harness accepted\\(\\) fails on a refusal$', 'assertion_failed', 'killed', 17)
+        self.assertTrue(observation['failures'][0].endswith('[harness.accepted]'))
+        observation = self.assertState('^the harness refused\\(\\) fails on an acceptance$', 'assertion_failed', 'killed', 17)
+        self.assertTrue(observation['failures'][0].endswith('[harness.refused]'))
+
+    def test_a_harness_error_outside_its_condition_is_not_a_kill(self):
+        self.assertState('^the harness accepted\\(\\) throws for another reason$', 'subject_exception', 'setup_error', 3)
 
     def test_an_async_assertion_is_a_kill(self):
         self.assertState('^an async assertion rejects$', 'assertion_failed', 'killed', 17)
