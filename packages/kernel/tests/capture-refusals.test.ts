@@ -319,6 +319,19 @@ describe("design check Q6: kinds with no usable predicate are a declared limit, 
     });
   }
 
+  test("review 01 Q6 scope witnesses: WeakRef and FinalizationRegistry given Object.prototype are captured as {}", () => {
+    // Provenance: review 01 `probe-declared-limit.mjs` (KC3-R1-DOC-03). This acceptance is what design check
+    // Q6 permits; the finding was a summary that promised refusal of every internal-slot kind. A change that
+    // broadens the refusal claim has to change this test, and the descriptions with it.
+    const target = {};
+    for (const value of [new WeakRef(target), new FinalizationRegistry(() => undefined)]) {
+      const result = canonicalize(Object.setPrototypeOf(value, Object.prototype));
+      assert.ok(result.ok);
+      assert.equal(result.value.canonical, "{}");
+    }
+    assert.equal(typeof target, "object", "the WeakRef target stays live through the capture");
+  });
+
   test("re-prototyped CryptoKey is captured as {} (its predicate reads process.versions, PXS-1)", async () => {
     const key = await webcrypto.subtle.generateKey({ name: "HMAC", hash: "SHA-256" }, true, ["sign"]);
     for (const prototype of [null, Object.prototype]) {

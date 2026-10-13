@@ -23,8 +23,9 @@ shared member is refused without being expanded in full. Within one visit, a str
 is read only until one scalar value past the length limit, and a container's own-names listing is
 classified only until it exceeds what an accepted container owns (K1.1-correction-02).
 Each root also carries a work meter and stops once it passes the budget every acceptable value fits
-within. Capture refuses every Proxy before observing it, and refuses built-ins that keep content in
-internal slots before listing their keys (K1.1-correction-03).
+within. Capture refuses every Proxy before observing it, and refuses before listing their keys the
+built-ins whose internal slots a side-effect-free engine test detects (K1.1-correction-03). The kinds no
+such test detects are a declared limit, listed under [value refusal diagnostics](#value-refusal-diagnostics).
 [Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention and work during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
 reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
@@ -90,7 +91,13 @@ A charge that passes B stops reading the root and records one root-located issue
 charged: code `too_much_work`, message "reading this value passed the work budget of 3145728 units
 that bounds every acceptable value; the rest of the value was not read". The meter stop and the byte
 stop (`too_many_bytes`) are exclusive; whichever comes first ends reading, and diagnostics describe
-the positions examined up to it. One alignment is the exception: when the stop lands on a refused
+the positions examined up to it. Either stop is reported by the charge that made it, and every caller
+returns at once, so after a stop nothing is observed, listed, allocated, charged or recorded: the one
+operation a refusal may perform past B is a listing whose own charge crossed it, which is why residual
+R1 is at most one listing per root (review 01 of K1.1-correction-03 found a names listing that ran after
+a diagnostic had stopped the root). Static rules SC10 and SC11 in `capture-metering.ts` keep every call
+in that form, and `capture-stop.test.ts` places the stop at every charge of a declared set of shapes and
+requires every listing and descriptor that ran to be charged. One alignment is the exception: when the stop lands on a refused
 position's own diagnostic unit, that position was examined but the stop issue takes its place, so the
 diagnostic units exceed the counted occurrences by one (`capture-work.test.ts` pins it). `too_much_work` is an addition to the exported `ValueIssueCode`
 type, which `index.ts` re-exports as a type from the private `@arrokothi/kernel` package. Review 08's

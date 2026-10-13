@@ -256,7 +256,8 @@ defects of the same mechanism that the reconstruction finds. Requirements are un
   traversal refuses:
   - re-prototyped built-ins, by internal-slot type checks rather than prototype or `Symbol.toStringTag`.
     This covers O-R8-3 and O-R8-4, as [owner-decisions-02](work/DESIGN-AUDIT-01/owner-decisions-02.md)
-    extra check b decided;
+    extra check b decided. The packet's [design check](work/K1.1-correction-03/design-01-check.md) Q6
+    narrows this to the kinds a side-effect-free engine test detects; the rest are a declared limit;
   - every Proxy, at every depth, under decision-01 item 2.
 
   The packet updates values.md, BASELINE and the superseded decision-03/04 item 5 references as payload.
@@ -268,8 +269,8 @@ defects of the same mechanism that the reconstruction finds. Requirements are un
 - `values.md`, BASELINE and the `OPEN(implementation)` marker record the binding's unit table and
   budget.
 - Invalidation-02's V-D1 claim hold is released.
-- Every root refuses re-prototyped built-ins and Proxies before listing, with no accepted-state or receipt
-  change. The O-R8-3/O-R8-4 witnesses and review 02's Proxy witnesses are maintained cases. On acceptance,
+- Every root refuses Proxies, and the re-prototyped built-ins of every detectable kind (design check Q6),
+  before listing, with no accepted-state or receipt change. The O-R8-3/O-R8-4 witnesses and review 02's Proxy witnesses are maintained cases. On acceptance,
   [invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)'s classification hold is released.
 
 **Out of scope:** the V-ENV claims held by [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md),

@@ -38,7 +38,8 @@
  * every Proxy before observing it at all — the first observation of any object is the Proxy test, so
  * no trap runs (owner decision-01 item 2) — and refuses a built-in that keeps its content in internal
  * slots (a re-prototyped Map, Date, typed array, boxed primitive, …) by internal-slot type checks
- * before any own-key listing (decision-01 item 3). It also refuses any container whose own data
+ * before any own-key listing (decision-01 item 3), for every kind a side-effect-free engine test detects.
+ * The kinds no such test detects are a declared limit, not a refusal (`values.md`; design check Q6). It also refuses any container whose own data
  * descriptor and ordinary property read disagree, whose array position is supplied by anything other
  * than an own data property, or whose structure cannot be observed at all. Those structural checks
  * predate the Proxy refusal and stay as a second line for host objects; all of these are
@@ -290,7 +291,8 @@ export const BOUNDARY_LIMITS = PrimordialObjectFreeze({
 export type ValueIssueCode =
   /**
    * Not one of the six boundary forms: `undefined`, a symbol, a function, a class instance, any Proxy,
-   * a built-in that keeps its content in internal slots (a Map, Date, typed array, boxed primitive, …), …
+   * a built-in whose internal slots a side-effect-free engine test detects (a Map, Date, typed array, boxed
+   * primitive, …), …
    */
   | "unsupported_form"
   /** `NaN`, `Infinity` or `-Infinity`. */
