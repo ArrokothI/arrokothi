@@ -1,0 +1,314 @@
+{
+  "from": "tests/fixtures/packet-tools/value-cost.json at H 5f586b176089987fa3667e4c03f26b3dac0a5bfb (227 registrations)",
+  "to": "tests/fixtures/packet-tools/value-cost.json at this C (231 registrations)",
+  "ported_anchor": [
+    {
+      "case": "value-cost.unit-table",
+      "old_id": "mutation-e9f0216f2bbb8eccd449b4cca6e709f0fdf6a2b9ea5ffb6fd4376c8dafd19a81",
+      "new_id": "mutation-d726935886bfa5c121a916fc19db61ab8c3adcc55fb8afb0abc8eb999331d737",
+      "name": "visit unit uncharged"
+    },
+    {
+      "case": "value-cost.unit-table",
+      "old_id": "mutation-da5069a35a82b37c3270d42e33f8ca4a29a9dc3b90db84a20f7e524e7996b996",
+      "new_id": "mutation-2f2e957da4e3f66d482649f832f1c252a0feecd7851b99ee6a640ae41fe1c1eb",
+      "name": "diagnostic unit uncharged"
+    },
+    {
+      "case": "value-cost.unit-table",
+      "old_id": "mutation-b086cfae6bd1b04bcdc761ae3b8bdd00308468b17fe7d7661484ceb48151ba96",
+      "new_id": "mutation-acf80342553ae87654f57ed23705b959b95abd8aeb1a692e9426077d3284be36",
+      "name": "symbols listing skipped for an array with an extra name (packet review MS-02)"
+    },
+    {
+      "case": "value-cost.oracle",
+      "old_id": "mutation-0e2a5ea66d5d8c5d3013b4c30516940291839fa9360a1f2c118f0bd9737629a1",
+      "new_id": "mutation-53edb649b9d16bf8c51151a5c10835f811b6c817df86fbc32f7213acbd7c99c5",
+      "name": "an uncharged extra names listing"
+    },
+    {
+      "case": "value-cost.static",
+      "old_id": "mutation-fb1d0b164fb3ae62b05329d7bd6c4901408db0f0c72cf7b652bc1fc73db16e43",
+      "new_id": "mutation-6955531df09922a60e5c24a295be7d6b26a9e343495a8ce306a7c1e02ab1f282",
+      "name": "SC1 element observed by a direct descriptor call"
+    },
+    {
+      "case": "value-cost.static",
+      "old_id": "mutation-2c68b86ab444e572b9862f4b4c58b4b9da8cc205dbc4e3c1d1d9e467708757a3",
+      "new_id": "mutation-a8bf8f3e96df4eb572f78a5ba9268af2aa698e659dc047587e18d7504420df06",
+      "name": "SC4 unmetered loop in the traversal"
+    },
+    {
+      "case": "value-cost.static",
+      "old_id": "mutation-654fcd29636b221327f87725e476642445cfa6d517706cf8f50dbfa2695ae0c9",
+      "new_id": "mutation-0d68278d040871c34124d65c4e4fef11b008af72e4ce5f51f214f273d7cd6729",
+      "name": "SC7 string scanned directly"
+    },
+    {
+      "case": "value-cost.static",
+      "old_id": "mutation-ece3e2a2f5b3d0223f2001190758cf34e77eb9fe2546a2ff89973f1c1debc23e",
+      "new_id": "mutation-94a95ac554df26dd4285243e7d1774dbda3b99eb8907c0e493a8d422c6771de7",
+      "name": "SC8 serializer reached from the traversal"
+    },
+    {
+      "case": "value-cost.byte-charges",
+      "old_id": "mutation-0e7ad37599d6019eecdcce8ff54511f9ff647a75e18cd437142329ffbf16c528",
+      "new_id": "mutation-8b507339ab4747cb5183c87c48fb95bb3856df616d709d9b853fa0a88dde7ccd",
+      "name": "lone-surrogate string uncharged"
+    },
+    {
+      "case": "value-cost.byte-charges",
+      "old_id": "mutation-163072b7020ea0dc851e1a2b05c460d1a50c182a6bc51ed9f5537790102b8992",
+      "new_id": "mutation-602ef1fd35f4628103845c354ada5cccddbdcad8e67d0d5ca8f4efaf66f90b00",
+      "name": "overlong string uncharged"
+    },
+    {
+      "case": "value-cost.byte-charges",
+      "old_id": "mutation-73f9f34342de03f48cd0ad2c1306fc9b4f3c83fed482ab0033ac92705f0e1b4e",
+      "new_id": "mutation-d2a6549c96e2f3a131adc4f9af9271abf6d6cff5b6ba39e5e43dae2b4d740608",
+      "name": "lone-surrogate member name uncharged"
+    },
+    {
+      "case": "value-cost.byte-charges",
+      "old_id": "mutation-1531ac2020a6407360a60f8fc1542680ae269a8173a4a64c9739c9c66ef9ca7f",
+      "new_id": "mutation-8c6d9aa774fdb26e8c026c07a4aebf95e68c4b415cb76d134a21f88644abc084",
+      "name": "overlong member name uncharged"
+    },
+    {
+      "case": "value-cost.brands",
+      "old_id": "mutation-5562b7fb70456a5c37ef08de0d6356934f4d0dcadd21fc468fb6df627ace6130",
+      "new_id": "mutation-205c1cec1e62262f341b7464656aec129488e59a017c009975a59de0dda044f5",
+      "name": "internal-slot check after the symbols listing"
+    },
+    {
+      "case": "value-cost.order",
+      "old_id": "mutation-c707887fe9811082fe8ee8185fb046ed4bb9a95f720c7a0574fc2ad161691605",
+      "new_id": "mutation-dceb130e6012ae09e57cbf6c07efbd28662073a35e3932ed0dc19a933716f0ec",
+      "name": "depth tested before the cycle"
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "old_id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+      "new_id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
+      "name": "RC-CATCH-RETHROW (C1: killed by the creation converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "old_id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+      "new_id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
+      "name": "VAL-catch-rethrows (C1: killed by the creation converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.outcome-hostile",
+      "old_id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+      "new_id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
+      "name": "RC-CATCH-RETHROW (C1: killed by the outcome-hostile converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.outcome-hostile",
+      "old_id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+      "new_id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
+      "name": "VAL-catch-rethrows (C1: killed by the outcome-hostile converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "old_id": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+      "new_id": "mutation-ae88c9fe0575b01596e36221a9b9da4055f755abceaccaa242c8fee3ce355f07",
+      "name": "COST-array-structure-charge-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "old_id": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+      "new_id": "mutation-302be644b3c6a1f21498c0f0cc888344da769e6bab8d86c4c3b0d3836d6257be",
+      "name": "COST-string-bytes-uncharged (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "old_id": "mutation-0bab68334a085e9e6a992d9835bce2a47f763a05797cca8c1afd0fcdeed8f4d2",
+      "new_id": "mutation-e5108030a9ed4c737f138051eb6f8c0df616ab059fd060e964da8a0a09102f12",
+      "name": "X1-foreign-object-instanceof (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "old_id": "mutation-9be95bd8d92b93e7ed723fd2d483a5bb58c493996518533e5b8358117d336e1e",
+      "new_id": "mutation-d97be062e406a3aaa50fd70b927b4b23e9e2ba563f8efcfcaefd2bb9f1a59e37",
+      "name": "RC-PHANTOM-NAME-PATH (C1: killed by the value-refusal-cost converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "old_id": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+      "new_id": "mutation-6f6572d981da18fb98eb82d9f978745ae091a0d914b819970966049437e577f2",
+      "name": "VAL-listed-not-owned-misclassified (C1: killed by the value-refusal-cost converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "old_id": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+      "new_id": "mutation-ae88c9fe0575b01596e36221a9b9da4055f755abceaccaa242c8fee3ce355f07",
+      "name": "COST-array-structure-charge-dropped (C1: killed by the values converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "old_id": "mutation-c1264fa7c0b915f87dc3ed689a4a068047bf9207209665729e5eb8312156b533",
+      "new_id": "mutation-08d73b5737d6162172e66833f59e7fa5ed11d1c439cba0872a16d8df1e3f2ed2",
+      "name": "COST-refused-string-uncharged (C1: killed by the values converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "old_id": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+      "new_id": "mutation-302be644b3c6a1f21498c0f0cc888344da769e6bab8d86c4c3b0d3836d6257be",
+      "name": "COST-string-bytes-uncharged (C1: killed by the values converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "old_id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+      "new_id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
+      "name": "RC-CATCH-RETHROW (C1: killed by the values converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "old_id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+      "new_id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
+      "name": "VAL-catch-rethrows (C1: killed by the values converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "old_id": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+      "new_id": "mutation-6f6572d981da18fb98eb82d9f978745ae091a0d914b819970966049437e577f2",
+      "name": "VAL-listed-not-owned-misclassified (C1: killed by the values converted tests at B and at C)"
+    }
+  ],
+  "ported_equivalent": [
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "old_id": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+      "new_id": "mutation-7960fc44ab1bb6399423b4327cf960b29f7a67df708fbb7c7b0b01162e139e1e",
+      "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "old_id": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+      "new_id": "mutation-7960fc44ab1bb6399423b4327cf960b29f7a67df708fbb7c7b0b01162e139e1e",
+      "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the values converted tests at B and at C)"
+    }
+  ],
+  "withdrawn": [
+    {
+      "case": "value-cost.c1.creation",
+      "old_id": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+      "name": "O-APPENDOWN-PUSH (C1: killed by the creation converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.ingress",
+      "old_id": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+      "name": "O-APPENDOWN-PUSH (C1: killed by the ingress converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.ingress",
+      "old_id": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19",
+      "name": "O-DEFINEDATA-LITERAL (C1: killed by the ingress converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "old_id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+      "name": "RC-CATCH-RETHROW (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "old_id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+      "name": "V-CATCH (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "old_id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+      "name": "VAL-catch-rethrows (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "old_id": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+      "name": "RC-CATCH-RETHROW (C1: killed by the value-refusal-cost converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "old_id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+      "name": "V-CATCH (C1: killed by the value-refusal-cost converted tests at B and at C)"
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "old_id": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+      "name": "VAL-catch-rethrows (C1: killed by the value-refusal-cost converted tests at B and at C)"
+    }
+  ],
+  "added": [
+    {
+      "case": "value-cost.static",
+      "id": "mutation-29317a4c6578a4afff9b4b2caf0f75e5690b84a81f47202afffe7757c3687b15",
+      "name": "SC10 symbol diagnostic whose stop is not propagated (review 01 KC3-R1-STOP-01 site, one layer)"
+    },
+    {
+      "case": "value-cost.static",
+      "id": "mutation-3bb8ce5a1dafe27d1d7e9434f4c8dd12b68c5d27d0b06deccff0057eefad222a",
+      "name": "SC10 symbol diagnostic whose stop branch returns REFUSED"
+    },
+    {
+      "case": "value-cost.static",
+      "id": "mutation-ac78dd0f9a36a3a34e0b8ade621183f3797b101a1357ec09b119ef7cbe71f8b8",
+      "name": "SC10 nested stop folded into a refused element"
+    },
+    {
+      "case": "value-cost.static",
+      "id": "mutation-e8b246ccba34a523ce05c95232ff33905d905cf44e33433dc808202dd885d92d",
+      "name": "SC10 terminal refusal that drops its diagnostic stop"
+    },
+    {
+      "case": "value-cost.static",
+      "id": "mutation-f25c1ea7b3f4d3ce0455f50dc906b7cf9a988f51da025e5c8abb5d0ecdc4a44a",
+      "name": "SC10 failed array structure charge not propagated"
+    },
+    {
+      "case": "value-cost.static",
+      "id": "mutation-d664b207c4534e8b003a2e351ac975f75db46e0311569a699e9020245b68f8c9",
+      "name": "SC2 names listing not gated on the stop (one layer)"
+    },
+    {
+      "case": "value-cost.static",
+      "id": "mutation-9bbe53a1a7db12ad87ef1b39cd9e290c0a0cf3ee283897019dd0de5de8dd8fce",
+      "name": "SC2 symbols listing not gated on the stop (one layer)"
+    },
+    {
+      "case": "value-cost.static",
+      "id": "mutation-a9c2861bb5528d8d5d9169c94451249c8199bede2da3cb5067ebc1fd3408edb5",
+      "name": "SC11 stop state reset outside spend and charge"
+    },
+    {
+      "case": "value-cost.byte-charges",
+      "id": "mutation-dfaf00db54a392ac10944d8112d1f45266693fe4886cc8c25f03f9c391a29c41",
+      "name": "MV3-array-symbols-listing-skipped (C1: no longer reached by the value-diagnostic-work group's converted tests; registered here, where the exact charge of 4,096 symbol members kills it)"
+    },
+    {
+      "case": "value-cost.stop",
+      "id": "mutation-90d8e3e3494bb4d9e7e3405702532be9a0cc6a3fb96c0dd2763a442de3ceaab3",
+      "name": "H's shape: an unpropagated symbol diagnostic and an ungated names listing (review 01 KC3-R1-STOP-01)"
+    },
+    {
+      "case": "value-cost.stop",
+      "id": "mutation-255713900201f172147d102295628af66f961d74754f3fea669f471ba87204ec",
+      "name": "a diagnostic that always reports success and an ungated names listing"
+    },
+    {
+      "case": "value-cost.stop",
+      "id": "mutation-71523b6f66ad66a82b3f2f05cb326174856324eedce862ec986536b7c9f82850",
+      "name": "an element descriptor taken before its charge (late charge)"
+    },
+    {
+      "case": "value-cost.stop",
+      "id": "mutation-ea3ea93d529841c571d4be8a4104c0e60c9096049eb9ddce1dc9bf44644b7305",
+      "name": "a member descriptor taken before its charge (late charge)"
+    }
+  ],
+  "counts": {
+    "ported_anchor": 29,
+    "ported_equivalent": 2,
+    "withdrawn": 9,
+    "added": 13
+  }
+}

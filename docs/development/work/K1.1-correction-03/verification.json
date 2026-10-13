@@ -360,7 +360,7 @@
         "todo": "^[#ℹ] todo (\\d+)$"
       },
       "minimum_counts": {
-        "tests": 4080
+        "tests": 4114
       },
       "exact_counts": {
         "fail": 0,
