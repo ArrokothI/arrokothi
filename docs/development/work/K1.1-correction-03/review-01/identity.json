@@ -1,0 +1,17 @@
+{
+  "B": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "C": "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+  "H": "5f586b176089987fa3667e4c03f26b3dac0a5bfb",
+  "initial_head": "5f586b176089987fa3667e4c03f26b3dac0a5bfb",
+  "source": "full local Git objects; full binary diff saved",
+  "captured_utc": "2026-10-12T21:23:47.865796+00:00",
+  "session": "01a131fe-f3aa-77c0-940b-6d5d3963afef",
+  "model": "gpt-6-astra",
+  "effort": "xhigh",
+  "ancestry": {
+    "B->C": true,
+    "C->H": true,
+    "K1.2 correction integration->B": true,
+    "TOOLS-01 integration->B": true
+  }
+}

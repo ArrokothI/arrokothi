@@ -1,0 +1,17 @@
+Direct leaf audit: value-cost.unit-table
+Direct leaf audit: value-cost.budget
+Direct leaf audit: value-cost.depth
+Direct leaf audit: value-cost.oracle
+Direct leaf audit: value-cost.static
+Direct leaf audit: value-cost.byte-charges
+Direct leaf audit: value-cost.proxy
+Direct leaf audit: value-cost.brands
+Direct leaf audit: value-cost.order
+Direct leaf audit: value-cost.c1.creation
+Direct leaf audit: value-cost.c1.dispatch
+Direct leaf audit: value-cost.c1.ingress
+Direct leaf audit: value-cost.c1.outcome-hostile
+Direct leaf audit: value-cost.c1.value-diagnostic-work
+Direct leaf audit: value-cost.c1.value-refusal-cost
+Direct leaf audit: value-cost.c1.values
+{"runs": 243, "controls": 16, "seconds": 406.30533287487924}

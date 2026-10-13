@@ -1,0 +1,44 @@
+{
+  "captured_utc": "2026-10-13T10:00:41.031770+00:00",
+  "review_record": "docs/development/work/K1.1-correction-03/review-01.md",
+  "trees": [
+    {
+      "label": "H",
+      "path": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+      "HEAD": "5f586b176089987fa3667e4c03f26b3dac0a5bfb",
+      "tracked_diff": "",
+      "staged_diff": "",
+      "status": "?? docs/development/work/K1.1-correction-03/review-01.md\n?? docs/development/work/K1.1-correction-03/review-01/.gitignore\n?? docs/development/work/K1.1-correction-03/review-01/README.md\n?? docs/development/work/K1.1-correction-03/review-01/administrative.diff\n?? docs/development/work/K1.1-correction-03/review-01/adoption-corpus.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/adoption-corpus.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/area-advisory-summary.json\n?? docs/development/work/K1.1-correction-03/review-01/audit-records.py\n?? docs/development/work/K1.1-correction-03/review-01/audit-value-cost-kills.py\n?? docs/development/work/K1.1-correction-03/review-01/brief-02.md\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-B.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-B.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-C.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-C.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-H.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-H.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-review.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/builder-docs-review.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/candidate.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/candidate.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/capture-corpus.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/capture-corpus.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/changed-files.txt\n?? docs/development/work/K1.1-correction-03/review-01/coverage-before-reports.md\n?? docs/development/work/K1.1-correction-03/review-01/cumulative.diff\n?? docs/development/work/K1.1-correction-03/review-01/declared-limit-run.json\n?? docs/development/work/K1.1-correction-03/review-01/declared-limit.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/declared-limit.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/dimensions.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/dimensions.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/evidence-attribution.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/evidence-attribution.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/history.txt\n?? docs/development/work/K1.1-correction-03/review-01/identity.json\n?? docs/development/work/K1.1-correction-03/review-01/independent-checks.json\n?? docs/development/work/K1.1-correction-03/review-01/kernel-sweeps.log\n?? docs/development/work/K1.1-correction-03/review-01/mutations.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/mutations.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/normative-search.txt\n?? docs/development/work/K1.1-correction-03/review-01/oracle-census.log\n?? docs/development/work/K1.1-correction-03/review-01/probe-declared-limit.mjs\n?? docs/development/work/K1.1-correction-03/review-01/probe-evidence-attribution.py\n?? docs/development/work/K1.1-correction-03/review-01/probe-stop-boundary.mjs\n?? docs/development/work/K1.1-correction-03/review-01/record-audit.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/record-audit.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/refusal-census.log\n?? docs/development/work/K1.1-correction-03/review-01/refusal-guards.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/refusal-guards.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/required-followups.json\n?? docs/development/work/K1.1-correction-03/review-01/review-artifact-checks.json\n?? docs/development/work/K1.1-correction-03/review-01/review-events.mjs\n?? docs/development/work/K1.1-correction-03/review-01/run-independent-checks.py\n?? docs/development/work/K1.1-correction-03/review-01/run-required-followups.py\n?? docs/development/work/K1.1-correction-03/review-01/search-dimensions.mjs\n?? docs/development/work/K1.1-correction-03/review-01/source-integrity.json\n?? docs/development/work/K1.1-correction-03/review-01/stop-boundary.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/stop-boundary.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/value-cost-leaf-audit.json\n?? docs/development/work/K1.1-correction-03/review-01/value-cost-leaf-events.jsonl.gz\n?? docs/development/work/K1.1-correction-03/review-01/value-cost-leaf-summary.json\n?? docs/development/work/K1.1-correction-03/review-01/value-cost-leaves.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/value-cost-leaves.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/value-cost.stderr.log\n?? docs/development/work/K1.1-correction-03/review-01/value-cost.stdout.log\n?? docs/development/work/K1.1-correction-03/review-01/verification-summary.json\n?? docs/development/work/K1.1-correction-03/review-01/verify-run.json\n?? docs/development/work/K1.1-correction-03/review-01/verify.json\n?? docs/development/work/K1.1-correction-03/review-01/verify.stderr.log\n",
+      "dependency_note": null
+    },
+    {
+      "label": "C",
+      "path": "/private/tmp/arrokothi-kc3-review-c",
+      "HEAD": "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+      "tracked_diff": "",
+      "staged_diff": "",
+      "status": "",
+      "dependency_note": null
+    },
+    {
+      "label": "B",
+      "path": "/private/tmp/arrokothi-kc3-review-b",
+      "HEAD": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+      "tracked_diff": "",
+      "staged_diff": "",
+      "status": "?? node_modules\n",
+      "dependency_note": "Reviewer-created node_modules symlink to the C dependency install; no B source change."
+    }
+  ],
+  "source_digests": {
+    "AGENTS.md": "f9a12ebd831b4bb2aed1a2296faab9b0f779f16558ef41ea95524b68de3459c6",
+    "docs/development/006-development-process.md": "7cc815b17fec271573aacb36033d24c79e4bb8bf5cfd57db526e55d9ec8a5fcb",
+    "docs/development/007-work-packets.md": "77da9eb0fca68bd40e57d7a4ff2708c47c2c675f51e8b6cf5ef44e75a5327329",
+    "docs/development/008-implementation-report.md": "a6c230269b396a49c872cb34bb2ed98cb9ad4d1107cad792077cf42ae180f91b",
+    "docs/development/012-review-methods.md": "61d8360966ab10b7dff010d5c7a5ab184aa6367a9c9ee6e94073428fd19e9a5a",
+    "packages/kernel/src/values.ts": "3d42aff86bc1443833874a40fbe5ef325d3124701f9d43f622d8ff386cf9e0bf",
+    "packages/kernel/src/envelope.ts": "32a07b02dd96bdd80555babf65129b2b9ed14dcaa8ac83aa5fb9f20ee185203f",
+    "tests/tooling/value-cost-probe.mjs": "91e8fbab72d0e9282a7f01f696db3e28f084dd2225d7a05e9b6eb8949cce6d60",
+    "tests/fixtures/packet-tools/value-cost.json": "50ef56cb3f51d445fe23f3eb6c4638e05280e12683f09329511b257901df77c7"
+  }
+}

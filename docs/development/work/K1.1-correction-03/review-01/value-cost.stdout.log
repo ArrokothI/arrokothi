@@ -1,0 +1,3131 @@
+{
+  "operation": "mutations",
+  "revision": "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+  "registry": "tests/fixtures/packet-tools/value-cost.json",
+  "result": "selected_cases_passed",
+  "counts": {
+    "killed": 227
+  },
+  "cases": [
+    {
+      "case": "value-cost.unit-table",
+      "content_key": "case-48fcfc4a42415667d2a703f79188ab764b813e9f34a51a6800c690e48932dd76",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":23,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-e9f0216f2bbb8eccd449b4cca6e709f0fdf6a2b9ea5ffb6fd4376c8dafd19a81",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":23,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":23,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-e9f0216f2bbb8eccd449b4cca6e709f0fdf6a2b9ea5ffb6fd4376c8dafd19a81"
+        },
+        {
+          "mutation": "mutation-3b349c1a39fac137c3b5356bb578f1aa44e63eff20d09d6db9e0df9744897a82",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":17,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":17,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-3b349c1a39fac137c3b5356bb578f1aa44e63eff20d09d6db9e0df9744897a82"
+        },
+        {
+          "mutation": "mutation-f468b392f6d90d88119f7d16e294d6cef8e33d8fd8d18b4eadf4d046c49180a0",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":21,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":21,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-f468b392f6d90d88119f7d16e294d6cef8e33d8fd8d18b4eadf4d046c49180a0"
+        },
+        {
+          "mutation": "mutation-ff7d20a2aeaac8e3bbe84a64d54369b24148f3ea5d39fcf17e823e6ba63f07fb",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-ff7d20a2aeaac8e3bbe84a64d54369b24148f3ea5d39fcf17e823e6ba63f07fb"
+        },
+        {
+          "mutation": "mutation-5c07839fd30eb4398aa089e8b320df7973ed88c81c185d34b025c152743ffa92",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":20,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":20,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-5c07839fd30eb4398aa089e8b320df7973ed88c81c185d34b025c152743ffa92"
+        },
+        {
+          "mutation": "mutation-88dbdbd66dad8a14034989e5bf83526aaf6b2ce9a1b3447136cf4bbe8e494a7d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":14,\"fail\":9,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":14,\"fail\":9,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-88dbdbd66dad8a14034989e5bf83526aaf6b2ce9a1b3447136cf4bbe8e494a7d"
+        },
+        {
+          "mutation": "mutation-b37f7a08d69bcc13c3787481c7a8af40548dbf6df0503a6c5f3f2aa4d639ebdb",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-b37f7a08d69bcc13c3787481c7a8af40548dbf6df0503a6c5f3f2aa4d639ebdb"
+        },
+        {
+          "mutation": "mutation-da5069a35a82b37c3270d42e33f8ca4a29a9dc3b90db84a20f7e524e7996b996",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":14,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":14,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-da5069a35a82b37c3270d42e33f8ca4a29a9dc3b90db84a20f7e524e7996b996"
+        },
+        {
+          "mutation": "mutation-48a4efac5ad2f0c9b07ffdc3388a1304a34f5ef40edb85adb2592d6474a7896d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-48a4efac5ad2f0c9b07ffdc3388a1304a34f5ef40edb85adb2592d6474a7896d"
+        },
+        {
+          "mutation": "mutation-b086cfae6bd1b04bcdc761ae3b8bdd00308468b17fe7d7661484ceb48151ba96",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.unit-table.selected-tests",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.unit-table.selected-tests\"]}\n"
+            }
+          },
+          "content_key": "mutation-b086cfae6bd1b04bcdc761ae3b8bdd00308468b17fe7d7661484ceb48151ba96"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"value-cost.unit-table\",\"assertion\":\"value-cost.unit-table.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":23,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+        }
+      }
+    },
+    {
+      "case": "value-cost.budget",
+      "content_key": "case-1fc78d5b7fcdabe70b46c6a539b530bb6f581203645ec8f090d598410806c97c",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.budget\",\"assertion\":\"value-cost.budget.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":13,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-8387c6db5f878bda71eb74ff8720e7383ffa185c32ae086ceab690ba339731f2",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.budget\",\"assertion\":\"value-cost.budget.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":6,\"fail\":7,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.budget.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.budget.selected-tests",
+          "content_key": "mutation-8387c6db5f878bda71eb74ff8720e7383ffa185c32ae086ceab690ba339731f2"
+        },
+        {
+          "mutation": "mutation-b90519d84da23119cb415b99c9271a039e1feefde53d0b1b2534e9a64f108616",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.budget\",\"assertion\":\"value-cost.budget.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":5,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.budget.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.budget.selected-tests",
+          "content_key": "mutation-b90519d84da23119cb415b99c9271a039e1feefde53d0b1b2534e9a64f108616"
+        },
+        {
+          "mutation": "mutation-14b83f50a499150f922fef92c53f740a96111faf39ee45834032a0ba1aa2af36",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.budget\",\"assertion\":\"value-cost.budget.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.budget.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.budget.selected-tests",
+          "content_key": "mutation-14b83f50a499150f922fef92c53f740a96111faf39ee45834032a0ba1aa2af36"
+        },
+        {
+          "mutation": "mutation-600f4dde8659f78d520757f9ba36ae2791dadbd98dbdcaf69da710bffce0fef3",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.budget\",\"assertion\":\"value-cost.budget.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":5,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.budget.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.budget.selected-tests",
+          "content_key": "mutation-600f4dde8659f78d520757f9ba36ae2791dadbd98dbdcaf69da710bffce0fef3"
+        },
+        {
+          "mutation": "mutation-13189a67fbe3c100ce08f98911db0d7196ba3f489bb32cb5eea226bbad5c6d90",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.budget\",\"assertion\":\"value-cost.budget.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":12,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.budget.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.budget.selected-tests",
+          "content_key": "mutation-13189a67fbe3c100ce08f98911db0d7196ba3f489bb32cb5eea226bbad5c6d90"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.depth",
+      "content_key": "case-043830a50ac81c50765d270a1ee49663823d6b1c6d32c803cf7c95ea61390159",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.depth\",\"assertion\":\"value-cost.depth.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":1,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-8130a5034dba477bf56726a86289040ce9ed6082eaf8faed6e1073d1f41b8c3e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.depth\",\"assertion\":\"value-cost.depth.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.depth.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.depth.selected-tests",
+          "content_key": "mutation-8130a5034dba477bf56726a86289040ce9ed6082eaf8faed6e1073d1f41b8c3e"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.oracle",
+      "content_key": "case-17afadd82ee84b4e85cb7dc03216d8f3dc3a77baa974a1d0cc64ee19b1626712",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.oracle\",\"assertion\":\"value-cost.oracle.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":1,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-0e2a5ea66d5d8c5d3013b4c30516940291839fa9360a1f2c118f0bd9737629a1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.oracle\",\"assertion\":\"value-cost.oracle.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.oracle.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.oracle.selected-tests",
+          "content_key": "mutation-0e2a5ea66d5d8c5d3013b4c30516940291839fa9360a1f2c118f0bd9737629a1"
+        },
+        {
+          "mutation": "mutation-d4f4195d13d29dab4ffad9461a705e919f6909b447bd61d5c7acbb6b6b7ef5f3",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.oracle\",\"assertion\":\"value-cost.oracle.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.oracle.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.oracle.selected-tests",
+          "content_key": "mutation-d4f4195d13d29dab4ffad9461a705e919f6909b447bd61d5c7acbb6b6b7ef5f3"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.static",
+      "content_key": "case-4c8162eba76b7a51a0be2b4e2d07b2263f652460793d90a862b2e8598069d614",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":1,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-fb1d0b164fb3ae62b05329d7bd6c4901408db0f0c72cf7b652bc1fc73db16e43",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-fb1d0b164fb3ae62b05329d7bd6c4901408db0f0c72cf7b652bc1fc73db16e43"
+        },
+        {
+          "mutation": "mutation-acde38e0ac9937ac6d161c04944a8f1816d5ea5caf74125e2a661ed365a9d704",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-acde38e0ac9937ac6d161c04944a8f1816d5ea5caf74125e2a661ed365a9d704"
+        },
+        {
+          "mutation": "mutation-63ad144c16f81bfec692e904d9374ca7dc2e194190153918103dcd81404f0e26",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-63ad144c16f81bfec692e904d9374ca7dc2e194190153918103dcd81404f0e26"
+        },
+        {
+          "mutation": "mutation-5b211256c7047577040c9604f1286451fda84bb106be9877eebaaca8e2b153c8",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-5b211256c7047577040c9604f1286451fda84bb106be9877eebaaca8e2b153c8"
+        },
+        {
+          "mutation": "mutation-2c68b86ab444e572b9862f4b4c58b4b9da8cc205dbc4e3c1d1d9e467708757a3",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-2c68b86ab444e572b9862f4b4c58b4b9da8cc205dbc4e3c1d1d9e467708757a3"
+        },
+        {
+          "mutation": "mutation-3427099bca017383c03bb0a882c7828dd57d03547f2b9efd6627d8b2f2efdd5b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-3427099bca017383c03bb0a882c7828dd57d03547f2b9efd6627d8b2f2efdd5b"
+        },
+        {
+          "mutation": "mutation-bf47542098ae54db05d4e7c6d259f5878f6e5d2b453e26d8608be7a782ed0906",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-bf47542098ae54db05d4e7c6d259f5878f6e5d2b453e26d8608be7a782ed0906"
+        },
+        {
+          "mutation": "mutation-654fcd29636b221327f87725e476642445cfa6d517706cf8f50dbfa2695ae0c9",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-654fcd29636b221327f87725e476642445cfa6d517706cf8f50dbfa2695ae0c9"
+        },
+        {
+          "mutation": "mutation-ece3e2a2f5b3d0223f2001190758cf34e77eb9fe2546a2ff89973f1c1debc23e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-ece3e2a2f5b3d0223f2001190758cf34e77eb9fe2546a2ff89973f1c1debc23e"
+        },
+        {
+          "mutation": "mutation-202853439a9677a62905337319225eea91d1790c2bcbc47da3098adee9c7e788",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-202853439a9677a62905337319225eea91d1790c2bcbc47da3098adee9c7e788"
+        },
+        {
+          "mutation": "mutation-2694639f69feba8e4eef2e17a92704f2728ca4a7ce4646301351c5ba093079d7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-2694639f69feba8e4eef2e17a92704f2728ca4a7ce4646301351c5ba093079d7"
+        },
+        {
+          "mutation": "mutation-fdd0ac098b82b62bf4abbabc32abec647f9ab8ae750af2d0c25cfc274185d593",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.static\",\"assertion\":\"value-cost.static.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.static.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.static.selected-tests",
+          "content_key": "mutation-fdd0ac098b82b62bf4abbabc32abec647f9ab8ae750af2d0c25cfc274185d593"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.byte-charges",
+      "content_key": "case-a62e02d5b3e45dce819a2876628dffad866b9fa8532f5079c2343dbed98cc59b",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":11,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-c0830d226881a684d4582d951720ea6e6aab9e3fcee213b7b081722f362014c1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-c0830d226881a684d4582d951720ea6e6aab9e3fcee213b7b081722f362014c1"
+        },
+        {
+          "mutation": "mutation-4734e0ebecec453e2eef32ffb37709bfd6a31f449d14b10aea4057a161dd6273",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-4734e0ebecec453e2eef32ffb37709bfd6a31f449d14b10aea4057a161dd6273"
+        },
+        {
+          "mutation": "mutation-215238bd607ee56496b1cfa3c7f9733c7538f036c75595aab15609d667da5f4b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":10,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-215238bd607ee56496b1cfa3c7f9733c7538f036c75595aab15609d667da5f4b"
+        },
+        {
+          "mutation": "mutation-614aa8653b81d8ca3f35fd77f34f5fed05192ab4d317b6cec151566b1cf72199",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":10,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-614aa8653b81d8ca3f35fd77f34f5fed05192ab4d317b6cec151566b1cf72199"
+        },
+        {
+          "mutation": "mutation-c1e4ae9dfa4d99905cc1efb7d4cd27e1814d44dd854f7de40a06a1923f6c34ae",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":10,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-c1e4ae9dfa4d99905cc1efb7d4cd27e1814d44dd854f7de40a06a1923f6c34ae"
+        },
+        {
+          "mutation": "mutation-0e7ad37599d6019eecdcce8ff54511f9ff647a75e18cd437142329ffbf16c528",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":10,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-0e7ad37599d6019eecdcce8ff54511f9ff647a75e18cd437142329ffbf16c528"
+        },
+        {
+          "mutation": "mutation-163072b7020ea0dc851e1a2b05c460d1a50c182a6bc51ed9f5537790102b8992",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":10,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-163072b7020ea0dc851e1a2b05c460d1a50c182a6bc51ed9f5537790102b8992"
+        },
+        {
+          "mutation": "mutation-73f9f34342de03f48cd0ad2c1306fc9b4f3c83fed482ab0033ac92705f0e1b4e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":10,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-73f9f34342de03f48cd0ad2c1306fc9b4f3c83fed482ab0033ac92705f0e1b4e"
+        },
+        {
+          "mutation": "mutation-1531ac2020a6407360a60f8fc1542680ae269a8173a4a64c9739c9c66ef9ca7f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.byte-charges\",\"assertion\":\"value-cost.byte-charges.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":10,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.byte-charges.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.byte-charges.selected-tests",
+          "content_key": "mutation-1531ac2020a6407360a60f8fc1542680ae269a8173a4a64c9739c9c66ef9ca7f"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.proxy",
+      "content_key": "case-4489add9e711903d0cc3704e1656559c8f6d1de61607ddddc1d91575fb164b25",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.proxy\",\"assertion\":\"value-cost.proxy.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":103,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-aa0f76532668f17299829c283c719be0a9af7119632b1453b013ca1a1d02371a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.proxy\",\"assertion\":\"value-cost.proxy.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":12,\"fail\":91,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.proxy.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.proxy.selected-tests",
+          "content_key": "mutation-aa0f76532668f17299829c283c719be0a9af7119632b1453b013ca1a1d02371a"
+        },
+        {
+          "mutation": "mutation-2cb4fc0ccd53a89806d749f1f762788e4d312df3b65c2cfb51457d0c3e2c246e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.proxy\",\"assertion\":\"value-cost.proxy.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":101,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.proxy.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.proxy.selected-tests",
+          "content_key": "mutation-2cb4fc0ccd53a89806d749f1f762788e4d312df3b65c2cfb51457d0c3e2c246e"
+        },
+        {
+          "mutation": "mutation-82cca2664decbc5a2cd86effe568281a6a7f4879747cf8f04f0ed15cd63173fa",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.proxy\",\"assertion\":\"value-cost.proxy.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":100,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.proxy.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.proxy.selected-tests",
+          "content_key": "mutation-82cca2664decbc5a2cd86effe568281a6a7f4879747cf8f04f0ed15cd63173fa"
+        },
+        {
+          "mutation": "mutation-5dcbc5a95e2ac4486e89d545e5ede7ff9726bdbbff028cbe475d04f9533832fa",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.proxy\",\"assertion\":\"value-cost.proxy.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":89,\"fail\":14,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.proxy.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.proxy.selected-tests",
+          "content_key": "mutation-5dcbc5a95e2ac4486e89d545e5ede7ff9726bdbbff028cbe475d04f9533832fa"
+        },
+        {
+          "mutation": "mutation-22730af23155e97b8f0e743b05601cd5a071bee5dc2258f21ee81bbaeffda352",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.proxy\",\"assertion\":\"value-cost.proxy.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":21,\"fail\":82,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.proxy.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.proxy.selected-tests",
+          "content_key": "mutation-22730af23155e97b8f0e743b05601cd5a071bee5dc2258f21ee81bbaeffda352"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.brands",
+      "content_key": "case-7e07b5a9b84ef6eef0e5dbb84bc805a156d66f4a5156c4ed92a9f5d2faad5ba1",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":34,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-56a9bedb13b922532e651d84c13a444946c43ee71b2d5e089be7628311831cab",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":29,\"fail\":5,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-56a9bedb13b922532e651d84c13a444946c43ee71b2d5e089be7628311831cab"
+        },
+        {
+          "mutation": "mutation-474ff1af73124cbaf00c3121f41a91f20254aa6d0b1a6bbe39d09bf094f72d8d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":32,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-474ff1af73124cbaf00c3121f41a91f20254aa6d0b1a6bbe39d09bf094f72d8d"
+        },
+        {
+          "mutation": "mutation-41f26296b27583ab4eae7c72e8f90afaca3beedff3a9da9495c52bbe72699477",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":32,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-41f26296b27583ab4eae7c72e8f90afaca3beedff3a9da9495c52bbe72699477"
+        },
+        {
+          "mutation": "mutation-d2cc6cf4ff66710b29ae0987d0245994f7c3f35f329fabb93e523e048884be51",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-d2cc6cf4ff66710b29ae0987d0245994f7c3f35f329fabb93e523e048884be51"
+        },
+        {
+          "mutation": "mutation-49978d8d59f6701b94c3cb199d859d5f128286d9ece89d82f5d770814440b235",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":32,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-49978d8d59f6701b94c3cb199d859d5f128286d9ece89d82f5d770814440b235"
+        },
+        {
+          "mutation": "mutation-a0755748eed7f73fbf30d091173b83f92defafe7ee3bbefc6dbef3e86035f332",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-a0755748eed7f73fbf30d091173b83f92defafe7ee3bbefc6dbef3e86035f332"
+        },
+        {
+          "mutation": "mutation-cb50d2f1434904dafecaff5607b91de0374d1a06a91de1b808e2e252bb2f75f0",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":31,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-cb50d2f1434904dafecaff5607b91de0374d1a06a91de1b808e2e252bb2f75f0"
+        },
+        {
+          "mutation": "mutation-5677223c0fd9b7259e63fe8f868aaf7eea0e5185b180d9a3c6b0e936373291b4",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":27,\"fail\":7,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-5677223c0fd9b7259e63fe8f868aaf7eea0e5185b180d9a3c6b0e936373291b4"
+        },
+        {
+          "mutation": "mutation-e16e07c874561d867dc7dd645c9e14c85535763e7c4b07e5148f665c80ffab01",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":28,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-e16e07c874561d867dc7dd645c9e14c85535763e7c4b07e5148f665c80ffab01"
+        },
+        {
+          "mutation": "mutation-d37fddd15448453ffefdead1421b3a56fba03d21a956b5d133527a638e9a7bfe",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":29,\"fail\":5,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-d37fddd15448453ffefdead1421b3a56fba03d21a956b5d133527a638e9a7bfe"
+        },
+        {
+          "mutation": "mutation-18b5efa18463e9ca2cbac9704e4ad87fb67db30f085d6c496bcbb6304feb42e8",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-18b5efa18463e9ca2cbac9704e4ad87fb67db30f085d6c496bcbb6304feb42e8"
+        },
+        {
+          "mutation": "mutation-c4301baadd7aa210d2ecb31419ab10c731c53ceba6769142095e3c61f25e2f79",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":32,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-c4301baadd7aa210d2ecb31419ab10c731c53ceba6769142095e3c61f25e2f79"
+        },
+        {
+          "mutation": "mutation-16b0bf3f5b22e3f03b925c4d8e2ab4e82756471e6d460646b10529579a6e12ee",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-16b0bf3f5b22e3f03b925c4d8e2ab4e82756471e6d460646b10529579a6e12ee"
+        },
+        {
+          "mutation": "mutation-fc560a21f8e2d8f85313578db617bcc8d34d036ddc097f63fc736d755e632665",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-fc560a21f8e2d8f85313578db617bcc8d34d036ddc097f63fc736d755e632665"
+        },
+        {
+          "mutation": "mutation-24121c6d42675e06f3fdeea2f94f7e3bb6c3e21e0dff22a6abcdebb213287237",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":32,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-24121c6d42675e06f3fdeea2f94f7e3bb6c3e21e0dff22a6abcdebb213287237"
+        },
+        {
+          "mutation": "mutation-8f7c34a04c12222584b0f126d4cf65724697876a64e4b36405f336c8bc3f396f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-8f7c34a04c12222584b0f126d4cf65724697876a64e4b36405f336c8bc3f396f"
+        },
+        {
+          "mutation": "mutation-89f2ca2bf777ff49658e22f9eeaffc873aaaab01293e28af6d9c45ee3eb41d56",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-89f2ca2bf777ff49658e22f9eeaffc873aaaab01293e28af6d9c45ee3eb41d56"
+        },
+        {
+          "mutation": "mutation-c3d8e7b695f6295656ab86065da8c87d00b42e6810d31f68ef8cf92374ef663d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":32,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-c3d8e7b695f6295656ab86065da8c87d00b42e6810d31f68ef8cf92374ef663d"
+        },
+        {
+          "mutation": "mutation-a3f05fc49514a5eb62265e92dcf27d73fd724d060bfacbcc7f4f6d1b7107985a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":34,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-a3f05fc49514a5eb62265e92dcf27d73fd724d060bfacbcc7f4f6d1b7107985a"
+        },
+        {
+          "mutation": "mutation-5562b7fb70456a5c37ef08de0d6356934f4d0dcadd21fc468fb6df627ace6130",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.brands\",\"assertion\":\"value-cost.brands.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":33,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.brands.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.brands.selected-tests",
+          "content_key": "mutation-5562b7fb70456a5c37ef08de0d6356934f4d0dcadd21fc468fb6df627ace6130"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.order",
+      "content_key": "case-d5fd4d0faf85b806f11ac28341cac33c419d8df9996585dbd38c134bc7fac76e",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.order\",\"assertion\":\"value-cost.order.selected-tests\",\"reached\":true,\"passed\":true,\"pass\":2,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-c707887fe9811082fe8ee8185fb046ed4bb9a95f720c7a0574fc2ad161691605",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.order\",\"assertion\":\"value-cost.order.selected-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.order.selected-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.order.selected-tests",
+          "content_key": "mutation-c707887fe9811082fe8ee8185fb046ed4bb9a95f720c7a0574fc2ad161691605"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "content_key": "case-2cd9973a393b355c8473a22ed6923f43c797daea6fc4afc3590054c3b2b1ca4a",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":true,\"pass\":8,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8"
+        },
+        {
+          "mutation": "mutation-f259c3f416d01bb2c17efe9ec6e5ffe709e2e65e298f4715bf0de35f6e72278b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-f259c3f416d01bb2c17efe9ec6e5ffe709e2e65e298f4715bf0de35f6e72278b"
+        },
+        {
+          "mutation": "mutation-4737cc2855a9a9a53c3044b8528860a4807e445fbb481363ec7d6ba601052755",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-4737cc2855a9a9a53c3044b8528860a4807e445fbb481363ec7d6ba601052755"
+        },
+        {
+          "mutation": "mutation-49a0843576c5fe717a4193ceb629a7e6e57efb415244c780e0a00726b3a7e7c0",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-49a0843576c5fe717a4193ceb629a7e6e57efb415244c780e0a00726b3a7e7c0"
+        },
+        {
+          "mutation": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b"
+        },
+        {
+          "mutation": "mutation-5c30ab6a2ff6a47f9a18fc1ac255f50f6a7c79d7c7996bfdcddd393c03692d38",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-5c30ab6a2ff6a47f9a18fc1ac255f50f6a7c79d7c7996bfdcddd393c03692d38"
+        },
+        {
+          "mutation": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78"
+        },
+        {
+          "mutation": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49"
+        },
+        {
+          "mutation": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":6,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19"
+        },
+        {
+          "mutation": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c"
+        },
+        {
+          "mutation": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e"
+        },
+        {
+          "mutation": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":8,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672"
+        },
+        {
+          "mutation": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a"
+        },
+        {
+          "mutation": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec"
+        },
+        {
+          "mutation": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7"
+        },
+        {
+          "mutation": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966"
+        },
+        {
+          "mutation": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b"
+        },
+        {
+          "mutation": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d"
+        },
+        {
+          "mutation": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040"
+        },
+        {
+          "mutation": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60"
+        },
+        {
+          "mutation": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.creation\",\"assertion\":\"value-cost.c1.creation.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.creation.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.creation.converted-tests",
+          "content_key": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.dispatch",
+      "content_key": "case-41a0f13d52728d4c79e9d8bee5a961d451e64275302c0a6c04061c08e74944b6",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.c1.dispatch\",\"assertion\":\"value-cost.c1.dispatch.converted-tests\",\"reached\":true,\"passed\":true,\"pass\":2,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.dispatch\",\"assertion\":\"value-cost.c1.dispatch.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.dispatch.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.dispatch.converted-tests",
+          "content_key": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8"
+        },
+        {
+          "mutation": "mutation-0380416e35590c512cae18c3c884ed74ee53083c7ade8db46d147a397742515a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.dispatch\",\"assertion\":\"value-cost.c1.dispatch.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.dispatch.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.dispatch.converted-tests",
+          "content_key": "mutation-0380416e35590c512cae18c3c884ed74ee53083c7ade8db46d147a397742515a"
+        },
+        {
+          "mutation": "mutation-247688fb864948eb6791c408b4efdcdd0ef721b2ffcd7f809a5a41d56b126034",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.dispatch\",\"assertion\":\"value-cost.c1.dispatch.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.dispatch.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.dispatch.converted-tests",
+          "content_key": "mutation-247688fb864948eb6791c408b4efdcdd0ef721b2ffcd7f809a5a41d56b126034"
+        },
+        {
+          "mutation": "mutation-804c808dde9ba06ebd022b87abd89654573f67b25adbabe2848a50c685711b65",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.dispatch\",\"assertion\":\"value-cost.c1.dispatch.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.dispatch.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.dispatch.converted-tests",
+          "content_key": "mutation-804c808dde9ba06ebd022b87abd89654573f67b25adbabe2848a50c685711b65"
+        },
+        {
+          "mutation": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.dispatch\",\"assertion\":\"value-cost.c1.dispatch.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.dispatch.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.dispatch.converted-tests",
+          "content_key": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b"
+        },
+        {
+          "mutation": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.dispatch\",\"assertion\":\"value-cost.c1.dispatch.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.dispatch.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.dispatch.converted-tests",
+          "content_key": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.ingress",
+      "content_key": "case-c96c3f20eb879addb979edd55cbfe9fc33f12fe740edd5d77686d19a47fb6c0f",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":true,\"pass\":5,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-5d1c7d87cb781c6bb2abdd5eec05fb3c8ae121dbc9655c3089375cd95586e263",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-5d1c7d87cb781c6bb2abdd5eec05fb3c8ae121dbc9655c3089375cd95586e263"
+        },
+        {
+          "mutation": "mutation-00f410e88769bb3aa2385091f5268bed18b04ddd6f4352d0c401c6c30dc0b855",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-00f410e88769bb3aa2385091f5268bed18b04ddd6f4352d0c401c6c30dc0b855"
+        },
+        {
+          "mutation": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78"
+        },
+        {
+          "mutation": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":3,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49"
+        },
+        {
+          "mutation": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19"
+        },
+        {
+          "mutation": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":5,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672"
+        },
+        {
+          "mutation": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a"
+        },
+        {
+          "mutation": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec"
+        },
+        {
+          "mutation": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7"
+        },
+        {
+          "mutation": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":3,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a"
+        },
+        {
+          "mutation": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d"
+        },
+        {
+          "mutation": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1"
+        },
+        {
+          "mutation": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60"
+        },
+        {
+          "mutation": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a"
+        },
+        {
+          "mutation": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":4,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a"
+        },
+        {
+          "mutation": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":3,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358"
+        },
+        {
+          "mutation": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.ingress\",\"assertion\":\"value-cost.c1.ingress.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":3,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.ingress.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.ingress.converted-tests",
+          "content_key": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.outcome-hostile",
+      "content_key": "case-bcc87c48c086309f6faa119c94a901b0025e5895795689ed3836f3d82842a54f",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.c1.outcome-hostile\",\"assertion\":\"value-cost.c1.outcome-hostile.converted-tests\",\"reached\":true,\"passed\":true,\"pass\":1,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.outcome-hostile\",\"assertion\":\"value-cost.c1.outcome-hostile.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.outcome-hostile.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.outcome-hostile.converted-tests",
+          "content_key": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e"
+        },
+        {
+          "mutation": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.outcome-hostile\",\"assertion\":\"value-cost.c1.outcome-hostile.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.outcome-hostile.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.outcome-hostile.converted-tests",
+          "content_key": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672"
+        },
+        {
+          "mutation": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.outcome-hostile\",\"assertion\":\"value-cost.c1.outcome-hostile.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.outcome-hostile.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.outcome-hostile.converted-tests",
+          "content_key": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966"
+        },
+        {
+          "mutation": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.outcome-hostile\",\"assertion\":\"value-cost.c1.outcome-hostile.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.outcome-hostile.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.outcome-hostile.converted-tests",
+          "content_key": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485"
+        },
+        {
+          "mutation": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.outcome-hostile\",\"assertion\":\"value-cost.c1.outcome-hostile.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":0,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.outcome-hostile.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.outcome-hostile.converted-tests",
+          "content_key": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "content_key": "case-fa929312910a35022b289ad060334d924aa141e2727eceec2367e190f989f3a4",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":true,\"pass\":17,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f"
+        },
+        {
+          "mutation": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456"
+        },
+        {
+          "mutation": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793"
+        },
+        {
+          "mutation": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619"
+        },
+        {
+          "mutation": "mutation-e409001229dd0faad12e5a72efa8a0f7ef0fb88a98a11f046ee8d045635b040f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-e409001229dd0faad12e5a72efa8a0f7ef0fb88a98a11f046ee8d045635b040f"
+        },
+        {
+          "mutation": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":6,\"fail\":11,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6"
+        },
+        {
+          "mutation": "mutation-ebebb55d55c5b38ed0e178c65a85c41b376ed8925009009d7925be15f9045564",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-ebebb55d55c5b38ed0e178c65a85c41b376ed8925009009d7925be15f9045564"
+        },
+        {
+          "mutation": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf"
+        },
+        {
+          "mutation": "mutation-6b169eb2546bc88acfb1c33ef24122deccacbc74bec1efa66e404ccc7c33d3c4",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-6b169eb2546bc88acfb1c33ef24122deccacbc74bec1efa66e404ccc7c33d3c4"
+        },
+        {
+          "mutation": "mutation-389b656ca1a4020c9648e18d11628aba533c010aadcdd7bcfe9dab0e57290841",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-389b656ca1a4020c9648e18d11628aba533c010aadcdd7bcfe9dab0e57290841"
+        },
+        {
+          "mutation": "mutation-98cee7b687732cf0b5bb48ebe57f874eb163eb25157b119bfa2f9bc8cf98331a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":13,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-98cee7b687732cf0b5bb48ebe57f874eb163eb25157b119bfa2f9bc8cf98331a"
+        },
+        {
+          "mutation": "mutation-36e50b3e02c880ac99e1832d2d59cad94dd93371ede148829e4e7b5d9fac1765",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":16,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-36e50b3e02c880ac99e1832d2d59cad94dd93371ede148829e4e7b5d9fac1765"
+        },
+        {
+          "mutation": "mutation-0c93b43b203b3054b6fcb0821020d05ff53d576198f7d184a466e1482eb65173",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":13,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-0c93b43b203b3054b6fcb0821020d05ff53d576198f7d184a466e1482eb65173"
+        },
+        {
+          "mutation": "mutation-11892856c44d73242036d8e886d9180fac7d7d79f455901e71f4097d2a594cd2",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":13,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-11892856c44d73242036d8e886d9180fac7d7d79f455901e71f4097d2a594cd2"
+        },
+        {
+          "mutation": "mutation-45f82a5c0362a2761040a8291410d67166ab6ce5c53815d4f7c637569b6dc1af",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":15,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-45f82a5c0362a2761040a8291410d67166ab6ce5c53815d4f7c637569b6dc1af"
+        },
+        {
+          "mutation": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":8,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78"
+        },
+        {
+          "mutation": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025"
+        },
+        {
+          "mutation": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f"
+        },
+        {
+          "mutation": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e"
+        },
+        {
+          "mutation": "mutation-c2d305d8e38dacc1da976fcca738514610779b260af6d095d38f0e20770b6b39",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":13,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-c2d305d8e38dacc1da976fcca738514610779b260af6d095d38f0e20770b6b39"
+        },
+        {
+          "mutation": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":16,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672"
+        },
+        {
+          "mutation": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":16,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6"
+        },
+        {
+          "mutation": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966"
+        },
+        {
+          "mutation": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":12,\"fail\":5,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b"
+        },
+        {
+          "mutation": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485"
+        },
+        {
+          "mutation": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":7,\"fail\":10,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7"
+        },
+        {
+          "mutation": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":11,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040"
+        },
+        {
+          "mutation": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":5,\"fail\":12,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a"
+        },
+        {
+          "mutation": "mutation-0bab68334a085e9e6a992d9835bce2a47f763a05797cca8c1afd0fcdeed8f4d2",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-diagnostic-work\",\"assertion\":\"value-cost.c1.value-diagnostic-work.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":14,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-diagnostic-work.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-diagnostic-work.converted-tests",
+          "content_key": "mutation-0bab68334a085e9e6a992d9835bce2a47f763a05797cca8c1afd0fcdeed8f4d2"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "content_key": "case-9f4511d1331108ea4042dc4bdaede890c14603388ff1a8e104cff358b3fea07a",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":true,\"pass\":10,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-0c93b43b203b3054b6fcb0821020d05ff53d576198f7d184a466e1482eb65173",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-0c93b43b203b3054b6fcb0821020d05ff53d576198f7d184a466e1482eb65173"
+        },
+        {
+          "mutation": "mutation-11892856c44d73242036d8e886d9180fac7d7d79f455901e71f4097d2a594cd2",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-11892856c44d73242036d8e886d9180fac7d7d79f455901e71f4097d2a594cd2"
+        },
+        {
+          "mutation": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78"
+        },
+        {
+          "mutation": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025"
+        },
+        {
+          "mutation": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f"
+        },
+        {
+          "mutation": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e"
+        },
+        {
+          "mutation": "mutation-c2d305d8e38dacc1da976fcca738514610779b260af6d095d38f0e20770b6b39",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-c2d305d8e38dacc1da976fcca738514610779b260af6d095d38f0e20770b6b39"
+        },
+        {
+          "mutation": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":9,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672"
+        },
+        {
+          "mutation": "mutation-c44f45c7614de66e128d96a2b66fc5d697341cbe5abcb4563b58428cc7ee3f62",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-c44f45c7614de66e128d96a2b66fc5d697341cbe5abcb4563b58428cc7ee3f62"
+        },
+        {
+          "mutation": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a"
+        },
+        {
+          "mutation": "mutation-29940f7da7279c2c784adfd031254b8ece0aee158432cacd1e4812b3768e17c2",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-29940f7da7279c2c784adfd031254b8ece0aee158432cacd1e4812b3768e17c2"
+        },
+        {
+          "mutation": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97"
+        },
+        {
+          "mutation": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a"
+        },
+        {
+          "mutation": "mutation-ef1e0ac8aa132af66ea63212690248f2b10d640abaf449abce8e08fc1d12f135",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-ef1e0ac8aa132af66ea63212690248f2b10d640abaf449abce8e08fc1d12f135"
+        },
+        {
+          "mutation": "mutation-d8b17191a0167123f13f34f82f44533f45e56794a512b4734cc06fe52b8c9f68",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-d8b17191a0167123f13f34f82f44533f45e56794a512b4734cc06fe52b8c9f68"
+        },
+        {
+          "mutation": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":1,\"fail\":9,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6"
+        },
+        {
+          "mutation": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0"
+        },
+        {
+          "mutation": "mutation-41e35f67761d98196cec9c2232d9413f3469e786c033e68b7a8edebc2e207000",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-41e35f67761d98196cec9c2232d9413f3469e786c033e68b7a8edebc2e207000"
+        },
+        {
+          "mutation": "mutation-9be95bd8d92b93e7ed723fd2d483a5bb58c493996518533e5b8358117d336e1e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-9be95bd8d92b93e7ed723fd2d483a5bb58c493996518533e5b8358117d336e1e"
+        },
+        {
+          "mutation": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966"
+        },
+        {
+          "mutation": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b"
+        },
+        {
+          "mutation": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485"
+        },
+        {
+          "mutation": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7"
+        },
+        {
+          "mutation": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040"
+        },
+        {
+          "mutation": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60"
+        },
+        {
+          "mutation": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":2,\"fail\":8,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a"
+        },
+        {
+          "mutation": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62"
+        },
+        {
+          "mutation": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60"
+        },
+        {
+          "mutation": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8"
+        },
+        {
+          "mutation": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e"
+        },
+        {
+          "mutation": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":8,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb"
+        },
+        {
+          "mutation": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.value-refusal-cost\",\"assertion\":\"value-cost.c1.value-refusal-cost.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":9,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.value-refusal-cost.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.value-refusal-cost.converted-tests",
+          "content_key": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.values",
+      "content_key": "case-34b8745363c1e53c3921011ae2545281665095c564ff20beabaeedcbf93bed50",
+      "claim": {
+        "kind": "test_assertion",
+        "semantic_credit": "not evaluated"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":true,\"pass\":26,\"fail\":0,\"status\":0,\"signal\":null,\"failures\":[]}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-bbdb1b401be022f6504b60061016f1d1f38c672e610a121664068e02ca5f442f"
+        },
+        {
+          "mutation": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456"
+        },
+        {
+          "mutation": "mutation-ac35b6009c09d764bbb9d054f3af422ba9a38adbb4b5dcc64a8b1624663c0f5f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-ac35b6009c09d764bbb9d054f3af422ba9a38adbb4b5dcc64a8b1624663c0f5f"
+        },
+        {
+          "mutation": "mutation-12ccb7eebc398bc116159e6cc75d3e2887e8348ca2d982172d73da375e7b114c",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-12ccb7eebc398bc116159e6cc75d3e2887e8348ca2d982172d73da375e7b114c"
+        },
+        {
+          "mutation": "mutation-2260b5eaec556d1b268396f04eedf6a9698cb4bfb06ccd2df4a48e9952e27d51",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-2260b5eaec556d1b268396f04eedf6a9698cb4bfb06ccd2df4a48e9952e27d51"
+        },
+        {
+          "mutation": "mutation-0bb7417db10ae24d04e255e2821b4133bfb27e18ccee91fb93f13ab3fe01fb19",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-0bb7417db10ae24d04e255e2821b4133bfb27e18ccee91fb93f13ab3fe01fb19"
+        },
+        {
+          "mutation": "mutation-c1264fa7c0b915f87dc3ed689a4a068047bf9207209665729e5eb8312156b533",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-c1264fa7c0b915f87dc3ed689a4a068047bf9207209665729e5eb8312156b533"
+        },
+        {
+          "mutation": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-09eb4befae6ac900dcd1c98d26a9de6a1ad9635112c334dc3bedb30f1886b793"
+        },
+        {
+          "mutation": "mutation-47f46f8d435797f01e3d6853772c3f0b790562394ffb54d5f51f1307f9f01b67",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-47f46f8d435797f01e3d6853772c3f0b790562394ffb54d5f51f1307f9f01b67"
+        },
+        {
+          "mutation": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619"
+        },
+        {
+          "mutation": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6"
+        },
+        {
+          "mutation": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf"
+        },
+        {
+          "mutation": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78"
+        },
+        {
+          "mutation": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025"
+        },
+        {
+          "mutation": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":23,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49"
+        },
+        {
+          "mutation": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c"
+        },
+        {
+          "mutation": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f"
+        },
+        {
+          "mutation": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-3d8a745e4bff9a51a441a6f992e787ea0306529f36a9511279fe99976d077a5e"
+        },
+        {
+          "mutation": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":12,\"fail\":14,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672"
+        },
+        {
+          "mutation": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a"
+        },
+        {
+          "mutation": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97"
+        },
+        {
+          "mutation": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a"
+        },
+        {
+          "mutation": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0"
+        },
+        {
+          "mutation": "mutation-f0a07f1789af0a1616ee53afe4b7ea0b17199be8808b02a82bf632e3049f2315",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-f0a07f1789af0a1616ee53afe4b7ea0b17199be8808b02a82bf632e3049f2315"
+        },
+        {
+          "mutation": "mutation-471c38e8974d4ddb066e7e5f24f16d75b5ef72532b9085c90ffed63540ad7b5d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-471c38e8974d4ddb066e7e5f24f16d75b5ef72532b9085c90ffed63540ad7b5d"
+        },
+        {
+          "mutation": "mutation-78877ac7d1bfe8b5369de406897aa80eabe8779a82e3412773dc04c89614d4df",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-78877ac7d1bfe8b5369de406897aa80eabe8779a82e3412773dc04c89614d4df"
+        },
+        {
+          "mutation": "mutation-ae83e7bb9b75bf0d47f07224927be770c7295b6ad9f69d21914851ad90653bc9",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-ae83e7bb9b75bf0d47f07224927be770c7295b6ad9f69d21914851ad90653bc9"
+        },
+        {
+          "mutation": "mutation-bf5bac39bb5893b2e06fe5c787152630df599057e045c84d3a1e18a719e09be0",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-bf5bac39bb5893b2e06fe5c787152630df599057e045c84d3a1e18a719e09be0"
+        },
+        {
+          "mutation": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec"
+        },
+        {
+          "mutation": "mutation-c53171d42820ac2383f7c65dda01115ecff9a333c27818fb7206b3ea83d8628c",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":23,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-c53171d42820ac2383f7c65dda01115ecff9a333c27818fb7206b3ea83d8628c"
+        },
+        {
+          "mutation": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":23,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7"
+        },
+        {
+          "mutation": "mutation-8ba25905e7bc2cd5b64e5680ab5805e231043c9d0c4115007eb68cf6d99e6433",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-8ba25905e7bc2cd5b64e5680ab5805e231043c9d0c4115007eb68cf6d99e6433"
+        },
+        {
+          "mutation": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a"
+        },
+        {
+          "mutation": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966"
+        },
+        {
+          "mutation": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b"
+        },
+        {
+          "mutation": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1"
+        },
+        {
+          "mutation": "mutation-5364e5ea25d2caec9892bef88328122e4ad05cacc0e5e97057e2572c6f1ac2d7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-5364e5ea25d2caec9892bef88328122e4ad05cacc0e5e97057e2572c6f1ac2d7"
+        },
+        {
+          "mutation": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485"
+        },
+        {
+          "mutation": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":23,\"fail\":3,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7"
+        },
+        {
+          "mutation": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-33efc4fa81e7a6c9a0a3f76117e39981ffcd455f81b99cdf8b3e57a1ac8eb040"
+        },
+        {
+          "mutation": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":22,\"fail\":4,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60"
+        },
+        {
+          "mutation": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":20,\"fail\":6,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a"
+        },
+        {
+          "mutation": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62"
+        },
+        {
+          "mutation": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-4461daa37919fa24aa862c2b4d88c5704a4e7c1347d3943533a89df949603c60"
+        },
+        {
+          "mutation": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8"
+        },
+        {
+          "mutation": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e"
+        },
+        {
+          "mutation": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a"
+        },
+        {
+          "mutation": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb"
+        },
+        {
+          "mutation": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465"
+        },
+        {
+          "mutation": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1"
+        },
+        {
+          "mutation": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":24,\"fail\":2,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358"
+        },
+        {
+          "mutation": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"value-cost.c1.values\",\"assertion\":\"value-cost.c1.values.converted-tests\",\"reached\":true,\"passed\":false,\"pass\":25,\"fail\":1,\"status\":1,\"signal\":null,\"failures\":[\"value-cost.c1.values.converted-tests\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "value-cost.c1.values.converted-tests",
+          "content_key": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5"
+        }
+      ]
+    }
+  ],
+  "determinism_sample": [
+    "value-cost.unit-table"
+  ],
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [],
+    "absent": [],
+    "inherited_values_recorded": false
+  },
+  "acceptance": "not evaluated",
+  "witnesses": [],
+  "limits": [
+    "Only the listed cases and mutations were executed",
+    "Structured witnesses rely on reviewed independent fixtures; no universal causal proof",
+    "Trusted repository commands run without containment; temporary copies protect source files"
+  ]
+}
