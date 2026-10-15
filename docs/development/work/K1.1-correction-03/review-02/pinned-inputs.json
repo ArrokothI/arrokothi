@@ -1,0 +1,121 @@
+[
+  {
+    "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+    "path": "AGENTS.md",
+    "blob": "5d79819e36e2d09e7107972798d1bf443f9dc715",
+    "bytes": 9835,
+    "sha256": "f9a12ebd831b4bb2aed1a2296faab9b0f779f16558ef41ea95524b68de3459c6"
+  },
+  {
+    "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+    "path": "docs/development/006-development-process.md",
+    "blob": "0ba2415e37e1baf8001d969ccc2e813a85225be3",
+    "bytes": 30298,
+    "sha256": "7cc815b17fec271573aacb36033d24c79e4bb8bf5cfd57db526e55d9ec8a5fcb"
+  },
+  {
+    "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+    "path": "docs/development/007-work-packets.md",
+    "blob": "c78b1e9614d8eab642ba655b68d33d6d53b6c7cf",
+    "bytes": 77513,
+    "sha256": "0fc08dee3f3d2bf3b0b519f8252d09f2f0dddea772de98e1b3a8de2fa840edf5"
+  },
+  {
+    "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+    "path": "docs/development/008-implementation-report.md",
+    "blob": "7be67898d11adf7d302d049172858cbc1be803b7",
+    "bytes": 11515,
+    "sha256": "a6c230269b396a49c872cb34bb2ed98cb9ad4d1107cad792077cf42ae180f91b"
+  },
+  {
+    "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+    "path": "docs/development/012-review-methods.md",
+    "blob": "c4f6f0a69d590e445aa67ce64d9b730d4eb5bfa8",
+    "bytes": 13394,
+    "sha256": "61d8360966ab10b7dff010d5c7a5ab184aa6367a9c9ee6e94073428fd19e9a5a"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/release-01.md",
+    "blob": "2c52af076889dd30168ae45f92a278e1fcd2ee16",
+    "bytes": 3123,
+    "sha256": "47e074d0c6f0663bdc21b4e269025e17fb86677b8bc3d7fe32523ce771f4026f"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/brief-01.md",
+    "blob": "e58aeffebf1bcbc1dbde42814737ca7305278f0a",
+    "bytes": 16676,
+    "sha256": "5c1a674f020d97fc11e17c5d35daf2b9eac47f74617d1140ef96822759fc4f70"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/design-01.md",
+    "blob": "0cccd28a84e81248d278679bae372e4c77213b72",
+    "bytes": 42832,
+    "sha256": "1072ec59d9fac3bb6bf5305c422eefbc95d16cf514afa2bf6267bd42a228660a"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/design-01-check.md",
+    "blob": "e81dcadf2f6824c78c01d9d7825732979a76aa72",
+    "bytes": 2591,
+    "sha256": "369c4e6a7e9db233380e923e21a25db615f83f9220168aa8a9246e218a3c6a5d"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/owner-choice-01.md",
+    "blob": "6e875c23a42de9499dae373547ab8dda96685c69",
+    "bytes": 4878,
+    "sha256": "389ad36b01a8df4d927b4788bd4a1ea9a863d1987ca6142cf92fdab0ccb839e0"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/review-01.md",
+    "blob": "38d86e7de923c0bc6643582565452737b3c800a6",
+    "bytes": 29778,
+    "sha256": "cf9f6f48c497752ee8492ad17a91a0c17a2ae8d5549411d064e7e622c6f0496d"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/review-01/brief-02.md",
+    "blob": "6438752309b0d18aa4af5c5da39d271fdd5990db",
+    "bytes": 9079,
+    "sha256": "7880428c17ae04da10da71f81e3d8080d0904e7536b735eebc488b37e85c271d"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/design-02.md",
+    "blob": "c31fd4fef38e3dae534ee70a8643e0f864441de2",
+    "bytes": 25887,
+    "sha256": "d7cba6b86e76efcb8d98081ab9127da00c56af88ac648834110d62ae428c5ba8"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/implementation-01.md",
+    "blob": "3f87cccc00525b073e8c53b94146081f2cc2edf4",
+    "bytes": 40352,
+    "sha256": "ccda8de829978c164512beb3f6100752a9c88f2b554f9c442b6754efc06ae503"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/implementation-02.md",
+    "blob": "5c5a0093483ba86d09cd7b07f7762d4fe2388b5b",
+    "bytes": 29334,
+    "sha256": "ee033d7de285f3e99aadbe88c624831d1f463d5d64497e7148ec749aaa89ecd5"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/implementation-03.md",
+    "blob": "face89e81ee7fa8a03790cb63286676f4e2d752b",
+    "bytes": 29173,
+    "sha256": "5bb7e7c5c372530c0988857ea725e1e2ad45d6c0f3438ff35656b3cb15b4f593"
+  },
+  {
+    "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+    "path": "docs/development/work/K1.1-correction-03/verification.json",
+    "blob": "d32e2b5188c80b11fceb789801c9761a56d4320d",
+    "bytes": 19906,
+    "sha256": "317eef623ddeb68b143b92190f2f016b8f24f545251da023d807b611dd289864"
+  }
+]

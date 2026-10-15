@@ -1,0 +1,27 @@
+test_a_genuine_selected_assertion_failure_is_a_kill (test_value_cost_probe.RepositoryControls.test_a_genuine_selected_assertion_failure_is_a_kill)
+Positive control: the case's registered mutant 'visit unit uncharged' fails an exact unit count. ... ok
+test_passing_control (test_value_cost_probe.RepositoryControls.test_passing_control) ... ok
+test_review_01_module_load_throw_is_not_a_kill (test_value_cost_probe.RepositoryControls.test_review_01_module_load_throw_is_not_a_kill) ... ok
+test_review_01_parse_failure_is_not_a_kill (test_value_cost_probe.RepositoryControls.test_review_01_parse_failure_is_not_a_kill) ... ok
+test_a_cancelled_subtest_is_not_a_kill (test_value_cost_probe.SyntheticControls.test_a_cancelled_subtest_is_not_a_kill) ... ok
+test_a_hang_is_the_runner_timeout (test_value_cost_probe.SyntheticControls.test_a_hang_is_the_runner_timeout) ... ok
+test_a_harness_error_outside_its_condition_is_not_a_kill (test_value_cost_probe.SyntheticControls.test_a_harness_error_outside_its_condition_is_not_a_kill) ... ok
+test_a_helper_assertion_is_a_kill (test_value_cost_probe.SyntheticControls.test_a_helper_assertion_is_a_kill) ... ok
+test_a_hook_failure_is_not_a_kill (test_value_cost_probe.SyntheticControls.test_a_hook_failure_is_not_a_kill) ... ok
+test_a_subject_assertion_error_is_not_a_kill (test_value_cost_probe.SyntheticControls.test_a_subject_assertion_error_is_not_a_kill) ... ok
+test_a_test_side_assertion_is_a_kill (test_value_cost_probe.SyntheticControls.test_a_test_side_assertion_is_a_kill) ... ok
+test_an_assertion_error_the_subject_built_is_not_a_kill (test_value_cost_probe.SyntheticControls.test_an_assertion_error_the_subject_built_is_not_a_kill)
+TOOLS-01 owner choice 09's objection: such an error carries only test frames, yet it is not witnessed. ... ok
+test_an_async_assertion_is_a_kill (test_value_cost_probe.SyntheticControls.test_an_async_assertion_is_a_kill) ... ok
+test_an_exception_while_arguments_are_evaluated_is_not_a_kill (test_value_cost_probe.SyntheticControls.test_an_exception_while_arguments_are_evaluated_is_not_a_kill)
+Review 01's ingress O-DEFINEDATA-LITERAL shape: the subject throws before the assertion runs. ... ok
+test_an_inner_output_overflow_is_not_a_kill (test_value_cost_probe.SyntheticControls.test_an_inner_output_overflow_is_not_a_kill) ... ok
+test_control_passes (test_value_cost_probe.SyntheticControls.test_control_passes) ... ok
+test_no_selection_is_uncovered (test_value_cost_probe.SyntheticControls.test_no_selection_is_uncovered) ... ok
+test_the_harness_unwrappers_are_kills_on_their_own_condition (test_value_cost_probe.SyntheticControls.test_the_harness_unwrappers_are_kills_on_their_own_condition)
+Review 01 found 15 of 23 runs without ERR_ASSERTION failing through these; they are assertions. ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 7.323s
+
+OK

@@ -1,0 +1,7 @@
+2026-10-12: the owner choice 01 standing rule covers a changed witnessed test, not a changed helper
+module. artifact-21fb34d9 and artifact-ada9f66c stay complete. The owner accepts the 007 TOOLS-02 scope
+edit and the kernel-sweep timeout of 2,400 s.
+2026-10-14: round 2 was pre-approved past design 02 except on stop conditions, and none was raised.
+docs/development/014-owner-progress-summary.md is an owner summary pinned at B. Its 'next steps' line
+about K1.1-correction-03 describes brief 01's planned scope, not current behaviour. The owner updates
+014 at integration, and it is not a DOC-03 instance.

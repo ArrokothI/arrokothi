@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/packet_tools.py",
+    "verify",
+    "--revision",
+    "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7",
+    "--spec",
+    "docs/development/work/K1.1-correction-03/verification.json"
+  ],
+  "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+  "start_utc": "2026-10-14T14:55:22.415012+00:00",
+  "node": "v26.10.0",
+  "npm": "11.19.1",
+  "python": "Python 3.14.6",
+  "clean_before": "",
+  "head": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7",
+  "parallel_validation_jobs": 0,
+  "process_inspection": "No unrelated node/python/npm validation process observed before launch; desktop and long-running services present.",
+  "pid": 87020,
+  "exit_code": 0,
+  "elapsed_seconds": 3299.987183457939,
+  "end_utc": "2026-10-14T18:36:52.007989+00:00",
+  "clean_after": ""
+}

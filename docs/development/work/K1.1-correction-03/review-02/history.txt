@@ -1,0 +1,31 @@
+41628b8bcfd11c899c2fcf60ef4fb73c0858e298 ad9bc8640d261ace8af5e75c47aad1bad3ca84d7 K1.1-correction-03: implementation report 03, 007 WAITING_FOR_REVIEW
+ad9bc8640d261ace8af5e75c47aad1bad3ca84d7 c705126ec906eba0f70619e6c3ddf21b475f0c8b K1.1-correction-03: declare the value-cost witness's environment name in the verify census
+c705126ec906eba0f70619e6c3ddf21b475f0c8b d3b087c7d2d6874047c331d0da606338b691a8c5 K1.1-correction-03: payload C for review 01 (STOP-01, EVID-02, DOC-03)
+d3b087c7d2d6874047c331d0da606338b691a8c5 c8add082e72352d45f1c462eb18afc1e3d5dbaba K1.1-correction-03 (WIP): C1 requalification record, MV3 registered at C, seam checks
+c8add082e72352d45f1c462eb18afc1e3d5dbaba 9772c53e6b00fe7e2986d1881d67602f25cede6d K1.1-correction-03 (WIP): requalified value-cost registry, census, verify spec
+9772c53e6b00fe7e2986d1881d67602f25cede6d 735a99b5d75fdb7dd5c9ee1d838aebcefc61c607 K1.1-correction-03 (WIP): witness the harness unwrappers by their own condition; harness.ts unchanged
+735a99b5d75fdb7dd5c9ee1d838aebcefc61c607 2d9a1d860d9d259a992eb886f221ddf0e906123a K1.1-correction-03 (WIP): Q6 scope in current summaries; stop propagation in BASELINE
+2d9a1d860d9d259a992eb886f221ddf0e906123a 35177b28258fcfb38d73012ae46089f6d766539e K1.1-correction-03 (WIP): stop propagation, stop oracle, assertion-witness probe
+35177b28258fcfb38d73012ae46089f6d766539e c91b82d0fe6c2db04f2683d71873eec7618b643b K1.1-correction-03: design 02 for review 01's findings (STOP-01, EVID-02, DOC-03)
+c91b82d0fe6c2db04f2683d71873eec7618b643b 5f586b176089987fa3667e4c03f26b3dac0a5bfb K1.1-correction-03: record independent review 01 (CHANGES REQUIRED)
+5f586b176089987fa3667e4c03f26b3dac0a5bfb ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb K1.1-correction-03: implementation report 02, 007 WAITING_FOR_REVIEW
+ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb 40f57cf9fe843b5e89879df5e4ae56369eaa154f K1.1-correction-03: name the revision the sweep timing was measured at
+40f57cf9fe843b5e89879df5e4ae56369eaa154f 4c736b4fead13a1988870b0522a60dd1a1553371 K1.1-correction-03: kernel-sweeps timeout 2,400 s in the verify specification
+4c736b4fead13a1988870b0522a60dd1a1553371 53a9f607b8b38f89540db1e2324a2c7430d62026 K1.1-correction-03: apply owner choice 01 (R4 residual, adoption reopen and transfer, C2-LIMIT later lists)
+53a9f607b8b38f89540db1e2324a2c7430d62026 ed461d20edb4bb06868302a76e1a786dfa278d29 K1.1-correction-03: implementation report 01, C1 ablation record, 007 status
+ed461d20edb4bb06868302a76e1a786dfa278d29 6c7ccd9d9cb664371e1be8918e8ed7257ea10d62 K1.1-correction-03: record the candidate observation in six held realm witnesses
+6c7ccd9d9cb664371e1be8918e8ed7257ea10d62 fc0c477a8e4c0f4120397b22890ddd35e45bf46c K1.1-correction-03: suite targets sit at their members' current declarations
+fc0c477a8e4c0f4120397b22890ddd35e45bf46c e47750c05b73e396ade3187387b80f4e964309b2 K1.1-correction-03: payload C — C1 ablation, final census and verify spec
+e47750c05b73e396ade3187387b80f4e964309b2 3e6a51d8e2b36349d01be569e6f4e17c24c9e4ff K1.1-correction-03 (WIP): budget review fixes BM-01..BM-07
+3e6a51d8e2b36349d01be569e6f4e17c24c9e4ff 70137741e19bad70a15f2e9f5cd2e9a4dd584967 K1.1-correction-03 (WIP): coordinator conversions; conversion-review fixes; silent-pass search
+70137741e19bad70a15f2e9f5cd2e9a4dd584967 19eb998e34f69cfbecf7dba30ccdd49ce32f470b K1.1-correction-03 (WIP): Layer 3 and BASELINE for the packet-review outcomes; registry mutants
+19eb998e34f69cfbecf7dba30ccdd49ce32f470b 4ba018723e62db717dbc5846b956f5f216c2c83e K1.1-correction-03 (WIP): converted values, diagnostic-work and refusal-cost tests; packet-review fixes
+4ba018723e62db717dbc5846b956f5f216c2c83e ebc6ae6118e7a51bc0bc44a5100215bd629b3439 K1.1-correction-03 (WIP): keep intrinsic references out of the instrument's load-time code
+ebc6ae6118e7a51bc0bc44a5100215bd629b3439 e1e0062222acf691eb288a094fae65c7c12658cd K1.1-correction-03 (WIP): Layer 3 and BASELINE payload, value-cost registry, held witnesses
+e1e0062222acf691eb288a094fae65c7c12658cd 2fe72f9040d049954372526e998caa1c1e105cbb K1.1-correction-03 (WIP): pin every byte charge; tighter oracle; registry probe
+2fe72f9040d049954372526e998caa1c1e105cbb 296655937c975937f0108948170bb417593b8ea4 K1.1-correction-03 (WIP): generated corpus, a declared bounded search
+296655937c975937f0108948170bb417593b8ea4 01c018081de36f03e2f42837673ee85e9b672823 K1.1-correction-03 (WIP): static metering check, work oracle and refusal tests
+01c018081de36f03e2f42837673ee85e9b672823 02e55bdcf247865b746cf415070e5f50f7fb3fd6 K1.1-correction-03 (WIP): metered capture, Proxy and internal-slot refusal, O(1) cycle set
+02e55bdcf247865b746cf415070e5f50f7fb3fd6 2b24cdea510e17c79372f520f99945d81d9bceb1 K1.1-correction-03: record the owner's design check of design 01
+2b24cdea510e17c79372f520f99945d81d9bceb1 0b340b6f3e73942edc39c76a79063d490d6e2992 K1.1-correction-03: record IN_PROGRESS and design 01 for the design check
+0b340b6f3e73942edc39c76a79063d490d6e2992 b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b K1.1-correction-03: owner release 01 and brief 01

@@ -1,0 +1,201 @@
+{
+  "node": "v26.10.0",
+  "anchor": "if (value === null) return charge(state, 4) ? null : STOPPED;",
+  "rows": [
+    {
+      "name": "correct_control",
+      "replacement": "if (value === null) return charge(state, 4) ? null : STOPPED;",
+      "helper": "",
+      "static": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/guard.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"violations\":[]}\n",
+        "stderr": ""
+      },
+      "maintained": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "--test",
+          "packages/kernel/tests/capture-stop.test.ts"
+        ],
+        "exit": 0,
+        "stdout": "\u25b6 KC3-R1-STOP-01 review 01's stop-boundary family at the real B\n  \u2714 every listing that ran was charged: \u03a3(1 + length) equals the listing units (0.423667ms)\n  \u2714 offset 0: the symbol diagnostic passes B and the names are never listed (0.501291ms)\n  \u2714 offsets -1 and -2: the names listing itself passes B, after it returns, and is charged (1.112167ms)\n  \u2714 offsets +1 and +2: the symbols listing passes B and the names are never listed (0.128333ms)\n\u2714 KC3-R1-STOP-01 review 01's stop-boundary family at the real B (2.819792ms)\n\u25b6 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter\n  \u2714 all fourteen consumers ran (0.197292ms)\n  \u2714 canonicalize: refused, the target never listed after its stop, accepted state unchanged (0.127209ms)\n  \u2714 boundaryValueIssues: refused, the target never listed after its stop, accepted state unchanged (0.045333ms)\n  \u2714 isBoundaryValue: refused, the target never listed after its stop, accepted state unchanged (0.060708ms)\n  \u2714 creation-authority: refused, the target never listed after its stop, accepted state unchanged (0.084875ms)\n  \u2714 creation-input: refused, the target never listed after its stop, accepted state unchanged (0.284917ms)\n  \u2714 ingress: refused, the target never listed after its stop, accepted state unchanged (0.082209ms)\n  \u2714 recovery-definitionRevisions: refused, the target never listed after its stop, accepted state unchanged (0.047167ms)\n  \u2714 recovery-runtimeContractRevisions: refused, the target never listed after its stop, accepted state unchanged (0.044458ms)\n  \u2714 recovery-progressCodecs: refused, the target never listed after its stop, accepted state unchanged (0.038542ms)\n  \u2714 outcome-progress: refused, the target never listed after its stop, accepted state unchanged (0.043666ms)\n  \u2714 outcome-emission: refused, the target never listed after its stop, accepted state unchanged (0.051708ms)\n  \u2714 outcome-result: refused, the target never listed after its stop, accepted state unchanged (0.034666ms)\n  \u2714 outcome-error: refused, the target never listed after its stop, accepted state unchanged (0.038333ms)\n  \u2714 eager-eight: refused, the target never listed after its stop, accepted state unchanged (0.031542ms)\n\u2714 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter (1.617166ms)\n\u25b6 KC3-R1-STOP-01 the lower-threshold seam is evidence only\n  \u2714 it can only lower B and the size limit, and a lowered run stops exactly where that threshold is passed (1.478958ms)\n  \u2714 no Kernel module but values.ts names it, and the package entry does not export it (1.298ms)\n\u2714 KC3-R1-STOP-01 the lower-threshold seam is evidence only (2.847959ms)\n\u25b6 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation\n  \u2714 the declared shapes were all swept, both meters, every position of the small ones (0.487958ms)\n  \u2714 every listing that ran was charged, at every stop position (1.980792ms)\n  \u2714 every descriptor of a caller object was charged, at every stop position (6.130042ms)\n  \u2714 a stopped run ends with its one stop issue, past its threshold, and recorded nothing the unstopped run did not (17.206042ms)\n  \u2714 the meter and the engine operations only grow with the threshold (39.4685ms)\n\u2714 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation (65.486958ms)\n\u2139 tests 26\n\u2139 suites 4\n\u2139 pass 26\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 15198.0895\n",
+        "stderr": ""
+      },
+      "trace": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/trace.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"answer\":{\"result\":{\"ok\":false,\"issues\":[{\"path\":\"\",\"code\":\"too_many_bytes\",\"message\":\"canonical form reaches at least 1048580 bytes, above the per-root limit of 1048576; the rest of the value was not read\"}]},\"work\":{\"units\":7,\"visit\":2,\"listing\":4,\"element\":1,\"descriptor\":0,\"read\":0,\"string\":0,\"diagnostic\":0,\"stop\":\"bytes\"},\"end\":{\"bytes\":6,\"crossing\":null}},\"continuations\":[]}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "false_instead_of_stop",
+      "replacement": "if (value === null) return charge(state, 4) ? null : false;",
+      "helper": "",
+      "static": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/guard.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"violations\":[]}\n",
+        "stderr": ""
+      },
+      "maintained": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "--test",
+          "packages/kernel/tests/capture-stop.test.ts"
+        ],
+        "exit": 0,
+        "stdout": "\u25b6 KC3-R1-STOP-01 review 01's stop-boundary family at the real B\n  \u2714 every listing that ran was charged: \u03a3(1 + length) equals the listing units (0.772375ms)\n  \u2714 offset 0: the symbol diagnostic passes B and the names are never listed (3.81075ms)\n  \u2714 offsets -1 and -2: the names listing itself passes B, after it returns, and is charged (8.355834ms)\n  \u2714 offsets +1 and +2: the symbols listing passes B and the names are never listed (0.59925ms)\n\u2714 KC3-R1-STOP-01 review 01's stop-boundary family at the real B (16.642125ms)\n\u25b6 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter\n  \u2714 all fourteen consumers ran (0.270042ms)\n  \u2714 canonicalize: refused, the target never listed after its stop, accepted state unchanged (1.194833ms)\n  \u2714 boundaryValueIssues: refused, the target never listed after its stop, accepted state unchanged (0.141666ms)\n  \u2714 isBoundaryValue: refused, the target never listed after its stop, accepted state unchanged (0.064167ms)\n  \u2714 creation-authority: refused, the target never listed after its stop, accepted state unchanged (0.258542ms)\n  \u2714 creation-input: refused, the target never listed after its stop, accepted state unchanged (0.097125ms)\n  \u2714 ingress: refused, the target never listed after its stop, accepted state unchanged (0.057666ms)\n  \u2714 recovery-definitionRevisions: refused, the target never listed after its stop, accepted state unchanged (0.044542ms)\n  \u2714 recovery-runtimeContractRevisions: refused, the target never listed after its stop, accepted state unchanged (0.045ms)\n  \u2714 recovery-progressCodecs: refused, the target never listed after its stop, accepted state unchanged (0.032541ms)\n  \u2714 outcome-progress: refused, the target never listed after its stop, accepted state unchanged (0.042417ms)\n  \u2714 outcome-emission: refused, the target never listed after its stop, accepted state unchanged (0.030917ms)\n  \u2714 outcome-result: refused, the target never listed after its stop, accepted state unchanged (0.023459ms)\n  \u2714 outcome-error: refused, the target never listed after its stop, accepted state unchanged (0.022333ms)\n  \u2714 eager-eight: refused, the target never listed after its stop, accepted state unchanged (0.022375ms)\n\u2714 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter (2.853291ms)\n\u25b6 KC3-R1-STOP-01 the lower-threshold seam is evidence only\n  \u2714 it can only lower B and the size limit, and a lowered run stops exactly where that threshold is passed (8.665459ms)\n  \u2714 no Kernel module but values.ts names it, and the package entry does not export it (45.992042ms)\n\u2714 KC3-R1-STOP-01 the lower-threshold seam is evidence only (54.777042ms)\n\u25b6 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation\n  \u2714 the declared shapes were all swept, both meters, every position of the small ones (0.556208ms)\n  \u2714 every listing that ran was charged, at every stop position (7.021459ms)\n  \u2714 every descriptor of a caller object was charged, at every stop position (9.713875ms)\n  \u2714 a stopped run ends with its one stop issue, past its threshold, and recorded nothing the unstopped run did not (24.031834ms)\n  \u2714 the meter and the engine operations only grow with the threshold (39.435666ms)\n\u2714 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation (81.069834ms)\n\u2139 tests 26\n\u2139 suites 4\n\u2139 pass 26\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 17308.163584\n",
+        "stderr": ""
+      },
+      "trace": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/trace.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"answer\":{\"result\":{\"ok\":false,\"issues\":[{\"path\":\"\",\"code\":\"too_many_bytes\",\"message\":\"canonical form reaches at least 1048580 bytes, above the per-root limit of 1048576; the rest of the value was not read\"}]},\"work\":{\"units\":7,\"visit\":2,\"listing\":4,\"element\":1,\"descriptor\":0,\"read\":0,\"string\":0,\"diagnostic\":0,\"stop\":\"bytes\"},\"end\":{\"bytes\":6,\"crossing\":null}},\"continuations\":[{\"site\":\"defineAt\",\"stopped\":true},{\"site\":\"finishArray\",\"stopped\":true}]}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "nested_return_ignored",
+      "replacement": "if (value === null) { const paid = (): boolean => charge(state, 4); paid(); return null; }",
+      "helper": "",
+      "static": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/guard.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"violations\":[]}\n",
+        "stderr": ""
+      },
+      "maintained": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "--test",
+          "packages/kernel/tests/capture-stop.test.ts"
+        ],
+        "exit": 0,
+        "stdout": "\u25b6 KC3-R1-STOP-01 review 01's stop-boundary family at the real B\n  \u2714 every listing that ran was charged: \u03a3(1 + length) equals the listing units (0.839458ms)\n  \u2714 offset 0: the symbol diagnostic passes B and the names are never listed (0.751791ms)\n  \u2714 offsets -1 and -2: the names listing itself passes B, after it returns, and is charged (1.020958ms)\n  \u2714 offsets +1 and +2: the symbols listing passes B and the names are never listed (0.126708ms)\n\u2714 KC3-R1-STOP-01 review 01's stop-boundary family at the real B (3.443833ms)\n\u25b6 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter\n  \u2714 all fourteen consumers ran (0.213208ms)\n  \u2714 canonicalize: refused, the target never listed after its stop, accepted state unchanged (0.122791ms)\n  \u2714 boundaryValueIssues: refused, the target never listed after its stop, accepted state unchanged (0.044416ms)\n  \u2714 isBoundaryValue: refused, the target never listed after its stop, accepted state unchanged (0.056292ms)\n  \u2714 creation-authority: refused, the target never listed after its stop, accepted state unchanged (0.068625ms)\n  \u2714 creation-input: refused, the target never listed after its stop, accepted state unchanged (0.087917ms)\n  \u2714 ingress: refused, the target never listed after its stop, accepted state unchanged (0.057ms)\n  \u2714 recovery-definitionRevisions: refused, the target never listed after its stop, accepted state unchanged (0.051541ms)\n  \u2714 recovery-runtimeContractRevisions: refused, the target never listed after its stop, accepted state unchanged (0.0305ms)\n  \u2714 recovery-progressCodecs: refused, the target never listed after its stop, accepted state unchanged (0.030625ms)\n  \u2714 outcome-progress: refused, the target never listed after its stop, accepted state unchanged (0.047042ms)\n  \u2714 outcome-emission: refused, the target never listed after its stop, accepted state unchanged (0.064625ms)\n  \u2714 outcome-result: refused, the target never listed after its stop, accepted state unchanged (0.047709ms)\n  \u2714 outcome-error: refused, the target never listed after its stop, accepted state unchanged (0.040292ms)\n  \u2714 eager-eight: refused, the target never listed after its stop, accepted state unchanged (0.031375ms)\n\u2714 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter (1.32675ms)\n\u25b6 KC3-R1-STOP-01 the lower-threshold seam is evidence only\n  \u2714 it can only lower B and the size limit, and a lowered run stops exactly where that threshold is passed (1.637291ms)\n  \u2714 no Kernel module but values.ts names it, and the package entry does not export it (1.3475ms)\n\u2714 KC3-R1-STOP-01 the lower-threshold seam is evidence only (3.134292ms)\n\u25b6 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation\n  \u2714 the declared shapes were all swept, both meters, every position of the small ones (0.53775ms)\n  \u2714 every listing that ran was charged, at every stop position (2.334875ms)\n  \u2714 every descriptor of a caller object was charged, at every stop position (6.657833ms)\n  \u2714 a stopped run ends with its one stop issue, past its threshold, and recorded nothing the unstopped run did not (17.03575ms)\n  \u2714 the meter and the engine operations only grow with the threshold (36.6215ms)\n\u2714 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation (63.399709ms)\n\u2139 tests 26\n\u2139 suites 4\n\u2139 pass 26\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 16104.860625\n",
+        "stderr": ""
+      },
+      "trace": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/trace.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"answer\":{\"result\":{\"ok\":false,\"issues\":[{\"path\":\"\",\"code\":\"too_many_bytes\",\"message\":\"canonical form reaches at least 1048580 bytes, above the per-root limit of 1048576; the rest of the value was not read\"}]},\"work\":{\"units\":7,\"visit\":2,\"listing\":4,\"element\":1,\"descriptor\":0,\"read\":0,\"string\":0,\"diagnostic\":0,\"stop\":\"bytes\"},\"end\":{\"bytes\":6,\"crossing\":null}},\"continuations\":[{\"site\":\"defineAt\",\"stopped\":true},{\"site\":\"finishArray\",\"stopped\":true}]}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "class_return_ignored",
+      "replacement": "if (value === null) { ReviewNullCharge.capture(state); return null; }",
+      "helper": "\nclass ReviewNullCharge { static capture(state: CaptureState): Visited { return charge(state, 4) ? null : STOPPED; } }\n",
+      "static": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/guard.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"violations\":[]}\n",
+        "stderr": ""
+      },
+      "maintained": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "--test",
+          "packages/kernel/tests/capture-stop.test.ts"
+        ],
+        "exit": 0,
+        "stdout": "\u25b6 KC3-R1-STOP-01 review 01's stop-boundary family at the real B\n  \u2714 every listing that ran was charged: \u03a3(1 + length) equals the listing units (0.44425ms)\n  \u2714 offset 0: the symbol diagnostic passes B and the names are never listed (0.508792ms)\n  \u2714 offsets -1 and -2: the names listing itself passes B, after it returns, and is charged (0.100916ms)\n  \u2714 offsets +1 and +2: the symbols listing passes B and the names are never listed (0.082208ms)\n\u2714 KC3-R1-STOP-01 review 01's stop-boundary family at the real B (1.7665ms)\n\u25b6 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter\n  \u2714 all fourteen consumers ran (1.25625ms)\n  \u2714 canonicalize: refused, the target never listed after its stop, accepted state unchanged (0.162959ms)\n  \u2714 boundaryValueIssues: refused, the target never listed after its stop, accepted state unchanged (0.051167ms)\n  \u2714 isBoundaryValue: refused, the target never listed after its stop, accepted state unchanged (0.060583ms)\n  \u2714 creation-authority: refused, the target never listed after its stop, accepted state unchanged (0.062459ms)\n  \u2714 creation-input: refused, the target never listed after its stop, accepted state unchanged (0.086792ms)\n  \u2714 ingress: refused, the target never listed after its stop, accepted state unchanged (0.044375ms)\n  \u2714 recovery-definitionRevisions: refused, the target never listed after its stop, accepted state unchanged (0.068917ms)\n  \u2714 recovery-runtimeContractRevisions: refused, the target never listed after its stop, accepted state unchanged (0.0295ms)\n  \u2714 recovery-progressCodecs: refused, the target never listed after its stop, accepted state unchanged (0.034667ms)\n  \u2714 outcome-progress: refused, the target never listed after its stop, accepted state unchanged (0.043042ms)\n  \u2714 outcome-emission: refused, the target never listed after its stop, accepted state unchanged (0.038417ms)\n  \u2714 outcome-result: refused, the target never listed after its stop, accepted state unchanged (0.025417ms)\n  \u2714 outcome-error: refused, the target never listed after its stop, accepted state unchanged (0.024375ms)\n  \u2714 eager-eight: refused, the target never listed after its stop, accepted state unchanged (0.024125ms)\n\u2714 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter (2.3365ms)\n\u25b6 KC3-R1-STOP-01 the lower-threshold seam is evidence only\n  \u2714 it can only lower B and the size limit, and a lowered run stops exactly where that threshold is passed (1.507083ms)\n  \u2714 no Kernel module but values.ts names it, and the package entry does not export it (1.349542ms)\n\u2714 KC3-R1-STOP-01 the lower-threshold seam is evidence only (2.933459ms)\n\u25b6 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation\n  \u2714 the declared shapes were all swept, both meters, every position of the small ones (0.502334ms)\n  \u2714 every listing that ran was charged, at every stop position (2.066333ms)\n  \u2714 every descriptor of a caller object was charged, at every stop position (6.186583ms)\n  \u2714 a stopped run ends with its one stop issue, past its threshold, and recorded nothing the unstopped run did not (16.400209ms)\n  \u2714 the meter and the engine operations only grow with the threshold (39.874958ms)\n\u2714 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation (65.228125ms)\n\u2139 tests 26\n\u2139 suites 4\n\u2139 pass 26\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 15412.891167\n",
+        "stderr": ""
+      },
+      "trace": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/trace.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"answer\":{\"result\":{\"ok\":false,\"issues\":[{\"path\":\"\",\"code\":\"too_many_bytes\",\"message\":\"canonical form reaches at least 1048580 bytes, above the per-root limit of 1048576; the rest of the value was not read\"}]},\"work\":{\"units\":7,\"visit\":2,\"listing\":4,\"element\":1,\"descriptor\":0,\"read\":0,\"string\":0,\"diagnostic\":0,\"stop\":\"bytes\"},\"end\":{\"bytes\":6,\"crossing\":null}},\"continuations\":[{\"site\":\"defineAt\",\"stopped\":true},{\"site\":\"finishArray\",\"stopped\":true}]}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "alias_false",
+      "replacement": "if (value === null) return reviewNullCharge(state, 4) ? null : false;",
+      "helper": "\nconst reviewNullCharge = charge;\n",
+      "static": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/guard.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"violations\":[]}\n",
+        "stderr": ""
+      },
+      "maintained": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "--test",
+          "packages/kernel/tests/capture-stop.test.ts"
+        ],
+        "exit": 0,
+        "stdout": "\u25b6 KC3-R1-STOP-01 review 01's stop-boundary family at the real B\n  \u2714 every listing that ran was charged: \u03a3(1 + length) equals the listing units (0.577625ms)\n  \u2714 offset 0: the symbol diagnostic passes B and the names are never listed (1.033ms)\n  \u2714 offsets -1 and -2: the names listing itself passes B, after it returns, and is charged (0.097958ms)\n  \u2714 offsets +1 and +2: the symbols listing passes B and the names are never listed (0.080375ms)\n\u2714 KC3-R1-STOP-01 review 01's stop-boundary family at the real B (2.654ms)\n\u25b6 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter\n  \u2714 all fourteen consumers ran (0.175917ms)\n  \u2714 canonicalize: refused, the target never listed after its stop, accepted state unchanged (0.11875ms)\n  \u2714 boundaryValueIssues: refused, the target never listed after its stop, accepted state unchanged (0.046625ms)\n  \u2714 isBoundaryValue: refused, the target never listed after its stop, accepted state unchanged (0.054083ms)\n  \u2714 creation-authority: refused, the target never listed after its stop, accepted state unchanged (0.087584ms)\n  \u2714 creation-input: refused, the target never listed after its stop, accepted state unchanged (0.103083ms)\n  \u2714 ingress: refused, the target never listed after its stop, accepted state unchanged (0.058167ms)\n  \u2714 recovery-definitionRevisions: refused, the target never listed after its stop, accepted state unchanged (0.037583ms)\n  \u2714 recovery-runtimeContractRevisions: refused, the target never listed after its stop, accepted state unchanged (0.028166ms)\n  \u2714 recovery-progressCodecs: refused, the target never listed after its stop, accepted state unchanged (0.025083ms)\n  \u2714 outcome-progress: refused, the target never listed after its stop, accepted state unchanged (0.037584ms)\n  \u2714 outcome-emission: refused, the target never listed after its stop, accepted state unchanged (0.023583ms)\n  \u2714 outcome-result: refused, the target never listed after its stop, accepted state unchanged (0.035166ms)\n  \u2714 outcome-error: refused, the target never listed after its stop, accepted state unchanged (0.027375ms)\n  \u2714 eager-eight: refused, the target never listed after its stop, accepted state unchanged (0.021ms)\n\u2714 KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter (1.200458ms)\n\u25b6 KC3-R1-STOP-01 the lower-threshold seam is evidence only\n  \u2714 it can only lower B and the size limit, and a lowered run stops exactly where that threshold is passed (1.59175ms)\n  \u2714 no Kernel module but values.ts names it, and the package entry does not export it (4.265042ms)\n\u2714 KC3-R1-STOP-01 the lower-threshold seam is evidence only (5.93275ms)\n\u25b6 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation\n  \u2714 the declared shapes were all swept, both meters, every position of the small ones (0.487417ms)\n  \u2714 every listing that ran was charged, at every stop position (2.0485ms)\n  \u2714 every descriptor of a caller object was charged, at every stop position (6.211958ms)\n  \u2714 a stopped run ends with its one stop issue, past its threshold, and recorded nothing the unstopped run did not (17.167708ms)\n  \u2714 the meter and the engine operations only grow with the threshold (37.55375ms)\n\u2714 KC3-R1-STOP-01 every stop position of the declared shapes accounts for every observation (63.664916ms)\n\u2139 tests 26\n\u2139 suites 4\n\u2139 pass 26\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 15936.178375\n",
+        "stderr": ""
+      },
+      "trace": {
+        "argv": [
+          "node",
+          "--experimental-strip-types",
+          "--no-warnings",
+          "/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/kc3-review02-stop-forms-87tf9ebq/trace.mjs"
+        ],
+        "exit": 0,
+        "stdout": "{\"answer\":{\"result\":{\"ok\":false,\"issues\":[{\"path\":\"\",\"code\":\"too_many_bytes\",\"message\":\"canonical form reaches at least 1048580 bytes, above the per-root limit of 1048576; the rest of the value was not read\"}]},\"work\":{\"units\":7,\"visit\":2,\"listing\":4,\"element\":1,\"descriptor\":0,\"read\":0,\"string\":0,\"diagnostic\":0,\"stop\":\"bytes\"},\"end\":{\"bytes\":6,\"crossing\":null}},\"continuations\":[{\"site\":\"defineAt\",\"stopped\":true},{\"site\":\"finishArray\",\"stopped\":true}]}\n",
+        "stderr": ""
+      }
+    }
+  ]
+}

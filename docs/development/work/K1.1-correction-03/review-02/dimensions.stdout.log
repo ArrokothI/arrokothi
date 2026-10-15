@@ -1,0 +1,105 @@
+{
+  "node": "v26.10.0",
+  "tree": "/private/tmp/arrokothi-kc3-review02-c",
+  "baseline": "/private/tmp/arrokothi-kc3-review02-b",
+  "initialSeed": "0x4b433303",
+  "dimensions": {
+    "families": [
+      "symbol",
+      "hidden",
+      "accessor",
+      "undefined",
+      "lone-name",
+      "long-name",
+      "array-extra",
+      "hole",
+      "NaN",
+      "Map",
+      "proxy",
+      "revoked",
+      "cycle"
+    ],
+    "prototypes": [
+      "plain",
+      "null",
+      "foreign1",
+      "foreign1000"
+    ],
+    "widths": [
+      1,
+      7,
+      8,
+      9,
+      33,
+      257,
+      4096
+    ],
+    "wrappers": [
+      0,
+      1,
+      15,
+      29,
+      31
+    ],
+    "aliases": [
+      "shared",
+      "alternating",
+      "distinct"
+    ]
+  },
+  "outcomes": {
+    "cases": 5460,
+    "stops": {
+      "none": 5388,
+      "bytes": 72
+    },
+    "codes": {
+      "unrepresentable_member": 6240,
+      "too_deep": 5616,
+      "unsupported_form": 16224,
+      "undefined_member": 3744,
+      "lone_surrogate": 1248,
+      "string_too_long": 1248,
+      "too_many_bytes": 72,
+      "non_finite_number": 3120,
+      "cycle": 3120
+    },
+    "maxUnits": 1052978,
+    "listingMismatches": [],
+    "maxDetails": 8,
+    "maxPath": 96,
+    "maxMessage": 113
+  },
+  "accepted": {
+    "cases": 1543,
+    "maxRatio": 2.9692307692307693,
+    "maxUnits": 3094930,
+    "costliestWitness": {
+      "label": "submitted-costliest-witness",
+      "bytes": 1048555,
+      "units": 3094930,
+      "gapToBudget": 50798
+    },
+    "baselineComparisons": 1543
+  },
+  "publicConsumers": [
+    "canonicalize",
+    "boundaryValueIssues and isBoundaryValue",
+    "creation authorityContext",
+    "creation initial input payload",
+    "ingress payload",
+    "recovery availability list",
+    "Outcome progress",
+    "Outcome emission value",
+    "Outcome completed result",
+    "Outcome failed error",
+    "eight eager Outcome roots from a visible caller with no grant"
+  ],
+  "consumerCases": 1056,
+  "limits": [
+    "Finite deterministic slices; not all cross-products of all engine objects.",
+    "Listing instrumentation observes real native returned lengths, not engine-internal work.",
+    "No physical isolation, live providers, native-addon External, or wall-time guarantee.",
+    "Near-budget mixed-family alignments are in probe-stop-boundary.mjs."
+  ]
+}

@@ -1,0 +1,40 @@
+[
+  {
+    "name": "adoption-corpus",
+    "result": "revalidation_complete",
+    "counts": {
+      "origins": 1549,
+      "counterexamples": 1125,
+      "families": 26,
+      "members": 415,
+      "suite_targets": 52,
+      "preserved": 37,
+      "kills": 0
+    },
+    "revision": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7"
+  },
+  {
+    "name": "mutations",
+    "result": "selected_cases_passed",
+    "counts": {
+      "killed": 109
+    },
+    "revision": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7"
+  },
+  {
+    "name": "refusal-guards",
+    "result": "selected_cases_passed",
+    "counts": {
+      "killed": 321
+    },
+    "revision": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7"
+  },
+  {
+    "name": "value-cost",
+    "result": "selected_cases_passed",
+    "counts": {
+      "killed": 231
+    },
+    "revision": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7"
+  }
+]
