@@ -307,7 +307,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 599
+        "tests": 607
       }
     },
     {
@@ -407,7 +407,7 @@
         "todo": "^[#\u2139] todo (\\d+)$"
       },
       "minimum_counts": {
-        "tests": 4114
+        "tests": 4119
       },
       "exact_counts": {
         "fail": 0,

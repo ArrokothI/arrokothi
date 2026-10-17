@@ -1,0 +1,62 @@
+[
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:112:3@5a8d958ffdab",
+    "title": "the pinned codec and revisions come from the creation that bound them, per Execution",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:135:3@5a8d958ffdab",
+    "title": "reservation pins a batch and acknowledges none of it",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:157:3@5a8d958ffdab",
+    "title": "K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:291:3@5a8d958ffdab",
+    "title": "the intent is already accepted and readable by the time the Driver is called",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:332:3@5a8d958ffdab",
+    "title": "a delayed Execution does not prevent another from being dispatched on the same coordinator",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:351:3@5a8d958ffdab",
+    "title": "dispatch returns while the report is outstanding; a later report settles it",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:413:3@5a8d958ffdab",
+    "title": "redelivery is refused when there is no unresolved exchange",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:465:3@5a8d958ffdab",
+    "title": "K11-R2-VAL-02 the Activation, redelivery and inspection carry the one value identity described",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:1073:3@5a8d958ffdab",
+    "title": "delayed or absent report leaves the attempt pending without blocking others",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  },
+  {
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "member": "packages/kernel/tests/dispatch.test.ts:1314:3@5a8d958ffdab",
+    "title": "a primitive string reason is retained up to 1,024 code units",
+    "cause": "Approved harness failure assertions remove a derived intrinsic match; helper review is not carried forward. Refused and already transferred to TOOLS-02, without a credited target."
+  }
+]
