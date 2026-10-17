@@ -68,7 +68,11 @@ kinds as declared limits. Its [owner choice 01](../docs/development/work/K1.1-co
 of 2026-10-12 accepted R4, hidden own entries, as the fourth residual, and named BINDING-01's bytes core
 as what removes it from the Kernel. [Values](concepts/values.md#fixed-semantic-limits) states the result and
 retires decision-04 item 1's live-Proxy exclusion. It does not cover request envelopes, which
-BINDING-01 owns.
+BINDING-01 owns. The packet's [owner choice 02](../docs/development/work/K1.1-correction-03/owner-choice-02.md)
+and [design 03 check](../docs/development/work/K1.1-correction-03/design-03-check.md) require one stop
+representation distinct from accepted values and immediate propagation before further capture
+bookkeeping, with only the bounded stop issue, paired cycle unwind and fixed root refusal packaging
+remaining. They refine the evidence claim without adding an accepted semantic residual.
 
 ## Misunderstandings that shaped these pages
 

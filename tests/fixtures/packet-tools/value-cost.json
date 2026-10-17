@@ -763,6 +763,30 @@
           "before": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? STOPPED : value;",
           "after": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? false : value;",
           "id": "mutation-c8a1510276c8d0df885f633ea954a68c3ac588294fe7df98b5b0e3dfcb7f4880"
+        },
+        {
+          "operator": "design03-callable-grammar",
+          "path": "packages/kernel/src/values.ts",
+          "name": "a mutable stop-capable function binding",
+          "before": "const charge = (state: CaptureState, bytes: number):",
+          "after": "let charge = (state: CaptureState, bytes: number):",
+          "id": "mutation-852cf114966802654b43c429f0ebf64fc54b4cba8e58460dd2d980b0f79b0f3f"
+        },
+        {
+          "operator": "design03-callable-grammar",
+          "path": "packages/kernel/src/values.ts",
+          "name": "an async stop-capable wrapper",
+          "before": "const charge = (state: CaptureState, bytes: number):",
+          "after": "const asyncCharge = async (state: CaptureState): Promise<true | typeof STOPPED> => charge(state, 1);\nconst charge = (state: CaptureState, bytes: number):",
+          "id": "mutation-689263ab724d2f9df648cff62ca1a262da8964e0295ca8be9a44cc404962d7b4"
+        },
+        {
+          "operator": "design03-callable-grammar",
+          "path": "packages/kernel/src/values.ts",
+          "name": "a generator stop-capable wrapper",
+          "before": "const charge = (state: CaptureState, bytes: number):",
+          "after": "function* generatorCharge(state: CaptureState): Generator<unknown, true | typeof STOPPED, unknown> { return charge(state, 1); }\nconst charge = (state: CaptureState, bytes: number):",
+          "id": "mutation-0a137ba652d88d94d3536f23e04db09232d8fb5915a22e1d5863df84c34e973f"
         }
       ]
     },

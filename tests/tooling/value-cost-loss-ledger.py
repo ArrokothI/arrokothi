@@ -8,6 +8,9 @@ is not a closed replacement: the ledger retains the obligation and the isolated 
 import argparse
 import gzip
 import json
+import hashlib
+import re
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 
@@ -16,9 +19,56 @@ PACKET=ROOT/'docs/development/work/K1.1-correction-03'
 
 
 def load(path):
+    summary=json.loads((path/'summary.json').read_text())
+    if summary.get('runs')!=792 or not summary.get('production_restored'):
+        raise RuntimeError('not a complete restored C1 matrix: '+str(path))
     with gzip.open(path/'observations.jsonl.gz','rt') as file:
         rows=[json.loads(line) for line in file]
-    return {(row['mutant'],Path(row['file']).name):row for row in rows}
+    if len(rows)!=792:raise RuntimeError('wrong matrix row count')
+    result={(row['mutant'],Path(row['file']).name):row for row in rows}
+    if len(result)!=len(rows):raise RuntimeError('duplicate matrix cells')
+    return result
+
+
+
+def repository_path(path):
+    if '/packages/' not in path:raise RuntimeError('witness outside repository tests: '+path)
+    return 'packages/'+path.split('/packages/',1)[1]
+
+
+def overlay(text, patch):
+    original=text.splitlines(True);result=[];position=0
+    for line in patch.splitlines(True):
+        if line.startswith(('---','+++')):continue
+        if line.startswith('@@'):
+            start=int(re.match(r'@@ -(\d+)',line).group(1))-1
+            result.extend(original[position:start]);position=start
+        elif line.startswith((' ','-')):
+            if original[position]!=line[1:]:raise RuntimeError('B overlay context mismatch')
+            if line[0]==' ':result.append(original[position])
+            position+=1
+        elif line.startswith('+'):result.append(line[1:])
+    result.extend(original[position:]);return ''.join(result)
+
+
+def bind_assertions(runs, metadata, directory):
+    requests=[];targets=[];sources={}
+    for row in runs.values():
+        for leaf in (row.get('observation') or {}).get('observations',[]):
+            witness=leaf.get('witnessed')
+            if not witness:continue
+            path=repository_path(witness['module'])
+            if path not in sources:
+                text=subprocess.check_output(['git','show',metadata['revision']+':'+path],cwd=ROOT,text=True)
+                if metadata['side']=='b' and path=='packages/kernel/tests/harness.ts':
+                    patch=(directory/'harness-overlay.diff').read_text()
+                    if hashlib.sha256(patch.encode()).hexdigest()!=metadata['overlay_sha256']:raise RuntimeError('overlay digest mismatch')
+                    text=overlay(text,patch)
+                sources[path]=text
+            requests.append({'path':path,'text':sources[path],**{key:witness['anchor'][key] for key in ('line','column','expression')}})
+            targets.append(witness)
+    output=subprocess.check_output(['node','tests/tooling/value-cost-assertion-sites.mjs'],cwd=ROOT,input=json.dumps(requests),text=True)
+    for target,anchor in zip(targets,json.loads(output),strict=True):target['exact_assertion']=anchor
 
 
 def leaf_result(runs, mutant, file, title):
@@ -43,6 +93,9 @@ def main():
     parser.add_argument('--b',required=True,type=Path);parser.add_argument('--c',required=True,type=Path)
     parser.add_argument('--output',required=True,type=Path);args=parser.parse_args()
     b,c=load(args.b),load(args.c)
+    bm,cm=[json.loads((path/'metadata.json').read_text()) for path in (args.b,args.c)]
+    if bm['tooling']!=cm['tooling']:raise RuntimeError('B/C qualification tooling differs')
+    bind_assertions(b,bm,args.b);bind_assertions(c,cm,args.c)
     mapping=json.loads((PACKET/'c1-ablation/map.json').read_text())
     mutants=json.loads((ROOT/'tests/fixtures/packet-tools/value-cost-c1-ports.json').read_text())
     historical=[json.loads(line) for line in (PACKET/'c1-ablation-01.jsonl').read_text().splitlines()]
@@ -54,6 +107,7 @@ def main():
         if row['side']=='b-alone' and row.get('alone')==['passed']:
             cascades.add((row['file'],row['leaf'],row['mutant']))
     rows=[];historical_count=0;losses=0;isolations=[]
+    converted_keys={(row['file'],row['original']) for row in mapping}
     for conversion in mapping:
         file,original=conversion['file'],conversion['original']
         for mutant in mutants:
@@ -78,14 +132,25 @@ def main():
                 isolations.append({'side':'b','mutant':mid,'file':file,'title':original,'path':before['leaf']['path']})
             rows.append({'file':file,'original':original,'converted':conversion['converted'],'mutant':mid,
                          'obligation':mutant['mechanism'],'historical':historical_kind,
+                         'disposition':'retained' if before['qualified'] and not lost else 'uncredited_at_C' if lost else 'uncredited_at_B',
                          'historical_cascade':(file,original,mid) in cascades,'b':before,'c':after,'loss':lost,
                          'replacement_candidates':candidates,'replacement':None if lost else 'not_required',
                          'residual_reliance':False})
     if len(mapping)!=69 or len(mutants)!=87 or historical_count!=437:
         raise RuntimeError('C1 historical inventory changed')
+    unchanged_losses=[]
+    for (mid,file),run in b.items():
+        if mid=='control':continue
+        for leaf in (run.get('observation') or {}).get('observations',[]):
+            if (file,leaf['name']) in converted_keys:continue
+            before=leaf_result(b,mid,file,leaf['name']);after=leaf_result(c,mid,file,leaf['name'])
+            if before['qualified'] and not after['qualified']:
+                unchanged_losses.append({'file':file,'title':leaf['name'],'mutant':mid,'b':before,'c':after,
+                    'scope':'outside the 69 conversions; separately visible qualification downgrade'})
     unique={json.dumps(row,sort_keys=True):row for row in isolations}
     args.output.mkdir(parents=True,exist_ok=True)
     (args.output/'loss-ledger.json').write_text(json.dumps({'conversions':69,'mutants':87,'matrix_files':9,
+        'b_metadata':bm,'c_metadata':cm,'mutations':mutants,'unchanged_test_losses':unchanged_losses,
         'historical_pairs':historical_count,'qualified_b_losses':losses,'replacement_credit':'none until isolated obligation review',
         'rows':rows},indent=2)+'\n')
     (args.output/'isolation-leads.json').write_text(json.dumps(list(unique.values()),indent=2)+'\n')

@@ -4,7 +4,14 @@
   "require_direct_parent": true,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.1-correction-03/implementation-04.md"
+    "docs/development/work/K1.1-correction-03/implementation-04.md",
+    "docs/development/work/K1.1-correction-03/evidence-04/b-matrices.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/c-matrices.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/isolations.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/verify.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/continuations.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/c1-ledger.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/manifest.json"
   ],
   "preserve": [
     {
@@ -152,7 +159,7 @@
       "path": "docs/development/work/K1.1-correction-03/design-03.md"
     },
     {
-      "revision": "ac4b1836",
+      "revision": "ac4b183631a320d0ee8f8cdd3bad816c729cc13a",
       "path": "docs/development/work/K1.1-correction-03/design-03-check.md"
     }
   ],
@@ -467,6 +474,18 @@
       "inputs": [
         "value-cost-baseline"
       ]
+    },
+    {
+      "id": "value-cost-continuations",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-continuations.mjs",
+        "full"
+      ],
+      "timeout_seconds": 3600,
+      "output_limit_bytes": 1048576
     }
   ],
   "profiles_not_run": [
@@ -584,6 +603,6 @@
     "C1 is requalified per original/converted test and mutant, with a complete loss ledger over the 69 conversions, 87 mutant meanings and nine files. Historical 437 pairs, eight vanished rows, five cascades, nine withdrawals, equivalent originals and faithful analogues remain separately identified. B uses only the approved test-harness overlay; production is unchanged. Full matrices are separate recorded evidence, not an aggregate group-total substitution.",
     "scripts/packet_tools.py and refusal-guards.json change in this packet (K1.1-correction-03 owner choice 01, follow-up): C2-LIMIT accepts a later owner decision's pinned list of further limited members, with tool tests and registered refusal guards; the four other files in scripts/ are preserved at B.",
     "kernel-sweeps runs with a 2,400 s timeout: the poison sweep now also covers this packet's capture-* tests (B-scale witnesses, generated corpus), and at 4c736b4f its count and throw modes alone took 321 s and 314 s, past the earlier 900 s.",
-    "D2: verify runs the declared 38-shape small continuation subset (original 21 plus false/null scalar, member, sibling and nested controls, and ordinary undefined refusal), with exhaustive work <=2000 and bytes <=4000 and the original larger-shape sampling. The full 1862-shape design-03 continuation search is run once at C as separate recorded evidence; every run compares pristine/instrumented results and traces bookkeeping/native work against actual stopped state. These are finite searches, not proofs over future JavaScript."
+    "D2: the prescribed verify includes the 38-shape small continuation corpus through repository tests and the full 1862-shape design-03 continuation search as a separately logged step. Small thresholds are exhaustive for work <=2000 and bytes <=4000, with the original larger-shape sampling; full dimensions retain the declared charge-neighborhood sampling and paired thresholds. Each run compares pristine/instrumented results and traces bookkeeping/native work against actual stopped state. These are finite searches, not proofs over future JavaScript. If measured duration would put verify past about two hours, condition D2 permits a declared subset and a separate full C run; the report must state both."
   ]
 }

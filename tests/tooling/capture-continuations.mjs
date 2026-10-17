@@ -129,5 +129,7 @@ try {
  }
  console.log(JSON.stringify({node:process.version,mode,shapes:shapes.length,smallShapes:smallCount,runs,comparisons,violations,first,stops,crossed:[...crossed].sort(),unwinds,natives,forbidden,
   inventory:instrumented.inventory,dimensions:{families,prototypes:Object.keys(prototypes),widths:mode==='full'?[1,7,8,9,17]:[1,9],depths:mode==='full'?[0,1,15,29,31]:[0,31],aliasing:['shared','distinct'],smallThresholds:'work <=2000 and bytes <=4000 exhaustive; otherwise 0..256, every 61st, final 256',largeThresholds:'charge neighborhoods; over 160 neighborhoods: first/final 48 and every 97th; four paired thresholds'}}));
- if(violations!==0 || comparisons!==runs || forbidden!==0)process.exitCode=1;
+ // Small mode is an observation child: its importing test must reach its own assertion,
+ // including under mutations. Standalone larger searches enforce their own exit gate.
+ if(mode!=='small' && (violations!==0 || comparisons!==runs || forbidden!==0))process.exitCode=1;
 } finally {for(const[name,fn]of saved)Object[name]=fn;fs.rmSync(temp,{recursive:true,force:true});}

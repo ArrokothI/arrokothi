@@ -106,8 +106,9 @@ bindings and escaped state are declared static gaps, not proven safe forms. The 
 trace in `capture-stop.test.ts` observes actual root state, snapshot allocations/writes, finishing,
 freezing and native observations independently of the returned sentinel. Its checked site inventory,
 negative controls and declared finite continuation search are regression evidence, not a proof over
-future JavaScript. The normal verify runs the 38-shape small subset; the full design-03 matrix is a
-separate recorded C run under design-check condition D2. One alignment is the exception: when the stop lands on a refused
+future JavaScript. Verification declares the 38-shape small corpus and the full design-03 matrix;
+condition D2 permits a declared verify subset if needed to keep the gate within about two hours,
+with the full C run recorded separately. One alignment is the exception: when the stop lands on a refused
 position's own diagnostic unit, that position was examined but the stop issue takes its place, so the
 diagnostic units exceed the counted occurrences by one (`capture-work.test.ts` pins it). `too_much_work` is an addition to the exported `ValueIssueCode`
 type, which `index.ts` re-exports as a type from the private `@arrokothi/kernel` package. Review 08's

@@ -103,7 +103,7 @@ const topLevelFunctions = (source: ts.SourceFile): Map<string, Fn> => {
   const out = new Map<string, Fn>();
   for (const statement of source.statements) {
     if (ts.isFunctionDeclaration(statement) && statement.name !== undefined) out.set(statement.name.text, statement);
-    if (ts.isVariableStatement(statement)) {
+    if (ts.isVariableStatement(statement) && (statement.declarationList.flags & ts.NodeFlags.Const) !== 0) {
       for (const declaration of statement.declarationList.declarations) {
         if (ts.isIdentifier(declaration.name) && declaration.initializer !== undefined) {
           let initializer: ts.Expression = declaration.initializer;
@@ -383,7 +383,7 @@ const isGlobalValue = (checker: ts.TypeChecker, identifier: ts.Identifier): bool
 };
 
 /**
- * Runs SC1–SC9 over `values.ts`, or over `override` text in its place, and returns each violation.
+ * Runs SC1–SC11 over `values.ts`, or over `override` text in its place, and returns each violation.
  * An override that does not typecheck is itself reported, so a negative control cannot pass vacuously.
  */
 export function meteringViolations(override?: string): string[] {
@@ -557,6 +557,8 @@ export function meteringViolations(override?: string): string[] {
   for (const name of capable) {
     const fn = functions.get(name);
     if (fn === undefined) { out.push(`SC10 missing stop producer ${name}`); continue; }
+    if (fn.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword) ||
+        ("asteriskToken" in fn && fn.asteriskToken !== undefined)) out.push(`SC10 ${name} is not a synchronous callable`);
     if (!fn.type || !/\b(?:typeof STOPPED|Visited)\b/.test(normalized(fn.type))) out.push(`SC10 ${name} return type omits STOPPED`);
     const nested = (node: ts.Node): void => {
       if (ts.isFunctionLike(node) || ts.isClassDeclaration(node) || ts.isClassExpression(node)) {

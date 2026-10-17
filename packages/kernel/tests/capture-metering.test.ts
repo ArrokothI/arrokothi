@@ -164,6 +164,24 @@ describe("KC3-1 static metering check", () => {
       before: "  for (let entryIndex = 0; entryIndex < captured.length && entryIndex < BOUNDARY_LIMITS.containerEntries; entryIndex += 1) {\n    const pair = readAt(captured, entryIndex) as readonly [string, BoundaryValue];",
       after: "  for (const pair of captured) {",
     },
+    {
+      "rule": "SC10",
+      "name": "a mutable stop-capable function binding",
+      "before": "const charge = (state: CaptureState, bytes: number):",
+      "after": "let charge = (state: CaptureState, bytes: number):"
+    },
+    {
+      "rule": "SC10",
+      "name": "an async stop-capable wrapper",
+      "before": "const charge = (state: CaptureState, bytes: number):",
+      "after": "const asyncCharge = async (state: CaptureState): Promise<true | typeof STOPPED> => charge(state, 1);\nconst charge = (state: CaptureState, bytes: number):"
+    },
+    {
+      "rule": "SC10",
+      "name": "a generator stop-capable wrapper",
+      "before": "const charge = (state: CaptureState, bytes: number):",
+      "after": "function* generatorCharge(state: CaptureState): Generator<unknown, true | typeof STOPPED, unknown> { return charge(state, 1); }\nconst charge = (state: CaptureState, bytes: number):"
+    },
   ];
 
   for (const bypass of bypasses) {
