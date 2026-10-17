@@ -534,6 +534,22 @@ export function meteringViolations(override?: string): string[] {
   }
 
   // SC10: every call of a stop-capable function returns at once when the root stops.
+  // The spelling STOPPED alone proves nothing if its declaration becomes an accepted value.
+  // Keep the private, fresh unique-symbol producer inside the same bounded syntax contract.
+  const sentinels = source.statements.flatMap((statement) => ts.isVariableStatement(statement)
+    ? statement.declarationList.declarations.filter((declaration) =>
+      ts.isIdentifier(declaration.name) && declaration.name.text === "STOPPED").map((declaration) => ({ statement, declaration }))
+    : []);
+  const sentinel = sentinels.length === 1 ? sentinels[0] : undefined;
+  const initializer = sentinel?.declaration.initializer;
+  if (sentinel === undefined || (sentinel.statement.declarationList.flags & ts.NodeFlags.Const) === 0 ||
+      sentinel.statement.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ||
+      sentinel.declaration.type === undefined || normalized(sentinel.declaration.type) !== "unique symbol" ||
+      initializer === undefined || !ts.isCallExpression(initializer) ||
+      !ts.isIdentifier(initializer.expression) || initializer.expression.text !== "Symbol" ||
+      initializer.arguments.length > 1 || (initializer.arguments.length === 1 && !ts.isStringLiteral(initializer.arguments[0]!))) {
+    out.push("SC10 STOPPED must be one private const unique symbol initialized by a fresh Symbol call");
+  }
   const capable = stopCapable(functions);
   for (const required of ["record", "refuse", "listOwnNames", "listOwnSymbols", "observeElement", "observeDescriptor", "readMember", "scanText", "checkMember", "capture", "captureArray", "captureObject"]) {
     if (!capable.has(required)) out.push(`SC10 ${required} is expected to be stop-capable but calls no stop-capable function`);

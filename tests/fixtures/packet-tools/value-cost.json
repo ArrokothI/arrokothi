@@ -787,6 +787,38 @@
           "before": "const charge = (state: CaptureState, bytes: number):",
           "after": "function* generatorCharge(state: CaptureState): Generator<unknown, true | typeof STOPPED, unknown> { return charge(state, 1); }\nconst charge = (state: CaptureState, bytes: number):",
           "id": "mutation-0a137ba652d88d94d3536f23e04db09232d8fb5915a22e1d5863df84c34e973f"
+        },
+        {
+          "operator": "design03-sentinel-declaration",
+          "path": "packages/kernel/src/values.ts",
+          "name": "the stop declaration replaced by false",
+          "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+          "after": "const STOPPED = false;",
+          "id": "mutation-eb58e4a043bba76d38f83f96ab3a9e1a01a70f8d5554acd78678df6ca9570a1a"
+        },
+        {
+          "operator": "design03-sentinel-declaration",
+          "path": "packages/kernel/src/values.ts",
+          "name": "the stop declaration replaced by null",
+          "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+          "after": "const STOPPED = null;",
+          "id": "mutation-9757fd7814b5139a686d8aa66abec78f26567546f6ad592b4ba72de2322564b9"
+        },
+        {
+          "operator": "design03-sentinel-declaration",
+          "path": "packages/kernel/src/values.ts",
+          "name": "the stop declaration replaced by undefined",
+          "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+          "after": "const STOPPED = undefined;",
+          "id": "mutation-04c5f8cb08f0aca87010ad4fd85ce68fa4b9a4a6b2a94a633f76ff3f6d899887"
+        },
+        {
+          "operator": "design03-sentinel-declaration",
+          "path": "packages/kernel/src/values.ts",
+          "name": "the stop declaration replaced by ordinary refusal sentinel",
+          "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+          "after": "const STOPPED: unique symbol = REFUSED as any;",
+          "id": "mutation-92a694bd8b2bf0fcb1eedaffc461d8c611b40c2963d8281cf62dd03a4bff24fb"
         }
       ]
     },

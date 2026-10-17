@@ -407,7 +407,7 @@
         "todo": "^[#\u2139] todo (\\d+)$"
       },
       "minimum_counts": {
-        "tests": 4119
+        "tests": 4123
       },
       "exact_counts": {
         "fail": 0,

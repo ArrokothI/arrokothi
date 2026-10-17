@@ -182,6 +182,30 @@ describe("KC3-1 static metering check", () => {
       "before": "const charge = (state: CaptureState, bytes: number):",
       "after": "function* generatorCharge(state: CaptureState): Generator<unknown, true | typeof STOPPED, unknown> { return charge(state, 1); }\nconst charge = (state: CaptureState, bytes: number):"
     },
+    {
+      "rule": "SC10",
+      "name": "the stop declaration replaced by false",
+      "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+      "after": "const STOPPED = false;"
+    },
+    {
+      "rule": "SC10",
+      "name": "the stop declaration replaced by null",
+      "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+      "after": "const STOPPED = null;"
+    },
+    {
+      "rule": "SC10",
+      "name": "the stop declaration replaced by undefined",
+      "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+      "after": "const STOPPED = undefined;"
+    },
+    {
+      "rule": "SC10",
+      "name": "the stop declaration replaced by ordinary refusal sentinel",
+      "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
+      "after": "const STOPPED: unique symbol = REFUSED as any;"
+    },
   ];
 
   for (const bypass of bypasses) {
