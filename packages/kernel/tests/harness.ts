@@ -9,6 +9,8 @@
  * could excuse the implementation; these only record what they were handed.
  */
 
+import assert from "node:assert/strict";
+
 import type {
   Activation,
   AuthenticatedCaller,
@@ -545,13 +547,16 @@ export function polluteObjectField(key: string, value: unknown): IteratorNextPol
 
 /** Unwraps an accepted result, failing loudly with the refusal when it was refused instead. */
 export function accepted<T>(result: { ok: true; value: T } | { ok: false; error: { classification: string; reason: string } }): T {
-  if (!result.ok) throw new Error(`expected acceptance, got ${result.error.classification}: ${result.error.reason}`);
+  if (!result.ok) {
+    const message = `expected acceptance, got ${result.error.classification}: ${result.error.reason}`;
+    assert.fail(message);
+  }
   return result.value;
 }
 
 /** Unwraps a refusal, failing loudly when the request was accepted instead. */
 export function refused<E>(result: { ok: true; value: unknown } | { ok: false; error: E }): E {
-  if (result.ok) throw new Error("expected a refusal, but the request was accepted");
+  if (result.ok) assert.fail("expected a refusal, but the request was accepted");
   return result.error;
 }
 

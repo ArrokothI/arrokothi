@@ -363,7 +363,7 @@ rule-1 held leaves. It binds `kernel-landing-zone.test.ts:1200:9@deedd7950724`, 
 lists among the limited members, normally, or designs multi-leaf target admission if more such
 members exist by then. It also takes the 15 origins that K1.1-correction-03 reopened and transferred under
 its [owner choice 01](work/K1.1-correction-03/owner-choice-01.md), and binds the 24 members that choice
-lists under `limited.added` in two of owner choice 04's limited origins, in the same way. It also designs the evidence that a
+lists under `limited.added` in two of owner choice 04's limited origins, in the same way. It also takes the ten newly reopened origins in K1.1-correction-03 [owner choice 02’s transfer list](work/K1.1-correction-03/owner-choice-02/transferred-origins.json); the [transfer attachment](work/K1.1-correction-03/owner-choice-02/helper-transfer-04.json) preserves the five invalidated harness reviews, dependent witnesses and two already-open origins. It also designs the evidence that a
 target-set mutation's qualifying assertion executed and failed, which P1-M's kills need; until then
 target-set mutations earn no kill ([owner choice 09](work/TOOLS-01/owner-choice-09.md)). Origins already closed by packets that touched their areas are not reopened, with one exception, the
 standing rule of K1.1-correction-03 owner choice 01: a packet that changes a witnessed test reopens the affected

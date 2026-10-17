@@ -432,16 +432,32 @@ wrong test counts invalidate the run. A malformed-input test can assert that a t
 returns its declared CheckError rather than an accidental IndexError/KeyError; that is a named
 boundary assertion, not a harness crash promoted to a kill.
 
-The value-cost probe (`value-cost-probe.mjs`, K1.1-correction-03) runs named maintained tests in one
-process. It reports a failure only for a selected test that failed at an assertion a test-side module
-imported. `value-cost-witness.mjs` records those by import site, never by a stack frame or an error
-class: `node:assert` as test-side modules import it, and the harness's `accepted`/`refused` when their
-own condition fails. Every other outcome exits 3, outside the probe's declared exits, so the runner
-records `setup_error`. That covers a parse or load failure, a hook failure, a cancellation, an
-exception raised by the code under test (including one raised while an assertion's arguments are
-evaluated), an error the subject constructs, and an output overflow. A run with no selected test is
-`uncovered` and a hang is the runner's `timeout`. The probe's JSON names the precise state.
-`test_value_cost_probe.py` keeps a control for each state (review 01, KC3-R1-EVID-02).
+The value-cost probe (`value-cost-probe.mjs`, K1.1-correction-03 design 03) requires three facts:
+a complete source-policy certificate for every `packages/**/src` module in that control/mutated tree,
+an eligible synchronous assertion with its original operands, and that assertion's exact error object
+reaching a selected leaf's `testCodeFailure`. Source modules cannot import/export/require the assert
+modules, reference `AssertionError`, or use computed module requests/dynamic code generation within
+the declared syntax. The certificate records every source digest; missing files or parse errors fail it.
+
+`value-cost-witness.mjs` admits strict default/`ok` with a boolean, strict identity/deep comparisons on
+verified plain-data graphs, and `fail` with no argument or a primitive string. Optional messages must
+be primitive strings. The owner amendment admits `match`/`doesNotMatch` only with a primitive string
+and a RegExp literal created in the test module, under the same clean intrinsic/prototype snapshot.
+Preflight uses captured built-ins, rejects Proxies before reflection, follows own data descriptors,
+excludes hooks/functions/exotics, and caps traversal at 100,000 entries. It does not invoke subject
+code or project operands. Callback/validator and async assertion forms, unsafe messages and custom
+`Assert` instances receive no credit. Excluded outer calls suppress inner witnesses across their
+dynamic extent. An awaited operation followed by an eligible synchronous assertion can qualify.
+
+The actual harness branches now call `assert.fail` after their original conditions/messages are
+evaluated; there is no synthetic harness wrapper or post-exception reread. The reporter records full
+test paths/declarations and assertion module/anchor. It retains every mixed-domain observation.
+A replacement claim needs an isolated qualifying leaf and passing control, plus its stated obligation.
+A source-policy failure, parse/load/setup error, signal, hook failure, cancellation, timeout, subject
+exception or output overflow earns no kill. No selection is `uncovered`. The registry runner's
+classification is unchanged. `test_value_cost_probe.py` maintains positive and negative controls;
+`requalify-value-cost.py` uses that same probe/classifier for B with the declared test-only harness
+overlay and C, never treating a failed leaf or missing test as an assertion.
 
 The refusal registry pairs every `require` call in packet_tools.py with a malformed input and
 removal mutation. check-refusal-registry.py reconciles the whole finite set and refuses stale or

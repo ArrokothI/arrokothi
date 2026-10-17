@@ -475,3 +475,31 @@ describe("KC3-R1-STOP-01 every stop position of the declared shapes accounts for
     }
   });
 });
+
+// Design 03 adds no load-time intrinsic/helper reference to this importing test file (D1).
+describe("KC3 design 03 bookkeeping trace", () => {
+  test("the declared small continuation subset has no work after a stop", () => {
+    const row = JSON.parse(execFileSync(process.execPath,
+      ["--experimental-strip-types", "--no-warnings", "tests/tooling/capture-continuations.mjs", "small"],
+      { cwd: REPO_ROOT, encoding: "utf8", timeout: 900_000, maxBuffer: 8 * 1024 * 1024 }));
+    assert.equal(row.violations, 0, JSON.stringify(row.first));
+    assert.equal(row.shapes, 38);
+    assert.equal(row.comparisons, row.runs);
+    assert.equal(row.forbidden, 0);
+    assert.deepEqual(row.crossed, ["descriptor", "diagnostic", "element", "listing", "read", "string", "visit"]);
+    assert.ok(row.unwinds > 0 && row.natives > 0);
+  });
+  test("trace controls discriminate unchanged-result continuations and unsupported stop forms", () => {
+    const result = JSON.parse(execFileSync(process.execPath,
+      ["--experimental-strip-types", "--no-warnings", "tests/tooling/capture-trace-controls.mjs"],
+      { cwd: REPO_ROOT, encoding: "utf8", timeout: 180_000, maxBuffer: 8 * 1024 * 1024 }));
+    for (const row of result.rows) {
+      assert.equal(row.unchangedResult, true, row.name);
+      assert.equal(row.trace.balanced, true, row.name);
+      assert.equal(row.static.some((x: string) => x.startsWith("typecheck:")), false, row.name);
+      assert.equal(row.static.some((x: string) => x.startsWith("SC10")), row.expectedStatic === "reject", row.name);
+      assert.equal(row.trace.violations > 0, row.name !== "correct-control", row.name);
+    }
+    for (const row of result.inventoryControls) assert.equal(row.rejected, true, row.name);
+  });
+});

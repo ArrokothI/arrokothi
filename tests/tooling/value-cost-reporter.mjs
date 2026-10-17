@@ -5,13 +5,16 @@
 // test-side assertion function throw. The reporter and the tests run in one process, so the cause is the
 // thrown object itself. A run that never loads produces no line at all.
 const WITNESS = Symbol.for('arrokothi.value-cost.witness');
-const bounded = (text) => (typeof text === 'string' ? text.slice(0, 200) : null);
+const bounded = (text) => (typeof text === 'string' ? text : null);
 
 export default async function* valueCostReporter(source) {
   const witnessed = globalThis[WITNESS];
+  const parents = [];
   for await (const event of source) {
     const data = event.data ?? {};
     if (event.type === 'test:start') {
+      parents.length = data.nesting;
+      parents[data.nesting] = data.name;
       yield `${JSON.stringify({ event: 'start', name: bounded(data.name), nesting: data.nesting })}\n`;
     } else if (event.type === 'test:pass' || event.type === 'test:fail') {
       const details = data.details ?? {};
@@ -22,6 +25,8 @@ export default async function* valueCostReporter(source) {
         event: event.type === 'test:pass' ? 'pass' : 'fail',
         name: bounded(data.name),
         nesting: data.nesting,
+        path: [...parents.slice(0, data.nesting), data.name],
+        declaration: { file: data.file ?? null, line: data.line === undefined ? null : data.line - (witnessed?.sourceOffsets?.get(data.file) ?? 0), column: data.column ?? null },
         type: details.type ?? null,
         skip: data.skip !== undefined && data.skip !== false,
         todo: data.todo !== undefined && data.todo !== false,

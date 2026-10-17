@@ -1,0 +1,3106 @@
+{
+  "source_revision": "ac4b183631a320d0ee8f8cdd3bad816c729cc13a",
+  "reason": "Owner choice 02 \u00a72.3 and design-03-check D1: harness accepted/refused now fail through actual synchronous assert.fail; prior whole-module reviews are stale. No replacement review self-certified.",
+  "reviews": [
+    {
+      "id": "review.harness.creation",
+      "origin": "artifact-6c57cc9dd8febdefa65ed496",
+      "module": "packages/kernel/tests/harness.ts",
+      "pin_blob": "9e1c9f2a0562fc5314ae8cb5793fe21e40d80328",
+      "current_blob": "73f11529116a283b372b7d108fee314da87575ac",
+      "covers": "module",
+      "reason": "harness.ts changed between 9fd2faa7 and C (K1.2). Top level: the type-only import gains OutcomeEnvelope and SubmissionGrant (erased), the own-array.ts import gains readAt (module already requested), and observer, submissionFor, unsafeDriver and outcomeFor are new function-valued declarations with no load-time effect. caller now adds controlScopes, a copy of scopes; the Kernel reads it only in requestTakeover, recoverExecution and reportProtocolFailure (coordinator.ts #requireControl), none of which this file calls. recordingDriver also records each submission grant through recordOwn and declares isSafeToReplace, which only takeover reads; the file still reads seen. Its one iterator-pollution window (line 888) creates no caller: author is built before it, so caller's new array spread never meets the hostile next; inherited-index traps cannot reach an own-array spread. The inputs and assertions of its literal-titled members are unchanged."
+    },
+    {
+      "id": "review.harness.evidence",
+      "origin": "artifact-394a3572417fe81cafbd7097",
+      "module": "packages/kernel/tests/harness.ts",
+      "pin_blob": "9e1c9f2a0562fc5314ae8cb5793fe21e40d80328",
+      "current_blob": "73f11529116a283b372b7d108fee314da87575ac",
+      "covers": "module",
+      "reason": "harness.ts changed between 9fd2faa7 and C (K1.2). Top level: the type-only import gains OutcomeEnvelope and SubmissionGrant (erased), the own-array.ts import gains readAt (module already requested), and observer, submissionFor, unsafeDriver and outcomeFor are new function-valued declarations with no load-time effect. caller now adds controlScopes, a copy of scopes; the Kernel reads it only in requestTakeover, recoverExecution and reportProtocolFailure (coordinator.ts #requireControl), none of which this file calls. recordingDriver also records each submission grant through recordOwn and declares isSafeToReplace, which only takeover reads; the file still reads seen. It installs no iterator pollution and no inherited-index trap. The inputs and assertions of its literal-titled members are unchanged."
+    },
+    {
+      "id": "review.harness.ingress",
+      "origin": "artifact-ecb10ef937e0612352e7c7ef",
+      "module": "packages/kernel/tests/harness.ts",
+      "pin_blob": "9e1c9f2a0562fc5314ae8cb5793fe21e40d80328",
+      "current_blob": "73f11529116a283b372b7d108fee314da87575ac",
+      "covers": "module",
+      "reason": "harness.ts changed between 9fd2faa7 and C (K1.2). Top level: the type-only import gains OutcomeEnvelope and SubmissionGrant (erased), the own-array.ts import gains readAt (module already requested), and observer, submissionFor, unsafeDriver and outcomeFor are new function-valued declarations with no load-time effect. caller now adds controlScopes, a copy of scopes; the Kernel reads it only in requestTakeover, recoverExecution and reportProtocolFailure (coordinator.ts #requireControl), none of which this file calls. recordingDriver also records each submission grant through recordOwn and declares isSafeToReplace, which only takeover reads; the file still reads seen. Its one iterator-pollution window (line 797) uses the module-level author, built at load, so caller's new array spread never meets the hostile next; inherited-index traps cannot reach an own-array spread. The inputs and assertions of its literal-titled members are unchanged."
+    },
+    {
+      "id": "review.harness.inspection",
+      "origin": "artifact-a45b1c9d40d46e183ebd203d",
+      "module": "packages/kernel/tests/harness.ts",
+      "pin_blob": "9e1c9f2a0562fc5314ae8cb5793fe21e40d80328",
+      "current_blob": "73f11529116a283b372b7d108fee314da87575ac",
+      "covers": "module",
+      "reason": "harness.ts changed between 9fd2faa7 and C (K1.2). Top level: the type-only import gains OutcomeEnvelope and SubmissionGrant (erased), the own-array.ts import gains readAt (module already requested), and observer, submissionFor, unsafeDriver and outcomeFor are new function-valued declarations with no load-time effect. caller now adds controlScopes, a copy of scopes; the Kernel reads it only in requestTakeover, recoverExecution and reportProtocolFailure (coordinator.ts #requireControl), none of which this file calls. recordingDriver also records each submission grant through recordOwn and declares isSafeToReplace, which only takeover reads; the file still reads seen. It installs no iterator pollution; inherited-index traps cannot reach caller's own-array spread. The inputs and assertions of its literal-titled members are unchanged."
+    },
+    {
+      "id": "review.harness.receipts",
+      "origin": "artifact-f1a28bedebfe204b9687fa53",
+      "module": "packages/kernel/tests/harness.ts",
+      "pin_blob": "9e1c9f2a0562fc5314ae8cb5793fe21e40d80328",
+      "current_blob": "73f11529116a283b372b7d108fee314da87575ac",
+      "covers": "module",
+      "reason": "harness.ts changed between 9fd2faa7 and C (K1.2). Top level: the type-only import gains OutcomeEnvelope and SubmissionGrant (erased), the own-array.ts import gains readAt (module already requested), and observer, submissionFor, unsafeDriver and outcomeFor are new function-valued declarations with no load-time effect. caller now adds controlScopes, a copy of scopes; the Kernel reads it only in requestTakeover, recoverExecution and reportProtocolFailure (coordinator.ts #requireControl), none of which this file calls. recordingDriver also records each submission grant through recordOwn and declares isSafeToReplace, which only takeover reads; the file still reads seen. It installs no iterator pollution and no inherited-index trap. The inputs and assertions of its literal-titled members are unchanged."
+    }
+  ],
+  "members": [
+    "packages/kernel/tests/creation.test.ts:1009:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:1031:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:1058:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:106:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:124:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:147:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:165:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:202:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:216:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:230:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:238:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:251:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:300:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:309:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:333:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:35:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:362:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:415:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:441:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:487:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:503:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:516:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:546:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:579:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:605:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:630:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:65:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:742:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:76:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:823:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:85:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:883:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:922:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:944:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:958:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:979:3@088207d1ce86",
+    "packages/kernel/tests/creation.test.ts:98:3@088207d1ce86",
+    "packages/kernel/tests/evidence.test.ts:111:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:128:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:145:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:168:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:184:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:199:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:215:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:229:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:275:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:303:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:329:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:77:3@6f11f8b27115",
+    "packages/kernel/tests/evidence.test.ts:93:3@6f11f8b27115",
+    "packages/kernel/tests/ingress.test.ts:114:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:131:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:153:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:164:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:178:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:190:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:209:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:235:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:253:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:287:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:299:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:311:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:330:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:340:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:367:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:381:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:408:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:415:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:434:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:448:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:461:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:481:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:513:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:537:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:565:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:58:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:600:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:663:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:728:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:792:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:79:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:821:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:849:3@61e8bde54da2",
+    "packages/kernel/tests/ingress.test.ts:91:3@61e8bde54da2",
+    "packages/kernel/tests/inspection.test.ts:108:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:118:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:133:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:153:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:178:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:211:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:251:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:40:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:66:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:75:3@6975f64c51ef",
+    "packages/kernel/tests/inspection.test.ts:89:3@6975f64c51ef",
+    "packages/kernel/tests/receipts.test.ts:102:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:121:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:134:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:164:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:187:5@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:210:5@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:227:5@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:22:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:241:5@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:259:5@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:295:5@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:30:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:44:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:68:3@a0a1368492ff",
+    "packages/kernel/tests/receipts.test.ts:84:3@a0a1368492ff"
+  ],
+  "removed_witnesses": [
+    {
+      "id": "witness.creation.883.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:883:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: retry still replays and changed content still conflicts"
+    },
+    {
+      "id": "witness.creation.979.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:979:3@088207d1ce86"
+      ],
+      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: a revoked initialInput envelope is a located refusal"
+    },
+    {
+      "id": "witness.ingress.792.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:792:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: replay returns the retained disposition and changed content conflicts"
+    },
+    {
+      "id": "witness.ingress.849.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "Proxy",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:849:3@61e8bde54da2"
+      ],
+      "required_result": "Held for K1.1-correction-03 under Proxy: A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order. Test: an unreadable or absent ingress envelope answers as an unknown destination"
+    },
+    {
+      "id": "witness.inspection.178.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:178:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: inspect and visibleExecutions report the same facts with the accessor live as without it"
+    },
+    {
+      "id": "witness.inspection.211.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:211:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Serializer-window output independence, refusal or restoration under environment pollution: held by invalidation-03 for BINDING-01. Test: a refusal recorded under the accessor is still retained evidence a later read reports"
+    },
+    {
+      "id": "witness.inspection.251.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:251:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: inspect, redelivery and listings under live get/set pollution equal the unpolluted views"
+    },
+    {
+      "id": "witness.creation.333.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:333:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds assignment, delete in its run set; per-test classification is BINDING-01's. Test: K11-R2-VAL-02 creation under ambient toJSON still binds the retained payload and its replay"
+    },
+    {
+      "id": "witness.creation.516.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:516:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds assignment in its run set. Earlier reading, kept as a note for BINDING-01: An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector. Test: K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection"
+    },
+    {
+      "id": "witness.creation.1009.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:1009:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds assignment, delete in its run set; per-test classification is BINDING-01's. Test: ambient identity text cannot complete an empty creation envelope"
+    },
+    {
+      "id": "witness.ingress.461.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:461:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds assignment in its run set. Earlier reading, kept as a note for BINDING-01: An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector. Test: K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection"
+    },
+    {
+      "id": "witness.creation.35.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:35:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: creation binds every field in one decision and lands READY"
+    },
+    {
+      "id": "witness.creation.65.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:65:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the creation receipt names the creation boundary and covers its initial input"
+    },
+    {
+      "id": "witness.creation.76.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:76:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a creation the caller may not scope is refused and creates nothing"
+    },
+    {
+      "id": "witness.creation.85.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:85:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: creation content that is not a boundary value is refused, with the reason"
+    },
+    {
+      "id": "witness.creation.98.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:98:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: row 1: nothing committed, so the creation commits now"
+    },
+    {
+      "id": "witness.creation.106.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:106:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: rows 2 and 3: a retry returns the same Execution and the retained decision"
+    },
+    {
+      "id": "witness.creation.124.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:124:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: changing the content under one key is a conflict, not an update"
+    },
+    {
+      "id": "witness.creation.147.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:147:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: any changed part of the creation content conflicts, not only the input"
+    },
+    {
+      "id": "witness.creation.165.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:165:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: content equality is logical, so an honest re-serialization is still a replay"
+    },
+    {
+      "id": "witness.creation.202.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:202:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a second intentional run needs a fresh key, even with identical content"
+    },
+    {
+      "id": "witness.creation.216.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:216:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: another authenticated caller may use the same key text without colliding"
+    },
+    {
+      "id": "witness.creation.230.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:230:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the same caller's key text in two authority scopes names two requests"
+    },
+    {
+      "id": "witness.creation.238.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:238:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: no packing of the creation key's three parts can make two requests collide"
+    },
+    {
+      "id": "witness.creation.251.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:251:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R3-ID-02 an identity field that is not text is refused rather than packed into a colliding key"
+    },
+    {
+      "id": "witness.creation.300.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:300:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R3-ID-02 identity text is still held to the ordinary boundary-value rules"
+    },
+    {
+      "id": "witness.creation.309.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:309:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R3-ID-03 malformed scope is refused before authorization, well-formed unauthorized scope after"
+    },
+    {
+      "id": "witness.creation.487.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:487:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the payload cannot supply or change the producer namespace"
+    },
+    {
+      "id": "witness.creation.503.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:503:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: an Execution is invisible outside its authority scope, exactly as a missing one is"
+    },
+    {
+      "id": "witness.creation.579.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:579:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector. Test: K11-R2-VAL-02 what creation retained is exactly what its canonical identity described"
+    },
+    {
+      "id": "witness.creation.605.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:605:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation"
+    },
+    {
+      "id": "witness.creation.1058.3.088207d1ce86",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-6c57cc9dd8febdefa65ed496",
+        "artifact-febb180b453e17b8edab6893"
+      ],
+      "members": [
+        "packages/kernel/tests/creation.test.ts:1058:3@088207d1ce86"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: An ordinary object with a null or custom prototype; ordinary objects are not the held re-prototyped built-ins. Test: a field carried only by inheritance reads as missing"
+    },
+    {
+      "id": "witness.evidence.77.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:77:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the creation receipt is unchanged by editing the returned one, on replay and in inspection"
+    },
+    {
+      "id": "witness.evidence.93.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:93:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the ingress receipt is unchanged by editing the returned one"
+    },
+    {
+      "id": "witness.evidence.111.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:111:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the dispatch receipt is unchanged by editing the returned one, and redelivery returns the original"
+    },
+    {
+      "id": "witness.evidence.128.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:128:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: editing a receipt reached through inspection cannot reach the Execution either"
+    },
+    {
+      "id": "witness.evidence.145.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:145:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the retained mailbox disposition cannot be edited into a different disposition"
+    },
+    {
+      "id": "witness.evidence.168.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:168:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a recorded creation conflict is unchanged by editing the returned record"
+    },
+    {
+      "id": "witness.evidence.184.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:184:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a recorded ingress conflict is unchanged, and editing it invents no Execution"
+    },
+    {
+      "id": "witness.evidence.199.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:199:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: editing a refusal reached through inspection cannot reach the Execution"
+    },
+    {
+      "id": "witness.evidence.215.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:215:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a refusal that names no Execution is immutable too, and stays unrecorded"
+    },
+    {
+      "id": "witness.evidence.229.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:229:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: every evidence object any exposed path returns is immutable"
+    },
+    {
+      "id": "witness.evidence.275.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:275:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: evidence the Kernel retains and evidence it returns are the same object, safely"
+    },
+    {
+      "id": "witness.evidence.303.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:303:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the terminal vocabulary cannot be extended, emptied or re-spelled"
+    },
+    {
+      "id": "witness.evidence.329.3.6f11f8b27115",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-394a3572417fe81cafbd7097",
+        "artifact-41fff78d8c610a53b2aafa0e"
+      ],
+      "members": [
+        "packages/kernel/tests/evidence.test.ts:329:3@6f11f8b27115"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the published limits cannot be raised or lowered by a caller"
+    },
+    {
+      "id": "witness.ingress.58.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:58:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: acceptance records content, provenance, a mailbox entry and a position together"
+    },
+    {
+      "id": "witness.ingress.79.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:79:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a declared subscription class is retained as part of the immutable content"
+    },
+    {
+      "id": "witness.ingress.91.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:91:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: input that is not a boundary value is refused and queues nothing"
+    },
+    {
+      "id": "witness.ingress.114.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:114:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a payload exactly at a limit is accepted, and one unit over is refused"
+    },
+    {
+      "id": "witness.ingress.131.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:131:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the same holds at creation, for the initial input and the authority context alike"
+    },
+    {
+      "id": "witness.ingress.153.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:153:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a refusal locates the offending field by name"
+    },
+    {
+      "id": "witness.ingress.164.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:164:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: an exact replay returns the recorded disposition and creates no second Event"
+    },
+    {
+      "id": "witness.ingress.178.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:178:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a replay is decided by logical value, not by spelling"
+    },
+    {
+      "id": "witness.ingress.190.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:190:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: different content under an accepted identity is recorded and refused, and edits nothing"
+    },
+    {
+      "id": "witness.ingress.209.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:209:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R15-ID-01 the creation key text stays usable as a genuine ingress key"
+    },
+    {
+      "id": "witness.ingress.235.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:235:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R15-ID-01 different content under the creation key text is fresh ingress, not a conflict"
+    },
+    {
+      "id": "witness.ingress.253.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:253:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R15-ID-01 the new ingress row replays on its own receipt while creation retry still replays creation"
+    },
+    {
+      "id": "witness.ingress.287.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:287:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: two producers may use the same request-key text"
+    },
+    {
+      "id": "witness.ingress.299.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:299:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: one producer's key text to two Executions names two inputs"
+    },
+    {
+      "id": "witness.ingress.311.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:311:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R3-ID-02 a request key that is not text names nothing and is refused"
+    },
+    {
+      "id": "witness.ingress.330.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:330:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R3-ID-02 a destination that is not text answers as an unknown destination, disclosing nothing"
+    },
+    {
+      "id": "witness.ingress.340.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:340:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: no packing of the three parts can make two identities collide"
+    },
+    {
+      "id": "witness.ingress.367.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:367:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: an unknown destination and one the caller may not see answer identically"
+    },
+    {
+      "id": "witness.ingress.408.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:408:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a capacity below one is a configuration error, not a refusal to discover at runtime"
+    },
+    {
+      "id": "witness.ingress.415.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:415:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: capacity refuses ingress before any acknowledgment"
+    },
+    {
+      "id": "witness.ingress.434.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:434:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: input accepted while RUNNING is queued and stays out of the reserved batch"
+    },
+    {
+      "id": "witness.ingress.448.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:448:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: replay and conflict behave the same way while RUNNING as while READY"
+    },
+    {
+      "id": "witness.ingress.513.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:513:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R2-VAL-02 the accepted content, the replay decision and the exposed value are one structure"
+    },
+    {
+      "id": "witness.ingress.565.3.61e8bde54da2",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ecb10ef937e0612352e7c7ef"
+      ],
+      "members": [
+        "packages/kernel/tests/ingress.test.ts:565:3@61e8bde54da2"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing"
+    },
+    {
+      "id": "witness.inspection.40.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:40:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the snapshot carries every fact the packet accepts"
+    },
+    {
+      "id": "witness.inspection.66.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:66:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: reading twice changes nothing and reads the same"
+    },
+    {
+      "id": "witness.inspection.75.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:75:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: editing a returned view cannot reach the Execution"
+    },
+    {
+      "id": "witness.inspection.89.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:89:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: accepted content cannot be edited through the caller's own object either"
+    },
+    {
+      "id": "witness.inspection.108.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:108:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: inspection is scoped like every other read"
+    },
+    {
+      "id": "witness.inspection.118.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:118:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector. Test: K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound"
+    },
+    {
+      "id": "witness.inspection.133.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:133:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: An own data member named __proto__ on a plain JSON object; no exotic object, Proxy or serializer-environment vector. Test: K11-R2-VAL-02 inspection exposes the structure identity was taken from, twice over"
+    },
+    {
+      "id": "witness.inspection.153.3.6975f64c51ef",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-a45b1c9d40d46e183ebd203d",
+        "artifact-c65a82c89661d8cb815b5b1b"
+      ],
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:153:3@6975f64c51ef"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: visibleExecutions lists what this caller may reach, and nothing else"
+    },
+    {
+      "id": "witness.receipts.30.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:30:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a part that is not text is raised rather than packed into a colliding key"
+    },
+    {
+      "id": "witness.receipts.44.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:44:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: creation, ingress and dispatch intent each mint their own"
+    },
+    {
+      "id": "witness.receipts.68.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:68:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a receipt from one boundary can never be mistaken for another's"
+    },
+    {
+      "id": "witness.receipts.84.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:84:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: an exact replay returns the original token, at each boundary that can replay"
+    },
+    {
+      "id": "witness.receipts.102.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:102:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: every refusal mints none"
+    },
+    {
+      "id": "witness.receipts.121.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:121:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: an unauthorized caller cannot learn that an Execution exists"
+    },
+    {
+      "id": "witness.receipts.134.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:134:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: refusals that name no Execution advance nothing observable"
+    },
+    {
+      "id": "witness.receipts.164.3.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:164:3@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a caller that holds the scope sees the Execution and its receipts"
+    },
+    {
+      "id": "witness.receipts.187.5.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:187:5@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: The Proxy wraps an AuthenticatedCaller to count scope reads; it never reaches value capture. Test: inspect performs the same scope work for hidden and missing"
+    },
+    {
+      "id": "witness.receipts.210.5.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:210:5@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: The Proxy wraps an AuthenticatedCaller to count scope reads; it never reaches value capture. Test: equal work holds with many legitimate scopes and in both orders"
+    },
+    {
+      "id": "witness.receipts.227.5.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:227:5@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: The Proxy wraps an AuthenticatedCaller to count scope reads; it never reaches value capture. Test: scope work does not depend on where the match sits"
+    },
+    {
+      "id": "witness.receipts.241.5.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:241:5@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: The Proxy wraps an AuthenticatedCaller to count scope reads; it never reaches value capture. Test: single-ID lookup work does not depend on hidden-record population"
+    },
+    {
+      "id": "witness.receipts.259.5.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:259:5@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: The Proxy wraps an AuthenticatedCaller to count scope reads; it never reaches value capture. Test: ingress, dispatch and redelivery share the same normalized lookup"
+    },
+    {
+      "id": "witness.receipts.295.5.a0a1368492ff",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53"
+      ],
+      "members": [
+        "packages/kernel/tests/receipts.test.ts:295:5@a0a1368492ff"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: The Proxy wraps an AuthenticatedCaller to count scope reads; it never reaches value capture. Test: visibleExecutions does uniform per-record work and reveals only visible IDs"
+    }
+  ],
+  "origins": [
+    {
+      "id": "artifact-ce2e69842afb779a3e70c0f5",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Own __proto__ capture and retention is checked in the named K11-R1-VAL-01 value and creation cases.",
+        "targets": [
+          "suite.packages/kernel/tests/values.test.ts",
+          "suite.packages/kernel/tests/creation.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.creation.516.3.088207d1ce86"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.177.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.177.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.207.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.207.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.448.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.445.3.5a8d958ffdab"
+          }
+        ],
+        "context": [
+          {
+            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+            "path": "docs/development/work/K1.1/review-01.md",
+            "start": 53,
+            "end": 73
+          }
+        ],
+        "context_reasons": {
+          "mental-model/concepts/core.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+          "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+          "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+        }
+      }
+    },
+    {
+      "id": "artifact-70d6df0d9d69aeaa93cc8b66",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "The mutable returned receipt witness is retained in attempts to alter receipts/refusals followed by replay and inspection.",
+        "targets": [
+          "suite.packages/kernel/tests/evidence.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.77.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.168.3.6f11f8b27115"
+          }
+        ],
+        "context": [
+          {
+            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+            "path": "docs/development/work/K1.1/review-02.md",
+            "start": 120,
+            "end": 141
+          }
+        ],
+        "context_reasons": {
+          "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+          "packages/kernel/src/coordinator.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
+          "packages/kernel/src/identity.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+        }
+      }
+    },
+    {
+      "id": "artifact-6c57cc9dd8febdefa65ed496",
+      "state": "pending_revalidation",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/creation.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/creation.test.ts"
+        ]
+      }
+    },
+    {
+      "id": "artifact-394a3572417fe81cafbd7097",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/evidence.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/evidence.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.77.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.93.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.111.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.128.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.145.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.168.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.184.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.199.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.215.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.229.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.275.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.303.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.329.3.6f11f8b27115"
+          }
+        ],
+        "context": [
+          {
+            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+            "path": "packages/kernel/tests/evidence.test.ts",
+            "start": 1,
+            "end": 351
+          }
+        ],
+        "context_reasons": {
+          "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+        }
+      }
+    },
+    {
+      "id": "artifact-210dd0aaaf1f9edcdcaa0600",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/harness.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/harness.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "target",
+            "id": "target.values.151.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.171.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.459.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.505.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.512.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.523.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.543.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.554.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.580.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.651.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.refusals.18.3.39d0ccd292d8"
+          },
+          {
+            "kind": "target",
+            "id": "target.dispatch.1477.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.893.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.589.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.910.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.606.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.178.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.178.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.615.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.612.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1529.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1496.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1459.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.poison-catalog.291.3.46794b39598a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.creation.516.3.088207d1ce86"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.180.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.180.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.187.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.187.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.196.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.196.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.209.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.209.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.228.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.228.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.247.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.247.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.267.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.267.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.285.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.285.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.306.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.306.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.324.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.324.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.360.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.360.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.394.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.394.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.421.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.421.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.460.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.460.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.98.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.98.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.107.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.107.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.128.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.128.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.142.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.142.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.159.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.159.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.177.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.177.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.207.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.207.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.233.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.233.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.347.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.347.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.388.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.388.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.451.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.451.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.464.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.464.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.470.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.470.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.478.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.478.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.488.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.488.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.500.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.500.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.529.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.529.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.558.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.558.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.115.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.refusals.43.3.a948b4eead74"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.refusals.64.3.39d0ccd292d8"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.refusals.60.3.a948b4eead74"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.ingress.381.3.dfc5a87bbd90"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.112.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.112.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.135.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.135.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.157.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.157.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.199.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.199.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.209.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.209.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.233.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.233.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.294.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.291.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.335.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.332.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.354.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.351.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.416.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.413.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.448.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.445.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.468.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.465.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1078.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1073.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1341.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1314.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.66.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.265.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.281.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.372.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1064.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1099.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1113.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1131.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1152.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1184.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1222.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1269.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1302.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1358.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1428.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.takeover.140.3.27e29236797b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.77.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.168.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.aggregate-refusal.100.1.19af122ffc40"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.activation-identity.46.3.c2dec471ae59"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.exact-coordinates.17.3.e52b1010d0ae"
+          }
+        ],
+        "context": [
+          {
+            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+            "path": "packages/kernel/tests/harness.ts",
+            "start": 1,
+            "end": 445
+          }
+        ],
+        "context_reasons": {
+          "packages/kernel/src/own-array.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+        }
+      }
+    },
+    {
+      "id": "artifact-ecb10ef937e0612352e7c7ef",
+      "state": "pending_revalidation",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/ingress.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/ingress.test.ts"
+        ]
+      }
+    },
+    {
+      "id": "artifact-a45b1c9d40d46e183ebd203d",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/inspection.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/inspection.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.178.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.211.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.251.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.40.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.66.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.75.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.89.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.108.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.118.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.133.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.153.3.6975f64c51ef"
+          }
+        ],
+        "context": [
+          {
+            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+            "path": "packages/kernel/tests/inspection.test.ts",
+            "start": 1,
+            "end": 273
+          }
+        ],
+        "context_reasons": {}
+      }
+    },
+    {
+      "id": "artifact-f1a28bedebfe204b9687fa53",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/receipts.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/receipts.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.30.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.44.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.68.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.84.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.102.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.121.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.134.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.164.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.187.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.210.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.227.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.241.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.259.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.295.5.a0a1368492ff"
+          }
+        ],
+        "context": [
+          {
+            "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+            "path": "packages/kernel/tests/receipts.test.ts",
+            "start": 1,
+            "end": 311
+          }
+        ],
+        "context_reasons": {
+          "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+        }
+      }
+    },
+    {
+      "id": "artifact-41fff78d8c610a53b2aafa0e",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/evidence.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/evidence.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.77.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.93.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.111.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.128.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.145.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.168.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.184.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.199.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.215.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.229.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.275.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.303.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.329.3.6f11f8b27115"
+          }
+        ],
+        "context": [
+          {
+            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+            "path": "packages/kernel/tests/evidence.test.ts",
+            "start": 1,
+            "end": 351
+          }
+        ],
+        "context_reasons": {
+          "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+        }
+      }
+    },
+    {
+      "id": "artifact-0f12d86d31f51cf923cb05e8",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/harness.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/harness.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "target",
+            "id": "target.values.151.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.171.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.459.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.505.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.512.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.523.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.543.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.554.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.580.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.values.651.3.fb228bec8c58"
+          },
+          {
+            "kind": "target",
+            "id": "target.refusals.18.3.39d0ccd292d8"
+          },
+          {
+            "kind": "target",
+            "id": "target.dispatch.1477.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.893.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.589.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.910.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.606.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.178.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.178.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.615.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.612.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1529.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1496.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1459.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.poison-catalog.291.3.46794b39598a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.creation.516.3.088207d1ce86"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.180.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.180.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.187.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.187.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.196.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.196.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.209.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.209.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.228.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.228.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.247.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.247.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.267.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.267.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.285.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.285.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.306.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.306.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.324.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.324.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.360.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.360.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.394.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.394.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.421.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.421.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.460.3.4976648bb62a"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.nondisclosure.460.3.f61e9117877b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.98.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.98.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.107.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.107.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.128.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.128.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.142.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.142.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.159.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.159.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.177.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.177.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.207.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.207.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.233.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.233.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.347.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.347.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.388.5.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.388.5.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.451.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.451.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.464.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.464.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.470.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.470.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.478.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.478.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.488.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.488.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.500.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.500.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.529.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.529.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.558.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.558.3.fb228bec8c58"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.values.115.3.44b00a5bd3f1"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.refusals.43.3.a948b4eead74"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.refusals.64.3.39d0ccd292d8"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.refusals.60.3.a948b4eead74"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.ingress.381.3.dfc5a87bbd90"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.112.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.112.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.135.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.135.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.157.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.157.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.199.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.199.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.209.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.209.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.233.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.233.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.294.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.291.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.335.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.332.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.354.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.351.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.416.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.413.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.448.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.445.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.468.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.465.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1078.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1073.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1341.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1314.3.5a8d958ffdab"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.66.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.265.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.281.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.372.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1064.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1099.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1113.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1131.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1152.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1184.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1222.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1269.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1302.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1358.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.dispatch.1428.3.41092809bb04"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.takeover.140.3.27e29236797b"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.77.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.evidence.168.3.6f11f8b27115"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.aggregate-refusal.100.1.19af122ffc40"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.activation-identity.46.3.c2dec471ae59"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.exact-coordinates.17.3.e52b1010d0ae"
+          }
+        ],
+        "context": [
+          {
+            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+            "path": "packages/kernel/tests/harness.ts",
+            "start": 1,
+            "end": 584
+          }
+        ],
+        "context_reasons": {
+          "packages/kernel/src/own-array.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+        }
+      }
+    },
+    {
+      "id": "artifact-c65a82c89661d8cb815b5b1b",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/inspection.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/inspection.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.178.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.211.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.251.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.40.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.66.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.75.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.89.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.108.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.118.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.133.3.6975f64c51ef"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.inspection.153.3.6975f64c51ef"
+          }
+        ],
+        "context": [
+          {
+            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+            "path": "packages/kernel/tests/inspection.test.ts",
+            "start": 1,
+            "end": 273
+          }
+        ],
+        "context_reasons": {}
+      }
+    },
+    {
+      "id": "artifact-b303eed73b3e154fe6365c09",
+      "state": "complete",
+      "legacy": {
+        "status": "suite",
+        "rationale": "Maintained source packages/kernel/tests/receipts.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
+        "targets": [
+          "suite.packages/kernel/tests/receipts.test.ts"
+        ]
+      },
+      "closure": {
+        "links": [
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.30.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.44.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.68.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.84.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.102.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.121.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.134.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.164.3.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.187.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.210.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.227.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.241.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.259.5.a0a1368492ff"
+          },
+          {
+            "kind": "counterexample",
+            "id": "witness.receipts.295.5.a0a1368492ff"
+          }
+        ],
+        "context": [
+          {
+            "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+            "path": "packages/kernel/tests/receipts.test.ts",
+            "start": 1,
+            "end": 311
+          }
+        ],
+        "context_reasons": {
+          "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+        }
+      }
+    }
+  ],
+  "already_transferred": [
+    "artifact-6c57cc9dd8febdefa65ed496",
+    "artifact-ecb10ef937e0612352e7c7ef"
+  ],
+  "newly_transferred": [
+    "artifact-0f12d86d31f51cf923cb05e8",
+    "artifact-210dd0aaaf1f9edcdcaa0600",
+    "artifact-394a3572417fe81cafbd7097",
+    "artifact-41fff78d8c610a53b2aafa0e",
+    "artifact-70d6df0d9d69aeaa93cc8b66",
+    "artifact-a45b1c9d40d46e183ebd203d",
+    "artifact-b303eed73b3e154fe6365c09",
+    "artifact-c65a82c89661d8cb815b5b1b",
+    "artifact-ce2e69842afb779a3e70c0f5",
+    "artifact-f1a28bedebfe204b9687fa53"
+  ]
+}

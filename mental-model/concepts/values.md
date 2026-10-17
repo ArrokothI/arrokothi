@@ -202,7 +202,12 @@ grows with a length charges that length. A string is charged before it is scanne
 listing is charged as soon as it returns. The budget `B` is derived from the four limits: it is at
 least the number of units any value within them consumes when it is accepted. So the meter never
 refuses a valid value, and the four limits alone still decide validity. Once a root's meter passes
-`B`, capture stops reading that root and refuses it. Refusing a root therefore costs at most `B`
+`B`, capture stops reading that root and refuses it. A stop is distinct from an ordinary refusal
+that permits the next sibling. Every active capture frame propagates the stop before another
+observation, snapshot write, pending-list allocation or finish operation. Only the crossing operation's
+fixed accounting, one bounded stop issue, paired cycle unwind and fixed root refusal packaging remain.
+The binding must keep that stop result distinct from every accepted value, including `false` and
+`null`. Refusing a root therefore costs at most `B`
 units plus the one operation that crossed it, which is no more than an acceptance at the limits may
 cost. The same holds for every root a request carries, including roots captured before the request's
 authority is decided. Each root has its own budget, and no aggregate budget applies. Timing and heap

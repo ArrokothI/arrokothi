@@ -1,7 +1,13 @@
 {
   "version": 1,
   "source_trees": [
-    "packages/kernel/src"
+    "packages/agents/strands/src",
+    "packages/core/src",
+    "packages/interoperability/mcp/src",
+    "packages/kernel/src",
+    "packages/models/gemini/src",
+    "packages/retrieval/local/src",
+    "packages/sdk/src"
   ],
   "files": [
     "package.json",
@@ -24,7 +30,12 @@
     "packages/kernel/tests/value-diagnostic-work.test.ts",
     "packages/kernel/tests/value-refusal-cost.test.ts",
     "packages/kernel/tests/values.test.ts",
-    "packages/kernel/tests/zone-analysis.ts"
+    "packages/kernel/tests/zone-analysis.ts",
+    "tests/tooling/capture-trace.mjs",
+    "tests/tooling/capture-continuations.mjs",
+    "tests/tooling/capture-trace-controls.mjs",
+    "tests/fixtures/packet-tools/capture-trace-sites.json",
+    "tests/fixtures/packet-tools/capture-trace-controls.json"
   ],
   "dependencies": [
     {
@@ -241,7 +252,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -251,69 +264,69 @@
         "value-cost.unit-table"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-d726935886bfa5c121a916fc19db61ab8c3adcc55fb8afb0abc8eb999331d737",
+          "id": "mutation-01432dd09be824762c9a2984a50e6fd59ee5e5fb5b633e1153c05b3dde68e25f",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"visit\", 1)) return STOPPED;\n  if (value === null)",
+          "before": "  if (spend(state, \"visit\", 1) === STOPPED) return STOPPED;\n  if (value === null)",
           "after": "  if (value === null)",
           "operator": "remove-work-charge",
           "name": "visit unit uncharged"
         },
         {
-          "id": "mutation-3b349c1a39fac137c3b5356bb578f1aa44e63eff20d09d6db9e0df9744897a82",
+          "id": "mutation-4c9ded744fbd7e6a46ae482d65f19d642cec88e67d1106f43dbd0fe429d424ce",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"element\", 1)) return STOPPED;\n",
+          "before": "  if (spend(state, \"element\", 1) === STOPPED) return STOPPED;\n",
           "after": "",
           "operator": "remove-work-charge",
           "name": "element unit uncharged"
         },
         {
-          "id": "mutation-f468b392f6d90d88119f7d16e294d6cef8e33d8fd8d18b4eadf4d046c49180a0",
+          "id": "mutation-f0e6d53dd15474fa31a696bb101c95a25caf7abc82f64a22e156d947cae520cb",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"descriptor\", 1)) return STOPPED;\n",
+          "before": "  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n",
           "after": "",
           "operator": "remove-work-charge",
           "name": "descriptor unit uncharged"
         },
         {
-          "id": "mutation-ff7d20a2aeaac8e3bbe84a64d54369b24148f3ea5d39fcf17e823e6ba63f07fb",
+          "id": "mutation-e68dfa0676baa6306210b620a8861b56f6b9cfc5a2b205189d48f0a711af61c6",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"read\", 1)) return STOPPED;\n",
+          "before": "  if (spend(state, \"read\", 1) === STOPPED) return STOPPED;\n",
           "after": "",
           "operator": "remove-work-charge",
           "name": "read unit uncharged"
         },
         {
-          "id": "mutation-5c07839fd30eb4398aa089e8b320df7973ed88c81c185d34b025c152743ffa92",
+          "id": "mutation-82437f2d3d864820d1c75b09bca5f59f8d42c4402905d048afb1a02e0aac34cc",
           "path": "packages/kernel/src/values.ts",
-          "before": "if (!spend(state, \"string\", units)) return STOPPED;",
-          "after": "if (!spend(state, \"string\", 1)) return STOPPED;",
+          "before": "if (spend(state, \"string\", units) === STOPPED) return STOPPED;",
+          "after": "if (spend(state, \"string\", 1) === STOPPED) return STOPPED;",
           "operator": "weaken-work-charge",
           "name": "string units charged as one"
         },
         {
-          "id": "mutation-88dbdbd66dad8a14034989e5bf83526aaf6b2ce9a1b3447136cf4bbe8e494a7d",
+          "id": "mutation-996989c28fd50c0e3df92d435d2b9441ade873a411c0eab3ce58a18fc1ca17ef",
           "path": "packages/kernel/src/values.ts",
-          "before": "return spend(state, \"listing\", 1 + names.length) ? names : STOPPED;",
-          "after": "return spend(state, \"listing\", 1) ? names : STOPPED;",
+          "before": "return spend(state, \"listing\", 1 + names.length) === STOPPED ? STOPPED : names;",
+          "after": "return spend(state, \"listing\", 1) === STOPPED ? STOPPED : names;",
           "operator": "weaken-work-charge",
           "name": "names listing charged as one"
         },
         {
-          "id": "mutation-b37f7a08d69bcc13c3787481c7a8af40548dbf6df0503a6c5f3f2aa4d639ebdb",
+          "id": "mutation-1c1d9e945e98fb1c981a0c1637e9bf3448a63276d799820347b17873c8ebd973",
           "path": "packages/kernel/src/values.ts",
-          "before": "return spend(state, \"listing\", 1 + symbols.length) ? symbols.length : STOPPED;",
-          "after": "return spend(state, \"listing\", 1) ? symbols.length : STOPPED;",
+          "before": "return spend(state, \"listing\", 1 + symbols.length) === STOPPED ? STOPPED : symbols.length;",
+          "after": "return spend(state, \"listing\", 1) === STOPPED ? STOPPED : symbols.length;",
           "operator": "weaken-work-charge",
           "name": "symbols listing charged as one"
         },
         {
-          "id": "mutation-2f2e957da4e3f66d482649f832f1c252a0feecd7851b99ee6a640ae41fe1c1eb",
+          "id": "mutation-15807e9811bf472bd90d1b9c8e40de54e58d77c03563b7fdcfbff8368dd55186",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"diagnostic\", 1)) return false;\n  pushIssue(state.issues, issue);",
+          "before": "  if (spend(state, \"diagnostic\", 1) === STOPPED) return STOPPED;\n  pushIssue(state.issues, issue);",
           "after": "  pushIssue(state.issues, issue);",
           "operator": "remove-work-charge",
           "name": "diagnostic unit uncharged"
@@ -348,7 +361,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -358,7 +373,7 @@
         "value-cost.budget"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -415,7 +430,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -425,7 +442,7 @@
         "value-cost.depth"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -469,7 +486,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -479,7 +498,7 @@
         "value-cost.oracle"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -521,7 +540,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -531,7 +552,7 @@
         "value-cost.static"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -543,10 +564,10 @@
           "name": "SC1 element observed by a direct descriptor call"
         },
         {
-          "id": "mutation-acde38e0ac9937ac6d161c04944a8f1816d5ea5caf74125e2a661ed365a9d704",
+          "id": "mutation-04adf5dba261f3b3110cce5a6c5e6742125dc313bf15cce0641ca0fe012c6a55",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"descriptor\", 1)) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
-          "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, name);\n  if (!spend(state, \"descriptor\", 1)) return STOPPED;\n  return descriptor;",
+          "before": "  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
+          "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, name);\n  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return descriptor;",
           "operator": "charge-after-work",
           "name": "SC2 descriptor helper observes before charging"
         },
@@ -631,18 +652,18 @@
           "name": "SC9 diagnostic text loop without its cap"
         },
         {
-          "id": "mutation-29317a4c6578a4afff9b4b2caf0f75e5690b84a81f47202afffe7757c3687b15",
+          "id": "mutation-3f5cf1bb10c7d4a7454265b4595a0c3a9ab4426bf05d519c00553472c8e399cf",
           "path": "packages/kernel/src/values.ts",
-          "before": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return STOPPED;",
+          "before": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
           "after": "    record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" });",
           "operator": "drop-stop-propagation",
           "name": "SC10 symbol diagnostic whose stop is not propagated (review 01 KC3-R1-STOP-01 site, one layer)"
         },
         {
-          "id": "mutation-3bb8ce5a1dafe27d1d7e9434f4c8dd12b68c5d27d0b06deccff0057eefad222a",
+          "id": "mutation-db66e794507d73bb1f88c8b9c5f06d72b7ed22a576cb6a862ebb02c848413ef8",
           "path": "packages/kernel/src/values.ts",
-          "before": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return STOPPED;",
-          "after": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return REFUSED;",
+          "before": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
+          "after": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return REFUSED;",
           "operator": "drop-stop-propagation",
           "name": "SC10 symbol diagnostic whose stop branch returns REFUSED"
         },
@@ -655,17 +676,17 @@
           "name": "SC10 nested stop folded into a refused element"
         },
         {
-          "id": "mutation-e8b246ccba34a523ce05c95232ff33905d905cf44e33433dc808202dd885d92d",
+          "id": "mutation-cf9d870ccc6491bb5382cd1ebaf9bc40039e25ab31ecf88d26a1f4ad5aaf8928",
           "path": "packages/kernel/src/values.ts",
-          "before": "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) ? REFUSED : STOPPED);",
+          "before": "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) === STOPPED ? STOPPED : REFUSED);",
           "after": "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue), REFUSED);",
           "operator": "drop-stop-propagation",
           "name": "SC10 terminal refusal that drops its diagnostic stop"
         },
         {
-          "id": "mutation-f25c1ea7b3f4d3ce0455f50dc906b7cf9a988f51da025e5c8abb5d0ecdc4a44a",
+          "id": "mutation-d5571a24a32cb37139bf9408147a6ee36a801cb9339cb2646e34c870fd57719f",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
+          "before": "  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "after": "  charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount);",
           "operator": "drop-stop-propagation",
           "name": "SC10 failed array structure charge not propagated"
@@ -693,6 +714,55 @@
           "after": "  let refused = false;\n  state.stopped = false;\n  const symbolCount = listOwnSymbols(state, container);",
           "operator": "stale-stop-state",
           "name": "SC11 stop state reset outside spend and charge"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-null-stop-substitution",
+          "path": "packages/kernel/src/values.ts",
+          "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+          "after": "if (value === null) return charge(state, 4) === STOPPED ? null : null;",
+          "id": "mutation-11af9458ea7fafdfbc1795a6ed4e4c90791ba505ba7449f20b4ce46ef2028af6"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-false-stop-substitution",
+          "path": "packages/kernel/src/values.ts",
+          "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+          "after": "if (value === null) return charge(state, 4) === STOPPED ? false : null;",
+          "id": "mutation-fe8e6d6b7da1c3a5d51ef4a12cdac63b984e07e1a6ce75d550c09a949da64006"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-nested-return-ignored",
+          "path": "packages/kernel/src/values.ts",
+          "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+          "after": "if (value === null) { const paid = (): true | typeof STOPPED => charge(state, 4); paid(); return null; }",
+          "id": "mutation-1973c25858596cb6d5e2082e469a446c526ec2924765dcedf90774b1789a353f"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-class-return-ignored",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+              "after": "if (value === null) { ReviewNullCharge.capture(state); return null; }"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "export const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;",
+              "after": "\nclass ReviewNullCharge { static capture(state: CaptureState): Visited { return charge(state, 4) === STOPPED ? STOPPED : null; } }\n\nexport const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;"
+            }
+          ],
+          "id": "mutation-92a3e0048519428178a1a81a4b37a0d181e88ee108206e827d7082f082c7db4e"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-boolean-stop-substitution",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? STOPPED : value;",
+          "after": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? false : value;",
+          "id": "mutation-c8a1510276c8d0df885f633ea954a68c3ac588294fe7df98b5b0e3dfcb7f4880"
         }
       ]
     },
@@ -708,7 +778,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -718,7 +790,7 @@
         "value-cost.byte-charges"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -762,33 +834,33 @@
           "name": "object symbols uncharged"
         },
         {
-          "id": "mutation-8b507339ab4747cb5183c87c48fb95bb3856df616d709d9b853fa0a88dde7ccd",
+          "id": "mutation-0a1b3e8d49f38620ceab9071fae3f50f6f79799469cf62ec1f3add845e11286d",
           "path": "packages/kernel/src/values.ts",
-          "before": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" })) return STOPPED;\n      return charge(state, value.length) ? REFUSED : STOPPED;",
-          "after": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" })) return STOPPED;\n      return REFUSED;",
+          "before": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" }) === STOPPED) return STOPPED;\n      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;",
+          "after": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" }) === STOPPED) return STOPPED;\n      return REFUSED;",
           "operator": "remove-work-charge",
           "name": "lone-surrogate string uncharged"
         },
         {
-          "id": "mutation-602ef1fd35f4628103845c354ada5cccddbdcad8e67d0d5ca8f4efaf66f90b00",
+          "id": "mutation-30b14fab5f514513572177d5eeafb6bdf07fe7cbe6fb2eb85911c75fe891ba15",
           "path": "packages/kernel/src/values.ts",
-          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) ? REFUSED : STOPPED;",
+          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;",
           "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return REFUSED;",
           "operator": "remove-work-charge",
           "name": "overlong string uncharged"
         },
         {
-          "id": "mutation-d2a6549c96e2f3a131adc4f9af9271abf6d6cff5b6ba39e5e43dae2b4d740608",
+          "id": "mutation-bc4d1ac4528be780c38f439a17e7db30059eaf870296fb5cd09c911cd02e12c7",
           "path": "packages/kernel/src/values.ts",
-          "before": "message: \"member name contains an unpaired surrogate\" })) return STOPPED;\n      refused = true;\n      if (!charge(state, key.length)) return STOPPED;",
-          "after": "message: \"member name contains an unpaired surrogate\" })) return STOPPED;\n      refused = true;",
+          "before": "message: \"member name contains an unpaired surrogate\" }) === STOPPED) return STOPPED;\n      refused = true;\n      if (charge(state, key.length) === STOPPED) return STOPPED;",
+          "after": "message: \"member name contains an unpaired surrogate\" }) === STOPPED) return STOPPED;\n      refused = true;",
           "operator": "remove-work-charge",
           "name": "lone-surrogate member name uncharged"
         },
         {
-          "id": "mutation-8c6d9aa774fdb26e8c026c07a4aebf95e68c4b415cb76d134a21f88644abc084",
+          "id": "mutation-54a190a0d784c0c00db0b525706b6db6aedbb30d1561e26eb4507c516e2106f5",
           "path": "packages/kernel/src/values.ts",
-          "before": "      refused = true;\n      if (!charge(state, key.length)) return STOPPED;\n      continue;\n    }\n    // The member name",
+          "before": "      refused = true;\n      if (charge(state, key.length) === STOPPED) return STOPPED;\n      continue;\n    }\n    // The member name",
           "after": "      refused = true;\n      continue;\n    }\n    // The member name",
           "operator": "remove-work-charge",
           "name": "overlong member name uncharged"
@@ -815,7 +887,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -825,7 +899,7 @@
         "value-cost.proxy"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -914,7 +988,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -924,7 +1000,7 @@
         "value-cost.brands"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -1110,7 +1186,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -1120,7 +1198,7 @@
         "value-cost.order"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -1145,7 +1223,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -1155,11 +1235,11 @@
         "value-cost.stop"
       ],
       "timeout_seconds": 300,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-90d8e3e3494bb4d9e7e3405702532be9a0cc6a3fb96c0dd2763a442de3ceaab3",
+          "id": "mutation-da2335586dd217d365a2be87c2024e416869e59eee812455a7434531d0d5613a",
           "edits": [
             {
               "path": "packages/kernel/src/values.ts",
@@ -1168,7 +1248,7 @@
             },
             {
               "path": "packages/kernel/src/values.ts",
-              "before": "    if (!record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" })) return STOPPED;",
+              "before": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
               "after": "    record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" });"
             }
           ],
@@ -1176,11 +1256,11 @@
           "name": "H's shape: an unpropagated symbol diagnostic and an ungated names listing (review 01 KC3-R1-STOP-01)"
         },
         {
-          "id": "mutation-255713900201f172147d102295628af66f961d74754f3fea669f471ba87204ec",
+          "id": "mutation-44efa86cdfc0230e0b3cb68917f1d91c8cc78c02753401b0eb39c087b2a81c0a",
           "edits": [
             {
               "path": "packages/kernel/src/values.ts",
-              "before": "  if (!spend(state, \"diagnostic\", 1)) return false;\n  pushIssue(state.issues, issue);\n  return true;",
+              "before": "  if (spend(state, \"diagnostic\", 1) === STOPPED) return STOPPED;\n  pushIssue(state.issues, issue);\n  return true;",
               "after": "  if (spend(state, \"diagnostic\", 1)) pushIssue(state.issues, issue);\n  return true;"
             },
             {
@@ -1193,18 +1273,18 @@
           "name": "a diagnostic that always reports success and an ungated names listing"
         },
         {
-          "id": "mutation-71523b6f66ad66a82b3f2f05cb326174856324eedce862ec986536b7c9f82850",
+          "id": "mutation-0d318c5b20e46d76f68363203630d030efa88e884a39a236596b656e96a605a4",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"element\", 1)) return STOPPED;\n  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);",
-          "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  if (!spend(state, \"element\", 1)) return STOPPED;",
+          "before": "  if (spend(state, \"element\", 1) === STOPPED) return STOPPED;\n  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);",
+          "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  if (spend(state, \"element\", 1) === STOPPED) return STOPPED;",
           "operator": "post-stop-observation",
           "name": "an element descriptor taken before its charge (late charge)"
         },
         {
-          "id": "mutation-ea3ea93d529841c571d4be8a4104c0e60c9096049eb9ddce1dc9bf44644b7305",
+          "id": "mutation-f00e95167c4b271ffeae037a640cd3df050bd4fd12d666a53520a4f19b71eccf",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!spend(state, \"descriptor\", 1)) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
-          "after": "  const observed = PrimordialGetOwnPropertyDescriptor(container, name);\n  if (!spend(state, \"descriptor\", 1)) return STOPPED;\n  return observed;",
+          "before": "  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
+          "after": "  const observed = PrimordialGetOwnPropertyDescriptor(container, name);\n  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return observed;",
           "operator": "post-stop-observation",
           "name": "a member descriptor taken before its charge (late charge)"
         }
@@ -1222,7 +1302,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -1232,7 +1314,7 @@
         "value-cost.c1.creation"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -1427,7 +1509,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -1437,7 +1521,7 @@
         "value-cost.c1.dispatch"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -1511,7 +1595,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -1521,7 +1607,7 @@
         "value-cost.c1.ingress"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -1676,7 +1762,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -1686,7 +1774,7 @@
         "value-cost.c1.outcome-hostile"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -1752,7 +1840,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -1762,19 +1852,19 @@
         "value-cost.c1.value-diagnostic-work"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-ae88c9fe0575b01596e36221a9b9da4055f755abceaccaa242c8fee3ce355f07",
+          "id": "mutation-ff675ff92f19a46f20d7f2656e05b84b01af854c1191634301cd1c6b05b5e674",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
-          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
+          "before": "  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
+          "after": "  if (charge(state, (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "operator": "c1-ablation",
           "name": "COST-array-structure-charge-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-7960fc44ab1bb6399423b4327cf960b29f7a67df708fbb7c7b0b01162e139e1e",
+          "id": "mutation-664cd6978e87bdaf0fe707c41a19c6d0f1b516121492146663623f3476388047",
           "edits": [
             {
               "path": "packages/kernel/src/values.ts",
@@ -1783,7 +1873,7 @@
             },
             {
               "path": "packages/kernel/src/values.ts",
-              "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return false;",
+              "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return STOPPED;",
               "after": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return true;"
             }
           ],
@@ -1791,9 +1881,9 @@
           "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the value-diagnostic-work converted tests at B and at C); at this C both the stop flag and the charge's reported stop, because stop propagation (KC3-R1-STOP-01) makes the flag alone redundant"
         },
         {
-          "id": "mutation-302be644b3c6a1f21498c0f0cc888344da769e6bab8d86c4c3b0d3836d6257be",
+          "id": "mutation-c94bd37d059c3c18a0a698bc93f1f047459238941a449d73305b9a3c32b4a951",
           "path": "packages/kernel/src/values.ts",
-          "before": "    return charge(state, scan.bytes) ? value : STOPPED;",
+          "before": "    return charge(state, scan.bytes) === STOPPED ? STOPPED : value;",
           "after": "    return value;",
           "operator": "c1-ablation",
           "name": "COST-string-bytes-uncharged (C1: killed by the value-diagnostic-work converted tests at B and at C)"
@@ -2014,7 +2104,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -2024,7 +2116,7 @@
         "value-cost.c1.value-refusal-cost"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
@@ -2300,7 +2392,9 @@
       "files": [
         "tests/tooling/value-cost-probe.mjs",
         "tests/tooling/value-cost-witness.mjs",
-        "tests/tooling/value-cost-reporter.mjs"
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
       ],
       "argv": [
         "node",
@@ -2310,19 +2404,19 @@
         "value-cost.c1.values"
       ],
       "timeout_seconds": 180,
-      "output_limit_bytes": 32768,
+      "output_limit_bytes": 1048576,
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-ae88c9fe0575b01596e36221a9b9da4055f755abceaccaa242c8fee3ce355f07",
+          "id": "mutation-ff675ff92f19a46f20d7f2656e05b84b01af854c1191634301cd1c6b05b5e674",
           "path": "packages/kernel/src/values.ts",
-          "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
-          "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return STOPPED;",
+          "before": "  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
+          "after": "  if (charge(state, (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "operator": "c1-ablation",
           "name": "COST-array-structure-charge-dropped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-7960fc44ab1bb6399423b4327cf960b29f7a67df708fbb7c7b0b01162e139e1e",
+          "id": "mutation-664cd6978e87bdaf0fe707c41a19c6d0f1b516121492146663623f3476388047",
           "edits": [
             {
               "path": "packages/kernel/src/values.ts",
@@ -2331,7 +2425,7 @@
             },
             {
               "path": "packages/kernel/src/values.ts",
-              "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return false;",
+              "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return STOPPED;",
               "after": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return true;"
             }
           ],
@@ -2371,17 +2465,17 @@
           "name": "COST-phantom-scan-not-bounded (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-08d73b5737d6162172e66833f59e7fa5ed11d1c439cba0872a16d8df1e3f2ed2",
+          "id": "mutation-a15a74f5b0eec46a5e283449c00c5c76ada5f0bbd1105bb52a560e2b531e948c",
           "path": "packages/kernel/src/values.ts",
-          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) ? REFUSED : STOPPED;\n",
+          "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;\n",
           "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return REFUSED;\n",
           "operator": "c1-ablation",
           "name": "COST-refused-string-uncharged (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-302be644b3c6a1f21498c0f0cc888344da769e6bab8d86c4c3b0d3836d6257be",
+          "id": "mutation-c94bd37d059c3c18a0a698bc93f1f047459238941a449d73305b9a3c32b4a951",
           "path": "packages/kernel/src/values.ts",
-          "before": "    return charge(state, scan.bytes) ? value : STOPPED;",
+          "before": "    return charge(state, scan.bytes) === STOPPED ? STOPPED : value;",
           "after": "    return value;",
           "operator": "c1-ablation",
           "name": "COST-string-bytes-uncharged (C1: killed by the values converted tests at B and at C)"
@@ -2755,6 +2849,101 @@
           "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}",
           "operator": "c1-ablation",
           "name": "VAL-snapshot-rereads-caller (C1: killed by the values converted tests at B and at C)"
+        }
+      ]
+    },
+    {
+      "id": "value-cost.bookkeeping-trace",
+      "category": "value-cost",
+      "assertion": "value-cost.bookkeeping-trace.selected-tests",
+      "source": "review-02 stop-corpus, stop-guard and stop-forms; design-03 single-sentinel analogues, unchanged-result continuations",
+      "input": {
+        "file": "packages/kernel/tests/capture-stop.test.ts",
+        "pattern": "the declared small continuation subset has no work after a stop"
+      },
+      "files": [
+        "tests/tooling/value-cost-probe.mjs",
+        "tests/tooling/value-cost-witness.mjs",
+        "tests/tooling/value-cost-reporter.mjs",
+        "tests/tooling/value-cost-source-policy.mjs",
+        "tests/fixtures/packet-tools/value-cost-source-files.json"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/value-cost-probe.mjs",
+        "value-cost.bookkeeping-trace"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-null-stop-substitution",
+          "path": "packages/kernel/src/values.ts",
+          "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+          "after": "if (value === null) return charge(state, 4) === STOPPED ? null : null;",
+          "id": "mutation-11af9458ea7fafdfbc1795a6ed4e4c90791ba505ba7449f20b4ce46ef2028af6"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-false-stop-substitution",
+          "path": "packages/kernel/src/values.ts",
+          "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+          "after": "if (value === null) return charge(state, 4) === STOPPED ? false : null;",
+          "id": "mutation-fe8e6d6b7da1c3a5d51ef4a12cdac63b984e07e1a6ce75d550c09a949da64006"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-nested-return-ignored",
+          "path": "packages/kernel/src/values.ts",
+          "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+          "after": "if (value === null) { const paid = (): true | typeof STOPPED => charge(state, 4); paid(); return null; }",
+          "id": "mutation-1973c25858596cb6d5e2082e469a446c526ec2924765dcedf90774b1789a353f"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-class-return-ignored",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+              "after": "if (value === null) { ReviewNullCharge.capture(state); return null; }"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "export const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;",
+              "after": "\nclass ReviewNullCharge { static capture(state: CaptureState): Visited { return charge(state, 4) === STOPPED ? STOPPED : null; } }\n\nexport const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;"
+            }
+          ],
+          "id": "mutation-92a3e0048519428178a1a81a4b37a0d181e88ee108206e827d7082f082c7db4e"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-alias-false",
+          "edits": [
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+              "after": "if (value === null) return reviewNullCharge(state, 4) === STOPPED ? false : null;"
+            },
+            {
+              "path": "packages/kernel/src/values.ts",
+              "before": "export const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;",
+              "after": "\nconst reviewNullCharge = charge;\n\nexport const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;"
+            }
+          ],
+          "id": "mutation-b7db06af252ed24445f6db5dd066138c1cb0d8aabfb63050d349f353129a1ef9"
+        },
+        {
+          "operator": "design03-stop-analogue",
+          "name": "review02-boolean-stop-substitution",
+          "path": "packages/kernel/src/values.ts",
+          "before": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? STOPPED : value;",
+          "after": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? false : value;",
+          "id": "mutation-c8a1510276c8d0df885f633ea954a68c3ac588294fe7df98b5b0e3dfcb7f4880"
         }
       ]
     }

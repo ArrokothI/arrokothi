@@ -36,20 +36,20 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC2",
       name: "a descriptor helper that no longer charges",
-      before: '  if (!spend(state, "descriptor", 1)) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);',
+      before: "  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
       after: "  return PrimordialGetOwnPropertyDescriptor(container, name);",
     },
     {
       rule: "SC2",
       name: "a names listing charged a constant instead of its length",
-      before: '  return spend(state, "listing", 1 + names.length) ? names : STOPPED;',
-      after: '  return spend(state, "listing", 1) ? names : STOPPED;',
+      before: "  return spend(state, \"listing\", 1 + names.length) === STOPPED ? STOPPED : names;",
+      after: "  return spend(state, \"listing\", 1) === STOPPED ? STOPPED : names;",
     },
     {
       rule: "SC2",
       name: "a string scanned before it is charged",
-      before: '  if (!spend(state, "string", units)) return STOPPED;\n  return scanBoundaryString(text);',
-      after: '  const scanned = scanBoundaryString(text);\n  if (!spend(state, "string", units)) return STOPPED;\n  return scanned;',
+      before: "  if (spend(state, \"string\", units) === STOPPED) return STOPPED;\n  return scanBoundaryString(text);",
+      after: "  const scanned = scanBoundaryString(text);\n  if (spend(state, \"string\", units) === STOPPED) return STOPPED;\n  return scanned;",
     },
     {
       rule: "SC3",
@@ -78,8 +78,8 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC5",
       name: "a visit that is not charged first",
-      before: '  if (!spend(state, "visit", 1)) return STOPPED;\n  if (value === null) return charge(state, 4) ? null : STOPPED;',
-      after: '  if (value === null) return charge(state, 4) ? null : STOPPED;\n  if (!spend(state, "visit", 1)) return STOPPED;',
+      before: "  if (spend(state, \"visit\", 1) === STOPPED) return STOPPED;\n  if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+      after: "  if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;\n  if (spend(state, \"visit\", 1) === STOPPED) return STOPPED;",
     },
     {
       rule: "SC6",
@@ -125,14 +125,14 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC10",
       name: "a symbol diagnostic whose stop is not propagated (review 01's counterexample site)",
-      before: '    if (!record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" })) return STOPPED;',
+      before: "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
       after: '    record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" });',
     },
     {
       rule: "SC10",
       name: "a diagnostic whose stop branch returns REFUSED",
-      before: '    if (!record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" })) return STOPPED;',
-      after: '    if (!record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" })) return REFUSED;',
+      before: "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
+      after: "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return REFUSED;",
     },
     {
       rule: "SC10",
@@ -143,14 +143,14 @@ describe("KC3-1 static metering check", () => {
     {
       rule: "SC10",
       name: "a terminal refusal that drops its diagnostic's stop",
-      before: "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) ? REFUSED : STOPPED);",
+      before: "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) === STOPPED ? STOPPED : REFUSED);",
       after: "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue), REFUSED);",
     },
     {
       rule: "SC10",
       name: "a failed byte charge reported as a refusal",
-      before: "  if (value === null) return charge(state, 4) ? null : STOPPED;",
-      after: "  if (value === null) return charge(state, 4) ? null : REFUSED;",
+      before: "  if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+      after: "  if (value === null) return charge(state, 4) === STOPPED ? REFUSED : null;",
     },
     {
       rule: "SC11",

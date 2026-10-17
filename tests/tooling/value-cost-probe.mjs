@@ -21,11 +21,21 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { sourcePolicy } from './value-cost-source-policy.mjs';
+import { createHash } from 'node:crypto';
 
 const NONQUALIFYING_EXIT = 3;
 const id = process.argv[2];
 const entry = JSON.parse(readFileSync('tests/fixtures/packet-tools/value-cost.json', 'utf8')).cases.find((row) => row.id === id);
 const { file, pattern } = entry.input;
+const certificate = sourcePolicy(process.cwd(), JSON.parse(readFileSync('tests/fixtures/packet-tools/value-cost-source-files.json', 'utf8')));
+const source = { ...certificate, sha256: createHash('sha256').update(JSON.stringify(certificate.files)).digest('hex') };
+if (!source.ok) {
+  const state = source.violations.some(row => row.reason === 'parse_error') ? 'parse_error' : 'source_policy';
+  console.log(JSON.stringify({ case:id, assertion:entry.assertion, reached:false, passed:false, state,
+    leaves:0, pass:0, fail:0, failures:[], nonqualifying:[], source, claim:entry.claim }));
+  process.exit(3);
+}
 const innerOutput = entry.input.inner_output_bytes ?? 64 * 1024 * 1024;
 const side = mkdtempSync(join(tmpdir(), 'value-cost-probe-'));
 const events = join(side, 'events.jsonl');
@@ -56,7 +66,7 @@ const lines = readLines(events);
 const loadFailure = readJson(load);
 rmSync(side, { recursive: true, force: true });
 
-const bounded = (list) => list.slice(0, 20);
+const bounded = (list) => list;
 const leaf = (line) => line.type === 'test';
 const executed = (lines ?? []).filter((line) => (line.event === 'pass' || line.event === 'fail') && leaf(line) && !line.skip && !line.todo);
 const witnessed = executed.filter((line) => line.event === 'fail' && line.failureType === 'testCodeFailure' && line.witnessed !== null);
@@ -68,6 +78,7 @@ const started = (lines ?? []).some((line) => line.event === 'start');
 
 let state;
 if (run.error !== undefined) state = run.error.code === 'ENOBUFS' ? 'output_limit' : 'spawn_error';
+else if (run.signal !== null) state = 'signal';
 else if (lines === null || summary === undefined) state = started ? 'setup_error' : loadFailure?.syntax === true ? 'parse_error' : loadFailure !== null ? 'load_error' : 'setup_error';
 else if (witnessed.length > 0) state = 'assertion_failed';
 else if (executed.length === 0 && failures.length === 0) state = 'no_selection';
@@ -86,13 +97,16 @@ const reached = state === 'passed' || state === 'assertion_failed';
 const passed = state === 'passed';
 const exit = state === 'passed' ? 0 : state === 'assertion_failed' || state === 'no_selection' ? entry.failure_exit : NONQUALIFYING_EXIT;
 const named = state === 'assertion_failed'
-  ? bounded(witnessed.map((line) => `${file} > ${line.name} [${line.witnessed}]`))
+  ? bounded(witnessed.map((line) => `${file} > ${line.name} [${line.witnessed.kind}]`))
   : state === 'passed' ? [] : [`${entry.assertion}: ${state}`];
 console.log(JSON.stringify({
   case: id, assertion: entry.assertion, reached, passed, state,
   leaves: executed.length, pass: executed.filter((line) => line.event === 'pass').length, fail: executed.filter((line) => line.event === 'fail').length,
   failures: named,
-  nonqualifying: bounded(nonqualifying.map((line) => ({ name: line.name, type: line.type, failureType: line.failureType, cause: line.cause }))),
+  observations: executed.map(({ name, path, declaration, event, failureType, witnessed, cause }) => ({ name, path, declaration, event, failureType, witnessed, cause })),
+  witnesses: witnessed.map(({ name, path, declaration, witnessed }) => ({ name, path, declaration, ...witnessed })),
+  source,
+  nonqualifying: bounded(nonqualifying.map((line) => ({ name: line.name, path: line.path, declaration: line.declaration, type: line.type, failureType: line.failureType, cause: line.cause }))),
   load: loadFailure, status: run.status, signal: run.signal, claim: entry.claim,
 }));
 process.exitCode = exit;

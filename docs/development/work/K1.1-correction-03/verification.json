@@ -4,7 +4,7 @@
   "require_direct_parent": true,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.1-correction-03/implementation-03.md"
+    "docs/development/work/K1.1-correction-03/implementation-04.md"
   ],
   "preserve": [
     {
@@ -130,6 +130,30 @@
     {
       "revision": "35177b28258fcfb38d73012ae46089f6d766539e",
       "path": "docs/development/work/K1.1-correction-03/design-02.md"
+    },
+    {
+      "revision": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+      "path": "docs/development/work/K1.1-correction-03/implementation-03.md"
+    },
+    {
+      "revision": "0294c238bdb651e5ef0f66de3c53350621b32381",
+      "path": "docs/development/work/K1.1-correction-03/review-02.md"
+    },
+    {
+      "revision": "0294c238bdb651e5ef0f66de3c53350621b32381",
+      "path": "docs/development/work/K1.1-correction-03/review-02"
+    },
+    {
+      "revision": "0294c238bdb651e5ef0f66de3c53350621b32381",
+      "path": "docs/development/work/K1.1-correction-03/owner-choice-02.md"
+    },
+    {
+      "revision": "0294c238bdb651e5ef0f66de3c53350621b32381",
+      "path": "docs/development/work/K1.1-correction-03/design-03.md"
+    },
+    {
+      "revision": "ac4b1836",
+      "path": "docs/development/work/K1.1-correction-03/design-03-check.md"
     }
   ],
   "evidence": [],
@@ -247,6 +271,13 @@
       "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
       "environment": "ARROKOTHI_EVIDENCE_ROOT",
       "source": "docs/development/archive.md pinned Git fallback; verified against the tree before and after use"
+    },
+    {
+      "id": "value-cost-baseline",
+      "kind": "git_snapshot",
+      "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+      "environment": "ARROKOTHI_VALUE_COST_BASELINE",
+      "source": "Design 03 maintains review 01 accepted-byte differential at fixed B; read-only baseline source snapshot"
     }
   ],
   "checks": [
@@ -362,11 +393,11 @@
       "timeout_seconds": 900,
       "output_limit_bytes": 1048576,
       "counts": {
-        "tests": "^[#ℹ] tests (\\d+)$",
-        "fail": "^[#ℹ] fail (\\d+)$",
-        "cancelled": "^[#ℹ] cancelled (\\d+)$",
-        "skipped": "^[#ℹ] skipped (\\d+)$",
-        "todo": "^[#ℹ] todo (\\d+)$"
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
       },
       "minimum_counts": {
         "tests": 4114
@@ -394,11 +425,11 @@
       "timeout_seconds": 900,
       "output_limit_bytes": 1048576,
       "counts": {
-        "tests": "^[#ℹ] tests (\\d+)$",
-        "fail": "^[#ℹ] fail (\\d+)$",
-        "cancelled": "^[#ℹ] cancelled (\\d+)$",
-        "skipped": "^[#ℹ] skipped (\\d+)$",
-        "todo": "^[#ℹ] todo (\\d+)$"
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
       },
       "minimum_counts": {
         "tests": 1
@@ -422,6 +453,20 @@
       ],
       "timeout_seconds": 2400,
       "output_limit_bytes": 1048576
+    },
+    {
+      "id": "value-cost-dimensions",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-dimensions.mjs"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "inputs": [
+        "value-cost-baseline"
+      ]
     }
   ],
   "profiles_not_run": [
@@ -533,12 +578,12 @@
     "P1 adoption remains pending; this packet closes no adoption origin (design check Q7), and a passing executed subset does not complete P1/P2.",
     "No prior results reused; acceptance and hold release are not evaluated.",
     "check:builder-docs has an owner-reported pre-existing missing DESIGN-AUDIT-01 README on main; report separately without repairing it.",
-    "value-cost.json mutants run named maintained tests through value-cost-probe.mjs. A kill needs a selected test that failed at an assertion a test-side module imported (value-cost-witness.mjs, by import site); a parse or load failure, hook, cancellation, subject exception or output overflow exits 3 and is a setup_error, never a kill (review 01, KC3-R1-EVID-02). A kill shows that a selected assertion fails, not that the claim is complete. B is a proven bound; the costliest acceptance found is not proven maximal.",
+    "value-cost.json uses the maintained source-policy certificate plus synchronous safe-operand assertion witness from design 03 and its approved match/doesNotMatch amendment. Exact error identity, source anchor and selected-leaf disposition are recorded; excluded/mixed failures remain visible. A kill does not prove claim completeness. B remains the proven work bound; the costliest acceptance observed is not a maximum proof.",
     "Timing and heap measurements are observations only (decision-05 item 3); no gate uses them.",
     "Dimension gaps and closed-by-reading reasons are in the dimensions result; no universal coverage claim.",
-    "The value-cost.c1.* cases maintain design check C1 at group level: each runs a conversion group's tests by name against the C analogues of the mutants those tests killed at B and at C. Implementation 03 requalified them under the probe's evidence contract: 153 registrations remain, and the nine withdrawn ones (a subject exception at C, not an assertion) stay killed by a witnessed assertion in another registered case. The per-test matrix behind them (c1-ablation-01.md, 783 runs per side) is a one-time measurement, not rerun here.",
+    "C1 is requalified per original/converted test and mutant, with a complete loss ledger over the 69 conversions, 87 mutant meanings and nine files. Historical 437 pairs, eight vanished rows, five cascades, nine withdrawals, equivalent originals and faithful analogues remain separately identified. B uses only the approved test-harness overlay; production is unchanged. Full matrices are separate recorded evidence, not an aggregate group-total substitution.",
     "scripts/packet_tools.py and refusal-guards.json change in this packet (K1.1-correction-03 owner choice 01, follow-up): C2-LIMIT accepts a later owner decision's pinned list of further limited members, with tool tests and registered refusal guards; the four other files in scripts/ are preserved at B.",
     "kernel-sweeps runs with a 2,400 s timeout: the poison sweep now also covers this packet's capture-* tests (B-scale witnesses, generated corpus), and at 4c736b4f its count and throw modes alone took 321 s and 314 s, past the earlier 900 s.",
-    "capture-stop.test.ts places the stop at every charge of a declared set of 21 shapes through captureWithWork's lower thresholds (exhaustively up to 2,000 units and 4,000 bytes, sampled above) and replays review 01's real-B family through every root consumer; it is a declared bounded search, not a proof over all values (review 01, KC3-R1-STOP-01)."
+    "D2: verify runs the declared 38-shape small continuation subset (original 21 plus false/null scalar, member, sibling and nested controls, and ordinary undefined refusal), with exhaustive work <=2000 and bytes <=4000 and the original larger-shape sampling. The full 1862-shape design-03 continuation search is run once at C as separate recorded evidence; every run compares pristine/instrumented results and traces bookkeeping/native work against actual stopped state. These are finite searches, not proofs over future JavaScript."
   ]
 }

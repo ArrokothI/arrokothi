@@ -91,13 +91,23 @@ A charge that passes B stops reading the root and records one root-located issue
 charged: code `too_much_work`, message "reading this value passed the work budget of 3145728 units
 that bounds every acceptable value; the rest of the value was not read". The meter stop and the byte
 stop (`too_many_bytes`) are exclusive; whichever comes first ends reading, and diagnostics describe
-the positions examined up to it. Either stop is reported by the charge that made it, and every caller
-returns at once, so after a stop nothing is observed, listed, allocated, charged or recorded: the one
-operation a refusal may perform past B is a listing whose own charge crossed it, which is why residual
-R1 is at most one listing per root (review 01 of K1.1-correction-03 found a names listing that ran after
-a diagnostic had stopped the root). Static rules SC10 and SC11 in `capture-metering.ts` keep every call
-in that form, and `capture-stop.test.ts` places the stop at every charge of a declared set of shapes and
-requires every listing and descriptor that ran to be charged. One alignment is the exception: when the stop lands on a refused
+the positions examined up to it. Either charge reports a stop with the same private unique-symbol result, `STOPPED`, which is
+separate from both accepted `false`/`null` and the non-stopping `REFUSED` result. Each active caller
+returns it before more traversal or bookkeeping. After the transition, only the crossing writer's
+fixed accounting and one bounded stop issue, paired cycle deletion, and root refusal packaging with
+the two fixed evidence-record freezes remain. No snapshot write, pending-list growth, finish helper,
+new observation or serialization is permitted. R1 therefore permits at most the single listing whose
+own returned-length charge crossed the budget.
+
+SC10/SC11 in `capture-metering.ts` check this protocol for direct, statically named module-level
+functions and const function bindings, including return types and the root handler. They reject nested
+callables/classes around stop-capable work. Aliases, computed/dynamic calls, `.call`/`.apply`, shadowed
+bindings and escaped state are declared static gaps, not proven safe forms. The disposable-source
+trace in `capture-stop.test.ts` observes actual root state, snapshot allocations/writes, finishing,
+freezing and native observations independently of the returned sentinel. Its checked site inventory,
+negative controls and declared finite continuation search are regression evidence, not a proof over
+future JavaScript. The normal verify runs the 38-shape small subset; the full design-03 matrix is a
+separate recorded C run under design-check condition D2. One alignment is the exception: when the stop lands on a refused
 position's own diagnostic unit, that position was examined but the stop issue takes its place, so the
 diagnostic units exceed the counted occurrences by one (`capture-work.test.ts` pins it). `too_much_work` is an addition to the exported `ValueIssueCode`
 type, which `index.ts` re-exports as a type from the private `@arrokothi/kernel` package. Review 08's
