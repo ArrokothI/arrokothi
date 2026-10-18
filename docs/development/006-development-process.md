@@ -32,6 +32,13 @@ These principles take precedence over habit. The K0.1–K1.2 record shows the co
    - identify the mechanism that produced it;
    - identify the other instances that mechanism allows.
    When one subsystem keeps failing, [stop and redesign](#stop-and-redesign).
+6. **Build right what is expensive to change; record the rest.** Get right, with full evidence, what
+   later work builds on: API and wire shapes, persisted data and identity, Kernel state-machine
+   semantics, module boundaries, and anything that would silently corrupt a cooperative caller's data.
+   Hardening and evidence beyond that may stop at a limitation recorded in
+   [017](017-known-limitations.md) and be fixed when its trigger happens. A finding inside a recorded
+   limitation, or an evidence-tooling gap that shows no production defect or false claim, does not
+   block. 017 owns the rule and the register.
 
 ## Authority and records
 

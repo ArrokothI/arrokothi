@@ -11,6 +11,7 @@ implementation facts, migration scope, review policy and status.
 | [Work packets and status](007-work-packets.md) | Packet scope, current acceptance, integration and release |
 | [Owner summary](014-owner-progress-summary.md) | A short account of what works and what comes next |
 | [Findings](003-evidence-and-findings.md) | Known gaps and their dispositions |
+| [Known limitations](017-known-limitations.md) | What is deliberately not guaranteed yet, why, and what triggers a fix |
 | [Development process](006-development-process.md) | Actor permissions, review and handoff |
 | [Report template](008-implementation-report.md) | Candidate, review and integration record fields |
 | [Role launchers](009-universal-prompts.md) | Short launchers for coding, review, cleanup, brief writing and adversary roles |
