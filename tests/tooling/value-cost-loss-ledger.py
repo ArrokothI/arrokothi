@@ -88,6 +88,18 @@ def leaf_result(runs, mutant, file, title):
             'mixed':bool(observation.get('nonqualifying'))}
 
 
+def control_binding(runs, file, title):
+    """Keep the original declaration even when a mutant prevents that leaf from appearing."""
+    control=runs[('control',file)]
+    leaves=[leaf for leaf in control['observation']['observations'] if leaf['name']==title]
+    if len(leaves)!=1 or leaves[0]['event']!='pass' or control['state']!='passed':
+        raise RuntimeError('missing or ambiguous passing control: '+file+' / '+title)
+    leaf=leaves[0]
+    return {'file':control['file'],'title':title,'path':leaf['path'],
+            'declaration':{**leaf['declaration'],'file':repository_path(leaf['declaration']['file'])},
+            'passing_control':True}
+
+
 
 def registered_candidates(directory, metadata, mutants):
     """Use exact same-edit registry witnesses, including meter tests absent from the nine-file matrix."""
@@ -147,6 +159,8 @@ def main():
     converted_keys={(row['file'],row['original']) for row in mapping}
     for conversion in mapping:
         file,original=conversion['file'],conversion['original']
+        original_binding=control_binding(b,file,original)
+        converted_bindings=[control_binding(c,file,title) for title in conversion['converted']]
         for mutant in mutants:
             mid=mutant['id'];before=leaf_result(b,mid,file,original)
             after=[leaf_result(c,mid,file,title) for title in conversion['converted']]
@@ -173,6 +187,7 @@ def main():
                 if before.get('leaf'):
                     isolations.append({'side':'b','mutant':mid,'file':file,'title':original,'path':before['leaf']['path']})
             rows.append({'file':file,'original':original,'converted':conversion['converted'],'mutant':mid,
+                         'original_test':original_binding,'converted_tests':converted_bindings,
                          'obligation':mutant['mechanism'],'historical':historical_kind,
                          'disposition':'retained' if before['qualified'] and not lost else 'uncredited_at_C' if lost else 'uncredited_at_B',
                          'historical_cascade':cascade,'needs_replacement':needs_replacement,'b':before,'c':after,'loss':lost,
