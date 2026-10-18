@@ -5,7 +5,9 @@
  * Real native listings are wrapped before import, then the global slots restored.
  */
 import assert from 'node:assert/strict';
-import { resolve } from 'node:path';
+import { cpSync, mkdtempSync, rmSync, symlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 const tree = resolve(process.argv[2] ?? process.cwd());
 const baseline = resolve(process.argv[3] ?? process.env.ARROKOTHI_VALUE_COST_BASELINE);
@@ -24,7 +26,13 @@ for (const [key, native] of [['getOwnPropertyNames', ownNames], ['getOwnProperty
 let v;
 try { v = await import(url(tree, 'packages/kernel/src/values.ts')); }
 finally { Object.getOwnPropertyNames = ownNames; Object.getOwnPropertySymbols = ownSymbols; }
-const b = await import(url(baseline, 'packages/kernel/src/values.ts'));
+// The baseline is a read-only source snapshot (verify's declared input has no node_modules). Import a
+// temporary copy of its Kernel source that resolves its one package import through the candidate tree's.
+const baselineCopy = mkdtempSync(join(tmpdir(), 'kc3-dimensions-baseline-'));
+process.on('exit', () => rmSync(baselineCopy, { recursive: true, force: true }));
+cpSync(resolve(baseline, 'packages/kernel/src'), join(baselineCopy, 'src'), { recursive: true });
+symlinkSync(resolve(tree, 'node_modules'), join(baselineCopy, 'node_modules'));
+const b = await import(pathToFileURL(join(baselineCopy, 'src/values.ts')).href);
 const reset = () => { tracked = new WeakSet(); listingUnits = 0; calls = 0; maxListing = 0; forbiddenCalls = 0; };
 const B = 3 * 1048576;
 let chain = Object.create(null);
