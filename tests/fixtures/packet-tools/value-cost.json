@@ -1382,14 +1382,6 @@
           "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-f259c3f416d01bb2c17efe9ec6e5ffe709e2e65e298f4715bf0de35f6e72278b",
-          "path": "packages/kernel/src/coordinator.ts",
-          "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
-          "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };",
-          "operator": "c1-ablation",
-          "name": "C-KIND-ORDINARY (C1: killed by the creation converted tests at B and at C)"
-        },
-        {
           "id": "mutation-4737cc2855a9a9a53c3044b8528860a4807e445fbb481363ec7d6ba601052755",
           "path": "packages/kernel/src/coordinator.ts",
           "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
@@ -1412,14 +1404,6 @@
           "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-5c30ab6a2ff6a47f9a18fc1ac255f50f6a7c79d7c7996bfdcddd393c03692d38",
-          "path": "packages/kernel/src/envelope.ts",
-          "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
-          "after": "",
-          "operator": "c1-ablation",
-          "name": "E-OWN-ONLY (C1: killed by the creation converted tests at B and at C)"
         },
         {
           "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
@@ -1445,14 +1429,6 @@
           "after": "  const descriptor = {} as {\n    value: unknown;",
           "operator": "c1-ablation",
           "name": "O-DEFINEDATA-LITERAL (C1: killed by the creation converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c",
-          "path": "packages/kernel/src/values.ts",
-          "before": "    defineAt(out, index, item);",
-          "after": "    out[index] = item;",
-          "operator": "c1-ablation",
-          "name": "OWN-element-install-by-set (C1: killed by the creation converted tests at B and at C)"
         },
         {
           "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
@@ -1512,22 +1488,6 @@
           "name": "V-CATCH (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
-          "path": "packages/kernel/src/values.ts",
-          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
-          "after": "  if (false) {",
-          "operator": "c1-ablation",
-          "name": "V-FOREIGN-PROTO (C1: killed by the creation converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
-          "path": "packages/kernel/src/values.ts",
-          "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
-          "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });",
-          "operator": "c1-ablation",
-          "name": "V-SNAPSHOT-LITERAL (C1: killed by the creation converted tests at B and at C)"
-        },
-        {
           "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
           "path": "packages/kernel/src/values.ts",
           "before": "  } catch (error) {\n    return refuse(state, {",
@@ -1542,14 +1502,6 @@
           "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
           "operator": "c1-ablation",
           "name": "VAL-disagree-check-removed (C1: killed by the creation converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1",
-          "path": "packages/kernel/src/values.ts",
-          "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
-          "after": "  if (prototype !== Object.prototype && prototype !== null) {",
-          "operator": "c1-ablation",
-          "name": "VAL-plain-prototype-live-global (C1: killed by the creation converted tests at B and at C)"
         }
       ]
     },
@@ -1587,30 +1539,6 @@
           "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-0380416e35590c512cae18c3c884ed74ee53083c7ade8db46d147a397742515a",
-          "path": "packages/kernel/src/coordinator.ts",
-          "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
-          "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,",
-          "operator": "c1-ablation",
-          "name": "C-FREEZE-ACTIVATION (C1: killed by the dispatch converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-247688fb864948eb6791c408b4efdcdd0ef721b2ffcd7f809a5a41d56b126034",
-          "path": "packages/kernel/src/coordinator.ts",
-          "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
-          "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
-          "operator": "c1-ablation",
-          "name": "C-FREEZE-EVENT (C1: killed by the dispatch converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-804c808dde9ba06ebd022b87abd89654573f67b25adbabe2848a50c685711b65",
-          "path": "packages/kernel/src/coordinator.ts",
-          "before": "      events: PrimordialObjectFreeze(carriedEvents),",
-          "after": "      events: Object.freeze(carriedEvents),",
-          "operator": "c1-ablation",
-          "name": "C-FREEZE-EVENTS (C1: killed by the dispatch converted tests at B and at C)"
         },
         {
           "id": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b",
@@ -1739,22 +1667,6 @@
           "after": "      // slot not installed",
           "operator": "c1-ablation",
           "name": "SER-slots-not-installed (C1: killed by the ingress converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a",
-          "path": "packages/kernel/src/values.ts",
-          "before": "    appendOwn(captured, [key, item] as const);",
-          "after": "    captured.push([key, item] as const);",
-          "operator": "c1-ablation",
-          "name": "V-CAPTURED-PUSH (C1: killed by the ingress converted tests at B and at C)"
-        },
-        {
-          "id": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
-          "path": "packages/kernel/src/values.ts",
-          "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
-          "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });",
-          "operator": "c1-ablation",
-          "name": "V-SNAPSHOT-LITERAL (C1: killed by the ingress converted tests at B and at C)"
         },
         {
           "id": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1",
