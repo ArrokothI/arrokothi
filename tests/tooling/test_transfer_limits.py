@@ -6,6 +6,7 @@ from test_packet_tools import RepositoryFixture, tool
 
 P1H = tool.P1H_TARGET_REFUSAL.format('held')
 LATER_DECISION = 'docs/development/work/K1.1-correction-03/owner-choice-01.md'
+SECOND_DECISION = 'docs/development/work/K1.1-correction-03/owner-choice-02.md'
 
 
 class TransferListTests(RepositoryFixture):
@@ -333,15 +334,15 @@ class LimitTests(RepositoryFixture):
 class RepositoryLimitTests(RepositoryFixture):
     """The maintained manifest: owner choices 04, 05 and 11 pin their lists; owner choice 04's limit admits each
     extra through its only target record, design 06's two extras among them; owner choice 11 lists one member;
-    K1.1-correction-03 owner choice 01 pins its transferred origins and lists the members its conversions changed."""
+    K1.1-correction-03 owner choices 01 and 02 pin their transferred origins and list further dispatch members."""
 
     def test_the_manifest_pins_its_lists_and_maps_every_extra(self):
         import json
         from test_target_tools import ROOT
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         lists = {row['decision']: row for row in manifest['transfer_lists']}
-        self.assertEqual(sorted(lists), [LATER_DECISION, tool.LIMIT_DECISION, 'docs/development/work/TOOLS-01/owner-choice-05.md',
-                                         tool.LISTED_DECISION])
+        self.assertEqual(sorted(lists), [LATER_DECISION, SECOND_DECISION, tool.LIMIT_DECISION,
+                                         'docs/development/work/TOOLS-01/owner-choice-05.md', tool.LISTED_DECISION])
         for decision, row in lists.items():
             listed = {item['origin'] for item in json.loads((ROOT / row['list']).read_text())}
             self.assertEqual(tool.digest((ROOT / row['list']).read_bytes()), row['sha256'])
@@ -366,8 +367,13 @@ class RepositoryLimitTests(RepositoryFixture):
         later = {origin: limit['added'] for origin, limit in limits.items() if 'added' in limit}
         later_list = LATER_DECISION[:-len('.md')] + '/limited-members.json'
         entry = {'decision': LATER_DECISION, 'members': later_list, 'sha256': tool.digest((ROOT / later_list).read_bytes())}
-        self.assertEqual(later, {'artifact-73555fe668cc180905b1e49a': [entry], 'artifact-ea5444a6d42154e413fe0f2e': [entry]})
-        counts = {}
-        for item in json.loads((ROOT / later_list).read_text()):
-            counts[item['origin']] = counts.get(item['origin'], 0) + 1
-        self.assertEqual(counts, {'artifact-73555fe668cc180905b1e49a': 3, 'artifact-ea5444a6d42154e413fe0f2e': 21})
+        # Owner choice 02 lists ten further refused members of the dispatch origin.
+        second_list = SECOND_DECISION[:-len('.md')] + '/limited-members.json'
+        second = {'decision': SECOND_DECISION, 'members': second_list, 'sha256': tool.digest((ROOT / second_list).read_bytes())}
+        self.assertEqual(later, {'artifact-73555fe668cc180905b1e49a': [entry, second], 'artifact-ea5444a6d42154e413fe0f2e': [entry]})
+        for path, expected in ((later_list, {'artifact-73555fe668cc180905b1e49a': 3, 'artifact-ea5444a6d42154e413fe0f2e': 21}),
+                               (second_list, {'artifact-73555fe668cc180905b1e49a': 10})):
+            counts = {}
+            for item in json.loads((ROOT / path).read_text()):
+                counts[item['origin']] = counts.get(item['origin'], 0) + 1
+            self.assertEqual(counts, expected)
