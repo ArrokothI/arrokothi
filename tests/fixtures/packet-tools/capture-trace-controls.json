@@ -128,5 +128,16 @@
       "captureObject:call.finishObject": 1
     },
     "static": "reject"
+  },
+  {
+    "name": "post-stop-descriptor-outside-collector",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { PrimordialGetOwnPropertyDescriptor(out, \"0\"); return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {
+      "captureArray:call.PrimordialGetOwnPropertyDescriptor": 1
+    },
+    "static": "reject"
   }
 ]

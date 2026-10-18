@@ -98,7 +98,8 @@ export function captureObserver() {
     let allowed=!stopped || phase==='leave' || phase==='transition';
     if(stopped&&!allowed) {
       const writerSite=owner===writer && ['write.state.stop','write.state.crossing','object'].some(op=>id===`${owner}:${op}#1`);
-      const collectorSite=(owner==='pushIssue' && [':entry#1',':object#1',':object#2',':call.appendOwn#1',':call.appendOwn#2'].some(suffix=>id==='pushIssue'+suffix)) ||
+      const collectorSite=(owner==='pushIssue' && [':entry#1',':object#1',':object#2',':call.appendOwn#1',':call.appendOwn#2',
+        ':write.(entry as { occurrences: number }).occurrences#1'].some(suffix=>id==='pushIssue'+suffix)) ||
         (owner==='issueText'&&phase==='enter');
       allowed=(crossing && (writerSite || collectorSite)) ||
         (owner==='closeContainer'&&phase==='enter') ||
@@ -125,10 +126,13 @@ export function captureObserver() {
     natives++;
     if(current?.stopped!==true)return;
     const owner=stack.at(-1), writer=stack.findLast(x=>x==='spend'||x==='charge');
+    // The crossing writer's one collector call may append (defineProperty/create) or, past the eight
+    // located details, read its at most twelve Kernel-owned suffix entries (getOwnPropertyDescriptor).
     const allowed=(name==='freeze'&&owner==='acceptMetered') ||
-      (['defineProperty','create'].includes(name)&&owner==='pushIssue'&&writer!==undefined&&transitions===1&&collector===1);
+      (['defineProperty','create','getOwnPropertyDescriptor'].includes(name)&&owner==='pushIssue'&&writer!==undefined&&transitions===1&&collector===1);
     const id='native:'+name+'@'+owner,count=(after.get(id)??0)+1;after.set(id,count);
-    if(!allowed || count>(name==='freeze'&&owner==='acceptMetered'?2:1))violation(id);
+    const limit=name==='freeze'&&owner==='acceptMetered'?2:name==='getOwnPropertyDescriptor'?12:1;
+    if(!allowed || count>limit)violation(id);
   }
   return {trace,native,
     begin(){current=undefined;stack=[];active=true;violations=0;first=[];events=[];opened=new Set();roots=0;transitions=0;collector=0;unwinds=0;natives=0;after=new Map();},
