@@ -94,6 +94,25 @@ class RepositoryControls(ProbeFixture):
         self.assertTrue(all(name.startswith('packages/kernel/tests/capture-work.test.ts > ') and name.endswith(']')
                             for name in observation['failures']))
 
+    def test_repeated_runs_observe_the_same_structure(self):
+        """Round 4: the registry's determinism sample repeats a case in a fresh tree and compares the observations,
+        so test and assertion locations are reported relative to the tree, for a control and for a kill."""
+        _, entry = self.copy()
+        mutant = next(row for row in entry['mutants'] if row['name'] == 'visit unit uncharged')
+        runs = []
+        for edits in ([], tool.mutation_edits(mutant)):
+            pair = []
+            for _ in range(2):
+                root, entry = self.copy()
+                if edits:
+                    self.assertIsNone(tool.apply_edits(root, edits))
+                pair.append(self.run_case(root, entry)[2])
+            self.assertEqual(pair[0], pair[1])
+            runs.append(pair[0])
+        self.assertEqual([runs[0]['state'], runs[1]['state']], ['passed', 'assertion_failed'])
+        self.assertEqual({row['declaration']['file'] for row in runs[0]['observations']}, {'packages/kernel/tests/capture-work.test.ts'})
+        self.assertEqual({row['module'] for row in runs[1]['witnesses']}, {'packages/kernel/tests/capture-work.test.ts'})
+
     def test_review_01_parse_failure_is_not_a_kill(self):
         root, entry = self.copy()
         source = root / 'packages/kernel/src/values.ts'
@@ -312,6 +331,15 @@ class VocabularyControls(ProbeFixture):
             body = "let calls=0; const desc=Object.create(null); desc.get=()=>{calls++;return undefined}; desc.configurable=true; Object.defineProperty(Object.prototype,"+json.dumps(key)+",desc); try {assert.equal(1,1)} finally {delete Object.prototype["+json.dumps(key)+"]} assert.equal(calls,0)"
             with self.subTest(key=key):self.snippet(body,'passed')
         self.snippet('let calls=0; const x={get value(){calls++; return 1}}; assert.strictEqual(x,x); assert.equal(calls,0)','passed')
+
+    def test_a_raised_array_prototype_length_alone_stays_eligible(self):
+        """Round 4: a test that defines and then deletes an Array.prototype index leaves its length raised for the
+        rest of the process. That number runs no code, so later assertions still qualify; an index that remains
+        is still an unclean intrinsic."""
+        install = 'Object.defineProperty(Array.prototype,"0",{value:7,writable:true,configurable:true});'
+        self.snippet(install + ' delete Array.prototype[0]; assert.equal(Array.prototype.length,1); assert.deepEqual([1],[2])', 'assertion_failed')
+        self.snippet(install + ' delete Array.prototype[0]; assert.deepEqual([1],[1])', 'passed')
+        self.snippet(install + ' try {assert.deepEqual([1],[2])} finally {delete Array.prototype[0]}')
 
     def test_live_intrinsic_binding_changes_are_unobserved_and_uncredited(self):
         for name in ['Object','Symbol','Array','RegExp']:

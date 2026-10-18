@@ -55,7 +55,10 @@ function clean() {
     for (let j = 0; j < names.length; j++) {
       if (names[j] !== old.names[j]) return false;
       const a = descriptor(old.target, names[j]), b = old.descriptors[j];
-      if (!a || !is(field(a, 'value'), field(b, 'value')) || field(a, 'get') !== field(b, 'get') || field(a, 'set') !== field(b, 'set') ||
+      // Defining and then deleting an Array.prototype index leaves its length raised. A number in that
+      // data property runs no code; any index left behind is an extra name and fails above.
+      const residue = old.target === ArrayProto && names[j] === 'length' && typeof field(a, 'value') === 'number';
+      if (!a || (!residue && !is(field(a, 'value'), field(b, 'value'))) || field(a, 'get') !== field(b, 'get') || field(a, 'set') !== field(b, 'set') ||
           field(a, 'writable') !== field(b, 'writable') || field(a, 'enumerable') !== field(b, 'enumerable') || field(a, 'configurable') !== field(b, 'configurable')) return false;
     }
   }

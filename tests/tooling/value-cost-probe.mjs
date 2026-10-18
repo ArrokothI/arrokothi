@@ -18,9 +18,10 @@
 // The probe sets no timeout of its own: the runner's case timeout kills the process group and records
 // `timeout`. The assertions live in the maintained test files only.
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { sourcePolicy } from './value-cost-source-policy.mjs';
 import { createHash } from 'node:crypto';
 
@@ -67,6 +68,16 @@ const loadFailure = readJson(load);
 rmSync(side, { recursive: true, force: true });
 
 const bounded = (list) => list;
+// The runner executes each case in a fresh temporary tree. Report test and assertion locations relative
+// to that tree, so a repeated run (the registry's determinism sample) observes the same structure.
+const roots = [...new Set([process.cwd(), realpathSync(process.cwd())])].flatMap((root) => [root + sep, pathToFileURL(root + sep).href]);
+const relative = (text) => {
+  if (typeof text !== 'string') return text;
+  const root = roots.find((prefix) => text.startsWith(prefix));
+  return root === undefined ? text : text.slice(root.length);
+};
+const at = (declaration) => (declaration === null || declaration === undefined ? declaration : { ...declaration, file: relative(declaration.file) });
+const site = (witness) => (witness === null || witness === undefined ? witness : { ...witness, module: relative(witness.module) });
 const leaf = (line) => line.type === 'test';
 const executed = (lines ?? []).filter((line) => (line.event === 'pass' || line.event === 'fail') && leaf(line) && !line.skip && !line.todo);
 const witnessed = executed.filter((line) => line.event === 'fail' && line.failureType === 'testCodeFailure' && line.witnessed !== null);
@@ -103,10 +114,10 @@ console.log(JSON.stringify({
   case: id, assertion: entry.assertion, reached, passed, state,
   leaves: executed.length, pass: executed.filter((line) => line.event === 'pass').length, fail: executed.filter((line) => line.event === 'fail').length,
   failures: named,
-  observations: executed.map(({ name, path, declaration, event, failureType, witnessed, cause }) => ({ name, path, declaration, event, failureType, witnessed, cause })),
-  witnesses: witnessed.map(({ name, path, declaration, witnessed }) => ({ name, path, declaration, ...witnessed })),
+  observations: executed.map(({ name, path, declaration, event, failureType, witnessed, cause }) => ({ name, path, declaration: at(declaration), event, failureType, witnessed: site(witnessed), cause })),
+  witnesses: witnessed.map(({ name, path, declaration, witnessed }) => ({ name, path, declaration: at(declaration), ...site(witnessed) })),
   source,
-  nonqualifying: bounded(nonqualifying.map((line) => ({ name: line.name, path: line.path, declaration: line.declaration, type: line.type, failureType: line.failureType, cause: line.cause }))),
+  nonqualifying: bounded(nonqualifying.map((line) => ({ name: line.name, path: line.path, declaration: at(line.declaration), type: line.type, failureType: line.failureType, cause: line.cause }))),
   load: loadFailure, status: run.status, signal: run.signal, claim: entry.claim,
 }));
 process.exitCode = exit;

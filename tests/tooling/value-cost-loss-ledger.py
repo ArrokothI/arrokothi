@@ -32,6 +32,7 @@ def load(path):
 
 
 def repository_path(path):
+    if path.startswith('packages/'):return path
     if '/packages/' not in path:raise RuntimeError('witness outside repository tests: '+path)
     return 'packages/'+path.split('/packages/',1)[1]
 

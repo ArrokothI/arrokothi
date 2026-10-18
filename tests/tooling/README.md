@@ -444,14 +444,17 @@ verified plain-data graphs, and `fail` with no argument or a primitive string. O
 be primitive strings. The owner amendment admits `match`/`doesNotMatch` only with a primitive string
 and a RegExp literal created in the test module, under the same clean intrinsic/prototype snapshot.
 Preflight uses captured built-ins, rejects Proxies before reflection, follows own data descriptors,
-excludes hooks/functions/exotics, and caps traversal at 100,000 entries. It does not invoke subject
+excludes hooks/functions/exotics, and caps traversal at 100,000 entries. A raised `Array.prototype.length`
+alone, which a test leaves by defining and deleting an index, is not an unclean intrinsic; a remaining
+index is. It does not invoke subject
 code or project operands. Callback/validator and async assertion forms, unsafe messages and custom
 `Assert` instances receive no credit. Excluded outer calls suppress inner witnesses across their
 dynamic extent. An awaited operation followed by an eligible synchronous assertion can qualify.
 
 The actual harness branches now call `assert.fail` after their original conditions/messages are
 evaluated; there is no synthetic harness wrapper or post-exception reread. The reporter records full
-test paths/declarations and assertion module/anchor. It retains every mixed-domain observation.
+test paths/declarations and assertion module/anchor, which the probe reports relative to the case's
+tree so that a repeated run observes the same structure. It retains every mixed-domain observation.
 A replacement claim needs an isolated qualifying leaf and passing control, plus its stated obligation.
 A source-policy failure, parse/load/setup error, signal, hook failure, cancellation, timeout, subject
 exception or output overflow earns no kill. No selection is `uncovered`. The registry runner's
@@ -466,9 +469,9 @@ negative controls. Realm observations have deliberate corrupt-observation contro
 comparison makes those tests red. Held witnesses carry a structured claim with owner, decision and
 reason. `witnesses` reports reproduction separately with `semantic_credit: none`; assertion kills
 validate the observation checker, not the correctness of the behavior it observed. BINDING-01 owns
-V-ENV. K1.1-correction-03 owns Proxy and re-prototyped built-in refusal and V-D1. Current Proxy `{}`
-acceptance and built-in observations are superseded behavior pending that packet, never passing
-policy expectations. The N15 surplus-charge witness checks exactly 4,049 visits for its stored
+V-ENV. K1.1-correction-03 owns Proxy and re-prototyped built-in refusal and V-D1. Capture now refuses
+every Proxy before any trap, so held witnesses that reach capture through a Proxy record that refusal;
+they stay held for BINDING-01. Held observations are never passing policy expectations. The N15 surplus-charge witness checks exactly 4,049 visits for its stored
 recipe; it establishes no general cost bound and releases no V-D1 hold.
 
 Determinism samples are declared by case ID in each registry. Both control and mutant are rerun
