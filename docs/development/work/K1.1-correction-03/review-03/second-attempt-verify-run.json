@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/packet_tools.py",
+    "verify",
+    "--revision",
+    "2bf220e9e426c810f2505fa2d74d70197807e584",
+    "--spec",
+    "docs/development/work/K1.1-correction-03/verification.json"
+  ],
+  "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+  "start_utc": "2026-10-18T17:07:48.177736+00:00",
+  "node": "v26.10.0",
+  "npm": "11.19.1",
+  "python": "Python 3.13.7",
+  "head": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "clean_before": "",
+  "parallel_validation_jobs": 0,
+  "process_inspection": "Only persistent ChatGPT CUA Node services observed; no independent Node/Python/npm validation jobs. No other review tests are run concurrently.",
+  "dependency_install": "npm ci --ignore-scripts --no-audit --no-fund (locked dependencies)",
+  "pid": 15417,
+  "exit_code": 2,
+  "elapsed_seconds": 471.26036187494174,
+  "end_utc": "2026-10-18T17:15:39.689228+00:00",
+  "clean_after": ""
+}

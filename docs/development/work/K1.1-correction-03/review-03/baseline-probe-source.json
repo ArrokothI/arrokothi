@@ -1,0 +1,23 @@
+{
+  "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "tree": "/private/tmp/k11-review-03-B",
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "03cfb96959d83a49f5064f19652fee709191484e8748a5aca7f285bb3ec876d1"
+    },
+    {
+      "path": "packages/kernel/package.json",
+      "sha256": "47730f2e954a42ca75a54e114db704d4e41d579a2818ce8b97b4a192cc82d5a5"
+    },
+    {
+      "path": "packages/kernel/src/values.ts",
+      "sha256": "eb1f5c3b5705ade2d90427cbac598518430aaf68085d0c62f7d8e6bf47d97cae"
+    },
+    {
+      "path": "packages/kernel/src/own-array.ts",
+      "sha256": "fcd114e76ddec2087a8fbd84029a357673bb29fe7acf55ff7a6db19aa73e7438"
+    }
+  ],
+  "dependencies": "C npm ci lockfile; canonicalize 3.0.0 unchanged at B/C"
+}

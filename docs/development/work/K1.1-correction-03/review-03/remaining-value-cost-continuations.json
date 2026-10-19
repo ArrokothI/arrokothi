@@ -1,0 +1,58 @@
+{
+  "id": "value-cost-continuations",
+  "source_specification": "docs/development/work/K1.1-correction-03/verification.json",
+  "source_revision": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "start_utc": "2026-10-19T09:15:41.160455+00:00",
+  "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+  "node": "v26.10.0",
+  "parallel_validation_jobs": 0,
+  "argv": [
+    "node",
+    "--no-warnings",
+    "--experimental-strip-types",
+    "tests/tooling/capture-continuations.mjs",
+    "full"
+  ],
+  "passed": true,
+  "counts": {},
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [],
+    "absent": [
+      "NODE_OPTIONS",
+      "NODE_TEST_CONTEXT",
+      "NODE_V8_COVERAGE",
+      "KERNEL_POISON_MODE",
+      "KERNEL_POISON_OUT",
+      "KERNEL_POISON_NAMES",
+      "PACKET_ORACLE_CHECK",
+      "PACKET_REACH_FILE",
+      "ARROKOTHI_READ_TRACE",
+      "GEMINI_MODEL",
+      "GEMINI_API_KEY",
+      "GOOGLE_API_KEY",
+      "GOOGLE_GENERATIVE_AI_API_KEY",
+      "FLOOR_ORDER_LOG",
+      "FLOOR_READ_DIR",
+      "ARROKOTHI_VALUE_COST_LOAD"
+    ],
+    "inherited_values_recorded": false
+  },
+  "inputs": [],
+  "catalog": null,
+  "status": "finished",
+  "exit": 0,
+  "output": "{\"node\":\"v26.10.0\",\"mode\":\"full\",\"shapes\":1862,\"smallShapes\":38,\"runs\":373694,\"comparisons\":373694,\"violations\":0,\"first\":[],\"stops\":{\"none\":12883,\"work\":187343,\"bytes\":173468},\"crossed\":[\"descriptor\",\"diagnostic\",\"element\",\"listing\",\"read\",\"string\",\"visit\"],\"unwinds\":1868169,\"natives\":127688183,\"forbidden\":0,\"inventory\":{\"spend:entry\":1,\"spend:exit\":1,\"spend:write.state.units\":1,\"spend:write.state.visitUnits\":1,\"spend:write.state.listingUnits\":1,\"spend:write.state.elementUnits\":1,\"spend:write.state.descriptorUnits\":1,\"spend:write.state.readUnits\":1,\"spend:write.state.stringUnits\":1,\"spend:write.state.diagnosticUnits\":1,\"spend:write.state.stopped\":1,\"spend:transition\":1,\"spend:write.state.stop\":1,\"spend:write.state.crossing\":1,\"spend:object\":1,\"charge:entry\":1,\"charge:exit\":1,\"charge:write.state.bytes\":1,\"charge:write.state.stopped\":1,\"charge:transition\":1,\"charge:write.state.stop\":1,\"charge:object\":1,\"record:entry\":1,\"record:exit\":1,\"refuse:entry\":1,\"refuse:exit\":1,\"capture:entry\":1,\"capture:exit\":1,\"capture:object\":8,\"captureArray:entry\":1,\"captureArray:exit\":1,\"captureArray:object\":8,\"captureArray:call.defineAt\":1,\"captureArray:call.finishArray\":1,\"captureObject:entry\":1,\"captureObject:exit\":1,\"captureObject:object\":9,\"captureObject:array\":4,\"captureObject:call.appendOwn\":2,\"captureObject:call.finishObject\":1,\"checkMember:entry\":1,\"checkMember:exit\":1,\"checkMember:object\":7,\"listOwnNames:entry\":1,\"listOwnNames:exit\":1,\"listOwnNames:call.PrimordialGetOwnPropertyNames\":1,\"listOwnSymbols:entry\":1,\"listOwnSymbols:exit\":1,\"listOwnSymbols:call.PrimordialGetOwnPropertySymbols\":1,\"observeElement:entry\":1,\"observeElement:exit\":1,\"observeElement:call.PrimordialGetOwnPropertyDescriptor\":1,\"observeElement:object\":2,\"observeDescriptor:entry\":1,\"observeDescriptor:exit\":1,\"observeDescriptor:call.PrimordialGetOwnPropertyDescriptor\":1,\"readMember:entry\":1,\"readMember:exit\":1,\"readMember:object\":1,\"scanText:entry\":1,\"scanText:exit\":1,\"isProxyValue:entry\":1,\"isProxyValue:exit\":1,\"isOpenContainer:entry\":1,\"isOpenContainer:exit\":1,\"openContainer:entry\":1,\"openContainer:exit\":1,\"closeContainer:entry\":1,\"closeContainer:exit\":1,\"isArrayValue:entry\":1,\"isArrayValue:exit\":1,\"prototypeOf:entry\":1,\"prototypeOf:exit\":1,\"isBuiltInWithSlots:entry\":1,\"isBuiltInWithSlots:exit\":1,\"observeArrayLength:entry\":1,\"observeArrayLength:exit\":1,\"observeArrayLength:call.PrimordialGetOwnPropertyDescriptor\":1,\"allocateElements:entry\":1,\"allocateElements:exit\":1,\"allocateElements:call.sizedList\":1,\"arrayIndexValue:entry\":1,\"arrayIndexValue:exit\":1,\"isArrayIndex:entry\":1,\"isArrayIndex:exit\":1,\"scanBoundaryString:entry\":1,\"scanBoundaryString:exit\":1,\"scanBoundaryString:object\":1,\"finishArray:entry\":1,\"finishArray:exit\":1,\"finishArray:call.PrimordialObjectFreeze\":1,\"finishObject:entry\":1,\"finishObject:exit\":1,\"finishObject:call.PrimordialObjectCreate\":1,\"finishObject:call.defineData\":1,\"finishObject:call.PrimordialObjectFreeze\":1,\"pushIssue:entry\":1,\"pushIssue:exit\":1,\"pushIssue:call.appendOwn\":2,\"pushIssue:object\":2,\"pushIssue:write.(entry as { occurrences: number }).occurrences\":1,\"issueText:entry\":1,\"issueText:exit\":1,\"describe:entry\":1,\"describe:exit\":1,\"child:entry\":1,\"child:exit\":1,\"element:entry\":1,\"element:exit\":1,\"containerStructureBytes:entry\":1,\"containerStructureBytes:exit\":1,\"acceptMetered:entry\":1,\"acceptMetered:exit\":1,\"acceptMetered:root-state\":1,\"acceptMetered:object\":4,\"acceptMetered:array\":1,\"acceptMetered:new.PrimordialSet\":1,\"acceptMetered:call.PrimordialObjectFreeze\":2,\"finishAcceptance:entry\":1,\"finishAcceptance:exit\":1,\"finishAcceptance:object\":8,\"finishAcceptance:array\":3,\"finishAcceptance:call.encode\":1,\"finishAcceptance:call.PrimordialObjectFreeze\":1,\"encode:entry\":1,\"encode:exit\":1},\"dimensions\":{\"families\":[\"symbol\",\"hidden\",\"accessor\",\"undefined\",\"lone-name\",\"array-extra\",\"hole\",\"cycle\",\"Map\",\"proxy\",\"revoked\",\"NaN\"],\"prototypes\":[\"ordinary\",\"null\",\"foreign\"],\"widths\":[1,7,8,9,17],\"depths\":[0,1,15,29,31],\"aliasing\":[\"shared\",\"distinct\"],\"smallThresholds\":\"work <=2000 and bytes <=4000 exhaustive; otherwise 0..256, every 61st, final 256\",\"largeThresholds\":\"charge neighborhoods; over 160 neighborhoods: first/final 48 and every 97th; four paired thresholds\"}}\n",
+  "elapsed_seconds": 166.55203754198737,
+  "end_utc": "2026-10-19T09:18:27.711577+00:00",
+  "clean_after": ""
+}

@@ -1,0 +1,67 @@
+{
+  "id": "value-cost-dimensions",
+  "source_specification": "docs/development/work/K1.1-correction-03/verification.json",
+  "source_revision": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "start_utc": "2026-10-19T09:15:35.198927+00:00",
+  "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+  "node": "v26.10.0",
+  "parallel_validation_jobs": 0,
+  "argv": [
+    "node",
+    "--no-warnings",
+    "--experimental-strip-types",
+    "tests/tooling/capture-dimensions.mjs"
+  ],
+  "passed": true,
+  "counts": {},
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [
+      "ARROKOTHI_VALUE_COST_BASELINE"
+    ],
+    "absent": [
+      "NODE_OPTIONS",
+      "NODE_TEST_CONTEXT",
+      "NODE_V8_COVERAGE",
+      "KERNEL_POISON_MODE",
+      "KERNEL_POISON_OUT",
+      "KERNEL_POISON_NAMES",
+      "PACKET_ORACLE_CHECK",
+      "PACKET_REACH_FILE",
+      "ARROKOTHI_READ_TRACE",
+      "GEMINI_MODEL",
+      "GEMINI_API_KEY",
+      "GOOGLE_API_KEY",
+      "GOOGLE_GENERATIVE_AI_API_KEY",
+      "FLOOR_ORDER_LOG",
+      "FLOOR_READ_DIR",
+      "ARROKOTHI_VALUE_COST_LOAD"
+    ],
+    "inherited_values_recorded": false
+  },
+  "inputs": [
+    {
+      "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+      "regular_files": 2278,
+      "symlinks": 4,
+      "content_manifest_sha256": "d63d356fe64b63c6475579d62a30a06117675507edc528ca6a639441602af6a1",
+      "id": "value-cost-baseline"
+    }
+  ],
+  "catalog": null,
+  "status": "finished",
+  "exit": 0,
+  "output": "{\n  \"node\": \"v26.10.0\",\n  \"tree\": \"/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C\",\n  \"baseline\": \"/var/folders/9_/v7jswj911pgd8x04p368t23r0000gn/T/arrokothi-input-29q65sa6/value-cost-baseline\",\n  \"initialSeed\": \"0x4b433303\",\n  \"dimensions\": {\n    \"families\": [\n      \"symbol\",\n      \"hidden\",\n      \"accessor\",\n      \"undefined\",\n      \"lone-name\",\n      \"long-name\",\n      \"array-extra\",\n      \"hole\",\n      \"NaN\",\n      \"Map\",\n      \"proxy\",\n      \"revoked\",\n      \"cycle\"\n    ],\n    \"prototypes\": [\n      \"plain\",\n      \"null\",\n      \"foreign1\",\n      \"foreign1000\"\n    ],\n    \"widths\": [\n      1,\n      7,\n      8,\n      9,\n      33,\n      257,\n      4096\n    ],\n    \"wrappers\": [\n      0,\n      1,\n      15,\n      29,\n      31\n    ],\n    \"aliases\": [\n      \"shared\",\n      \"alternating\",\n      \"distinct\"\n    ]\n  },\n  \"outcomes\": {\n    \"cases\": 5460,\n    \"stops\": {\n      \"none\": 5388,\n      \"bytes\": 72\n    },\n    \"codes\": {\n      \"unrepresentable_member\": 6240,\n      \"too_deep\": 5616,\n      \"unsupported_form\": 16224,\n      \"undefined_member\": 3744,\n      \"lone_surrogate\": 1248,\n      \"string_too_long\": 1248,\n      \"too_many_bytes\": 72,\n      \"non_finite_number\": 3120,\n      \"cycle\": 3120\n    },\n    \"maxUnits\": 1052978,\n    \"listingMismatches\": [],\n    \"maxDetails\": 8,\n    \"maxPath\": 96,\n    \"maxMessage\": 113\n  },\n  \"accepted\": {\n    \"cases\": 1543,\n    \"maxRatio\": 2.9692307692307693,\n    \"maxUnits\": 3094930,\n    \"costliestWitness\": {\n      \"label\": \"submitted-costliest-witness\",\n      \"bytes\": 1048555,\n      \"units\": 3094930,\n      \"gapToBudget\": 50798\n    },\n    \"baselineComparisons\": 1543\n  },\n  \"publicConsumers\": [\n    \"canonicalize\",\n    \"boundaryValueIssues and isBoundaryValue\",\n    \"creation authorityContext\",\n    \"creation initial input payload\",\n    \"ingress payload\",\n    \"recovery availability list\",\n    \"Outcome progress\",\n    \"Outcome emission value\",\n    \"Outcome completed result\",\n    \"Outcome failed error\",\n    \"eight eager Outcome roots from a visible caller with no grant\"\n  ],\n  \"consumerCases\": 1056,\n  \"limits\": [\n    \"Finite deterministic slices; not all cross-products of all engine objects.\",\n    \"Listing instrumentation observes real native returned lengths, not engine-internal work.\",\n    \"No physical isolation, live providers, native-addon External, or wall-time guarantee.\",\n    \"Near-budget mixed-family alignments are in probe-stop-boundary.mjs.\"\n  ]\n}\n",
+  "elapsed_seconds": 5.945209083147347,
+  "end_utc": "2026-10-19T09:15:41.144117+00:00",
+  "clean_after": ""
+}

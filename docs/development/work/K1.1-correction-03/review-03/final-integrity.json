@@ -1,0 +1,16 @@
+{
+  "checked_at_utc": "2026-10-19T15:44:49.907756+00:00",
+  "C": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "H": "4b121d7ba665182b22857f049c05f019f25d0c65",
+  "C_status_porcelain": "",
+  "H_tracked_diff": "",
+  "H_staged_diff": "",
+  "H_only_untracked_review_artifacts": true,
+  "no_commit_or_push": true,
+  "completed_remaining_steps": 13,
+  "all_remaining_steps_passed": true,
+  "cumulative_diff_bytes": 110492496,
+  "cumulative_diff_sha256": "7cefa80711594a0cd862028aef88ea7fba2f2461012dcc008f0bfa14eedc4327",
+  "owner_supplements_verbatim": true,
+  "report_final_line": "ACCEPT"
+}

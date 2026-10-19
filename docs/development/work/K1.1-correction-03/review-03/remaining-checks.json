@@ -1,0 +1,142 @@
+[
+  {
+    "id": "dimensions",
+    "start_utc": "2026-10-19T08:47:29.828918+00:00",
+    "passed": true,
+    "elapsed_seconds": 0.10598983312956989,
+    "end_utc": "2026-10-19T08:47:29.935132+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "registered-mutants",
+    "start_utc": "2026-10-19T08:47:29.950928+00:00",
+    "passed": true,
+    "elapsed_seconds": 356.5385976249818,
+    "end_utc": "2026-10-19T08:53:26.493689+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "refusal-mutants",
+    "start_utc": "2026-10-19T08:53:26.511004+00:00",
+    "passed": true,
+    "elapsed_seconds": 271.1738247908652,
+    "end_utc": "2026-10-19T08:57:57.688001+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "value-cost-mutants",
+    "start_utc": "2026-10-19T08:57:57.703299+00:00",
+    "passed": true,
+    "elapsed_seconds": 714.5320934159681,
+    "end_utc": "2026-10-19T09:09:52.161995+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "refusal-census",
+    "start_utc": "2026-10-19T09:09:52.192501+00:00",
+    "passed": true,
+    "counts": {},
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 0.4858078749384731,
+    "end_utc": "2026-10-19T09:09:52.678328+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "oracle-census",
+    "start_utc": "2026-10-19T09:09:52.693503+00:00",
+    "passed": true,
+    "counts": {},
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 0.20538420812226832,
+    "end_utc": "2026-10-19T09:09:52.898902+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "typecheck",
+    "start_utc": "2026-10-19T09:09:52.913792+00:00",
+    "passed": true,
+    "counts": {},
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 2.9298367500305176,
+    "end_utc": "2026-10-19T09:09:55.843628+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "repository-tests",
+    "start_utc": "2026-10-19T09:09:55.859146+00:00",
+    "passed": true,
+    "counts": {
+      "tests": 4123,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 45.67599308304489,
+    "end_utc": "2026-10-19T09:10:41.534898+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "archive-tests",
+    "start_utc": "2026-10-19T09:10:41.552080+00:00",
+    "passed": true,
+    "counts": {
+      "tests": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 0.829602082958445,
+    "end_utc": "2026-10-19T09:10:42.381693+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "kernel-sweeps",
+    "start_utc": "2026-10-19T09:10:42.396866+00:00",
+    "passed": true,
+    "counts": {},
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 292.78770958282985,
+    "end_utc": "2026-10-19T09:15:35.182947+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "value-cost-dimensions",
+    "start_utc": "2026-10-19T09:15:35.198927+00:00",
+    "passed": true,
+    "counts": {},
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 5.945209083147347,
+    "end_utc": "2026-10-19T09:15:41.144117+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "value-cost-continuations",
+    "start_utc": "2026-10-19T09:15:41.160455+00:00",
+    "passed": true,
+    "counts": {},
+    "status": "finished",
+    "exit": 0,
+    "elapsed_seconds": 166.55203754198737,
+    "end_utc": "2026-10-19T09:18:27.711577+00:00",
+    "clean_after": ""
+  },
+  {
+    "id": "area-gate",
+    "start_utc": "2026-10-19T09:18:27.727663+00:00",
+    "passed": true,
+    "elapsed_seconds": 21.879130833083764,
+    "end_utc": "2026-10-19T09:18:49.606687+00:00",
+    "clean_after": ""
+  }
+]

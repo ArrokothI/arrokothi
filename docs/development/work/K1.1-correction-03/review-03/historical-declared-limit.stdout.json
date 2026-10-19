@@ -1,0 +1,35 @@
+{
+  "node": "v26.10.0",
+  "tree": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+  "documentation_claim_holds": true,
+  "claim": {
+    "path": "mental-model/roadmap.md",
+    "line": 111,
+    "text": "refuses every Proxy, and every built-in whose internal slots a side-effect-free engine test detects, under"
+  },
+  "rows": [
+    {
+      "kind": "WeakRef",
+      "result": {
+        "ok": true,
+        "value": {
+          "value": {},
+          "canonical": "{}",
+          "canonicalBytes": 2
+        }
+      }
+    },
+    {
+      "kind": "FinalizationRegistry",
+      "result": {
+        "ok": true,
+        "value": {
+          "value": {},
+          "canonical": "{}",
+          "canonicalBytes": 2
+        }
+      }
+    }
+  ],
+  "interpretation": "Review 01 witnesses still receive the Q6-authorized acceptance; the former broad roadmap synopsis is absent and the detectable-kind qualifier is present."
+}

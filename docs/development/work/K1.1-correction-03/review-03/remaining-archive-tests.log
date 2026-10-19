@@ -1,0 +1,14 @@
+▶ K1.0 evidence records
+  ✔ every settled round's manifest is present and checked (2.315833ms)
+  ✔ every recorded digest is the digest of the file it names (14.563834ms)
+  ✔ no token presented as a digest has an impossible length (2.122625ms)
+  ✔ the check is not vacuous: it rejects a manifest whose digest is wrong (0.290083ms)
+✔ K1.0 evidence records (19.859083ms)
+ℹ tests 4
+ℹ suites 1
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.197542

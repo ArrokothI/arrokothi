@@ -1,0 +1,152 @@
+[
+  {
+    "archive": "b-matrices",
+    "name": "b-c1.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-c1/summary.json",
+    "content": "{\n  \"runs\": 792,\n  \"counts\": {\n    \"passed\": 565,\n    \"assertion_failed\": 172,\n    \"subject_exception\": 50,\n    \"load_error\": 4,\n    \"signal\": 1\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-registry.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-registry/summary.json",
+    "content": "{\n  \"runs\": 151,\n  \"counts\": {\n    \"passed\": 7,\n    \"assertion_failed\": 123,\n    \"subject_exception\": 18,\n    \"load_error\": 2,\n    \"setup_error\": 1\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-withdrawn.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-withdrawn/summary.json",
+    "content": "{\n  \"runs\": 18,\n  \"counts\": {\n    \"passed\": 9,\n    \"subject_exception\": 9\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-equivalent.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-equivalent/summary.json",
+    "content": "{\n  \"runs\": 6,\n  \"counts\": {\n    \"passed\": 2,\n    \"assertion_failed\": 4\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-direct.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "b-matrices",
+    "name": "b-direct/summary.json",
+    "content": "{\n  \"runs\": 2,\n  \"counts\": {\n    \"direct\": 2\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-c1.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-c1/summary.json",
+    "content": "{\n  \"runs\": 792,\n  \"counts\": {\n    \"passed\": 535,\n    \"assertion_failed\": 228,\n    \"subject_exception\": 28,\n    \"signal\": 1\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-registry.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-registry/summary.json",
+    "content": "{\n  \"runs\": 256,\n  \"counts\": {\n    \"passed\": 18,\n    \"assertion_failed\": 238\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-withdrawn.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-withdrawn/summary.json",
+    "content": "{\n  \"runs\": 18,\n  \"counts\": {\n    \"passed\": 9,\n    \"subject_exception\": 9\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-equivalent.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-equivalent/summary.json",
+    "content": "{\n  \"runs\": 6,\n  \"counts\": {\n    \"passed\": 6\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-direct.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "c-matrices",
+    "name": "c-direct/summary.json",
+    "content": "{\n  \"runs\": 2,\n  \"counts\": {\n    \"direct\": 2\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "isolations",
+    "name": "screen.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "isolations",
+    "name": "b-isolated.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "isolations",
+    "name": "b-isolated/summary.json",
+    "content": "{\n  \"runs\": 622,\n  \"counts\": {\n    \"passed\": 311,\n    \"subject_exception\": 61,\n    \"assertion_failed\": 250\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "isolations",
+    "name": "c-isolated.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "isolations",
+    "name": "c-isolated/summary.json",
+    "content": "{\n  \"runs\": 942,\n  \"counts\": {\n    \"passed\": 471,\n    \"assertion_failed\": 471\n  },\n  \"production_restored\": true\n}\n"
+  },
+  {
+    "archive": "c1-ledger",
+    "name": "ledger.exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "verify",
+    "name": "C/exit",
+    "content": "0\n"
+  },
+  {
+    "archive": "verify",
+    "name": "C/run.txt",
+    "content": "command: python3 -B scripts/packet_tools.py verify --revision 2bf220e9e426c810f2505fa2d74d70197807e584 --spec docs/development/work/K1.1-correction-03/verification.json\nnode: v26.10.0\nnpm: 11.19.1\npython: Python 3.13.5 /Users/rex-shih/anaconda3/bin/python3\nhost: Darwin 25.6.0 arm64\nstarted_utc: 2026-10-18T07:23:35Z\nfinished_utc: 2026-10-18T08:25:51Z\nelapsed_seconds: 3736\nexit: 0\nclean_after: yes\n"
+  },
+  {
+    "archive": "verify",
+    "name": "f7371872/exit",
+    "content": "1\n"
+  },
+  {
+    "archive": "verify",
+    "name": "f7371872/run.txt",
+    "content": "command: python3 -B scripts/packet_tools.py verify --revision f73718728837eaa6f8724a43c385f2da02cc4bf6 --spec docs/development/work/K1.1-correction-03/verification.json\nnode: v26.10.0\nnpm: 11.19.1\npython: Python 3.13.5 /Users/rex-shih/anaconda3/bin/python3\nhost: Darwin 25.6.0 arm64\nstarted_utc: 2026-10-18T06:19:38Z\nfinished_utc: 2026-10-18T07:21:40Z\nelapsed_seconds: 3722\nexit: 1\nclean_after: yes\n"
+  }
+]

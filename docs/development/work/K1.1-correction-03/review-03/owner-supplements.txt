@@ -1,0 +1,5 @@
+2026-10-12: the owner choice 01 standing rule covers a changed witnessed test, not a changed helper
+module. The owner accepts the 007 TOOLS-02 scope edit and the kernel-sweep timeout.
+2026-10-18: proposed limitation L-13 in implementation-04 (no request-wide work budget; each root has
+its own B under decision-05 item 5) is approved for 017. 014's 'next steps' line is a plan statement
+that the owner updates at integration, not a current claim.
