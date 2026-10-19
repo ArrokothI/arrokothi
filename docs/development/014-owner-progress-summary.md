@@ -84,7 +84,7 @@ K1.3 is not released. Limits:
 
 **A root-cause audit of accepted design.** DESIGN-AUDIT-01 answered which choices accepted in
 K0.1–K1.2 keep producing defect families, and what the owner's options are for each. It looked hardest at
-the in-process capture threat model. What now exists, under [its directory](work/DESIGN-AUDIT-01/):
+the in-process capture threat model. What now exists, starting from [its register](work/DESIGN-AUDIT-01/register.md):
 
 - A design-debt register. It covers 278 classified review-finding labels in 16 families and six items: the
   same-process threat model, the own-array and serializer environment, exotic classification,

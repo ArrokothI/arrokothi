@@ -347,6 +347,11 @@ for architecture boundaries and implementation/migration updates.
 Each packet has one **verification command** at C. It runs every required check and prints a
 summary: tool versions, commands, exit codes, and counts including skips. The report quotes that
 summary, and reviewers rerun it.
+Run it in the [Packet verify](../../.github/workflows/packet-verify.yml) workflow at the exact C,
+with the packet's spec. Its artifact holds the raw output, stderr, a summary and the run identity.
+Agents start the run, end their turn and read the artifact later, instead of supervising a long local
+run; a reviewer may cite that run instead of repeating it. A local run stays valid when CI is
+unavailable; record which one was used.
 
 Attach raw logs, with a manifest and digests, only for runs a reviewer cannot reproduce cheaply:
 external gates, long or nondeterministic probes, timing observations, and failures being disclosed.

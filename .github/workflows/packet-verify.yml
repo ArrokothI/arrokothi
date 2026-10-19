@@ -1,0 +1,105 @@
+# Runs a packet's composed verification at an exact payload commit C, so coding and review agents
+# read one result instead of supervising an hour-long local run. It changes no acceptance rule:
+# the result is evidence for the reviewer, who still binds acceptance to exact H (006).
+#
+# Start it from the Actions tab ("Run workflow"), or:
+#   gh workflow run packet-verify.yml -f revision=<full C SHA> -f spec=docs/development/work/<packet>/verification.json
+# Read it with:
+#   gh run list --workflow packet-verify.yml
+#   gh run download <run-id> -n packet-verify-<C SHA>
+name: Packet verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Payload commit C (full 40-character SHA)
+        required: true
+      spec:
+        description: Verification spec path at C, e.g. docs/development/work/<packet>/verification.json
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: packet-verify-${{ inputs.revision }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      REVISION: ${{ inputs.revision }}
+      SPEC: ${{ inputs.spec }}
+    steps:
+      - name: Check inputs
+        run: |
+          [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]] || { echo "revision must be a full 40-character commit SHA"; exit 1; }
+          [[ "$SPEC" =~ ^docs/development/work/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+\.json$ ]] || { echo "spec must be docs/development/work/<packet>/<file>.json"; exit 1; }
+
+      - name: Check out C with full history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.revision }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.10.0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify (one job, clean checkout at C)
+        env:
+          TMPDIR: ${{ runner.temp }}
+        run: |
+          out="$RUNNER_TEMP/packet-verify"
+          mkdir -p "$out"
+          {
+            echo "revision=$REVISION"
+            echo "spec=$SPEC"
+            echo "head=$(git rev-parse HEAD)"
+            echo "node=$(node --version) npm=$(npm --version) python=$(python3 --version 2>&1)"
+            echo "runner=$RUNNER_OS $(uname -m) cpus=$(nproc)"
+            echo "started=$(date -u +%FT%TZ)"
+          } > "$out/run.txt"
+          set +e
+          python3 -B scripts/packet_tools.py verify --revision "$REVISION" --spec "$SPEC" \
+            > "$out/verify.json" 2> >(tee "$out/verify.stderr.log" >&2)
+          status=$?
+          set -e
+          { echo "finished=$(date -u +%FT%TZ)"; echo "exit=$status"; } >> "$out/run.txt"
+          python3 - "$out/verify.json" "$out/summary.json" <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, sys
+          try:
+              data = json.load(open(sys.argv[1]))
+          except Exception as exc:
+              data = {'result': 'unreadable', 'error': str(exc)}
+          checks = [{'id': c.get('id'), 'passed': c.get('passed'),
+                     'result': c.get('result', {}).get('result') if isinstance(c.get('result'), dict) else None,
+                     'counts': c.get('counts')} for c in data.get('checks', data.get('results', []))]
+          summary = {'result': data.get('result'), 'error': data.get('error'), 'checks': checks}
+          json.dump(summary, open(sys.argv[2], 'w'), indent=2)
+          print(f"## Packet verify: `{summary['result']}`\n")
+          if summary['error']:
+              print(f"Error: `{summary['error']}`\n")
+          for c in checks:
+              print(f"- {'✅' if c['passed'] else '❌'} `{c['id']}` {c['result'] or ''} {c['counts'] or ''}")
+          PY
+          exit $status
+
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packet-verify-${{ inputs.revision }}
+          path: ${{ runner.temp }}/packet-verify
+          retention-days: 90
