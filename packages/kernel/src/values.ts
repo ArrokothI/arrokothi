@@ -34,14 +34,18 @@
  * directly into the snapshot rather than into a scratch array it reads back (K11-R6-VAL-04).
  *
  * Coherence alone would still let an exotic representation be *normalized* into a plain snapshot, and
- * `values.md` says to reject unsupported values rather than repair them. So the capture pass also
- * refuses any container whose own data descriptor and ordinary property read disagree, whose array
- * position is supplied by anything other than an own data property, or whose structure cannot be
- * observed at all (a trap that throws). Those are `unstable_representation`, `undefined_member` and
- * `unsupported_form` refusals, not repairs, and they are stated structurally rather than by naming
- * `Proxy`: nothing here tests for a particular exotic object kind.
+ * `values.md` says to reject unsupported values rather than repair them. So the capture pass refuses
+ * every Proxy before observing it at all — the first observation of any object is the Proxy test, so
+ * no trap runs (owner decision-01 item 2) — and refuses a built-in that keeps its content in internal
+ * slots (a re-prototyped Map, Date, typed array, boxed primitive, …) by internal-slot type checks
+ * before any own-key listing (decision-01 item 3), for every kind a side-effect-free engine test detects.
+ * The kinds no such test detects are a declared limit, not a refusal (`values.md`; design check Q6). It also refuses any container whose own data
+ * descriptor and ordinary property read disagree, whose array position is supplied by anything other
+ * than an own data property, or whose structure cannot be observed at all. Those structural checks
+ * predate the Proxy refusal and stay as a second line for host objects; all of these are
+ * `unsupported_form`, `unstable_representation` and `undefined_member` refusals, not repairs.
  *
- * Three further properties are deliberate and are the reason this is one module rather than a helper:
+ * Further properties are deliberate and are the reason this is one module rather than a helper:
  *
  * 1. **Validation runs before equality, never after.** A non-finite number, a lone surrogate or a
  *    class instance is rejected at the boundary; it is never coerced to `null`, `"NaN"` or U+FFFD
@@ -66,12 +70,16 @@
  *    bounded details per root, then exact counts per remaining code, with bounded path construction.
  *    Reading does not stop at eight issues.
  *
- *    These are read and retention bounds, not a proof that refusing a value costs no more time or
- *    memory than accepting one at the limits (`values.md` V-D1). Some refusal work is not charged to
- *    the byte count: review 08 of K1.2-correction-01 measured refused containers at nesting depth
- *    costing more than the costliest acceptance found. The V-D1 claim is **held** for this binding and
- *    is not certified by this implementation; K1.1-correction-03 owns the metered bound (owner
- *    decision-05, K1.2-correction-01 amendment 01).
+ *    The byte count bounds what is accepted, not the work of refusing. A refused position can charge
+ *    no bytes at all (review 08 of K1.2-correction-01 measured refused containers at nesting depth
+ *    costing more than any acceptance), so refusal cost has its own measure (`values.md` V-D1, owner
+ *    decision-05):
+ * 5. **Every root has a work meter.** Every observation of a caller value and every value-dependent
+ *    piece of Kernel work is charged to the root's meter through the metered helpers below, and the
+ *    root stops at the first unit past `CAPTURE_WORK_BUDGET` = 3 × the size limit, which no acceptable
+ *    value can reach. Refusing a root therefore costs at most that budget plus one operation, whatever
+ *    its shape, depth or sharing; `tests/capture-metering.test.ts` keeps capture code inside the helpers
+ *    (K1.1-correction-03).
  *
  * K1.0 assigned `packages/core/src/util/json.ts` to this packet as `DX-2` (migratable). It is not
  * extracted. The legacy `canonicalJson` in `packages/core/src/util/hash.ts` is an
@@ -95,7 +103,9 @@
 import canonicalizeJcs from "canonicalize";
 import { Buffer } from "node:buffer";
 
-import { appendOwn, defineAt, defineData, readAt, restoreDescriptor, sizedList, truncateOwn } from "./own-array.ts";
+import { types as UtilTypes } from "node:util";
+
+import { appendOwn, defineAt, defineData, readAt, restoreDescriptor, sizedList } from "./own-array.ts";
 
 /**
  * Primordials captured before any caller code runs.
@@ -150,6 +160,8 @@ const PrimordialGetOwnPropertySymbols = Object.getOwnPropertySymbols;
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialJSONStringify = JSON.stringify;
 const PrimordialNumberIsFinite = Number.isFinite;
+const PrimordialNumberIsInteger = Number.isInteger;
+const PrimordialRangeError = RangeError;
 const PrimordialArrayPrototype = Array.prototype;
 const PrimordialSetPrototype = Set.prototype;
 const PrimordialArrayMap = Array.prototype.map;
@@ -216,6 +228,42 @@ const hasOwnValue = (holder: object): boolean =>
 const PrimordialBufferByteLength = Buffer.byteLength;
 const PrimordialGlobalThis = globalThis;
 
+/**
+ * The Proxy and internal-slot predicates, read once at load (owner decision-01 items 2–3).
+ *
+ * Each of these `util.types` predicates is native: it reads the engine's object kind, runs no trap and
+ * consults no prototype, global or `Symbol.toStringTag`, and it recognizes revoked Proxies and cross-realm
+ * built-ins. Looking the predicates up at call time would itself be a global hop, so each is captured here.
+ * `JSON.isRawJSON` (ECMAScript 2026, missing from this repository's ES2023 type library, hence
+ * `JSONWithRawJSON`) tests the `[[IsRawJSON]]` slot. `util.types.isKeyObject` and `isCryptoKey` are not
+ * used: in Node v26.10.0 they are JavaScript functions that read the configurable `process.versions` on
+ * every call, so they would run ambient code inside capture. KeyObject and CryptoKey keep their state
+ * outside own properties and join the kinds no side-effect-free test recognizes (BASELINE, declared limits).
+ */
+const PrimordialIsProxy = UtilTypes.isProxy;
+const PrimordialIsMap = UtilTypes.isMap;
+const PrimordialIsSet = UtilTypes.isSet;
+const PrimordialIsWeakMap = UtilTypes.isWeakMap;
+const PrimordialIsWeakSet = UtilTypes.isWeakSet;
+const PrimordialIsDate = UtilTypes.isDate;
+const PrimordialIsRegExp = UtilTypes.isRegExp;
+const PrimordialIsAnyArrayBuffer = UtilTypes.isAnyArrayBuffer;
+const PrimordialIsArrayBufferView = UtilTypes.isArrayBufferView;
+const PrimordialIsBoxedPrimitive = UtilTypes.isBoxedPrimitive;
+const PrimordialIsNativeError = UtilTypes.isNativeError;
+const PrimordialIsPromise = UtilTypes.isPromise;
+const PrimordialIsGeneratorObject = UtilTypes.isGeneratorObject;
+const PrimordialIsMapIterator = UtilTypes.isMapIterator;
+const PrimordialIsSetIterator = UtilTypes.isSetIterator;
+const PrimordialIsArgumentsObject = UtilTypes.isArgumentsObject;
+const PrimordialIsModuleNamespaceObject = UtilTypes.isModuleNamespaceObject;
+const PrimordialIsExternal = UtilTypes.isExternal;
+interface JSONWithRawJSON extends JSON {
+  readonly isRawJSON: (value: unknown) => boolean;
+}
+const PrimordialJSONWithRawJSON = PrimordialJSON as JSONWithRawJSON;
+const PrimordialIsRawJSON = PrimordialJSONWithRawJSON.isRawJSON;
+
 /** A value that may cross a Kernel boundary. `values.md`: "Boundary value and root". */
 export type BoundaryValue = null | boolean | number | string | BoundaryValue[] | { [key: string]: BoundaryValue };
 
@@ -241,7 +289,11 @@ export const BOUNDARY_LIMITS = PrimordialObjectFreeze({
 } as const);
 
 export type ValueIssueCode =
-  /** Not one of the six boundary forms: `undefined`, a symbol, a function, a class instance, … */
+  /**
+   * Not one of the six boundary forms: `undefined`, a symbol, a function, a class instance, any Proxy,
+   * a built-in whose internal slots a side-effect-free engine test detects (a Map, Date, typed array, boxed
+   * primitive, …), …
+   */
   | "unsupported_form"
   /** `NaN`, `Infinity` or `-Infinity`. */
   | "non_finite_number"
@@ -264,7 +316,13 @@ export type ValueIssueCode =
   | "string_too_long"
   | "too_many_entries"
   | "too_deep"
-  | "too_many_bytes";
+  | "too_many_bytes"
+  /**
+   * Reading the value passed the root's work budget B (`CAPTURE_WORK_BUDGET`), which every acceptable
+   * value stays within, so the value is refused and the rest of it is not read. Like `too_many_bytes`
+   * it stops the root; the two are exclusive, so one root still reports at most eleven distinct codes.
+   */
+  | "too_much_work";
 
 /** One reason a value is not an acceptable boundary value, located within that value. */
 export interface ValueIssue {
@@ -309,7 +367,7 @@ const childElement = (path: string, suffix: string): string =>
 /** Bounded diagnostics only; never used for accepted content or identity. */
 const issueText = (text: string, limit: number, omitted: string): string => {
   if (text.length > limit) return omitted;
-  for (let index = 0; index < text.length; index += 1) {
+  for (let index = 0; index < text.length && index < 1_024; index += 1) {
     if (text[index]! < " " || text[index]! > "~") return omitted;
   }
   return text;
@@ -359,7 +417,7 @@ const scanBoundaryString = (input: string): StringScan => {
   if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;
   let scalars = 0;
   let bytes = 2;
-  for (let index = 0; index < units; index += 1) {
+  for (let index = 0; index < units && index < 2 * BOUNDARY_LIMITS.stringScalarValues; index += 1) {
     scalars += 1;
     if (scalars > BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;
     const unit = PrimordialReflectApply(PrimordialStringCharCodeAt, input, [index]) as number;
@@ -389,12 +447,14 @@ const scanBoundaryString = (input: string): StringScan => {
 /**
  * Records one located reason this value is not acceptable.
  *
- * Through `appendOwn`, not `push` and not `list[list.length] = issue`. Issue lists are built while
- * caller traps are still running, and both of those are `[[Set]]` on a position the list does not
- * own yet: an inherited `Array.prototype` indexed setter installed by an earlier trap in the same
- * pass swallows the issue and leaves a hole that a later read answers from the attacker's getter,
- * so the reason a value was refused would be the attacker's text (K11-R6-VAL-04). `own-array.ts`
+ * Through `appendOwn`, not `push` and not `list[list.length] = issue`. Issue lists are Kernel-grown, and
+ * both of those are `[[Set]]` on a position the list does not own yet: an inherited `Array.prototype`
+ * indexed setter would swallow the issue and leave a hole that a later read answers from the inherited
+ * getter, so the reason a value was refused would be someone else's text (K11-R6-VAL-04). `own-array.ts`
  * owns why the replacement is structural rather than another captured method.
+ *
+ * Capture charges this as one diagnostic unit through `record`; the two stop issues are recorded here
+ * directly and are the "plus one operation" of the work bound.
  */
 const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
   // Keep every code occurrence, but never a per-position suffix object/path/message. This
@@ -408,7 +468,8 @@ const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
     });
     return;
   }
-  for (let index = 8; index < issues.length; index += 1) {
+  // At most one suffix entry per code: 8 details plus 12 codes bound the search.
+  for (let index = 8; index < issues.length && index < 8 + 12; index += 1) {
     const entry = readAt(issues, index) as ValueIssue;
     if (entry.code === issue.code) {
       // Every suffix entry owns occurrences; no caller or inherited value is consulted.
@@ -424,23 +485,86 @@ const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {
  *
  * A distinct sentinel rather than `undefined`, because `undefined` is itself one of the refused
  * things this pass reports. Every path that returns `REFUSED` has already recorded at least one
- * located issue.
+ * located issue, or a stop issue for the whole root.
  */
-const REFUSED = Symbol("refused boundary value");
+const REFUSED: unique symbol = Symbol("refused boundary value");
 type Captured = BoundaryValue | typeof REFUSED;
+
+/**
+ * What a stop-capable function returns once the root has stopped: nothing further is observed or charged.
+ *
+ * Only `spend` (the work stop) and `charge` (the byte stop) change the stop state, and each reports it in
+ * its result. Every function that calls one of them, directly or through another, is stop-capable and
+ * reports the stop to its own caller as the sole `STOPPED` sentinel, distinct from `REFUSED` and
+ * every accepted value. Each
+ * caller tests that result by identity and returns (K1.1-correction-03 design 03). So once a
+ * root stops, no helper, listing, allocation, per-name loop, diagnostic or charge runs: only the stop
+ * issue, the test that detects the stop in each active frame and that frame's `finally`.
+ * Root handling packages the refusal and freezes the two fixed-size evidence records. No snapshot
+ * write or finishing is permitted after the stop. SC10/SC11 check the declared direct-call syntax;
+ * the runtime trace checks bookkeeping and finalization on its maintained shapes.
+ */
+const STOPPED: unique symbol = Symbol("capture stopped");
+
+/** What one traversal step returns: an accepted snapshot, a recorded refusal, or the root's stop. */
+type Visited = Captured | typeof STOPPED;
+
+/**
+ * The work budget B of one root: the most units any acceptable value can consume, as a proven bound.
+ *
+ * `values.md`, fixed semantic limits: refusal cost is compared in metered Kernel work. Each unit below is
+ * an abstract operation whose engine work is bounded by a constant that depends only on the four limits,
+ * because no Proxy is ever observed (`capture` refuses every Proxy first) and no accessor is ever invoked.
+ * The residuals outside that constant (an object's listings before their length is known, host objects
+ * with interceptors, hash-table lookups, and own entries a listing walks but does not return) are declared
+ * in `values.md` and BASELINE `#value-refusal-diagnostics`.
+ *
+ * | Unit | Charged for | Units |
+ * |---|---|---|
+ * | visit | one visit of one value: classification, the Proxy test, the cycle and depth tests, the array test, the prototype observation, the internal-slot predicates, an array's `length` | 1 |
+ * | listing | one own-key listing (names or symbols), right after it returns | 1 + its length |
+ * | element | one array position: its own descriptor and its one ordinary read | 1 |
+ * | descriptor | one object member's (or listed index's) own descriptor | 1 |
+ * | read | one object member's ordinary read | 1 |
+ * | string | scanning one string or member name of at most 131,072 UTF-16 units, before the scan | its length |
+ * | diagnostic | recording one issue (bounded path, bounded message, at most eleven suffix codes) | 1 |
+ *
+ * **Derivation.** An accepted value's canonical form splits into disjoint per-node parts (brackets,
+ * commas, colons and quoted names for a container, the spelling for a scalar), and each accepted node
+ * costs at most three units per byte of its own part:
+ * - an array of n ≥ 1 entries costs 1 + (1 + n + 1) + 1 + n = 2n + 4 units for n + 1 bytes, and 2n + 4 ≤ 3n + 3
+ *   exactly when n ≥ 1; an empty array costs 4 units for 2 bytes;
+ * - an object of n ≥ 1 members with name lengths ℓ costs 1 + (1 + n) + 1 + n + n + Σℓ = 3n + 3 + Σℓ units for at
+ *   least 2n + 1 + Σ(ℓ + 2) bytes; an empty object costs 3 units for 2 bytes;
+ * - a string of ℓ units costs 1 + ℓ for at least ℓ + 2 bytes; any other scalar costs 1 for at least 1 byte.
+ * So an accepted value costs at most 3 × its canonical bytes ≤ 3 × 1,048,576. Units only grow during a
+ * capture, so no acceptable value ever passes B at any point, and the meter never refuses a valid value.
+ * B is a proven upper bound, not an attained maximum: the ratio 3 is reached only by singleton arrays,
+ * and the depth limit forces leaves and fan-out (BASELINE `#value-refusal-diagnostics` records the
+ * costliest witness and the gap).
+ */
+export const CAPTURE_WORK_BUDGET: number = 3 * BOUNDARY_LIMITS.canonicalBytes;
+
+/** The string preflight: no valid string has more UTF-16 units than twice the scalar limit. */
+const STRING_SCAN_LIMIT = 2 * BOUNDARY_LIMITS.stringScalarValues;
+
+const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
+const BUILT_IN_MESSAGE = "expected a plain object, received a built-in object whose content is kept in internal slots";
+const TOO_MUCH_WORK_MESSAGE = `reading this value passed the work budget of ${CAPTURE_WORK_BUDGET} units that bounds every acceptable value; the rest of the value was not read`;
 
 interface CaptureState {
   readonly issues: ValueIssue[];
   /**
    * Containers currently on the path, by identity, so a self-reference is a cycle and not a hang.
    *
-   * A plain identity stack compared with `===`, not a `Set`: `Set` construction consults the
-   * global `Set` binding and `has`/`add`/`delete` consult `Set.prototype`, all of which a
-   * capture-time side effect can replace mid-pass. Depth is bounded by `containerDepth`, so one scan
-   * compares at most that many identities and consults nothing ambient. The scans are not charged to
-   * the byte count; their total over a refused value is part of the held V-D1 question (item 4 above).
+   * A Kernel-created `Set`, reached only through load-time references: constructed with the load-time
+   * constructor and no iterable (so no adder lookup), and read and written only through the load-time
+   * `has`/`add`/`delete` under the load-time `Reflect.apply`. No global binding or prototype is consulted
+   * at call time (DEC-8). Only containers on the current path are open and descent stops one level past
+   * the depth limit, so it never holds more than 32 entries: each operation is a constant bounded by the
+   * depth limit, and a visit's work no longer grows with nesting depth (K12C1-R8-VALUE-DEPTH-01).
    */
-  readonly open: object[];
+  readonly open: Set<object>;
   /**
    * Canonical bytes of everything read so far, every occurrence of a shared member counted in full.
    *
@@ -449,35 +573,93 @@ interface CaptureState {
    * bytes, a scalar's spelling — so the count only ever grows toward the exact canonical size and
    * never past it. Content that is refused for another reason is charged for the work of reading it
    * (a refused string's length, a container's surplus names), which can only add to a count on a
-   * value that is refused anyway.
+   * value that is refused anyway. This is the semantic size limit; the work meter is `units`.
    */
   bytes: number;
-  /** Set once `bytes` passes the size limit; from then on nothing further is read. */
+  /** The work meter: every unit charged to this root (the per-kind counts below sum to it). */
+  units: number;
+  visitUnits: number;
+  listingUnits: number;
+  elementUnits: number;
+  descriptorUnits: number;
+  readUnits: number;
+  stringUnits: number;
+  diagnosticUnits: number;
+  /** Which stop ended reading, if any: the byte limit or the work budget. They are exclusive. */
+  stop: "none" | "bytes" | "work";
+  /** For a work stop, the kind of the charge that passed B (evidence for the stop oracle); otherwise `null`. */
+  crossing: UnitKind | null;
+  /** Set once either stop fires; from then on nothing further is read or charged. */
   stopped: boolean;
 }
+
+export type UnitKind = "visit" | "listing" | "element" | "descriptor" | "read" | "string" | "diagnostic";
+
+/**
+ * Charges `units` of one kind to the root's work meter and reports whether reading may continue.
+ *
+ * The first charge that takes the meter past B records one root-located `too_much_work` issue, stops the
+ * root and returns `STOPPED`, which its caller propagates by identity. Every charge is made before the work
+ * it pays for, except a listing, which is charged right after it returns because its length is not known
+ * before; that listing is the one operation a refusal may perform past B. `state` is a Kernel-created
+ * literal and its counters are own data properties, so these writes consult no prototype.
+ */
+const spend = (state: CaptureState, kind: UnitKind, units: number): true | typeof STOPPED => {
+  if (state.stopped) return STOPPED;
+  state.units += units;
+  if (kind === "visit") state.visitUnits += units;
+  else if (kind === "listing") state.listingUnits += units;
+  else if (kind === "element") state.elementUnits += units;
+  else if (kind === "descriptor") state.descriptorUnits += units;
+  else if (kind === "read") state.readUnits += units;
+  else if (kind === "string") state.stringUnits += units;
+  else state.diagnosticUnits += units;
+  if (state.units > CAPTURE_WORK_BUDGET) {
+    state.stopped = true;
+    state.stop = "work";
+    state.crossing = kind;
+    pushIssue(state.issues, { path: "", code: "too_much_work", message: TOO_MUCH_WORK_MESSAGE });
+    return STOPPED;
+  }
+  return true;
+};
+
+/**
+ * Records one located issue as one diagnostic unit and reports whether reading may continue.
+ *
+ * `STOPPED` means this diagnostic took the meter past B: the stop issue was recorded instead, and the caller
+ * must return `STOPPED` at once rather than go on to its next observation (KC3-R1-STOP-01).
+ */
+const record = (state: CaptureState, issue: ValueIssue): true | typeof STOPPED => {
+  if (spend(state, "diagnostic", 1) === STOPPED) return STOPPED;
+  pushIssue(state.issues, issue);
+  return true;
+};
+
+/** A terminal refusal: records the issue and returns `REFUSED`, or `STOPPED` if that diagnostic stopped the root. */
+const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) === STOPPED ? STOPPED : REFUSED);
 
 /**
  * Adds `bytes` to the root's running canonical size and reports whether reading may continue.
  *
- * The first time the count passes the limit, one root-located `too_many_bytes` issue is recorded and
- * the pass stops: every later `capture` returns at once and every container loop ends. The reported
- * size is a lower bound — the part of the value read before stopping. Nothing past the byte stop is
- * read, which bounds the reading this count charges. It does not bound refusal work the count does not
- * charge, so it is no claim that a refusal costs no more than a value at the limit: that V-D1 claim is
- * held pending K1.1-correction-03 (item 4 of the module comment). `state` is a Kernel-created literal
- * and `bytes`/`stopped` are its own data properties, so these writes consult no prototype.
+ * The first time the count passes the limit, one root-located `too_many_bytes` issue is recorded, the
+ * root stops and this returns `STOPPED`, which its caller propagates by identity, as for `spend`. The reported
+ * size is a lower bound — the part of the value read before stopping. This is the semantic size limit
+ * and is not a work charge: the work every read performs is charged to the meter (`spend`), whose
+ * budget B bounds refusal cost (`values.md` V-D1, owner decision-05).
  */
-const charge = (state: CaptureState, bytes: number): boolean => {
-  if (state.stopped) return false;
+const charge = (state: CaptureState, bytes: number): true | typeof STOPPED => {
+  if (state.stopped) return STOPPED;
   state.bytes += bytes;
   if (state.bytes > BOUNDARY_LIMITS.canonicalBytes) {
     state.stopped = true;
+    state.stop = "bytes";
     pushIssue(state.issues, {
       path: "",
       code: "too_many_bytes",
       message: `canonical form reaches at least ${state.bytes} bytes, above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,
     });
-    return false;
+    return STOPPED;
   }
   return true;
 };
@@ -489,29 +671,190 @@ const charge = (state: CaptureState, bytes: number): boolean => {
 const containerStructureBytes = (entries: number, isObject: boolean): number =>
   entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);
 
-const isOpen = (state: CaptureState, container: object): boolean => {
-  for (let index = 0; index < state.open.length; index += 1) {
-    if (readAt(state.open, index) === container) return true;
-  }
-  return false;
-};
+// -- Metered helpers ----------------------------------------------------------------------------
+//
+// These are the only functions that observe a caller value or grow value-dependent bookkeeping
+// (`tests/capture-metering.test.ts` enforces it). Three kinds:
+// - visit-covered: constant work, called at most once per visit and never inside a loop, paid by the
+//   visit unit `capture` charges first, and reached only while the root has not stopped (every
+//   stop-capable call before them returned on a stop);
+// - charged: the first statement charges the unit, and the charge refuses once the root has stopped; a
+//   listing, whose length is known only after it returns, first tests the stop itself, then lists, then
+//   charges its length;
+// - per-name: constant work on one listed name, called only inside loops bounded by a charged listing.
+
+/** Whether an object or function is a Proxy. Reads only the engine's object kind; runs no trap. */
+/** The Proxy test, through the load-time `util.types.isProxy`; `envelope.ts` uses it for identity text. */
+export const isProxyValue = (value: object): boolean => PrimordialIsProxy(value);
+
+/** Whether a container is open on the current path (cycle test), through the load-time `has`. */
+const isOpenContainer = (state: CaptureState, container: object): boolean =>
+  PrimordialReflectApply(PrimordialSetHas, state.open, [container]) as boolean;
 
 const openContainer = (state: CaptureState, container: object): void => {
-  appendOwn(state.open, container);
+  PrimordialReflectApply(PrimordialSetAdd, state.open, [container]);
 };
 
-// The swap-with-last removal is an own write at a position the stack already owns, and the
-// truncation is an own `length` write; neither reaches a prototype. It is still routed through
-// `own-array.ts` so the whole stack — push, read and removal — obeys one rule rather than three
-// separately argued ones (K11-R6-VAL-04).
 const closeContainer = (state: CaptureState, container: object): void => {
-  for (let index = 0; index < state.open.length; index += 1) {
-    if (readAt(state.open, index) === container) {
-      defineAt(state.open, index, readAt(state.open, state.open.length - 1) as object);
-      truncateOwn(state.open, state.open.length - 1);
-      return;
-    }
+  PrimordialReflectApply(PrimordialSetDelete, state.open, [container]);
+};
+
+/** `IsArray` of a value already known not to be a Proxy, so it forwards nowhere and cannot throw. */
+const isArrayValue = (container: object): boolean => PrimordialArrayIsArray(container);
+
+/**
+ * The observed prototype, through the load-time `getPrototypeOf`.
+ *
+ * Callers compare it with the load-time `Object.prototype`/`Array.prototype`, never a live global read
+ * (K11-R5-VAL-03). For a non-Proxy value this reports the internal `[[Prototype]]` and runs nothing.
+ */
+const prototypeOf = (container: object): object | null => PrimordialGetPrototypeOf(container) as object | null;
+
+/**
+ * Whether a non-array object keeps content in internal slots: a built-in kind that a plain-object
+ * snapshot would silently drop (owner decision-01 item 3; owner-decisions-02 extra check b).
+ *
+ * Internal-slot type checks only, never the prototype, a constructor name or `Symbol.toStringTag`: each
+ * predicate reads the engine's object kind, so a re-prototyped or cross-realm built-in is recognized the
+ * same way. Run only on an object whose prototype is plain, before any own-key listing, so a typed array
+ * or String wrapper is refused without enumerating its indices (O-R8-3). Kinds with no non-throwing,
+ * side-effect-free predicate in Node v26.10.0 are a declared limit (`values.md`).
+ */
+const isBuiltInWithSlots = (container: object): boolean =>
+  PrimordialIsMap(container) ||
+  PrimordialIsSet(container) ||
+  PrimordialIsWeakMap(container) ||
+  PrimordialIsWeakSet(container) ||
+  PrimordialIsDate(container) ||
+  PrimordialIsRegExp(container) ||
+  PrimordialIsAnyArrayBuffer(container) ||
+  PrimordialIsArrayBufferView(container) ||
+  PrimordialIsBoxedPrimitive(container) ||
+  PrimordialIsNativeError(container) ||
+  PrimordialIsPromise(container) ||
+  PrimordialIsGeneratorObject(container) ||
+  PrimordialIsMapIterator(container) ||
+  PrimordialIsSetIterator(container) ||
+  PrimordialIsArgumentsObject(container) ||
+  PrimordialIsModuleNamespaceObject(container) ||
+  PrimordialIsExternal(container) ||
+  PrimordialIsRawJSON(container);
+
+/**
+ * An array's `length`, held to the one-stable-structure rule before it is trusted to bound the loop:
+ * one own data descriptor and one ordinary read that agree on a number. `null` when they do not.
+ */
+const observeArrayLength = (container: object): number | null => {
+  const lengthDescriptor = PrimordialGetOwnPropertyDescriptor(container, "length");
+  const lengthRead: unknown = (container as { length: unknown }).length;
+  if (
+    lengthDescriptor === undefined ||
+    !hasOwnValue(lengthDescriptor) ||
+    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||
+    typeof lengthRead !== "number"
+  ) {
+    return null;
   }
+  return lengthRead;
+};
+
+/**
+ * The snapshot list for an array of `length` positions (at most the entry limit), visit-covered.
+ *
+ * There is no scratch array between the one caller observation and the snapshot (K11-R6-VAL-04): each
+ * accepted element is installed directly into this list as own data with `defineAt`, so no inherited
+ * indexed setter can swallow it and no second reading exists to disagree with the first.
+ */
+const allocateElements = (length: number): BoundaryValue[] => sizedList<BoundaryValue>(length);
+
+/**
+ * One own-names listing, charged `1 + length` right after it returns.
+ *
+ * `names` is engine-built (`CreateArrayFromList`), so it is dense own data and its element reads consult
+ * no prototype. The listing itself is the one step whose engine work is not known before it runs
+ * (`values.md`, the narrowed own-key exclusion): its charge stops the root if it passes B. Because it
+ * cannot be charged before it runs, it tests the stop first: no listing starts once the root has stopped,
+ * so the one listing past B is the one whose own charge crossed it (KC3-R1-STOP-01).
+ */
+const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {
+  if (state.stopped) return STOPPED;
+  const names = PrimordialGetOwnPropertyNames(container) as string[];
+  return spend(state, "listing", 1 + names.length) === STOPPED ? STOPPED : names;
+};
+
+/** One own-symbols listing, gated on the stop and charged `1 + length` right after it returns; only its count is used. */
+const listOwnSymbols = (state: CaptureState, container: object): number | typeof STOPPED => {
+  if (state.stopped) return STOPPED;
+  const symbols = PrimordialGetOwnPropertySymbols(container);
+  return spend(state, "listing", 1 + symbols.length) === STOPPED ? STOPPED : symbols.length;
+};
+
+/** One array position, observed once: its own descriptor and, for own data, one ordinary read. */
+interface ObservedPosition {
+  readonly descriptor: PropertyDescriptor | undefined;
+  readonly read: unknown;
+}
+
+const observeElement = (state: CaptureState, container: object, key: string): ObservedPosition | typeof STOPPED => {
+  if (spend(state, "element", 1) === STOPPED) return STOPPED;
+  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);
+  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.
+  if (descriptor === undefined || !hasOwnValue(descriptor)) return { descriptor, read: undefined };
+  return { descriptor, read: (container as Record<string, unknown>)[key] };
+};
+
+/** One own descriptor of a listed object member or listed array index. */
+const observeDescriptor = (state: CaptureState, container: object, name: string): PropertyDescriptor | undefined | typeof STOPPED => {
+  if (spend(state, "descriptor", 1) === STOPPED) return STOPPED;
+  return PrimordialGetOwnPropertyDescriptor(container, name);
+};
+
+/**
+ * One object member's ordinary read, made only after its own descriptor said enumerable data.
+ *
+ * `{ read }` rather than the bare value, because `undefined` is itself a refused member value and must
+ * stay distinguishable from the stop.
+ */
+const readMember = (state: CaptureState, container: object, key: string): { readonly read: unknown } | typeof STOPPED => {
+  if (spend(state, "read", 1) === STOPPED) return STOPPED;
+  return { read: (container as Record<string, unknown>)[key] };
+};
+
+/**
+ * Scans one string or member name, charging its length first.
+ *
+ * A string longer than twice the scalar limit cannot be valid whatever it holds, so it is refused by
+ * its length alone: no character is read, the engine never flattens a caller-sized rope, and it costs
+ * no string units (KC2-R1-01, SELF-R4-STRING-01). Otherwise the scan reads at most that many units.
+ */
+const scanText = (state: CaptureState, text: string): StringScan | typeof STOPPED => {
+  const units = text.length;
+  if (units > STRING_SCAN_LIMIT) return TOO_LONG;
+  if (spend(state, "string", units) === STOPPED) return STOPPED;
+  return scanBoundaryString(text);
+};
+
+/** The frozen snapshot of an accepted array, installed element by element above. */
+const finishArray = (out: BoundaryValue[]): BoundaryValue => PrimordialObjectFreeze(out) as unknown as BoundaryValue;
+
+/**
+ * The frozen snapshot of an accepted object, with the validated prototype (`Object.prototype` or `null`).
+ *
+ * Every member is installed with `defineData` (`own-array.ts`), never assignment and never a descriptor
+ * literal. Plain assignment `snapshot[name] = ...` invokes the inherited legacy `__proto__` setter for
+ * that one key instead of creating an own data property: a valid own `"__proto__"` member would vanish
+ * from the record, its value would silently become the snapshot's prototype, and the retained structure
+ * would stop matching the canonical bytes taken from it (K02-R2-02, K11-R1-VAL-01). `defineProperty`
+ * gives no member name special treatment — but an ordinary descriptor literal would let inherited
+ * `get`/`set` pollution throw out of the installation, so the descriptor is null-prototype (K11-R7-STATE-03).
+ */
+const finishObject = (prototype: object | null, captured: readonly (readonly [string, BoundaryValue])[]): BoundaryValue => {
+  const snapshot = PrimordialObjectCreate(prototype) as Record<string, BoundaryValue>;
+  for (let entryIndex = 0; entryIndex < captured.length && entryIndex < BOUNDARY_LIMITS.containerEntries; entryIndex += 1) {
+    const pair = readAt(captured, entryIndex) as readonly [string, BoundaryValue];
+    defineData(snapshot, pair[0], pair[1], false, true, false);
+  }
+  return PrimordialObjectFreeze(snapshot);
 };
 
 /**
@@ -525,16 +868,17 @@ const closeContainer = (state: CaptureState, container: object): void => {
  * index and let it escape the extra-member rejection (K11-R1-VAL-01).
  *
  * Written without `RegExp.prototype.test`, the `Number`/`String` globals or any prototype
- * method: all three are ambient reads a capture-time side effect can replace mid-pass. Digit
- * spelling is checked by code-unit comparison (safe internal ordering on single characters, no
- * method lookup); the range bound uses length plus a lexicographic comparison, which agrees
- * with the numeric comparison for equal-length digit strings. `"4294967295"` (length 10,
- * above `"4294967294"`) is therefore excluded exactly as the definition requires.
+ * method: all three are ambient reads. Digit spelling is checked by code-unit comparison (safe
+ * internal ordering on single characters, no method lookup); the range bound uses length plus a
+ * lexicographic comparison, which agrees with the numeric comparison for equal-length digit strings.
+ * `"4294967295"` (length 10, above `"4294967294"`) is therefore excluded exactly as the definition
+ * requires. Per-name work: at most ten reads, paid by the listing that produced the name.
  */
 const isArrayIndex = (name: string): boolean => {
-  // Length first, so a caller-supplied name of any size is classified after at most ten reads.
+  // Length first, so a caller-supplied name of any size is classified after at most ten reads. The loop
+  // also carries the cap itself, so its bound does not rest on the guard above (KC3-1, static rule SC9).
   if (name.length === 0 || name.length > 10) return false;
-  for (let index = 0; index < name.length; index += 1) {
+  for (let index = 0; index < name.length && index < 10; index += 1) {
     const unit = name[index] as string;
     if (unit < "0" || unit > "9") return false;
   }
@@ -547,60 +891,67 @@ const isArrayIndex = (name: string): boolean => {
  * Numeric value of a name `isArrayIndex` already accepted.
  *
  * No `Number` global read: the spelling is already known to be canonical digits in range, so a
- * positional accumulation over code units (via the load-time `charCodeAt`) is exact.
+ * positional accumulation over code units (via the load-time `charCodeAt`) is exact. Per-name work.
  */
 const arrayIndexValue = (name: string): number => {
   let value = 0;
-  for (let index = 0; index < name.length; index += 1) {
+  for (let index = 0; index < name.length && index < 10; index += 1) {
     value = value * 10 + ((PrimordialReflectApply(PrimordialStringCharCodeAt, name, [index]) as number) - 48);
   }
   return value;
 };
 
+// -- The traversal ------------------------------------------------------------------------------
+//
+// No function below observes a caller value except through the helpers above, and none holds a caller
+// value in anything but `unknown`/`object`, so strict TypeScript rejects a member read of one here.
+
 /**
- * One member's value, or a refusal, from the one descriptor already read for that position.
+ * One member's value, or a refusal, from the one descriptor and the one read already taken.
  *
- * `descriptor.value` is the structural fact — what the object *owns* — and `container[key]` is what
- * ordinary property access, including the JCS implementation's own member access, would see. On an
- * ordinary object these are the same thing by construction. Where they differ, the value has no
- * single content: one reading would decide identity and the other would be retained. `values.md`
- * rejects unsupported values rather than repairing them, so the disagreement is refused here and
- * neither reading is preferred.
- *
- * Each position is observed exactly twice — its own descriptor and one ordinary read — and never
- * again. The descriptor is read by the caller of this function, which is also what decides that the
- * position exists at all, so there is only ever one descriptor per position to reason about.
- * Whatever the container answers on any later read cannot matter: nothing downstream reads it.
+ * `descriptor.value` is the structural fact — what the object *owns* — and `read` is what ordinary
+ * property access, including the JCS implementation's own member access, would see. On an ordinary
+ * object these are the same thing by construction. Where they differ, the value has no single
+ * content: one reading would decide identity and the other would be retained. `values.md` rejects
+ * unsupported values rather than repairing them, so the disagreement is refused and neither reading
+ * is preferred. An accessor or a missing position was never read. `STOPPED` when the refusal's diagnostic
+ * stopped the root.
  */
-function describedValue(
-  container: object,
-  key: string,
+function checkMember(
   descriptor: PropertyDescriptor | undefined,
+  read: unknown,
   path: string,
   state: CaptureState,
-): { readonly ok: true; readonly value: unknown } | { readonly ok: false } {
+): { readonly ok: true; readonly value: unknown } | { readonly ok: false } | typeof STOPPED {
   if (descriptor === undefined) {
     // The structure said this member exists — an own-names listing, or an array position below
     // `length` — but it owns no property there. Anything a read would return comes from somewhere
-    // else (a prototype, a trap), so there is no own content to accept.
-    pushIssue(state.issues, {
-      path,
-      code: "undefined_member",
-      message: "position has no own property; a value supplied only through a prototype or a dynamic read is not accepted content",
-    });
+    // else (a prototype), so there is no own content to accept.
+    if (
+      record(state, {
+        path,
+        code: "undefined_member",
+        message: "position has no own property; a value supplied only through a prototype or a dynamic read is not accepted content",
+      }) === STOPPED
+    ) {
+      return STOPPED;
+    }
     return { ok: false };
   }
   if (!hasOwnValue(descriptor)) {
-    pushIssue(state.issues, { path, code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" });
+    if (record(state, { path, code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" }) === STOPPED) return STOPPED;
     return { ok: false };
   }
-  const read = (container as Record<string, unknown>)[key];
   if (!PrimordialObjectIs(descriptor.value, read)) {
-    pushIssue(state.issues, {
-      path,
-      code: "unstable_representation",
-      message: "member is supplied differently by its own data descriptor and by ordinary property access, so it has no single content",
-    });
+    if (
+      record(state, {
+        path,
+        code: "unstable_representation",
+        message: "member is supplied differently by its own data descriptor and by ordinary property access, so it has no single content",
+      }) === STOPPED
+    ) {
+      return STOPPED;
+    }
     return { ok: false };
   }
   return { ok: true, value: descriptor.value };
@@ -614,133 +965,124 @@ function describedValue(
  * and `values.md`'s depth is the greatest level any path reaches. Descent stops one level past the
  * limit: a value nested ten thousand deep is reported as too deep rather than exhausting the stack.
  *
+ * Every visit is charged one unit first. The first observation of an object-typed value is the Proxy
+ * test, before `IsArray` (which forwards through a Proxy's target), before the prototype and before
+ * any descriptor or key, so every Proxy at every depth is refused with no trap run (owner decision-01
+ * item 2). Then cycle, depth and foreign forms are classified in that order, as before.
+ *
  * Refusals are collected rather than thrown: eight bounded located details, followed by exact
- * counts for every remaining code. A refused position stops contributing to the
- * snapshot but does not stop its siblings from being examined — with one exception. Once the running
- * canonical size passes the limit (`charge`), reading stops outright, because examining the rest is
- * exactly the unbounded work the limit exists to prevent. Reasons past that point are not collected.
+ * counts for every remaining code. A refused position stops contributing to the snapshot but does
+ * not stop its siblings from being examined — until a stop: once the running canonical size passes
+ * the limit (`charge`) or the work meter passes B (`spend`), reading stops outright. Every frame returns
+ * `STOPPED` at once, so nothing past a stop is observed and no reason past it is collected; counts
+ * describe the positions examined.
  */
-function capture(value: unknown, path: string, level: number, state: CaptureState): Captured {
-  if (state.stopped) return REFUSED;
-  if (value === null) return charge(state, 4) ? null : REFUSED;
-
-  const type = typeof value;
-  if (type === "boolean") return charge(state, value === true ? 4 : 5) ? (value as boolean) : REFUSED;
-  if (type === "number") {
+function capture(value: unknown, path: string, level: number, state: CaptureState): Visited {
+  if (state.stopped) return STOPPED;
+  if (spend(state, "visit", 1) === STOPPED) return STOPPED;
+  if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;
+  if (typeof value === "boolean") return charge(state, value ? 4 : 5) === STOPPED ? STOPPED : value;
+  if (typeof value === "number") {
     if (!PrimordialNumberIsFinite(value)) {
-      pushIssue(state.issues, { path, code: "non_finite_number", message: "expected a finite number, received a non-finite number" });
-      return REFUSED;
+      return refuse(state, { path, code: "non_finite_number", message: "expected a finite number, received a non-finite number" });
     }
     // A template literal applies the abstract `ToString` to a number primitive — the same
     // `Number::toString` spelling `JSON.stringify` emits for a finite number, `-0` as `0` — and
     // consults no prototype or global on the way.
-    return charge(state, `${value as number}`.length) ? (value as number) : REFUSED;
+    return charge(state, `${value}`.length) === STOPPED ? STOPPED : value;
   }
-  if (type === "string") {
-    const text = value as string;
-    const scan = scanBoundaryString(text);
+  if (typeof value === "string") {
+    const scan = scanText(state, value);
+    if (scan === STOPPED) return STOPPED;
     if (scan.kind === "lone_surrogate") {
-      pushIssue(state.issues, { path, code: "lone_surrogate", message: "string contains an unpaired surrogate and has no UTF-8 encoding" });
-      charge(state, text.length);
-      return REFUSED;
+      if (record(state, { path, code: "lone_surrogate", message: "string contains an unpaired surrogate and has no UTF-8 encoding" }) === STOPPED) return STOPPED;
+      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;
     }
     if (scan.kind === "too_long") {
-      pushIssue(state.issues, {
-        path,
-        code: "string_too_long",
-        message: `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
-      });
+      if (
+        record(state, {
+          path,
+          code: "string_too_long",
+          message: `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
+        }) === STOPPED
+      ) {
+        return STOPPED;
+      }
       // Charged at its full length, which is free to read and never less than the reading the scan
-      // did, so repeated occurrences of one refused string exhaust the budget quickly.
-      charge(state, text.length);
-      return REFUSED;
+      // did, so repeated occurrences of one refused string exhaust the size budget quickly.
+      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;
     }
-    return charge(state, scan.bytes) ? text : REFUSED;
+    return charge(state, scan.bytes) === STOPPED ? STOPPED : value;
   }
-  if (type !== "object") {
-    pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
-    return REFUSED;
+  if ((typeof value === "object" || typeof value === "function") && isProxyValue(value)) {
+    return refuse(state, { path, code: "unsupported_form", message: PROXY_MESSAGE });
+  }
+  if (typeof value !== "object") {
+    return refuse(state, { path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
   }
 
-  const container = value as object;
-  if (isOpen(state, container)) {
-    pushIssue(state.issues, { path, code: "cycle", message: "value refers to itself and has no canonical form" });
-    return REFUSED;
+  if (isOpenContainer(state, value)) {
+    return refuse(state, { path, code: "cycle", message: "value refers to itself and has no canonical form" });
   }
 
   const entered = level + 1;
   if (entered > BOUNDARY_LIMITS.containerDepth) {
-    pushIssue(state.issues, {
+    return refuse(state, {
       path,
       code: "too_deep",
       message: `container nesting passes the depth limit of ${BOUNDARY_LIMITS.containerDepth}`,
     });
-    return REFUSED;
   }
 
-  openContainer(state, container);
+  openContainer(state, value);
   try {
-    // Every structural observation of caller-owned state happens inside this block. A container
-    // whose structure cannot be observed without throwing has no readable content; it is refused
-    // like any other unsupported form rather than escaping as an exception from a Kernel boundary.
-    return PrimordialArrayIsArray(container)
-      ? captureArray(container as readonly unknown[] & object, path, entered, state)
-      : captureObject(container, path, entered, state);
+    // Every structural observation of the value happens inside this block. A container whose
+    // structure cannot be observed without throwing has no readable content; it is refused like any
+    // other unsupported form rather than escaping as an exception from a Kernel boundary. With every
+    // Proxy refused above, this is reached only by host objects and engine errors.
+    return isArrayValue(value) ? captureArray(value, path, entered, state) : captureObject(value, path, entered, state);
   } catch (error) {
-    pushIssue(state.issues, {
+    return refuse(state, {
       path,
       code: "unstable_representation",
       message: `observing this value's structure threw (${describe(error)}), so it presents no readable content`,
     });
-    return REFUSED;
   } finally {
-    closeContainer(state, container);
+    closeContainer(state, value);
   }
 }
 
 /** The array half of `capture`. Positions come from own data properties below `length`, only. */
-function captureArray(container: readonly unknown[] & object, path: string, entered: number, state: CaptureState): Captured {
+function captureArray(container: object, path: string, entered: number, state: CaptureState): Visited {
   // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
   // canonicalize as a plain array and lose its exotic identity, so refuse it instead.
   // `Array.prototype` itself is non-writable and non-configurable, so this reference cannot be
-  // swapped by a capture-time side effect; only its *properties* are mutable, and those are
-  // handled by the serializer sandbox below.
-  if (PrimordialGetPrototypeOf(container) !== PrimordialArrayPrototype) {
-    pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
-    return REFUSED;
+  // swapped; only its *properties* are mutable, and those are handled by the serializer sandbox below.
+  if (prototypeOf(container) !== PrimordialArrayPrototype) {
+    return refuse(state, { path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
   }
 
   // `length` decides which positions exist, so it is held to the same one-stable-structure rule as
   // any other member before it is trusted to bound the loop.
-  const lengthDescriptor = PrimordialGetOwnPropertyDescriptor(container, "length");
-  const lengthRead: unknown = (container as { length: unknown }).length;
-  if (
-    lengthDescriptor === undefined ||
-    !hasOwnValue(lengthDescriptor) ||
-    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||
-    typeof lengthRead !== "number"
-  ) {
-    pushIssue(state.issues, {
+  const length = observeArrayLength(container);
+  if (length === null) {
+    return refuse(state, {
       path,
       code: "unstable_representation",
       message: "array length is not one stable own data property, so which positions exist cannot be established",
     });
-    return REFUSED;
   }
-  const length = lengthRead;
 
   // K11-R3-LIMIT-01: the trusted observed length has already decided this root cannot be
   // accepted, so refuse without allocating or traversing proportional to that invalid extent.
-  // A declared sparse length can be as large as 2**32 - 1; allocating `new Array(length)` and
-  // looping to `length - 1` would turn a known over-limit root into effectively unbounded work.
-  // Exactly-at-limit still proceeds below; one-over refuses here with no traversal.
+  // A declared sparse length can be as large as 2**32 - 1. Exactly-at-limit still proceeds below;
+  // one-over refuses here with no traversal.
   if (length > BOUNDARY_LIMITS.containerEntries) {
-    pushIssue(state.issues, {
+    return refuse(state, {
       path,
       code: "too_many_entries",
       message: `array has ${length} entries, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
     });
-    return REFUSED;
   }
 
   let refused = false;
@@ -748,37 +1090,43 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   // An array carrying extra own properties (`a = [1]; a.tag = "x"`, or `a["01"] = 1`)
   // would canonicalize as if they were not there. Reject it rather than drop them.
   // Only canonical indices count; numeric-looking non-indices such as `"01"` are extra.
-  // Structural reads below use the primordials captured at module load so a capture-time side
-  // effect that overwrites a global cannot steer the rest of this observation. The scan below
-  // uses index loops rather than `filter`/`for...of`/`push`, because `Array.prototype` methods
-  // and `Symbol.iterator` are themselves mutable mid-pass. `names` is an engine-built list
-  // (`CreateArrayFromList`, own data, dense), so its element reads are own reads.
   //
   // Both name scans are bounded by the entry limit, not by the listing (KC2-R1-01). An accepted array
   // owns exactly its indices below `length` plus `length` itself, and `length` is at most
   // `containerEntries` here, so a listing longer than `containerEntries + 1` names is refused as one
-  // aggregate reason without classifying each name. The engine's own-names listing is the one step
-  // proportional to the array's size.
-  const names = PrimordialGetOwnPropertyNames(container) as string[];
+  // aggregate reason without classifying each name. Each name the scans do classify was paid for by
+  // the listing's charge.
+  const names = listOwnNames(state, container);
+  if (names === STOPPED) return STOPPED;
   const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;
   let hasExtra = overlong;
   for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {
-    const name = names[nameIndex] as string;
+    const name = names[nameIndex]!;
     if (name !== "length" && !isArrayIndex(name)) {
       hasExtra = true;
       break;
     }
   }
-  const symbolCount = hasExtra ? 0 : PrimordialGetOwnPropertySymbols(container).length;
+  // The symbols listing is taken, and metered, even when an extra name already refuses the array: the
+  // names listing walked every symbol-keyed member without charging it, and this charge pays for that
+  // walk on every occurrence. Only an array with no extra name counts its symbols toward the byte charge
+  // and the diagnostic, exactly as before the meter, so byte-stop positions and reasons are unchanged.
+  const listed = listOwnSymbols(state, container);
+  if (listed === STOPPED) return STOPPED;
+  const symbolCount = hasExtra ? 0 : listed;
   if (overlong) {
-    pushIssue(state.issues, {
-      path,
-      code: "unrepresentable_member",
-      message: `array lists ${names.length} own names, more than an array of at most ${BOUNDARY_LIMITS.containerEntries} entries owns; canonical form would silently drop the rest`,
-    });
+    if (
+      record(state, {
+        path,
+        code: "unrepresentable_member",
+        message: `array lists ${names.length} own names, more than an array of at most ${BOUNDARY_LIMITS.containerEntries} entries owns; canonical form would silently drop the rest`,
+      }) === STOPPED
+    ) {
+      return STOPPED;
+    }
     refused = true;
   } else if (hasExtra || symbolCount > 0) {
-    pushIssue(state.issues, { path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
+    if (record(state, { path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" }) === STOPPED) return STOPPED;
     refused = true;
   }
 
@@ -790,219 +1138,230 @@ function captureArray(container: readonly unknown[] & object, path: string, ente
   // index outside `length` is state canonical array form would silently drop
   // (`unrepresentable_member`). Both refuse; neither is normalized.
   for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {
-    const name = names[nameIndex] as string;
+    const name = names[nameIndex]!;
     if (name === "length" || !isArrayIndex(name)) continue;
     const numeric = arrayIndexValue(name);
     if (numeric >= length) {
-      const backing = PrimordialGetOwnPropertyDescriptor(container, name);
+      const backing = observeDescriptor(state, container, name);
+      if (backing === STOPPED) return STOPPED;
       if (backing === undefined) {
-        pushIssue(state.issues, {
-          path: element(path, numeric),
-          code: "unstable_representation",
-          message: "array lists an own index it does not own, so its structure has no single reading",
-        });
-      } else {
-        pushIssue(state.issues, {
+        if (
+          record(state, {
+            path: element(path, numeric),
+            code: "unstable_representation",
+            message: "array lists an own index it does not own, so its structure has no single reading",
+          }) === STOPPED
+        ) {
+          return STOPPED;
+        }
+      } else if (
+        record(state, {
           path: element(path, numeric),
           code: "unrepresentable_member",
           message: "array has an own index outside its length, which canonical form would silently drop",
-        });
+        }) === STOPPED
+      ) {
+        return STOPPED;
       }
       refused = true;
     }
   }
 
-  // Charged before any element is read, so an occurrence of a shared array costs budget in
+  // Charged before any element is read, so an occurrence of a shared array costs size budget in
   // proportion to the listing just taken. An accepted array owns exactly its indices plus
   // `length`, so the surplus and symbol terms are zero for it and the charge is its exact
   // punctuation; they are non-zero only on an array already refused above.
   const surplus = names.length - (length + 1);
-  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;
+  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;
 
-  // K11-R6-VAL-04: there is no scratch array between the one caller observation and the snapshot.
-  //
-  // The previous shape captured each accepted element into a holey `new Array(length)` with
-  // ordinary assignment and read it back to build the snapshot. Both halves are ambient: the
-  // assignment is `[[Set]]` into a position the scratch does not own, so an inherited
-  // `Array.prototype` indexed setter installed during this value's own prototype observation
-  // swallowed it, and the later read of that still-unowned position answered from the attacker's
-  // getter. A coherent caller array whose element read *and* own descriptor both said `20` could
-  // therefore be retained and canonicalized as `999`.
-  //
-  // Each accepted element is now installed directly into the snapshot as own data at the moment it
-  // is captured. `defineAt` is `[[DefineOwnProperty]]`, so no prototype is consulted, and there is
-  // no second reading of anything to disagree with the first. A refused position stops
-  // contributing and the whole partially built array is discarded, exactly as before.
-  const out: BoundaryValue[] = sizedList<BoundaryValue>(length);
+  const out = allocateElements(length);
   for (let index = 0; index < length; index += 1) {
-    if (state.stopped) return REFUSED;
+    const observed = observeElement(state, container, `${index}`);
+    if (observed === STOPPED) return STOPPED;
     const where = element(path, index);
-    const key = `${index}`;
-    const member = describedValue(container, key, PrimordialGetOwnPropertyDescriptor(container, key), where, state);
+    const member = checkMember(observed.descriptor, observed.read, where, state);
+    if (member === STOPPED) return STOPPED;
     if (!member.ok) {
       refused = true;
       continue;
     }
     if (member.value === undefined) {
-      pushIssue(state.issues, { path: where, code: "undefined_member", message: "array element is undefined; an array has no absent positions" });
+      if (record(state, { path: where, code: "undefined_member", message: "array element is undefined; an array has no absent positions" }) === STOPPED) return STOPPED;
       refused = true;
       continue;
     }
     const item = capture(member.value, where, entered, state);
+    if (item === STOPPED) return STOPPED;
     if (item === REFUSED) {
       refused = true;
       continue;
     }
-    defineAt(out, index, item as BoundaryValue);
+    defineAt(out, index, item);
   }
 
+  // Every stop above has already returned `STOPPED`, so the root has not stopped here.
   if (refused) return REFUSED;
   // Freezing reduces every element installed above to the non-writable, non-configurable own data
   // the snapshot contract requires, and fixes `length` with it.
-  return PrimordialObjectFreeze(out) as unknown as BoundaryValue[];
+  return finishArray(out);
 }
 
 /** The object half of `capture`. Members come from own enumerable string-keyed data properties. */
-function captureObject(container: object, path: string, entered: number, state: CaptureState): Captured {
+function captureObject(container: object, path: string, entered: number, state: CaptureState): Visited {
   // Both sides of this comparison are independent of caller-mutable state: the observation uses
   // the load-time `getPrototypeOf`, and the plain prototype is the load-time object, not a live
-  // `globalThis.Object` read the trap itself may just have replaced (K11-R5-VAL-03). A trap that
-  // returns a non-primordial, non-null prototype is refused here rather than normalized; a trap
-  // that returns the primordial prototype (or null) yields a genuinely plain snapshot, whatever
-  // else the trap did — and everything downstream of capture uses primordials only.
-  const prototype = PrimordialGetPrototypeOf(container) as object | null;
+  // `globalThis.Object` read (K11-R5-VAL-03). A non-primordial, non-null prototype is refused here
+  // rather than normalized, exactly as before; a built-in keeping its own prototype is refused here too.
+  const prototype = prototypeOf(container);
   if (prototype !== PrimordialObjectPrototype && prototype !== null) {
-    pushIssue(state.issues, { path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
-    return REFUSED;
+    return refuse(state, { path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
+  }
+  // A plain-looking prototype does not make a built-in plain: a re-prototyped Map, Date or typed array
+  // (and an arguments object, a module namespace or a raw JSON object) keeps its content in internal
+  // slots. Refused by internal-slot type checks before any own-key listing (owner decision-01 item 3).
+  if (isBuiltInWithSlots(container)) {
+    return refuse(state, { path, code: "unsupported_form", message: BUILT_IN_MESSAGE });
   }
 
   let refused = false;
-  const symbolCount = PrimordialGetOwnPropertySymbols(container).length;
+  const symbolCount = listOwnSymbols(state, container);
+  if (symbolCount === STOPPED) return STOPPED;
   if (symbolCount > 0) {
-    pushIssue(state.issues, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" });
+    // A diagnostic can be the charge that passes B; the names listing below must then not start
+    // (KC3-R1-STOP-01, review 01's counterexample).
+    if (record(state, { path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" }) === STOPPED) return STOPPED;
     refused = true;
   }
 
   // One own-names observation and one descriptor per name. The same descriptor answers "is this
   // member enumerable?" and "what does this member own?", so those two questions cannot be settled
   // from different readings of the same object. Index loops, not `for...of`: the iterator lookup
-  // is ambient and mutable mid-pass. `names` is engine-built (`CreateArrayFromList`), so it is
-  // dense own data and its element reads consult no prototype; `enumerable` and `captured` below
-  // are Kernel-grown and therefore go through `own-array.ts` in both directions.
+  // is ambient. `enumerable` and `captured` below are Kernel-grown and therefore go through
+  // `own-array.ts` in both directions.
   //
   // The descriptor reads are bounded by the entry limit, not by the listing (KC2-R1-01). An accepted
   // object owns at most `containerEntries` names, all enumerable, so once `containerEntries + 1`
   // descriptors have been read the object is certainly refused, and a reason is already recorded:
   // either more than `containerEntries` of them were enumerable, or one was non-enumerable or not
-  // owned. The remaining names are not read. The engine's own-names listing itself is the one step
-  // proportional to the object's size, and no Kernel code can make it smaller.
-  const names = PrimordialGetOwnPropertyNames(container) as string[];
+  // owned. The remaining names are not read.
+  const names = listOwnNames(state, container);
+  if (names === STOPPED) return STOPPED;
   const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;
-  const enumerable: [string, PropertyDescriptor][] = [];
+  const enumerable: (readonly [string, PropertyDescriptor])[] = [];
   let nonEnumerable = false;
   for (let nameIndex = 0; nameIndex < readable; nameIndex += 1) {
-    const name = names[nameIndex] as string;
-    const descriptor = PrimordialGetOwnPropertyDescriptor(container, name);
+    const descriptor = observeDescriptor(state, container, names[nameIndex]!);
+    if (descriptor === STOPPED) return STOPPED;
+    const name = names[nameIndex]!;
     if (descriptor === undefined) {
       // The object listed an own name it does not own. There is no content behind it to accept.
-      pushIssue(state.issues, {
-        path: child(path, name),
-        code: "unstable_representation",
-        message: "object lists an own member it does not own, so its structure has no single reading",
-      });
+      if (
+        record(state, {
+          path: child(path, name),
+          code: "unstable_representation",
+          message: "object lists an own member it does not own, so its structure has no single reading",
+        }) === STOPPED
+      ) {
+        return STOPPED;
+      }
       refused = true;
       continue;
     }
-    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor]);
+    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);
     else nonEnumerable = true;
   }
   if (nonEnumerable) {
-    pushIssue(state.issues, { path, code: "unrepresentable_member", message: "object has non-enumerable own members, which canonical form would silently drop" });
+    if (record(state, { path, code: "unrepresentable_member", message: "object has non-enumerable own members, which canonical form would silently drop" }) === STOPPED) return STOPPED;
     refused = true;
   }
   if (enumerable.length > BOUNDARY_LIMITS.containerEntries) {
-    pushIssue(state.issues, {
-      path,
-      code: "too_many_entries",
-      message:
-        readable < names.length
-          ? `object has more than ${BOUNDARY_LIMITS.containerEntries} members, the limit; it lists ${names.length} own names`
-          : `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
-    });
+    if (
+      record(state, {
+        path,
+        code: "too_many_entries",
+        message:
+          readable < names.length
+            ? `object has more than ${BOUNDARY_LIMITS.containerEntries} members, the limit; it lists ${names.length} own names`
+            : `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
+      }) === STOPPED
+    ) {
+      return STOPPED;
+    }
     refused = true;
   }
 
   // Charged before any member is read, as for arrays. An accepted object's own names are exactly
   // its enumerable members and it owns no symbols, so this is its exact punctuation; a larger
   // listing, or any symbol, belongs to an object already refused above.
-  if (!charge(state, containerStructureBytes(names.length, true) + symbolCount)) return REFUSED;
+  if (charge(state, containerStructureBytes(names.length, true) + symbolCount) === STOPPED) return STOPPED;
 
-  const captured: [string, BoundaryValue][] = [];
+  const captured: (readonly [string, BoundaryValue])[] = [];
   for (let entryIndex = 0; entryIndex < enumerable.length; entryIndex += 1) {
-    if (state.stopped) return REFUSED;
-    // Index access, not destructuring iteration: `for...of` over the pair would consult the
-    // ambient `Symbol.iterator`.
-    const pair = readAt(enumerable, entryIndex) as [string, PropertyDescriptor];
+    const pair = readAt(enumerable, entryIndex)!;
+    const keyScan = scanText(state, pair[0]);
+    if (keyScan === STOPPED) return STOPPED;
     const key = pair[0];
     const descriptor = pair[1];
     const where = child(path, key);
-    const keyScan = scanBoundaryString(key);
     if (keyScan.kind === "lone_surrogate") {
-      pushIssue(state.issues, { path: where, code: "lone_surrogate", message: "member name contains an unpaired surrogate" });
+      if (record(state, { path: where, code: "lone_surrogate", message: "member name contains an unpaired surrogate" }) === STOPPED) return STOPPED;
       refused = true;
-      if (!charge(state, key.length)) return REFUSED;
+      if (charge(state, key.length) === STOPPED) return STOPPED;
       continue;
     }
     if (keyScan.kind === "too_long") {
-      pushIssue(state.issues, {
-        path: where,
-        code: "string_too_long",
-        message: `member name cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
-      });
+      if (
+        record(state, {
+          path: where,
+          code: "string_too_long",
+          message: `member name cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
+        }) === STOPPED
+      ) {
+        return STOPPED;
+      }
       refused = true;
-      if (!charge(state, key.length)) return REFUSED;
+      if (charge(state, key.length) === STOPPED) return STOPPED;
       continue;
     }
     // The member name's quoted, escaped bytes, exactly as the member will be spelled.
-    if (!charge(state, keyScan.bytes)) return REFUSED;
-    const member = describedValue(container, key, descriptor, where, state);
+    if (charge(state, keyScan.bytes) === STOPPED) return STOPPED;
+    let read: unknown = undefined;
+    if (hasOwnValue(descriptor)) {
+      const observed = readMember(state, container, key);
+      if (observed === STOPPED) return STOPPED;
+      read = observed.read;
+    }
+    const member = checkMember(descriptor, read, where, state);
+    if (member === STOPPED) return STOPPED;
     if (!member.ok) {
       refused = true;
       continue;
     }
     if (member.value === undefined) {
-      pushIssue(state.issues, {
-        path: where,
-        code: "undefined_member",
-        message: "member is present with no value; omit the member instead, since absent and null are different values",
-      });
+      if (
+        record(state, {
+          path: where,
+          code: "undefined_member",
+          message: "member is present with no value; omit the member instead, since absent and null are different values",
+        }) === STOPPED
+      ) {
+        return STOPPED;
+      }
       refused = true;
       continue;
     }
     const item = capture(member.value, where, entered, state);
+    if (item === STOPPED) return STOPPED;
     if (item === REFUSED) {
       refused = true;
       continue;
     }
-    appendOwn(captured, [key, item]);
+    appendOwn(captured, [key, item] as const);
   }
 
+  // Every stop above has already returned `STOPPED`, so the root has not stopped here.
   if (refused) return REFUSED;
-  // The snapshot preserves the validated prototype (`Object.prototype` or `null`) and installs every
-  // member with `defineData` (`own-array.ts`), never assignment and never a descriptor literal.
-  // Plain assignment `snapshot[name] = ...` invokes the inherited legacy `__proto__` setter for
-  // that one key instead of creating an own data property: a valid own `"__proto__"` member would
-  // vanish from the record, its value would silently become the snapshot's prototype, and the
-  // retained structure would stop matching the canonical bytes taken from it (K02-R2-02,
-  // K11-R1-VAL-01). `defineProperty` gives no member name special treatment — but an ordinary
-  // descriptor literal would let inherited `get`/`set` pollution throw out of the installation, so
-  // the descriptor is null-prototype (K11-R7-STATE-03).
-  const snapshot = PrimordialObjectCreate(prototype) as Record<string, BoundaryValue>;
-  for (let entryIndex = 0; entryIndex < captured.length; entryIndex += 1) {
-    const pair = readAt(captured, entryIndex) as [string, BoundaryValue];
-    defineData(snapshot, pair[0], pair[1], false, true, false);
-  }
-  return PrimordialObjectFreeze(snapshot);
+  return finishObject(prototype, captured);
 }
 
 /**
@@ -1420,15 +1779,89 @@ function encode(value: BoundaryValue): string {
   return canonical;
 }
 
+type Acceptance = { readonly ok: true; readonly value: CanonicalValue } | { readonly ok: false; readonly issues: ValueIssue[] };
+
+/**
+ * What one capture charged to its root's work meter, by unit kind (`CAPTURE_WORK_BUDGET`'s table).
+ * `units` is their sum; `stop` names the stop that ended reading, if any.
+ */
+export interface CaptureWork {
+  readonly units: number;
+  readonly visit: number;
+  readonly listing: number;
+  readonly element: number;
+  readonly descriptor: number;
+  readonly read: number;
+  readonly string: number;
+  readonly diagnostic: number;
+  readonly stop: "none" | "bytes" | "work";
+}
+
+/**
+ * How one capture ended, for the stop oracle (KC3-R1-STOP-01): the running canonical size when reading
+ * ended, and on a work stop the kind of the charge that passed B (`null` otherwise).
+ */
+export interface CaptureEnd {
+  readonly bytes: number;
+  readonly crossing: UnitKind | null;
+}
+
+/** What the evidence path returns: the result, the meter's counts and how reading ended. */
+export interface MeteredAcceptance {
+  readonly result: Acceptance;
+  readonly work: CaptureWork;
+  readonly end: CaptureEnd;
+}
+
 /**
  * The whole acceptance path, run once: capture, canonicalize the capture, measure its bytes.
  *
- * Both public entry points go through this, so "what was refused" and "what was accepted" can never
- * be answered by two different passes over the caller's object.
+ * Every public entry point goes through this, so "what was refused" and "what was accepted" can never
+ * be answered by two different passes over the caller's object. Each call is one root with its own
+ * work meter and its own budget; eager multi-root consumers call it once per root (owner decision-05
+ * item 5). `encode` runs only on a snapshot capture accepted, outside the meter: it is the same for
+ * every acceptance and no refusal reaches it.
+ *
+ * `workSpent` and `bytesSpent` are what the meter and the size count start at: 0 on every consumer path
+ * (`accept`). Only the evidence export below starts them higher, which stops the root exactly where a lower
+ * B or size limit would; the counts it reports leave the head start out.
  */
-function accept(value: unknown): { readonly ok: true; readonly value: CanonicalValue } | { readonly ok: false; readonly issues: ValueIssue[] } {
-  const state: CaptureState = { issues: [], open: [], bytes: 0, stopped: false };
-  const snapshot = capture(value, "", 0, state);
+function acceptMetered(value: unknown, workSpent: number, bytesSpent: number): MeteredAcceptance {
+  const state: CaptureState = {
+    issues: [],
+    open: new PrimordialSet<object>(),
+    bytes: bytesSpent,
+    units: workSpent,
+    visitUnits: 0,
+    listingUnits: 0,
+    elementUnits: 0,
+    descriptorUnits: 0,
+    readUnits: 0,
+    stringUnits: 0,
+    diagnosticUnits: 0,
+    stop: "none",
+    crossing: null,
+    stopped: false,
+  };
+  // The root: a stop has already recorded its stop issue, so it is this root's refusal.
+  const visited = capture(value, "", 0, state);
+  const snapshot: Captured = visited === STOPPED ? REFUSED : visited;
+  const work: CaptureWork = PrimordialObjectFreeze({
+    units: state.units - workSpent,
+    visit: state.visitUnits,
+    listing: state.listingUnits,
+    element: state.elementUnits,
+    descriptor: state.descriptorUnits,
+    read: state.readUnits,
+    string: state.stringUnits,
+    diagnostic: state.diagnosticUnits,
+    stop: state.stop,
+  });
+  const end: CaptureEnd = PrimordialObjectFreeze({ bytes: state.bytes - bytesSpent, crossing: state.crossing });
+  return { result: finishAcceptance(snapshot, state), work, end };
+}
+
+function finishAcceptance(snapshot: Captured, state: CaptureState): Acceptance {
   if (snapshot === REFUSED || state.issues.length > 0) {
     return {
       ok: false,
@@ -1480,6 +1913,34 @@ function accept(value: unknown): { readonly ok: true; readonly value: CanonicalV
   return { ok: true, value: PrimordialObjectFreeze({ value: snapshot, canonical, canonicalBytes }) };
 }
 
+const accept = (value: unknown): Acceptance => acceptMetered(value, 0, 0).result;
+
+/**
+ * Evidence only: one capture's result together with what it charged to the work meter.
+ *
+ * The maintained tests and the TOOLS-01 probes read meter counts through this. With no thresholds it runs
+ * exactly the path `canonicalize` runs. `workBudget` and `byteLimit` may only lower B and the size limit,
+ * so the stop oracle can place a stop at every charge of a small value (KC3-R1-STOP-01); a value this path
+ * accepts is one the consumer path accepts. A lower threshold starts the meter (or the size count) that far
+ * along, so the stop is the consumer path's own comparison against B; the stop messages therefore still
+ * name B and the size limit, and a byte stop's reported size includes the head start. `index.ts` does not
+ * re-export it, so it is no part of the package surface; it is the test-only path owner decision-02
+ * anticipates for the capture module.
+ */
+export const captureWithWork = (
+  value: unknown,
+  workBudget: number = CAPTURE_WORK_BUDGET,
+  byteLimit: number = BOUNDARY_LIMITS.canonicalBytes,
+): MeteredAcceptance => {
+  if (!PrimordialNumberIsInteger(workBudget) || workBudget < 0 || workBudget > CAPTURE_WORK_BUDGET) {
+    throw new PrimordialRangeError("captureWithWork: workBudget must be an integer in [0, CAPTURE_WORK_BUDGET]");
+  }
+  if (!PrimordialNumberIsInteger(byteLimit) || byteLimit < 0 || byteLimit > BOUNDARY_LIMITS.canonicalBytes) {
+    throw new PrimordialRangeError("captureWithWork: byteLimit must be an integer in [0, BOUNDARY_LIMITS.canonicalBytes]");
+  }
+  return acceptMetered(value, CAPTURE_WORK_BUDGET - workBudget, BOUNDARY_LIMITS.canonicalBytes - byteLimit);
+};
+
 /** Bounded details and exact suffix code counts for a refused root. Empty means valid. */
 export function boundaryValueIssues(value: unknown): ValueIssue[] {
   const result = accept(value);
@@ -1503,7 +1964,7 @@ export const isBoundaryValue = (value: unknown): value is BoundaryValue => bound
  * is exactly the second reading of caller-owned state that made identity and retained content
  * disagree (K11-R2-VAL-02).
  */
-export function canonicalize(value: unknown): { readonly ok: true; readonly value: CanonicalValue } | { readonly ok: false; readonly issues: ValueIssue[] } {
+export function canonicalize(value: unknown): Acceptance {
   return accept(value);
 }
 

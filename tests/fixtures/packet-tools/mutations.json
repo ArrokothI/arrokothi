@@ -1228,13 +1228,15 @@
         ],
         "recorded_observation": {
           "case": "control",
-          "shadow": "declared",
-          "trapCalls": 1,
+          "shadow": "",
+          "trapCalls": 0,
           "globalBindingUnchanged": true,
           "expected": "{\"a\":[1,\"x\"],\"b\":2}",
           "result": {
-            "ok": true,
-            "canonical": "{\"a\":[1,\"x\"],\"b\":2}"
+            "ok": false,
+            "codes": [
+              "unsupported_form"
+            ]
           },
           "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
         }
@@ -1243,7 +1245,7 @@
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
       }
     },
     {
@@ -1281,22 +1283,24 @@
         ],
         "recorded_observation": {
           "case": "JSON",
-          "shadow": "declared",
-          "trapCalls": 1,
+          "shadow": "",
+          "trapCalls": 0,
           "globalBindingUnchanged": true,
           "expected": "{\"a\":[1,\"x\"],\"b\":2}",
           "result": {
-            "ok": true,
-            "canonical": "{\"a\":[999,\"x\"],\"b\":999}"
+            "ok": false,
+            "codes": [
+              "unsupported_form"
+            ]
           },
-          "laterPlainCall": "{\"a\":[999,\"x\"],\"b\":999}"
+          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
       }
     },
     {
@@ -1334,22 +1338,24 @@
         ],
         "recorded_observation": {
           "case": "Object",
-          "shadow": "declared",
-          "trapCalls": 1,
+          "shadow": "",
+          "trapCalls": 0,
           "globalBindingUnchanged": true,
           "expected": "{\"a\":[1,\"x\"],\"b\":2}",
           "result": {
-            "ok": true,
-            "canonical": "{\"a\":[1,\"x\"]}"
+            "ok": false,
+            "codes": [
+              "unsupported_form"
+            ]
           },
-          "laterPlainCall": "{\"a\":[1,\"x\"]}"
+          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
       }
     },
     {
@@ -1387,22 +1393,24 @@
         ],
         "recorded_observation": {
           "case": "Array",
-          "shadow": "declared",
-          "trapCalls": 1,
+          "shadow": "",
+          "trapCalls": 0,
           "globalBindingUnchanged": true,
           "expected": "{\"a\":[1,\"x\"],\"b\":2}",
           "result": {
-            "ok": true,
-            "canonical": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}"
+            "ok": false,
+            "codes": [
+              "unsupported_form"
+            ]
           },
-          "laterPlainCall": "{\"a\":{\"0\":1,\"1\":\"x\"},\"b\":2}"
+          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
       }
     },
     {
@@ -1442,23 +1450,23 @@
           "mode": "control",
           "fired": false,
           "first": {
+            "ok": false,
+            "reason": "creation content is not an acceptable boundary value: initialInput.payload unsupported_form"
+          },
+          "second": {
             "ok": true,
             "executionId": "execution-5:app-a8:tenant-a5:lex-1",
             "replayed": false
           },
-          "second": {
-            "ok": false,
-            "reason": "creation key \"lex-1\" already names Execution execution-5:app-a8:tenant-a5:lex-1 with different content; a second intentional run needs a fresh key"
-          },
           "sameExecutionForDifferentContent": false,
-          "firstRetainedPayload": "{\"b\":2,\"a\":[1,\"x\"]}"
+          "firstRetainedPayload": null
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
       }
     },
     {
@@ -1496,26 +1504,25 @@
         ],
         "recorded_observation": {
           "mode": "hop",
-          "fired": true,
+          "fired": false,
           "first": {
-            "ok": true,
-            "executionId": "execution-5:app-a8:tenant-a5:lex-1",
-            "replayed": false
+            "ok": false,
+            "reason": "creation content is not an acceptable boundary value: initialInput.payload unsupported_form"
           },
           "second": {
             "ok": true,
             "executionId": "execution-5:app-a8:tenant-a5:lex-1",
-            "replayed": true
+            "replayed": false
           },
-          "sameExecutionForDifferentContent": true,
-          "firstRetainedPayload": "{\"b\":2,\"a\":[1,\"x\"]}"
+          "sameExecutionForDifferentContent": false,
+          "firstRetainedPayload": null
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. This input contains a Proxy; its current acceptance is also superseded by decision-01, pending K1.1-correction-03."
+        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
       }
     },
     {
@@ -4317,8 +4324,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4326,7 +4335,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4365,8 +4374,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4374,7 +4385,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4416,8 +4427,10 @@
           "prototype": "Object.prototype"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4425,7 +4438,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4468,8 +4481,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{\"0\":7,\"1\":8,\"2\":9}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4477,7 +4492,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4516,8 +4531,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4525,7 +4542,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4567,7 +4584,7 @@
         "recorded_observation": {
           "accepted": false,
           "codes": [
-            "unrepresentable_member"
+            "unsupported_form"
           ]
         }
       },
@@ -4576,7 +4593,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4617,7 +4634,7 @@
         "recorded_observation": {
           "accepted": false,
           "codes": [
-            "unrepresentable_member"
+            "unsupported_form"
           ]
         }
       },
@@ -4626,7 +4643,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4667,7 +4684,7 @@
         "recorded_observation": {
           "accepted": false,
           "codes": [
-            "unrepresentable_member"
+            "unsupported_form"
           ]
         }
       },
@@ -4676,7 +4693,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4715,8 +4732,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4724,7 +4743,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4761,8 +4780,10 @@
           "prototype": "null"
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/p-reprototyped-exotics.ts",
@@ -4770,7 +4791,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: a built-in whose content is kept in internal slots, with a plain prototype, is refused by its internal-slot type check before any own-key listing (DESIGN-AUDIT-01 decision-01 item 3). The before-listing order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"
@@ -4806,8 +4827,10 @@
           "target": {}
         },
         "recorded_observation": {
-          "accepted": true,
-          "canonical": "{}"
+          "accepted": false,
+          "codes": [
+            "unsupported_form"
+          ]
         }
       },
       "source": "TOOLS-01 owner continuation: coherent Proxy accepted as {}; decision-01",
@@ -4815,7 +4838,7 @@
         "kind": "held_witness",
         "owner": "K1.1-correction-03",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md",
-        "reason": "Current capture behavior is superseded: decision-01 requires Proxy and re-prototyped built-in refusal before own-key listing. Even an incidental current refusal does not prove that order. Reproduction earns no conformance or correction credit."
+        "reason": "K1.1-correction-03 candidate behavior: every Proxy is refused before any observation of it, with no trap run (DESIGN-AUDIT-01 decision-01 item 2). The zero-trap order is pinned by capture-refusals.test.ts, not by this witness. Held until K1.1-correction-03 is accepted; reproduction earns no conformance, correction or hold-release credit."
       },
       "files": [
         "tests/tooling/capture-witness.mjs"

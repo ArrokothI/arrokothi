@@ -1,0 +1,933 @@
+{
+  "source_revision": "5236e9e5af1151d0ea64ffa0d79ea86c85343521",
+  "authority": "owner-choice-02.md section 2.3 and owner-choice-01.md standing transfer rule",
+  "reason": "The approved harness rewrite removes the derived V-ENV intrinsic-reference route from these targets. Fresh P1-T target results are credited, so the C2-LIMIT held-only extras no longer apply. Target and origin records remain; all previously transferred origins stay pending_revalidation. No hold release or new limit.",
+  "removed_extras": [
+    {
+      "origin": "artifact-73555fe668cc180905b1e49a",
+      "previous_extra": {
+        "member": "packages/kernel/tests/dispatch.test.ts:1061:3@5a8d958ffdab",
+        "target": "target.dispatch.1061.3.5a8d958ffdab"
+      },
+      "target": {
+        "id": "target.dispatch.1061.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.1061.3.5a8d958ffdab",
+        "member": "packages/kernel/tests/dispatch.test.ts:1061:3@5a8d958ffdab",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "test_path": [
+          "KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)",
+          "report during invocation settles the attempt with intent intact"
+        ],
+        "declaration": {
+          "line": 1209,
+          "column": 3
+        },
+        "input_anchors": [
+          {
+            "anchor": "assert.equal(view.state, \"RUNNING\", \"a report changes no accepted state\");",
+            "sha256": "7c5a9b9d34ee52b4962e29c8e9cf6ad79fe9d24b29461f3b7e6281dda43b18b1",
+            "computed": true
+          }
+        ],
+        "assertion_anchors": [
+          {
+            "anchor": "assert.equal(view.state, \"RUNNING\", \"a report changes no accepted state\");",
+            "sha256": "7c5a9b9d34ee52b4962e29c8e9cf6ad79fe9d24b29461f3b7e6281dda43b18b1"
+          },
+          {
+            "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"delivered\", failure: null, activationId: result.activationId, writerEpoch: 1 },\n    ]);",
+            "sha256": "99381b8e0521d2c78de20cbd66cc459b1f8da318e55d0fe2b8ba422ce0283345"
+          },
+          {
+            "anchor": "assert.equal(view.activation?.receipt.token, result.receipt.token, \"the intent receipt is intact\");",
+            "sha256": "58a7fe40a038ed9073de68b29d93223c02f4ca4a3536bd8ab766b21c4865e7a4"
+          },
+          {
+            "anchor": "assert.deepEqual(view.activation?.batch, [created.initialEventId], \"the reserved batch is intact\");",
+            "sha256": "a4eba9fcaf0b72a316f3cb90a2b7b19af468e61b9e5ae91b0048900db33d7986"
+          },
+          {
+            "anchor": "assert.deepEqual(view.acknowledged, [], \"a report acknowledges nothing\");",
+            "sha256": "a18b3a78cc56b10c1d73ced1916f1d88fffc4203a69a5a848d53869eb9f27275"
+          }
+        ],
+        "relation": {
+          "kind": "authorized_replacement",
+          "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+        },
+        "discrimination": {
+          "reading": "The state, receipt token, batch and acknowledgments must be unchanged and the delivery delivered. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+        }
+      },
+      "result": {
+        "id": "target.dispatch.1061.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.1061.3.5a8d958ffdab",
+        "refused": [],
+        "anchors": [
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "input",
+            "anchor": "assert.equal(view.state, \"RUNNING\", \"a report changes no accepted state\");",
+            "bound": true,
+            "scope": "span",
+            "input": "computed",
+            "offset": 59064,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(view.state, \"RUNNING\", \"a report changes no accepted state\");",
+            "bound": true,
+            "offset": 59064,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"delivered\", failure: null, activationId: re",
+            "bound": true,
+            "offset": 59143,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(view.activation?.receipt.token, result.receipt.token, \"the intent receipt is intact\");",
+            "bound": true,
+            "offset": 59312,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.activation?.batch, [created.initialEventId], \"the reserved batch is intact\");",
+            "bound": true,
+            "offset": 59416,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.acknowledged, [], \"a report acknowledges nothing\");",
+            "bound": true,
+            "offset": 59520,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          }
+        ],
+        "title_kind": "literal",
+        "reach_run": "valid",
+        "credit": "target_reading"
+      },
+      "current_register_entry": null,
+      "member": {
+        "member": "packages/kernel/tests/dispatch.test.ts:1061:3@5a8d958ffdab",
+        "origins": [
+          "artifact-73555fe668cc180905b1e49a"
+        ],
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "pin_blob": "5a8d958ffdabb11d96a49e41330bcd9aa9a8b5d0",
+        "title": "report during invocation settles the attempt with intent intact",
+        "title_kind": "literal",
+        "status": "refused",
+        "reasons": [
+          "span changed or removed",
+          "test-side module changed without a helper review: packages/kernel/tests/capture-instruments.ts",
+          "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+        ],
+        "scope": "span",
+        "current": null,
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [
+          "packages/kernel/src/coordinator.ts",
+          "packages/kernel/src/envelope.ts",
+          "packages/kernel/src/identity.ts",
+          "packages/kernel/src/index.ts",
+          "packages/kernel/src/lifecycle.ts",
+          "packages/kernel/src/outcome.ts",
+          "packages/kernel/src/own-array.ts",
+          "packages/kernel/src/refusal.ts",
+          "packages/kernel/src/result.ts",
+          "packages/kernel/src/unsupported.ts",
+          "packages/kernel/src/values.ts"
+        ],
+        "repository_read_changed": [],
+        "prefix_differences": [
+          "head: registration head",
+          "load: declaration",
+          "load: function declaration",
+          "load: type-only declaration"
+        ]
+      }
+    },
+    {
+      "origin": "artifact-73555fe668cc180905b1e49a",
+      "previous_extra": {
+        "member": "packages/kernel/tests/dispatch.test.ts:1141:3@5a8d958ffdab",
+        "target": "target.dispatch.1141.3.5a8d958ffdab"
+      },
+      "target": {
+        "id": "target.dispatch.1141.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.1141.3.5a8d958ffdab",
+        "member": "packages/kernel/tests/dispatch.test.ts:1141:3@5a8d958ffdab",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "test_path": [
+          "KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)",
+          "duplicate and conflicting reports are inert after the first"
+        ],
+        "declaration": {
+          "line": 1297,
+          "column": 3
+        },
+        "input_anchors": [
+          {
+            "anchor": "const kernel = new ExecutionCoordinator({\n      driver: {\n        driverId: \"fake-manual\",\n        deliver(_activation, settlement): undefined {\n          settlements.push(settlement);\n          return undefined;\n        },\n      },\n    });",
+            "sha256": "519efd2697b4e491cab00f4d9a9581bf0a1af12036a49d06be879b22ae97dfdd",
+            "literals": [
+              {
+                "ordinal": 12,
+                "value": "fake-manual"
+              }
+            ]
+          }
+        ],
+        "assertion_anchors": [
+          {
+            "anchor": "assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [\n      { attempt: 1, status: \"delivered\", failure: null, activationId: `${created.executionId}/activation-1`, writerEpoch: 1 },\n    ]);",
+            "sha256": "5171b3546156f928b607e21f8ff3c0c861928ba9356850e02c9be34b5adf729a"
+          },
+          {
+            "anchor": "assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [\n      { attempt: 1, status: \"delivered\", failure: null, activationId: `${created.executionId}/activation-1`, writerEpoch: 1 },\n      { attempt: 2, status: \"failed\", failure: \"first failure\", activationId: `${created.executionId}/activation-1`, writerEpoch: 1 },\n    ]);",
+            "sha256": "643f670d435549bd32df6bf8f69cf52f3577bbb5907710eb16399a56cea3f48b"
+          }
+        ],
+        "relation": {
+          "kind": "authorized_replacement",
+          "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+        },
+        "discrimination": {
+          "reading": "After repeated and conflicting reports on each attempt, the rows must keep each attempt's first report. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+        }
+      },
+      "result": {
+        "id": "target.dispatch.1141.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.1141.3.5a8d958ffdab",
+        "refused": [],
+        "anchors": [
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "input",
+            "anchor": "const kernel = new ExecutionCoordinator({\n      driver: {\n        driverId: \"fake-manual\",\n        deliver(_activation, ",
+            "bound": true,
+            "scope": "span",
+            "input": "tokens_matched",
+            "offset": 63142,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [\n      { attempt: 1, sta",
+            "bound": true,
+            "offset": 63635,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).activation?.deliveries, [\n      { attempt: 1, sta",
+            "bound": true,
+            "offset": 64087,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          }
+        ],
+        "title_kind": "literal",
+        "reach_run": "valid",
+        "credit": "target_reading"
+      },
+      "current_register_entry": null,
+      "member": {
+        "member": "packages/kernel/tests/dispatch.test.ts:1141:3@5a8d958ffdab",
+        "origins": [
+          "artifact-73555fe668cc180905b1e49a"
+        ],
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "pin_blob": "5a8d958ffdabb11d96a49e41330bcd9aa9a8b5d0",
+        "title": "duplicate and conflicting reports are inert after the first",
+        "title_kind": "literal",
+        "status": "refused",
+        "reasons": [
+          "span changed or removed",
+          "test-side module changed without a helper review: packages/kernel/tests/capture-instruments.ts",
+          "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+        ],
+        "scope": "span",
+        "current": null,
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [
+          "packages/kernel/src/coordinator.ts",
+          "packages/kernel/src/envelope.ts",
+          "packages/kernel/src/identity.ts",
+          "packages/kernel/src/index.ts",
+          "packages/kernel/src/lifecycle.ts",
+          "packages/kernel/src/outcome.ts",
+          "packages/kernel/src/own-array.ts",
+          "packages/kernel/src/refusal.ts",
+          "packages/kernel/src/result.ts",
+          "packages/kernel/src/unsupported.ts",
+          "packages/kernel/src/values.ts"
+        ],
+        "repository_read_changed": [],
+        "prefix_differences": [
+          "head: registration head",
+          "load: declaration",
+          "load: function declaration",
+          "load: type-only declaration"
+        ]
+      }
+    },
+    {
+      "origin": "artifact-73555fe668cc180905b1e49a",
+      "previous_extra": {
+        "member": "packages/kernel/tests/dispatch.test.ts:1331:3@5a8d958ffdab",
+        "target": "target.dispatch.1331.3.5a8d958ffdab"
+      },
+      "target": {
+        "id": "target.dispatch.1331.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.1331.3.5a8d958ffdab",
+        "member": "packages/kernel/tests/dispatch.test.ts:1331:3@5a8d958ffdab",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "test_path": [
+          "KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)",
+          "redelivery overlap: out-of-order reports settle only their own attempts"
+        ],
+        "declaration": {
+          "line": 1503,
+          "column": 3
+        },
+        "input_anchors": [
+          {
+            "anchor": "const kernel = new ExecutionCoordinator({\n      driver: {\n        driverId: \"fake-overlap\",\n        deliver(activation, settlement): undefined {\n          settlements.push(settlement);\n          seenIds.push(activation.activationId);\n          return undefined;\n        },\n      },\n    });",
+            "sha256": "64970380bc63db0a78d665d46e24feec6fac347994fb09821dfbf99d8818b231",
+            "literals": [
+              {
+                "ordinal": 12,
+                "value": "fake-overlap"
+              }
+            ]
+          }
+        ],
+        "assertion_anchors": [
+          {
+            "anchor": "assert.deepEqual(seenIds, [first.activationId, first.activationId], \"redelivery carries the identical Activation\");",
+            "sha256": "fe94430d0d9b7166abb42e0765a5aeabbcb386dcca77042a31d83adf85dca5d2"
+          },
+          {
+            "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"failed\", failure: \"late failure\", activationId: first.activationId, writerEpoch: 1 },\n      { attempt: 2, status: \"delivered\", failure: null, activationId: first.activationId, writerEpoch: 1 },\n    ]);",
+            "sha256": "9addc484ab07ab70ebff4b81fb4ded369997d3ea7091c56ea5a886525543a6d7"
+          },
+          {
+            "anchor": "assert.equal(view.activation?.writerEpoch, 1, \"reports never advance the epoch\");",
+            "sha256": "cc3605696ad32d673e56cec3364e997b3b6882bd10d564cd697a3f4be4aa8ffa"
+          },
+          {
+            "anchor": "assert.deepEqual(view.activation?.batch, [created.initialEventId], \"nothing was re-selected\");",
+            "sha256": "bc000a56817c4166c2ca8d2c7de78b4ccd4e3f120e1e83a89e0960ab52fc23d5"
+          },
+          {
+            "anchor": "assert.deepEqual(view.queued, [created.initialEventId, late[0]]);",
+            "sha256": "e82a46e236b7f07c321bd1604229d6b346a0871b9962e4ab32c3266cbb67206e"
+          }
+        ],
+        "relation": {
+          "kind": "authorized_replacement",
+          "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+        },
+        "discrimination": {
+          "reading": "Redelivery must resend the identical Activation; reports settled out of order must land on their own rows, without advancing the epoch or re-selecting. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+        }
+      },
+      "result": {
+        "id": "target.dispatch.1331.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.1331.3.5a8d958ffdab",
+        "refused": [],
+        "anchors": [
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "input",
+            "anchor": "const kernel = new ExecutionCoordinator({\n      driver: {\n        driverId: \"fake-overlap\",\n        deliver(activation, ",
+            "bound": true,
+            "scope": "span",
+            "input": "tokens_matched",
+            "offset": 71215,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(seenIds, [first.activationId, first.activationId], \"redelivery carries the identical Activation\");",
+            "bound": true,
+            "offset": 71835,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"failed\", failure: \"late failure\", activatio",
+            "bound": true,
+            "offset": 72220,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(view.activation?.writerEpoch, 1, \"reports never advance the epoch\");",
+            "bound": true,
+            "offset": 72503,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.activation?.batch, [created.initialEventId], \"nothing was re-selected\");",
+            "bound": true,
+            "offset": 72589,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.queued, [created.initialEventId, late[0]]);",
+            "bound": true,
+            "offset": 72688,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          }
+        ],
+        "title_kind": "literal",
+        "reach_run": "valid",
+        "credit": "target_reading"
+      },
+      "current_register_entry": null,
+      "member": {
+        "member": "packages/kernel/tests/dispatch.test.ts:1331:3@5a8d958ffdab",
+        "origins": [
+          "artifact-73555fe668cc180905b1e49a"
+        ],
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "pin_blob": "5a8d958ffdabb11d96a49e41330bcd9aa9a8b5d0",
+        "title": "redelivery overlap: out-of-order reports settle only their own attempts",
+        "title_kind": "literal",
+        "status": "refused",
+        "reasons": [
+          "span changed or removed",
+          "test-side module changed without a helper review: packages/kernel/tests/capture-instruments.ts",
+          "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+        ],
+        "scope": "span",
+        "current": null,
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [
+          "packages/kernel/src/coordinator.ts",
+          "packages/kernel/src/envelope.ts",
+          "packages/kernel/src/identity.ts",
+          "packages/kernel/src/index.ts",
+          "packages/kernel/src/lifecycle.ts",
+          "packages/kernel/src/outcome.ts",
+          "packages/kernel/src/own-array.ts",
+          "packages/kernel/src/refusal.ts",
+          "packages/kernel/src/result.ts",
+          "packages/kernel/src/unsupported.ts",
+          "packages/kernel/src/values.ts"
+        ],
+        "repository_read_changed": [],
+        "prefix_differences": [
+          "head: registration head",
+          "load: declaration",
+          "load: function declaration",
+          "load: type-only declaration"
+        ]
+      }
+    },
+    {
+      "origin": "artifact-73555fe668cc180905b1e49a",
+      "previous_extra": {
+        "member": "packages/kernel/tests/dispatch.test.ts:280:3@5a8d958ffdab",
+        "target": "target.dispatch.280.3.5a8d958ffdab"
+      },
+      "target": {
+        "id": "target.dispatch.280.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.280.3.5a8d958ffdab",
+        "member": "packages/kernel/tests/dispatch.test.ts:280:3@5a8d958ffdab",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "test_path": [
+          "K1.1-C4 the intent is accepted before the send, and the send is not awaited",
+          "a Driver that reports failure records an operational failure, not a state change"
+        ],
+        "declaration": {
+          "line": 332,
+          "column": 3
+        },
+        "input_anchors": [
+          {
+            "anchor": "const kernel = new ExecutionCoordinator({ driver: failingDriver() });",
+            "sha256": "9853dbdce264f961f490886130028f8b16e4e85f69af0bdf4d0723b3df1a2c83",
+            "computed": true
+          }
+        ],
+        "assertion_anchors": [
+          {
+            "anchor": "assert.equal(view.state, \"RUNNING\", \"a lost send does not resolve the exchange\");",
+            "sha256": "8cde21f9b5afb5098e7f3ad4696461ed0fc2b11c3160168ca60f1dba1b0cc23c"
+          },
+          {
+            "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"failed\", failure: \"native submit lost\", activationId: view.activation?.activationId as string, writerEpoch: 1 },\n    ]);",
+            "sha256": "6b9797fc445bcca9d9055d6b8f006fe750464f4c2af720a4817035db817f6faf"
+          },
+          {
+            "anchor": "assert.deepEqual(view.acknowledged, [], \"and acknowledges nothing\");",
+            "sha256": "5a84013fddafe4bb38bcada640261fac029cf218eb176f67509efa5e8a71d5a9"
+          }
+        ],
+        "relation": {
+          "kind": "authorized_replacement",
+          "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+        },
+        "discrimination": {
+          "reading": "A failing report must leave RUNNING, record a failed delivery with the reason, and acknowledge nothing. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+        }
+      },
+      "result": {
+        "id": "target.dispatch.280.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.280.3.5a8d958ffdab",
+        "refused": [],
+        "anchors": [
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "input",
+            "anchor": "const kernel = new ExecutionCoordinator({ driver: failingDriver() });",
+            "bound": true,
+            "scope": "span",
+            "input": "computed",
+            "offset": 15775,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(view.state, \"RUNNING\", \"a lost send does not resolve the exchange\");",
+            "bound": true,
+            "offset": 16033,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.activation?.deliveries, [\n      { attempt: 1, status: \"failed\", failure: \"native submit lost\", act",
+            "bound": true,
+            "offset": 16119,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.acknowledged, [], \"and acknowledges nothing\");",
+            "bound": true,
+            "offset": 16321,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          }
+        ],
+        "title_kind": "literal",
+        "reach_run": "valid",
+        "credit": "target_reading"
+      },
+      "current_register_entry": null,
+      "member": {
+        "member": "packages/kernel/tests/dispatch.test.ts:280:3@5a8d958ffdab",
+        "origins": [
+          "artifact-73555fe668cc180905b1e49a"
+        ],
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "pin_blob": "5a8d958ffdabb11d96a49e41330bcd9aa9a8b5d0",
+        "title": "a Driver that reports failure records an operational failure, not a state change",
+        "title_kind": "literal",
+        "status": "refused",
+        "reasons": [
+          "span changed or removed",
+          "test-side module changed without a helper review: packages/kernel/tests/capture-instruments.ts",
+          "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+        ],
+        "scope": "span",
+        "current": null,
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [
+          "packages/kernel/src/coordinator.ts",
+          "packages/kernel/src/envelope.ts",
+          "packages/kernel/src/identity.ts",
+          "packages/kernel/src/index.ts",
+          "packages/kernel/src/lifecycle.ts",
+          "packages/kernel/src/outcome.ts",
+          "packages/kernel/src/own-array.ts",
+          "packages/kernel/src/refusal.ts",
+          "packages/kernel/src/result.ts",
+          "packages/kernel/src/unsupported.ts",
+          "packages/kernel/src/values.ts"
+        ],
+        "repository_read_changed": [],
+        "prefix_differences": [
+          "head: registration head",
+          "load: declaration",
+          "load: function declaration",
+          "load: type-only declaration"
+        ]
+      }
+    },
+    {
+      "origin": "artifact-73555fe668cc180905b1e49a",
+      "previous_extra": {
+        "member": "packages/kernel/tests/dispatch.test.ts:66:3@5a8d958ffdab",
+        "target": "target.dispatch.66.3.5a8d958ffdab"
+      },
+      "target": {
+        "id": "target.dispatch.66.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.66.3.5a8d958ffdab",
+        "member": "packages/kernel/tests/dispatch.test.ts:66:3@5a8d958ffdab",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "test_path": [
+          "K1.1-C4 what one dispatch intent pins",
+          "the Activation carries exactly the facts creation bound, and the Execution is RUNNING"
+        ],
+        "declaration": {
+          "line": 117,
+          "column": 3
+        },
+        "input_anchors": [
+          {
+            "anchor": "assert.deepEqual(activation.events, [\n      {\n        eventId: created.initialEventId,\n        destination: created.executionId,\n        kind: \"application.request\",\n        payload: { text: \"report for week 37\" },\n        sourceCategory: \"application_input\",\n        acceptancePosition: 1,\n      },\n    ]);",
+            "sha256": "ea547dca5fadd3dc3722de4dff39bb7727ba469f74ebd28fa4460c970e857bca",
+            "computed": true
+          }
+        ],
+        "assertion_anchors": [
+          {
+            "anchor": "assert.equal(result.writerEpoch, 1);",
+            "sha256": "3682105c188bd5d2171f25a0ac145d84a257b57b2bc0cf1fd7c5e2ceb4efb219"
+          },
+          {
+            "anchor": "assert.equal(result.baseProgressRevision, 0);",
+            "sha256": "91ea8717f56a277296f70694f82415f978de901f6738336215f791ff469c42c7"
+          },
+          {
+            "anchor": "assert.equal(result.redelivered, false);",
+            "sha256": "d0bc12ac69e11624302569a40758a2b7bc0d7faaf88e33a073e2f3ed216aca25"
+          },
+          {
+            "anchor": "assert.equal(activation.executionId, created.executionId);",
+            "sha256": "3d76570e98fe45a0313e5ef2a434dad0d69bbde7495d597fed7a77c00e28146a"
+          },
+          {
+            "anchor": "assert.equal(activation.activationId, result.activationId);",
+            "sha256": "4c2fd4978d59dc5b22b21b277ec684942c17fb742d27c7556e039e77a0b03f92"
+          },
+          {
+            "anchor": "assert.equal(activation.writerEpoch, 1);",
+            "sha256": "86746f4c76bd4b91a31b01e4204b7fc80aa5c7b9f4e5cdf084dd5badccc47667"
+          },
+          {
+            "anchor": "assert.equal(activation.baseProgressRevision, 0);",
+            "sha256": "b37273894060d3ab3589caf8770a000d9a3ba36215815cf05fdecd264da16563"
+          },
+          {
+            "anchor": "assert.equal(activation.definitionRevision, \"weekly-report@3\");",
+            "sha256": "a8895bee549ae62a011c144a23ca254cd215e34374671c17ad3cf46b78abe064"
+          },
+          {
+            "anchor": "assert.equal(activation.runtimeContractRevision, \"runtime-contract@1\");",
+            "sha256": "1e11aded64b9126231dd6f7509768a93dd3454b4971fe3d84faeb89dd3f640a5"
+          },
+          {
+            "anchor": "assert.equal(activation.progressCodec, \"inline-json@1\");",
+            "sha256": "7a96dec13f4e19b9743203ff127c3fdaa8ee4c97798b4e52cfea88fbced3437c"
+          },
+          {
+            "anchor": "assert.equal(activation.acceptedProgress, null, \"no Outcome has installed progress; K1.2 owns that\");",
+            "sha256": "cdd7fafeba775e4aff3c71af0b7c753e52650c7c9f1cf72075398bf7a66fec9a"
+          },
+          {
+            "anchor": "assert.deepEqual(activation.executionView, { tenant: \"a\" }, \"the authorized view supplied at creation\");",
+            "sha256": "9a2123b1e5c58664938b3c90a73f1cdbb8323466e36e28d77d3d715f6362c3c1"
+          },
+          {
+            "anchor": "assert.deepEqual(activation.events, [\n      {\n        eventId: created.initialEventId,\n        destination: created.executionId,\n        kind: \"application.request\",\n        payload: { text: \"report for week 37\" },\n        sourceCategory: \"application_input\",\n        acceptancePosition: 1,\n      },\n    ]);",
+            "sha256": "ea547dca5fadd3dc3722de4dff39bb7727ba469f74ebd28fa4460c970e857bca"
+          },
+          {
+            "anchor": "assert.deepEqual(view.activation, {\n      activationId: result.activationId,\n      writerEpoch: 1,\n      baseProgressRevision: 0,\n      batch: [created.initialEventId],\n      receipt: result.receipt,\n      deliveries: [{ attempt: 1, status: \"delivered\", failure: null, activationId: result.activationId, writerEpoch: 1 }],\n    });",
+            "sha256": "87c53b488f18a7fac4b47988a3be42758c12f239b3cb01b9bf4bdba64fa3eee1"
+          }
+        ],
+        "relation": {
+          "kind": "authorized_replacement",
+          "decision": "docs/development/work/K1.2/contract.md (C11, K1.2-DEC-16): each delivery row names the activationId and writerEpoch it carried when sent"
+        },
+        "discrimination": {
+          "reading": "The Activation must carry the creation's IDs, epoch 1, base revision 0, pinned revisions and codec, no progress, the authorized view and the Event; the inspected Activation must deep-equal the expected record. The delivery row now also names the attempt's activationId and writerEpoch (K1.2)."
+        }
+      },
+      "result": {
+        "id": "target.dispatch.66.3.5a8d958ffdab",
+        "counterexample": "cx.dispatch.66.3.5a8d958ffdab",
+        "refused": [],
+        "anchors": [
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "input",
+            "anchor": "assert.deepEqual(activation.events, [\n      {\n        eventId: created.initialEventId,\n        destination: created.exec",
+            "bound": true,
+            "scope": "span",
+            "input": "computed",
+            "offset": 6359,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(result.writerEpoch, 1);",
+            "bound": true,
+            "offset": 5469,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(result.baseProgressRevision, 0);",
+            "bound": true,
+            "offset": 5510,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(result.redelivered, false);",
+            "bound": true,
+            "offset": 5560,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.executionId, created.executionId);",
+            "bound": true,
+            "offset": 5713,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.activationId, result.activationId);",
+            "bound": true,
+            "offset": 5776,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.writerEpoch, 1);",
+            "bound": true,
+            "offset": 5840,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.baseProgressRevision, 0);",
+            "bound": true,
+            "offset": 5885,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.definitionRevision, \"weekly-report@3\");",
+            "bound": true,
+            "offset": 5939,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.runtimeContractRevision, \"runtime-contract@1\");",
+            "bound": true,
+            "offset": 6007,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.progressCodec, \"inline-json@1\");",
+            "bound": true,
+            "offset": 6083,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.equal(activation.acceptedProgress, null, \"no Outcome has installed progress; K1.2 owns that\");",
+            "bound": true,
+            "offset": 6144,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(activation.executionView, { tenant: \"a\" }, \"the authorized view supplied at creation\");",
+            "bound": true,
+            "offset": 6250,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(activation.events, [\n      {\n        eventId: created.initialEventId,\n        destination: created.exec",
+            "bound": true,
+            "offset": 6359,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          },
+          {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "role": "assertion",
+            "anchor": "assert.deepEqual(view.activation, {\n      activationId: result.activationId,\n      writerEpoch: 1,\n      baseProgressRev",
+            "bound": true,
+            "offset": 6785,
+            "count": 1,
+            "baseline": 0,
+            "reached": true
+          }
+        ],
+        "title_kind": "literal",
+        "reach_run": "valid",
+        "credit": "target_reading"
+      },
+      "current_register_entry": null,
+      "member": {
+        "member": "packages/kernel/tests/dispatch.test.ts:66:3@5a8d958ffdab",
+        "origins": [
+          "artifact-73555fe668cc180905b1e49a"
+        ],
+        "file": "packages/kernel/tests/dispatch.test.ts",
+        "pin_blob": "5a8d958ffdabb11d96a49e41330bcd9aa9a8b5d0",
+        "title": "the Activation carries exactly the facts creation bound, and the Execution is RUNNING",
+        "title_kind": "literal",
+        "status": "refused",
+        "reasons": [
+          "span changed or removed",
+          "test-side module changed without a helper review: packages/kernel/tests/capture-instruments.ts",
+          "test-side module changed without a helper review: packages/kernel/tests/harness.ts"
+        ],
+        "scope": "span",
+        "current": null,
+        "reads": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "register": null,
+        "helper_closure": "unchanged",
+        "production_changed": [
+          "packages/kernel/src/coordinator.ts",
+          "packages/kernel/src/envelope.ts",
+          "packages/kernel/src/identity.ts",
+          "packages/kernel/src/index.ts",
+          "packages/kernel/src/lifecycle.ts",
+          "packages/kernel/src/outcome.ts",
+          "packages/kernel/src/own-array.ts",
+          "packages/kernel/src/refusal.ts",
+          "packages/kernel/src/result.ts",
+          "packages/kernel/src/unsupported.ts",
+          "packages/kernel/src/values.ts"
+        ],
+        "repository_read_changed": [],
+        "prefix_differences": [
+          "head: registration head",
+          "load: declaration",
+          "load: function declaration",
+          "load: type-only declaration"
+        ]
+      }
+    }
+  ]
+}

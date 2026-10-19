@@ -1,0 +1,421 @@
+{
+  "pins": {
+    "B": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+    "C": "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+    "H": "5f586b176089987fa3667e4c03f26b3dac0a5bfb"
+  },
+  "checks": {
+    "administrative_files": [
+      "docs/development/007-work-packets.md",
+      "docs/development/work/K1.1-correction-03/implementation-02.md"
+    ],
+    "baseline_policy_unchanged": {
+      "AGENTS.md": "f9a12ebd831b4bb2aed1a2296faab9b0f779f16558ef41ea95524b68de3459c6",
+      "docs/development/006-development-process.md": "7cc815b17fec271573aacb36033d24c79e4bb8bf5cfd57db526e55d9ec8a5fcb",
+      "docs/development/008-implementation-report.md": "a6c230269b396a49c872cb34bb2ed98cb9ad4d1107cad792077cf42ae180f91b",
+      "docs/development/012-review-methods.md": "61d8360966ab10b7dff010d5c7a5ab184aa6367a9c9ee6e94073428fd19e9a5a"
+    },
+    "ed509e11dc39ff24e10c1ace68189776c4270919": {
+      "accepted_head": "b7191dbf630defeff7756122a6798e15d0b73dd3",
+      "ancestor_of_B": true,
+      "cleanup_tree_equal": true
+    },
+    "8f82900337e38dfdb93026b04de2066df75b175c": {
+      "accepted_head": "a50c38867c93c63094f271d099cec71624382577",
+      "ancestor_of_B": true,
+      "cleanup_tree_equal": true
+    }
+  },
+  "adoption": {
+    "reopened": [
+      "artifact-22eb339860078995989b5d5f",
+      "artifact-4e300ac8047fcf6b203072a1",
+      "artifact-510be2a0362710c9996c358a",
+      "artifact-6c57cc9dd8febdefa65ed496",
+      "artifact-6dcba4da5936b64c77a8b470",
+      "artifact-7902341bc00c3376b26ef71f",
+      "artifact-7c99b94ca43cc08b3d970f63",
+      "artifact-98679309de7791acf7f59c87",
+      "artifact-b344c9faf1272dd3033d4ccd",
+      "artifact-bb7722eb19e78f33e1f81a58",
+      "artifact-bbe0c5a1782aa6f649f0a4a3",
+      "artifact-bca863b02ba3f5f894baa47d",
+      "artifact-ebfa0eb36bcd33f72a4dffce",
+      "artifact-f468517ae332ead13530f5b1",
+      "artifact-febb180b453e17b8edab6893"
+    ],
+    "limited_members": 24,
+    "dropped_witnesses": 96,
+    "linked_dropped_witnesses": 76,
+    "unlinked_dropped_witnesses": [
+      "witness.dispatch.564.3.5a8d958ffdab",
+      "witness.ingress.537.3.61e8bde54da2",
+      "witness.ingress.821.3.61e8bde54da2",
+      "witness.values.1327.3.fb228bec8c58",
+      "witness.values.308.5.fb228bec8c58",
+      "witness.values.320.5.fb228bec8c58",
+      "witness.values.328.5.fb228bec8c58",
+      "witness.values.334.5.fb228bec8c58",
+      "witness.values.357.5.fb228bec8c58",
+      "witness.values.363.5.fb228bec8c58",
+      "witness.values.376.5.fb228bec8c58",
+      "witness.values.419.5.fb228bec8c58",
+      "witness.values.622.3.fb228bec8c58",
+      "witness.values.657.3.fb228bec8c58",
+      "witness.values.687.3.fb228bec8c58",
+      "witness.values.711.3.fb228bec8c58",
+      "witness.values.741.3.fb228bec8c58",
+      "witness.values.761.3.fb228bec8c58",
+      "witness.values.791.3.fb228bec8c58",
+      "witness.values.822.3.fb228bec8c58"
+    ],
+    "supplemental_owner_exceptions": {
+      "artifact-21fb34d9cd3ad15575371064": "complete",
+      "artifact-ada9f66cd74e3bc95eef93d6": "complete"
+    },
+    "states": {
+      "complete": 92,
+      "pending_revalidation": 62,
+      "pending": 1395
+    }
+  },
+  "c1": {
+    "conversion_count": 69,
+    "counts": {
+      "pairs_at_B": 437,
+      "kept_at_C": 383,
+      "elsewhere_at_C": 37,
+      "vanished_at_B": 8,
+      "cascade_at_B": 5,
+      "restored": 4
+    },
+    "lost": [
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-03 descriptor probe: depth does not change bounded observations or coherent Proxy acceptance",
+        "mutant": "MV3-array-symbols-listing-skipped",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-03 descriptor probe: the byte stop bounds trap calls before later rows",
+        "mutant": "MV3-array-symbols-listing-skipped",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-03 descriptor probe: one and eight eager roots keep bounded calls before authority",
+        "mutant": "MV3-array-symbols-listing-skipped",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-04 handler probe: Kernel-selected observations and coherent acceptance do not depend on handler depth",
+        "mutant": "MV3-array-symbols-listing-skipped",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-04 handler probe: the byte stop bounds Kernel-selected observations",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-04 handler probe: the byte stop bounds Kernel-selected observations",
+        "mutant": "MV3-array-symbols-listing-skipped",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-04 handler probe: eager roots preserve selected counts and whole state before authority",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "value-diagnostic-work.test.ts",
+        "original": "decision-04 handler probe: eager roots preserve selected counts and whole state before authority",
+        "mutant": "MV3-array-symbols-listing-skipped",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a value that answers differently on each read is bound to the one reading that was taken",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a value that answers differently on each read is bound to the one reading that was taken",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a value that answers differently on each read is bound to the one reading that was taken",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time one-shot Object.keys replacement cannot change canonical bytes",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time Array.prototype.join replacement cannot change canonical bytes either",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "the retained structure and the canonical bytes are exactly the one value observed",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "the index the accessor picks is not special: position zero and a nested array behave the same",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a value the rules do refuse is still refused with the accessor live, not normalized",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "values.test.ts",
+        "original": "a capture-time trap that inserts the chain still binds the observed structure",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "vanished_at_B"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "a payload observation that installs get/set still creates the exact Execution",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "cascade_at_B"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "cascade_at_B"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "an earlier-field trap cannot steer a later field through ambient state in the same tick",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "creation.test.ts",
+        "original": "an earlier-field trap cannot steer a later field through ambient state in the same tick",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+        "mutant": "VAL-snapshot-rereads-caller",
+        "reason": "restored"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "restored"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a creation whose payload traps the first mailbox index still binds its initial Event",
+        "mutant": "VAL-snapshot-rereads-caller",
+        "reason": "restored"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a creation whose payload traps the first mailbox index still binds its initial Event",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a creation whose payload traps the first mailbox index still binds its initial Event",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "restored"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a creation whose payload traps the first mailbox index still binds its initial Event",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a creation whose payload traps the first mailbox index still binds its initial Event",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a payload observation that installs get/set still retains the accepted Event",
+        "mutant": "VAL-snapshot-is-caller-object",
+        "reason": "cascade_at_B"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a payload observation that installs get/set still retains the accepted Event",
+        "mutant": "RC-ELEMENT-READ-TWICE",
+        "reason": "cascade_at_B"
+      },
+      {
+        "file": "ingress.test.ts",
+        "original": "a payload observation that installs get/set still retains the accepted Event",
+        "mutant": "VAL-snapshot-rereads-caller",
+        "reason": "cascade_at_B"
+      },
+      {
+        "file": "dispatch.test.ts",
+        "original": "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+        "mutant": "VAL-object-read-from-descriptor",
+        "reason": "elsewhere_at_C"
+      },
+      {
+        "file": "dispatch.test.ts",
+        "original": "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable",
+        "mutant": "MV1-element-read-replaced-by-descriptor-value",
+        "reason": "elsewhere_at_C"
+      }
+    ],
+    "kept_only_by_vanishing_at_C": [],
+    "limits": "Supplied reduced matrix inspected; not an independent rerun of all 1,566 file/mutant pairs. Loss replacement requires source and rerun checks as well."
+  }
+}

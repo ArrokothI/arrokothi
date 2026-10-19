@@ -15,7 +15,17 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { BOUNDARY_LIMITS, ExecutionCoordinator, canonicalize, isTerminal, type BoundaryValue, type ExecutionView } from "../src/index.ts";
+import {
+  BOUNDARY_LIMITS,
+  ExecutionCoordinator,
+  boundaryValueIssues,
+  canonicalize,
+  isTerminal,
+  type BoundaryValue,
+  type ExecutionView,
+} from "../src/index.ts";
+import { acceptIdentityText, type LocatedIssue } from "../src/envelope.ts";
+import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
 import {
   accepted,
   caller,
@@ -53,6 +63,60 @@ const input = (destination: string, overrides: Partial<Parameters<ExecutionCoord
 
 const view = (kernel: ExecutionCoordinator, executionId: string, who = author): ExecutionView =>
   accepted(kernel.inspect(who, executionId));
+
+/** The fixed refusal capture records for every Proxy, before observing it (owner decision-01 item 2). */
+const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
+const INPUT_REFUSED = "input content is not an acceptable boundary value: ";
+const CREATION_REFUSED = "creation content is not an acceptable boundary value: ";
+/** The fixed label the identity-text classifier gives every Proxy, before `Array.isArray` (K1.1-correction-03). */
+const IDENTITY_PROXY_MESSAGE = "expected text that can name a request, received a Proxy";
+
+/**
+ * K1.1-correction-03: a payload Proxy a converted case used to drive is refused at capture before any
+ * trap runs (owner decision-01 item 2). Asserts the whole result: the exact located refusal and its
+ * fixed message, zero traps, and nothing queued or receipted behind the refusal.
+ */
+function assertIngressProxyRefused(
+  kernel: ExecutionCoordinator,
+  executionId: string,
+  requestKey: string,
+  witness: { readonly proxy: unknown; readonly calls: () => number },
+): void {
+  const before = view(kernel, executionId);
+  const refusal = refused(kernel.submitInput(author, input(executionId, { requestKey, payload: witness.proxy as never })));
+  assert.equal(refusal.classification, "malformed_value");
+  assert.equal(refusal.reason, `${INPUT_REFUSED}payload unsupported_form`);
+  assert.deepEqual(boundaryValueIssues(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
+  assert.equal(witness.calls(), 0, "the payload Proxy was refused before any trap ran");
+  const after = view(kernel, executionId);
+  assert.deepEqual(after.mailbox, before.mailbox, "nothing was queued behind the refusal");
+  assert.deepEqual(after.receipts, before.receipts, "and no receipt was minted");
+}
+
+/**
+ * `request` with its own `payload` field turned into an accessor: the first read runs `effect`, and
+ * every read answers `payload`.
+ *
+ * K1.1-correction-03: this is where a converted case's same-tick side effect now comes from. Capture
+ * refuses a payload Proxy before any trap, but request envelopes stay under the envelope rule, which
+ * allows an own accessor (owner design check Q7). Ingress (and creation, for the initial input)
+ * observes this field inside the boundary call, before the payload root is captured and serialized and
+ * before anything is committed, so the effect is live for every step a payload trap used to reach.
+ */
+function withPayloadGetter<R extends object>(request: R, payload: unknown, effect: () => void): { request: R; reads: () => number } {
+  let reads = 0;
+  const copy = { ...request } as unknown as Record<string, unknown>;
+  Object.defineProperty(copy, "payload", {
+    get(): unknown {
+      reads += 1;
+      if (reads === 1) effect();
+      return payload;
+    },
+    enumerable: true,
+    configurable: true,
+  });
+  return { request: copy as unknown as R, reads: () => reads };
+}
 
 describe("K1.1-C2 accepting one input", () => {
   test("acceptance records content, provenance, a mailbox entry and a position together", () => {
@@ -477,34 +541,117 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
   });
 
   test("K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress", () => {
+    // K1.1-correction-03: converted from two get-trap Proxy witnesses (owner decision-01 item 2).
+    // Title unchanged. Both Proxies are now refused before any trap runs. The disagreement is reached in a
+    // wrapped child, by a hook on the one own-descriptor observation of a genuine array; the dynamically
+    // supplied position by an inherited `Array.prototype` element, the other way an ordinary read answers
+    // for a position an array does not own.
     const kernel = coordinator();
     const { executionId } = start(kernel);
     const before = view(kernel, executionId);
 
-    const payload = new Proxy([1], {
+    const payload = countingProxy([1], {
       get(inner, property, receiver): unknown {
         if (property === "0") return 2;
         return Reflect.get(inner, property, receiver);
       },
     });
-    const refusal = refused(kernel.submitInput(author, input(executionId, { requestKey: "unstable", payload: payload as never })));
-    assert.equal(refusal.classification, "malformed_value");
-    assert.match(refusal.reason, /payload\[0\] unstable_representation/, "and the refusal locates the position");
-    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox, "nothing was queued under either reading");
+    assertIngressProxyRefused(kernel, executionId, "unstable", payload);
 
-    // The same refusal reaches a position `length` claims but the value does not own, which the
-    // round-3 path canonicalized as absent while retaining the dynamically supplied element.
-    const hollow: unknown[] = [];
-    hollow.length = 1;
-    const supplied = new Proxy(hollow, {
+    const hollowTarget: unknown[] = [];
+    hollowTarget.length = 1;
+    const supplied = countingProxy(hollowTarget, {
       get(inner, property, receiver): unknown {
         if (property === "0") return 7;
         return Reflect.get(inner, property, receiver);
       },
     });
-    const hollowRefusal = refused(kernel.submitInput(author, input(executionId, { requestKey: "hollow", payload: supplied as never })));
+    assertIngressProxyRefused(kernel, executionId, "hollow", supplied);
+
+    // A genuine array that owns 2 at position 0 and reads 2 there, whose one own-descriptor
+    // observation says 1: the two readings disagree, and neither is accepted.
+    type Retained = { mailbox: { eventId: string; payload: unknown }[]; receipts: string[] };
+    const probe = inWrappedChild<{
+      refusal: { ok: boolean; error?: { classification: string; reason: string } };
+      observations: number;
+      read: unknown;
+      initialEventId: string;
+      creationReceipt: string;
+      before: Retained;
+      after: Retained;
+    }>(`
+      const driver = { driverId: "fake-child", deliver(activation, settlement) { settlement.delivered(); return undefined; }, isSafeToReplace() { return true; } };
+      const author = { namespace: "app-a", scopes: ["tenant-a"], controlScopes: ["tenant-a"] };
+      const coordinator = new kernel.ExecutionCoordinator({ driver });
+      const created = coordinator.createExecution(author, {
+        creationKey: "report-17",
+        scope: "tenant-a",
+        definitionRevision: "weekly-report@3",
+        runtimeContractRevision: "runtime-contract@1",
+        progressCodec: "inline-json@1",
+        authorityContext: { tenant: "a" },
+        initialInput: { kind: "application.request", payload: { text: "report for week 37" } },
+      });
+      const executionId = created.value.executionId;
+      const retained = () => {
+        const seen = coordinator.inspect(author, executionId).value;
+        return {
+          mailbox: seen.mailbox.map((entry) => ({ eventId: entry.eventId, payload: entry.payload })),
+          receipts: seen.receipts.map((receipt) => receipt.token),
+        };
+      };
+      const before = retained();
+      const payload = track([2]);
+      let observations = 0;
+      hooks.descriptor = (target, key, real) => {
+        if (target === payload && key === "0") {
+          observations += 1;
+          return { value: 1, writable: true, enumerable: true, configurable: true };
+        }
+        return real;
+      };
+      const refusal = coordinator.submitInput(author, {
+        destination: executionId,
+        requestKey: "unstable",
+        kind: "application.correction",
+        payload,
+      });
+      hooks.descriptor = undefined;
+      emit({ refusal, observations, read: payload[0], initialEventId: created.value.initialEventId, creationReceipt: created.value.receipt.token, before, after: retained() });
+    `);
+    assert.equal(probe.observations, 1, "the position's own descriptor was observed exactly once, and said 1");
+    assert.equal(probe.read, 2, "while its ordinary read says 2");
+    assert.equal(probe.refusal.ok, false);
+    assert.equal(probe.refusal.error?.classification, "malformed_value");
+    assert.equal(probe.refusal.error?.reason, `${INPUT_REFUSED}payload[0] unstable_representation`, "and the refusal locates the position");
+    assert.deepEqual(probe.before.mailbox, [{ eventId: probe.initialEventId, payload: { text: "report for week 37" } }]);
+    assert.deepEqual(probe.before.receipts, [probe.creationReceipt], "the creation receipt only");
+    assert.deepEqual(probe.after, probe.before, "nothing was queued or receipted under either reading");
+
+    // The same refusal reaches a position `length` claims but the value does not own, which the
+    // round-3 path canonicalized as absent while retaining the dynamically supplied element. Here an
+    // inherited element, live across the call, supplies 7 to an ordinary read of that position.
+    const hollow: unknown[] = [];
+    hollow.length = 1;
+    const saved = Object.getOwnPropertyDescriptor(Array.prototype, "0");
+    Object.defineProperty(Array.prototype, "0", { value: 7, writable: true, enumerable: false, configurable: true });
+    let ownedThere: PropertyDescriptor | undefined;
+    let suppliedThere: unknown;
+    let hollowResult: ReturnType<ExecutionCoordinator["submitInput"]>;
+    try {
+      ownedThere = Object.getOwnPropertyDescriptor(hollow, "0");
+      suppliedThere = hollow[0];
+      hollowResult = kernel.submitInput(author, input(executionId, { requestKey: "hollow", payload: hollow as never }));
+    } finally {
+      if (saved === undefined) delete (Array.prototype as unknown as Record<string, unknown>)["0"];
+      else Object.defineProperty(Array.prototype, "0", saved);
+    }
+    assert.equal(ownedThere, undefined, "the array owns nothing at position 0");
+    assert.equal(suppliedThere, 7, "while an ordinary read of it is supplied 7");
+    const hollowRefusal = refused(hollowResult!);
     assert.equal(hollowRefusal.classification, "malformed_value");
     assert.match(hollowRefusal.reason, /payload\[0\] undefined_member/);
+    assert.equal(hollowRefusal.reason, `${INPUT_REFUSED}payload[0] undefined_member`);
     assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox);
   });
 
@@ -532,25 +679,48 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
     assert.equal(conflict.classification, "duplicate_conflict");
   });
 
-  test("K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement", () => {
+  test("K11-R2-VAL-02 ingress identity and replay agree under an Object.keys replacement installed in the same call", () => {
+    // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
+    // Original title: "K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys
+    // replacement". That Proxy installed the replacement mid-capture and is now refused before any trap
+    // runs; the same replacement comes from the request's `payload` getter (the envelope rule), inside the
+    // call and before the payload is captured and serialized.
     const kernel = coordinator();
     const { executionId } = start(kernel);
     const realKeys = Object.keys;
-    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+    const replaceKeys = (): void => {
+      (Object as unknown as Record<string, unknown>).keys = () => [];
+    };
+
+    const witness = countingProxy({ a: 1 } as Record<string, unknown>, {
       get(inner, property, receiver): unknown {
         if (property === "a") {
-          (Object as unknown as Record<string, unknown>).keys = () => [];
+          replaceKeys();
           return 1;
         }
         return Reflect.get(inner, property, receiver);
       },
     });
+    let keysAfterWitness: unknown;
+    try {
+      assertIngressProxyRefused(kernel, executionId, "ambient-keys", witness);
+    } finally {
+      keysAfterWitness = Object.keys;
+      Object.keys = realKeys;
+    }
+    assert.equal(keysAfterWitness, realKeys, "so the replacement was never installed");
+
+    const sneaky = withPayloadGetter(input(executionId, { requestKey: "ambient-keys" }), { a: 1 }, replaceKeys);
+    let replacedAcross = false;
     let first: { eventId: string; replayed: boolean };
     try {
-      first = accepted(kernel.submitInput(author, input(executionId, { requestKey: "ambient-keys", payload: sneaky as never })));
+      first = accepted(kernel.submitInput(author, sneaky.request));
+      replacedAcross = Object.keys !== realKeys;
     } finally {
       Object.keys = realKeys;
     }
+    assert.equal(sneaky.reads(), 1, "the payload field was observed once, inside the call");
+    assert.equal(replacedAcross, true, "the replacement was live across the boundary call");
     assert.equal(first!.replayed, false);
     assert.deepEqual(view(kernel, executionId).mailbox[1]?.payload, { a: 1 });
     const replay = accepted(kernel.submitInput(author, input(executionId, { requestKey: "ambient-keys", payload: { a: 1 } })));
@@ -577,47 +747,73 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
   /**
    * The accepted-state half of the same defect.
    *
-   * The payload observation runs caller code inside the boundary call, so the caller can install an
+   * Envelope observation runs caller code inside the boundary call, so the caller can install an
    * inherited setter at exactly the index name the mailbox and the receipt list are about to write
    * to. Under the previous shape both writes were `[[Set]]` into positions those lists did not own
    * yet, so both were swallowed: `submitInput` would still answer with an Event ID, an acceptance
    * position and a receipt, while inspection, the replay lookup and the next dispatch saw nothing
    * behind them. That is acceptance without retention, reached without replacing any method.
+   *
+   * K1.1-correction-03: these cases installed the setter from a payload Proxy's get trap. Capture now
+   * refuses every Proxy before any trap runs (owner decision-01 item 2), so that Proxy stays only as a
+   * witness of its own refusal. The setter now comes from the request's own `payload` getter, which the
+   * envelope rule still runs inside the call, before the payload is captured and before the commit
+   * (design check Q7).
    */
-  const trapOnRead = (payload: Record<string, unknown>, indices: readonly string[], onInstall: (trap: InheritedIndexTrap) => void): BoundaryValue =>
-    new Proxy(payload, {
+  const trapWitness = (
+    payload: Record<string, unknown>,
+    indices: readonly string[],
+    onInstall: (trap: InheritedIndexTrap) => void,
+  ): { proxy: unknown; calls: () => number } =>
+    countingProxy(payload, {
       get(target, property, receiver): unknown {
-        if (property === "n") {
-          onInstall(trapInheritedIndices(indices));
-          return Reflect.get(target, property, receiver) as unknown;
-        }
+        if (property === "n") onInstall(trapInheritedIndices(indices));
         return Reflect.get(target, property, receiver) as unknown;
       },
-    }) as unknown as BoundaryValue;
+    });
 
   test("an inherited setter at the next mailbox index cannot make an accepted Event go unretained", () => {
+    // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
+    // Title unchanged. The setter is still installed inside the ingress call, now by the request's own
+    // `payload` getter (the envelope rule).
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });
     const author = caller("app-a", "tenant-a");
     const created = accepted(kernel.createExecution(author, createRequest()));
 
     let trap: InheritedIndexTrap | undefined;
+    const witness = trapWitness({ n: 2 }, ["1", "2"], (installed) => {
+      trap = installed;
+    });
+    try {
+      assertIngressProxyRefused(kernel, created.executionId, "traps-its-own-slot", witness);
+    } finally {
+      trap?.restore();
+    }
+    const installedByWitness: InheritedIndexTrap | undefined = trap;
+    assert.equal(installedByWitness, undefined, "so the setter was never installed");
+
+    const observedPayload = { n: 2, inner: { m: 1 } };
+    const sneaky = withPayloadGetter(
+      { destination: created.executionId, requestKey: "traps-its-own-slot", kind: "application.request", payload: { n: 2, inner: { m: 1 } } },
+      observedPayload,
+      () => {
+        trap = trapInheritedIndices(["1", "2"]);
+      },
+    );
     let submitted: { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
     try {
-      submitted = accepted(
-        kernel.submitInput(author, {
-          destination: created.executionId,
-          requestKey: "traps-its-own-slot",
-          kind: "application.request",
-          payload: trapOnRead({ n: 2 }, ["1", "2"], (installed) => {
-            trap = installed;
-          }),
-        }),
-      ) as { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
+      submitted = accepted(kernel.submitInput(author, sneaky.request)) as {
+        eventId: string;
+        acceptancePosition: number;
+        replayed: boolean;
+        receipt: { token: string };
+      };
       assert.equal(inheritedIndexIsLive(1), true, "the inherited setter was live across the ingress call");
     } finally {
       trap?.restore();
     }
+    assert.equal(sneaky.reads(), 1, "the payload field was observed once, inside the call");
 
     assert.equal(submitted!.replayed, false);
     assert.equal(submitted!.acceptancePosition, 2);
@@ -630,7 +826,7 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
       view.mailbox.map((entry) => entry.eventId),
       [created.initialEventId, submitted!.eventId],
     );
-    assert.deepEqual(view.mailbox[1]?.payload, { n: 2 }, "the retained payload is the observed value");
+    assert.deepEqual(view.mailbox[1]?.payload, { n: 2, inner: { m: 1 } }, "the retained payload is the observed value");
     assert.deepEqual(view.queued, [created.initialEventId, submitted!.eventId]);
     assert.deepEqual(
       view.receipts.map((receipt) => receipt.token),
@@ -645,7 +841,7 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
         destination: created.executionId,
         requestKey: "traps-its-own-slot",
         kind: "application.request",
-        payload: { n: 2 },
+        payload: { n: 2, inner: { m: 1 } },
       }),
     );
     assert.equal(replay.replayed, true);
@@ -653,64 +849,99 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
     assert.equal(replay.acceptancePosition, 2);
     assert.equal(replay.receipt, submitted!.receipt);
 
+    // The retained payload is the Kernel's own copy, taken from the one observation: changing the object
+    // the getter returned, at either level, changes nothing retained. (The Proxy this case used before
+    // checked the same thing by answering differently on a later read; C1 of the design check.)
+    observedPayload.n = 3;
+    observedPayload.inner.m = 3;
+    assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).mailbox[1]?.payload, { n: 2, inner: { m: 1 } });
+
     // And the retained Event is selectable: reservation sees it in acceptance order.
     const dispatched = accepted(kernel.dispatch(author, created.executionId, { bound: 2 }));
     assert.deepEqual(dispatched.batch, [created.initialEventId, submitted!.eventId]);
   });
 
-  test("a creation whose payload traps the first mailbox index still binds its initial Event", () => {
+  test("a creation whose initial-input payload field traps the first mailbox index still binds its initial Event", () => {
+    // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
+    // Original title: "a creation whose payload traps the first mailbox index still binds its initial
+    // Event". The Proxy is now refused before any trap; the setter comes from the initial input's own
+    // `payload` getter (the envelope rule), inside the creation call.
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });
     const author = caller("app-a", "tenant-a");
 
     let trap: InheritedIndexTrap | undefined;
-    let created: { executionId: string; initialEventId: string; replayed: boolean };
+    const witness = trapWitness({ n: 1 }, ["0", "1"], (installed) => {
+      trap = installed;
+    });
     try {
-      created = accepted(
+      const refusal = refused(
         kernel.createExecution(
           author,
-          createRequest({
-            creationKey: "traps-the-first-slot",
-            initialInput: {
-              kind: "application.request",
-              payload: trapOnRead({ n: 1 }, ["0", "1"], (installed) => {
-                trap = installed;
-              }),
-            },
-          }),
+          createRequest({ creationKey: "traps-the-first-slot", initialInput: { kind: "application.request", payload: witness.proxy as never } }),
         ),
       );
+      assert.equal(refusal.classification, "malformed_value");
+      assert.equal(refusal.reason, `${CREATION_REFUSED}initialInput.payload unsupported_form`);
+      assert.equal(refusal.executionId, null);
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
+      assert.equal(witness.calls(), 0, "the payload Proxy was refused before any trap ran");
+      assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created behind the refusal");
+    } finally {
+      trap?.restore();
+    }
+    const installedByWitness: InheritedIndexTrap | undefined = trap;
+    assert.equal(installedByWitness, undefined, "so the setter was never installed");
+
+    const observedPayload = { n: 1, inner: { m: 1 } };
+    const initial = withPayloadGetter({ kind: "application.request", payload: { n: 1, inner: { m: 1 } } }, observedPayload, () => {
+      trap = trapInheritedIndices(["0", "1"]);
+    });
+    let created: { executionId: string; initialEventId: string; replayed: boolean };
+    try {
+      created = accepted(kernel.createExecution(author, createRequest({ creationKey: "traps-the-first-slot", initialInput: initial.request })));
       assert.equal(inheritedIndexIsLive(0), true, "the inherited setter was live across the creation call");
     } finally {
       trap?.restore();
     }
+    assert.equal(initial.reads(), 1, "the payload field was observed once, inside the call");
 
     assert.equal(created!.replayed, false);
     const view = accepted(kernel.inspect(author, created!.executionId));
     assert.equal(view.state, "READY");
     assert.equal(view.mailbox.length, 1, "creation's own atomic Event is retained");
     assert.equal(view.mailbox[0]?.eventId, created!.initialEventId);
-    assert.deepEqual(view.mailbox[0]?.payload, { n: 1 });
+    assert.deepEqual(view.mailbox[0]?.payload, { n: 1, inner: { m: 1 } });
     assert.deepEqual(view.receipts.length, 1);
     assert.deepEqual(kernel.visibleExecutions(author), [created!.executionId]);
+
+    // The retained initial payload is the Kernel's own copy, taken from the one observation (as above).
+    observedPayload.n = 3;
+    observedPayload.inner.m = 3;
+    assert.deepEqual(accepted(kernel.inspect(author, created!.executionId)).mailbox[0]?.payload, { n: 1, inner: { m: 1 } });
   });
 });
 
 describe("K11-R7-STATE-03 ingress under inherited descriptor-field pollution", () => {
   /**
-   * The ingress half of the same class: the payload observation installs inherited `get`/`set`
-   * fields and then presents a valid object, and everything the Kernel defines afterwards —
+   * The ingress half of the same class: caller code installs inherited `get`/`set` fields inside the
+   * ingress call and then presents a valid payload, and everything the Kernel defines afterwards —
    * snapshot, clone, serializer swap, mailbox entry, receipt — must not consult the prototype.
-   * The handler is null-prototype so its own trap lookups cannot be what breaks (see the
-   * creation suite for why that distinction matters); any failure here would be the Kernel's.
+   *
+   * K1.1-correction-03: the installer was a payload Proxy's `getPrototypeOf` trap (with a
+   * null-prototype handler, so its own trap lookups could not be what broke). Capture now refuses
+   * every Proxy before any trap runs (owner decision-01 item 2), so that Proxy stays only as a witness
+   * of its own refusal; the pollution now comes from the request's own `payload` getter, which the
+   * envelope rule still runs inside the call, before the payload is captured (design check Q7). Any
+   * failure here would be the Kernel's.
    */
-  const polluteOnRead = (
+  const pollutingWitness = (
     payload: Record<string, unknown>,
     onPollution: (pollution: DescriptorPollution) => void,
     seen: { hostile: boolean },
-  ): BoundaryValue => {
+  ): { proxy: unknown; calls: () => number } => {
     let installed = false;
-    const handler: ProxyHandler<Record<string, unknown>> = {
+    return countingProxy(payload, {
       getPrototypeOf(target): object | null {
         if (!installed) {
           installed = true;
@@ -719,11 +950,14 @@ describe("K11-R7-STATE-03 ingress under inherited descriptor-field pollution", (
         }
         return Reflect.getPrototypeOf(target);
       },
-    };
-    return new Proxy(payload, Object.assign(Object.create(null), handler)) as unknown as BoundaryValue;
+    });
   };
 
-  test("a payload observation that installs get/set still retains the accepted Event", () => {
+  test("a payload field whose observation installs get/set still retains the accepted Event", () => {
+    // K1.1-correction-03: converted from a getPrototypeOf-trap Proxy instrument (owner decision-01 item 2; design check Q7).
+    // Original title: "a payload observation that installs get/set still retains the accepted Event". The
+    // pollution now comes from the request's `payload` getter (the envelope rule), in the same call and
+    // before the snapshot, clone, window and commit.
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });
     const author = caller("app-a", "tenant-a");
@@ -731,22 +965,43 @@ describe("K11-R7-STATE-03 ingress under inherited descriptor-field pollution", (
 
     let pollution: DescriptorPollution | undefined;
     const seen = { hostile: false };
+    const witness = pollutingWitness(
+      { n: 2 },
+      (installed) => {
+        pollution = installed;
+      },
+      seen,
+    );
+    try {
+      assertIngressProxyRefused(kernel, created.executionId, "descriptor-pollution", witness);
+    } finally {
+      pollution?.restore();
+    }
+    const installedByWitness: DescriptorPollution | undefined = pollution;
+    assert.equal(installedByWitness, undefined, "so the pollution was never installed");
+    assert.equal(seen.hostile, false);
+
+    const polluting = withPayloadGetter(
+      { destination: created.executionId, requestKey: "descriptor-pollution", kind: "application.request", payload: { n: 2 } },
+      { n: 2 },
+      () => {
+        pollution = polluteDescriptorFields({ get: 1, set: () => {} });
+        seen.hostile = descriptorConversionIsHostile();
+      },
+    );
     let submitted: { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
     try {
-      submitted = accepted(
-        kernel.submitInput(author, {
-          destination: created.executionId,
-          requestKey: "descriptor-pollution",
-          kind: "application.request",
-          payload: polluteOnRead({ n: 2 }, (installed) => {
-            pollution = installed;
-          }, seen),
-        }),
-      ) as { eventId: string; acceptancePosition: number; replayed: boolean; receipt: { token: string } };
+      submitted = accepted(kernel.submitInput(author, polluting.request)) as {
+        eventId: string;
+        acceptancePosition: number;
+        replayed: boolean;
+        receipt: { token: string };
+      };
     } finally {
       pollution?.restore();
     }
 
+    assert.equal(polluting.reads(), 1, "the payload field was observed once, inside the call");
     assert.equal(seen.hostile, true, "descriptor conversion threw for the whole ingress call");
     assert.equal(submitted!.replayed, false);
     assert.equal(submitted!.acceptancePosition, 2);
@@ -817,27 +1072,42 @@ describe("K11-R16-VAL-01 ingress replay and conflict are stable while the iterat
 
 describe("K11-R16-ID-01 ingress diagnostics never throw on caller-owned values", () => {
   test("a revoked Proxy in requestKey, kind or subscriptionClass is a located refusal", () => {
+    // K1.1-correction-03: `acceptIdentityText` now tests for a Proxy before `Array.isArray` and labels it
+    // "a Proxy", so each revoked Proxy below is exactly `unsupported_form` with the fixed label. The
+    // ingress reason carries the path and the code only, so the label is pinned on the classifier the
+    // boundary calls, with the same value. Without the Proxy arm a revoked Proxy would reach
+    // `Array.isArray`, throw, and be labelled "an uninspectable value" under the same code. The
+    // classifier's catch is now defensive only: `Array.isArray` throws only on a revoked Proxy, which the
+    // Proxy arm names first, so no non-Proxy value makes it throw.
     const kernel = coordinator();
     const { executionId } = start(kernel);
     const before = view(kernel, executionId);
+    const revokedKey = revokedProxy();
+    const revokedKind = revokedProxy();
+    const revokedClass = revokedProxy();
 
-    const keyRefusal = refused(kernel.submitInput(author, input(executionId, { requestKey: revokedProxy() as never })));
+    const keyRefusal = refused(kernel.submitInput(author, input(executionId, { requestKey: revokedKey as never })));
     assert.equal(keyRefusal.classification, "malformed_value");
-    assert.match(keyRefusal.reason, /requestKey (unsupported_form|unstable_representation)/);
+    assert.equal(keyRefusal.reason, `${INPUT_REFUSED}requestKey unsupported_form`);
     assert.equal(keyRefusal.executionId, executionId);
 
-    const kindRefusal = refused(kernel.submitInput(author, input(executionId, { kind: revokedProxy() as never })));
+    const kindRefusal = refused(kernel.submitInput(author, input(executionId, { kind: revokedKind as never })));
     assert.equal(kindRefusal.classification, "malformed_value");
-    assert.match(kindRefusal.reason, /kind (unsupported_form|unstable_representation)/);
+    assert.equal(kindRefusal.reason, `${INPUT_REFUSED}kind unsupported_form`);
 
     const classRefusal = refused(
-      kernel.submitInput(author, input(executionId, { subscriptionClass: revokedProxy() as never })),
+      kernel.submitInput(author, input(executionId, { subscriptionClass: revokedClass as never })),
     );
     assert.equal(classRefusal.classification, "malformed_value");
-    assert.match(classRefusal.reason, /subscriptionClass (unsupported_form|unstable_representation)/);
+    assert.equal(classRefusal.reason, `${INPUT_REFUSED}subscriptionClass unsupported_form`);
 
     for (const refusal of [keyRefusal, kindRefusal, classRefusal]) {
       assert.doesNotMatch(refusal.reason, /TypeError|IsArray/, "no ambient exception leaks into the reason");
+    }
+    for (const [value, label] of [[revokedKey, "requestKey"], [revokedKind, "kind"], [revokedClass, "subscriptionClass"]] as const) {
+      const issues: LocatedIssue[] = [];
+      assert.equal(acceptIdentityText(value, label, issues), false, label);
+      assert.deepEqual(issues, [{ path: label, code: "unsupported_form", message: IDENTITY_PROXY_MESSAGE }], label);
     }
     const after = view(kernel, executionId);
     assert.deepEqual(after.mailbox, before.mailbox, "malformed input queues nothing");

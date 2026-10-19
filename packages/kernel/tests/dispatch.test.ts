@@ -16,8 +16,9 @@ import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { ExecutionCoordinator, canonicalize } from "../src/index.ts";
-import type { DeliverySettlement, DispatchOptions, ExecutionDriver } from "../src/index.ts";
+import { ExecutionCoordinator, boundaryValueIssues, canonicalize } from "../src/index.ts";
+import type { BoundaryValue, DeliverySettlement, DispatchOptions, ExecutionDriver } from "../src/index.ts";
+import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
 import {
   accepted,
   asyncFailingDriver,
@@ -53,6 +54,56 @@ const started = (kernel: ExecutionCoordinator, creationKey = "report-17") => {
   const created = accepted(kernel.createExecution(author, createRequest({ creationKey })));
   return created;
 };
+
+/** The fixed refusal capture records for every Proxy, before observing it (owner decision-01 item 2). */
+const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
+
+/**
+ * K1.1-correction-03: a payload Proxy a converted case used to drive is refused at capture before any
+ * trap runs (owner decision-01 item 2). Asserts the whole result: the exact located refusal and its
+ * fixed message, zero traps, nothing created and nothing handed to the Driver.
+ */
+function assertPayloadProxyRefused(
+  kernel: ExecutionCoordinator,
+  driver: { readonly seen: readonly unknown[] },
+  creationKey: string,
+  witness: { readonly proxy: unknown; readonly calls: () => number },
+): void {
+  const refusal = refused(
+    kernel.createExecution(author, createRequest({ creationKey, initialInput: { kind: "k", payload: witness.proxy as never } })),
+  );
+  assert.equal(refusal.classification, "malformed_value");
+  assert.equal(refusal.reason, "creation content is not an acceptable boundary value: initialInput.payload unsupported_form");
+  assert.equal(refusal.executionId, null);
+  assert.deepEqual(boundaryValueIssues(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
+  assert.equal(witness.calls(), 0, "the payload Proxy was refused before any trap ran");
+  assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created behind the refusal");
+  assert.equal(driver.seen.length, 0, "and nothing reached the Driver");
+}
+
+/**
+ * Input content whose own `payload` field is an accessor: its first read runs `effect`, and every read
+ * answers `payload`.
+ *
+ * K1.1-correction-03: where a converted case's side effect now comes from. Capture refuses a payload
+ * Proxy before any trap, but request envelopes stay under the envelope rule, which allows an own
+ * accessor (owner design check Q7). Creation observes this field inside the boundary call, before the
+ * payload root is captured and serialized and before anything is committed.
+ */
+function payloadGetterInput(kind: string, payload: unknown, effect: () => void): { content: { kind: string; payload: BoundaryValue }; reads: () => number } {
+  let reads = 0;
+  const content: Record<string, unknown> = { kind };
+  Object.defineProperty(content, "payload", {
+    get(): unknown {
+      reads += 1;
+      if (reads === 1) effect();
+      return payload;
+    },
+    enumerable: true,
+    configurable: true,
+  });
+  return { content: content as unknown as { kind: string; payload: BoundaryValue }, reads: () => reads };
+}
 
 const withInputs = (kernel: ExecutionCoordinator, executionId: string, keys: string[]): string[] =>
   keys.map(
@@ -505,47 +556,126 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
   });
 
   test("K11-R2-VAL-02 a payload with no single reading never reaches a Driver", () => {
+    // K1.1-correction-03: converted from a get-trap Proxy witness (owner decision-01 item 2). Title unchanged.
+    // That Proxy owned 1 at position 0 and read 2 there; it is now refused before any trap runs, so it no
+    // longer reaches the comparison of the two readings. The Proxy stays as a witness of its own refusal, and
+    // the disagreement itself is reached in a wrapped child, by a hook on the one own-descriptor observation
+    // of a genuine array.
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });
-    const payload = new Proxy([1], {
+    const witness = countingProxy([1], {
       get(inner, property, receiver): unknown {
         if (property === "0") return 2;
         return Reflect.get(inner, property, receiver);
       },
     });
-    const refusal = refused(
-      kernel.createExecution(author, createRequest({ initialInput: { kind: "k", payload: payload as never } })),
+    assertPayloadProxyRefused(kernel, driver, "report-17", witness);
+    assert.deepEqual(driver.seen, [], "no Activation was built from the refused Proxy");
+
+    // A genuine array that owns 2 at position 0 and reads 2 there, whose one own-descriptor observation
+    // says 1. Every Execution visible afterwards is dispatched, so a creation that accepted either reading
+    // would hand its Activation to the Driver.
+    const probe = inWrappedChild<{
+      refusal: { ok: boolean; error?: { classification: string; reason: string; executionId: string | null } };
+      observations: number;
+      read: unknown;
+      visible: string[];
+      delivered: number;
+    }>(`
+      const seen = [];
+      const driver = {
+        driverId: "fake-child",
+        deliver(activation, settlement) { seen.push(activation); settlement.delivered(); return undefined; },
+        isSafeToReplace() { return true; },
+      };
+      const author = { namespace: "app-a", scopes: ["tenant-a"], controlScopes: ["tenant-a"] };
+      const coordinator = new kernel.ExecutionCoordinator({ driver });
+      const payload = track([2]);
+      let observations = 0;
+      hooks.descriptor = (target, key, real) => {
+        if (target === payload && key === "0") {
+          observations += 1;
+          return { value: 1, writable: true, enumerable: true, configurable: true };
+        }
+        return real;
+      };
+      const refusal = coordinator.createExecution(author, {
+        creationKey: "report-17",
+        scope: "tenant-a",
+        definitionRevision: "weekly-report@3",
+        runtimeContractRevision: "runtime-contract@1",
+        progressCodec: "inline-json@1",
+        authorityContext: { tenant: "a" },
+        initialInput: { kind: "k", payload },
+      });
+      hooks.descriptor = undefined;
+      const visible = coordinator.visibleExecutions(author);
+      for (const executionId of visible) coordinator.dispatch(author, executionId, { bound: 1 });
+      emit({ refusal, observations, read: payload[0], visible, delivered: seen.length });
+    `);
+    assert.equal(probe.observations, 1, "the position's own descriptor was observed exactly once, and said 1");
+    assert.equal(probe.read, 2, "while its ordinary read says 2");
+    assert.equal(probe.refusal.ok, false);
+    assert.equal(probe.refusal.error?.classification, "malformed_value");
+    assert.equal(
+      probe.refusal.error?.reason,
+      "creation content is not an acceptable boundary value: initialInput.payload[0] unstable_representation",
     );
-    assert.equal(refusal.classification, "malformed_value");
-    assert.deepEqual(driver.seen, [], "no Activation was built from a value with two readings");
+    assert.equal(probe.refusal.error?.executionId, null);
+    assert.deepEqual(probe.visible, [], "nothing was created under either reading");
+    assert.equal(probe.delivered, 0, "no Activation was built from a value with two readings");
   });
 
   test("K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound", () => {
+    // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
+    // Title unchanged. That Proxy installed the review-04 replacement mid-capture and is now refused before
+    // any trap runs; the same replacement comes from the initial input's `payload` getter (the envelope
+    // rule), inside the creation call and before the payload is captured and serialized.
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });
     const realKeys = Object.keys;
-    // The initial input reads coherently while installing the review-04 replacement. Creation,
-    // dispatch, redelivery and inspection must then all agree on `{a:1}` with bytes `{"a":1}`.
-    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+    const replaceKeys = (): void => {
+      (Object as unknown as Record<string, unknown>).keys = () => [];
+    };
+
+    const witness = countingProxy({ a: 1 } as Record<string, unknown>, {
       get(inner, property, receiver): unknown {
         if (property === "a") {
-          (Object as unknown as Record<string, unknown>).keys = () => [];
+          replaceKeys();
           return 1;
         }
         return Reflect.get(inner, property, receiver);
       },
     });
+    let keysAfterWitness: unknown;
+    try {
+      assertPayloadProxyRefused(kernel, driver, "ambient-keys-dispatch", witness);
+    } finally {
+      keysAfterWitness = Object.keys;
+      Object.keys = realKeys;
+    }
+    assert.equal(keysAfterWitness, realKeys, "so the replacement was never installed");
+
+    // The initial input reads coherently while the replacement is live. Creation, dispatch,
+    // redelivery and inspection must then all agree on `{a:1}` with bytes `{"a":1}`.
+    const input = payloadGetterInput("k", { a: 1 }, replaceKeys);
+    let replacedAcross = false;
     let created: { executionId: string; initialEventId: string };
     try {
-      created = accepted(
-        kernel.createExecution(
-          author,
-          createRequest({ creationKey: "ambient-keys-dispatch", initialInput: { kind: "k", payload: sneaky as never } }),
-        ),
-      );
+      created = accepted(kernel.createExecution(author, createRequest({ creationKey: "ambient-keys-dispatch", initialInput: input.content })));
+      replacedAcross = Object.keys !== realKeys;
     } finally {
       Object.keys = realKeys;
     }
+    assert.equal(input.reads(), 1, "the payload field was observed once, inside the call");
+    assert.equal(replacedAcross, true, "the replacement was live across the creation call");
+    // The bytes bound are the retained value's own: the caller's plain retry of `{a:1}` is the same
+    // creation, which it could not be had creation bound `{}`.
+    const replay = accepted(
+      kernel.createExecution(author, createRequest({ creationKey: "ambient-keys-dispatch", initialInput: { kind: "k", payload: { a: 1 } } })),
+    );
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.executionId, created!.executionId);
     accepted(kernel.dispatch(author, created!.executionId, { bound: 1 }));
     const redelivered = accepted(kernel.redeliver(author, created!.executionId));
     assert.equal(redelivered.redelivered, true);
@@ -564,30 +694,45 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     }
   });
 
-  test("K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable", () => {
+  test("K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable", () => {
+    // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
+    // Original title: "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation
+    // mutable". The Proxy is now refused before any trap; the replacement comes from the initial input's
+    // `payload` getter (the envelope rule) inside the creation call, and stays live through the later
+    // dispatch exactly as before.
     const driver = recordingDriver();
     const kernel = new ExecutionCoordinator({ driver });
     const realFreeze = Object.freeze;
-    // The input reads coherently while disabling the operation a later dispatch uses to seal its
-    // exchange. Identity is correct — what is under test is that the Activation handed to the
-    // Driver is actually immutable.
-    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+    const replaceFreeze = (): void => {
+      (Object as unknown as Record<string, unknown>).freeze = (value: unknown) => value;
+    };
+
+    const witness = countingProxy({ a: 1 } as Record<string, unknown>, {
       get(inner, property, receiver): unknown {
         if (property === "a") {
-          (Object as unknown as Record<string, unknown>).freeze = (value: unknown) => value;
+          replaceFreeze();
           return 1;
         }
         return Reflect.get(inner, property, receiver);
       },
     });
+    let freezeAfterWitness: unknown;
+    try {
+      assertPayloadProxyRefused(kernel, driver, "state-freeze", witness);
+    } finally {
+      freezeAfterWitness = Object.freeze;
+      (Object as unknown as Record<string, unknown>).freeze = realFreeze;
+    }
+    assert.equal(freezeAfterWitness, realFreeze, "so the replacement was never installed");
+
+    // The input reads coherently while the envelope observation disables the operation a later
+    // dispatch uses to seal its exchange. Identity is correct — what is under test is that the
+    // Activation handed to the Driver is actually immutable.
+    const input = payloadGetterInput("k", { a: 1 }, replaceFreeze);
     let created: { executionId: string; initialEventId: string };
     try {
-      created = accepted(
-        kernel.createExecution(
-          author,
-          createRequest({ creationKey: "state-freeze", initialInput: { kind: "k", payload: sneaky as never } }),
-        ),
-      );
+      created = accepted(kernel.createExecution(author, createRequest({ creationKey: "state-freeze", initialInput: input.content })));
+      assert.equal(input.reads(), 1, "the payload field was observed once, inside the call");
       assert.notEqual(Object.freeze, realFreeze, "the replacement was live across the boundary call");
       // The replacement stays live through the later dispatch below: the review witness requires
       // the Activation sealed *after* the pollution, not after a cleanup.

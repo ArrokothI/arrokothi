@@ -1,0 +1,1048 @@
+{
+  "revision": "10aa09aae4d6ae1f4792ba2c7961e9b3e34e0118",
+  "node": "v26.10.0",
+  "source": "scripts/packet_tools.py register_matches/register_case_matches; unchanged detector and recipes",
+  "reason": "The owner-approved harness failure branches now call assert.fail rather than construct Error. Removing that intrinsic reference removes 94 derived V-ENV matches and the V-ENV part of six Proxy matches. Claim holds are unchanged; this confers no preservation or closure credit. Fresh census and standing transfers must account for each affected member.",
+  "removed_matches": [
+    {
+      "key": "packages/kernel/tests/control-authority.test.ts:162:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/control-authority.test.ts:171:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/control-authority.test.ts:261:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/control-authority.test.ts:298:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/control-authority.test.ts:62:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/delivery-attribution.test.ts:31:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/delivery-attribution.test.ts:82:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/history-attribution.test.ts:155:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/history-attribution.test.ts:96:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:178:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:299:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/inspection.test.ts:108:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/inspection.test.ts:153:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/inspection.test.ts:40:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/inspection.test.ts:66:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/inspection.test.ts:75:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/late-reports.test.ts:75:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/nondisclosure.test.ts:324:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/nondisclosure.test.ts:360:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/nondisclosure.test.ts:421:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/nondisclosure.test.ts:460:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/outcome-acceptance.test.ts:483:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/outcome-acceptance.test.ts:94:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/outcome-partial-claim.test.ts:159:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/receipts.test.ts:121:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/receipts.test.ts:134:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/receipts.test.ts:164:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/receipts.test.ts:68:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/receipts.test.ts:84:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/refusals.test.ts:43:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/refusals.test.ts:60:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/submission-authority.test.ts:171:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/submission-authority.test.ts:462:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover-reentrancy.test.ts:110:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover-reentrancy.test.ts:173:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover-reentrancy.test.ts:225:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover-reentrancy.test.ts:50:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover.test.ts:104:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover.test.ts:120:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover.test.ts:153:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/takeover.test.ts:198:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:110:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:140:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:151:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:173:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:181:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:199:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:240:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:277:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:291:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:305:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:313:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:326:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:375:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:384:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:624:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/creation.test.ts:640:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:117:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:1209:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:1223:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:1297:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:1486:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:1503:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:163:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:186:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:208:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:298:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:332:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:345:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:386:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:405:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:467:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:474:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:487:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/dispatch.test.ts:519:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:122:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:143:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:195:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:228:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:242:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:254:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:273:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:317:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:351:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:363:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:375:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:394:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:404:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:431:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:445:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:477:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:496:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:510:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    },
+    {
+      "key": "packages/kernel/tests/ingress.test.ts:658:3",
+      "matched": [
+        "V-ENV"
+      ],
+      "classification": "held",
+      "claim": "V-ENV",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
+    }
+  ],
+  "changed_matches": [
+    {
+      "before": {
+        "key": "packages/kernel/tests/creation.test.ts:1230:3",
+        "matched": [
+          "Proxy",
+          "V-ENV"
+        ],
+        "classification": "held",
+        "claim": "Proxy",
+        "reason": "A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      },
+      "after_matched": [
+        "Proxy"
+      ]
+    },
+    {
+      "before": {
+        "key": "packages/kernel/tests/creation.test.ts:1254:3",
+        "matched": [
+          "Proxy",
+          "V-ENV"
+        ],
+        "classification": "held",
+        "claim": "Proxy",
+        "reason": "A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      },
+      "after_matched": [
+        "Proxy"
+      ]
+    },
+    {
+      "before": {
+        "key": "packages/kernel/tests/creation.test.ts:1270:3",
+        "matched": [
+          "Proxy",
+          "V-ENV"
+        ],
+        "classification": "held",
+        "claim": "Proxy",
+        "reason": "A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      },
+      "after_matched": [
+        "Proxy"
+      ]
+    },
+    {
+      "before": {
+        "key": "packages/kernel/tests/creation.test.ts:1293:3",
+        "matched": [
+          "Proxy",
+          "V-ENV"
+        ],
+        "classification": "held",
+        "claim": "Proxy",
+        "reason": "A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      },
+      "after_matched": [
+        "Proxy"
+      ]
+    },
+    {
+      "before": {
+        "key": "packages/kernel/tests/ingress.test.ts:1074:3",
+        "matched": [
+          "Proxy",
+          "V-ENV"
+        ],
+        "classification": "held",
+        "claim": "Proxy",
+        "reason": "A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      },
+      "after_matched": [
+        "Proxy"
+      ]
+    },
+    {
+      "before": {
+        "key": "packages/kernel/tests/ingress.test.ts:1117:3",
+        "matched": [
+          "Proxy",
+          "V-ENV"
+        ],
+        "classification": "held",
+        "claim": "Proxy",
+        "reason": "A Proxy reaching capture is refused; decision-01 \u00a72 keeps refusal, but K1.1-correction-03 decides its code, location and order.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      },
+      "after_matched": [
+        "Proxy"
+      ]
+    }
+  ],
+  "before_count": 953,
+  "after_count": 859
+}

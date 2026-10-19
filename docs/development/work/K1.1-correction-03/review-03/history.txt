@@ -1,0 +1,751 @@
+commit 4b121d7ba665182b22857f049c05f019f25d0c65
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sun Oct 18 04:27:14 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sun Oct 18 04:27:14 2026 -0400
+
+    K1.1-correction-03: implementation report 04, 007 WAITING_FOR_REVIEW
+    
+    Candidate H over payload C 2bf220e9e426c810f2505fa2d74d70197807e584 on
+    B b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b. Verify on clean C returns
+    checks_passed. Output-only attachments in evidence-04 hold the B/C
+    requalification matrices, isolations, C1 ledger, continuation search and
+    both verify runs, with a digest manifest. 007 records the round and the
+    TOOLS-02 transfer under owner choice 03.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 2bf220e9e426c810f2505fa2d74d70197807e584
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sun Oct 18 03:23:35 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sun Oct 18 03:23:35 2026 -0400
+
+    build: import the dimensions baseline from a copy that resolves its package
+    
+    verify's value-cost-dimensions step failed at f7371872: the declared B
+    baseline input is a read-only source snapshot without node_modules, so
+    importing its values.ts could not resolve the canonicalize package. The
+    script now imports a temporary copy of the baseline Kernel source whose
+    one package import resolves through the candidate tree's node_modules,
+    and leaves the verified input untouched. Against a node_modules-free B
+    snapshot it reproduces the declared slices: 5,460 refused, 1,543
+    accepted (costliest 3,094,930 units) and 1,056 consumer cases.
+    
+    No other check or requalification run reads this script.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit f73718728837eaa6f8724a43c385f2da02cc4bf6
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sun Oct 18 00:15:54 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sun Oct 18 00:15:54 2026 -0400
+
+    build: let the stop trace admit the collector's bounded suffix search
+    
+    The first full design-03 continuation search (1,862 shapes, 373,694 runs)
+    reported 118,608 post-stop violations, every one a getOwnPropertyDescriptor
+    inside pushIssue. Once eight located details exist, the crossing writer's
+    one collector call scans at most twelve Kernel-owned suffix entries with
+    readAt and may bump an entry's occurrences. Design 03 allows that bounded
+    collector; the trace's allowance listed only the first-eight append path,
+    which the 38-shape small corpus never passes.
+    
+    The trace now admits those reads (at most twelve) and the one occurrences
+    write, only inside the crossing writer's single collector call. With it
+    the full search reports no violation. A new control keeps a post-stop
+    descriptor read outside the collector a violation. Production unchanged.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit d4bb18b2a955b63637d369531b59b557e60613cc
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 23:57:18 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 23:57:18 2026 -0400
+
+    build: list eleven value-cost registrations as uncredited and transfer them to TOOLS-02
+    
+    At 8a8579cf the registry kills 238 of 249 registrations with qualifying
+    assertions. In the other eleven (C1 groups creation, dispatch, ingress)
+    the failing assertion runs while an intrinsic the test itself replaced
+    or polluted is still live, so the witness refuses it by design 03's
+    clean-snapshot rule. Owner choice 03 item 2: they are removed from the
+    active registry, listed with their refused calls in uncredited-04.json,
+    and transferred to TOOLS-02. No production or test code changes.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 8a8579cfa8a8320acece4b4f10362e7bad0e14ac
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 23:38:05 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 23:38:05 2026 -0400
+
+    build: make value-cost observations repeatable and tolerate a raised Array.prototype.length
+    
+    The first full value-cost registry run at the design-03 tooling found two
+    evidence-tooling defects; production is unchanged.
+    
+    - The probe reported declarations and assertion modules as absolute paths
+      in the runner's temporary tree, so the determinism sample's repeat never
+      compared equal and every unit-table registration was invalid_baseline.
+      It now reports them relative to the tree; the loss ledger accepts that.
+    - Tests that define and then delete an Array.prototype index leave its
+      length raised for the rest of the process. The witness treated that as
+      an unclean intrinsic and refused every later assertion: 71 C1-group
+      registrations ended as subject_exception although their assertions
+      failed. A raised length alone runs no code; a remaining index still
+      fails the snapshot.
+    
+    Both have controls in test_value_cost_probe.py that fail without the fix.
+    The tooling README also drops a stale sentence that called Proxy {}
+    acceptance current.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 3befdd729e421a40e90681764a9d008bd0dcfc9b
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 23:03:14 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 23:03:14 2026 -0400
+
+    build: pin owner choice 02's transfer and limited-member lists in the manifest test
+    
+    b4dc23cd added owner choice 02's transfer list and its ten dispatch
+    limited members to adoption.json; the repository manifest test still
+    pinned only the earlier decisions.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 7eab971af9624558c37df6878815ce1279e7539b
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 23:01:39 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 23:01:39 2026 -0400
+
+    K1.1-correction-03: owner choice 03, scope freeze
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 1e4ddaa30e4cc4b2e22f5bf025401bd3d4ab396a
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 22:23:22 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 22:23:22 2026 -0400
+
+    build: retain control anchors for every C1 ledger row
+
+commit 42d42bf3d28cd59c13f46fef862c8c842ab13a21
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 22:15:24 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 22:15:24 2026 -0400
+
+    build: reconcile qualified targets with limited-origin census
+
+commit 5236e9e5af1151d0ea64ffa0d79ea86c85343521
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 16:59:36 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 16:59:36 2026 -0400
+
+    build: guard the unique stop sentinel declaration
+
+commit b4dc23cdb5376bf9ba1118fcc7fae5782e027db8
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 16:53:02 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 16:53:02 2026 -0400
+
+    build: regenerate adoption census and transfer harness dependents
+
+commit 00f87cac73a30587362e3a8d6bc0de3b61daa393
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 16:37:28 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 16:37:28 2026 -0400
+
+    build: refresh derived harness register and historical loss leads
+
+commit 10aa09aae4d6ae1f4792ba2c7961e9b3e34e0118
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 16:33:06 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 16:33:06 2026 -0400
+
+    build: complete static grammar and loss ledger anchors
+
+commit 8e75961d5c4957176930fd9a289303bf1ad563f0
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Sat Oct 17 09:28:14 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Sat Oct 17 09:28:14 2026 -0400
+
+    build: implement approved stop and qualification protocols
+
+commit ac4b183631a320d0ee8f8cdd3bad816c729cc13a
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Fri Oct 16 14:57:41 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Fri Oct 16 14:57:41 2026 -0400
+
+    docs: record approved K1.1-correction-03 design check 03
+
+commit 0294c238bdb651e5ef0f66de3c53350621b32381
+Author:     chrizeroxtwo <realo@hotmail.com.tw>
+AuthorDate: Fri Oct 16 11:21:38 2026 +0200
+Commit:     chrizeroxtwo <realo@hotmail.com.tw>
+CommitDate: Fri Oct 16 11:21:38 2026 +0200
+
+    docs: propose K1.1-correction-03 design 03
+
+commit fe7953da27141ef0f98dcdbe0abb4b54e7b711cc
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Thu Oct 15 00:01:15 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Thu Oct 15 00:01:15 2026 -0400
+
+    K1.1-correction-03: owner choice 02, stop-and-redesign route
+    
+    Records the owner's route after review 02: one stop representation
+    (STOP-02 redesign), a finishable qualifying-kill rule (EVID-01) and the
+    C1 unit clarification (C1-03). A fresh GPT-6 session implements; design 03
+    gets an Opus design check; acceptance needs a full GPT-6 review and a
+    targeted Opus review of the same H. No hold is lifted.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit d32427f7296c0a246226e7eb422cca154c20909a
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Thu Oct 15 00:00:43 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Thu Oct 15 00:00:43 2026 -0400
+
+    K1.1-correction-03: record independent review 02 (CHANGES REQUIRED, stop-and-redesign)
+    
+    Records Codex (gpt-6-astra) independent review 02 of H 41628b8b and its
+    evidence bundle unchanged; all 81 manifest entries match their SHA-256
+    values (logs force-added past the repository *.log ignore). Findings
+    KC3-R2-EVID-01, KC3-R2-STOP-02 and KC3-R2-C1-03 (all P2); 006
+    stop-and-redesign is active and owner decision brief 03 is attached.
+    007 moves to CHANGES_REQUESTED. No hold is lifted; no other packet is
+    released.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 41628b8bcfd11c899c2fcf60ef4fb73c0858e298
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 13:37:59 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 13:37:59 2026 +0000
+
+    K1.1-correction-03: implementation report 03, 007 WAITING_FOR_REVIEW
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit ad9bc8640d261ace8af5e75c47aad1bad3ca84d7
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 12:21:41 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 12:21:41 2026 +0000
+
+    K1.1-correction-03: declare the value-cost witness's environment name in the verify census
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit c705126ec906eba0f70619e6c3ddf21b475f0c8b
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 12:20:41 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 12:20:41 2026 +0000
+
+    K1.1-correction-03: payload C for review 01 (STOP-01, EVID-02, DOC-03)
+    
+    Stop propagation: record/refuse and every traversal frame report and return
+    on a stop; listing helpers gate before their native call; static rules SC10
+    and SC11; capture-stop.test.ts places the stop at every charge of a declared
+    shape set and replays review 01's real-B family through every root consumer.
+    
+    Evidence: value-cost-probe credits a kill only to a selected test failing at
+    an assertion a test-side module imported (value-cost-witness.mjs); every other
+    outcome exits 3. Registry requalified (231 registrations), C1 judged at B and
+    C under the same rule (c1-requalification-02).
+    
+    Documentation: roadmap, BASELINE, 007 and values.ts comments within design
+    check Q6's detectable-kind scope.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit d3b087c7d2d6874047c331d0da606338b691a8c5
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 11:55:45 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 11:55:45 2026 +0000
+
+    K1.1-correction-03 (WIP): C1 requalification record, MV3 registered at C, seam checks
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit c8add082e72352d45f1c462eb18afc1e3d5dbaba
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 11:35:08 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 11:35:08 2026 +0000
+
+    K1.1-correction-03 (WIP): requalified value-cost registry, census, verify spec
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit 9772c53e6b00fe7e2986d1881d67602f25cede6d
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 11:12:43 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 11:12:43 2026 +0000
+
+    K1.1-correction-03 (WIP): witness the harness unwrappers by their own condition; harness.ts unchanged
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit 735a99b5d75fdb7dd5c9ee1d838aebcefc61c607
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 11:09:50 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 11:09:50 2026 +0000
+
+    K1.1-correction-03 (WIP): Q6 scope in current summaries; stop propagation in BASELINE
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit 2d9a1d860d9d259a992eb886f221ddf0e906123a
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 11:06:24 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 11:06:24 2026 +0000
+
+    K1.1-correction-03 (WIP): stop propagation, stop oracle, assertion-witness probe
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit 35177b28258fcfb38d73012ae46089f6d766539e
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Tue Oct 13 10:40:50 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Tue Oct 13 10:40:50 2026 +0000
+
+    K1.1-correction-03: design 02 for review 01's findings (STOP-01, EVID-02, DOC-03)
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_016R35jnrvQUbQX6Ta8chiA8
+
+commit c91b82d0fe6c2db04f2683d71873eec7618b643b
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Tue Oct 13 06:17:41 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Tue Oct 13 06:17:41 2026 -0400
+
+    K1.1-correction-03: record independent review 01 (CHANGES REQUIRED)
+    
+    Records Codex (gpt-6-astra) independent review 01 of H 5f586b17 and its
+    evidence bundle unchanged; every file matches the reviewer's SHA-256
+    manifest. Findings KC3-R1-STOP-01 (P1), KC3-R1-EVID-02 (P2) and
+    KC3-R1-DOC-03 (P2); next brief review-01/brief-02.md. 007 moves to
+    CHANGES_REQUESTED. No hold is lifted; no other packet is released.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 5f586b176089987fa3667e4c03f26b3dac0a5bfb
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 20:51:25 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 20:51:25 2026 +0000
+
+    K1.1-correction-03: implementation report 02, 007 WAITING_FOR_REVIEW
+    
+    Administrative H over payload C ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb, where verify returns
+    checks_passed. Owner choice 01 answered implementation 01's questions; this report lists the 15
+    origins reopened and transferred to TOOLS-02 under its standing rule, the additive C2-LIMIT
+    extension and the verify result with its advisory area report. 007 moves the packet to
+    WAITING_FOR_REVIEW and extends the TOOLS-02 scope for the transfer. No hold is lifted.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 19:46:07 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 19:46:07 2026 +0000
+
+    K1.1-correction-03: name the revision the sweep timing was measured at
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 40f57cf9fe843b5e89879df5e4ae56369eaa154f
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 19:45:51 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 19:45:51 2026 +0000
+
+    K1.1-correction-03: kernel-sweeps timeout 2,400 s in the verify specification
+    
+    Verify on 4c736b4f passed every check except kernel-sweeps, which hit its 900 s timeout during
+    the poison sweep's reenter mode. The poison sweep now also runs this packet's capture-* tests:
+    count and throw modes took 321 s and 314 s, and the sweep had passed every mode it finished.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 4c736b4fead13a1988870b0522a60dd1a1553371
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 14:27:28 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 14:27:28 2026 +0000
+
+    K1.1-correction-03: apply owner choice 01 (R4 residual, adoption reopen and transfer, C2-LIMIT later lists)
+    
+    - owner-choice-01.md records the owner's decisions verbatim, and the follow-up choice, with two
+      pinned lists: the 15 complete origins reopened and transferred to TOOLS-02, and the 24 members of
+      two owner choice 04 limited origins whose tests this packet converted.
+    - values.md, BASELINE and sources.md: R4 is the fourth residual; BINDING-01's bytes core removes it
+      from the Kernel.
+    - adoption.json: the 15 origins go to pending_revalidation and are transferred; the 96 stale
+      witnesses are removed; 18 more suite targets sit at their tests' current lines; the two limited
+      origins cite the later member list under limited.added.
+    - scripts/packet_tools.py (additive): C2-LIMIT accepts a later owner decision's pinned list of
+      further limited members. Tool tests, README and 8 refusal-guard registrations follow.
+    - verification.json: allowlist for implementation-02, preserve narrowed for the tool change and
+      extended to the round-1 records, tool test minimum 581.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 53a9f607b8b38f89540db1e2324a2c7430d62026
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 04:08:02 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 04:08:02 2026 +0000
+
+    K1.1-correction-03: implementation report 01, C1 ablation record, 007 status
+    
+    Administrative H over payload C ed461d20edb4bb06868302a76e1a786dfa278d29. The candidate is
+    built but not ready for review. Two owner questions are open: residual R4 (hidden own entries,
+    a brief stop condition) and the TOOLS-01 adoption corpus, which keeps verify invalid at its
+    adoption step after the owner-authorized test conversions. Every other verify check passes
+    when run on its own. No hold is lifted and no other packet is released.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit ed461d20edb4bb06868302a76e1a786dfa278d29
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 03:34:35 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 03:34:35 2026 +0000
+
+    K1.1-correction-03: record the candidate observation in six held realm witnesses
+    
+    The mutations run at 6c7ccd9d found six BINDING-01-owned V-ENV held witnesses
+    (realm.kernel-lexical-shadow.* and realm.kernel-lexical-creation.*) with invalid baselines.
+    Each reached capture through a Proxy, which capture now refuses before any trap
+    (DESIGN-AUDIT-01 decision-01 item 2). Their recorded observations now show that refusal,
+    and their claims say why; they stay held for BINDING-01, whose envelope gap remains
+    (design check Q7). The matching hold-register reasons follow the case claims.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 6c7ccd9d9cb664371e1be8918e8ed7257ea10d62
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 02:45:59 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 02:45:59 2026 +0000
+
+    K1.1-correction-03: suite targets sit at their members' current declarations
+    
+    Verify on fc0c477a returned invalid at its adoption step: eleven suite targets (one in
+    dispatch.test.ts, ten in values.test.ts) still named their members' declaration lines from
+    before the test conversions moved them. Each target now names its member's current line; the
+    anchors and test paths are unchanged.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit fc0c477a8e4c0f4120397b22890ddd35e45bf46c
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Mon Oct 12 00:41:07 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Mon Oct 12 00:41:07 2026 +0000
+
+    K1.1-correction-03: payload C — C1 ablation, final census and verify spec
+    
+    - C1 (design check): two ingress conversions now check that the retained payload is the Kernel's
+      own copy, so they kill the snapshot-detachment mutants their Proxy originals killed. The seven
+      value-cost.c1.* probe cases keep each conversion group's B-and-C kills (162 mutants); the
+      per-test B/C matrix scripts and inputs are under work/K1.1-correction-03/c1-ablation/.
+    - zone-analysis.ts: the unused isKeyObject/isCryptoKey entries are gone (PXS-1).
+    - adoption.json: hold register and preserved table recomputed at the final test tree.
+    - Tooling tests: pinned register keys follow the converted tests; the D05-CHK-05 Proxy
+      acceptances, now refusals, are held for Proxy.
+    - verification.json: C..H allowlist with the C1 attachments; repository test minimum 4,080.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit e47750c05b73e396ade3187387b80f4e964309b2
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Sun Oct 11 22:40:14 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Sun Oct 11 22:40:14 2026 +0000
+
+    K1.1-correction-03 (WIP): budget review fixes BM-01..BM-07
+    
+    - BM-01: a meter stop before any other issue is pinned as the one root-located too_much_work
+      detail with its fixed message and exact units.
+    - BM-02: the runtime oracle asserts each shape stays within B with no meter stop (the old
+      assertion could not fail).
+    - BM-03: in one wrapped child, the eight-root Outcome before authority runs exactly eight times
+      the Proxy tests and prototype observations of one direct capture that stops at B + 1.
+    - BM-04, BM-06: BASELINE's derivation covers the empty array and object; the descriptor unit
+      includes a listed array index past length (BASELINE and the values.md marker).
+    - BM-05: a stop on a position's diagnostic unit is pinned and stated in BASELINE.
+    - BM-07: comment corrected.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 3e6a51d8e2b36349d01be569e6f4e17c24c9e4ff
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Sun Oct 11 22:36:41 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Sun Oct 11 22:36:41 2026 +0000
+
+    K1.1-correction-03 (WIP): coordinator conversions; conversion-review fixes; silent-pass search
+    
+    Coordinator group (owner decision-01 item 2; design check C1): creation (7), ingress (5),
+    dispatch (2) and outcome-hostile (1) conversions, reviewed independently.
+    
+    A suite-wide run with per-test refusal counting found every test whose value now meets a Proxy or
+    internal-slot refusal. Two unconverted tests passed only because their Proxy was refused before the
+    mechanism they name; both are converted: creation K11-R5-VAL-03 (an envelope getter swaps the live
+    Object binding before a foreign-prototype payload is captured) and dispatch K11-R2-VAL-02 (the
+    disagreement reached through a wrapped-child descriptor hook). The poison catalog keeps its Proxy
+    entry and gains a vm global over a throwing sandbox, so capture's catch path stays under poison.
+    
+    Conversion-review fixes: byte-stop read and length witnesses, a wrapped-child arm for the type-only
+    label, a Proxy-prototype witness for foreign-prototype chain walks, identity-text labels pinned,
+    a whole-helper read pin, accurate comments, and no new load-time intrinsic references in any
+    converted file.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 70137741e19bad70a15f2e9f5cd2e9a4dd584967
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Sun Oct 11 17:20:02 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Sun Oct 11 17:20:02 2026 +0000
+
+    K1.1-correction-03 (WIP): Layer 3 and BASELINE for the packet-review outcomes; registry mutants
+    
+    - values.md: capture runs no trap of a value that is itself a Proxy and invokes no accessor;
+      R1 names both listings of one object; R2 says interceptors can forward to caller code (a vm
+      global over a Proxy sandbox); new residual R4 for own entries a listing walks but does not
+      return (private names, leftover element storage), which no observation can count; KeyObject
+      and CryptoKey join the kinds no side-effect-free test recognizes.
+    - BASELINE: the native predicate list without isKeyObject/isCryptoKey and why; identity text
+      tests for a Proxy first; R1-R4 with the R4 measurement; the classification hold link now names
+      DESIGN-AUDIT-01 invalidation-01.
+    - values.ts: the unit-table comment points to the declared residuals.
+    - value-cost.json: mutants for MS-02 (array symbols skip), SC9 (loop caps), PXS-1 (a JavaScript
+      isKeyObject reintroduced) and PXS-2 (identity text without the Proxy test); the two removed
+      predicate drops are gone.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 19eb998e34f69cfbecf7dba30ccdd49ce32f470b
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Sun Oct 11 10:36:36 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Sun Oct 11 10:36:36 2026 +0000
+
+    K1.1-correction-03 (WIP): converted values, diagnostic-work and refusal-cost tests; packet-review fixes
+    
+    Test conversions (owner decision-01 items 2-3; design check C1), reviewed independently:
+    values.test.ts (26), value-diagnostic-work.test.ts (17), value-refusal-cost.test.ts (10).
+    
+    Fixes from the independent packet review:
+    - PXS-1: util.types.isKeyObject and isCryptoKey are JavaScript functions that read the configurable
+      process.versions on every call; capture no longer calls them. KeyObject and CryptoKey join the
+      kinds no side-effect-free test recognizes (captured as {} when re-prototyped, as at B). A
+      maintained case installs a throwing process.versions getter and sees it never called.
+    - PXS-2: acceptIdentityText tests for a Proxy before Array.isArray, so a Proxy in an identity field
+      is named a Proxy with no IsArray forwarding; other labels are unchanged.
+    - PXS-3: a contextified vm global over a Proxy sandbox is pinned as residual R2.
+    - MS-02: an array with an extra name still lists, and meters, its symbols; bytes and diagnostics
+      are unchanged.
+    - MS-03: every loop outside the traversal and serializer window carries its own literal cap, and
+      static rule SC9 enforces it, with three seeded bypasses.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 4ba018723e62db717dbc5846b956f5f216c2c83e
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Sun Oct 11 03:18:31 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Sun Oct 11 03:18:31 2026 +0000
+
+    K1.1-correction-03 (WIP): keep intrinsic references out of the instrument's load-time code
+    
+    The wrapped-child prelude resolved the Kernel module URLs in a module-level template, so every
+    test file importing capture-instruments.ts carried an intrinsic reference in its load-time code and
+    the P1-H V-ENV detector held all of its leaves. The URLs are now resolved inside inWrappedChild.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit ebc6ae6118e7a51bc0bc44a5100215bd629b3439
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Fri Oct 9 23:20:21 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Fri Oct 9 23:20:21 2026 +0000
+
+    K1.1-correction-03 (WIP): Layer 3 and BASELINE payload, value-cost registry, held witnesses
+    
+    - values.md: metered refusal cost, Proxy and internal-slot refusal, residuals R1-R3, undetectable
+      kinds as a declared limit, the envelope gap named as BINDING-01's; the OPEN(implementation)
+      marker records the unit table and B.
+    - BASELINE #value-refusal-diagnostics: unit table, derivation of B, costliest acceptance,
+      meter stop, Proxy and internal-slot refusal, declared limits; coherent-Proxy acceptance removed.
+    - sources.md, rewrite-index.md section 4 and roadmap.md updated.
+    - tests/fixtures/packet-tools/value-cost.json: 9 probe cases, 60 mutants over named maintained tests.
+    - capture-work.test.ts: exact pins for symbol listings and for N16 with non-enumerable names.
+    - mutations.json: the 11 capture.current.* held witnesses record the candidate refusal.
+    - test_adapter_inputs.py: converted from Proxy-target acceptance (decision-01 item 2).
+    - verification.json: draft combined candidate and verify spec.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit e1e0062222acf691eb288a094fae65c7c12658cd
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Fri Oct 9 23:02:39 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Fri Oct 9 23:02:39 2026 +0000
+
+    K1.1-correction-03 (WIP): pin every byte charge; tighter oracle; registry probe
+    
+    KC3-5: N15 below and above the overlong threshold, N16, refused string and
+    member-name charges and symbol charges, each at its derived byte-stop visit.
+    The oracle bounds observations of tracked caller objects exactly.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 2fe72f9040d049954372526e998caa1c1e105cbb
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Fri Oct 9 22:57:55 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Fri Oct 9 22:57:55 2026 +0000
+
+    K1.1-correction-03 (WIP): generated corpus, a declared bounded search
+    
+    Families x depth x aliasing at width 4,096; family x consumer at depth 2;
+    width x consumer for three families. Shared root-consumer harness.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 296655937c975937f0108948170bb417593b8ea4
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Fri Oct 9 22:53:21 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Fri Oct 9 22:53:21 2026 +0000
+
+    K1.1-correction-03 (WIP): static metering check, work oracle and refusal tests
+    
+    capture-metering: SC1-SC8 over values.ts with one seeded bypass per rule.
+    capture-work: exact unit pins, B and its costliest witnesses, the meter stop
+    derived for review 08's family at depths 2/16/31, wrapped-operation depth
+    independence, the eight-root pre-authority Outcome, and the runtime oracle.
+    capture-refusals: every Proxy witness in every root consumer at four depths
+    with zero traps; internal-slot refusal with zero listings; declared limit.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 01c018081de36f03e2f42837673ee85e9b672823
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Fri Oct 9 22:42:18 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Fri Oct 9 22:42:18 2026 +0000
+
+    K1.1-correction-03 (WIP): metered capture, Proxy and internal-slot refusal, O(1) cycle set
+    
+    values.ts: per-root work meter with B = 3 x canonicalBytes and a too_much_work
+    stop; metered helpers for every caller observation; the Proxy test as the first
+    observation of every object; internal-slot refusal after the plain-prototype
+    check and before any listing; a load-time Set for cycle detection. Shared
+    Proxy-free test instruments; DEC-8/9 inventories classify the new sites.
+    Converted tests follow.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 02e55bdcf247865b746cf415070e5f50f7fb3fd6
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Fri Oct 9 22:25:55 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Fri Oct 9 22:25:55 2026 +0000
+
+    K1.1-correction-03: record the owner's design check of design 01
+    
+    Verbatim owner decision relayed in the session (2026-10-09): design 01
+    approved with conditions C1-C2 and answers to its seven questions.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 2b24cdea510e17c79372f520f99945d81d9bceb1
+Author:     Claude <noreply@anthropic.com>
+AuthorDate: Thu Oct 8 20:00:10 2026 +0000
+Commit:     Claude <noreply@anthropic.com>
+CommitDate: Thu Oct 8 20:00:10 2026 +0000
+
+    K1.1-correction-03: record IN_PROGRESS and design 01 for the design check
+    
+    Design 01 proposes the per-root work meter (B = 3 x the canonical size limit),
+    Proxy refusal as the first observation, internal-slot brand refusal before any
+    listing, O(1) cycle detection, metered helpers with a static check and a
+    runtime ops/units oracle, and the corpus and mutant plan. It raises seven owner
+    questions; three meet brief stop conditions. No production code.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_014t7Fy37yvj7saVgiyJkE2M
+
+commit 0b340b6f3e73942edc39c76a79063d490d6e2992
+Author:     Rex-Shih <pipirex@gmail.com>
+AuthorDate: Thu Oct 8 15:22:12 2026 -0400
+Commit:     Rex-Shih <pipirex@gmail.com>
+CommitDate: Thu Oct 8 15:22:12 2026 -0400
+
+    K1.1-correction-03: owner release 01 and brief 01
+    
+    Records the owner's 2026-10-08 release of K1.1-correction-03 from main
+    b9c1e549 on claude/k1.1-correction-03, with a Claude Code cloud session
+    (claude-opus-5-5) as first implementer, and the planner's brief 01.
+    Adds the release lines to 007. No hold is lifted; no other packet is released.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

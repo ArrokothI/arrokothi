@@ -1,0 +1,80 @@
+{
+  "id": "archive-tests",
+  "source_specification": "docs/development/work/K1.1-correction-03/verification.json",
+  "source_revision": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "start_utc": "2026-10-19T09:10:41.552080+00:00",
+  "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+  "node": "v26.10.0",
+  "parallel_validation_jobs": 0,
+  "argv": "node --test --experimental-strip-types tests/archive/*.test.ts",
+  "passed": true,
+  "counts": {
+    "tests": 4,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [
+      "ARROKOTHI_EVIDENCE_ROOT"
+    ],
+    "absent": [
+      "NODE_OPTIONS",
+      "NODE_TEST_CONTEXT",
+      "NODE_V8_COVERAGE",
+      "KERNEL_POISON_MODE",
+      "KERNEL_POISON_OUT",
+      "KERNEL_POISON_NAMES",
+      "PACKET_ORACLE_CHECK",
+      "PACKET_REACH_FILE",
+      "ARROKOTHI_READ_TRACE",
+      "GEMINI_MODEL",
+      "GEMINI_API_KEY",
+      "GOOGLE_API_KEY",
+      "GOOGLE_GENERATIVE_AI_API_KEY",
+      "FLOOR_ORDER_LOG",
+      "FLOOR_READ_DIR",
+      "ARROKOTHI_VALUE_COST_LOAD"
+    ],
+    "inherited_values_recorded": false
+  },
+  "inputs": [
+    {
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "regular_files": 1238,
+      "symlinks": 4,
+      "content_manifest_sha256": "89be2e0728a835c5ecd943231c18d14ea7a1d207c6aea5e659d84935101887e7",
+      "id": "archive-snapshot"
+    }
+  ],
+  "catalog": {
+    "script": "test:archive-evidence",
+    "files": 1,
+    "valid": true,
+    "summary_consistent": true,
+    "refused_files": {},
+    "unselected_files": [],
+    "leaves": 4,
+    "leaf_verdicts": {
+      "passed": 4
+    },
+    "source_kind_checked": true
+  },
+  "status": "finished",
+  "exit": 0,
+  "output": "\u25b6 K1.0 evidence records\n  \u2714 every settled round's manifest is present and checked (2.315833ms)\n  \u2714 every recorded digest is the digest of the file it names (14.563834ms)\n  \u2714 no token presented as a digest has an impossible length (2.122625ms)\n  \u2714 the check is not vacuous: it rejects a manifest whose digest is wrong (0.290083ms)\n\u2714 K1.0 evidence records (19.859083ms)\n\u2139 tests 4\n\u2139 suites 1\n\u2139 pass 4\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 83.197542\n",
+  "elapsed_seconds": 0.829602082958445,
+  "end_utc": "2026-10-19T09:10:42.381693+00:00",
+  "clean_after": ""
+}

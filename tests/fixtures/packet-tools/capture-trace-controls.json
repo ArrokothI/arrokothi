@@ -1,0 +1,143 @@
+[
+  {
+    "name": "review02-null-stop-substitution",
+    "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+    "after": "if (value === null) return charge(state, 4) === STOPPED ? null : null;",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {},
+    "static": "reject"
+  },
+  {
+    "name": "review02-false-stop-substitution",
+    "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+    "after": "if (value === null) return charge(state, 4) === STOPPED ? false : null;",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {},
+    "static": "reject"
+  },
+  {
+    "name": "review02-nested-return-ignored",
+    "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+    "after": "if (value === null) { const paid = (): true | typeof STOPPED => charge(state, 4); paid(); return null; }",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {},
+    "static": "reject"
+  },
+  {
+    "name": "review02-class-return-ignored",
+    "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+    "after": "if (value === null) { ReviewNullCharge.capture(state); return null; }",
+    "extra": "\nclass ReviewNullCharge { static capture(state: CaptureState): Visited { return charge(state, 4) === STOPPED ? STOPPED : null; } }\n",
+    "shape": "[null]",
+    "inventory_delta": {},
+    "static": "reject"
+  },
+  {
+    "name": "review02-alias-false",
+    "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+    "after": "if (value === null) return reviewNullCharge(state, 4) === STOPPED ? false : null;",
+    "extra": "\nconst reviewNullCharge = charge;\n",
+    "shape": "[null]",
+    "inventory_delta": {},
+    "static": "gap"
+  },
+  {
+    "name": "review02-boolean-stop-substitution",
+    "before": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? STOPPED : value;",
+    "after": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? false : value;",
+    "extra": "",
+    "shape": "[false]",
+    "inventory_delta": {},
+    "static": "reject"
+  },
+  {
+    "name": "snapshot-write",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { defineAt(out, index, null); return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {
+      "captureArray:call.defineAt": 1
+    },
+    "static": "reject"
+  },
+  {
+    "name": "snapshot-finish",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { finishArray(out); return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {
+      "captureArray:call.finishArray": 1
+    },
+    "static": "reject"
+  },
+  {
+    "name": "snapshot-freeze",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { PrimordialObjectFreeze(out); return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {
+      "captureArray:call.PrimordialObjectFreeze": 1
+    },
+    "static": "reject"
+  },
+  {
+    "name": "pending-allocation",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { const pending: unknown[] = []; return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {
+      "captureArray:array": 1
+    },
+    "static": "reject"
+  },
+  {
+    "name": "object-snapshot-write-and-finish",
+    "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
+    "after": "if (value === null) return charge(state, 4) === STOPPED ? null : null;",
+    "extra": "",
+    "shape": "{x:null}",
+    "inventory_delta": {},
+    "static": "reject"
+  },
+  {
+    "name": "pending-append",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    appendOwn(captured, [key, item] as const);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { appendOwn(captured, [\"extra\", null]); return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    appendOwn(captured, [key, item] as const);",
+    "extra": "",
+    "shape": "{x:null}",
+    "inventory_delta": {
+      "captureObject:call.appendOwn": 1,
+      "captureObject:array": 1
+    },
+    "static": "reject"
+  },
+  {
+    "name": "object-finish",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    appendOwn(captured, [key, item] as const);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { finishObject(prototype, captured); return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    appendOwn(captured, [key, item] as const);",
+    "extra": "",
+    "shape": "{x:null}",
+    "inventory_delta": {
+      "captureObject:call.finishObject": 1
+    },
+    "static": "reject"
+  },
+  {
+    "name": "post-stop-descriptor-outside-collector",
+    "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "after": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) { PrimordialGetOwnPropertyDescriptor(out, \"0\"); return STOPPED; }\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt(out, index, item);",
+    "extra": "",
+    "shape": "[null]",
+    "inventory_delta": {
+      "captureArray:call.PrimordialGetOwnPropertyDescriptor": 1
+    },
+    "static": "reject"
+  }
+]

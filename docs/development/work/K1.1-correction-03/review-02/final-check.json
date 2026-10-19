@@ -1,0 +1,29 @@
+{
+  "time_utc": "2026-10-15T02:29:28.288683+00:00",
+  "B": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "C": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7",
+  "H": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+  "main_head": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+  "main_tracked_diff": "",
+  "main_untracked_scope": "review-02.md and review-02/ only",
+  "C_head": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7",
+  "C_status": "",
+  "C_shallow": "false",
+  "B_head": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "B_tracked_diff": "",
+  "B_status": "?? node_modules",
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.1-correction-03/implementation-03.md"
+  ],
+  "pinned_input_hashes": "verified",
+  "cumulative_diff_hash": "matches fresh B..H binary diff",
+  "required_and_review_results": "validated against raw records",
+  "new_counterexample_observations": "validated",
+  "python_sources": "all parse",
+  "local_links": "all resolve (manifest written next)",
+  "owner_supplements": "verbatim match",
+  "review_final_line": "CHANGES REQUIRED",
+  "candidate_changes": false,
+  "commits_or_pushes": false
+}

@@ -1,0 +1,1188 @@
+{
+  "node": "v26.10.0",
+  "tree": "/private/tmp/arrokothi-kc3-review-c",
+  "budget": 3145728,
+  "contract_holds": false,
+  "explanation": "A symbol diagnostic crosses B by one. The following caller names listing still runs, and its 1+length units are absent from the meter.",
+  "rows": [
+    {
+      "options": {
+        "offset": -2
+      },
+      "expectedBeforeDiagnostic": 3145726,
+      "work": {
+        "units": 3145985,
+        "visit": 786335,
+        "listing": 787175,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786141,
+        "stop": "work"
+      },
+      "actualListingUnits": 787175,
+      "unchargedListingUnits": 0,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786132
+        },
+        {
+          "path": "",
+          "code": "unrepresentable_member",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "offset": -1
+      },
+      "expectedBeforeDiagnostic": 3145727,
+      "work": {
+        "units": 3145986,
+        "visit": 786335,
+        "listing": 787177,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786140,
+        "stop": "work"
+      },
+      "actualListingUnits": 787177,
+      "unchargedListingUnits": 0,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786131
+        },
+        {
+          "path": "",
+          "code": "unrepresentable_member",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "offset": 0
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786921,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786139,
+        "stop": "work"
+      },
+      "actualListingUnits": 787179,
+      "unchargedListingUnits": 258,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786130
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "offset": 1
+      },
+      "expectedBeforeDiagnostic": 3145729,
+      "work": {
+        "units": 3145729,
+        "visit": 786336,
+        "listing": 786916,
+        "element": 786335,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786142,
+        "stop": "work"
+      },
+      "actualListingUnits": 786916,
+      "unchargedListingUnits": 0,
+      "targetNameListings": [],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786134
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "offset": 2
+      },
+      "expectedBeforeDiagnostic": 3145730,
+      "work": {
+        "units": 3145730,
+        "visit": 786336,
+        "listing": 786918,
+        "element": 786335,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786141,
+        "stop": "work"
+      },
+      "actualListingUnits": 786918,
+      "unchargedListingUnits": 0,
+      "targetNameListings": [],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786133
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "nameCount": 0
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786921,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786139,
+        "stop": "work"
+      },
+      "actualListingUnits": 786922,
+      "unchargedListingUnits": 1,
+      "targetNameListings": [
+        0
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786130
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "nameCount": 1
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786921,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786139,
+        "stop": "work"
+      },
+      "actualListingUnits": 786923,
+      "unchargedListingUnits": 2,
+      "targetNameListings": [
+        1
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786130
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "nameCount": 4096
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786921,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786139,
+        "stop": "work"
+      },
+      "actualListingUnits": 791018,
+      "unchargedListingUnits": 4097,
+      "targetNameListings": [
+        4096
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786130
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "nameCount": 65536
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786921,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786139,
+        "stop": "work"
+      },
+      "actualListingUnits": 852458,
+      "unchargedListingUnits": 65537,
+      "targetNameListings": [
+        65536
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786130
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "wrappers": 1
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786920,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786140,
+        "stop": "work"
+      },
+      "actualListingUnits": 787178,
+      "unchargedListingUnits": 258,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786131
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "wrappers": 15
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786328,
+        "listing": 786955,
+        "element": 786327,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786119,
+        "stop": "work"
+      },
+      "actualListingUnits": 787213,
+      "unchargedListingUnits": 258,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786110
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "wrappers": 29
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786321,
+        "listing": 786990,
+        "element": 786320,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786098,
+        "stop": "work"
+      },
+      "actualListingUnits": 787248,
+      "unchargedListingUnits": 258,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786089
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "prototype": "null"
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786921,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786139,
+        "stop": "work"
+      },
+      "actualListingUnits": 787179,
+      "unchargedListingUnits": 258,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786130
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "options": {
+        "sharedRows": false
+      },
+      "expectedBeforeDiagnostic": 3145728,
+      "work": {
+        "units": 3145729,
+        "visit": 786335,
+        "listing": 786921,
+        "element": 786334,
+        "descriptor": 0,
+        "read": 0,
+        "string": 0,
+        "diagnostic": 786139,
+        "stop": "work"
+      },
+      "actualListingUnits": 787179,
+      "unchargedListingUnits": 258,
+      "targetNameListings": [
+        257
+      ],
+      "issues": [
+        {
+          "path": "[0][0]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][1]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][2]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][3]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][4]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][5]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][6]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "[0][7]",
+          "code": "unsupported_form",
+          "message": "expected a plain object, received object"
+        },
+        {
+          "path": "",
+          "code": "unsupported_form",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 786130
+        },
+        {
+          "path": "",
+          "code": "too_much_work",
+          "message": "additional occurrences (locations omitted)",
+          "occurrences": 1
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "kind": "canonicalize",
+      "classification": "refused",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "boundaryValueIssues",
+      "classification": "refused",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "isBoundaryValue",
+      "classification": "refused",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "creation-authority",
+      "classification": "malformed_value",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "creation-input",
+      "classification": "malformed_value",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "ingress",
+      "classification": "malformed_value",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "recovery-definitionRevisions",
+      "classification": "malformed_value",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "recovery-runtimeContractRevisions",
+      "classification": "malformed_value",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "recovery-progressCodecs",
+      "classification": "malformed_value",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "outcome-progress",
+      "classification": "malformed_envelope",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "outcome-emission",
+      "classification": "malformed_envelope",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "outcome-result",
+      "classification": "malformed_envelope",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "outcome-error",
+      "classification": "malformed_envelope",
+      "targetNameListings": [
+        257
+      ]
+    },
+    {
+      "kind": "eager-eight",
+      "classification": "unauthorized_submission",
+      "targetNameListings": [
+        257,
+        257,
+        257,
+        257,
+        257,
+        257,
+        257,
+        257
+      ]
+    }
+  ]
+}

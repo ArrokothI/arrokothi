@@ -1,0 +1,42 @@
+{
+  "operation": "gate",
+  "advisory": true,
+  "result": "reported",
+  "revision": "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+  "base": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "changed_paths": 66,
+  "behaviour_paths": 31,
+  "touched_areas": [
+    "packages/kernel",
+    "tooling"
+  ],
+  "areas": 68,
+  "open_origins": 1457,
+  "ungated": 664,
+  "acceptance": "not evaluated",
+  "limits": [
+    "Advisory (owner choice 07): the report fails nothing and requires no triage",
+    "Areas are derived lexically from minimum contexts and over-include; they are not a semantic impact analysis",
+    "Origins that name no path are ungated and counted, not listed by area"
+  ],
+  "reported_count": {
+    "open_origins": 342,
+    "by_state": {
+      "pending": 296,
+      "pending_revalidation": 46
+    },
+    "prose_pending": 0
+  },
+  "by_area": {
+    "packages/kernel": {
+      "open_origins": 341,
+      "prose_pending": 0,
+      "records": []
+    },
+    "tooling": {
+      "open_origins": 10,
+      "prose_pending": 0,
+      "records": []
+    }
+  }
+}

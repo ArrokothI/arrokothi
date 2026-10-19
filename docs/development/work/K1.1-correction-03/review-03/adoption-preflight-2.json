@@ -1,0 +1,1 @@
+{"operation": "corpus", "result": "invalid", "error": "preserved table differs from the census at C: 21 members differ, 0 not recomputed (first: ['packages/kernel/tests/ambient-reads.test.ts:138:3@4a94f4ea0361', 'packages/kernel/tests/ambient-reads.test.ts:160:3@4a94f4ea0361', 'packages/kernel/tests/ambient-reads.test.ts:298:3@4a94f4ea0361'])"}

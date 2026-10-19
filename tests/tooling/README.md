@@ -343,6 +343,11 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   the only suite target naming the member, at a rule-1 held leaf with a literal title, refused by P1-H
   alone — never by title. Owner choice 11 lists one further member by name: its pinned list sits under
   `limited.listed` for that member's origin, and its admission rule is unchanged for every other extra.
+  A later owner decision may list further members of a limited origin whose tests a packet changed
+  (K1.1-correction-03 owner choice 01). The origin lists it under `limited.added`, one
+  `{decision, members, sha256}` entry per decision, with the list of `{origin, member}` in the
+  decision's attachment directory. Every origin that cites the decision cites the same list, the list names only further
+  members of origins that cite it, and each named member counts as listed.
   A listed member counts while it is refused without a credited target, or held by rule 1 (owner
   answers to design 06 revision 4). Per origin, those members must equal the listed members plus the
   admitted extras, and owner choice 04's list restates each origin's member count. Which list a
@@ -427,6 +432,36 @@ wrong test counts invalidate the run. A malformed-input test can assert that a t
 returns its declared CheckError rather than an accidental IndexError/KeyError; that is a named
 boundary assertion, not a harness crash promoted to a kill.
 
+The value-cost probe (`value-cost-probe.mjs`, K1.1-correction-03 design 03) requires three facts:
+a complete source-policy certificate for every `packages/**/src` module in that control/mutated tree,
+an eligible synchronous assertion with its original operands, and that assertion's exact error object
+reaching a selected leaf's `testCodeFailure`. Source modules cannot import/export/require the assert
+modules, reference `AssertionError`, or use computed module requests/dynamic code generation within
+the declared syntax. The certificate records every source digest; missing files or parse errors fail it.
+
+`value-cost-witness.mjs` admits strict default/`ok` with a boolean, strict identity/deep comparisons on
+verified plain-data graphs, and `fail` with no argument or a primitive string. Optional messages must
+be primitive strings. The owner amendment admits `match`/`doesNotMatch` only with a primitive string
+and a RegExp literal created in the test module, under the same clean intrinsic/prototype snapshot.
+Preflight uses captured built-ins, rejects Proxies before reflection, follows own data descriptors,
+excludes hooks/functions/exotics, and caps traversal at 100,000 entries. A raised `Array.prototype.length`
+alone, which a test leaves by defining and deleting an index, is not an unclean intrinsic; a remaining
+index is. It does not invoke subject
+code or project operands. Callback/validator and async assertion forms, unsafe messages and custom
+`Assert` instances receive no credit. Excluded outer calls suppress inner witnesses across their
+dynamic extent. An awaited operation followed by an eligible synchronous assertion can qualify.
+
+The actual harness branches now call `assert.fail` after their original conditions/messages are
+evaluated; there is no synthetic harness wrapper or post-exception reread. The reporter records full
+test paths/declarations and assertion module/anchor, which the probe reports relative to the case's
+tree so that a repeated run observes the same structure. It retains every mixed-domain observation.
+A replacement claim needs an isolated qualifying leaf and passing control, plus its stated obligation.
+A source-policy failure, parse/load/setup error, signal, hook failure, cancellation, timeout, subject
+exception or output overflow earns no kill. No selection is `uncovered`. The registry runner's
+classification is unchanged. `test_value_cost_probe.py` maintains positive and negative controls;
+`requalify-value-cost.py` uses that same probe/classifier for B with the declared test-only harness
+overlay and C, never treating a failed leaf or missing test as an assertion.
+
 The refusal registry pairs every `require` call in packet_tools.py with a malformed input and
 removal mutation. check-refusal-registry.py reconciles the whole finite set and refuses stale or
 empty registration. registry-check.mjs reconciles all 29 complete-decision comparisons with their
@@ -434,9 +469,9 @@ negative controls. Realm observations have deliberate corrupt-observation contro
 comparison makes those tests red. Held witnesses carry a structured claim with owner, decision and
 reason. `witnesses` reports reproduction separately with `semantic_credit: none`; assertion kills
 validate the observation checker, not the correctness of the behavior it observed. BINDING-01 owns
-V-ENV. K1.1-correction-03 owns Proxy and re-prototyped built-in refusal and V-D1. Current Proxy `{}`
-acceptance and built-in observations are superseded behavior pending that packet, never passing
-policy expectations. The N15 surplus-charge witness checks exactly 4,049 visits for its stored
+V-ENV. K1.1-correction-03 owns Proxy and re-prototyped built-in refusal and V-D1. Capture now refuses
+every Proxy before any trap, so held witnesses that reach capture through a Proxy record that refusal;
+they stay held for BINDING-01. Held observations are never passing policy expectations. The N15 surplus-charge witness checks exactly 4,049 visits for its stored
 recipe; it establishes no general cost bound and releases no V-D1 hold.
 
 Determinism samples are declared by case ID in each registry. Both control and mutant are rerun

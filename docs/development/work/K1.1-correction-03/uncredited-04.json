@@ -1,0 +1,490 @@
+{
+  "source": "K1.1-correction-03 round 4: the value-cost registry run at 8a8579cf (Claude Code, claude-opus-5-5, 2026-10-18 UTC)",
+  "authority": "owner-choice-03.md item 2: a mutant without a qualifying kill is listed as uncredited and transferred to TOOLS-02; no new tooling",
+  "transfer": "TOOLS-02",
+  "diagnosis": "A debug copy of value-cost-witness.mjs (not maintained) logged each refused call, selected alone with the mutation applied: the clean-snapshot check failed on an intrinsic the test had replaced or polluted and had not yet restored when it asserted (the global Object binding; Object.freeze; Object.prototype members; Array.prototype indices). refused_calls lists each. Asserting after restoration would qualify; that is a test rewrite under the standing rule, left to TOOLS-02.",
+  "withdrawn": [
+    {
+      "case": "value-cost.c1.creation",
+      "registration": {
+        "id": "mutation-f259c3f416d01bb2c17efe9ec6e5ffe709e2e65e298f4715bf0de35f6e72278b",
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
+        "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };",
+        "operator": "c1-ablation",
+        "name": "C-KIND-ORDINARY (C1: killed by the creation converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "C-KIND-ORDINARY"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "an earlier-field getter cannot steer a later field through ambient state in the same tick",
+          "declaration": {
+            "file": "packages/kernel/tests/creation.test.ts",
+            "line": 1345,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "an earlier-field getter cannot steer a later field through ambient state in the same tick",
+          "assertion": "assert.match",
+          "module": "packages/kernel/tests/creation.test.ts",
+          "line": 1399,
+          "unclean": "Object.prototype has extra members kind, payload"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "registration": {
+        "id": "mutation-5c30ab6a2ff6a47f9a18fc1ac255f50f6a7c79d7c7996bfdcddd393c03692d38",
+        "path": "packages/kernel/src/envelope.ts",
+        "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
+        "after": "",
+        "operator": "c1-ablation",
+        "name": "E-OWN-ONLY (C1: killed by the creation converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "E-OWN-ONLY"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "an earlier-field getter cannot steer a later field through ambient state in the same tick",
+          "declaration": {
+            "file": "packages/kernel/tests/creation.test.ts",
+            "line": 1345,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "an earlier-field getter cannot steer a later field through ambient state in the same tick",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 559,
+          "unclean": "Object.prototype has extra members kind, payload"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "registration": {
+        "id": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c",
+        "path": "packages/kernel/src/values.ts",
+        "before": "    defineAt(out, index, item);",
+        "after": "    out[index] = item;",
+        "operator": "c1-ablation",
+        "name": "OWN-element-install-by-set (C1: killed by the creation converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "OWN-element-install-by-set"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "a coherent array captured while an indexed accessor installed in the same call is live binds its own value",
+          "declaration": {
+            "file": "packages/kernel/tests/creation.test.ts",
+            "line": 820,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "a coherent array captured while an indexed accessor installed in the same call is live binds its own value",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 552,
+          "unclean": "Array.prototype has extra indices 0, 1"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "registration": {
+        "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+        "after": "  if (false) {",
+        "operator": "c1-ablation",
+        "name": "V-FOREIGN-PROTO (C1: killed by the creation converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "V-FOREIGN-PROTO"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped",
+          "declaration": {
+            "file": "packages/kernel/tests/creation.test.ts",
+            "line": 509,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 559,
+          "unclean": "the global Object binding is replaced"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "registration": {
+        "id": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
+        "path": "packages/kernel/src/values.ts",
+        "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+        "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });",
+        "operator": "c1-ablation",
+        "name": "V-SNAPSHOT-LITERAL (C1: killed by the creation converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "V-SNAPSHOT-LITERAL"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "an initial-input payload field whose observation installs get/set still creates the exact Execution",
+          "declaration": {
+            "file": "packages/kernel/tests/creation.test.ts",
+            "line": 948,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "an initial-input payload field whose observation installs get/set still creates the exact Execution",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 552,
+          "unclean": "Object.prototype has extra members get, set"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.creation",
+      "registration": {
+        "id": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+        "after": "  if (prototype !== Object.prototype && prototype !== null) {",
+        "operator": "c1-ablation",
+        "name": "VAL-plain-prototype-live-global (C1: killed by the creation converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "VAL-plain-prototype-live-global"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped",
+          "declaration": {
+            "file": "packages/kernel/tests/creation.test.ts",
+            "line": 509,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 559,
+          "unclean": "the global Object binding is replaced"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.dispatch",
+      "registration": {
+        "id": "mutation-0380416e35590c512cae18c3c884ed74ee53083c7ade8db46d147a397742515a",
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
+        "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,",
+        "operator": "c1-ablation",
+        "name": "C-FREEZE-ACTIVATION (C1: killed by the dispatch converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "C-FREEZE-ACTIVATION"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable",
+          "declaration": {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "line": 697,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable",
+          "assertion": "assert.ok",
+          "module": "packages/kernel/tests/dispatch.test.ts",
+          "line": 742,
+          "unclean": "Object.freeze is replaced"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.dispatch",
+      "registration": {
+        "id": "mutation-247688fb864948eb6791c408b4efdcdd0ef721b2ffcd7f809a5a41d56b126034",
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+        "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+        "operator": "c1-ablation",
+        "name": "C-FREEZE-EVENT (C1: killed by the dispatch converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "C-FREEZE-EVENT"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable",
+          "declaration": {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "line": 697,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable",
+          "assertion": "assert.ok",
+          "module": "packages/kernel/tests/dispatch.test.ts",
+          "line": 744,
+          "unclean": "Object.freeze is replaced"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.dispatch",
+      "registration": {
+        "id": "mutation-804c808dde9ba06ebd022b87abd89654573f67b25adbabe2848a50c685711b65",
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "      events: PrimordialObjectFreeze(carriedEvents),",
+        "after": "      events: Object.freeze(carriedEvents),",
+        "operator": "c1-ablation",
+        "name": "C-FREEZE-EVENTS (C1: killed by the dispatch converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "C-FREEZE-EVENTS"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable",
+          "declaration": {
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "line": 697,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "K11-R5-STATE-01 an Object.freeze replacement installed in the creation call cannot leave the Activation mutable",
+          "assertion": "assert.ok",
+          "module": "packages/kernel/tests/dispatch.test.ts",
+          "line": 743,
+          "unclean": "Object.freeze is replaced"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.ingress",
+      "registration": {
+        "id": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a",
+        "path": "packages/kernel/src/values.ts",
+        "before": "    appendOwn(captured, [key, item] as const);",
+        "after": "    captured.push([key, item] as const);",
+        "operator": "c1-ablation",
+        "name": "V-CAPTURED-PUSH (C1: killed by the ingress converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "V-CAPTURED-PUSH"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+          "declaration": {
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "line": 775,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        },
+        {
+          "name": "a creation whose initial-input payload field traps the first mailbox index still binds its initial Event",
+          "declaration": {
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "line": 864,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 552,
+          "unclean": "Array.prototype has extra indices 1, 2"
+        },
+        {
+          "leaf": "a creation whose initial-input payload field traps the first mailbox index still binds its initial Event",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 552,
+          "unclean": "Array.prototype has extra indices 0, 1"
+        }
+      ]
+    },
+    {
+      "case": "value-cost.c1.ingress",
+      "registration": {
+        "id": "mutation-8ce001f802720e3d62e28a503de8f2b101f35fb62e512ba685000702ea23662d",
+        "path": "packages/kernel/src/values.ts",
+        "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+        "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });",
+        "operator": "c1-ablation",
+        "name": "V-SNAPSHOT-LITERAL (C1: killed by the ingress converted tests at B and at C)"
+      },
+      "ablation_ids": [
+        "V-SNAPSHOT-LITERAL"
+      ],
+      "observed_at": "8a8579cfa8a8320acece4b4f10362e7bad0e14ac",
+      "runner": "setup_error",
+      "probe_state": "subject_exception",
+      "nonqualifying": [
+        {
+          "name": "a payload field whose observation installs get/set still retains the accepted Event",
+          "declaration": {
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "line": 956,
+            "column": 3
+          },
+          "failureType": "testCodeFailure",
+          "cause": {
+            "name": "AssertionError",
+            "code": "ERR_ASSERTION"
+          }
+        }
+      ],
+      "reason": "the failing assertion runs while an intrinsic the test itself replaced or polluted is still live, so the witness refuses it (design 03 §3 clean-snapshot condition)",
+      "refused_calls": [
+        {
+          "leaf": "a payload field whose observation installs get/set still retains the accepted Event",
+          "assertion": "assert.fail",
+          "module": "packages/kernel/tests/harness.ts",
+          "line": 552,
+          "unclean": "Object.prototype has extra members get, set"
+        }
+      ]
+    }
+  ]
+}

@@ -1,27 +1,28 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-08 against remote main `8f82900337e38dfdb93026b04de2066df75b175c`, the
-merge of TOOLS-01 (PR #45) into base `f62527e8d564a6e2f63b83cbb52e24053f333540`. TOOLS-01's accepted H is
-`a50c38867c93c63094f271d099cec71624382577`, payload C is
-`83094969e591dba5c4f25d19c572522b78a7a396`, and independent review 06 is recorded at
-`82b09e1f9ddbfe60e86a64f4adbdb8feab67e9c4`. Its [cleanup](work/TOOLS-01/cleanup-01.md)
-is complete, and it is [integrated](work/TOOLS-01/integration-01.md). Main also contains the accepted,
-owner-closed DESIGN-AUDIT-01 and K1.2-correction-01 work. The [status ledger](007-work-packets.md)
-and linked records own exact acceptance, integration and release identities.
+Snapshot: checked 2026-10-19 against remote main `7af0cd11176c220353c06545630edbe45c2127b6` (the merge
+of PR #47, the known-limitations register, onto the TOOLS-01 integration) and the K1.1-correction-03 branch
+`claude/k1.1-correction-03`. K1.1-correction-03's accepted H is
+`4b121d7ba665182b22857f049c05f019f25d0c65`, payload C is `2bf220e9e426c810f2505fa2d74d70197807e584`,
+independent review 03 is recorded at `06ec8f25025d1d7c8d4ad020644fd787c6f41d62`, and acceptance record A
+is `0137dc0df27824b9f821f92f2045a2f3126cd835`. Its [cleanup](work/K1.1-correction-03/cleanup-01.md) is
+complete; integration waits for the owner's merge. The [status ledger](007-work-packets.md) and linked
+records own exact acceptance, integration and release identities.
 
 | Area | Current position |
 |---|---|
 | K0 | Closed |
-| K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed; some value-capture claims are held (below) |
+| K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed; the V-ENV value-capture claim is held (below) |
 | Repository cleanup and planning | DOCS-CLEANUP-01 and PLAN-01 accepted, integrated and owner-closed; the archive is kept locally only, by owner choice, and was re-verified on 2026-10-02 |
-| Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; its V-D1 cost claim is held for K1.1-correction-03 |
+| Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; K1.1-correction-03 restores its V-D1 claim as a metered bound |
 | K1.2 Outcome acceptance | K1.2 and its cumulative correction K1.2-correction-01 accepted, integrated and owner-closed; the earlier H14 integration hold is lifted |
-| Held value-capture claims | V-D1 refusal cost ([invalidation-02](work/K1.2/invalidation-02.md)); re-prototyped built-in classification ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)); environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) |
+| Held value-capture claims | Environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)), for BINDING-01. The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
 | BINDING-01, COORD-REFACTOR-01 | Planned; not released |
 | TOOLS-01 | Independently accepted at H above; integrated at `8f829003` (PR #45) |
 | TOOLS-02 | Planned remaining corpus extraction; not released; acceptance and integration required before K1.4 acceptance |
-| K1.1-correction-03 | Planned, with scope amended by decision-01; not released |
+| K1.1-correction-03 | Independently accepted at H above; cleanup complete; integration pending the owner's merge |
+| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-13) under 006 working principle 6 |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
 
@@ -74,13 +75,11 @@ K1.3 is not released. Limits:
   takeover.
 - The sweeps are finite evidence for their declared scenarios, not a proof over arbitrary future
   code.
-- No V-D1 refusal-cost claim is made, and the supported SDK is unchanged.
-- Two value-capture claims inherited from K1.1 are held.
-  - A re-prototyped built-in, such as a null-prototype Map, is accepted as a plain object
-    ([invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md)).
-  - Code that runs during capture can declare a global `let JSON` that steers the canonical bytes. A
-    conflicting creation retry is then answered as a replay
-    ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)).
+- The supported SDK is unchanged.
+- One value-capture claim inherited from K1.1 is still held: code that runs before or during capture
+  can declare a global `let JSON` that steers the canonical bytes. A conflicting creation retry is then
+  answered as a replay ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)). The refusal-cost
+  and re-prototyped built-in claims are restored by K1.1-correction-03 (below).
 
 **A root-cause audit of accepted design.** DESIGN-AUDIT-01 answered which choices accepted in
 K0.1–K1.2 keep producing defect families, and what the owner's options are for each. It looked hardest at
@@ -144,6 +143,42 @@ E1 result. The advisory report blocks no packet. Live-provider, large-memory/tim
 known-base-failure profile were not run. The repository verification floor is now Node 26.10+;
 this does not change the supported SDK's runtime declaration.
 
+**Metered value refusal cost.** K1.1-correction-03 answered whether refusing a live value can be
+proven to cost no more than accepting one at the limits, and whether capture can refuse Proxies and
+re-prototyped built-ins instead of silently projecting them. The private Kernel's in-process capture
+now:
+
+- charges every operation it performs on a caller value to one work meter per root, with budget
+  B = 3 × 1,048,576 units. No accepted value needs more, so the meter never refuses a valid value.
+  Capture stops at the first unit past B, and nothing but unwinding runs after a stop.
+- refuses every Proxy before any other look at it, at every depth and on every root consumer.
+- refuses re-prototyped built-ins with internal slots by engine type checks before listing any keys,
+  including null-prototype Maps, Dates and typed arrays, arguments objects and raw JSON.
+- finds cycles in constant time per visit, so refusal work no longer grows with nesting depth.
+
+Accepted values, canonical bytes and diagnostic weights are unchanged. The owner released the V-D1 and
+classification holds on that basis ([hold release](work/K1.1-correction-03/hold-release-01.md)).
+
+The lesson is to size the evidence to the claim. The production change is about a thousand lines in two
+files. Review 01 found one real production defect, while reviews 02 and 03 found none: their findings
+were about the evidence tooling, which grew far larger than the code. The owner
+then limited blocking findings to real production defects and false current claims, and recorded the
+deliberate limits in [017](017-known-limitations.md). That rule now applies to every packet (006
+working principle 6).
+
+Status: independently accepted at H `4b121d7b`; cleanup complete; integration pending the owner's
+merge. Limits:
+- The bound is metered work, not wall-clock time. Four engine residuals (R1–R4), host interceptor
+  objects and request-wide totals are stated limits (017 L-03–L-07, L-13).
+- Re-prototyped built-ins without a cheap engine predicate (WeakRef, Temporal, Intl, iterators and
+  others) are still accepted as plain data (L-08). A Proxy request envelope can still run caller code
+  between root captures (L-09).
+- The in-process binding has a cooperative contract; it is no defence against hostile code in the same
+  process (L-02). V-ENV stays held for BINDING-01.
+- The static checks are bounded syntactic guards, and mutation credit covers a declared assertion
+  vocabulary only (L-11, L-12). The reviewer's run of the full verify failed on a census difference,
+  which TOOLS-02 owns.
+
 **A smaller current documentation tree.** DOCS-CLEANUP-01 answered how to preserve closed evidence
 while making current guidance easier to find. The sealed archive and relocated active fixtures now
 exist. The packet is accepted, integrated and owner-closed. By the owner's choice the archive is
@@ -154,8 +189,8 @@ result.
 an oversized scalar could make refusal require unbounded Kernel traversal. Capture now charges each
 occurrence while reading and bounds scalar/key scanning and descriptor classification. The work is
 accepted, integrated and owner-closed. Its broader V-D1 claim, that refusing costs no more than
-accepting at the limits, is held: some refusals were later shown to cost more than the costliest
-acceptance, and the owner moved that bound to a metered design in K1.1-correction-03. Host
+accepting at the limits, was held when some refusals were shown to cost more than the costliest
+acceptance; K1.1-correction-03 restores it as a metered bound (above). Host
 enumeration and caller callbacks remain outside the Kernel traversal bound. This implements neither
 tombstone retention nor a wire decoder.
 
@@ -166,24 +201,25 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 ## The next few steps
 
 All successors remain unreleased. The dependencies below come from 007 and become eligible for an
-owner release only after their prerequisites are accepted and integrated.
+owner release only after their prerequisites are accepted and integrated. Briefs follow 006 working
+principle 6: build right what later work builds on, and record the rest in [017](017-known-limitations.md).
 
-1. **K1.1-correction-03** depends on TOOLS-01. Its brief covers the metered V-D1 bound, refusal of
-   re-prototyped built-ins by internal-slot checks, and refusal of every Proxy before own-key listing.
-   Acceptance is to release the recorded refusal-cost and classification holds.
-2. **BINDING-01** depends on both TOOLS-01 and correction-03. It owns the canonical-bytes core,
-   8 MiB transport adapter and capture wrapper moved into the SDK as an internal module, plus the
-   V-ENV hold. It must classify the 853 rule-1 V-ENV entries. The 96 V-ENV-matching category entries
-   retain correction-03's ownership. Runtime evidence, such as evaluating Node's
-   `--frozen-intrinsics`, is a candidate approach for its brief, not an owner-selected design or
-   evidence that the hold can be lifted. The supported SDK surface changes at K1.4, as
+1. **Integrate K1.1-correction-03** by the owner's merge, then record its integration receipt.
+2. **BINDING-01** depends on TOOLS-01 and correction-03. It owns the canonical-bytes core, the
+   8 MiB transport adapter and the capture wrapper moved into the SDK as an internal module, plus the
+   V-ENV hold. Moving capture out of the Kernel also retires most of 017's L-04–L-09. It must classify
+   the 853 rule-1 V-ENV entries. Runtime evidence, such as evaluating Node's `--frozen-intrinsics`, is a
+   candidate approach for its brief, not an owner-selected design or evidence that the hold can be
+   lifted. The supported SDK surface changes at K1.4, as
    [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies.
 3. **TOOLS-02** also depends on TOOLS-01. It owns the remaining extraction, mention triage and
-   mutation-family work, target-set assertion-provenance design, and all 47 transferred origins.
-   These include [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins and the limited member
-   `kernel-landing-zone.test.ts:1200:9@deedd7950724`, to bind normally or address through a reviewed
-   multi-leaf admission design if needed. TOOLS-02 must be accepted and integrated before K1.4
-   acceptance; 007 does not make it a prerequisite for correction-03, BINDING-01 or K1.3.
+   mutation-family work, target-set assertion-provenance design, and the transferred origins.
+   These include [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins, the limited member
+   `kernel-landing-zone.test.ts:1200:9@deedd7950724`, the origins K1.1-correction-03 transferred, and
+   review 03's three P3 observations. Restoring a reproducible composed verify (KC3-R3-CENSUS-01) comes
+   first, because every packet runs it. Hold-register entries held under the now-released V-D1 and
+   classification claims need revalidation. TOOLS-02 must be accepted and integrated before K1.4
+   acceptance; 007 does not make it a prerequisite for BINDING-01 or K1.3.
 4. **COORD-REFACTOR-01**, after BINDING-01, then **K1.3** retain their planned sequence. They have no
    release from this cleanup.
 5. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:

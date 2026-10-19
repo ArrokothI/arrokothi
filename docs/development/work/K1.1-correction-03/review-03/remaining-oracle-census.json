@@ -1,0 +1,57 @@
+{
+  "id": "oracle-census",
+  "source_specification": "docs/development/work/K1.1-correction-03/verification.json",
+  "source_revision": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "start_utc": "2026-10-19T09:09:52.693503+00:00",
+  "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+  "node": "v26.10.0",
+  "parallel_validation_jobs": 0,
+  "argv": [
+    "node",
+    "--no-warnings",
+    "--experimental-strip-types",
+    "tests/tooling/registry-check.mjs"
+  ],
+  "passed": true,
+  "counts": {},
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [],
+    "absent": [
+      "NODE_OPTIONS",
+      "NODE_TEST_CONTEXT",
+      "NODE_V8_COVERAGE",
+      "KERNEL_POISON_MODE",
+      "KERNEL_POISON_OUT",
+      "KERNEL_POISON_NAMES",
+      "PACKET_ORACLE_CHECK",
+      "PACKET_REACH_FILE",
+      "ARROKOTHI_READ_TRACE",
+      "GEMINI_MODEL",
+      "GEMINI_API_KEY",
+      "GOOGLE_API_KEY",
+      "GOOGLE_GENERATIVE_AI_API_KEY",
+      "FLOOR_ORDER_LOG",
+      "FLOOR_READ_DIR",
+      "ARROKOTHI_VALUE_COST_LOAD"
+    ],
+    "inherited_values_recorded": false
+  },
+  "inputs": [],
+  "catalog": null,
+  "status": "finished",
+  "exit": 0,
+  "output": "{\"oracle_comparisons\":29,\"registered_mutants\":29}\n",
+  "elapsed_seconds": 0.20538420812226832,
+  "end_utc": "2026-10-19T09:09:52.898902+00:00",
+  "clean_after": ""
+}

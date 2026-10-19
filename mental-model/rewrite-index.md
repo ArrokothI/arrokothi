@@ -258,10 +258,12 @@ naming an `OPEN(...)` marker claim that one exists.
 
 - Transport wire codec, framing, compression, and the storage layout/engine —
   `concepts/values.md#codec`, WS §1 "Left open" and §14.
-- Refusal diagnostic storage — `OPEN(implementation)` in `concepts/values.md#fixed-semantic-limits`.
-  The in-process binding records eight bounded details per root plus exact suffix code counts in
-  BASELINE `#value-refusal-diagnostics`; type labels use null/typeof without inspecting caller
-  properties. Eager single observation and byte-budget stops are preserved.
+- Refusal diagnostic storage and the work meter — `OPEN(implementation)` in
+  `concepts/values.md#fixed-semantic-limits`. The in-process binding records eight bounded details
+  per root plus exact suffix code counts in BASELINE `#value-refusal-diagnostics`; type labels use
+  null/typeof without inspecting caller properties. The same BASELINE section records its unit table,
+  the budget B = 3,145,728 with its derivation and costliest acceptance found, and the
+  `too_much_work` stop. Eager single observation and the byte-budget stop are preserved.
 - Receipt serialization / token representation; request-key hashing — `OPEN(implementation)` in
   `concepts/identity.md#acceptance-boundary-and-receipt`; WS §2. The in-process binding's choice,
   recorded in BASELINE `#request-identity-api`: a receipt is a structured record of its boundary,

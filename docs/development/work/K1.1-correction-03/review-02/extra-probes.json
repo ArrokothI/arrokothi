@@ -1,0 +1,58 @@
+[
+  {
+    "name": "stop-corpus",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/probe-stop-corpus.py"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:20:56.547801+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 35.663342958083376,
+    "end": "2026-10-15T02:21:32.435070+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "c1-direct",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/probe-c1-group.py",
+      "/private/tmp/arrokothi-kc3-review02-b"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:21:32.495985+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 0.6748625000473112,
+    "end": "2026-10-15T02:21:33.219176+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "attribution-controls",
+    "argv": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/tooling",
+      "-p",
+      "test_value_cost_probe.py",
+      "-v"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:21:33.254666+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 7.647225499851629,
+    "end": "2026-10-15T02:21:40.947250+00:00",
+    "clean_after": ""
+  }
+]

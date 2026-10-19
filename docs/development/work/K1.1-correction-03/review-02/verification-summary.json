@@ -1,0 +1,126 @@
+{
+  "result": "checks_passed",
+  "checks": [
+    {
+      "id": "tool-tests",
+      "passed": true,
+      "status": "finished",
+      "exit": 0,
+      "counts": {
+        "tests": 599
+      }
+    },
+    {
+      "id": "inventory",
+      "passed": true,
+      "result": "provenance_verified",
+      "counts": {
+        "artifact": 208,
+        "mention": 1333,
+        "additional": 8
+      }
+    },
+    {
+      "id": "adoption",
+      "passed": true,
+      "result": "revalidation_complete",
+      "counts": {
+        "origins": 1549,
+        "counterexamples": 1125,
+        "families": 26,
+        "members": 415,
+        "suite_targets": 52,
+        "preserved": 37,
+        "kills": 0
+      }
+    },
+    {
+      "id": "dimensions",
+      "passed": true,
+      "result": "coverage_reported"
+    },
+    {
+      "id": "registered-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 109
+      }
+    },
+    {
+      "id": "refusal-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 321
+      }
+    },
+    {
+      "id": "value-cost-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 231
+      }
+    },
+    {
+      "id": "refusal-census",
+      "passed": true,
+      "status": "finished",
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "oracle-census",
+      "passed": true,
+      "status": "finished",
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "typecheck",
+      "passed": true,
+      "status": "finished",
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "repository-tests",
+      "passed": true,
+      "status": "finished",
+      "exit": 0,
+      "counts": {
+        "tests": 4114,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "passed": true,
+      "status": "finished",
+      "exit": 0,
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "kernel-sweeps",
+      "passed": true,
+      "status": "finished",
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "area-gate",
+      "passed": true,
+      "result": "reported"
+    }
+  ]
+}

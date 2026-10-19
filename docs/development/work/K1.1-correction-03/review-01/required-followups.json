@@ -1,0 +1,110 @@
+[
+  {
+    "name": "capture-corpus",
+    "argv": [
+      "node",
+      "--test",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "packages/kernel/tests/capture-corpus.test.ts",
+      "packages/kernel/tests/capture-refusals.test.ts",
+      "packages/kernel/tests/capture-work.test.ts",
+      "packages/kernel/tests/capture-metering.test.ts",
+      "packages/kernel/tests/value-refusal-cost.test.ts",
+      "packages/kernel/tests/value-diagnostic-work.test.ts",
+      "packages/kernel/tests/values.test.ts"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T02:25:52.644034+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 28.52446070802398,
+    "end": "2026-10-13T02:26:21.474148+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "adoption-corpus",
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/packet_tools.py",
+      "corpus",
+      "--revision",
+      "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+      "--spec",
+      "tests/fixtures/packet-tools/adoption.json"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T02:26:21.624136+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 212.13536574994214,
+    "end": "2026-10-13T02:29:53.799844+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "mutations",
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/packet_tools.py",
+      "mutations",
+      "--revision",
+      "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+      "--spec",
+      "tests/fixtures/packet-tools/mutations.json"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T02:29:53.859075+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 499.2146259159781,
+    "end": "2026-10-13T02:38:13.098383+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "refusal-guards",
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/packet_tools.py",
+      "mutations",
+      "--revision",
+      "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+      "--spec",
+      "tests/fixtures/packet-tools/refusal-guards.json"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T02:38:13.162748+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 513.9448235840537,
+    "end": "2026-10-13T02:46:47.132222+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "value-cost",
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/packet_tools.py",
+      "mutations",
+      "--revision",
+      "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+      "--spec",
+      "tests/fixtures/packet-tools/value-cost.json"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T02:46:47.199588+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 428.2323551250156,
+    "end": "2026-10-13T02:53:55.610664+00:00",
+    "clean_after": ""
+  }
+]

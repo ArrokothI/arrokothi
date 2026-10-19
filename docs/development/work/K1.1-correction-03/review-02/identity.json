@@ -1,0 +1,32 @@
+{
+  "reviewer": "Codex desktop local session",
+  "session": "01a13ae6-14a7-7f20-a52f-f484b0614df4",
+  "model": "gpt-6-astra",
+  "effort": "xhigh",
+  "metadata_source": "local session turn_context",
+  "date": "2026-10-14",
+  "B": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "C": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7",
+  "H": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+  "governing_policy": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "initial_head": "41628b8bcfd11c899c2fcf60ef4fb73c0858e298",
+  "initial_tracked_status": "",
+  "objects": {
+    "B": {
+      "type": "commit",
+      "tree": "2dfa832fc9c65a9ff0e23b55edbf3436349039e8"
+    },
+    "C": {
+      "type": "commit",
+      "tree": "4fc34fd83553836b4a5e674183498096570b9aa0"
+    },
+    "H": {
+      "type": "commit",
+      "tree": "c747384ac014d7ec59bb1dde3d7a02adb6344324"
+    }
+  },
+  "ancestry": {
+    "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b..ad9bc8640d261ace8af5e75c47aad1bad3ca84d7": 0,
+    "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7..41628b8bcfd11c899c2fcf60ef4fb73c0858e298": 0
+  }
+}

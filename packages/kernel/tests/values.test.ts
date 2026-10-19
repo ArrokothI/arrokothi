@@ -15,6 +15,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
+import type { CaptureWork } from "../src/values.ts";
+import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
 import {
   arrayIteratorPrototype,
   descriptorConversionIsHostile,
@@ -27,10 +29,76 @@ import {
   recordOwn,
   trapInheritedIndices,
   type DescriptorPollution,
-  type InheritedIndexTrap,
 } from "./harness.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
+
+/**
+ * K1.1-correction-03: capture refuses every Proxy before observing it (owner decision-01 item 2), so a
+ * Proxy can no longer be the value under test here, count the Kernel's observations, or run a side
+ * effect in the middle of a capture. The cases that used one keep that Proxy as a witness of the new
+ * refusal (`countingProxy`, zero traps), and reach the mechanism it protected without a Proxy: through
+ * the wrapped child of `capture-instruments.ts`, whose hooks make one Kernel observation of a genuine
+ * array or plain object answer differently or act, or through the same pollution installed before the
+ * call. Exact values below are derived from the value's shape and the unit table in `values.ts`
+ * (`CAPTURE_WORK_BUDGET`), never copied from a run.
+ */
+const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
+const proxyRefusal = (path: string): { path: string; code: string; message: string } => ({ path, code: "unsupported_form", message: PROXY_MESSAGE });
+
+/** The fixed messages of the refusals the converted cases pin exactly. */
+const DISAGREEMENT = "member is supplied differently by its own data descriptor and by ordinary property access, so it has no single content";
+const NO_OWN_PROPERTY = "position has no own property; a value supplied only through a prototype or a dynamic read is not accepted content";
+const UNSTABLE_LENGTH = "array length is not one stable own data property, so which positions exist cannot be established";
+const THREW_OBJECT = "observing this value's structure threw (object), so it presents no readable content";
+const LISTED_NOT_OWNED = "object lists an own member it does not own, so its structure has no single reading";
+const INDEX_NOT_OWNED = "array lists an own index it does not own, so its structure has no single reading";
+const INDEX_OUTSIDE_LENGTH = "array has an own index outside its length, which canonical form would silently drop";
+const byteStop = (bytes: number): { path: string; code: string; message: string } => ({
+  path: "",
+  code: "too_many_bytes",
+  message: `canonical form reaches at least ${bytes} bytes, above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,
+});
+
+/** One located issue as a wrapped child reports it (JSON, so `occurrences` appears only on suffix entries). */
+interface ChildIssue {
+  readonly path: string;
+  readonly code: string;
+  readonly message: string;
+  readonly occurrences?: number;
+}
+
+/** One `captureWithWork` result as a wrapped child reports it: the whole result and the work meter. */
+interface ChildCapture {
+  readonly ok: boolean;
+  readonly canonical: string | null;
+  readonly value: unknown;
+  readonly issues: readonly ChildIssue[];
+  readonly work: CaptureWork;
+}
+
+/** Child-side text: reduces one `values.captureWithWork` result to a `ChildCapture`. */
+const SUMMARIZE = `
+  const summarize = (captured) => ({
+    ok: captured.result.ok,
+    canonical: captured.result.ok ? captured.result.value.canonical : null,
+    value: captured.result.ok ? captured.result.value.value : null,
+    issues: captured.result.ok ? [] : captured.result.issues,
+    work: captured.work,
+  });
+`;
+
+/** `harness.ts` for a child probe: it shares the child's Kernel modules, which the prelude loaded first. */
+const HARNESS_URL = new URL("./harness.ts", import.meta.url).href;
+
+/** A work record with every unit kind the case does not charge at zero; `units` is their sum. */
+const workOf = (parts: Partial<Omit<CaptureWork, "units">> & { readonly stop: CaptureWork["stop"] }): CaptureWork => {
+  const kinds = { visit: 0, listing: 0, element: 0, descriptor: 0, read: 0, string: 0, diagnostic: 0, ...parts };
+  return {
+    units: kinds.visit + kinds.listing + kinds.element + kinds.descriptor + kinds.read + kinds.string + kinds.diagnostic,
+    ...kinds,
+  };
+};
 
 /** A dense genuine array built without `push`, so these fixtures are own data whatever is installed. */
 const copyForTest = (elements: readonly unknown[]): unknown[] => {
@@ -293,55 +361,128 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
    *
    * The fixtures below are *representation* counterexamples, not one exotic object type: each one
    * makes an ordinary structural question - "what does this position own?" - have two answers. The
-   * rule under test is stated the same way, so nothing here or in `values.ts` tests for `Proxy`.
+   * rule under test is stated the same way: no case depends on what kind of object gives the answers.
+   *
+   * K1.1-correction-03: the Proxies that carried these counterexamples are now refused before any trap
+   * runs (owner decision-01 item 2), and each case keeps its Proxy as a witness of that. An ordinary value
+   * can no longer give two answers in the middle of a capture, so the mechanism is reached through the
+   * wrapped child instead: a hook makes the Kernel's one observation of a genuine array or plain object
+   * answer differently from its ordinary read, or change the caller's object after its one reading.
    */
   describe("K11-R2-VAL-02 identity and retained content come from one observation", () => {
-    /** A container whose own data descriptors and ordinary property reads deliberately disagree. */
-    const disagreeing = <T extends object>(target: T, key: string, read: unknown): T =>
-      new Proxy(target, {
+    /**
+     * The round-3 witness: own data descriptors and ordinary reads that deliberately disagree, behind a
+     * Proxy whose every trap is counted. Capture now refuses it before observing it.
+     */
+    const disagreeing = <T extends object>(target: T, key: string, read: unknown): { proxy: T; calls: () => number } =>
+      countingProxy(target, {
         get(inner, property, receiver): unknown {
           if (property === key) return read;
           return Reflect.get(inner, property, receiver);
         },
       });
 
-    test("an array position read differently than it is owned is refused, not silently picked", () => {
-      const value = disagreeing([1], "0", 2);
-      // The fixture really is the ambiguity the finding names, not a broken test double.
-      assert.equal(Array.isArray(value), true);
-      assert.equal(Object.getPrototypeOf(value), Array.prototype);
-      assert.equal(Object.getOwnPropertyDescriptor(value, "0")?.value, 1, "owns 1");
-      assert.equal((value as unknown as number[])[0], 2, "reads 2");
+    /**
+     * A probe whose hook makes the one own-descriptor observation of `key` on `subject` (a tracked genuine
+     * array or plain object the setup declares, inside `value`) say `owned`. The prelude owns `tracked`.
+     */
+    type DisagreementProbe = { captured: ChildCapture; observations: number; reads: unknown };
+    const disagreementProbe = (setup: string, key: string, owned: unknown, read: string): DisagreementProbe =>
+      inWrappedChild<DisagreementProbe>(`
+        ${SUMMARIZE}
+        ${setup}
+        let observations = 0;
+        hooks.descriptor = (target, key, real) => {
+          if (target !== subject || key !== ${JSON.stringify(key)}) return real;
+          observations += 1;
+          return { value: ${JSON.stringify(owned)}, writable: true, enumerable: true, configurable: true };
+        };
+        const captured = summarize(values.captureWithWork(value));
+        emit({ captured, observations, reads: ${read} });
+      `);
 
-      assert.deepEqual(issueCodes(value), ["unstable_representation"]);
-      assert.equal(canonicalize(value).ok, false, "and it produces no identity at all");
+    test("an array position read differently than it is owned is refused, not silently picked", () => {
+      // K1.1-correction-03: converted from a get-trap Proxy witness (owner decision-01 item 2). The Proxy is
+      // refused before any trap; the disagreement check is reached by a hook on the one descriptor observation.
+      const witness = disagreeing([1], "0", 2);
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+      assert.equal(canonicalize(witness.proxy).ok, false, "and it produces no identity at all");
+      assert.equal(witness.calls(), 0, "refused before any trap ran");
+
+      // A genuine array that owns 2 and reads 2, whose one own-descriptor observation says 1: the
+      // ambiguity the finding names, without a Proxy.
+      const observed = disagreementProbe("const subject = track([2]); const value = subject;", "0", 1, "subject[0]");
+      assert.equal(observed.observations, 1, "the position's own descriptor was observed exactly once, and said 1");
+      assert.equal(observed.reads, 2, "while its ordinary read says 2");
+      assert.deepEqual(observed.captured.issues, [{ path: "[0]", code: "unstable_representation", message: DISAGREEMENT }]);
+      assert.equal(observed.captured.ok, false, "and it produces no identity at all");
     });
 
     test("an object member read differently than it is owned is refused the same way", () => {
-      const value = disagreeing({ a: 1 }, "a", 2);
-      assert.equal(Object.getOwnPropertyDescriptor(value, "a")?.value, 1);
-      assert.equal((value as { a: number }).a, 2);
-      assert.deepEqual(issueCodes(value), ["unstable_representation"]);
-      assert.equal(boundaryValueIssues(value)[0]?.path, "a", "and the refusal locates the member");
+      // K1.1-correction-03: converted from a get-trap Proxy witness (owner decision-01 item 2).
+      const witness = disagreeing({ a: 1 }, "a", 2);
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+      assert.equal(witness.calls(), 0, "refused before any trap ran");
+
+      const observed = disagreementProbe("const subject = track({ a: 2 }); const value = subject;", "a", 1, "subject.a");
+      assert.equal(observed.observations, 1);
+      assert.equal(observed.reads, 2);
+      assert.deepEqual(observed.captured.issues, [{ path: "a", code: "unstable_representation", message: DISAGREEMENT }], "and the refusal locates the member");
+      assert.equal(observed.captured.ok, false);
     });
 
     test("the disagreement is refused at depth and under a valid root", () => {
-      const nestedDisagreement = { outer: [{ inner: disagreeing({ a: 1 }, "a", 2) }] };
-      assert.deepEqual(issueCodes(nestedDisagreement), ["unstable_representation"]);
-      assert.equal(boundaryValueIssues(nestedDisagreement)[0]?.path, "outer[0].inner.a");
+      // K1.1-correction-03: converted from a nested get-trap Proxy witness (owner decision-01 item 2).
+      const witness = disagreeing({ a: 1 }, "a", 2);
+      assert.deepEqual(boundaryValueIssues({ outer: [{ inner: witness.proxy }] }), [proxyRefusal("outer[0].inner")]);
+      assert.equal(witness.calls(), 0, "refused at depth before any trap ran");
+
+      const observed = disagreementProbe(
+        "const subject = track({ a: 2 }); const value = { outer: [{ inner: subject }] };",
+        "a",
+        1,
+        "subject.a",
+      );
+      assert.equal(observed.observations, 1);
+      assert.deepEqual(observed.captured.issues, [{ path: "outer[0].inner.a", code: "unstable_representation", message: DISAGREEMENT }]);
+      assert.equal(observed.captured.ok, false);
     });
 
     test("an array position supplied only by a dynamic read, owning nothing, is refused", () => {
       // `length` says the position exists; the object owns nothing there. The round-3 code read the
       // supplied 7 as the element, while the JCS implementation skipped the absent position: the
       // pair canonicalized to `[]` and retained `[7]`.
+      //
+      // K1.1-correction-03: converted from a get-trap Proxy witness (owner decision-01 item 2). The read
+      // that supplies 7 now comes through an inherited `Array.prototype` position, the other way an
+      // ordinary read answers for a position an array does not own.
+      const hollowTarget: unknown[] = [];
+      hollowTarget.length = 1;
+      const witness = disagreeing(hollowTarget, "0", 7);
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+      assert.equal(witness.calls(), 0, "refused before any trap ran");
+
       const hollow: unknown[] = [];
       hollow.length = 1;
-      const value = disagreeing(hollow, "0", 7);
-      assert.equal(Object.getOwnPropertyDescriptor(value, "0"), undefined, "owns nothing at 0");
-      assert.equal((value as unknown[])[0], 7, "but reads 7");
-      assert.deepEqual(issueCodes(value), ["undefined_member"]);
-      assert.equal(boundaryValueIssues(value)[0]?.path, "[0]");
+      const saved = Object.getOwnPropertyDescriptor(Array.prototype, "0");
+      Object.defineProperty(Array.prototype, "0", { value: 7, writable: true, enumerable: false, configurable: true });
+      let owned: PropertyDescriptor | undefined;
+      let read: unknown;
+      let issues: ReturnType<typeof boundaryValueIssues> = [];
+      let identified = true;
+      try {
+        owned = Object.getOwnPropertyDescriptor(hollow, "0");
+        read = hollow[0];
+        issues = boundaryValueIssues(hollow);
+        identified = canonicalize(hollow).ok;
+      } finally {
+        if (saved === undefined) delete (Array.prototype as unknown as Record<string, unknown>)["0"];
+        else Object.defineProperty(Array.prototype, "0", saved);
+      }
+      assert.equal(owned, undefined, "owns nothing at 0");
+      assert.equal(read, 7, "but reads 7");
+      assert.deepEqual(issues, [{ path: "[0]", code: "undefined_member", message: NO_OWN_PROPERTY }]);
+      assert.equal(identified, false, "and it produces no identity at all");
     });
 
     test("a member supplied only by a prototype is not accepted as own content", () => {
@@ -355,26 +496,73 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
     });
 
     test("a length that does not agree with itself cannot decide which positions exist", () => {
-      const value = disagreeing([1, 2], "length", 5);
-      assert.deepEqual(issueCodes(value), ["unstable_representation"]);
-      assert.equal(boundaryValueIssues(value)[0]?.path, "", "the root array is what has no stable shape");
+      // K1.1-correction-03: converted from a get-trap Proxy witness (owner decision-01 item 2). A genuine
+      // `[1, 2]` reads length 2 while the hook makes its one own `length` descriptor say 5.
+      const witness = disagreeing([1, 2], "length", 5);
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+      assert.equal(witness.calls(), 0, "refused before any trap ran");
+
+      const observed = inWrappedChild<{ captured: ChildCapture; observations: number; reads: number }>(`
+        ${SUMMARIZE}
+        const value = track([1, 2]);
+        let observations = 0;
+        hooks.descriptor = (target, key, real) => {
+          if (key !== "length") return real;
+          observations += 1;
+          return { value: 5, writable: true, enumerable: false, configurable: false };
+        };
+        const captured = summarize(values.captureWithWork(value));
+        emit({ captured, observations, reads: value.length });
+      `);
+      assert.equal(observed.observations, 1, "length's own descriptor was observed once, and said 5");
+      assert.equal(observed.reads, 2, "while its ordinary read says 2");
+      assert.deepEqual(
+        observed.captured.issues,
+        [{ path: "", code: "unstable_representation", message: UNSTABLE_LENGTH }],
+        "the root array is what has no stable shape",
+      );
+      assert.equal(observed.captured.ok, false);
     });
 
     test("a structure that cannot be observed is refused rather than thrown out of the boundary", () => {
-      const hostile = new Proxy({ a: 1 }, {
+      // K1.1-correction-03: converted from a throwing-trap Proxy witness (owner decision-01 item 2). The
+      // catch path is now reached only by host objects and engine errors, so a hook makes the Kernel's own
+      // descriptor observation of a plain object throw.
+      const witness = countingProxy({ a: 1 }, {
         getOwnPropertyDescriptor(): PropertyDescriptor {
           throw new Error("no descriptors for you");
         },
       });
-      let issues: ReturnType<typeof boundaryValueIssues> = [];
-      assert.doesNotThrow(() => {
-        issues = boundaryValueIssues(hostile);
-      }, "a Kernel boundary refuses; it does not propagate a caller's exception");
-      assert.deepEqual(issues.map((issue) => issue.code), ["unstable_representation"]);
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+      assert.equal(witness.calls(), 0, "refused before the throwing trap could run");
+
+      const observed = inWrappedChild<{ threw: string | null; captured: ChildCapture | null; observations: number }>(`
+        ${SUMMARIZE}
+        const value = track({ a: 1 });
+        let observations = 0;
+        hooks.descriptor = () => {
+          observations += 1;
+          throw new Error("no descriptors for you");
+        };
+        let threw = null;
+        let captured = null;
+        try {
+          captured = summarize(values.captureWithWork(value));
+        } catch (error) {
+          threw = String(error);
+        }
+        emit({ threw, captured, observations });
+      `);
+      assert.equal(observed.threw, null, "a Kernel boundary refuses; it does not propagate a caller's exception");
+      assert.equal(observed.observations, 1, "the throwing observation really ran");
+      assert.deepEqual(observed.captured?.issues, [{ path: "", code: "unstable_representation", message: THREW_OBJECT }]);
+      assert.equal(observed.captured?.ok, false);
     });
 
     test("an object listing an own member it does not own is refused", () => {
-      const lying = new Proxy({} as Record<string, unknown>, {
+      // K1.1-correction-03: converted from an ownKeys-trap Proxy witness (owner decision-01 item 2). A hook
+      // makes the one own-names listing of a plain `{}` report a name the object does not own.
+      const witness = countingProxy({} as Record<string, unknown>, {
         ownKeys(): string[] {
           return ["ghost"];
         },
@@ -382,7 +570,23 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
           return undefined;
         },
       });
-      assert.deepEqual(issueCodes(lying), ["unstable_representation"]);
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+      assert.equal(witness.calls(), 0, "refused before any trap ran");
+
+      const observed = inWrappedChild<{ captured: ChildCapture; listings: number }>(`
+        ${SUMMARIZE}
+        const value = track({});
+        let listings = 0;
+        hooks.names = (target, real) => {
+          listings += 1;
+          return [...real, "ghost"];
+        };
+        const captured = summarize(values.captureWithWork(value));
+        emit({ captured, listings });
+      `);
+      assert.equal(observed.listings, 1);
+      assert.deepEqual(observed.captured.issues, [{ path: "ghost", code: "unstable_representation", message: LISTED_NOT_OWNED }]);
+      assert.equal(observed.captured.ok, false);
     });
 
     test("every accepted root re-canonicalizes to the bytes that accepted it", () => {
@@ -420,29 +624,93 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
       // This fixture agrees with its own descriptor on the first read and diverges afterwards, which
       // is precisely what a three-pass acceptance path could not survive. Acceptance reads each
       // position once, so the reading it took is the reading it keeps.
-      let reads = 0;
-      const shifting = new Proxy({ a: 1 } as Record<string, unknown>, {
+      //
+      // K1.1-correction-03: converted from a get-trap Proxy that counted its reads (owner decision-01
+      // item 2). The Proxy is refused before any read. Without one, the source moves on through a hook:
+      // observing the later member `b` sets `a` to 2, after `a`'s one reading and before the snapshot is
+      // finished, so any second reading of `a` would answer 2. Reads are counted by the work meter.
+      let witnessReads = 0;
+      const witness = countingProxy({ a: 1 } as Record<string, unknown>, {
         get(inner, property, receiver): unknown {
           if (property === "a") {
-            reads += 1;
-            return reads;
+            witnessReads += 1;
+            return witnessReads;
           }
           return Reflect.get(inner, property, receiver);
         },
       });
+      assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+      assert.equal(witness.calls(), 0, "refused before any trap ran");
+      assert.equal(witnessReads, 0, "and before any read");
 
-      const result = canonicalize(shifting);
-      assert.ok(result.ok, "the first reading agreed with the own descriptor, so it is acceptable");
-      assert.equal(reads, 1, "the caller's object was read exactly once");
-      assert.equal(result.value.canonical, '{"a":1}');
-      assert.deepEqual(result.value.value, { a: 1 });
+      const observed = inWrappedChild<{
+        captured: ChildCapture;
+        aDescriptors: number;
+        moved: number;
+        sourceNow: number;
+        retainedIsSource: boolean;
+        frozen: boolean;
+        again: string | null;
+        counts: { descriptorTracked: number; namesTracked: number; symbolsTracked: number; prototypeTracked: number };
+      }>(`
+        ${SUMMARIZE}
+        const inner = track({});
+        const source = track({ a: 1, b: inner });
+        let aDescriptors = 0;
+        hooks.descriptor = (target, key, real) => {
+          if (target === source && key === "a") aDescriptors += 1;
+          return real;
+        };
+        let moved = 0;
+        hooks.prototype = (target, real) => {
+          if (target === inner) {
+            source.a = 2;
+            moved += 1;
+          }
+          return real;
+        };
+        reset();
+        const result = values.captureWithWork(source);
+        const observedCounts = snapshot();
+        // During the capture only: re-canonicalizing below observes whatever was retained.
+        const movedDuringCapture = moved;
+        const captured = summarize(result);
+        const retained = result.result.ok ? result.result.value.value : null;
+        const again = retained === null ? null : values.canonicalize(retained);
+        emit({
+          captured,
+          aDescriptors,
+          moved: movedDuringCapture,
+          sourceNow: source.a,
+          retainedIsSource: retained === source,
+          frozen: retained !== null && Object.isFrozen(retained),
+          again: again !== null && again.ok ? again.value.canonical : null,
+          counts: observedCounts,
+        });
+      `);
+      assert.equal(observed.moved, 1, "the source moved on during the capture, so this is not a vacuous pass");
+      assert.equal(observed.captured.ok, true, "the one reading agreed with the own descriptor, so it is acceptable");
+      assert.equal(observed.captured.canonical, '{"a":1,"b":{}}');
+      assert.deepEqual(observed.captured.value, { a: 1, b: {} });
+      assert.equal(observed.retainedIsSource, false, "what is retained is a Kernel snapshot, not the caller's object");
+      assert.equal(observed.frozen, true);
+      // Each member was observed once. Its own descriptor is counted by the wrapped primordials
+      // (`aDescriptors`, `descriptorTracked`) and by the meter's `descriptor` units. Its ordinary read is
+      // counted by the meter alone: `read` counts the Kernel's metered member reads (`readMember` calls),
+      // not engine [[Get]]s, since an unmetered [[Get]] of own data on a non-Proxy runs no caller code and
+      // is unobservable without a Proxy. `{a: 1, b: {}}`: visits for the root, `1` and `{}`; the root's
+      // symbols (1) and names (1 + 2) listings and the inner `{}`'s two listings (1 each); names "a" and "b".
+      assert.equal(observed.aDescriptors, 1, "a's own descriptor was observed exactly once");
+      assert.deepEqual(observed.captured.work, workOf({ visit: 3, listing: 6, descriptor: 2, read: 2, string: 2, stop: "none" }));
+      assert.equal(observed.counts.descriptorTracked, 2);
+      assert.equal(observed.counts.namesTracked, 2);
+      assert.equal(observed.counts.symbolsTracked, 2);
+      assert.equal(observed.counts.prototypeTracked, 2);
 
       // Reading the caller's object again now returns something else entirely. The accepted value is
       // unaffected, and re-canonicalizing what was retained still yields the bytes that bound it.
-      assert.equal(shifting["a"], 2, "the source has moved on");
-      const again = canonicalize(result.value.value);
-      assert.ok(again.ok);
-      assert.equal(again.value.canonical, result.value.canonical);
+      assert.equal(observed.sourceNow, 2, "the source has moved on");
+      assert.equal(observed.again, observed.captured.canonical);
     });
   });
 });
@@ -627,8 +895,6 @@ describe("refusing a value costs no more than the size limit allows", () => {
     return JSON.parse(output.trim().split("\n").pop() as string) as T;
   };
 
-  type Probe = { ok: boolean; codes: string[]; visits: number; ms: number };
-
   test("the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it", () => {
     const quote = String.fromCharCode(0x22);
     const backslash = String.fromCharCode(0x5c);
@@ -669,80 +935,149 @@ describe("refusing a value costs no more than the size limit allows", () => {
     assert.equal(canonicalOf(result.value.value), result.value.canonical, "the retained structure re-canonicalizes to its identity");
   });
 
+  /**
+   * The unit table (`CAPTURE_WORK_BUDGET` in `values.ts`) applied, in the order capture reads, to `levels`
+   * of `[v, v]` above one shared `[]` leaf, up to the first byte charge past the size limit.
+   *
+   * Each array occurrence costs one visit, its names listing (`1 +` its names: two indices and `length`
+   * for `[v, v]`, only `length` for `[]`) and its symbols listing (1), and only then its structure bytes
+   * (3 for `[v, v]`, 2 for `[]`); each position costs one element unit before its value is captured. A
+   * shared member is counted in full at every place it appears. Once a charge passes the limit, nothing
+   * further is charged.
+   */
+  const doublingToByteStop = (
+    levels: number,
+  ): { bytes: number; visit: number; listing: number; element: number; leafVisits: number } => {
+    const model = { bytes: 0, visit: 0, listing: 0, element: 0, leafVisits: 0, stopped: false };
+    const occurrence = (height: number): void => {
+      model.visit += 1;
+      if (height === 0) model.leafVisits += 1;
+      model.listing += 1 + (height === 0 ? 1 : 3) + 1;
+      model.bytes += height === 0 ? 2 : 3;
+      if (model.bytes > BOUNDARY_LIMITS.canonicalBytes) {
+        model.stopped = true;
+        return;
+      }
+      for (let position = 0; height > 0 && position < 2 && !model.stopped; position += 1) {
+        model.element += 1;
+        occurrence(height - 1);
+      }
+    };
+    occurrence(levels);
+    return { bytes: model.bytes, visit: model.visit, listing: model.listing, element: model.element, leafVisits: model.leafVisits };
+  };
+
+  /** Canonical punctuation bytes of an array (`isObject` false) or object of `entries` entries. */
+  const structureBytes = (entries: number, isObject: boolean): number => (entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0));
+
   test("thirty-two arrays standing for four billion are refused after reading about a megabyte", () => {
-    const observed = inBoundedChild<Probe>(`
-      let visits = 0;
+    // K1.1-correction-03: converted from a getPrototypeOf-trap Proxy that counted leaf visits (owner
+    // decision-01 item 2). The genuine shared leaf is tracked in a wrapped child instead, so each of its
+    // prototype observations is one visit; the timing gate is replaced by exact meter counts.
+    const observed = inWrappedChild<{ captured: ChildCapture; leafVisits: number; leafListings: number }>(`
+      ${SUMMARIZE}
       // The innermost array, observed once for each place it appears in the expanded value.
-      let value = new Proxy([], { getPrototypeOf(target) { visits += 1; return Reflect.getPrototypeOf(target); } });
+      const leaf = track([]);
+      let value = leaf;
       for (let level = 0; level < 31; level += 1) value = [value, value];
-      const result = canonicalize(value);
-      console.log(JSON.stringify({
-        ok: result.ok,
-        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
-        visits,
-        ms: performance.now() - started,
-      }));
-    `);
-    assert.equal(observed.ok, false);
-    assert.deepEqual(observed.codes, ["too_many_bytes"], "within the depth and entry limits, refused for size alone");
+      reset();
+      const captured = summarize(values.captureWithWork(value));
+      const observedCounts = snapshot();
+      emit({ captured, leafVisits: observedCounts.prototypeTracked, leafListings: observedCounts.namesTracked });
+    `, { timeout: 60_000 });
+    const model = doublingToByteStop(31);
+    assert.equal(observed.captured.ok, false);
+    assert.deepEqual(observed.captured.issues, [byteStop(model.bytes)], "within the depth and entry limits, refused for size alone");
     // Each occurrence of the innermost array is at least its own two bytes, so no more than half the
     // limit's worth of them can be read before the count passes it. Unbounded, this is 2^31.
-    assert.ok(observed.visits <= BOUNDARY_LIMITS.canonicalBytes / 2, `read ${observed.visits} occurrences of the shared leaf`);
-    assert.ok(observed.ms < 20_000, `refused in ${Math.round(observed.ms)} ms`);
+    assert.equal(observed.leafVisits, model.leafVisits, `read ${observed.leafVisits} occurrences of the shared leaf`);
+    assert.equal(observed.leafListings, model.leafVisits, "each occurrence was listed once");
+    assert.ok(observed.leafVisits <= BOUNDARY_LIMITS.canonicalBytes / 2);
+    assert.deepEqual(
+      observed.captured.work,
+      workOf({ visit: model.visit, listing: model.listing, element: model.element, stop: "bytes" }),
+      "every unit of the refusal, read before the byte stop",
+    );
   });
 
   test("one long string shared across shared arrays is refused before a second megabyte is read", () => {
-    const observed = inBoundedChild<Probe>(`
-      const text = "x".repeat(BOUNDARY_LIMITS.stringScalarValues);
-      let visits = 0;
+    // K1.1-correction-03: converted from a getOwnPropertyDescriptor-trap Proxy that counted element
+    // observations (owner decision-01 item 2). The genuine inner array is tracked in a wrapped child; the
+    // timing gate is replaced by exact meter counts.
+    const observed = inWrappedChild<{ captured: ChildCapture; elementObservations: number }>(`
+      ${SUMMARIZE}
+      const text = "x".repeat(values.BOUNDARY_LIMITS.stringScalarValues);
       // Counts element observations of the inner array, which appears 4,096 times in the outer one.
-      const inner = new Proxy(new Array(BOUNDARY_LIMITS.containerEntries).fill(text), {
-        getOwnPropertyDescriptor(target, key) {
-          if (key !== "length") visits += 1;
-          return Reflect.getOwnPropertyDescriptor(target, key);
-        },
-      });
-      const result = canonicalize(new Array(BOUNDARY_LIMITS.containerEntries).fill(inner));
-      console.log(JSON.stringify({
-        ok: result.ok,
-        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
-        visits,
-        ms: performance.now() - started,
-      }));
-    `);
-    assert.equal(observed.ok, false);
-    assert.deepEqual(observed.codes, ["too_many_bytes"]);
-    // Each string is 65,538 canonical bytes, so the seventeenth passes the limit. Unbounded, this
-    // expands to about a terabyte.
+      const inner = track(new Array(values.BOUNDARY_LIMITS.containerEntries).fill(text));
+      let elementObservations = 0;
+      hooks.descriptor = (target, key, real) => {
+        if (target === inner && key !== "length") elementObservations += 1;
+        return real;
+      };
+      const captured = summarize(values.captureWithWork(new Array(values.BOUNDARY_LIMITS.containerEntries).fill(inner)));
+      emit({ captured, elementObservations });
+    `, { timeout: 60_000 });
+    // Each string is 65,538 canonical bytes. The outer array and the first inner one charge their 4,097
+    // punctuation bytes first, so the sixteenth string passes the limit. Unbounded, this expands to about
+    // a terabyte.
+    const entries = BOUNDARY_LIMITS.containerEntries;
+    const arrayBytes = structureBytes(entries, false);
     const perString = BOUNDARY_LIMITS.stringScalarValues + 2;
-    assert.ok(observed.visits <= Math.ceil(BOUNDARY_LIMITS.canonicalBytes / perString) + 1, `read ${observed.visits} strings`);
-    assert.ok(observed.ms < 20_000, `refused in ${Math.round(observed.ms)} ms`);
+    const strings = Math.floor((BOUNDARY_LIMITS.canonicalBytes - 2 * arrayBytes) / perString) + 1;
+    assert.equal(observed.captured.ok, false);
+    assert.deepEqual(observed.captured.issues, [byteStop(2 * arrayBytes + strings * perString)]);
+    assert.equal(observed.elementObservations, strings, `read ${observed.elementObservations} strings`);
+    assert.ok(observed.elementObservations <= Math.ceil(BOUNDARY_LIMITS.canonicalBytes / perString) + 1);
+    // Two array visits and one per string; each array's names (1 + 4,097) and symbols (1) listings; one
+    // outer element and one per string; each string scanned in full once.
+    assert.deepEqual(
+      observed.captured.work,
+      workOf({
+        visit: 2 + strings,
+        listing: 2 * (1 + entries + 1 + 1),
+        element: 1 + strings,
+        string: strings * BOUNDARY_LIMITS.stringScalarValues,
+        stop: "bytes",
+      }),
+    );
   });
 
   test("a shared member refused for another reason is not re-read without bound either", () => {
-    const observed = inBoundedChild<Probe>(`
+    // K1.1-correction-03: converted from a getOwnPropertyDescriptor-trap Proxy that counted element
+    // observations (owner decision-01 item 2), as above.
+    const observed = inWrappedChild<{ captured: ChildCapture; elementObservations: number }>(`
+      ${SUMMARIZE}
       // Too long to accept, so it has no canonical bytes of its own; reading it is still charged.
       const text = "x".repeat(200000);
-      let visits = 0;
-      const inner = new Proxy(new Array(BOUNDARY_LIMITS.containerEntries).fill(text), {
-        getOwnPropertyDescriptor(target, key) {
-          if (key !== "length") visits += 1;
-          return Reflect.getOwnPropertyDescriptor(target, key);
-        },
-      });
-      const result = canonicalize(new Array(BOUNDARY_LIMITS.containerEntries).fill(inner));
-      console.log(JSON.stringify({
-        ok: result.ok,
-        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
-        visits,
-        ms: performance.now() - started,
-      }));
-    `);
-    assert.equal(observed.ok, false);
-    assert.equal(observed.codes[0], "string_too_long", "the first reason is still the real one");
-    assert.equal(observed.codes[observed.codes.length - 1], "too_many_bytes", "and reading stopped at the byte limit");
-    assert.ok(observed.visits <= Math.ceil(BOUNDARY_LIMITS.canonicalBytes / 200_000) + 1, `read ${observed.visits} strings`);
-    assert.ok(observed.ms < 20_000, `refused in ${Math.round(observed.ms)} ms`);
+      const inner = track(new Array(values.BOUNDARY_LIMITS.containerEntries).fill(text));
+      let elementObservations = 0;
+      hooks.descriptor = (target, key, real) => {
+        if (target === inner && key !== "length") elementObservations += 1;
+        return real;
+      };
+      const captured = summarize(values.captureWithWork(new Array(values.BOUNDARY_LIMITS.containerEntries).fill(inner)));
+      emit({ captured, elementObservations });
+    `, { timeout: 60_000 });
+    // Each refused occurrence is charged its 200,000-unit length, after the two arrays' 4,097 bytes each,
+    // so the sixth passes the limit. Refused by its length alone, it costs no string units.
+    const entries = BOUNDARY_LIMITS.containerEntries;
+    const arrayBytes = structureBytes(entries, false);
+    const strings = Math.floor((BOUNDARY_LIMITS.canonicalBytes - 2 * arrayBytes) / 200_000) + 1;
+    const tooLong = {
+      code: "string_too_long",
+      message: `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} Unicode scalar values`,
+    };
+    assert.equal(observed.captured.ok, false);
+    assert.deepEqual(observed.captured.issues, [
+      ...Array.from({ length: strings }, (_, index) => ({ path: `[0][${index}]`, ...tooLong })),
+      byteStop(2 * arrayBytes + strings * 200_000),
+    ], "the first reason is still the real one, and reading stopped at the byte limit");
+    assert.equal(observed.elementObservations, strings, `read ${observed.elementObservations} strings`);
+    assert.ok(observed.elementObservations <= Math.ceil(BOUNDARY_LIMITS.canonicalBytes / 200_000) + 1);
+    assert.deepEqual(
+      observed.captured.work,
+      workOf({ visit: 2 + strings, listing: 2 * (1 + entries + 1 + 1), element: 1 + strings, diagnostic: strings, stop: "bytes" }),
+    );
   });
 
   // KC2-R1-01. The tests above bound how often a shared member is re-read; these bound the reading
@@ -824,68 +1159,86 @@ describe("refusing a value costs no more than the size limit allows", () => {
   });
 
   test("an oversized own-names listing is classified after at most one descriptor past the entry limit", () => {
-    const observed = inBoundedChild<{ single: ReadProbe; shared: ReadProbe; justOver: ReadProbe }>(`
-      const counted = (target) => {
-        const handle = { reads: 0 };
-        const proxy = new Proxy(target, {
-          getOwnPropertyDescriptor(inner, key) {
-            handle.reads += 1;
-            return Reflect.getOwnPropertyDescriptor(inner, key);
-          },
-        });
-        return { handle, proxy };
+    // K1.1-correction-03: converted from getOwnPropertyDescriptor-trap Proxies that counted descriptor
+    // reads (owner decision-01 item 2). The genuine objects are tracked in a wrapped child, where every
+    // own-descriptor observation the Kernel makes of each is counted; the bounds become exact counts.
+    type Scenario = { captured: ChildCapture; reads: number };
+    const observed = inWrappedChild<{ single: Scenario; shared: Scenario; justOver: Scenario }>(`
+      ${SUMMARIZE}
+      const reads = new Map();
+      hooks.descriptor = (target, key, real) => {
+        reads.set(target, (reads.get(target) ?? 0) + 1);
+        return real;
       };
-      const report = (result, reads) => ({
-        ok: result.ok,
-        codes: result.ok ? [] : result.issues.map((issue) => issue.code),
-        reads,
-        ms: performance.now() - started,
-      });
-      const big = Object.fromEntries(Array.from({ length: 550_000 }, (_, i) => ["k" + i, 0]));
-      const one = counted(big);
-      const single = report(canonicalize(one.proxy), one.handle.reads);
-      const two = counted(big);
-      const shared = report(canonicalize(new Array(64).fill(two.proxy)), two.handle.reads);
-      const over = counted(Object.fromEntries(Array.from({ length: BOUNDARY_LIMITS.containerEntries + 1 }, (_, i) => ["k" + i, 0])));
-      const justOver = report(canonicalize(over.proxy), over.handle.reads);
-      console.log(JSON.stringify({ single, shared, justOver }));
-    `);
+      const named = (count) => track(Object.fromEntries(Array.from({ length: count }, (_, i) => ["k" + i, 0])));
+      const one = named(550_000);
+      const single = { captured: summarize(values.captureWithWork(one)), reads: reads.get(one) ?? 0 };
+      const two = named(550_000);
+      const shared = { captured: summarize(values.captureWithWork(new Array(64).fill(two))), reads: reads.get(two) ?? 0 };
+      const over = named(values.BOUNDARY_LIMITS.containerEntries + 1);
+      const justOver = { captured: summarize(values.captureWithWork(over)), reads: reads.get(over) ?? 0 };
+      emit({ single, shared, justOver });
+    `, { timeout: 60_000 });
     const bound = BOUNDARY_LIMITS.containerEntries + 1;
-    assert.equal(observed.single.ok, false);
-    assert.equal(observed.single.codes[0], "too_many_entries");
-    assert.ok(observed.single.reads <= bound, `read ${observed.single.reads} descriptors of 550,000 names`);
-    assert.ok(observed.shared.reads <= bound, `read ${observed.shared.reads} descriptors across 64 shared occurrences`);
+    const tooMany = {
+      code: "too_many_entries",
+      message: `object has more than ${BOUNDARY_LIMITS.containerEntries} members, the limit; it lists 550000 own names`,
+    };
+    // 4,097 descriptors make the object certainly refused; its punctuation for 550,000 names then passes
+    // the size limit, so nothing further is read.
+    assert.equal(observed.single.captured.ok, false);
+    assert.deepEqual(observed.single.captured.issues, [{ path: "", ...tooMany }, byteStop(structureBytes(550_000, true))]);
+    assert.equal(observed.single.reads, bound, `read ${observed.single.reads} descriptors of 550,000 names`);
+    assert.equal(observed.single.captured.work.descriptor, bound);
+    // The first of 64 shared occurrences ends the root the same way, after the outer array's 65 bytes.
+    assert.deepEqual(observed.shared.captured.issues, [{ path: "[0]", ...tooMany }, byteStop(structureBytes(64, false) + structureBytes(550_000, true))]);
+    assert.equal(observed.shared.reads, bound, `read ${observed.shared.reads} descriptors across 64 shared occurrences`);
+    assert.equal(observed.shared.captured.work.descriptor, bound);
     // At exactly one over, every name is still read and the reason is the same as before the bound.
-    assert.deepEqual(observed.justOver.codes, ["too_many_entries"]);
+    assert.deepEqual(observed.justOver.captured.issues, [
+      { path: "", code: "too_many_entries", message: `object has ${bound} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}` },
+    ]);
     assert.equal(observed.justOver.reads, bound);
+    assert.equal(observed.justOver.captured.work.descriptor, bound);
   });
 
   test("an array listing more names than any accepted array owns is refused without classifying each", () => {
-    const observed = inBoundedChild<ReadProbe>(`
+    // K1.1-correction-03: converted from an ownKeys-trap Proxy that also counted descriptor reads (owner
+    // decision-01 item 2). A hook makes the one own-names listing of a genuine `[]` report the 1,000,001
+    // names; every own-descriptor observation of it is counted.
+    const observed = inWrappedChild<{ captured: ChildCapture; indexReads: number; listed: number; symbolListings: number }>(`
+      ${SUMMARIZE}
       const listed = ["length", ...Array.from({ length: 1_000_000 }, (_, i) => String(i))];
-      let reads = 0;
-      const proxy = new Proxy([], {
-        ownKeys: () => listed,
-        getOwnPropertyDescriptor(inner, key) {
-          if (key !== "length") reads += 1;
-          return Reflect.getOwnPropertyDescriptor(inner, key);
-        },
-      });
-      const result = canonicalize(proxy);
-      // Only the first codes are printed: an unbounded implementation reports one issue per listed
-      // name, and printing a million of them would fail this probe for the wrong reason.
-      console.log(JSON.stringify({
-        ok: result.ok,
-        codes: result.ok ? [] : result.issues.slice(0, 3).map((issue) => issue.code),
-        issues: result.ok ? 0 : result.issues.length,
-        reads,
-        ms: performance.now() - started,
-      }));
-    `);
-    assert.equal(observed.ok, false);
-    assert.ok(observed.reads < 10, `read ${observed.reads} index descriptors of a 1,000,001-name listing`);
+      const value = track([]);
+      hooks.names = () => listed;
+      let indexReads = 0;
+      hooks.descriptor = (target, key, real) => {
+        if (key !== "length") indexReads += 1;
+        return real;
+      };
+      reset();
+      // The whole result is printed: diagnostics are compressed to at most eight details and one suffix
+      // entry per code, so even an implementation reporting one issue per name prints a bounded list.
+      const captured = summarize(values.captureWithWork(value));
+      const observedCounts = snapshot();
+      emit({ captured, indexReads, listed: observedCounts.namesListed, symbolListings: observedCounts.symbolsTracked });
+    `, { timeout: 60_000 });
+    assert.equal(observed.listed, 1_000_001, "the one listing really reported every name");
+    assert.equal(observed.captured.ok, false);
+    assert.equal(observed.indexReads, 0, `read ${observed.indexReads} index descriptors of a 1,000,001-name listing`);
     // One aggregate reason: the listing holds more names than an array of at most 4,096 entries owns.
-    assert.equal(observed.codes[0], "unrepresentable_member");
+    assert.deepEqual(observed.captured.issues, [
+      {
+        path: "",
+        code: "unrepresentable_member",
+        message: `array lists 1000001 own names, more than an array of at most ${BOUNDARY_LIMITS.containerEntries} entries owns; canonical form would silently drop the rest`,
+      },
+    ]);
+    // One visit, the names listing (1 + 1,000,001), one metered symbols listing (1: listed even though the
+    // names already refuse the array, packet review MS-02) and nothing per name: no descriptor, no element.
+    // Its surplus names still cost 1,000,000 bytes, within the size limit.
+    assert.equal(observed.symbolListings, 1);
+    assert.deepEqual(observed.captured.work, workOf({ visit: 1, listing: 1 + 1_000_001 + 1, diagnostic: 1, stop: "none" }));
   });
 });
 
@@ -924,11 +1277,14 @@ describe("K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (rou
   });
 
   test("a capture-time side effect installing Object.prototype.toJSON still binds the observed structure", () => {
+    // K1.1-correction-03: converted from a get-trap Proxy that installed the hook from inside capture
+    // (owner decision-01 item 2). That Proxy is now refused before its trap can run. The installation
+    // stays capture-time: a wrapped-child hook performs it from the Kernel's own descriptor observation of
+    // a genuine `{a: 1}`, after capture began and before the serializer runs. (The case above installs
+    // the same hook before the call.)
     const previous = (Object.prototype as Record<string, unknown>).toJSON;
     if (previous !== undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
-    // Owns 1 and reads 1, so capture accepts — but the ordinary read installs the hook as a side
-    // effect before the serializer runs. Review-03's witness produced canonical `42` here.
-    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+    const witness = countingProxy({ a: 1 } as Record<string, unknown>, {
       get(inner, property, receiver): unknown {
         if (property === "a") {
           (Object.prototype as Record<string, unknown>).toJSON = () => 42;
@@ -937,19 +1293,50 @@ describe("K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (rou
         return Reflect.get(inner, property, receiver);
       },
     });
-    assert.equal(Object.getOwnPropertyDescriptor(sneaky, "a")?.value, 1, "owns 1");
-    let result: ReturnType<typeof canonicalize>;
+    let witnessIssues: ReturnType<typeof boundaryValueIssues> = [];
+    let installedByWitness: unknown;
     try {
-      result = canonicalize(sneaky);
+      witnessIssues = boundaryValueIssues(witness.proxy);
     } finally {
-      const installed = (Object.prototype as Record<string, unknown>).toJSON;
-      assert.equal(typeof installed, "function", "the side effect really installed the hook");
+      installedByWitness = (Object.prototype as Record<string, unknown>).toJSON;
       if (previous === undefined) delete (Object.prototype as Record<string, unknown>).toJSON;
       else (Object.prototype as Record<string, unknown>).toJSON = previous;
     }
-    assert.ok(result!.ok, "the coherent reading is still acceptable");
-    assert.equal(result!.ok && result!.value.canonical, '{"a":1}');
-    assert.deepEqual(result!.ok && result!.value.value, { a: 1 });
+    assert.deepEqual(witnessIssues, [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(installedByWitness, undefined, "so its side effect never ran");
+
+    // Owns 1 and reads 1, so capture accepts — but observing it installs the hook as a side effect
+    // before the serializer runs. Review-03's witness produced canonical `42` here.
+    const observed = inWrappedChild<{ captured: ChildCapture; installs: number; installed: string; again: string | null }>(`
+      ${SUMMARIZE}
+      const value = track({ a: 1 });
+      let installs = 0;
+      hooks.descriptor = (target, key, real) => {
+        if (key === "a") {
+          Object.prototype.toJSON = () => 42;
+          installs += 1;
+        }
+        return real;
+      };
+      let captured;
+      let installed;
+      try {
+        captured = summarize(values.captureWithWork(value));
+      } finally {
+        installed = typeof Object.prototype.toJSON;
+        // Before emitting: JSON.stringify would otherwise print the hook's answer.
+        delete Object.prototype.toJSON;
+      }
+      const again = captured.ok ? values.canonicalize(captured.value) : null;
+      emit({ captured, installs, installed, again: again !== null && again.ok ? again.value.canonical : null });
+    `);
+    assert.equal(observed.installs, 1);
+    assert.equal(observed.installed, "function", "the side effect really installed the hook");
+    assert.equal(observed.captured.ok, true, "the coherent reading is still acceptable");
+    assert.equal(observed.captured.canonical, '{"a":1}');
+    assert.deepEqual(observed.captured.value, { a: 1 });
+    assert.equal(observed.again, '{"a":1}', "retained state re-canonicalizes to its identity");
   });
 
   test("a legitimate own toJSON data member is still content, not a hook", () => {
@@ -958,61 +1345,85 @@ describe("K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (rou
     assert.equal(result.value.canonical, '{"a":2,"toJSON":1}');
   });
 
+  /**
+   * K1.1-correction-03: a genuine array cannot list an index at or beyond its own `length`, so the two
+   * supplement witnesses below were Proxies. Each is now refused before its traps run (owner decision-01
+   * item 2) and kept as a witness; the phantom-index check is reached by hooks on the Kernel's one
+   * own-names listing (and, for the backed case, one own-descriptor observation) of a genuine `[]`.
+   */
+  const phantomIndexWitness = (index: string, backing: PropertyDescriptor | undefined): { proxy: unknown[]; calls: () => number } =>
+    countingProxy([] as unknown[], {
+      ownKeys(): string[] {
+        return ["length", index];
+      },
+      getOwnPropertyDescriptor(target, property): PropertyDescriptor | undefined {
+        if (property === "length") return { value: 0, writable: true, enumerable: false, configurable: false };
+        if (property === index) return backing;
+        return Reflect.getOwnPropertyDescriptor(target, property);
+      },
+      get(target, property, receiver): unknown {
+        if (property === "length") return 0;
+        return Reflect.get(target, property, receiver);
+      },
+    });
+
   test("an own-name listing reporting a canonical index outside length with no backing property is refused", () => {
     // Supplement witness: extensible empty-array target, length 0, ownKeys reports '10', no
     // descriptor behind it. The old partition dropped it into an accepted [].
-    const proxy = new Proxy([] as unknown[], {
-      ownKeys(): string[] {
-        return ["length", "10"];
-      },
-      getOwnPropertyDescriptor(target, property): PropertyDescriptor | undefined {
-        if (property === "length") return { value: 0, writable: true, enumerable: false, configurable: false };
-        if (property === "10") return undefined;
-        return Reflect.getOwnPropertyDescriptor(target, property);
-      },
-      get(target, property, receiver): unknown {
-        if (property === "length") return 0;
-        return Reflect.get(target, property, receiver);
-      },
-    });
-    assert.equal(Array.isArray(proxy), true);
-    assert.equal(Object.getPrototypeOf(proxy), Array.prototype);
-    assert.deepEqual(Object.getOwnPropertyNames(proxy), ["length", "10"]);
-    assert.equal(Object.getOwnPropertyDescriptor(proxy, "10"), undefined);
-    const issues = boundaryValueIssues(proxy);
-    assert.ok(issues.length > 0, "refused, not accepted as []");
-    assert.ok(
-      issues.some((issue) => issue.path === "[10]" && issue.code === "unstable_representation"),
-      `located unstable listing, got ${JSON.stringify(issues)}`,
-    );
-    assert.equal(canonicalize(proxy).ok, false);
+    // K1.1-correction-03: converted from that ownKeys-trap Proxy (owner decision-01 item 2).
+    const witness = phantomIndexWitness("10", undefined);
+    assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+    assert.equal(canonicalize(witness.proxy).ok, false);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+
+    const observed = inWrappedChild<{ captured: ChildCapture; listings: number; isArray: boolean; length: number }>(`
+      ${SUMMARIZE}
+      const value = track([]);
+      let listings = 0;
+      hooks.names = (target, real) => {
+        listings += 1;
+        return [...real, "10"];
+      };
+      const captured = summarize(values.captureWithWork(value));
+      emit({ captured, listings, isArray: Array.isArray(value), length: value.length });
+    `);
+    assert.equal(observed.isArray, true);
+    assert.equal(observed.length, 0);
+    assert.equal(observed.listings, 1, "the one listing reported length and '10'");
+    assert.equal(observed.captured.ok, false, "refused, not accepted as []");
+    assert.deepEqual(observed.captured.issues, [{ path: "[10]", code: "unstable_representation", message: INDEX_NOT_OWNED }], "located unstable listing");
   });
 
   test("a backed canonical index outside length is also refused rather than silently dropped", () => {
-    const proxy = new Proxy([] as unknown[], {
-      ownKeys(): string[] {
-        return ["length", "5"];
-      },
-      getOwnPropertyDescriptor(target, property): PropertyDescriptor | undefined {
-        if (property === "length") return { value: 0, writable: true, enumerable: false, configurable: false };
-        if (property === "5") return { value: 7, writable: true, enumerable: true, configurable: true };
-        return Reflect.getOwnPropertyDescriptor(target, property);
-      },
-      get(target, property, receiver): unknown {
-        if (property === "length") return 0;
-        return Reflect.get(target, property, receiver);
-      },
-    });
-    const issues = boundaryValueIssues(proxy);
-    assert.ok(issues.length > 0);
-    assert.ok(
-      issues.some((issue) => issue.path === "[5]"),
-      `the outside index is located, got ${JSON.stringify(issues)}`,
-    );
-    assert.equal(canonicalize(proxy).ok, false);
+    // K1.1-correction-03: converted from an ownKeys/getOwnPropertyDescriptor-trap Proxy (owner
+    // decision-01 item 2).
+    const witness = phantomIndexWitness("5", { value: 7, writable: true, enumerable: true, configurable: true });
+    assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+    assert.equal(canonicalize(witness.proxy).ok, false);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+
+    const observed = inWrappedChild<{ captured: ChildCapture; backings: number }>(`
+      ${SUMMARIZE}
+      const value = track([]);
+      hooks.names = (target, real) => [...real, "5"];
+      let backings = 0;
+      hooks.descriptor = (target, key, real) => {
+        if (key !== "5") return real;
+        backings += 1;
+        return { value: 7, writable: true, enumerable: true, configurable: true };
+      };
+      const captured = summarize(values.captureWithWork(value));
+      emit({ captured, backings });
+    `);
+    assert.equal(observed.backings, 1, "the outside index's own descriptor was observed once");
+    assert.equal(observed.captured.ok, false);
+    assert.deepEqual(observed.captured.issues, [{ path: "[5]", code: "unrepresentable_member", message: INDEX_OUTSIDE_LENGTH }], "the outside index is located");
   });
 
   test("a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal", () => {
+    // K1.1-correction-03: converted from a throwing-trap Proxy witness (owner decision-01 item 2). The
+    // throw now comes from a hook on the Kernel's descriptor observation of a plain object; what it throws
+    // is still a Proxy hostile to inspection, every trap of which is counted.
     const hostileError = new Proxy(
       {},
       {
@@ -1022,16 +1433,46 @@ describe("K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (rou
         },
       },
     );
-    const hostile = new Proxy({ a: 1 }, {
+    const witness = countingProxy({ a: 1 }, {
       getOwnPropertyDescriptor(): PropertyDescriptor {
         throw hostileError;
       },
     });
-    let issues: ReturnType<typeof boundaryValueIssues> = [];
-    assert.doesNotThrow(() => {
-      issues = boundaryValueIssues(hostile);
-    }, "the Kernel boundary refuses; it does not propagate the caller's exception or the formatter's");
-    assert.deepEqual(issues.map((issue) => issue.code), ["unstable_representation"]);
+    assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before the throwing trap could run");
+
+    const observed = inWrappedChild<{ threw: string | null; captured: ChildCapture | null; thrown: number; inspected: number }>(`
+      ${SUMMARIZE}
+      // Every trap of the thrown value is counted; "constructor" throws, as before.
+      let inspected = 0;
+      const hostileError = new Proxy({}, new Proxy({}, {
+        get(_handler, trap) {
+          return (...args) => {
+            inspected += 1;
+            if (trap === "get" && args[1] === "constructor") throw new Error("constructor boom");
+            return Reflect[trap](...args);
+          };
+        },
+      }));
+      const value = track({ a: 1 });
+      let thrown = 0;
+      hooks.descriptor = () => {
+        thrown += 1;
+        throw hostileError;
+      };
+      let threw = null;
+      let captured = null;
+      try {
+        captured = summarize(values.captureWithWork(value));
+      } catch (error) {
+        threw = typeof error;
+      }
+      emit({ threw, captured, thrown, inspected });
+    `);
+    assert.equal(observed.threw, null, "the Kernel boundary refuses; it does not propagate the caller's exception or the formatter's");
+    assert.equal(observed.thrown, 1, "the hostile value really was thrown");
+    assert.equal(observed.inspected, 0, "the refusal's label inspected nothing of what was thrown");
+    assert.deepEqual(observed.captured?.issues, [{ path: "", code: "unstable_representation", message: THREW_OBJECT }]);
   });
 });
 
@@ -1043,43 +1484,80 @@ describe("K11-R3-LIMIT-01 over-limit arrays refuse without work proportional to 
   });
 
   test("a deliberately huge sparse length refuses bounded without traversing its extent", () => {
+    // K1.1-correction-03: converted from a getOwnPropertyDescriptor-trap Proxy that counted index reads
+    // (owner decision-01 item 2). The genuine sparse array is tracked in a wrapped child, where every own
+    // descriptor and listing the Kernel takes of it is counted; the bound becomes exact counts.
     const HUGE = 20_000_000;
+    const observed = inWrappedChild<{ captured: ChildCapture; indexReads: number; listings: number; symbolListings: number }>(`
+      ${SUMMARIZE}
+      const target = [];
+      target.length = ${HUGE};
+      track(target);
+      let indexReads = 0;
+      hooks.descriptor = (inner, key, real) => {
+        if (key !== "length") indexReads += 1;
+        return real;
+      };
+      reset();
+      const captured = summarize(values.captureWithWork(target));
+      const observedCounts = snapshot();
+      emit({ captured, indexReads, listings: observedCounts.namesTracked, symbolListings: observedCounts.symbolsTracked });
+    `);
+    assert.deepEqual(observed.captured.issues, [
+      { path: "", code: "too_many_entries", message: `array has ${HUGE} entries, above the limit of ${BOUNDARY_LIMITS.containerEntries}` },
+    ]);
+    assert.equal(observed.indexReads, 0, `rejection traversed no index extent (saw ${observed.indexReads} index descriptor reads for length ${HUGE})`);
+    assert.equal(observed.listings, 0, "and listed none of its names");
+    assert.equal(observed.symbolListings, 0);
+    assert.deepEqual(observed.captured.work, workOf({ visit: 1, diagnostic: 1, stop: "none" }), "one visit and one diagnostic, whatever the length");
+    // And the plain huge sparse array itself refuses the same way.
     const target: unknown[] = [];
     target.length = HUGE;
-    let indexReads = 0;
-    const counting = new Proxy(target, {
-      getOwnPropertyDescriptor(inner, property): PropertyDescriptor | undefined {
-        if (typeof property === "string" && property !== "length" && /^(0|[1-9]\d*)$/.test(property)) indexReads += 1;
-        return Reflect.getOwnPropertyDescriptor(inner, property);
-      },
-    });
-    const issues = boundaryValueIssues(counting);
-    assert.deepEqual(issues.map((issue) => issue.code), ["too_many_entries"]);
-    assert.ok(indexReads < 100, `rejection traversed no index extent (saw ${indexReads} index descriptor reads for length ${HUGE})`);
-    // And the plain huge sparse array itself refuses the same way.
     assert.deepEqual(issueCodes(target), ["too_many_entries"]);
   });
 });
 
 describe("K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)", () => {
-  test("a capture-time one-shot Object.keys replacement cannot change canonical bytes", () => {
-    const realKeys = Object.keys;
-    // Coherent on the one reading capture takes (descriptor 1, read 1), while the read installs
-    // a live-global replacement as its side effect. Review-04's witness bound `{}` here while
-    // retaining `{a:1}`; the restored serializer environment must bind `{"a":1}`.
-    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
-      get(inner, property, receiver): unknown {
-        if (property === "a") {
-          (Object as unknown as Record<string, unknown>).keys = () => [];
-          return 1;
-        }
-        return Reflect.get(inner, property, receiver);
+  /**
+   * K1.1-correction-03: these cases used a get-trap Proxy that replaced an intrinsic as a side effect of
+   * capture's one reading. Capture now refuses that Proxy before its trap can run (owner decision-01
+   * item 2), so each case keeps it as a witness that the side effect never happens, and installs the same
+   * replacement before the call instead (a pre-call twin): the replacement is still live across the
+   * whole boundary call, which is what the serializer window has to neutralize.
+   */
+  const sneakyWitness = (target: Record<string, unknown>, property: string, sideEffect: () => void): { proxy: Record<string, unknown>; calls: () => number } =>
+    countingProxy(target, {
+      get(inner, key, receiver): unknown {
+        if (key === property) sideEffect();
+        return Reflect.get(inner, key, receiver);
       },
     });
-    assert.equal(Object.getOwnPropertyDescriptor(sneaky, "a")?.value, 1, "owns 1");
+
+  test("K11-R2-VAL-02 round 6: a one-shot Object.keys replacement live across the call cannot change canonical bytes", () => {
+    // K1.1-correction-03: converted from "a capture-time one-shot Object.keys replacement cannot change
+    // canonical bytes", whose get-trap Proxy installed the replacement (owner decision-01 item 2).
+    const realKeys = Object.keys;
+    const witness = sneakyWitness({ a: 1 }, "a", () => {
+      (Object as unknown as Record<string, unknown>).keys = () => [];
+    });
+    let witnessIssues: ReturnType<typeof boundaryValueIssues> = [];
+    let keysAfterWitness: unknown;
+    try {
+      witnessIssues = boundaryValueIssues(witness.proxy);
+    } finally {
+      keysAfterWitness = Object.keys;
+      Object.keys = realKeys;
+    }
+    assert.deepEqual(witnessIssues, [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(keysAfterWitness, realKeys, "so the replacement was never installed");
+
+    // A coherent value, with a live-global replacement installed before the call. Review-04's witness
+    // bound `{}` here while retaining `{a:1}`; the restored serializer environment must bind `{"a":1}`.
+    (Object as unknown as Record<string, unknown>).keys = () => [];
     let result: ReturnType<typeof canonicalize>;
     try {
-      result = canonicalize(sneaky);
+      result = canonicalize({ a: 1 });
       assert.notEqual(Object.keys, realKeys, "the replacement was live across the boundary call");
     } finally {
       Object.keys = realKeys;
@@ -1092,23 +1570,35 @@ describe("K11-R2-VAL-02 serializer execution environment is caller-independent (
     assert.equal(again.ok && again.value.canonical, '{"a":1}', "retained state re-canonicalizes to its identity");
   });
 
-  test("a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes", () => {
+  test("K11-R2-VAL-02 round 6: an Object.keys replacement that throws, live across the call, neither leaks nor diverts bytes", () => {
+    // K1.1-correction-03: converted from "a capture-time replacement that makes Object.keys throw neither
+    // leaks nor diverts bytes", whose get-trap Proxy installed the replacement (owner decision-01 item 2).
     const realKeys = Object.keys;
-    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
-      get(inner, property, receiver): unknown {
-        if (property === "a") {
-          (Object as unknown as Record<string, unknown>).keys = () => {
-            throw new Error("keys boom");
-          };
-          return 1;
-        }
-        return Reflect.get(inner, property, receiver);
-      },
+    const throwingKeys = (): never => {
+      throw new Error("keys boom");
+    };
+    const witness = sneakyWitness({ a: 1 }, "a", () => {
+      (Object as unknown as Record<string, unknown>).keys = throwingKeys;
     });
+    let witnessIssues: ReturnType<typeof boundaryValueIssues> = [];
+    let keysAfterWitness: unknown;
+    try {
+      witnessIssues = boundaryValueIssues(witness.proxy);
+    } finally {
+      keysAfterWitness = Object.keys;
+      Object.keys = realKeys;
+    }
+    assert.deepEqual(witnessIssues, [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(keysAfterWitness, realKeys, "so the replacement was never installed");
+
+    (Object as unknown as Record<string, unknown>).keys = throwingKeys;
     let threw = false;
     let result: ReturnType<typeof canonicalize> | undefined;
+    let liveAcross = false;
     try {
-      result = canonicalize(sneaky);
+      result = canonicalize({ a: 1 });
+      liveAcross = Object.keys === throwingKeys;
     } catch {
       threw = true;
     } finally {
@@ -1118,24 +1608,35 @@ describe("K11-R2-VAL-02 serializer execution environment is caller-independent (
     // still accepted with its own bytes; what must never happen is the ambient exception
     // escaping the Kernel boundary (review-04's `escaped: keys boom`) or bytes for `{}`.
     assert.equal(threw, false, "the Kernel boundary contains serializer failure; it does not propagate the ambient exception");
+    assert.equal(liveAcross, true, "the throwing replacement was live across the boundary call");
     assert.ok(result && result.ok, "the coherent reading is still acceptable");
     assert.equal(result && result.ok && result.value.canonical, '{"a":1}');
     assert.deepEqual(result && result.ok && result.value.value, { a: 1 });
   });
 
-  test("a capture-time Array.prototype.join replacement cannot change canonical bytes either", () => {
+  test("K11-R2-VAL-02 round 6: an Array.prototype.join replacement live across the call cannot change canonical bytes either", () => {
+    // K1.1-correction-03: converted from "a capture-time Array.prototype.join replacement cannot change
+    // canonical bytes either", whose get-trap Proxy installed the replacement (owner decision-01 item 2).
     const realJoin = Array.prototype.join;
-    const sneaky = new Proxy({ list: [1, 2] } as Record<string, unknown>, {
-      get(inner, property, receiver): unknown {
-        if (property === "list") {
-          (Array.prototype as unknown as Record<string, unknown>).join = () => "";
-        }
-        return Reflect.get(inner, property, receiver);
-      },
+    const witness = sneakyWitness({ list: [1, 2] }, "list", () => {
+      (Array.prototype as unknown as Record<string, unknown>).join = () => "";
     });
+    let witnessIssues: ReturnType<typeof boundaryValueIssues> = [];
+    let joinAfterWitness: unknown;
+    try {
+      witnessIssues = boundaryValueIssues(witness.proxy);
+    } finally {
+      joinAfterWitness = Array.prototype.join;
+      (Array.prototype as unknown as Record<string, unknown>).join = realJoin;
+    }
+    assert.deepEqual(witnessIssues, [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(joinAfterWitness, realJoin, "so the replacement was never installed");
+
+    (Array.prototype as unknown as Record<string, unknown>).join = () => "";
     let result: ReturnType<typeof canonicalize>;
     try {
-      result = canonicalize(sneaky);
+      result = canonicalize({ list: [1, 2] });
       assert.notEqual(Array.prototype.join, realJoin, "the replacement was live across the boundary call");
     } finally {
       (Array.prototype as unknown as Record<string, unknown>).join = realJoin;
@@ -1144,36 +1645,69 @@ describe("K11-R2-VAL-02 serializer execution environment is caller-independent (
     assert.equal(result!.ok && result!.value.canonical, '{"list":[1,2]}', "array bytes survive prototype replacement too, not only Object.keys");
   });
 
-  test("K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object binding cannot pass a foreign prototype as plain", () => {
+  test("K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain", () => {
+    // K1.1-correction-03: converted from "K11-R5-VAL-03 a getPrototypeOf trap that swaps the live Object
+    // binding cannot pass a foreign prototype as plain" (owner decision-01 item 2). The trap's Proxy is
+    // now refused before it runs; a wrapped-child hook makes the Kernel's one prototype observation of a
+    // genuine `{a: 1}` do what the trap did: swap the live binding and answer the replacement's prototype.
     const RealObject = Object;
     const realProto = Object.prototype;
-    // A fresh constructor whose prototype is neither the primordial object prototype nor null.
     const Fake = function Fake(this: unknown) {};
-    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+    const witness = countingProxy({ a: 1 } as Record<string, unknown>, {
       getPrototypeOf() {
-        // The observation itself replaces the live binding, then returns the replacement's
-        // prototype. Against a live `Object.prototype` read this compares equal and passes as
-        // plain; the retained snapshot would then inherit the foreign prototype.
         (globalThis as unknown as Record<string, unknown>).Object = Fake;
         return (Fake as unknown as { prototype: object }).prototype;
       },
     });
-    let issues: ReturnType<typeof boundaryValueIssues>;
-    let secondOk: boolean | undefined;
+    let witnessIssues: ReturnType<typeof boundaryValueIssues> = [];
+    let objectAfterWitness: unknown;
     try {
-      issues = boundaryValueIssues(sneaky);
-      assert.notEqual((globalThis as unknown as Record<string, unknown>).Object, RealObject, "the swap was live across the boundary call");
-      // The trap fires again here and re-installs the swap; the finally below restores it.
-      secondOk = canonicalize(sneaky).ok;
+      witnessIssues = boundaryValueIssues(witness.proxy);
     } finally {
+      objectAfterWitness = (globalThis as unknown as Record<string, unknown>).Object;
       (globalThis as unknown as Record<string, unknown>).Object = RealObject;
     }
-    assert.ok(issues!.length > 0, "a foreign prototype is refused, not normalized into a plain snapshot");
-    assert.ok(
-      issues!.some((issue) => issue.code === "unsupported_form"),
-      `the refusal names the non-plain form, got ${JSON.stringify(issues)}`,
+    assert.deepEqual(witnessIssues, [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(objectAfterWitness, RealObject, "so the swap never happened");
+
+    const observed = inWrappedChild<{ captured: ChildCapture; swapLive: boolean; secondOk: boolean; swaps: number; restored: boolean }>(`
+      ${SUMMARIZE}
+      const RealObject = Object;
+      // A fresh constructor whose prototype is neither the primordial object prototype nor null.
+      const Fake = function Fake() {};
+      const value = track({ a: 1 });
+      let swaps = 0;
+      hooks.prototype = () => {
+        // The observation itself replaces the live binding, then answers the replacement's
+        // prototype. Against a live Object.prototype read this compares equal and passes as
+        // plain; the retained snapshot would then inherit the foreign prototype.
+        swaps += 1;
+        globalThis.Object = Fake;
+        return Fake.prototype;
+      };
+      let captured;
+      let swapLive;
+      let secondOk;
+      try {
+        captured = summarize(values.captureWithWork(value));
+        swapLive = globalThis.Object !== RealObject;
+        // The hook fires again here and re-installs the swap; the finally below restores it.
+        secondOk = values.canonicalize(value).ok;
+      } finally {
+        globalThis.Object = RealObject;
+      }
+      emit({ captured, swapLive, secondOk, swaps, restored: Object === RealObject });
+    `);
+    assert.equal(observed.swaps, 2, "both observations swapped the binding");
+    assert.equal(observed.swapLive, true, "the swap was live across the boundary call");
+    assert.deepEqual(
+      observed.captured.issues,
+      [{ path: "", code: "unsupported_form", message: "expected a plain object, received object" }],
+      "a foreign prototype is refused, not normalized into a plain snapshot, and the refusal names the non-plain form",
     );
-    assert.equal(secondOk, false, "it produces no canonical identity");
+    assert.equal(observed.secondOk, false, "it produces no canonical identity");
+    assert.equal(observed.restored, true);
     assert.equal(Object.prototype, realProto, "the live binding is restored for later tests");
   });
 });
@@ -1182,11 +1716,11 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
   /**
    * The caller here is entirely coherent, which is the point.
    *
-   * `captureArray` observes the prototype first, and that observation is caller code. A genuine
-   * array behind a `Proxy` whose `getPrototypeOf` trap installs an inherited accessor at one of its
-   * own index names, and then returns the genuine `Array.prototype`, passes the plain-array check
-   * legitimately. Its own descriptor and its ordinary read still agree, so the one observation the
-   * pass takes is unambiguous.
+   * Before K1.1-correction-03, `captureArray` observed the prototype first, and that observation was
+   * caller code. A genuine array behind a `Proxy` whose `getPrototypeOf` trap installed an inherited
+   * accessor at one of its own index names, and then returned the genuine `Array.prototype`, passed the
+   * plain-array check legitimately. Its own descriptor and its ordinary read still agreed, so the one
+   * observation the pass took was unambiguous.
    *
    * The previous shape then put that observed element into a holey scratch array with an ordinary
    * indexed write and read it back to build the snapshot. Both halves went through the accessor:
@@ -1194,72 +1728,142 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
    * A caller whose value read `"kept"` could therefore be retained and canonicalized as the
    * attacker's substitute — the boundary accepting a value nobody sent. `values.md` allows exactly
    * two answers for a representation like this, and "some third value" is neither of them.
+   *
+   * K1.1-correction-03: that `Proxy` is now refused before its `getPrototypeOf` trap can run (owner
+   * decision-01 item 2), and each case keeps it as a witness that the accessor is never installed. The
+   * prototype observation stays the moment of installation: in a wrapped child, a hook on the Kernel's
+   * one prototype observation of a genuine array installs the inherited accessor (with `harness.ts`'s
+   * `trapInheritedIndices`, which the child shares) and answers the genuine `Array.prototype`.
    */
-  const coherentArrayTrapping = (
-    elements: readonly unknown[],
-    indices: readonly string[],
-    onInstall: (trap: InheritedIndexTrap) => void,
-  ): unknown => {
-    const target = copyForTest(elements);
-    return new Proxy(target, {
+  const coherentArrayTrapping = (elements: readonly unknown[], indices: readonly string[]): { proxy: unknown[]; calls: () => number; installed: () => number } => {
+    let installed = 0;
+    const witness = countingProxy(copyForTest(elements), {
       getPrototypeOf(inner): object | null {
-        onInstall(trapInheritedIndices(indices));
+        installed += 1;
+        trapInheritedIndices(indices).restore();
         return Reflect.getPrototypeOf(inner);
       },
     });
+    return { ...witness, installed: () => installed };
   };
 
-  const withTrap = <T>(work: (onInstall: (trap: InheritedIndexTrap) => void) => T): { result: T; trap: InheritedIndexTrap } => {
-    let trap: InheritedIndexTrap | undefined;
-    try {
-      const result = work((installed) => {
-        trap = installed;
-      });
-      assert.ok(trap !== undefined, "the trap was installed by the observation under test");
-      return { result, trap };
-    } finally {
-      trap?.restore();
-    }
-  };
+  /** What a child reports for one array captured while its prototype observation installs the accessor. */
+  type TrapProbe = { captured: ChildCapture; installed: number; swallowed: number; substitute: unknown; again: string | null; liveAfter: boolean };
+
+  /**
+   * Child-side text: `trapping(value, indices, wrap?, descriptorHook?)` tracks `value`, captures it (or the
+   * root `wrap(value)` builds around it) with a prototype hook that installs the accessor at `indices` the
+   * first time the Kernel observes `value`'s prototype, restores the accessor, and reports a `TrapProbe`.
+   * Built only inside a test body, so this suite's load-time code references no intrinsic.
+   */
+  const trappingSource = (): string => `
+    ${SUMMARIZE}
+    const { trapInheritedIndices } = await import(${JSON.stringify(HARNESS_URL)});
+    const trapping = (value, indices, wrap = (inner) => inner, descriptorHook = undefined) => {
+      track(value);
+      let trap;
+      let installed = 0;
+      hooks.prototype = (target, real) => {
+        if (target === value && trap === undefined) {
+          trap = trapInheritedIndices(indices);
+          installed += 1;
+        }
+        return real;
+      };
+      hooks.descriptor = descriptorHook;
+      let captured;
+      let liveAfter = false;
+      let swallowed = -1;
+      try {
+        captured = summarize(values.captureWithWork(wrap(value)));
+        // Before the liveness probe below, whose own write the live setter swallows.
+        swallowed = trap === undefined ? -1 : trap.swallowed.length;
+        const probe = [];
+        probe[Number(indices[0])] = "control-write";
+        liveAfter = trap !== undefined && (probe.length === 0 || !Object.prototype.hasOwnProperty.call(probe, indices[0]));
+      } finally {
+        trap?.restore();
+        hooks.prototype = undefined;
+        hooks.descriptor = undefined;
+      }
+      const again = captured.ok ? values.canonicalize(captured.value) : null;
+      return {
+        captured,
+        installed,
+        swallowed,
+        substitute: trap === undefined ? null : trap.substitute,
+        again: again !== null && again.ok ? again.value.canonical : null,
+        liveAfter,
+      };
+    };
+  `;
 
   test("the retained structure and the canonical bytes are exactly the one value observed", () => {
-    const { result, trap } = withTrap((onInstall) =>
-      canonicalize(coherentArrayTrapping(["zero", "kept"], ["1"], onInstall)),
-    );
-    assert.ok(result.ok, `expected acceptance, got ${result.ok ? "" : JSON.stringify(result.issues)}`);
-    assert.deepEqual(result.value.value, ["zero", "kept"], "the retained snapshot is the observed value");
-    assert.equal(result.value.canonical, '["zero","kept"]', "and its bytes describe that same structure");
-    assert.notDeepEqual(result.value.value, ["zero", trap.substitute]);
+    // K1.1-correction-03: converted from a getPrototypeOf-trap Proxy that installed the accessor (owner
+    // decision-01 item 2); a wrapped-child prototype hook installs it instead.
+    const witness = coherentArrayTrapping(["zero", "kept"], ["1"]);
+    assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(witness.installed(), 0, "so the accessor was never installed by it");
+
+    const observed = inWrappedChild<TrapProbe>(`
+      ${trappingSource()}
+      emit(trapping(["zero", "kept"], ["1"]));
+    `);
+    assert.equal(observed.installed, 1, "the trap was installed by the observation under test");
+    assert.equal(observed.liveAfter, true, "and was still live when the boundary call returned");
+    assert.equal(observed.captured.ok, true, `expected acceptance, got ${JSON.stringify(observed.captured.issues)}`);
+    assert.deepEqual(observed.captured.value, ["zero", "kept"], "the retained snapshot is the observed value");
+    assert.equal(observed.captured.canonical, '["zero","kept"]', "and its bytes describe that same structure");
+    assert.notDeepEqual(observed.captured.value, ["zero", observed.substitute]);
+    assert.equal(observed.swallowed, 0, "no Kernel write reached the inherited setter");
     // Re-canonicalizing what was retained reproduces the bytes that accepted it.
-    const again = canonicalize(result.value.value);
-    assert.ok(again.ok);
-    assert.equal(again.value.canonical, result.value.canonical);
+    assert.equal(observed.again, observed.captured.canonical);
   });
 
   test("the index the accessor picks is not special: position zero and a nested array behave the same", () => {
-    const first = withTrap((onInstall) => canonicalize(coherentArrayTrapping(["only"], ["0"], onInstall)));
-    assert.ok(first.result.ok);
-    assert.deepEqual(first.result.value.value, ["only"]);
-    assert.equal(first.result.value.canonical, '["only"]');
+    // K1.1-correction-03: converted from getPrototypeOf-trap Proxies that installed the accessor (owner
+    // decision-01 item 2); a wrapped-child prototype hook installs it instead.
+    const first = coherentArrayTrapping(["only"], ["0"]);
+    const nestedWitness = coherentArrayTrapping([1, 2, 3], ["0", "1", "2"]);
+    assert.deepEqual(boundaryValueIssues(first.proxy), [proxyRefusal("")]);
+    assert.deepEqual(boundaryValueIssues({ outer: nestedWitness.proxy }), [proxyRefusal("outer")]);
+    assert.equal(first.calls() + nestedWitness.calls(), 0, "refused before any trap ran");
+    assert.equal(first.installed() + nestedWitness.installed(), 0);
 
-    const nested = withTrap((onInstall) =>
-      canonicalize({ outer: coherentArrayTrapping([1, 2, 3], ["0", "1", "2"], onInstall) }),
-    );
-    assert.ok(nested.result.ok);
-    assert.deepEqual(nested.result.value.value, { outer: [1, 2, 3] });
-    assert.equal(nested.result.value.canonical, '{"outer":[1,2,3]}');
+    const observed = inWrappedChild<{ first: TrapProbe; nested: TrapProbe }>(`
+      ${trappingSource()}
+      const first = trapping(["only"], ["0"]);
+      const nested = trapping([1, 2, 3], ["0", "1", "2"], (inner) => ({ outer: inner }));
+      emit({ first, nested });
+    `);
+    assert.equal(observed.first.installed, 1);
+    assert.equal(observed.first.captured.ok, true);
+    assert.deepEqual(observed.first.captured.value, ["only"]);
+    assert.equal(observed.first.captured.canonical, '["only"]');
+    assert.equal(observed.first.swallowed, 0);
+
+    assert.equal(observed.nested.installed, 1);
+    assert.equal(observed.nested.captured.ok, true);
+    assert.deepEqual(observed.nested.captured.value, { outer: [1, 2, 3] });
+    assert.equal(observed.nested.captured.canonical, '{"outer":[1,2,3]}');
+    assert.equal(observed.nested.swallowed, 0);
+    assert.equal(observed.nested.again, '{"outer":[1,2,3]}');
   });
 
   test("a value the rules do refuse is still refused with the accessor live, not normalized", () => {
     // Coherence is what made the case above acceptable. Remove it — an own data descriptor and an
     // ordinary read that disagree — and the answer is the refusal `values.md` requires, with the
     // accessor still live and still unable to supply a third reading.
-    const target = copyForTest([0, 0]);
-    let trap: InheritedIndexTrap | undefined;
-    let issues: ReturnType<typeof boundaryValueIssues>;
-    const shifting = new Proxy(target, {
+    //
+    // K1.1-correction-03: converted from a getPrototypeOf- and get-trap Proxy (owner decision-01 item 2).
+    // The prototype hook installs the accessor at "1"; a descriptor hook makes position 1's one own
+    // descriptor say 99 while its ordinary read says 0.
+    let installed = 0;
+    const witness = countingProxy(copyForTest([0, 0]), {
       getPrototypeOf(inner): object | null {
-        trap = trapInheritedIndices(["1"]);
+        installed += 1;
+        trapInheritedIndices(["1"]).restore();
         return Reflect.getPrototypeOf(inner);
       },
       get(inner, property, receiver): unknown {
@@ -1267,15 +1871,22 @@ describe("K11-R6-VAL-04 one observation survives an indexed accessor installed w
         return Reflect.get(inner, property, receiver) as unknown;
       },
     });
-    try {
-      issues = boundaryValueIssues(shifting);
-    } finally {
-      trap?.restore();
-    }
+    assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(installed, 0);
+
+    const observed = inWrappedChild<TrapProbe>(`
+      ${trappingSource()}
+      emit(trapping([0, 0], ["1"], undefined, (target, key, real) =>
+        key === "1" ? { value: 99, writable: true, enumerable: true, configurable: true } : real));
+    `);
+    assert.equal(observed.installed, 1);
+    assert.equal(observed.liveAfter, true, "the accessor was live across the call");
     assert.deepEqual(
-      issues!.map((issue) => `${issue.path} ${issue.code}`),
+      observed.captured.issues.map((issue) => `${issue.path} ${issue.code}`),
       ["[1] unstable_representation"],
     );
+    assert.deepEqual(observed.captured.issues, [{ path: "[1]", code: "unstable_representation", message: DISAGREEMENT }]);
   });
 });
 
@@ -1628,38 +2239,70 @@ describe("K11-R16-VAL-01 (R2) canonical bytes do not depend on prototype-chain s
     assert.equal(Object.getPrototypeOf(holder), original, "iterator chain handed back exactly");
   });
 
-  test("a capture-time trap that inserts the chain still binds the observed structure", () => {
-    const target = { a: 1, b: 2 };
-    let hostile: object | null = null;
-    let installed = false;
-    const proxy = new Proxy(target, {
+  test("a capture-time observation that inserts the chain still binds the observed structure", () => {
+    // K1.1-correction-03: converted from "a capture-time trap that inserts the chain still binds the
+    // observed structure" (owner decision-01 item 2). Its getPrototypeOf-trap Proxy is now refused before
+    // the trap runs; a wrapped-child hook on the Kernel's one prototype observation of a genuine
+    // `{a: 1, b: 2}` inserts the chain instead, during capture. (The first case of this group, "an object
+    // inserted between Array.prototype and Object.prototype cannot choose the bytes", inserts it before
+    // the call.)
+    let witnessInstalled = false;
+    const witness = countingProxy({ a: 1, b: 2 }, {
       getPrototypeOf(t) {
-        if (!installed) {
-          installed = true;
-          hostile = {};
-          Object.defineProperty(hostile, "0", { get: () => '"pwned":9', set(_v: unknown) {}, configurable: true });
-          const original = Object.getPrototypeOf(arrayProto());
-          Object.setPrototypeOf(arrayProto(), hostile);
-          Object.setPrototypeOf(hostile, original);
-        }
+        witnessInstalled = true;
         return Reflect.getPrototypeOf(t);
       },
     });
-    let result: ReturnType<typeof canonicalize>;
-    try {
-      result = canonicalize(proxy);
-    } finally {
-      if (hostile !== null) Object.setPrototypeOf(arrayProto(), Object.getPrototypeOf(hostile));
-    }
-    assert.equal(installed, true, "the trap ran, so this is not a vacuous pass");
-    assert.equal(result!.ok, true, "refused under trap-installed chain");
-    assert.equal(result!.ok === true ? result!.value.canonical : null, '{"a":1,"b":2}');
-    assert.equal(
-      canonicalOf(result!.ok === true ? result!.value.value : null),
-      '{"a":1,"b":2}',
-      "retained content re-canonicalizes to the accepting bytes",
-    );
-    assert.equal(Object.getPrototypeOf(arrayProto()), Object.prototype, "chain handed back exactly");
+    assert.deepEqual(boundaryValueIssues(witness.proxy), [proxyRefusal("")]);
+    assert.equal(witness.calls(), 0, "refused before any trap ran");
+    assert.equal(witnessInstalled, false, "so it inserted nothing");
+    assert.equal(Object.getPrototypeOf(arrayProto()), Object.prototype);
+
+    const observed = inWrappedChild<{
+      captured: ChildCapture;
+      installed: boolean;
+      liveAcross: boolean;
+      again: string | null;
+      handedBack: boolean;
+    }>(`
+      ${SUMMARIZE}
+      const target = track({ a: 1, b: 2 });
+      let hostile = null;
+      let installed = false;
+      hooks.prototype = (t, real) => {
+        if (t === target && !installed) {
+          installed = true;
+          hostile = {};
+          Object.defineProperty(hostile, "0", { get: () => '"pwned":9', set(_v) {}, configurable: true });
+          const original = Object.getPrototypeOf(Array.prototype);
+          Object.setPrototypeOf(Array.prototype, hostile);
+          Object.setPrototypeOf(hostile, original);
+        }
+        return real;
+      };
+      let captured;
+      let liveAcross = false;
+      try {
+        captured = summarize(values.captureWithWork(target));
+        liveAcross = hostile !== null && Object.getPrototypeOf(Array.prototype) === hostile;
+      } finally {
+        if (hostile !== null) Object.setPrototypeOf(Array.prototype, Object.getPrototypeOf(hostile));
+      }
+      const again = captured.ok ? values.canonicalize(captured.value) : null;
+      emit({
+        captured,
+        installed,
+        liveAcross,
+        again: again !== null && again.ok ? again.value.canonical : null,
+        handedBack: Object.getPrototypeOf(Array.prototype) === Object.prototype,
+      });
+    `);
+    assert.equal(observed.installed, true, "the observation ran, so this is not a vacuous pass");
+    assert.equal(observed.liveAcross, true, "the insertion was live across the boundary call");
+    assert.equal(observed.captured.ok, true, "refused under observation-installed chain");
+    assert.equal(observed.captured.canonical, '{"a":1,"b":2}');
+    assert.equal(observed.again, '{"a":1,"b":2}', "retained content re-canonicalizes to the accepting bytes");
+    assert.equal(observed.handedBack, true, "chain handed back exactly");
   });
 
   test("an unresettable chain degrades to a refusal, never to wrong bytes", () => {

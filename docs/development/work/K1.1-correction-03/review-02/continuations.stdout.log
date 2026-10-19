@@ -1,0 +1,142 @@
+{
+  "instrumentation": [
+    {
+      "helper": "spend",
+      "anchor": "const spend = (state: CaptureState, kind: UnitKind, units: number): boolean => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"spend\", state, kind, units);"
+    },
+    {
+      "helper": "record",
+      "anchor": "const record = (state: CaptureState, issue: ValueIssue): boolean => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"record\", state);"
+    },
+    {
+      "helper": "charge",
+      "anchor": "const charge = (state: CaptureState, bytes: number): boolean => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"charge\", state, \"bytes\", bytes);"
+    },
+    {
+      "helper": "listOwnNames",
+      "anchor": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"listOwnNames\", state);"
+    },
+    {
+      "helper": "listOwnSymbols",
+      "anchor": "const listOwnSymbols = (state: CaptureState, container: object): number | typeof STOPPED => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"listOwnSymbols\", state);"
+    },
+    {
+      "helper": "observeElement",
+      "anchor": "const observeElement = (state: CaptureState, container: object, key: string): ObservedPosition | typeof STOPPED => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"observeElement\", state);"
+    },
+    {
+      "helper": "observeDescriptor",
+      "anchor": "const observeDescriptor = (state: CaptureState, container: object, name: string): PropertyDescriptor | undefined | typeof STOPPED => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"observeDescriptor\", state);"
+    },
+    {
+      "helper": "readMember",
+      "anchor": "const readMember = (state: CaptureState, container: object, key: string): { readonly read: unknown } | typeof STOPPED => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"readMember\", state);"
+    },
+    {
+      "helper": "scanText",
+      "anchor": "const scanText = (state: CaptureState, text: string): StringScan | typeof STOPPED => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"scanText\", state);"
+    },
+    {
+      "helper": "capture",
+      "anchor": "function capture(value: unknown, path: string, level: number, state: CaptureState): Visited {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"capture\", state);"
+    },
+    {
+      "helper": "captureArray",
+      "anchor": "function captureArray(container: object, path: string, entered: number, state: CaptureState): Visited {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"captureArray\", state);"
+    },
+    {
+      "helper": "captureObject",
+      "anchor": "function captureObject(container: object, path: string, entered: number, state: CaptureState): Visited {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"captureObject\", state);"
+    },
+    {
+      "helper": "checkMember",
+      "anchor": "): { readonly ok: true; readonly value: unknown } | { readonly ok: false } | typeof STOPPED {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"checkMember\", state);"
+    },
+    {
+      "helper": "openContainer",
+      "anchor": "const openContainer = (state: CaptureState, container: object): void => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"openContainer\", state);"
+    },
+    {
+      "helper": "closeContainer",
+      "anchor": "const closeContainer = (state: CaptureState, container: object): void => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"closeContainer\", state);"
+    },
+    {
+      "helper": "observeArrayLength",
+      "anchor": "const observeArrayLength = (container: object): number | null => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"observeArrayLength\", undefined);"
+    },
+    {
+      "helper": "scanBoundaryString",
+      "anchor": "const scanBoundaryString = (input: string): StringScan => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"scanBoundaryString\", undefined);"
+    },
+    {
+      "helper": "isArrayIndex",
+      "anchor": "const isArrayIndex = (name: string): boolean => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"isArrayIndex\", undefined);"
+    },
+    {
+      "helper": "arrayIndexValue",
+      "anchor": "const arrayIndexValue = (name: string): number => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"arrayIndexValue\", undefined);"
+    },
+    {
+      "helper": "finishObject",
+      "anchor": "const finishObject = (prototype: object | null, captured: readonly (readonly [string, BoundaryValue])[]): BoundaryValue => {",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"finishObject\", undefined);"
+    },
+    {
+      "helper": "refuse",
+      "anchor": "=> (record(state, issue) ? REFUSED : STOPPED);",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"refuse\", state)"
+    },
+    {
+      "helper": "isProxyValue",
+      "anchor": "=> PrimordialIsProxy(value);",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"isProxyValue\", undefined)"
+    },
+    {
+      "helper": "isOpenContainer",
+      "anchor": "=>\n  PrimordialReflectApply(PrimordialSetHas, state.open, [container]) as boolean;",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"isOpenContainer\", state)"
+    },
+    {
+      "helper": "isArrayValue",
+      "anchor": "=> PrimordialArrayIsArray(container);",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"isArrayValue\", undefined)"
+    },
+    {
+      "helper": "prototypeOf",
+      "anchor": "=> PrimordialGetPrototypeOf(container) as object | null;",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"prototypeOf\", undefined)"
+    },
+    {
+      "helper": "allocateElements",
+      "anchor": "=> sizedList<BoundaryValue>(length);",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"allocateElements\", undefined)"
+    },
+    {
+      "helper": "finishArray",
+      "anchor": "=> PrimordialObjectFreeze(out) as unknown as BoundaryValue;",
+      "injection": "globalThis.__KC3_REVIEW_TRACE__(\"finishArray\", undefined)"
+    }
+  ],
+  "exit": 0,
+  "stdout": "{\n  \"node\": \"v26.10.0\",\n  \"shapes\": 1824,\n  \"runs\": 359254,\n  \"comparisons\": 1824,\n  \"stops\": {\n    \"none\": 10945,\n    \"work\": 182229,\n    \"bytes\": 164256\n  },\n  \"crossed\": [\n    \"descriptor\",\n    \"diagnostic\",\n    \"element\",\n    \"listing\",\n    \"read\",\n    \"string\",\n    \"visit\"\n  ],\n  \"allowedCycleUnwinds\": 1841852,\n  \"postStopHelpers\": 0,\n  \"forbiddenCalls\": 0,\n  \"dimensions\": {\n    \"families\": [\n      \"symbol\",\n      \"hidden\",\n      \"accessor\",\n      \"undefined\",\n      \"lone-name\",\n      \"array-extra\",\n      \"hole\",\n      \"cycle\",\n      \"Map\",\n      \"proxy\",\n      \"revoked\",\n      \"NaN\"\n    ],\n    \"prototypes\": [\n      \"ordinary\",\n      \"null\",\n      \"foreign\"\n    ],\n    \"widths\": [\n      1,\n      7,\n      8,\n      9,\n      17\n    ],\n    \"depths\": [\n      0,\n      1,\n      15,\n      29,\n      31\n    ],\n    \"aliasing\": [\n      \"shared\",\n      \"distinct\"\n    ],\n    \"mix\": \"accepted object/array/NaN siblings around every refused position; object/array alternating wrappers\",\n    \"diagnostics\": \"crosses first-eight boundary\",\n    \"root\": \"single capture; public eager roots separately rerun from review-01\"\n  },\n  \"limits\": \"Instrumented helper-entry trace; no claim of engine internals or static-check soundness; wide/long thresholds sampled, small charge transitions exhaustive.\"\n}\n",
+  "stderr": ""
+}

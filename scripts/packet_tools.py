@@ -595,14 +595,39 @@ def transferred_origins(git, rev, rows, origins, lists):
     return found
 
 
+def later_limit_list(git, rev, entry):
+    """A later owner decision that lists further unbound members of limited origins (K1.1-correction-03 owner
+    choice 01): its record exists at C, and it pins a list of `{origin, member}` in its attachment directory."""
+    require(isinstance(entry, dict) and set(entry) == {'decision', 'members', 'sha256'} and
+            all(isinstance(value, str) for value in entry.values()) and entry['decision'].endswith('.md') and
+            entry['members'].startswith(entry['decision'][:-len('.md')] + '/'),
+            "a later limit names its decision, its member list in the decision's attachment directory and its SHA-256: "
+            + str(entry))
+    git.blob(rev, entry['decision'])
+    data = git.blob(rev, entry['members'])
+    require(digest(data) == entry['sha256'], 'a later limit list digest differs: ' + entry['members'])
+    try:
+        listed = json.loads(data)
+    except ValueError as exc:
+        raise CheckError('a later limit list is not JSON: ' + entry['members']) from exc
+    require(isinstance(listed, list) and all(isinstance(item, dict) and isinstance(item.get('origin'), str) and
+                                             isinstance(item.get('member'), str) for item in listed) and
+            len({item['member'] for item in listed}) == len(listed),
+            'a later limit list names each member once, with its origin: ' + entry['members'])
+    return listed
+
+
 def limited_origins(git, rev, rows, lists, members, targets, results, register):
     """C2-LIMIT (owner choice 04 §1, amended by owner choice 08 §2.4 and owner choice 11). Each origin transferred
     under owner choice 04 carries `limited`: the pinned unbound-member list and its extras, each `{member, target}`,
     and, where owner choice 11 lists a member of that origin, its pinned list under `listed`. An extra is admitted
     only through its target record: the only suite target naming that member, declared at a rule-1 held leaf with
     a literal title and refused by P1-H alone. Titles are never compared. A listed member counts while it is refused
-    without a credited target or held by rule 1 (owner answers to design 06 revision 4). Per origin, those members
-    must equal its listed members plus admitted extras, and the decision's list restates the origin's member count."""
+    without a credited target or held by rule 1 (owner answers to design 06 revision 4). A later owner decision may
+    list further members of a limited origin when a packet changes their tests (K1.1-correction-03 owner choice 01):
+    the origin cites it under `added`, `{decision, members, sha256}`, and each such member counts as listed. Per
+    origin, those members must equal its listed members plus admitted extras, and the decision's list restates the
+    origin's member count."""
     results = {result['id']: result for result in results}
     by_member = {}
     for target in targets.values():
@@ -615,13 +640,13 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
         entry = register.get(f"{row['file']}:{row['current'][0]}:{row['current'][1]}", {}) if row.get('current') else {}
         return row['status'] == 'held' and entry.get('claim') == 'V-ENV' and entry.get('decision') == VENV_RECORD
 
-    limited, listed_all, owner_listed = {}, None, None
+    limited, listed_all, owner_listed, later = {}, None, None, {}
     for row in rows:
         if row['decision'] != LIMIT_DECISION:
             require('limited' not in row, "only owner choice 04's origins carry a limit: " + row['origin'])
             continue
         limit, origin = row.get('limited'), row['origin']
-        require(isinstance(limit, dict) and set(limit) - {'listed'} == {'members', 'sha256', 'extras'} and
+        require(isinstance(limit, dict) and set(limit) - {'listed', 'added'} == {'members', 'sha256', 'extras'} and
                 limit['members'] == LIMIT_MEMBERS and isinstance(limit['extras'], list),
                 'a limited origin names the unbound-member list, its SHA-256 and its extras: ' + origin)
         data = git.blob(rev, LIMIT_MEMBERS)
@@ -644,9 +669,24 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
         require(lists[LIMIT_DECISION][origin].get('members') == len(in_origin),
                 "owner choice 04's member count differs from the preserved table: " + origin)
         named = {item['member'] for item in owner_listed or [] if item.get('origin') == origin} if 'listed' in limit else set()
-        listed, extras = (listed_all | named) & in_origin, set()
+        added = set()
+        cited = limit.get('added', [])
+        require(isinstance(cited, list) and len({entry['decision'] if isinstance(entry, dict) and
+                                                 isinstance(entry.get('decision'), str) else None
+                                                 for entry in cited}) == len(cited),
+                'a limited origin cites each later decision once: ' + origin)
+        for entry in cited:
+            listed_later = later_limit_list(git, rev, entry)
+            require(later.setdefault(entry['decision'], {'entry': entry, 'origins': set()})['entry'] == entry,
+                    'every limited origin citing a later decision cites its one pinned list: ' + entry['decision'])
+            later[entry['decision']]['origins'].add(origin)
+            later[entry['decision']]['listed'] = listed_later
+            added |= {item['member'] for item in listed_later if item['origin'] == origin}
+        listed, extras = (listed_all | named | added) & in_origin, set()
         require(named <= in_origin and not named & listed_all,
                 "owner choice 11 lists further members of its origin: " + origin)
+        require(added <= in_origin and not added & (listed_all | named),
+                'a later decision lists further members of its limited origin: ' + origin)
         for extra in limit['extras']:
             require(isinstance(extra, dict) and set(extra) == {'member', 'target'} and extra['member'] in in_origin and
                     extra['member'] not in listed | extras, 'an extra limited member is a further member of its origin: ' + str(extra))
@@ -669,6 +709,9 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
             'an unbound-member list entry lies outside the limited origins')
     require(owner_listed is None or all(item.get('origin') in limited for item in owner_listed),
             "owner choice 11's listed members lie in the limited origins")
+    for decision, row in later.items():
+        require(all(item['origin'] in row['origins'] for item in row['listed']),
+                "a later decision's listed members lie in limited origins that cite it: " + decision)
     return limited
 
 

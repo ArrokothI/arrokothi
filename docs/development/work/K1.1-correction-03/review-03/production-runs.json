@@ -1,0 +1,116 @@
+[
+  {
+    "name": "candidate-identity",
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/packet_tools.py",
+      "candidate",
+      "--payload",
+      "2bf220e9e426c810f2505fa2d74d70197807e584",
+      "--head",
+      "4b121d7ba665182b22857f049c05f019f25d0c65",
+      "--spec",
+      "docs/development/work/K1.1-correction-03/verification.json"
+    ],
+    "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+    "start_utc": "2026-10-19T08:46:02.072361+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 2,
+    "seconds": 0.5537123749963939,
+    "end_utc": "2026-10-19T08:46:02.644167+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "production-probes",
+    "argv": [
+      "node",
+      "--no-warnings",
+      "--experimental-strip-types",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-source/docs/development/work/K1.1-correction-03/review-03/production-probes.mjs",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+      "/private/tmp/k11-review-03-B"
+    ],
+    "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+    "start_utc": "2026-10-19T08:46:02.663483+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 6.33666883315891,
+    "end_utc": "2026-10-19T08:46:09.017763+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "historical-stop-boundary",
+    "argv": [
+      "node",
+      "--no-warnings",
+      "--experimental-strip-types",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-source/docs/development/work/K1.1-correction-03/review-03/rerun-stop-boundary.mjs",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+      "--require-contract"
+    ],
+    "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+    "start_utc": "2026-10-19T08:46:09.037038+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 5.648767624981701,
+    "end_utc": "2026-10-19T08:46:14.702799+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "historical-declared-limit",
+    "argv": [
+      "node",
+      "--no-warnings",
+      "--experimental-strip-types",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-source/docs/development/work/K1.1-correction-03/review-03/rerun-declared-limit.mjs",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C"
+    ],
+    "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+    "start_utc": "2026-10-19T08:46:14.723630+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 0.07285837503150105,
+    "end_utc": "2026-10-19T08:46:14.814731+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "historical-dimensions",
+    "argv": [
+      "node",
+      "--no-warnings",
+      "--experimental-strip-types",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-source/docs/development/work/K1.1-correction-03/review-03/search-dimensions.mjs",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+      "/private/tmp/k11-review-03-B"
+    ],
+    "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+    "start_utc": "2026-10-19T08:46:14.832688+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 4.631738167023286,
+    "end_utc": "2026-10-19T08:46:19.481521+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "historical-continuations",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-source/docs/development/work/K1.1-correction-03/review-03/probe-continuations.py"
+    ],
+    "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+    "start_utc": "2026-10-19T08:46:19.501719+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 10.135047875111923,
+    "end_utc": "2026-10-19T08:46:29.653619+00:00",
+    "clean_after": ""
+  }
+]

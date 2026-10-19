@@ -1,0 +1,543 @@
+{
+  "node": "v26.10.0",
+  "candidate": "ad9bc8640d261ace8af5e75c47aad1bad3ca84d7",
+  "subject_source": "import assert from 'node:assert/strict';\nexport const subjectError = new assert.AssertionError({message:'subject-owned exception, not a test assertion'});\nexport function subject() { throw subjectError; }\nexport function subjectValue() { return {get x() {throw subjectError;}}; }\nexport const subjectTypeError = new TypeError('subject getter failed');\nexport const malformedRefusal = {ok:false, get error() {throw subjectTypeError;}};\n",
+  "rows": [
+    {
+      "scenario": "passing",
+      "test_source": "test('probe',()=>assert.equal(1,1));",
+      "run": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":true,\"state\":\"passed\",\"leaves\":1,\"pass\":1,\"fail\":0,\"failures\":[],\"nonqualifying\":[],\"load\":null,\"status\":0,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "survived",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": true,
+          "state": "passed",
+          "leaves": 1,
+          "pass": 1,
+          "fail": 0,
+          "failures": [],
+          "nonqualifying": [],
+          "load": null,
+          "status": 0,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "genuine_assertion",
+      "test_source": "test('probe',()=>assert.equal(1,2));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [assert.equal]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [assert.equal]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "direct_subject_exception",
+      "test_source": "test('probe',()=>subject());",
+      "run": {
+        "status": "finished",
+        "exit": 3,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":false,\"passed\":false,\"state\":\"subject_exception\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"review.control.intended-test-assertion: subject_exception\"],\"nonqualifying\":[{\"name\":\"probe\",\"type\":\"test\",\"failureType\":\"testCodeFailure\",\"cause\":{\"name\":\"AssertionError\",\"code\":\"ERR_ASSERTION\"}}],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "setup_error",
+        "exit": 3
+      }
+    },
+    {
+      "scenario": "callback_throws_passthrough",
+      "test_source": "test('probe',()=>assert.throws(subject));",
+      "run": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":true,\"state\":\"passed\",\"leaves\":1,\"pass\":1,\"fail\":0,\"failures\":[],\"nonqualifying\":[],\"load\":null,\"status\":0,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "survived",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": true,
+          "state": "passed",
+          "leaves": 1,
+          "pass": 1,
+          "fail": 0,
+          "failures": [],
+          "nonqualifying": [],
+          "load": null,
+          "status": 0,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "callback_doesNotThrow_nonmatching",
+      "test_source": "test('probe',()=>assert.doesNotThrow(subject, TypeError));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [assert.doesNotThrow]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [assert.doesNotThrow]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "callback_doesNotReject_nonmatching",
+      "test_source": "test('probe',async()=>await assert.doesNotReject(async()=>subject(),TypeError));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [assert.doesNotReject]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [assert.doesNotReject]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "comparison_getter",
+      "test_source": "test('probe',()=>assert.deepEqual(subjectValue(),{x:1}));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [assert.deepEqual]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [assert.deepEqual]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "predicate_callback",
+      "test_source": "test('probe',()=>assert.throws(()=>{throw new TypeError('expected');},()=>subject()));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [assert.throws]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [assert.throws]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "harness_malformed_refusal",
+      "test_source": "test('probe',()=>accepted(malformedRefusal));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [harness.accepted]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [harness.accepted]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "harness_truthy_ok_subject_value",
+      "test_source": "test('probe',()=>accepted({ok:1,get value(){throw subjectTypeError;}}));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [harness.accepted]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [harness.accepted]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "harness_changing_ok_subject_value",
+      "test_source": "test('probe',()=>{let reads=0;accepted({get ok(){return reads++===0;},get value(){throw subjectTypeError;}});});",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [harness.accepted]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [harness.accepted]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "harness_missing_error",
+      "test_source": "test('probe',()=>accepted({ok:false}));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe [harness.accepted]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe [harness.accepted]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "hook_assertion",
+      "test_source": "describe('probe',()=>{beforeEach(()=>assert.equal(1,2));test('leaf',()=>assert.equal(1,1));});",
+      "run": {
+        "status": "finished",
+        "exit": 3,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":false,\"passed\":false,\"state\":\"hook_failure\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"review.control.intended-test-assertion: hook_failure\"],\"nonqualifying\":[{\"name\":\"leaf\",\"type\":\"test\",\"failureType\":\"hookFailed\",\"cause\":{\"name\":\"AssertionError\",\"code\":\"ERR_ASSERTION\"}}],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "setup_error",
+        "exit": 3
+      }
+    },
+    {
+      "scenario": "mixed_hook",
+      "test_source": "test('probe valid',()=>assert.equal(1,2)); describe('probe hook',()=>{beforeEach(()=>{throw new Error('setup');});test('leaf',()=>assert.equal(1,1));});",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":2,\"pass\":0,\"fail\":2,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe valid [assert.equal]\"],\"nonqualifying\":[{\"name\":\"leaf\",\"type\":\"test\",\"failureType\":\"hookFailed\",\"cause\":{\"name\":\"Error\",\"code\":null}}],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 2,
+          "pass": 0,
+          "fail": 2,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe valid [assert.equal]"
+          ],
+          "nonqualifying": [
+            {
+              "name": "leaf",
+              "type": "test",
+              "failureType": "hookFailed",
+              "cause": {
+                "name": "Error",
+                "code": null
+              }
+            }
+          ],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "mixed_subject",
+      "test_source": "test('probe valid',()=>assert.equal(1,2));test('probe exception',()=>subject());",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":2,\"pass\":0,\"fail\":2,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe valid [assert.equal]\"],\"nonqualifying\":[{\"name\":\"probe exception\",\"type\":\"test\",\"failureType\":\"testCodeFailure\",\"cause\":{\"name\":\"AssertionError\",\"code\":\"ERR_ASSERTION\"}}],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 2,
+          "pass": 0,
+          "fail": 2,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe valid [assert.equal]"
+          ],
+          "nonqualifying": [
+            {
+              "name": "probe exception",
+              "type": "test",
+              "failureType": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              }
+            }
+          ],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "mixed_cancellation",
+      "test_source": "test('probe valid',()=>assert.equal(1,2));test('probe parent',async(t)=>{t.test('unawaited',()=>new Promise(r=>setTimeout(r,100)));});",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":3,\"pass\":2,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe valid [assert.equal]\"],\"nonqualifying\":[],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 3,
+          "pass": 2,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe valid [assert.equal]"
+          ],
+          "nonqualifying": [],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "mixed_timeout",
+      "test_source": "test('probe valid',()=>assert.equal(1,2));test('probe slow',{timeout:10},()=>new Promise(r=>setTimeout(r,100)));",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":2,\"pass\":0,\"fail\":2,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe valid [assert.equal]\"],\"nonqualifying\":[{\"name\":\"probe slow\",\"type\":\"test\",\"failureType\":\"testTimeoutFailure\",\"cause\":{\"name\":null,\"code\":null}}],\"load\":null,\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 2,
+          "pass": 0,
+          "fail": 2,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe valid [assert.equal]"
+          ],
+          "nonqualifying": [
+            {
+              "name": "probe slow",
+              "type": "test",
+              "failureType": "testTimeoutFailure",
+              "cause": {
+                "name": null,
+                "code": null
+              }
+            }
+          ],
+          "load": null,
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    },
+    {
+      "scenario": "assertion_then_late_exception",
+      "test_source": "test('probe valid',()=>{setTimeout(()=>{throw new Error('late setup/load failure');},50);assert.equal(1,2);});",
+      "run": {
+        "status": "finished",
+        "exit": 17,
+        "output": "{\"case\":\"review.control\",\"assertion\":\"review.control.intended-test-assertion\",\"reached\":true,\"passed\":false,\"state\":\"assertion_failed\",\"leaves\":1,\"pass\":0,\"fail\":1,\"failures\":[\"packages/kernel/tests/review.test.mjs > probe valid [assert.equal]\"],\"nonqualifying\":[],\"load\":{\"origin\":\"uncaughtException\",\"syntax\":false,\"name\":\"Error\"},\"status\":1,\"signal\":null,\"claim\":\"A reached intended test assertion; never an exception from the subject or failed setup.\"}\n"
+      },
+      "outcome": {
+        "status": "killed",
+        "observation": {
+          "case": "review.control",
+          "assertion": "review.control.intended-test-assertion",
+          "reached": true,
+          "passed": false,
+          "state": "assertion_failed",
+          "leaves": 1,
+          "pass": 0,
+          "fail": 1,
+          "failures": [
+            "packages/kernel/tests/review.test.mjs > probe valid [assert.equal]"
+          ],
+          "nonqualifying": [],
+          "load": {
+            "origin": "uncaughtException",
+            "syntax": false,
+            "name": "Error"
+          },
+          "status": 1,
+          "signal": null,
+          "claim": "A reached intended test assertion; never an exception from the subject or failed setup."
+        }
+      }
+    }
+  ]
+}

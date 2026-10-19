@@ -1,0 +1,165 @@
+{
+  "source": "tests/fixtures/packet-tools/value-cost.json at 9772c53e6b00fe7e2986d1881d67602f25cede6d (round 2 WIP, before requalification)",
+  "withdrawn": [
+    {
+      "case": "value-cost.c1.creation",
+      "ablation_ids": [
+        "O-APPENDOWN-PUSH"
+      ],
+      "registration": {
+        "id": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+        "path": "packages/kernel/src/own-array.ts",
+        "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+        "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);",
+        "operator": "c1-ablation",
+        "name": "O-APPENDOWN-PUSH (C1: killed by the creation converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.ingress",
+      "ablation_ids": [
+        "O-APPENDOWN-PUSH"
+      ],
+      "registration": {
+        "id": "mutation-83e566c29bc58d6e3d5878f8de63c27c4c379dca329cd13fbfa7cac4b7c34d49",
+        "path": "packages/kernel/src/own-array.ts",
+        "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+        "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);",
+        "operator": "c1-ablation",
+        "name": "O-APPENDOWN-PUSH (C1: killed by the ingress converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.ingress",
+      "ablation_ids": [
+        "O-DEFINEDATA-LITERAL"
+      ],
+      "registration": {
+        "id": "mutation-9b2e2b09db0f2bd420e59cfc3b098fb0270618df3240fc43753cef1589fddd19",
+        "path": "packages/kernel/src/own-array.ts",
+        "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+        "after": "  const descriptor = {} as {\n    value: unknown;",
+        "operator": "c1-ablation",
+        "name": "O-DEFINEDATA-LITERAL (C1: killed by the ingress converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "ablation_ids": [
+        "RC-CATCH-RETHROW"
+      ],
+      "registration": {
+        "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+        "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+        "operator": "c1-ablation",
+        "name": "RC-CATCH-RETHROW (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "ablation_ids": [
+        "V-CATCH"
+      ],
+      "registration": {
+        "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {",
+        "after": "  } catch (error) {\n    throw error;",
+        "operator": "c1-ablation",
+        "name": "V-CATCH (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "ablation_ids": [
+        "VAL-catch-rethrows"
+      ],
+      "registration": {
+        "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {\n    return refuse(state, {",
+        "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
+        "operator": "c1-ablation",
+        "name": "VAL-catch-rethrows (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "ablation_ids": [
+        "RC-CATCH-RETHROW"
+      ],
+      "registration": {
+        "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+        "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+        "operator": "c1-ablation",
+        "name": "RC-CATCH-RETHROW (C1: killed by the value-refusal-cost converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "ablation_ids": [
+        "V-CATCH"
+      ],
+      "registration": {
+        "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {",
+        "after": "  } catch (error) {\n    throw error;",
+        "operator": "c1-ablation",
+        "name": "V-CATCH (C1: killed by the value-refusal-cost converted tests at B and at C)"
+      }
+    },
+    {
+      "case": "value-cost.c1.value-refusal-cost",
+      "ablation_ids": [
+        "VAL-catch-rethrows"
+      ],
+      "registration": {
+        "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {\n    return refuse(state, {",
+        "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
+        "operator": "c1-ablation",
+        "name": "VAL-catch-rethrows (C1: killed by the value-refusal-cost converted tests at B and at C)"
+      }
+    }
+  ],
+  "ported": [
+    {
+      "case": "value-cost.c1.value-diagnostic-work",
+      "ablation_ids": [
+        "COST-byte-stop-not-sticky",
+        "MB1-byte-stop-does-not-stop"
+      ],
+      "registration": {
+        "id": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+        "path": "packages/kernel/src/values.ts",
+        "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+        "after": "    state.stop = \"bytes\";",
+        "operator": "c1-ablation",
+        "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the value-diagnostic-work converted tests at B and at C)"
+      },
+      "replaced_by": "mutation-7960fc44ab1bb6399423b4327cf960b29f7a67df708fbb7c7b0b01162e139e1e"
+    },
+    {
+      "case": "value-cost.c1.values",
+      "ablation_ids": [
+        "COST-byte-stop-not-sticky",
+        "MB1-byte-stop-does-not-stop"
+      ],
+      "registration": {
+        "id": "mutation-296229348c0f84f22fe4fa5a7ad2b8ceba4f47ced15c73253d46622c3f12a456",
+        "path": "packages/kernel/src/values.ts",
+        "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+        "after": "    state.stop = \"bytes\";",
+        "operator": "c1-ablation",
+        "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the values converted tests at B and at C)"
+      },
+      "replaced_by": "mutation-7960fc44ab1bb6399423b4327cf960b29f7a67df708fbb7c7b0b01162e139e1e"
+    }
+  ]
+}

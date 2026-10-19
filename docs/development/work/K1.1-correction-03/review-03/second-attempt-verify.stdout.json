@@ -1,0 +1,1 @@
+{"operation": "verify", "result": "invalid", "error": "git cat-file: fatal: git cat-file: could not get object info"}

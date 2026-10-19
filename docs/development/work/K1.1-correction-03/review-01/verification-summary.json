@@ -1,0 +1,262 @@
+{
+  "result": "checks_passed",
+  "checks": [
+    {
+      "id": "tool-tests",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "result": null,
+      "counts": {
+        "tests": 581
+      }
+    },
+    {
+      "id": "inventory",
+      "passed": true,
+      "exit": null,
+      "status": null,
+      "result": "provenance_verified",
+      "counts": null,
+      "nested_counts": {
+        "artifact": 208,
+        "mention": 1333,
+        "additional": 8
+      }
+    },
+    {
+      "id": "adoption",
+      "passed": true,
+      "exit": null,
+      "status": null,
+      "result": "revalidation_complete",
+      "counts": null,
+      "nested_counts": {
+        "origins": 1549,
+        "counterexamples": 1125,
+        "families": 26,
+        "members": 415,
+        "suite_targets": 52,
+        "preserved": 37,
+        "kills": 0
+      }
+    },
+    {
+      "id": "dimensions",
+      "passed": true,
+      "exit": null,
+      "status": null,
+      "result": "coverage_reported",
+      "counts": null,
+      "nested_counts": null
+    },
+    {
+      "id": "registered-mutants",
+      "passed": true,
+      "exit": null,
+      "status": null,
+      "result": "selected_cases_passed",
+      "counts": null,
+      "nested_counts": {
+        "killed": 109
+      }
+    },
+    {
+      "id": "refusal-mutants",
+      "passed": true,
+      "exit": null,
+      "status": null,
+      "result": "selected_cases_passed",
+      "counts": null,
+      "nested_counts": {
+        "killed": 321
+      }
+    },
+    {
+      "id": "value-cost-mutants",
+      "passed": true,
+      "exit": null,
+      "status": null,
+      "result": "selected_cases_passed",
+      "counts": null,
+      "nested_counts": {
+        "killed": 227
+      }
+    },
+    {
+      "id": "refusal-census",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "oracle-census",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "typecheck",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "repository-tests",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "result": null,
+      "counts": {
+        "tests": 4080,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "result": null,
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "kernel-sweeps",
+      "passed": true,
+      "exit": 0,
+      "status": "finished",
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "area-gate",
+      "passed": true,
+      "exit": null,
+      "status": null,
+      "result": "reported",
+      "counts": null,
+      "nested_counts": null
+    }
+  ],
+  "profiles_not_run": [
+    {
+      "id": "live-provider",
+      "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
+      "checks": [
+        {
+          "id": "profile.gemini-provider-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:gemini"
+          ]
+        },
+        {
+          "id": "profile.mcp-gemini-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:mcp:gemini"
+          ]
+        },
+        {
+          "id": "profile.workflow-scenario-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:workflow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "large-memory-timing",
+      "reason": "Owner choice 01: historical engine-limit, heap and timing studies retained in the pinned inventory; individual semantic mappings/command adapters remain pending P1. No execution credit.",
+      "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "sources": [
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ],
+      "checks": [
+        {
+          "id": "profile.probe-diagnostics-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-namespace",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.refusal-cost-probe-04",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        }
+      ]
+    },
+    {
+      "id": "known-base-failure",
+      "reason": "Owner-reported pre-existing missing DESIGN-AUDIT-01 README on main. This builder-docs check is outside the required default profile and earns no execution credit here.",
+      "checks": [
+        {
+          "id": "builder-docs",
+          "argv": [
+            "npm",
+            "run",
+            "check:builder-docs"
+          ]
+        }
+      ]
+    }
+  ],
+  "result_reuse": false
+}

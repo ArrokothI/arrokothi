@@ -25,6 +25,7 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 import {
   ExecutionCoordinator,
   boundaryValueIssues,
@@ -63,6 +64,8 @@ const plainOwn = (target: object, key: PropertyKey): PropertyDescriptor | undefi
 interface Catalog {
   readonly trace: string[];
   readonly steps: number;
+  /** What `canonicalize` answered, inside its poison window, for the entry that reaches capture's catch path. */
+  readonly catchPath: unknown;
 }
 
 function runCatalog(poison: PoisonController): Catalog {
@@ -246,6 +249,16 @@ function runCatalog(poison: PoisonController): Catalog {
   step("submitOutcome: fail", () => later.submitOutcome(who, outcomeFor(laterId, laterOpen, { next: { step: "fail", error: { reason: "x" } } }), submissionFor(delayed, laterOpen.activationId)), later, who);
 
   // -- The value functions -----------------------------------------------------------------------
+  // K1.1-correction-03: capture refuses every Proxy before observing it (owner decision-01 item 2), so
+  // the Proxy entry below no longer drives capture's catch path; it now covers the Proxy refusal under
+  // poison. The entry after it reaches the catch path in-process without a Proxy value: the global of a
+  // `node:vm` context whose sandbox is a Proxy with a throwing `ownKeys` trap. The global is not itself a
+  // Proxy; its key listings are answered by the sandbox through host interceptors, so capture's own key
+  // listing throws. Re-prototyped to null, it passes the plain-prototype test and reaches that listing.
+  // Built here, per run, never at load time.
+  const unlistableContext = vm.createContext(proxy({}, { ownKeys: () => { throw new Error("no keys"); } }));
+  const unlistable = vm.runInContext("globalThis", unlistableContext) as object;
+  Object.setPrototypeOf(unlistable, null);
   const values: [string, unknown][] = [
     ["plain record", { a: 1, b: [true, null, "x"], c: { d: -0 } }],
     ["null-prototype record", Object.assign(Object.create(null) as object, { k: "v" })],
@@ -255,26 +268,38 @@ function runCatalog(poison: PoisonController): Catalog {
     ["accessor member", { get a(): number { return 1; } }],
     ["too long", "x".repeat(70_000)],
     ["a Proxy whose descriptor trap throws", proxy({ a: 1 }, { getOwnPropertyDescriptor: () => { throw new Error("no"); } })],
+    ["a null-prototype vm global whose sandbox key listing throws", unlistable],
   ];
+  let catchPath: unknown;
   for (const [label, value] of values) {
-    step(`canonicalize: ${label}`, () => canonicalize(value));
+    const canonical = step(`canonicalize: ${label}`, () => canonicalize(value));
+    if (value === unlistable) catchPath = canonical;
     step(`boundaryValueIssues: ${label}`, () => boundaryValueIssues(value));
     step(`isBoundaryValue: ${label}`, () => isBoundaryValue(value));
   }
   const one = canonicalize({ a: 1, b: 2 });
   const two = canonicalize({ b: 2, a: 1 });
   if (one.ok && two.ok) step("sameLogicalValue", () => sameLogicalValue(one.value, two.value));
-  return { trace, steps };
+  return { trace, steps, catchPath };
 }
 
 describe("correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them", () => {
-  const runs = new Map<PoisonMode, { catalog: Catalog; poison: PoisonController }>();
+  // A plain record, not a Map: the describe body stays free of intrinsic references (the load-time rule).
+  const runs: { [mode in PoisonMode]?: { catalog: Catalog; poison: PoisonController } } = {};
   for (const mode of ["off", "count", "throw", "reenter"] as const) {
     test(`${mode}: no zone frame reaches a poisoned member; every window was live`, () => {
       const poison = createPoison({ mode, names: NAMES, zoneRoot: ZONE_ROOT });
       const catalog = runCatalog(poison);
-      runs.set(mode, { catalog, poison });
+      runs[mode] = { catalog, poison };
       assert.deepEqual(poison.zoneFirings, [], "no Kernel read reached Object.prototype or Function.prototype");
+      assert.deepEqual(
+        catalog.catchPath,
+        {
+          ok: false,
+          issues: [{ path: "", code: "unstable_representation", message: "observing this value's structure threw (object), so it presents no readable content" }],
+        },
+        "the vm-global entry reached capture's catch path inside its window",
+      );
       assert.ok(catalog.steps > 100, `the catalog made ${catalog.steps} boundary calls`);
       assert.equal(poison.counts.windows, catalog.steps, "every boundary call was its own outermost window");
       if (mode !== "off") {
@@ -284,9 +309,9 @@ describe("correction DEC-8: the catalog under poisoned prototypes behaves exactl
     });
   }
   test("every poisoned run returned exactly what the unpoisoned run returned", () => {
-    const off = runs.get("off")?.catalog.trace;
+    const off = runs.off?.catalog.trace;
     assert.ok(off !== undefined && off.length > 100);
-    for (const mode of ["count", "throw", "reenter"] as const) assert.deepEqual(runs.get(mode)?.catalog.trace, off, `${mode} results`);
+    for (const mode of ["count", "throw", "reenter"] as const) assert.deepEqual(runs[mode]?.catalog.trace, off, `${mode} results`);
   });
   test("the catalog poisons the complete name set, the descriptor fields included", () => {
     for (const field of DESCRIPTOR_FIELDS) assert.ok(NAMES.includes(field), field);

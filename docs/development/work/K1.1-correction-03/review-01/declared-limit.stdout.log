@@ -1,0 +1,35 @@
+{
+  "node": "v26.10.0",
+  "tree": "/private/tmp/arrokothi-kc3-review-c",
+  "documentation_claim_holds": false,
+  "claim": {
+    "path": "mental-model/roadmap.md",
+    "line": 111,
+    "text": "refuses every Proxy and every built-in with internal slots under"
+  },
+  "rows": [
+    {
+      "kind": "WeakRef",
+      "result": {
+        "ok": true,
+        "value": {
+          "value": {},
+          "canonical": "{}",
+          "canonicalBytes": 2
+        }
+      }
+    },
+    {
+      "kind": "FinalizationRegistry",
+      "result": {
+        "ok": true,
+        "value": {
+          "value": {},
+          "canonical": "{}",
+          "canonicalBytes": 2
+        }
+      }
+    }
+  ],
+  "interpretation": "Acceptance is authorized by design-check Q6 and the canonical values owner. The broader changed roadmap synopsis is false; this is a documentation defect, not a demand to refuse these kinds."
+}

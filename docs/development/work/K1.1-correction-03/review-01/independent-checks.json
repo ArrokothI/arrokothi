@@ -1,0 +1,143 @@
+[
+  {
+    "name": "stop-boundary",
+    "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-01/probe-stop-boundary.mjs",
+      "/private/tmp/arrokothi-kc3-review-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T09:41:37.585481+00:00",
+    "node": "v26.10.0",
+    "exit": 0,
+    "seconds": 7.784700124990195,
+    "end": "2026-10-13T09:41:45.594172+00:00"
+  },
+  {
+    "name": "evidence-attribution",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-01/probe-evidence-attribution.py",
+      "/private/tmp/arrokothi-kc3-review-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T09:41:45.594968+00:00",
+    "node": "v26.10.0",
+    "exit": 0,
+    "seconds": 1.2205812921747565,
+    "end": "2026-10-13T09:41:46.840696+00:00"
+  },
+  {
+    "name": "dimensions",
+    "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-01/search-dimensions.mjs",
+      "/private/tmp/arrokothi-kc3-review-c",
+      "/private/tmp/arrokothi-kc3-review-b"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T09:41:46.841190+00:00",
+    "node": "v26.10.0",
+    "exit": 0,
+    "seconds": 6.413679416989908,
+    "end": "2026-10-13T09:41:53.274267+00:00"
+  },
+  {
+    "name": "record-audit",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-01/audit-records.py",
+      "/private/tmp/arrokothi-kc3-review-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T09:41:53.274867+00:00",
+    "node": "v26.10.0",
+    "exit": 0,
+    "seconds": 0.7841084161773324,
+    "end": "2026-10-13T09:41:54.082212+00:00"
+  },
+  {
+    "name": "candidate",
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/packet_tools.py",
+      "candidate",
+      "--payload",
+      "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+      "--head",
+      "5f586b176089987fa3667e4c03f26b3dac0a5bfb",
+      "--spec",
+      "docs/development/work/K1.1-correction-03/verification.json"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T09:41:54.082655+00:00",
+    "node": "v26.10.0",
+    "exit": 0,
+    "seconds": 1.7034781251568347,
+    "end": "2026-10-13T09:41:55.810414+00:00"
+  },
+  {
+    "name": "builder-docs-B",
+    "argv": [
+      "npm",
+      "run",
+      "check:builder-docs"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-b",
+    "start": "2026-10-13T09:41:55.810824+00:00",
+    "node": "v26.10.0",
+    "exit": 1,
+    "seconds": 0.6729073331225663,
+    "end": "2026-10-13T09:41:56.505422+00:00"
+  },
+  {
+    "name": "builder-docs-C",
+    "argv": [
+      "npm",
+      "run",
+      "check:builder-docs"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T09:41:56.505871+00:00",
+    "node": "v26.10.0",
+    "exit": 1,
+    "seconds": 0.5115602919831872,
+    "end": "2026-10-13T09:41:57.051171+00:00"
+  },
+  {
+    "name": "builder-docs-H",
+    "argv": [
+      "npm",
+      "run",
+      "check:builder-docs"
+    ],
+    "cwd": "/Users/rex-shih/Documents/ArrokothI/arrokothi",
+    "start": "2026-10-13T09:41:57.051527+00:00",
+    "node": "v26.10.0",
+    "exit": 1,
+    "seconds": 0.5134584589395672,
+    "end": "2026-10-13T09:41:57.593683+00:00"
+  },
+  {
+    "name": "value-cost-leaves",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-01/audit-value-cost-kills.py",
+      "/private/tmp/arrokothi-kc3-review-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review-c",
+    "start": "2026-10-13T09:41:57.594108+00:00",
+    "node": "v26.10.0",
+    "exit": 0,
+    "seconds": 406.37035962496884,
+    "end": "2026-10-13T09:48:43.963096+00:00"
+  }
+]

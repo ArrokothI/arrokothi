@@ -1,0 +1,104 @@
+[
+  {
+    "source": "review-01/probe-stop-boundary.mjs",
+    "maintained": [
+      "packages/kernel/tests/capture-stop.test.ts"
+    ],
+    "scope": "real budget offsets -2..+2, name counts 0/1/257/4096/65536, wrapper/depth/prototype/alias dimensions and fourteen consumer schedules; whole refusals/state"
+  },
+  {
+    "source": "review-01/probe-evidence-attribution.py",
+    "maintained": [
+      "tests/tooling/test_value_cost_probe.py"
+    ],
+    "scope": "parse/load, genuine charged-unit assertion, direct subject exception, test-created error and passing controls; source policy is separate from runtime witness"
+  },
+  {
+    "source": "review-01/probe-declared-limit.mjs",
+    "maintained": [
+      "packages/kernel/tests/capture-refusals.test.ts"
+    ],
+    "scope": "WeakRef and FinalizationRegistry accepted as {} within Q6; no widened guarantee"
+  },
+  {
+    "source": "review-01/search-dimensions.mjs",
+    "maintained": [
+      "tests/tooling/capture-dimensions.mjs"
+    ],
+    "scope": "13 refusal families / four prototypes / seven widths / five depths / three alias forms; seeded accepted-byte comparison with B and public-consumer schedules",
+    "historical_counts": [
+      5460,
+      1543,
+      1056
+    ],
+    "seed": "0x4b433303"
+  },
+  {
+    "source": "review-02/probe-stop-corpus.py",
+    "maintained": [
+      "tests/fixtures/packet-tools/capture-trace-controls.json",
+      "tests/tooling/capture-trace-controls.mjs",
+      "packages/kernel/tests/capture-stop.test.ts"
+    ],
+    "scope": "boolean failed charge substituted with accepted false; static and runtime controls; unchanged final result"
+  },
+  {
+    "source": "review-02/probe-stop-guard.py",
+    "maintained": [
+      "tests/fixtures/packet-tools/capture-trace-controls.json",
+      "packages/kernel/tests/capture-stop.test.ts"
+    ],
+    "scope": "null substitution, actual-state snapshot write/finish trace, unchanged final result"
+  },
+  {
+    "source": "review-02/probe-stop-forms.py",
+    "maintained": [
+      "tests/fixtures/packet-tools/capture-trace-controls.json",
+      "packages/kernel/tests/capture-metering.ts",
+      "tests/tooling/capture-trace-controls.mjs"
+    ],
+    "scope": "correct, false/null, ignored nested function/class, declared alias gap; original source retained, new-protocol edits in fixture/registry port map"
+  },
+  {
+    "source": "review-02/probe-continuations.mjs",
+    "maintained": [
+      "tests/tooling/capture-continuations.mjs",
+      "tests/tooling/capture-trace.mjs"
+    ],
+    "scope": "small 38 shapes plus full 12*3*5*5*2 + 24 edge shapes; actual state, pristine equality, seven work crossing kinds; native second observation",
+    "historical_counts": [
+      1824,
+      359254
+    ]
+  },
+  {
+    "source": "review-02/probe-attribution-02.py",
+    "maintained": [
+      "tests/tooling/test_value_cost_probe.py"
+    ],
+    "scope": "all eight false-credit routes, source-compliant supplied errors, exact forbidden source fixture, nested/async/unsafe-message/proxy/getter/intrinsic controls, genuine synchronous assertion after await"
+  },
+  {
+    "source": "review-02/probe-c1-group.py",
+    "maintained": [
+      "tests/tooling/requalify-value-cost.py",
+      "tests/tooling/value-cost-loss-ledger.py"
+    ],
+    "scope": "B overlay requalification and C observation; direct original B helper failure and C exception retained separately; replacement requires isolated exact leaf and obligation"
+  },
+  {
+    "source": "c1-ablation-01.jsonl",
+    "maintained": [
+      "tests/fixtures/packet-tools/value-cost-c1-ports.json",
+      "tests/tooling/value-cost-loss-ledger.py"
+    ],
+    "scope": "69 conversions, 87 meanings, nine files, 437 historical pairs; vanished/cascade/nonqualifying rows retained, no aggregate replacement credit"
+  },
+  {
+    "source": "c1-requalification-02/registry-changes.json",
+    "maintained": [
+      "docs/development/work/K1.1-correction-03/registry-ports-04.json"
+    ],
+    "scope": "227-to-231 ancestry retained; all 231 registrations ported with exact original/new text and IDs; nine withdrawn registrations and equivalent originals remain historical evidence, not silently erased"
+  }
+]

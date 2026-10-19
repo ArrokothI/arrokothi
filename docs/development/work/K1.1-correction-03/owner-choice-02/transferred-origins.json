@@ -1,0 +1,3474 @@
+[
+  {
+    "origin": "artifact-00894044eb58ada0e1dc436d",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover-reentrancy.50.3.b5f3f722dd2e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover-reentrancy.110.3.b5f3f722dd2e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover-reentrancy.173.3.b5f3f722dd2e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover-reentrancy.225.3.b5f3f722dd2e"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/takeover-reentrancy.test.ts",
+          "start": 1,
+          "end": 273
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-051103a915c0dad065b3ff57",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.180.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.187.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.196.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.209.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.228.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.247.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.267.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.285.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.306.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.324.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.360.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.394.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.421.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.460.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.586.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.590.3.f61e9117877b"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/nondisclosure.test.ts",
+          "start": 1,
+          "end": 593
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "mental-model/mechanisms/evidence.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-0f12d86d31f51cf923cb05e8",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.values.151.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.171.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.459.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.505.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.512.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.523.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.543.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.554.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.580.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.651.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.refusals.18.3.39d0ccd292d8"
+        },
+        {
+          "kind": "target",
+          "id": "target.dispatch.1477.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.893.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.589.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.910.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.606.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.178.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.178.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.615.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.612.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1529.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1496.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1459.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.poison-catalog.291.3.46794b39598a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.creation.516.3.088207d1ce86"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.180.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.180.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.187.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.187.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.196.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.196.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.209.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.209.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.228.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.228.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.247.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.247.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.267.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.267.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.285.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.285.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.306.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.306.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.324.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.324.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.360.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.360.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.394.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.394.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.421.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.421.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.460.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.460.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.98.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.98.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.107.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.107.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.128.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.128.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.142.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.142.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.159.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.159.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.177.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.177.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.207.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.207.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.233.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.233.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.347.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.347.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.388.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.388.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.451.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.451.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.464.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.464.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.470.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.470.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.478.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.478.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.488.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.488.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.500.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.500.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.529.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.529.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.558.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.558.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.115.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.43.3.a948b4eead74"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.64.3.39d0ccd292d8"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.60.3.a948b4eead74"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.ingress.381.3.dfc5a87bbd90"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.112.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.112.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.135.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.135.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.157.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.157.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.199.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.199.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.209.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.209.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.233.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.233.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.294.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.291.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.335.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.332.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.354.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.351.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.416.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.413.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.448.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.445.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.468.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.465.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1078.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1073.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1341.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1314.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.66.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.265.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.281.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.372.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1064.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1099.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1113.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1131.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1152.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1184.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1222.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1269.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1302.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1358.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1428.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.140.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.77.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.168.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.aggregate-refusal.100.1.19af122ffc40"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.46.3.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.exact-coordinates.17.3.e52b1010d0ae"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/harness.ts",
+          "start": 1,
+          "end": 584
+        }
+      ],
+      "context_reasons": {
+        "packages/kernel/src/own-array.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  {
+    "origin": "artifact-1082b30bb51b87ed10da586c",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.190.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.196.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.238.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.298.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.370.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.436.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.504.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.548.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.627.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.814.3.a1df9d957a56"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-evidence.822.3.a1df9d957a56"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/recovery-evidence.test.ts",
+          "start": 1,
+          "end": 843
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "mental-model/mechanisms/evidence.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-1a82f8f5670f7437573c1084",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.review-11-probes.24.5.658b03273f8c"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/review-11-probes.test.ts",
+          "start": 1,
+          "end": 80
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/review-11/read-runtime-results.json",
+          "start": 1,
+          "end": 76
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-1ab5c124484bc58b2a471c96",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.58.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.92.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.134.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.147.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.171.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.206.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.232.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.271.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.340.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.369.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.386.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.420.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.462.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.479.3.17f297ab70a5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-authority.508.3.17f297ab70a5"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/submission-authority.test.ts",
+          "start": 1,
+          "end": 533
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-210dd0aaaf1f9edcdcaa0600",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "target",
+          "id": "target.values.151.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.171.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.459.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.505.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.512.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.523.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.543.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.554.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.580.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.values.651.3.fb228bec8c58"
+        },
+        {
+          "kind": "target",
+          "id": "target.refusals.18.3.39d0ccd292d8"
+        },
+        {
+          "kind": "target",
+          "id": "target.dispatch.1477.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.893.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.589.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.910.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.606.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.178.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.178.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.615.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.612.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1529.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1496.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1459.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.poison-catalog.291.3.46794b39598a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.creation.516.3.088207d1ce86"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.180.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.180.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.187.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.187.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.196.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.196.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.209.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.209.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.228.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.228.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.247.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.247.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.267.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.267.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.285.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.285.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.306.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.306.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.324.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.324.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.360.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.360.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.394.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.394.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.421.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.421.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.460.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.460.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.98.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.98.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.107.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.107.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.128.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.128.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.142.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.142.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.159.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.159.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.177.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.177.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.207.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.207.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.233.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.233.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.347.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.347.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.388.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.388.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.451.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.451.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.464.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.464.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.470.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.470.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.478.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.478.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.488.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.488.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.500.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.500.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.529.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.529.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.558.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.558.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.115.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.43.3.a948b4eead74"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.64.3.39d0ccd292d8"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.60.3.a948b4eead74"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.ingress.381.3.dfc5a87bbd90"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.112.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.112.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.135.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.135.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.157.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.157.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.199.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.199.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.209.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.209.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.233.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.233.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.294.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.291.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.335.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.332.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.354.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.351.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.416.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.413.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.448.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.445.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.468.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.465.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1078.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1073.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1341.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1314.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.66.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.265.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.281.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.372.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1064.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1099.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1113.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1131.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1152.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1184.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1222.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1269.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1302.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1358.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1428.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.140.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.77.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.168.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.aggregate-refusal.100.1.19af122ffc40"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.46.3.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.exact-coordinates.17.3.e52b1010d0ae"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/harness.ts",
+          "start": 1,
+          "end": 445
+        }
+      ],
+      "context_reasons": {
+        "packages/kernel/src/own-array.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  {
+    "origin": "artifact-234036da40df72ad36095f4b",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.117.9.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.146.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.159.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.187.7.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.211.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.238.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.255.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.274.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.295.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.309.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.331.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.346.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.370.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.394.3.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.478.7.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.499.7.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.524.9.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.553.9.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.584.9.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.607.7.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.665.5.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.690.5.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.711.5.917f01e8c7cb"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-partial-claim.734.5.917f01e8c7cb"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/outcome-partial-claim.test.ts",
+          "start": 1,
+          "end": 754
+        }
+      ],
+      "context_reasons": {
+        "mental-model/mechanisms/execution-cycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-2805bf93c3eb6e0264775add",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.43.3.a948b4eead74"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusals.60.3.a948b4eead74"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/refusals.test.ts",
+          "start": 1,
+          "end": 75
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-29571c4db7cde3206ffea143",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.exact-coordinates.17.3.e52b1010d0ae"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/review-04/p4-exact-coordinates.ts",
+          "start": 1,
+          "end": 49
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-3310e718c17bac5248395d3d",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.history-attribution.57.3.95831241cad7"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.history-attribution.96.3.95831241cad7"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.history-attribution.140.3.95831241cad7"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.history-attribution.155.3.95831241cad7"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.history-attribution.175.3.95831241cad7"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/history-attribution.test.ts",
+          "start": 1,
+          "end": 197
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-334c2010f01b3ec6e0f741f2",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.49.5.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.72.3.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.79.3.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.90.3.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.113.3.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.129.3.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.166.3.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.180.3.1d0307e49380"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.terminal.203.3.1d0307e49380"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/terminal.test.ts",
+          "start": 1,
+          "end": 211
+        }
+      ],
+      "context_reasons": {
+        "mental-model/mechanisms/lifecycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-3553544e78c5d13e863f4db3",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.hold-permitted.44.3.cbd298773251"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.hold-permitted.89.3.cbd298773251"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.hold-permitted.113.3.cbd298773251"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.hold-permitted.139.3.cbd298773251"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.hold-permitted.152.3.cbd298773251"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.hold-permitted.204.3.cbd298773251"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.hold-permitted.230.3.cbd298773251"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/hold-permitted.test.ts",
+          "start": 1,
+          "end": 273
+        }
+      ],
+      "context_reasons": {
+        "mental-model/mechanisms/recovery.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-3737bddc25971e833c283b6b",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.180.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.180.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.187.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.187.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.196.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.196.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.209.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.209.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.228.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.228.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.247.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.247.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.267.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.267.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.285.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.285.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.306.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.306.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.324.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.324.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.360.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.360.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.394.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.394.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.421.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.421.3.f61e9117877b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.460.3.4976648bb62a"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.nondisclosure.460.3.f61e9117877b"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/nondisclosure.test.ts",
+          "start": 1,
+          "end": 477
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "mental-model/mechanisms/evidence.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-394a3572417fe81cafbd7097",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.77.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.93.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.111.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.128.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.145.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.168.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.184.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.199.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.215.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.229.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.275.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.303.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.329.3.6f11f8b27115"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/evidence.test.ts",
+          "start": 1,
+          "end": 351
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-41aacd591ea18aec11e47313",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.late-reports.45.3.5c75e870e7e8"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.late-reports.60.3.5c75e870e7e8"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.late-reports.75.3.5c75e870e7e8"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.late-reports.97.3.5c75e870e7e8"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.late-reports.109.3.5c75e870e7e8"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/late-reports.test.ts",
+          "start": 1,
+          "end": 133
+        }
+      ],
+      "context_reasons": {
+        "mental-model/mechanisms/execution-cycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-41fff78d8c610a53b2aafa0e",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.77.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.93.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.111.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.128.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.145.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.168.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.184.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.199.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.215.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.229.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.275.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.303.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.329.3.6f11f8b27115"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/evidence.test.ts",
+          "start": 1,
+          "end": 351
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-4992d5c386175b80f363f169",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.215.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.24.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.59.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.106.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.138.5.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.182.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.192.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.231.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.250.3.1a196058e44e"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.refusal-diagnostics.280.1.1a196058e44e"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/refusal-diagnostics.test.ts",
+          "start": 1,
+          "end": 293
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-55f842727285272a53a9e5d9",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1390.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1459.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1428.3.41092809bb04"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1-correction-01/review-02.md",
+          "start": 41,
+          "end": 68
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-58a5b7bc09b47ad262f7e4f5",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-evidence.38.3.1d6919314e67"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-evidence.59.3.1d6919314e67"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-evidence.70.3.1d6919314e67"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-evidence.90.3.1d6919314e67"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-evidence.106.3.1d6919314e67"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/outcome-evidence.test.ts",
+          "start": 1,
+          "end": 120
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-5f5e6a66eb7e856dbfa74c1a",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.whole-view-ambient.123.7.9b9706e1ef3e"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/whole-view-ambient.test.ts",
+          "start": 1,
+          "end": 133
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/review-10/probe-whole-view.mjs",
+          "start": 1,
+          "end": 83
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/review-10/whole-view-results.json",
+          "start": 1,
+          "end": 9112
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-70d6df0d9d69aeaa93cc8b66",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.77.3.6f11f8b27115"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.evidence.168.3.6f11f8b27115"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1/review-02.md",
+          "start": 120,
+          "end": 141
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "packages/kernel/src/coordinator.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
+        "packages/kernel/src/identity.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  {
+    "origin": "artifact-776df3f8f7169a5faed03faf",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-lifetime.49.3.39c497a3b731"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.submission-lifetime.108.3.39c497a3b731"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/submission-lifetime.test.ts",
+          "start": 1,
+          "end": 155
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-7c993a80443a808b1935f25a",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.44.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.83.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.97.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.110.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.132.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.151.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.172.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.190.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.204.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.234.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.252.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.266.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.276.3.1da587bddbab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery.300.3.1da587bddbab"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/recovery.test.ts",
+          "start": 1,
+          "end": 306
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/state.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-7da3229588308934e8965a17",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.delivery-attribution.31.3.b85acb739a1b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.delivery-attribution.82.3.b85acb739a1b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.delivery-attribution.167.3.b85acb739a1b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.delivery-attribution.193.3.b85acb739a1b"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/delivery-attribution.test.ts",
+          "start": 1,
+          "end": 224
+        }
+      ],
+      "context_reasons": {
+        "mental-model/mechanisms/execution-cycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-88c70bb20ca9f6fe9c05bbf5",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.exact-coordinates.17.3.e52b1010d0ae"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/exact-coordinates.test.ts",
+          "start": 1,
+          "end": 211
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-9252c2392294fb63ec0df4ed",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-ambient.259.7.b2dae76319e5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-ambient.271.5.b2dae76319e5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-ambient.286.3.b2dae76319e5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-ambient.293.3.b2dae76319e5"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-ambient.327.7.b2dae76319e5"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/recovery-ambient.test.ts",
+          "start": 1,
+          "end": 366
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-9f1aff62363a7e5c975a5af2",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-limits.83.7.6fc1ec66ede6"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-limits.105.3.6fc1ec66ede6"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/outcome-limits.test.ts",
+          "start": 1,
+          "end": 113
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-a45b1c9d40d46e183ebd203d",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.178.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.211.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.251.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.40.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.66.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.75.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.89.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.108.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.118.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.133.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.153.3.6975f64c51ef"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/inspection.test.ts",
+          "start": 1,
+          "end": 273
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-a4fa946d2759121d53f06ef8",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.76.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.109.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.122.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.166.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.196.5.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.234.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.139.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.159.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.224.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.260.3.0275df62ce13"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/host-members.test.ts",
+          "start": 1,
+          "end": 275
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-a7baf87132157c84897e9b47",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.62.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.70.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.99.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.133.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.162.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.171.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.179.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.200.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.228.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.261.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.298.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.333.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.354.3.a795110537af"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.control-authority.377.3.a795110537af"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/control-authority.test.ts",
+          "start": 1,
+          "end": 396
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-af6cc0ad3461d3504c14ba98",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.34.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.70.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.92.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.104.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.120.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.127.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.140.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.153.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.162.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.168.3.27e29236797b"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.takeover.198.3.27e29236797b"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/takeover.test.ts",
+          "start": 1,
+          "end": 226
+        }
+      ],
+      "context_reasons": {
+        "mental-model/mechanisms/execution-cycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-b06e44e7a30c0b735cf084aa",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1390.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1459.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.1428.3.41092809bb04"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1-correction-01/blocker-01.md",
+          "start": 74,
+          "end": 113
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-b303eed73b3e154fe6365c09",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.30.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.44.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.68.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.84.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.102.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.121.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.134.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.164.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.187.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.210.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.227.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.241.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.259.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.295.5.a0a1368492ff"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/receipts.test.ts",
+          "start": 1,
+          "end": 311
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-b46445caeaa7feb4193b6677",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.46.3.c2dec471ae59"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/review-04/p2-review14.ts",
+          "start": 1,
+          "end": 32
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-bf8be457073b319f1d960816",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.46.3.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.140.9.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.169.9.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.190.3.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.208.5.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.234.9.c2dec471ae59"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.activation-identity.269.3.c2dec471ae59"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/activation-identity.test.ts",
+          "start": 1,
+          "end": 288
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-c65a82c89661d8cb815b5b1b",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.178.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.211.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.251.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.40.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.66.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.75.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.89.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.108.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.118.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.133.3.6975f64c51ef"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.inspection.153.3.6975f64c51ef"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/inspection.test.ts",
+          "start": 1,
+          "end": 273
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-ce2e69842afb779a3e70c0f5",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.creation.516.3.088207d1ce86"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.177.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.177.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.207.5.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.207.5.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.448.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.445.3.5a8d958ffdab"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1/review-01.md",
+          "start": 53,
+          "end": 73
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/core.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+        "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  {
+    "origin": "artifact-cea7c714e6dd544a456b0612",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-history.43.3.1c87b9c51284"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-history.99.3.1c87b9c51284"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-history.123.3.1c87b9c51284"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-history.160.3.1c87b9c51284"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-history.187.3.1c87b9c51284"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-history.208.3.1c87b9c51284"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.recovery-history.252.3.1c87b9c51284"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/recovery-history.test.ts",
+          "start": 1,
+          "end": 306
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/state.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-d5ce2b4c65a4f714507485f0",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.aggregate-refusal.100.1.19af122ffc40"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.exact-coordinates.17.3.e52b1010d0ae"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+          "start": 1,
+          "end": 84
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-dbf5c4bd47aafe731d44ac00",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.values.1816.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.1512.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.1834.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.1530.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.1847.3.44b00a5bd3f1"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.values.1543.3.fb228bec8c58"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.916.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.913.3.5a8d958ffdab"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.958.3.41092809bb04"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.dispatch.955.3.5a8d958ffdab"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "docs/development/work/K1.1/review-07.md",
+          "start": 62,
+          "end": 98
+        }
+      ],
+      "context_reasons": {
+        "packages/kernel/src/coordinator.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
+        "packages/kernel/src/own-array.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
+        "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  {
+    "origin": "artifact-e675d28451f3413582099c7a",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.317.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.60.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.94.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.114.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.128.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.145.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.160.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.184.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.195.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.207.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.217.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.230.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.241.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.258.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.292.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.303.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.331.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.336.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.354.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.420.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.441.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.450.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.469.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.483.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.519.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.542.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.554.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.593.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.608.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.625.3.a83b53c2882d"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.outcome-acceptance.647.3.a83b53c2882d"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/outcome-acceptance.test.ts",
+          "start": 1,
+          "end": 672
+        }
+      ],
+      "context_reasons": {
+        "mental-model/mechanisms/execution-cycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-f1a28bedebfe204b9687fa53",
+    "cause": "Harness module-review invalidation and dependent closure/witness removal; see helper-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.30.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.44.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.68.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.84.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.102.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.121.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.134.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.164.3.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.187.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.210.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.227.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.241.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.259.5.a0a1368492ff"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.receipts.295.5.a0a1368492ff"
+        }
+      ],
+      "context": [
+        {
+          "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+          "path": "packages/kernel/tests/receipts.test.ts",
+          "start": 1,
+          "end": 311
+        }
+      ],
+      "context_reasons": {
+        "mental-model/concepts/identity.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+      }
+    }
+  },
+  {
+    "origin": "artifact-f50368fdd8385de10113f371",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.76.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.109.3.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.196.5.0275df62ce13"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.host-members.234.3.0275df62ce13"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/probe-host-members-06.ts",
+          "start": 1,
+          "end": 98
+        },
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "docs/development/work/K1.2-correction-01/probe-host-members-06.ts",
+          "start": 1,
+          "end": 98
+        }
+      ],
+      "context_reasons": {
+        "60eebc24113eb834e5d88015ca2a196c95c60493": "A revision the text cites as provenance; this context reads the origin and its records at their pinned revisions.",
+        "packages/kernel/src": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+      }
+    }
+  },
+  {
+    "origin": "artifact-f5306a247782c53fd004e62d",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.poison-catalog.291.3.46794b39598a"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/sweep/zone-names.ts",
+          "start": 1,
+          "end": 130
+        }
+      ],
+      "context_reasons": {}
+    }
+  },
+  {
+    "origin": "artifact-fcbe9b87cbe87b398197c578",
+    "cause": "Fresh census after the approved harness assertion rewrite: dependent member/helper closure or witness changed; see census-transfer-04.json.",
+    "previous_closure": {
+      "links": [
+        {
+          "kind": "counterexample",
+          "id": "witness.transaction.150.3.bbe0fb257476"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.transaction.59.3.bbe0fb257476"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.transaction.110.3.bbe0fb257476"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.transaction.237.3.bbe0fb257476"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.transaction.269.3.bbe0fb257476"
+        },
+        {
+          "kind": "counterexample",
+          "id": "witness.transaction.317.3.bbe0fb257476"
+        }
+      ],
+      "context": [
+        {
+          "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+          "path": "packages/kernel/tests/transaction.test.ts",
+          "start": 1,
+          "end": 365
+        }
+      ],
+      "context_reasons": {}
+    }
+  }
+]

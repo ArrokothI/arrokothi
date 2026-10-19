@@ -1,0 +1,1946 @@
+[
+  {
+    "id": "MD1-describe-reads-constructor",
+    "mechanism": "typeof-only diagnostic label (describe): no [[Get]] of constructor on a caller value",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+        "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MD2-describe-observes-prototype",
+    "mechanism": "single structural observation per foreign position: the label adds no prototype observation",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" && PrimordialGetPrototypeOf(value) === null ? \"null-prototype object\" : typeof value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+        "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" && PrimordialGetPrototypeOf(value) === null ? \"null-prototype object\" : typeof value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" && PrimordialGetPrototypeOf(value) === null ? \"null-prototype object\" : typeof value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MD3-catch-label-reads-constructor-name",
+    "mechanism": "catch path typeof-only label: no constructor.name read on the thrown value",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "observing this value's structure threw (${describe(error)})",
+      "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "observing this value's structure threw (${describe(error)})",
+        "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "observing this value's structure threw (${describe(error)})",
+      "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MD4-describe-reads-function-name",
+    "mechanism": "typeof-only label for unsupported primitives and functions: no name read",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"function\" && typeof (value as { name?: unknown }).name === \"string\" ? \"function\" : typeof value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+        "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"function\" && typeof (value as { name?: unknown }).name === \"string\" ? \"function\" : typeof value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"function\" && typeof (value as { name?: unknown }).name === \"string\" ? \"function\" : typeof value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MD6-catch-label-reads-message",
+    "mechanism": "catch path typeof-only label: no message read on the thrown value",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "observing this value's structure threw (${describe(error)})",
+      "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { message?: unknown }).message === \"string\" ? (error as { message: string }).message : describe(error)})"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "observing this value's structure threw (${describe(error)})",
+        "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { message?: unknown }).message === \"string\" ? (error as { message: string }).message : describe(error)})"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "observing this value's structure threw (${describe(error)})",
+      "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { message?: unknown }).message === \"string\" ? (error as { message: string }).message : describe(error)})"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MD7-describe-classifies-arrays",
+    "mechanism": "typeof-only label: no IsArray (a structural observation that throws on a revoked Proxy) of the thrown value",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : PrimordialArrayIsArray(value) ? \"array\" : typeof value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+        "after": "const describe = (value: unknown): string => value === null ? \"null\" : PrimordialArrayIsArray(value) ? \"array\" : typeof value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : PrimordialArrayIsArray(value) ? \"array\" : typeof value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MD8-catch-label-describes-container",
+    "mechanism": "catch path labels the thrown value, not the container",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "observing this value's structure threw (${describe(error)})",
+      "after": "observing this value's structure threw (${describe(container)})"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "observing this value's structure threw (${describe(error)})",
+        "after": "observing this value's structure threw (${describe(value)})"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "observing this value's structure threw (${describe(error)})",
+      "after": "observing this value's structure threw (${describe(value)})"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MO1-outcome-captured-before-visibility",
+    "mechanism": "Outcome scope/visibility precedes all root observation",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    const record = this.#visible(caller, executionSeen.observed as string);",
+      "after": "    captureOutcome(envelope as object, this.#emissionsPerOutcome);\n    const record = this.#visible(caller, executionSeen.observed as string);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    const record = this.#visible(caller, executionSeen.observed as string);",
+        "after": "    captureOutcome(envelope as object, this.#emissionsPerOutcome);\n    const record = this.#visible(caller, executionSeen.observed as string);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    const record = this.#visible(caller, executionSeen.observed as string);",
+      "after": "    captureOutcome(envelope as object, this.#emissionsPerOutcome);\n    const record = this.#visible(caller, executionSeen.observed as string);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MO2-emissions-skipped-after-refused-progress",
+    "mechanism": "eager capture of every Outcome root before authority (no short-circuit after a refused root)",
+    "at_b": {
+      "path": "packages/kernel/src/outcome.ts",
+      "before": "  const captured = emissionsField.ok ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+      "after": "  const captured = emissionsField.ok && progress !== null ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/outcome.ts",
+        "before": "  const captured = emissionsField.ok ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+        "after": "  const captured = emissionsField.ok && progress !== null ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/outcome.ts",
+      "before": "  const captured = emissionsField.ok ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };",
+      "after": "  const captured = emissionsField.ok && progress !== null ? captureEmissions(emissionsField.observed, emissionLimit, issues) : { emissions: [] as CapturedEmission[], overCapacity: null };"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MV1-element-read-replaced-by-descriptor-value",
+    "mechanism": "descriptor/read disagreement check: one ordinary read per position, compared with its own descriptor",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const read = (container as Record<string, unknown>)[key];",
+      "after": "  const read = descriptor.value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+        "after": "  return { descriptor, read: descriptor.value };"
+      },
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      read = observed.read;",
+        "after": "      read = descriptor.value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+      "after": "  return { descriptor, read: descriptor.value };"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MC1-creation-fails-fast-on-authority-context",
+    "mechanism": "creation captures both roots (authorityContext and initial payload) before refusing",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, \"authorityContext\"));",
+      "after": "  if (!authorityContext.ok) { appendIssues(issues, located(authorityContext.issues, \"authorityContext\")); return err(issues); }"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "  if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, \"authorityContext\"));",
+        "after": "  if (!authorityContext.ok) { appendIssues(issues, located(authorityContext.issues, \"authorityContext\")); return err(issues); }"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, \"authorityContext\"));",
+      "after": "  if (!authorityContext.ok) { appendIssues(issues, located(authorityContext.issues, \"authorityContext\")); return err(issues); }"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MR1-recovery-short-circuits-lists",
+    "mechanism": "recovery captures all three availability roots eagerly",
+    "at_b": {
+      "path": "packages/kernel/src/outcome.ts",
+      "before": "  const runtimeContractRevisions = captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);",
+      "after": "  const runtimeContractRevisions = definitionRevisions === null ? null : captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/outcome.ts",
+        "before": "  const runtimeContractRevisions = captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);",
+        "after": "  const runtimeContractRevisions = definitionRevisions === null ? null : captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/outcome.ts",
+      "before": "  const runtimeContractRevisions = captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);",
+      "after": "  const runtimeContractRevisions = definitionRevisions === null ? null : captureTextList(available, \"runtimeContractRevisions\", \"available.runtimeContractRevisions\", issues);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MV2-length-read-replaced-by-descriptor-value",
+    "mechanism": "array length held to one own data descriptor and one agreeing read",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+      "after": "  const lengthRead: unknown = lengthDescriptor?.value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+        "after": "  const lengthRead: unknown = lengthDescriptor?.value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
+      "after": "  const lengthRead: unknown = lengthDescriptor?.value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MV3-array-symbols-listing-skipped",
+    "mechanism": "arrays list own symbols (second own-key listing) before acceptance",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const symbolCount = hasExtra ? 0 : PrimordialGetOwnPropertySymbols(container).length;",
+      "after": "  const symbolCount = 0;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const symbolCount = hasExtra ? 0 : listed;",
+        "after": "  const symbolCount = 0;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (!hasExtra) {\n    const listed = listOwnSymbols(state, container);",
+      "after": "  if (false) {\n    const listed = listOwnSymbols(state, container);"
+    },
+    "analogue_source": "mutants-mv3.json / MV3-AT-C"
+  },
+  {
+    "id": "MB1-byte-stop-does-not-stop",
+    "mechanism": "the byte stop ends reading of the whole root",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    state.stopped = true;\n",
+      "after": ""
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+        "after": "    state.stop = \"bytes\";"
+      },
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return STOPPED;",
+        "after": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return true;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+      "after": "    state.stop = \"bytes\";"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "MB2-array-punctuation-undercharged",
+    "mechanism": "container punctuation byte charge before elements (commas)",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
+      "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
+        "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
+      "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-disagree-check-removed",
+    "mechanism": "descriptor/read disagreement check (checkMember / describedValue) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+      "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+        "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+      "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-object-read-from-descriptor",
+    "mechanism": "object member's one ordinary read replaced by the descriptor value [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const read = (container as Record<string, unknown>)[key];",
+      "after": "  const read = descriptor.value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+        "after": "  return { descriptor, read: descriptor.value };"
+      },
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      read = observed.read;",
+        "after": "      read = descriptor.value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      read = observed.read;",
+      "after": "      read = descriptor.value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-member-path-flattened",
+    "mechanism": "located path of an object member [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    const where = child(path, key);",
+      "after": "    const where = key;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    const where = child(path, key);",
+        "after": "    const where = key;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    const where = child(path, key);",
+      "after": "    const where = key;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-missing-descriptor-branch-removed",
+    "mechanism": "missing own descriptor at a structurally existing position (undefined_member) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
+      "after": "  if (false) {\n    // The structure said this member exists"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
+        "after": "  if (false) {\n    // The structure said this member exists"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
+      "after": "  if (false) {\n    // The structure said this member exists"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-element-path-dropped",
+    "mechanism": "located path of an array position [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    const where = element(path, index);",
+      "after": "    const where = path;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    const where = element(path, index);",
+        "after": "    const where = path;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    const where = element(path, index);",
+      "after": "    const where = path;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-length-agreement-removed",
+    "mechanism": "array length descriptor/read agreement [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
+      "after": ""
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
+        "after": ""
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
+      "after": ""
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-catch-rethrows",
+    "mechanism": "capture's catch path turns a throwing observation into a refusal [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  } catch (error) {\n    pushIssue(state.issues, {",
+      "after": "  } catch (error) {\n    throw error;\n    pushIssue(state.issues, {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {\n    return refuse(state, {",
+        "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  } catch (error) {\n    record(state, {",
+      "after": "  } catch (error) {\n    throw error;\n    record(state, {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-catch-code-changed",
+    "mechanism": "the catch path refuses an unobservable structure as unstable_representation [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+      "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+        "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+      "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-listed-not-owned-skipped",
+    "mechanism": "listed-but-not-owned object member check [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+      "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept."
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+        "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept."
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
+      "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept."
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-listed-not-owned-misclassified",
+    "mechanism": "a listed-but-not-owned member is unstable_representation, not a hole [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
+      "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "          code: \"unstable_representation\",\n          message: \"object lists an own member it does not own",
+        "after": "          code: \"undefined_member\",\n          message: \"object lists an own member it does not own"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "        code: \"unstable_representation\",\n        message: \"object lists an own member it does not own",
+      "after": "        code: \"undefined_member\",\n        message: \"object lists an own member it does not own"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-snapshot-is-caller-object",
+    "mechanism": "the retained snapshot is a Kernel copy taken from the one reading, never the caller's object [ablation: B original KILLED; C converted KILLED; at C the mutant binds {\"a\":2,\"b\":{}}]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  return PrimordialObjectFreeze(snapshot);\n}",
+      "after": "  return container as unknown as BoundaryValue;\n}"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return finishObject(prototype, captured);\n}",
+        "after": "  return container as unknown as BoundaryValue;\n}"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  return finishObject(prototype, captured);\n}",
+      "after": "  return container as unknown as BoundaryValue;\n}"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-snapshot-rereads-caller",
+    "mechanism": "snapshot members come from the one reading, not a later ordinary read of the caller [ablation: B original KILLED; C converted KILLED; at C the mutant binds {\"a\":2,\"b\":{}}]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+      "after": "    defineData(snapshot, pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue, false, true, false);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return finishObject(prototype, captured);\n}",
+        "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  return finishObject(prototype, captured);\n}",
+      "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-array-structure-charge-dropped",
+    "mechanism": "byte charge of an array's structure at every occurrence of a shared member [ablation: B original KILLED (its child hit the 60 s timeout); C converted KILLED (meter stop too_much_work instead of the byte stop)]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+      "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
+        "after": "  if (charge(state, (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (!charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;",
+      "after": "  if (!charge(state, (surplus > 0 ? surplus : 0) + symbolCount)) return REFUSED;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-byte-stop-not-sticky",
+    "mechanism": "the byte stop ends reading (stopped flag) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    state.stopped = true;\n    pushIssue(state.issues, {\n      path: \"\",\n      code: \"too_many_bytes\",",
+      "after": "    pushIssue(state.issues, {\n      path: \"\",\n      code: \"too_many_bytes\","
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+        "after": "    state.stop = \"bytes\";"
+      },
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return STOPPED;",
+        "after": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return true;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
+      "after": "    state.stop = \"bytes\";"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-string-bytes-uncharged",
+    "mechanism": "byte charge of an accepted string at every occurrence [ablation: B original KILLED (its child hit the 60 s timeout); C converted KILLED (meter stop too_much_work)]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    return charge(state, scan.bytes) ? text : REFUSED;",
+      "after": "    return text;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    return charge(state, scan.bytes) === STOPPED ? STOPPED : value;",
+        "after": "    return value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    return charge(state, scan.bytes) ? value : REFUSED;",
+      "after": "    return value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-refused-string-uncharged",
+    "mechanism": "byte charge of a refused (too long) string at every occurrence [ablation: B original KILLED (read 1,040,384 strings); C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      // did, so repeated occurrences of one refused string exhaust the budget quickly.\n      charge(state, text.length);\n",
+      "after": "      // did, so repeated occurrences of one refused string exhaust the budget quickly.\n"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;\n",
+        "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return REFUSED;\n"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      charge(state, value.length);\n",
+      "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-descriptor-reads-unbounded",
+    "mechanism": "object descriptor reads bounded by the entry limit plus one (KC2-R1-01) [ablation: B original KILLED (read 550,000 descriptors); C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+      "after": "  const readable = names.length;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+        "after": "  const readable = names.length;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+      "after": "  const readable = names.length;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-descriptor-bound-off-by-one",
+    "mechanism": "object descriptor read bound is exactly entry limit plus one [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+      "after": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries : names.length;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+        "after": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries : names.length;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
+      "after": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries : names.length;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-phantom-scan-not-bounded",
+    "mechanism": "an over-named array listing is refused without classifying each name (phantom-index scan skipped when overlong) [ablation: B original KILLED (1,000,000 index descriptors); C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex] as string;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
+      "after": "  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex] as string;\n    if (name === \"length\" || !isArrayIndex(name)) continue;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
+        "after": "  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
+      "after": "  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "COST-overlong-guard-removed",
+    "mechanism": "aggregate refusal of an over-named array listing [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;",
+      "after": "  const overlong = false;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;",
+        "after": "  const overlong = false;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;",
+      "after": "  const overlong = false;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-clone-inherits-object-prototype",
+    "mechanism": "serializer clone of an object is null-prototype, so an inherited toJSON is off the lookup path [ablation: B original KILLED; C converted KILLED (canonical '42')]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);",
+      "after": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(PrimordialObjectPrototype);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);",
+        "after": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(PrimordialObjectPrototype);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);",
+      "after": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(PrimordialObjectPrototype);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-snapshot-handed-to-dependency",
+    "mechanism": "encode hands only the serialization-safe clone to the dependency [ablation: B original KILLED; C converted KILLED (canonical '42')]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(toSerializationSafe(value)) as string | undefined);",
+      "after": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(value) as string | undefined);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(toSerializationSafe(value)) as string | undefined);",
+        "after": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(value) as string | undefined);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(toSerializationSafe(value)) as string | undefined);",
+      "after": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(value) as string | undefined);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-phantom-index-check-removed",
+    "mechanism": "listed canonical index at or beyond length must cohere or refuse (K11-R2-VAL-02 supplement) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    if (numeric >= length) {",
+      "after": "    if (false) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    if (numeric >= length) {",
+        "after": "    if (false) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    if (numeric >= length) {",
+      "after": "    if (false) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-phantom-unbacked-misclassified",
+    "mechanism": "an unbacked listed index is unstable_representation, a backed one unrepresentable_member [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      if (backing === undefined) {",
+      "after": "      if (backing === null) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      if (backing === undefined) {",
+        "after": "      if (backing === null) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      if (backing === undefined) {",
+      "after": "      if (backing === null) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-backed-outside-index-unlocated",
+    "mechanism": "a backed index outside length is located at its element path [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "          path: element(path, numeric),\n          code: \"unrepresentable_member\",",
+      "after": "          path,\n          code: \"unrepresentable_member\","
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "          path: element(path, numeric),\n          code: \"unrepresentable_member\",",
+        "after": "          path,\n          code: \"unrepresentable_member\","
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "          path: element(path, numeric),\n          code: \"unrepresentable_member\",",
+      "after": "          path,\n          code: \"unrepresentable_member\","
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-catch-label-inspects-thrown-value",
+    "mechanism": "the catch path's typeof-only label (describe) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+        "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+      "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "LIMIT-early-entries-refusal-removed",
+    "mechanism": "array length above the entry limit refused before listing or traversal (K11-R3-LIMIT-01) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (length > BOUNDARY_LIMITS.containerEntries) {",
+      "after": "  if (false) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (length > BOUNDARY_LIMITS.containerEntries) {",
+        "after": "  if (false) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (length > BOUNDARY_LIMITS.containerEntries) {",
+      "after": "  if (false) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-keys-slot-dropped",
+    "mechanism": "serializer window reinstalls Object.keys for the dependency [ablation: B original KILLED; C converted KILLED (bytes '{}')]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+      "after": ""
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+        "after": ""
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
+      "after": ""
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-slots-not-installed",
+    "mechanism": "serializer window installs the load-time primordial in every named slot [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+      "after": "      // slot not installed"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+        "after": "      // slot not installed"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
+      "after": "      // slot not installed"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-slots-not-handed-back",
+    "mechanism": "serializer window hands each named slot back after the call [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      } else {\n        restoreDescriptor(entry.holder, entry.key, entry.descriptor);",
+      "after": "      } else {\n        // not handed back"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      } else {\n        restoreDescriptor(entry.holder, entry.key, entry.descriptor);",
+        "after": "      } else {\n        // not handed back"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      } else {\n        restoreDescriptor(entry.holder, entry.key, entry.descriptor);",
+      "after": "      } else {\n        // not handed back"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-join-slot-dropped",
+    "mechanism": "serializer window reinstalls Array.prototype.join for the dependency [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  slot(PrimordialArrayPrototype, \"join\", PrimordialArrayJoin);\n",
+      "after": ""
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  slot(PrimordialArrayPrototype, \"join\", PrimordialArrayJoin);\n",
+        "after": ""
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  slot(PrimordialArrayPrototype, \"join\", PrimordialArrayJoin);\n",
+      "after": ""
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "VAL-plain-prototype-live-global",
+    "mechanism": "plain-prototype check compares with the load-time Object.prototype, not a live global read (K11-R5-VAL-03) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+      "after": "  if (prototype !== Object.prototype && prototype !== null) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+        "after": "  if (prototype !== Object.prototype && prototype !== null) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+      "after": "  if (prototype !== Object.prototype && prototype !== null) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "OWN-element-install-by-set",
+    "mechanism": "snapshot elements installed with [[DefineOwnProperty]], never [[Set]] (K11-R6-VAL-04) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    defineAt(out, index, item as BoundaryValue);",
+      "after": "    out[index] = item as BoundaryValue;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    defineAt(out, index, item);",
+        "after": "    out[index] = item;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    defineAt(out, index, item);",
+      "after": "    out[index] = item;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-index-shadows-kept",
+    "mechanism": "serializer window removes inherited index shadows for the call (K11-R6-VAL-05) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      const entry = readAt(shadows, index) as SavedSlot;\n      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];",
+      "after": "      const entry = readAt(shadows, index) as SavedSlot;\n      void entry;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      const entry = readAt(shadows, index) as SavedSlot;\n      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];",
+        "after": "      const entry = readAt(shadows, index) as SavedSlot;\n      void entry;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      const entry = readAt(shadows, index) as SavedSlot;\n      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];",
+      "after": "      const entry = readAt(shadows, index) as SavedSlot;\n      void entry;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-array-chain-link-dropped",
+    "mechanism": "serializer window resets the Array.prototype chain link (K11-R16-VAL-01 R2) [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);\n",
+      "after": ""
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);\n",
+        "after": ""
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);\n",
+      "after": ""
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "SER-chain-reset-skipped",
+    "mechanism": "serializer window resets every chain link for the call [ablation: B original KILLED; C converted KILLED]",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);",
+      "after": "      void entry;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);",
+        "after": "      void entry;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);",
+      "after": "      void entry;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-CATCH-RETHROW",
+    "mechanism": "the catch path of capture (a structure whose observation throws is refused, not propagated)",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  } catch (error) {\n    pushIssue(state.issues, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+      "after": "  } catch (error) {\n    throw error;\n    pushIssue(state.issues, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+        "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  } catch (error) {\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
+      "after": "  } catch (error) {\n    throw error;\n    record(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-CATCH-LABEL",
+    "mechanism": "the catch path's typeof-only label (no member of the thrown value is read)",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "threw (${describe(error)})",
+      "after": "threw (${(error as Error).constructor.name})"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "threw (${describe(error)})",
+        "after": "threw (${(error as Error).constructor.name})"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "threw (${describe(error)})",
+      "after": "threw (${(error as Error).constructor.name})"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-GHOST-CONTINUE",
+    "mechanism": "the listed-but-not-owned check ends that name's examination",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor]);",
+      "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor]);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
+        "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
+      "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-PHANTOM-INDEX-SWAP",
+    "mechanism": "the phantom-index check's backed/unbacked classification",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      if (backing === undefined) {",
+      "after": "      if (backing !== undefined) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      if (backing === undefined) {",
+        "after": "      if (backing !== undefined) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      if (backing === undefined) {",
+      "after": "      if (backing !== undefined) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-LENGTH-CODE",
+    "mechanism": "the unstable-length check's classification",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
+      "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
+        "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
+      "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-MISMATCH-OFF",
+    "mechanism": "the descriptor/read disagreement check",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+      "after": "  if (false) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+        "after": "  if (false) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
+      "after": "  if (false) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-PHANTOM-NAME-CHECK",
+    "mechanism": "the listed-but-not-owned check on a phantom name",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own.",
+      "after": "    if (false) {\n      // The object listed an own name it does not own."
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own.",
+        "after": "    if (false) {\n      // The object listed an own name it does not own."
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own.",
+      "after": "    if (false) {\n      // The object listed an own name it does not own."
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-PHANTOM-NAME-PATH",
+    "mechanism": "the phantom name's bounded member path",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "        path: child(path, name),\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
+      "after": "        path,\n        code: \"unstable_representation\",\n        message: \"object lists an own member"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "          path: child(path, name),\n          code: \"unstable_representation\",\n          message: \"object lists an own member",
+        "after": "          path,\n          code: \"unstable_representation\",\n          message: \"object lists an own member"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "        path: child(path, name),\n        code: \"unstable_representation\",\n        message: \"object lists an own member",
+      "after": "        path,\n        code: \"unstable_representation\",\n        message: \"object lists an own member"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-ISSUE-TEXT-BOUND",
+    "mechanism": "the diagnostic path bound (issueText length limit)",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (text.length > limit) return omitted;\n",
+      "after": ""
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (text.length > limit) return omitted;\n",
+        "after": ""
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (text.length > limit) return omitted;\n",
+      "after": ""
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-OWN-SUFFIX",
+    "mechanism": "pushIssue creates each suffix entry with its own count",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
+      "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
+        "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
+      "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-OWN-EXPLAIN",
+    "mechanism": "explainDiagnosticIssues reads occurrences own-only",
+    "at_b": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {",
+      "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/envelope.ts",
+        "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {",
+        "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {",
+      "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-OWN-RENDER",
+    "mechanism": "explain() reads occurrences own-only",
+    "at_b": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    out += occurrences === undefined",
+      "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    out += occurrences === undefined"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/envelope.ts",
+        "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    out += occurrences === undefined",
+        "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    out += occurrences === undefined"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    out += occurrences === undefined",
+      "after": "    const occurrences = (issue as { occurrences?: number }).occurrences;\n    out += occurrences === undefined"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-EAGER-EMISSIONS",
+    "mechanism": "every Emission root is captured eagerly (no stop at the first refused one)",
+    "at_b": {
+      "path": "packages/kernel/src/outcome.ts",
+      "before": "    if (!keyOk || value === null) continue;",
+      "after": "    if (!keyOk || value === null) break;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/outcome.ts",
+        "before": "    if (!keyOk || value === null) continue;",
+        "after": "    if (!keyOk || value === null) break;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/outcome.ts",
+      "before": "    if (!keyOk || value === null) continue;",
+      "after": "    if (!keyOk || value === null) break;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-ELEMENT-READ",
+    "mechanism": "each array position's one ordinary read is taken (not skipped)",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const read = (container as Record<string, unknown>)[key];",
+      "after": "  const read: unknown = undefined;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+        "after": "  return { descriptor, read: undefined };"
+      },
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return { read: (container as Record<string, unknown>)[key] };",
+        "after": "  return { read: undefined };"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+      "after": "  return { descriptor, read: undefined };"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "RC-ELEMENT-READ-TWICE",
+    "mechanism": "each array position is read at most once",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const read = (container as Record<string, unknown>)[key];",
+      "after": "  const read = ((container as Record<string, unknown>)[key], (container as Record<string, unknown>)[key]);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+        "after": "  (container as Record<string, unknown>)[key];\n  return { descriptor, read: (container as Record<string, unknown>)[key] };"
+      },
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  return { read: (container as Record<string, unknown>)[key] };",
+        "after": "  (container as Record<string, unknown>)[key];\n  return { read: (container as Record<string, unknown>)[key] };"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
+      "after": "  (container as Record<string, unknown>)[key];\n  return { descriptor, read: (container as Record<string, unknown>)[key] };"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-MAPSET-CREATION-KEY",
+    "mechanism": "creation-key index commit through load-time Map.set",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
+      "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
+        "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
+      "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-MAPSET-EXECUTIONS",
+    "mechanism": "Execution registry commit through load-time Map.set",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    mapSet(this.#executions, executionId, record);",
+      "after": "    this.#executions.set(executionId, record);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    mapSet(this.#executions, executionId, record);",
+        "after": "    this.#executions.set(executionId, record);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    mapSet(this.#executions, executionId, record);",
+      "after": "    this.#executions.set(executionId, record);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "O-APPENDOWN-PUSH",
+    "mechanism": "own-array appendOwn",
+    "at_b": {
+      "path": "packages/kernel/src/own-array.ts",
+      "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+      "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/own-array.ts",
+        "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+        "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/own-array.ts",
+      "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
+      "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "V-SNAPSHOT-LITERAL",
+    "mechanism": "snapshot member installation through null-prototype descriptor",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+      "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+        "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    defineData(snapshot, pair[0], pair[1], false, true, false);",
+      "after": "    Object.defineProperty(snapshot, pair[0], { value: pair[1], writable: false, enumerable: true, configurable: false });"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "O-DEFINEDATA-LITERAL",
+    "mechanism": "own-array defineData null-prototype descriptor",
+    "at_b": {
+      "path": "packages/kernel/src/own-array.ts",
+      "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+      "after": "  const descriptor = {} as {\n    value: unknown;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/own-array.ts",
+        "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+        "after": "  const descriptor = {} as {\n    value: unknown;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/own-array.ts",
+      "before": "  const descriptor = PrimordialObjectCreate(null) as {\n    value: unknown;",
+      "after": "  const descriptor = {} as {\n    value: unknown;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "V-CATCH",
+    "mechanism": "capture catch path containment",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  } catch (error) {",
+      "after": "  } catch (error) {\n    throw error;"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  } catch (error) {",
+        "after": "  } catch (error) {\n    throw error;"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  } catch (error) {",
+      "after": "  } catch (error) {\n    throw error;"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "E-OWN-ONLY",
+    "mechanism": "own-only envelope observation",
+    "at_b": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
+      "after": ""
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/envelope.ts",
+        "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
+        "after": ""
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "    if (PrimordialGetOwnPropertyDescriptor(holder, key) === undefined) return { observed: undefined, threw: false };\n",
+      "after": ""
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-KIND-ORDINARY",
+    "mechanism": "kind observed through observeField, not an ordinary read",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
+      "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
+        "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  const kindField = observeField(content, \"kind\", `${prefix}kind`, issues);",
+      "after": "  const kindField = { ok: true, observed: (content as { kind?: unknown }).kind };"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "V-SYNTH-DESCRIPTOR",
+    "mechanism": "missing own position synthesized from the ordinary read",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    const member = describedValue(container, key, PrimordialGetOwnPropertyDescriptor(container, key), where, state);",
+      "after": "    const member = describedValue(container, key, PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true }, where, state);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
+        "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true };\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs."
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
+      "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true };\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs."
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-MAILBOX-PUSH",
+    "mechanism": "mailbox append as own data",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    appendOwn(record.mailbox, entry);",
+      "after": "    record.mailbox.push(entry);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    appendOwn(record.mailbox, entry);",
+        "after": "    record.mailbox.push(entry);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    appendOwn(record.mailbox, entry);",
+      "after": "    record.mailbox.push(entry);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-INGRESS-RECEIPT-PUSH",
+    "mechanism": "ingress receipt append as own data",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
+      "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
+        "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
+      "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "V-CAPTURED-PUSH",
+    "mechanism": "captured member list grown as own data",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    appendOwn(captured, [key, item]);",
+      "after": "    captured.push([key, item]);"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    appendOwn(captured, [key, item] as const);",
+        "after": "    captured.push([key, item] as const);"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    appendOwn(captured, [key, item] as const);",
+      "after": "    captured.push([key, item] as const);"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-ACTIVATION-PAYLOAD-COPY",
+    "mechanism": "Activation carries the retained payload, not a copy",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    payload: entry.payload,",
+      "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    payload: entry.payload,",
+        "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    payload: entry.payload,",
+      "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-VIEW-PAYLOAD-COPY",
+    "mechanism": "inspection projects the retained payload, not a copy",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
+      "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
+        "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
+      "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-FREEZE-ACTIVATION",
+    "mechanism": "Activation frozen by load-time freeze",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
+      "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
+        "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "    const activation: Activation = PrimordialObjectFreeze({\n      executionId: record.executionId,",
+      "after": "    const activation: Activation = Object.freeze({\n      executionId: record.executionId,"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-FREEZE-EVENTS",
+    "mechanism": "Activation event batch frozen by load-time freeze",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "      events: PrimordialObjectFreeze(carriedEvents),",
+      "after": "      events: Object.freeze(carriedEvents),"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "      events: PrimordialObjectFreeze(carriedEvents),",
+        "after": "      events: Object.freeze(carriedEvents),"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "      events: PrimordialObjectFreeze(carriedEvents),",
+      "after": "      events: Object.freeze(carriedEvents),"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "C-FREEZE-EVENT",
+    "mechanism": "each carried Event frozen by load-time freeze",
+    "at_b": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+      "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/coordinator.ts",
+        "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+        "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/coordinator.ts",
+      "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
+      "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "V-FOREIGN-PROTO",
+    "mechanism": "plain-prototype check disabled (coordinator review)",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+      "after": "  if (false) {"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+        "after": "  if (false) {"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
+      "after": "  if (false) {"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "X1-foreign-object-instanceof",
+    "mechanism": "foreign-object label walks the prototype chain with instanceof (diagnostic-work review)",
+    "at_b": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    pushIssue(state.issues, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
+      "after": "    pushIssue(state.issues, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/values.ts",
+        "before": "    return refuse(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
+        "after": "    return refuse(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/values.ts",
+      "before": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
+      "after": "    record(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });"
+    },
+    "analogue_source": "maintained registry"
+  },
+  {
+    "id": "E-IDTEXT-CATCH",
+    "mechanism": "identity-text classifier throw escapes instead of a located refusal (coordinator review)",
+    "at_b": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "      received = \"an uninspectable value\";",
+      "after": "      throw new Error(\"classifier threw\");"
+    },
+    "at_c": [
+      {
+        "path": "packages/kernel/src/envelope.ts",
+        "before": "      received = \"an uninspectable value\";",
+        "after": "      throw new Error(\"classifier threw\");"
+      }
+    ],
+    "original_at_c": {
+      "path": "packages/kernel/src/envelope.ts",
+      "before": "      received = \"an uninspectable value\";",
+      "after": "      throw new Error(\"classifier threw\");"
+    },
+    "analogue_source": "original ablation"
+  }
+]

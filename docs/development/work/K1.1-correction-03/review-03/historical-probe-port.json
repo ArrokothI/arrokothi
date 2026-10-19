@@ -1,0 +1,10 @@
+{
+  "source_revision": "4b121d7ba665182b22857f049c05f019f25d0c65",
+  "unchanged": [
+    "review-02/rerun-stop-boundary.mjs",
+    "review-02/rerun-declared-limit.mjs",
+    "review-01/search-dimensions.mjs",
+    "review-02/probe-continuations.mjs"
+  ],
+  "port": "review-02/probe-continuations.py: three helper signature anchors changed from boolean to true | typeof STOPPED; refuse expression anchor changed to the candidate identity comparison; temporary directory prefix changed. Instrumentation and test semantics unchanged. No production mutant constructed."
+}

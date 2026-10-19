@@ -1,0 +1,42 @@
+{
+ "format": 1,
+ "candidate_payload": "2bf220e9e426c810f2505fa2d74d70197807e584",
+ "attachments": [
+  {
+   "path": "b-matrices.json",
+   "bytes": 21402557,
+   "sha256": "7486fa0a20e1e0c48486c55bbc060699754337b907a93712d472d0c70f84a15d",
+   "members": 49
+  },
+  {
+   "path": "c-matrices.json",
+   "bytes": 23344355,
+   "sha256": "be29e46bac34bb26d7de7f99d5683355036cfb20874c5bedc11312d03a3cebea",
+   "members": 49
+  },
+  {
+   "path": "isolations.json",
+   "bytes": 10905475,
+   "sha256": "d96e6e5e1467615ef52b90edfe73f49cddab44f2d586164ca726849ccc0b6171",
+   "members": 30
+  },
+  {
+   "path": "c1-ledger.json",
+   "bytes": 1241158,
+   "sha256": "f22a41928c47e72d98afc84ff0033b838e8f68feb217bdea8224314563ffe1ac",
+   "members": 9
+  },
+  {
+   "path": "continuations.json",
+   "bytes": 3717,
+   "sha256": "596cc7a682c2e2cd08923e9641a18d53a62b29378fde75121290ebc898151e53",
+   "members": 4
+  },
+  {
+   "path": "verify.json",
+   "bytes": 4744925,
+   "sha256": "814f77ed3d27cb22ce70c7bdee99b7b2c916d963c61819bae9b989cf804e902d",
+   "members": 10
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+{
+  "B": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+  "C": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "H": "4b121d7ba665182b22857f049c05f019f25d0c65",
+  "main": "7af0cd11176c220353c06545630edbe45c2127b6",
+  "candidate_branch": "4b121d7ba665182b22857f049c05f019f25d0c65",
+  "ancestry": true,
+  "H_parent": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "administrative_allowlist_exact": true,
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.1-correction-03/evidence-04/b-matrices.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/c-matrices.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/c1-ledger.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/continuations.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/isolations.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/manifest.json",
+    "docs/development/work/K1.1-correction-03/evidence-04/verify.json",
+    "docs/development/work/K1.1-correction-03/implementation-04.md"
+  ],
+  "full_H_source": true,
+  "full_B_source": true,
+  "cumulative_diff_sha256": "7cefa80711594a0cd862028aef88ea7fba2f2461012dcc008f0bfa14eedc4327",
+  "evidence_04_manifest_verified": [
+    {
+      "path": "b-matrices.json",
+      "bytes": 21402557,
+      "sha256": "7486fa0a20e1e0c48486c55bbc060699754337b907a93712d472d0c70f84a15d",
+      "members": 49
+    },
+    {
+      "path": "c-matrices.json",
+      "bytes": 23344355,
+      "sha256": "be29e46bac34bb26d7de7f99d5683355036cfb20874c5bedc11312d03a3cebea",
+      "members": 49
+    },
+    {
+      "path": "isolations.json",
+      "bytes": 10905475,
+      "sha256": "d96e6e5e1467615ef52b90edfe73f49cddab44f2d586164ca726849ccc0b6171",
+      "members": 30
+    },
+    {
+      "path": "c1-ledger.json",
+      "bytes": 1241158,
+      "sha256": "f22a41928c47e72d98afc84ff0033b838e8f68feb217bdea8224314563ffe1ac",
+      "members": 9
+    },
+    {
+      "path": "continuations.json",
+      "bytes": 3717,
+      "sha256": "596cc7a682c2e2cd08923e9641a18d53a62b29378fde75121290ebc898151e53",
+      "members": 4
+    },
+    {
+      "path": "verify.json",
+      "bytes": 4744925,
+      "sha256": "814f77ed3d27cb22ce70c7bdee99b7b2c916d963c61819bae9b989cf804e902d",
+      "members": 10
+    }
+  ],
+  "session": "01a14e96-3398-7520-97a2-ef62585010aa",
+  "model": "gpt-6-astra",
+  "date_utc": "2026-10-18T11:33:05.620346+00:00",
+  "source_acquisition": "Local clone seeded from existing repository; remote commit/tree fetch; missing raw GitHub blobs individually SHA-1 verified against pinned tree objects, including ranged evidence downloads.",
+  "reasoning_effort": "xhigh",
+  "cli_version": "0.158.0-alpha.2",
+  "model_evidence": "Local session metadata for the calling session; not an independently inspected serving backend."
+}

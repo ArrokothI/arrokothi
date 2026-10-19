@@ -1,0 +1,224 @@
+[
+  {
+    "name": "original-stop",
+    "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "/private/tmp/arrokothi-kc3-review02-c/docs/development/work/K1.1-correction-03/review-01/probe-stop-boundary.mjs",
+      "/private/tmp/arrokothi-kc3-review02-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:14:51.481670+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 1,
+    "seconds": 0.9917448330670595,
+    "end": "2026-10-15T02:14:52.798073+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "stop-boundary",
+    "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/rerun-stop-boundary.mjs",
+      "/private/tmp/arrokothi-kc3-review02-c",
+      "--require-contract"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:14:52.828883+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 7.951232375111431,
+    "end": "2026-10-15T02:15:00.827685+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "original-declared-limit",
+    "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "/private/tmp/arrokothi-kc3-review02-c/docs/development/work/K1.1-correction-03/review-01/probe-declared-limit.mjs",
+      "/private/tmp/arrokothi-kc3-review02-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:00.861930+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 1,
+    "seconds": 0.1318039579782635,
+    "end": "2026-10-15T02:15:01.044421+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "declared-limit",
+    "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/rerun-declared-limit.mjs",
+      "/private/tmp/arrokothi-kc3-review02-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:01.075027+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 0.13249037507921457,
+    "end": "2026-10-15T02:15:01.252437+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "old-attribution",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/rerun-evidence-attribution.py",
+      "/private/tmp/arrokothi-kc3-review02-c"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:01.283848+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 1.2083612498827279,
+    "end": "2026-10-15T02:15:02.537489+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "dimensions",
+    "argv": [
+      "node",
+      "--experimental-strip-types",
+      "--no-warnings",
+      "/private/tmp/arrokothi-kc3-review02-c/docs/development/work/K1.1-correction-03/review-01/search-dimensions.mjs",
+      "/private/tmp/arrokothi-kc3-review02-c",
+      "/private/tmp/arrokothi-kc3-review02-b"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:02.568812+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 6.784917999990284,
+    "end": "2026-10-15T02:15:09.397694+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "attribution-02",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/probe-attribution-02.py"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:09.446057+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 2.6045614581089467,
+    "end": "2026-10-15T02:15:12.096534+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "continuations",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/probe-continuations.py"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:12.123130+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 14.453236250206828,
+    "end": "2026-10-15T02:15:26.620367+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "stop-guard",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/probe-stop-guard.py"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:26.656725+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 16.398790041916072,
+    "end": "2026-10-15T02:15:43.101515+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "stop-forms",
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-02/probe-stop-forms.py"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:15:43.148222+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 84.3178057919722,
+    "end": "2026-10-15T02:17:07.508913+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "c1-requalification",
+    "argv": [
+      "python3",
+      "-B",
+      "docs/development/work/K1.1-correction-03/c1-requalification-02/requalify.py",
+      "/private/tmp/arrokothi-kc3-review02-b"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:17:07.690445+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 0,
+    "seconds": 78.91015058313496,
+    "end": "2026-10-15T02:18:26.642514+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "builder-docs-C",
+    "argv": [
+      "npm",
+      "run",
+      "check:builder-docs"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-c",
+    "start": "2026-10-15T02:18:26.853617+00:00",
+    "node": "v26.10.0",
+    "clean_before": "",
+    "exit": 1,
+    "seconds": 0.8337852908298373,
+    "end": "2026-10-15T02:18:27.734466+00:00",
+    "clean_after": ""
+  },
+  {
+    "name": "builder-docs-B",
+    "argv": [
+      "npm",
+      "run",
+      "check:builder-docs"
+    ],
+    "cwd": "/private/tmp/arrokothi-kc3-review02-b",
+    "start": "2026-10-15T02:18:27.761459+00:00",
+    "node": "v26.10.0",
+    "clean_before": "?? node_modules\n",
+    "exit": 1,
+    "seconds": 0.8939871250186116,
+    "end": "2026-10-15T02:18:29.670883+00:00",
+    "clean_after": "?? node_modules\n"
+  }
+]

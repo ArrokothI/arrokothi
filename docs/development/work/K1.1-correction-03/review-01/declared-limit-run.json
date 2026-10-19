@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "node",
+    "--experimental-strip-types",
+    "--no-warnings",
+    "/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.1-correction-03/review-01/probe-declared-limit.mjs",
+    "/private/tmp/arrokothi-kc3-review-c"
+  ],
+  "cwd": "/private/tmp/arrokothi-kc3-review-c",
+  "node": "v26.10.0",
+  "end": "2026-10-13T09:59:19.567915+00:00",
+  "seconds": 0.48378849984146655,
+  "exit": 0,
+  "clean_after": true
+}

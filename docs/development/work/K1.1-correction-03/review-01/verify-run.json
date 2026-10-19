@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/packet_tools.py",
+    "verify",
+    "--revision",
+    "ed23733e58bcb53a2f9a0aa5264f61f8334a7bfb",
+    "--spec",
+    "docs/development/work/K1.1-correction-03/verification.json"
+  ],
+  "cwd": "/private/tmp/arrokothi-kc3-review-c",
+  "start": 1791840282.838571,
+  "node": "v26.10.0",
+  "npm": "11.19.1",
+  "clean_before": "",
+  "exit": 0,
+  "end": 1791843214.3824,
+  "clean_after": ""
+}

@@ -1,0 +1,768 @@
+{
+  "id": "dimensions",
+  "source_specification": "docs/development/work/K1.1-correction-03/verification.json",
+  "source_revision": "2bf220e9e426c810f2505fa2d74d70197807e584",
+  "start_utc": "2026-10-19T08:47:29.828918+00:00",
+  "cwd": "/Users/linzhenglin/Desktop/ArrokothAI/k11-review-03-C",
+  "node": "v26.10.0",
+  "parallel_validation_jobs": 0,
+  "operation": "coverage",
+  "passed": true,
+  "result": {
+    "operation": "coverage",
+    "revision": "2bf220e9e426c810f2505fa2d74d70197807e584",
+    "result": "coverage_reported",
+    "families": [
+      {
+        "family": "identity",
+        "domains": {
+          "shape": [
+            "ambiguous-concatenation"
+          ],
+          "environment": [
+            "ordinary"
+          ]
+        },
+        "cases": 1,
+        "missing_combinations": [],
+        "empty_reason": null
+      },
+      {
+        "family": "oracle",
+        "domains": {
+          "comparison": [
+            "returned",
+            "view",
+            "nextRefusal",
+            "nextAcceptance",
+            "setupGrant",
+            "refusalPosition",
+            "refusalExecution",
+            "acceptingExit",
+            "fired",
+            "sameOperation",
+            "quietRepeat",
+            "callbackRan",
+            "deliveredAt",
+            "takeoverWindowAt",
+            "outcomeStepAt",
+            "outcomePrefix",
+            "applySequence",
+            "applyModel",
+            "referenceKind",
+            "referenceRefusal",
+            "referenceUnnamed",
+            "referenceUnchanged",
+            "referenceReplay",
+            "recoveryAnswer",
+            "takeoverAnswer",
+            "outcomeAnswer",
+            "declaredExit",
+            "attributed",
+            "exitReached"
+          ],
+          "environment": [
+            "ordinary"
+          ],
+          "stage": [
+            "decision-validation"
+          ]
+        },
+        "cases": 29,
+        "missing_combinations": [],
+        "empty_reason": null
+      },
+      {
+        "family": "realm.kernel-lexical-shadow",
+        "domains": {
+          "target": [
+            "control",
+            "JSON",
+            "Object",
+            "Array"
+          ],
+          "form": [
+            "declare"
+          ],
+          "stage": [
+            "during-capture"
+          ],
+          "environment": [
+            "ordinary"
+          ]
+        },
+        "cases": 4,
+        "missing_combinations": [],
+        "empty_reason": null
+      },
+      {
+        "family": "realm.kernel-lexical-creation",
+        "domains": {
+          "mode": [
+            "control",
+            "hop"
+          ],
+          "form": [
+            "declare"
+          ],
+          "stage": [
+            "during-capture"
+          ],
+          "environment": [
+            "ordinary"
+          ]
+        },
+        "cases": 2,
+        "missing_combinations": [],
+        "empty_reason": null
+      },
+      {
+        "family": "realm.lexical-shadow",
+        "domains": {
+          "pin": [
+            "pinned",
+            "unpinned"
+          ],
+          "stage": [
+            "post-pin"
+          ],
+          "environment": [
+            "ordinary",
+            "frozen-intrinsics"
+          ],
+          "form": [
+            "declare"
+          ]
+        },
+        "cases": 3,
+        "missing_combinations": [
+          {
+            "pin": "pinned",
+            "stage": "post-pin",
+            "environment": "ordinary",
+            "form": "declare"
+          }
+        ],
+        "empty_reason": null
+      },
+      {
+        "family": "realm.object-freeze-witness",
+        "domains": {
+          "pin": [
+            "pinned",
+            "unpinned"
+          ],
+          "stage": [
+            "post-pin"
+          ],
+          "environment": [
+            "ordinary",
+            "frozen-intrinsics"
+          ],
+          "form": [
+            "assign"
+          ]
+        },
+        "cases": 4,
+        "missing_combinations": [],
+        "empty_reason": null
+      },
+      {
+        "family": "realm.pin-forms",
+        "domains": {
+          "target": [
+            "JSON",
+            "Object",
+            "Array"
+          ],
+          "form": [
+            "assign",
+            "define",
+            "declare",
+            "preexisting"
+          ],
+          "pin": [
+            "full",
+            "writableOnly"
+          ],
+          "stage": [
+            "pre-pin",
+            "post-pin"
+          ],
+          "environment": [
+            "frozen-intrinsics"
+          ]
+        },
+        "cases": 24,
+        "missing_combinations": [
+          {
+            "target": "JSON",
+            "form": "assign",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "JSON",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "JSON",
+            "form": "define",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "JSON",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "JSON",
+            "form": "declare",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "JSON",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "JSON",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "JSON",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "assign",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "define",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "declare",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Object",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "assign",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "define",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "declare",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Array",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        ],
+        "empty_reason": null
+      },
+      {
+        "family": "realm.zone",
+        "domains": {
+          "target": [
+            "Map",
+            "Reflect"
+          ],
+          "form": [
+            "assign",
+            "define",
+            "declare",
+            "preexisting"
+          ],
+          "pin": [
+            "full",
+            "writableOnly"
+          ],
+          "stage": [
+            "pre-pin",
+            "post-pin"
+          ],
+          "environment": [
+            "frozen-intrinsics"
+          ]
+        },
+        "cases": 16,
+        "missing_combinations": [
+          {
+            "target": "Map",
+            "form": "assign",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Map",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Map",
+            "form": "define",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Map",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Map",
+            "form": "declare",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Map",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Map",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Map",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "assign",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "assign",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "define",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "define",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "declare",
+            "pin": "full",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "declare",
+            "pin": "writableOnly",
+            "stage": "pre-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "preexisting",
+            "pin": "full",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          },
+          {
+            "target": "Reflect",
+            "form": "preexisting",
+            "pin": "writableOnly",
+            "stage": "post-pin",
+            "environment": "frozen-intrinsics"
+          }
+        ],
+        "empty_reason": null
+      },
+      {
+        "family": "work-charge",
+        "domains": {
+          "shape": [
+            "empty-array-surplus-256-repeated-4096"
+          ],
+          "environment": [
+            "ordinary"
+          ],
+          "stage": [
+            "capture"
+          ]
+        },
+        "cases": 1,
+        "missing_combinations": [],
+        "empty_reason": null
+      },
+      {
+        "family": "tool-result",
+        "domains": {
+          "failure": [
+            "stale-repeat",
+            "invalid-repeat",
+            "unstable-control",
+            "target-wrong-kill",
+            "target-uncovered",
+            "target-never-kills",
+            "target-absent",
+            "target-malformed",
+            "target-assertion-shape",
+            "venv-leaf",
+            "venv-load",
+            "venv-hooks",
+            "venv-unresolved",
+            "venv-case"
+          ],
+          "environment": [
+            "POSIX-Python"
+          ],
+          "stage": [
+            "result-classification"
+          ]
+        },
+        "cases": 14,
+        "missing_combinations": [],
+        "empty_reason": null
+      },
+      {
+        "family": "held-capture",
+        "domains": {
+          "type": [
+            "Map",
+            "Date",
+            "Set",
+            "Uint8Array",
+            "ArrayBuffer",
+            "RegExp",
+            "Error",
+            "String",
+            "Boolean",
+            "WeakMap",
+            "Proxy"
+          ],
+          "prototype": [
+            "null",
+            "Object.prototype",
+            "unchanged"
+          ],
+          "stage": [
+            "capture"
+          ],
+          "environment": [
+            "ordinary"
+          ]
+        },
+        "cases": 11,
+        "missing_combinations": [
+          {
+            "type": "Map",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Map",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Date",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Date",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Set",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Set",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Uint8Array",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Uint8Array",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "ArrayBuffer",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "ArrayBuffer",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "RegExp",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "RegExp",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Error",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Error",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "String",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "String",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Boolean",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Boolean",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "WeakMap",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "WeakMap",
+            "prototype": "unchanged",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Proxy",
+            "prototype": "null",
+            "stage": "capture",
+            "environment": "ordinary"
+          },
+          {
+            "type": "Proxy",
+            "prototype": "Object.prototype",
+            "stage": "capture",
+            "environment": "ordinary"
+          }
+        ],
+        "empty_reason": null
+      }
+    ],
+    "negative_categories": {
+      "identity": 1,
+      "oracle-decision-field": 29,
+      "held-realm-witness": 53,
+      "work-charge": 1,
+      "tool-result": 14,
+      "held-capture": 11
+    },
+    "missing_categories": [],
+    "readings": [
+      {
+        "id": "audit.RM1",
+        "status": "closed_by_reading",
+        "reason": "Restored round-2 A-hard/B-hard prose omits the binding obligations. The validators check coverage/schema; review 03 compared the changed claims with the sources by reading.",
+        "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+      },
+      {
+        "id": "audit.RM2",
+        "status": "closed_by_reading",
+        "reason": "Identical generic responses retain IDs and minimum lengths but lose per-option semantic reconciliation. Review 03 read the option-specific responses; string shape is not semantic truth.",
+        "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+      },
+      {
+        "id": "audit.RM3",
+        "status": "closed_by_reading",
+        "reason": "Frozen intrinsics do not freeze the global Object binding. The original source and binding observations contradict poison-blocked; review 03 closed reach truth by reading.",
+        "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+      },
+      {
+        "id": "audit.RM5",
+        "status": "closed_by_reading",
+        "reason": "The flag and a startup check alone do not pin the bindings. Review 03 read the closure obligations; the schema guard does not claim to establish them.",
+        "source": "docs/development/work/DESIGN-AUDIT-01/review-03.md#findings"
+      }
+    ],
+    "reading_kills": 0,
+    "acceptance": "not evaluated",
+    "limits": [
+      "Declared finite domains; no universal coverage claim"
+    ]
+  },
+  "elapsed_seconds": 0.10598983312956989,
+  "end_utc": "2026-10-19T08:47:29.935132+00:00",
+  "clean_after": ""
+}

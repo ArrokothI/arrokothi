@@ -1,0 +1,109 @@
+Candidate C; H has identical normative files.
+Command: ["rg", "-n", "-i", "coherent.?prox|no caller code|metered|R[1-4]|undetect|hold|invalidation|OPEN\\(implementation\\)", "mental-model/concepts/values.md", "mental-model/rewrite-index.md", "mental-model/roadmap.md", "mental-model/sources.md", "docs/development/002-implemented-kernel-baseline.md"]
+mental-model/sources.md:58:in-process refusal-cost claim as a metered-work bound: one work meter per root, a budget derived from
+mental-model/sources.md:66:objects, module namespaces and raw JSON objects, and accepted residuals R1–R3 and the undetectable
+mental-model/sources.md:68:of 2026-10-12 accepted R4, hidden own entries, as the fourth residual, and named BINDING-01's bytes core
+mental-model/sources.md:110:K2 owns concrete policy/consent representation and remote freshness. R1 owns actual Driver-specific phase guarantees. K3 selects a persistent substrate; D1 selects any claimed isolation backend; S1 states supported versions/protocol subsets. No universal artifact service, memory ontology, Skill schema, policy backend or native checkpoint migration is silently invented to fill the directory. Optional concepts are usable design guidance, not automatic release commitments.
+mental-model/roadmap.md:108:Metered value refusal cost. Expected owner: [values](concepts/values.md#fixed-semantic-limits), whose
+mental-model/roadmap.md:109:V-D1 wording changes to the metered bound of [decision-05](../docs/development/work/K1.2/decision-05.md)
+mental-model/roadmap.md:114:[Scope and dependencies](../docs/development/007-work-packets.md#k11-correction-03--metered-value-refusal-cost).
+mental-model/roadmap.md:180:## R1.1
+mental-model/roadmap.md:192:[Packet scope and dependencies](../docs/development/007-work-packets.md#r11--first-real-native-boundary).
+mental-model/roadmap.md:194:## R1.2
+mental-model/roadmap.md:196:Second boundary and R1/E3 initial gate. Expected Layer-3 owners:
+mental-model/roadmap.md:208:[Packet scope and dependencies](../docs/development/007-work-packets.md#r12--second-boundary-and-r1e3-initial-gate).
+mental-model/roadmap.md:242:Evidence mapping: lose native state independently of Kernel storage and report hold/unavailability. Test compatible replay code and retained checkpoint/history references; prove native writer exclusion or refuse takeover. A restored Kernel record alone cannot establish native recovery.
+mental-model/roadmap.md:325:## R2.1
+mental-model/roadmap.md:335:[Packet scope and dependencies](../docs/development/007-work-packets.md#r21--selected-stock-runtime-migration).
+mental-model/roadmap.md:337:## R2.2
+mental-model/roadmap.md:345:[Packet scope and dependencies](../docs/development/007-work-packets.md#r22--typed-local-composition).
+mental-model/roadmap.md:347:## R2.3
+mental-model/roadmap.md:349:Public child/join and R2 gate. Expected Layer-3 owners:
+mental-model/roadmap.md:355:[Packet scope and dependencies](../docs/development/007-work-packets.md#r23--public-childjoin-and-r2-gate).
+mental-model/roadmap.md:366:Evidence mapping: slow observers cannot grow buffers indefinitely or pin accepted records beyond the retention contract. Exhaust output capacity before acceptance and verify hold/refusal without partial commit. Retention/deletion reports loss explicitly under [bounded retention](mechanisms/output.md#bounded-retention).
+mental-model/roadmap.md:384:## R1.3
+mental-model/roadmap.md:392:[Packet scope and dependencies](../docs/development/007-work-packets.md#r13--supported-driver-evidence).
+mental-model/roadmap.md:422:Evidence mapping: enumerate actual credential holders and containment boundaries, including plugins, fallback paths, host resources and native egress. A sandbox around one tool does not establish whole-Runtime isolation. Follow [containment claims](mechanisms/resources.md#containment-claims).
+mental-model/concepts/values.md:63:- **The Kernel reading progress with its own encoding.** The Kernel would be interpreting continuation it does not own. Progress belongs to the Runtime, and the Kernel only holds it.
+mental-model/concepts/values.md:67:The transport codec is deliberately left open. Wire format, framing and compression are choices for each implementation, and so are the storage layout and engine that hold accepted values. None of them affects the rules below. The rest of this page is about the third row of the table only.
+mental-model/concepts/values.md:90:The same holds when content is compared. A whole create request or a whole Outcome is the same as another only when every root equals the root in the same place, and a field that is absent differs from any field that is present. Joining the roots' canonical bytes into one string and comparing that is a different test, and a weaker one. Take an envelope with two optional value fields: one that carries `[1]` in the first and nothing in the second joins to exactly the same bytes as one that carries nothing in the first and `[1]` in the second.
+mental-model/concepts/values.md:100:**Duplicate object keys** are a special case, because they exist only on the wire. Text like `{"a":1,"a":2}` can be written down, but no decoded object can hold two members named `a`, so a parser has to pick one and quietly discard the other. The protocol does not let it choose. A decoder rejects duplicate keys while it is decoding, before parsing has a chance to erase them. Every rule that follows can then assume a decoded value with nothing hidden in it.
+mental-model/concepts/values.md:162:The same fact cuts the other way. A decimal spelling that carries more precision than binary64 can hold does not survive as written: if it decodes at all, what gets compared is the binary64 value it decodes to. `9007199254740993` and `9007199254740992` decode to the same binary64 value, so they are one value, and a request that changed one into the other would count as a faithful retry. An identifier that must survive digit for digit belongs in a string, not in a number. A spelling too large for binary64, such as `1e400`, has no finite value to decode to. It is refused like `Infinity`, not clamped to the largest finite number.
+mental-model/concepts/values.md:195:Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
+mental-model/concepts/values.md:197:In the in-process binding, "cost" means **metered Kernel work**, not wall-clock time or heap
+mental-model/concepts/values.md:207:cost. The same holds for every root a request carries, including roots captured before the request's
+mental-model/concepts/values.md:225:- **(R1)** The own-key listings of one object per root whose lengths are not known until they
+mental-model/concepts/values.md:228:- **(R2)** Host objects whose internal methods the host defines, such as interceptor-backed host
+mental-model/concepts/values.md:232:- **(R3)** Member lookups in hash tables, which are expected rather than proven to cost a constant.
+mental-model/concepts/values.md:233:- **(R4)** Own entries that a listing walks but does not return, such as private names, or element
+mental-model/concepts/values.md:237:  this binding cannot meter them. BINDING-01's bytes core removes R4 from the Kernel: the core
+mental-model/concepts/values.md:258:<!-- OPEN(implementation): diagnostic storage and the work meter for bounded refusal cost. The
+mental-model/concepts/values.md:286:A decoded value is plain data that nobody else holds. A live object differs in three ways:
+mental-model/concepts/values.md:290:- **It can hold what JSON cannot.** Plain JSON conversion drops or alters `undefined` members, symbol keys, array holes, Maps and Dates. For example, `{a: undefined}` becomes `{}`.
+mental-model/concepts/values.md:306:- **Objects** have the ordinary object prototype or a null prototype. They hold their content as own, enumerable data members with string keys.
+mental-model/concepts/values.md:307:- **Arrays** have the ordinary array prototype. They hold an own data element at every position up to the length observed.
+mental-model/concepts/values.md:346:**The request envelope is read differently.** A call into the binding, such as a create or a submit, takes an envelope whose fields hold identity text, a destination, and payload values. The payloads are boundary values and are captured by the rules above. The envelope's own fields are observed under a different rule, and the difference goes in both directions:
+docs/development/002-implemented-kernel-baseline.md:18:inspectable recovery holds ([Outcome acceptance API](#outcome-acceptance-api)). It refuses new
+docs/development/002-implemented-kernel-baseline.md:58:**Work meter (K1.1-correction-03).** V-D1 is a metered-work bound for this binding
+docs/development/002-implemented-kernel-baseline.md:100:cycle detection uses a Kernel-created `Set` reached through load-time methods. That set never holds
+docs/development/002-implemented-kernel-baseline.md:127:- **(R1)** The own-key listings of one object per root, its symbols then its names. Their lengths
+docs/development/002-implemented-kernel-baseline.md:130:- **(R2)** Host objects with interceptors. These can forward to caller-defined code: the global of
+docs/development/002-implemented-kernel-baseline.md:133:- **(R3)** Hash-table member lookups, which are expected to cost a constant, not proven to.
+docs/development/002-implemented-kernel-baseline.md:134:- **(R4)** Own entries that a listing walks but does not return, such as private names, or
+docs/development/002-implemented-kernel-baseline.md:136:  not metered, and a shared object repeats their cost on every occurrence. For example, an
+docs/development/002-implemented-kernel-baseline.md:138:  The owner accepted R4 as the fourth residual
+docs/development/002-implemented-kernel-baseline.md:160:through metered helpers, and that every other loop in `values.ts` carries its own cap. `capture-work.test.ts` compares wrapped engine operations with the units
+docs/development/002-implemented-kernel-baseline.md:162:only. The V-D1 claim stays held under [invalidation-02](work/K1.2/invalidation-02.md) until this
+docs/development/002-implemented-kernel-baseline.md:163:packet is accepted, and the classification hold of
+docs/development/002-implemented-kernel-baseline.md:164:[DESIGN-AUDIT-01 invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md) likewise. 007 records acceptance status and both holds; V-ENV ("ambient safety") stays held by
+docs/development/002-implemented-kernel-baseline.md:165:[invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) for BINDING-01.
+docs/development/002-implemented-kernel-baseline.md:252:A hold's permitted actions describe operations the hold itself does not refuse. Takeover still
+docs/development/002-implemented-kernel-baseline.md:258:hold/history and redelivery explanations add fixed text.
+docs/development/002-implemented-kernel-baseline.md:274:authority, reported with the other content issues (K12-R11-ORDER-01, K1.2 decision-02). Capture is
+docs/development/002-implemented-kernel-baseline.md:287:attempts, each naming its `activationId`/`writerEpoch`), `recoveryHolds` (each with its reason and
+docs/development/002-implemented-kernel-baseline.md:289:hold changes or disappears).
+docs/development/002-implemented-kernel-baseline.md:297:unresolved exchange, current epoch, and hold state after it returns and before committing, with no
+docs/development/002-implemented-kernel-baseline.md:299:established code hold makes the outer request refuse (`stale_exchange`, `no_unresolved_exchange`,
+docs/development/002-implemented-kernel-baseline.md:307:`available.definitionRevisions`, `runtimeContractRevisions` and `progressCodecs`, and holds the
+docs/development/002-implemented-kernel-baseline.md:308:exchange (`RUNNING`, `recoveryHolds` naming what is missing and what may be done next) or clears that
+docs/development/002-implemented-kernel-baseline.md:309:hold; it requires control authority (`unauthorized_control` otherwise). Each accepted decision that
+docs/development/002-implemented-kernel-baseline.md:310:enters, updates, or clears a hold appends one frozen `RecoveryHistoryRecord` (actor, authority,
+docs/development/002-implemented-kernel-baseline.md:312:`reportProtocolFailure(caller, executionId, { activationId, writerEpoch, diagnostic? })` holds the
+docs/development/002-implemented-kernel-baseline.md:315:any hold stands, takeover while a code hold stands; a takeover clears a protocol-failure hold (recorded
+docs/development/002-implemented-kernel-baseline.md:317:accepted Outcome of the current attempt resolves the exchange and ends its holds (recorded as
+docs/development/002-implemented-kernel-baseline.md:320:holds a caller-owned object. Each of the three controls builds its whole decision (hold, history
+docs/development/002-implemented-kernel-baseline.md:332:  resolved exchange, Outcome decision, hold-ending history records, and the retained accepted-Outcome
+docs/development/002-implemented-kernel-baseline.md:337:  load-time primitives with no caller code between first check and last mutation; the apply phase
+docs/development/002-implemented-kernel-baseline.md:346:  read from the caller or run between the first and last mutation. For hold entry, update and
+docs/development/002-implemented-kernel-baseline.md:348:  fault separates a hold change from its record. A takeover's receipt position is read while
+docs/development/002-implemented-kernel-baseline.md:350:  claim (no caller code or read between them). Every refusal record is built and appended before its
+docs/development/002-implemented-kernel-baseline.md:364:  `fault-oracle.test.ts` holds the sweep checker's negative controls, and a mutant of each of its
+docs/development/002-implemented-kernel-baseline.md:383:- **Per-entry disposition storage** (WS §3 "Left open"): each mailbox entry holds its own frozen
+docs/development/002-implemented-kernel-baseline.md:403:  is not required and cannot substitute for that grant. A visible grant holder without general
+docs/development/002-implemented-kernel-baseline.md:404:  control authority can submit an accepted Outcome that resolves the exchange and ends its holds.
+docs/development/002-implemented-kernel-baseline.md:413:- **Permitted actions** (`evidence.md`): each hold exposes `permittedNextActions` from the same rules
+docs/development/002-implemented-kernel-baseline.md:811:The [active roadmap](001-current-status-and-roadmap.md) replaces P1–P7/B1–B3. Begin with K0 contract fixtures, then K1 asynchronous acceptance and K2 actions; R1 challenges native fidelity before K3 persistence. [F01–F19](003-evidence-and-findings.md)
+mental-model/rewrite-index.md:85:| After R1.2 | `integration.md` | P4 retry owners, P7 fidelity changes |
+mental-model/rewrite-index.md:88:| When R2 is scheduled | `composition.md`, `context.md`, `state.md` | P1–P3, P5 |
+mental-model/rewrite-index.md:139:  Group headings (`##`) hold term entries (`###`) where a page has groups.
+mental-model/rewrite-index.md:212:| K0.2 observable distinctions; epoch not pinnable across exchanges | `concepts/identity.md#writer-epoch` | `tests/fixtures/k0/public-fixture-specification.md` §19 (`K02-R13-01`), accepted by `work/K0.2/review-17.md` |
+mental-model/rewrite-index.md:213:| K0.2 five distinguishing wait examples | `mechanisms/waits.md#small-distinguishing-examples` | `tests/fixtures/k0/public-fixture-specification.md` §22 (`K02-R16-01`), `work/K0.2/review-16.md` |
+mental-model/rewrite-index.md:217:| K1.1 creation/ingress domain separation (`KC1-DEC-1`) | `concepts/identity.md#request-key-and-input-id`, `mechanisms/creation.md#later-input-has-a-destination` | `work/K1.1/review-15.md` `K11-R15-ID-01`; `K1.1-correction-01/contract.md`; `K1.1-reference-01` REF-1 |
+mental-model/rewrite-index.md:222:| Status ownership moved off specification pages | `MM/README.md#how-these-pages-are-organized`, `#target-not-shipped` | `K1.1-reference-01` REF-3, `review-02.md` `REF1-R1-CONV-01` |
+mental-model/rewrite-index.md:242:- **`OPEN(implementation)`** — the architecture currently leaves the choice to implementations; an
+mental-model/rewrite-index.md:261:- Refusal diagnostic storage and the work meter — `OPEN(implementation)` in
+mental-model/rewrite-index.md:267:- Receipt serialization / token representation; request-key hashing — `OPEN(implementation)` in
+mental-model/rewrite-index.md:273:  what names — `OPEN(implementation)` in `concepts/identity.md#request-key-and-input-id`. The in-process binding uses producer
+mental-model/rewrite-index.md:278:- Activation-identity representation and well-formedness — `OPEN(implementation)` in
+mental-model/rewrite-index.md:284:  `OPEN(implementation)` in `concepts/identity.md#writer-epoch`; WS ID-4, K0.2 `K02-R13-01`. The
+mental-model/rewrite-index.md:305:  recorded in BASELINE `#outcome-acceptance-api`: each mailbox entry holds its own frozen disposition.
+mental-model/rewrite-index.md:315:  dispositions, resolved exchange, Outcome decision, hold-ending history records, and the retained
+mental-model/rewrite-index.md:319:  recovery controls (hold declaration, protocol-failure report, takeover) use the same build-then-apply
+mental-model/rewrite-index.md:328:  fixed TTL — `OPEN(implementation)` in `concepts/operations.md#three-clocks`; WS §4 "Left open".
+mental-model/rewrite-index.md:350:- Driver-specific phase recovery guarantees — R1 (`mechanisms/recovery.md`, `integration.md`).
+mental-model/rewrite-index.md:363:  `concepts/operations.md#child-and-ownership`, not a placeholder awaiting one. The standing
+mental-model/rewrite-index.md:397:   Activation IDs made *no* conforming implementation passable. Evidence: K0.2 `K02-R13-01`. General
+mental-model/rewrite-index.md:403:   `K11-R16-DOC-01`. **Repaired in this rewrite project:** `MM/kernel.md` previously read "there is
+mental-model/rewrite-index.md:429:    K0.2 `K02-R16-01`.
+mental-model/rewrite-index.md:431:    invalidation, and may not be read for another second. Owners:
+mental-model/rewrite-index.md:448:    Evidence: `K11-R15-ID-01`.

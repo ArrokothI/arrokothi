@@ -173,7 +173,9 @@ for (const cause of ["code", "protocol"] as const) {
 test("DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes", () => {
   const files = ["values.ts", "envelope.ts", "outcome.ts"];
   const codes = new Set(files.flatMap(file => [...readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8").matchAll(/code: "([a-z_]+)"/g)].map(m => m[1]!)));
-  assert.equal(codes.size, 17);
+  // 18 since K1.1-correction-03 added `too_much_work` (owner design check, Q2). It and `too_many_bytes`
+  // are exclusive stops, so one root still reports at most eleven distinct value codes.
+  assert.equal(codes.size, 18);
   assert.ok([...codes].every(c => c.length <= 32));
   const details = Array.from({ length: 8 }, () => ({ root: "r".repeat(63), path: "p".repeat(128), code: "c".repeat(32), message: "m".repeat(1_024) }));
   const rest = [...codes].map(code => ({ path: "ignored", code, message: "ignored" }));

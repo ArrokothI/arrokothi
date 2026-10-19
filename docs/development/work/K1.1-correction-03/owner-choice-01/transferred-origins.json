@@ -1,0 +1,1870 @@
+[
+ {
+  "origin": "artifact-22eb339860078995989b5d5f",
+  "path": "packages/kernel/tests/value-diagnostic-work.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "13 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 13 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/value-diagnostic-work.test.ts:114:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:134:3@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:170:3@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:269:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:299:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:317:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:342:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:406:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:434:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:452:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:61:3@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:75:1@95a131a2acfa",
+   "packages/kernel/tests/value-diagnostic-work.test.ts:87:1@95a131a2acfa"
+  ],
+  "stale_witnesses": [
+   "witness.value-diagnostic-work.114.1.95a131a2acfa",
+   "witness.value-diagnostic-work.134.3.95a131a2acfa",
+   "witness.value-diagnostic-work.170.3.95a131a2acfa",
+   "witness.value-diagnostic-work.269.1.95a131a2acfa",
+   "witness.value-diagnostic-work.299.1.95a131a2acfa",
+   "witness.value-diagnostic-work.317.1.95a131a2acfa",
+   "witness.value-diagnostic-work.342.1.95a131a2acfa",
+   "witness.value-diagnostic-work.406.1.95a131a2acfa",
+   "witness.value-diagnostic-work.434.1.95a131a2acfa",
+   "witness.value-diagnostic-work.452.1.95a131a2acfa",
+   "witness.value-diagnostic-work.61.3.95a131a2acfa",
+   "witness.value-diagnostic-work.75.1.95a131a2acfa",
+   "witness.value-diagnostic-work.87.1.95a131a2acfa"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.61.3.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.75.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.87.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.114.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.134.3.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.170.3.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.269.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.299.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.317.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.342.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.406.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.434.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.452.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.508.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.541.1.95a131a2acfa"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-diagnostic-work.573.1.95a131a2acfa"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/value-diagnostic-work.test.ts",
+     "start": 1,
+     "end": 618
+    }
+   ],
+   "context_reasons": {}
+  }
+ },
+ {
+  "origin": "artifact-4e300ac8047fcf6b203072a1",
+  "path": "docs/development/work/K1.1/review-06-supplement-01.md",
+  "line": 90,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "its closure linked 13 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [],
+  "stale_witnesses": [
+   "witness.creation.630.3.088207d1ce86",
+   "witness.ingress.598.3.dfc5a87bbd90",
+   "witness.ingress.600.3.61e8bde54da2",
+   "witness.ingress.661.3.dfc5a87bbd90",
+   "witness.ingress.663.3.61e8bde54da2",
+   "witness.ingress.726.3.dfc5a87bbd90",
+   "witness.ingress.728.3.61e8bde54da2",
+   "witness.values.1225.3.44b00a5bd3f1",
+   "witness.values.1239.3.44b00a5bd3f1",
+   "witness.values.1253.3.44b00a5bd3f1",
+   "witness.values.921.3.fb228bec8c58",
+   "witness.values.935.3.fb228bec8c58",
+   "witness.values.949.3.fb228bec8c58"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.630.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1225.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.921.3.fb228bec8c58"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1239.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.935.3.fb228bec8c58"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1253.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.949.3.fb228bec8c58"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.600.3.61e8bde54da2"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.598.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.663.3.61e8bde54da2"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.661.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.728.3.61e8bde54da2"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.726.3.dfc5a87bbd90"
+    }
+   ],
+   "context": [
+    {
+     "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+     "path": "docs/development/work/K1.1/review-06-supplement-01.md",
+     "start": 82,
+     "end": 112
+    }
+   ],
+   "context_reasons": {
+    "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+    "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+   }
+  }
+ },
+ {
+  "origin": "artifact-510be2a0362710c9996c358a",
+  "path": "packages/kernel/tests/ingress.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "6 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 6 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/ingress.test.ts:479:3@dfc5a87bbd90",
+   "packages/kernel/tests/ingress.test.ts:535:3@dfc5a87bbd90",
+   "packages/kernel/tests/ingress.test.ts:598:3@dfc5a87bbd90",
+   "packages/kernel/tests/ingress.test.ts:661:3@dfc5a87bbd90",
+   "packages/kernel/tests/ingress.test.ts:726:3@dfc5a87bbd90",
+   "packages/kernel/tests/ingress.test.ts:819:3@dfc5a87bbd90"
+  ],
+  "stale_witnesses": [
+   "witness.ingress.479.3.dfc5a87bbd90",
+   "witness.ingress.535.3.dfc5a87bbd90",
+   "witness.ingress.598.3.dfc5a87bbd90",
+   "witness.ingress.661.3.dfc5a87bbd90",
+   "witness.ingress.726.3.dfc5a87bbd90",
+   "witness.ingress.819.3.dfc5a87bbd90"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.479.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.535.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.598.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.661.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.726.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.790.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.819.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.847.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.459.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.58.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.79.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.91.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.114.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.131.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.153.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.164.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.178.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.190.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.209.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.235.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.253.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.287.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.299.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.311.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.330.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.340.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.367.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.381.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.406.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.413.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.432.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.446.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.511.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.563.3.dfc5a87bbd90"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/ingress.test.ts",
+     "start": 1,
+     "end": 864
+    }
+   ],
+   "context_reasons": {}
+  }
+ },
+ {
+  "origin": "artifact-6c57cc9dd8febdefa65ed496",
+  "path": "packages/kernel/tests/creation.test.ts",
+  "line": 1,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "11 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 11 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/creation.test.ts:1031:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:362:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:415:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:441:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:546:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:630:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:742:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:823:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:922:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:944:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:958:3@088207d1ce86"
+  ],
+  "stale_witnesses": [
+   "witness.creation.1031.3.088207d1ce86",
+   "witness.creation.362.3.088207d1ce86",
+   "witness.creation.415.3.088207d1ce86",
+   "witness.creation.441.3.088207d1ce86",
+   "witness.creation.546.3.088207d1ce86",
+   "witness.creation.630.3.088207d1ce86",
+   "witness.creation.742.3.088207d1ce86",
+   "witness.creation.823.3.088207d1ce86",
+   "witness.creation.922.3.088207d1ce86",
+   "witness.creation.944.3.088207d1ce86",
+   "witness.creation.958.3.088207d1ce86"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.362.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.415.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.441.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.546.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.630.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.742.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.823.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.883.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.922.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.944.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.958.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.979.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.1031.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.333.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.516.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.1009.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.35.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.65.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.76.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.85.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.98.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.106.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.124.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.147.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.165.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.202.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.216.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.230.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.238.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.251.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.300.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.309.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.487.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.503.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.579.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.605.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.1058.3.088207d1ce86"
+    }
+   ],
+   "context": [
+    {
+     "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+     "path": "packages/kernel/tests/creation.test.ts",
+     "start": 1,
+     "end": 1067
+    }
+   ],
+   "context_reasons": {
+    "mental-model/mechanisms/creation.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+   }
+  }
+ },
+ {
+  "origin": "artifact-6dcba4da5936b64c77a8b470",
+  "path": "packages/kernel/tests/sweep/poison.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "its closure linked 1 witness whose members K1.1-correction-03 changed",
+  "changed_members": [],
+  "stale_witnesses": [
+   "witness.poison-catalog.273.5.46794b39598a"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.poison-catalog.273.5.46794b39598a"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/sweep/poison.ts",
+     "start": 1,
+     "end": 536
+    }
+   ],
+   "context_reasons": {}
+  }
+ },
+ {
+  "origin": "artifact-7902341bc00c3376b26ef71f",
+  "path": "packages/kernel/tests/outcome-hostile.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "1 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 1 witness whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/outcome-hostile.test.ts:204:3@a66a34108666"
+  ],
+  "stale_witnesses": [
+   "witness.outcome-hostile.204.3.a66a34108666"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.82.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.204.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.235.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.275.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.295.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.103.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.133.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.349.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.360.3.a66a34108666"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.outcome-hostile.374.3.a66a34108666"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/outcome-hostile.test.ts",
+     "start": 1,
+     "end": 383
+    }
+   ],
+   "context_reasons": {}
+  }
+ },
+ {
+  "origin": "artifact-7c99b94ca43cc08b3d970f63",
+  "path": "docs/development/work/K1.1/review-06-supplement-01.md",
+  "line": 98,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "its closure linked 13 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [],
+  "stale_witnesses": [
+   "witness.creation.630.3.088207d1ce86",
+   "witness.ingress.598.3.dfc5a87bbd90",
+   "witness.ingress.600.3.61e8bde54da2",
+   "witness.ingress.661.3.dfc5a87bbd90",
+   "witness.ingress.663.3.61e8bde54da2",
+   "witness.ingress.726.3.dfc5a87bbd90",
+   "witness.ingress.728.3.61e8bde54da2",
+   "witness.values.1225.3.44b00a5bd3f1",
+   "witness.values.1239.3.44b00a5bd3f1",
+   "witness.values.1253.3.44b00a5bd3f1",
+   "witness.values.921.3.fb228bec8c58",
+   "witness.values.935.3.fb228bec8c58",
+   "witness.values.949.3.fb228bec8c58"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.630.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1225.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.921.3.fb228bec8c58"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1239.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.935.3.fb228bec8c58"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1253.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.949.3.fb228bec8c58"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.600.3.61e8bde54da2"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.598.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.663.3.61e8bde54da2"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.661.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.728.3.61e8bde54da2"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.726.3.dfc5a87bbd90"
+    }
+   ],
+   "context": [
+    {
+     "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+     "path": "docs/development/work/K1.1/review-06-supplement-01.md",
+     "start": 82,
+     "end": 112
+    }
+   ],
+   "context_reasons": {
+    "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+    "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+   }
+  }
+ },
+ {
+  "origin": "artifact-98679309de7791acf7f59c87",
+  "path": "packages/kernel/tests/poison-catalog.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "2 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 2 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/poison-catalog.test.ts:273:5@46794b39598a",
+   "packages/kernel/tests/poison-catalog.test.ts:286:3@46794b39598a"
+  ],
+  "stale_witnesses": [
+   "witness.poison-catalog.273.5.46794b39598a",
+   "witness.poison-catalog.286.3.46794b39598a"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.poison-catalog.273.5.46794b39598a"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.poison-catalog.286.3.46794b39598a"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.poison-catalog.291.3.46794b39598a"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/poison-catalog.test.ts",
+     "start": 1,
+     "end": 296
+    }
+   ],
+   "context_reasons": {}
+  }
+ },
+ {
+  "origin": "artifact-b344c9faf1272dd3033d4ccd",
+  "path": "docs/development/work/K1.1/review-05.md",
+  "line": 84,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "its closure linked 3 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [],
+  "stale_witnesses": [
+   "witness.creation.415.3.088207d1ce86",
+   "witness.values.1147.3.44b00a5bd3f1",
+   "witness.values.843.3.fb228bec8c58"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.415.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1147.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.843.3.fb228bec8c58"
+    }
+   ],
+   "context": [
+    {
+     "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+     "path": "docs/development/work/K1.1/review-05.md",
+     "start": 77,
+     "end": 98
+    }
+   ],
+   "context_reasons": {
+    "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+   }
+  }
+ },
+ {
+  "origin": "artifact-bb7722eb19e78f33e1f81a58",
+  "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "1 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 1 witness whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/aggregate-refusal.test.ts:173:1@19af122ffc40"
+  ],
+  "stale_witnesses": [
+   "witness.aggregate-refusal.173.1.19af122ffc40"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.69.3.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.85.3.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.139.1.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.185.1.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.26.5.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.45.3.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.53.3.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.100.1.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.121.3.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.128.1.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.157.3.19af122ffc40"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.aggregate-refusal.173.1.19af122ffc40"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+     "start": 1,
+     "end": 193
+    }
+   ],
+   "context_reasons": {}
+  }
+ },
+ {
+  "origin": "artifact-bbe0c5a1782aa6f649f0a4a3",
+  "path": "docs/development/work/K1.1/review-02.md",
+  "line": 84,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "its closure linked 7 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [],
+  "stale_witnesses": [
+   "witness.creation.546.3.088207d1ce86",
+   "witness.dispatch.504.3.5a8d958ffdab",
+   "witness.dispatch.507.3.41092809bb04",
+   "witness.dispatch.520.3.5a8d958ffdab",
+   "witness.dispatch.523.3.41092809bb04",
+   "witness.ingress.479.3.dfc5a87bbd90",
+   "witness.ingress.481.3.61e8bde54da2"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.546.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.481.3.61e8bde54da2"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.ingress.479.3.dfc5a87bbd90"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.507.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.504.3.5a8d958ffdab"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.523.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.520.3.5a8d958ffdab"
+    }
+   ],
+   "context": [
+    {
+     "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+     "path": "docs/development/work/K1.1/review-02.md",
+     "start": 73,
+     "end": 119
+    }
+   ],
+   "context_reasons": {
+    "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning.",
+    "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+   }
+  }
+ },
+ {
+  "origin": "artifact-bca863b02ba3f5f894baa47d",
+  "path": "packages/kernel/tests/dispatch.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "4 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 3 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/dispatch.test.ts:1510:3@41092809bb04",
+   "packages/kernel/tests/dispatch.test.ts:507:3@41092809bb04",
+   "packages/kernel/tests/dispatch.test.ts:523:3@41092809bb04",
+   "packages/kernel/tests/dispatch.test.ts:567:3@41092809bb04"
+  ],
+  "stale_witnesses": [
+   "witness.dispatch.507.3.41092809bb04",
+   "witness.dispatch.523.3.41092809bb04",
+   "witness.dispatch.567.3.41092809bb04"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.507.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.523.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.567.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.676.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.728.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.806.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.869.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.916.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.958.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1004.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1390.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1545.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.178.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.615.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1459.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1529.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.66.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.112.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.135.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.157.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.199.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.209.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.233.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.247.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.265.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.281.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.294.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.335.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.354.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.372.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.416.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.423.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.436.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.448.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.468.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1064.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1078.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1099.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1113.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1131.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1152.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1184.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1222.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1269.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1302.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1341.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1358.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1428.3.41092809bb04"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.dispatch.1560.3.41092809bb04"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/dispatch.test.ts",
+     "start": 1,
+     "end": 1566
+    }
+   ],
+   "context_reasons": {
+    "mental-model/mechanisms/execution-cycle.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+   }
+  }
+ },
+ {
+  "origin": "artifact-ebfa0eb36bcd33f72a4dffce",
+  "path": "packages/kernel/tests/values.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "37 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 26 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/values.test.ts:1015:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1045:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1065:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1095:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1126:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1147:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1225:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1239:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1253:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:151:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:1631:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:171:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:308:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:320:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:328:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:334:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:357:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:363:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:376:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:419:5@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:459:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:505:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:512:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:523:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:543:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:554:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:572:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:580:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:672:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:694:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:722:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:826:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:863:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:926:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:955:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:961:3@44b00a5bd3f1",
+   "packages/kernel/tests/values.test.ts:991:3@44b00a5bd3f1"
+  ],
+  "stale_witnesses": [
+   "witness.values.1015.3.44b00a5bd3f1",
+   "witness.values.1045.3.44b00a5bd3f1",
+   "witness.values.1065.3.44b00a5bd3f1",
+   "witness.values.1095.3.44b00a5bd3f1",
+   "witness.values.1126.3.44b00a5bd3f1",
+   "witness.values.1147.3.44b00a5bd3f1",
+   "witness.values.1225.3.44b00a5bd3f1",
+   "witness.values.1239.3.44b00a5bd3f1",
+   "witness.values.1253.3.44b00a5bd3f1",
+   "witness.values.1631.3.44b00a5bd3f1",
+   "witness.values.308.5.44b00a5bd3f1",
+   "witness.values.320.5.44b00a5bd3f1",
+   "witness.values.328.5.44b00a5bd3f1",
+   "witness.values.334.5.44b00a5bd3f1",
+   "witness.values.357.5.44b00a5bd3f1",
+   "witness.values.363.5.44b00a5bd3f1",
+   "witness.values.376.5.44b00a5bd3f1",
+   "witness.values.419.5.44b00a5bd3f1",
+   "witness.values.672.3.44b00a5bd3f1",
+   "witness.values.694.3.44b00a5bd3f1",
+   "witness.values.722.3.44b00a5bd3f1",
+   "witness.values.826.3.44b00a5bd3f1",
+   "witness.values.863.3.44b00a5bd3f1",
+   "witness.values.926.3.44b00a5bd3f1",
+   "witness.values.961.3.44b00a5bd3f1",
+   "witness.values.991.3.44b00a5bd3f1"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.values.220.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.251.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.264.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.308.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.320.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.328.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.334.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.357.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.363.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.376.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.419.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.672.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.694.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.722.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.763.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.781.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.799.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.826.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.863.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.926.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.961.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.991.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1015.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1045.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1065.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1095.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1126.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1147.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1225.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1239.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1253.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1307.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1323.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1342.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1414.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1454.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1480.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1498.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1518.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1553.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1579.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1615.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1631.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1665.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1728.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1786.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1816.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1834.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1847.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.893.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.910.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.98.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.107.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.115.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.128.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.142.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.159.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.177.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.207.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.233.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.347.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.388.5.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.451.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.464.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.470.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.478.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.488.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.500.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.529.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.558.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.632.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.662.3.44b00a5bd3f1"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.values.1039.3.44b00a5bd3f1"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/values.test.ts",
+     "start": 1,
+     "end": 1874
+    }
+   ],
+   "context_reasons": {
+    "mental-model/concepts/values.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+   }
+  }
+ },
+ {
+  "origin": "artifact-f468517ae332ead13530f5b1",
+  "path": "packages/kernel/tests/value-refusal-cost.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "3 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 3 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/value-refusal-cost.test.ts:100:1@beb911787bf3",
+   "packages/kernel/tests/value-refusal-cost.test.ts:120:1@beb911787bf3",
+   "packages/kernel/tests/value-refusal-cost.test.ts:147:1@beb911787bf3"
+  ],
+  "stale_witnesses": [
+   "witness.value-refusal-cost.100.1.beb911787bf3",
+   "witness.value-refusal-cost.120.1.beb911787bf3",
+   "witness.value-refusal-cost.147.1.beb911787bf3"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.56.3.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.64.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.74.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.84.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.92.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.100.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.110.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.120.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.147.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.173.1.beb911787bf3"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.value-refusal-cost.193.1.beb911787bf3"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/value-refusal-cost.test.ts",
+     "start": 1,
+     "end": 202
+    }
+   ],
+   "context_reasons": {}
+  }
+ },
+ {
+  "origin": "artifact-febb180b453e17b8edab6893",
+  "path": "packages/kernel/tests/creation.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "11 of its members changed in K1.1-correction-03 and are now refused without a linked target; its closure linked 11 witnesses whose members K1.1-correction-03 changed",
+  "changed_members": [
+   "packages/kernel/tests/creation.test.ts:1031:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:362:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:415:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:441:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:546:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:630:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:742:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:823:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:922:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:944:3@088207d1ce86",
+   "packages/kernel/tests/creation.test.ts:958:3@088207d1ce86"
+  ],
+  "stale_witnesses": [
+   "witness.creation.1031.3.088207d1ce86",
+   "witness.creation.362.3.088207d1ce86",
+   "witness.creation.415.3.088207d1ce86",
+   "witness.creation.441.3.088207d1ce86",
+   "witness.creation.546.3.088207d1ce86",
+   "witness.creation.630.3.088207d1ce86",
+   "witness.creation.742.3.088207d1ce86",
+   "witness.creation.823.3.088207d1ce86",
+   "witness.creation.922.3.088207d1ce86",
+   "witness.creation.944.3.088207d1ce86",
+   "witness.creation.958.3.088207d1ce86"
+  ],
+  "previous_closure": {
+   "links": [
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.362.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.415.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.441.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.546.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.630.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.742.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.823.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.883.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.922.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.944.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.958.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.979.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.1031.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.333.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.516.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.1009.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.35.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.65.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.76.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.85.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.98.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.106.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.124.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.147.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.165.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.202.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.216.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.230.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.238.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.251.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.300.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.309.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.487.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.503.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.579.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.605.3.088207d1ce86"
+    },
+    {
+     "kind": "counterexample",
+     "id": "witness.creation.1058.3.088207d1ce86"
+    }
+   ],
+   "context": [
+    {
+     "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+     "path": "packages/kernel/tests/creation.test.ts",
+     "start": 1,
+     "end": 1067
+    }
+   ],
+   "context_reasons": {
+    "mental-model/mechanisms/creation.md": "A Layer-3 page cited for its rule, not a sealed evidence record; the closure makes no claim about Layer-3 meaning."
+   }
+  }
+ }
+]
