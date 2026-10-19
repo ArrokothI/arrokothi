@@ -2,6 +2,7 @@
 
 > Original observations: 2026-09-07; dispositions reconciled 2026-09-08. The [roadmap](001-current-status-and-roadmap.md) owns sequence;
 > this register owns evidence pointers and unresolved-item disposition. Add new findings here.
+> Accepted limits that are fixed only when a trigger happens live in [known limitations](017-known-limitations.md).
 > No entry is an implicit canonical change. “Planned” means work accepted, solution still gated.
 
 ## Evidence boundary
