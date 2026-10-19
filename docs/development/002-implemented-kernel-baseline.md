@@ -177,9 +177,12 @@ The byte stop and its exact charges, the four limits, exact accepted values and 
 unchanged. `capture-metering.test.ts` checks statically that capture observes caller values only
 through metered helpers, and that every other loop in `values.ts` carries its own cap. `capture-work.test.ts` compares wrapped engine operations with the units
 charged, and `capture-corpus.test.ts` runs the declared generated corpus. Timing is an observation
-only. The V-D1 claim stays held under [invalidation-02](work/K1.2/invalidation-02.md) until this
-packet is accepted, and the classification hold of
-[DESIGN-AUDIT-01 invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md) likewise. 007 records acceptance status and both holds; V-ENV ("ambient safety") stays held by
+only. The V-D1 claim, in this metered meaning with residuals R1–R4, and the classification claim for the
+detectable kinds are claimed again. The owner released the holds of
+[invalidation-02](work/K1.2/invalidation-02.md) and
+[DESIGN-AUDIT-01 invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md) on 2026-10-19
+([hold release](work/K1.1-correction-03/hold-release-01.md)). The deliberate limits are listed in
+[known limitations](017-known-limitations.md). V-ENV ("ambient safety") stays held by
 [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) for BINDING-01.
 
 Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit
