@@ -1,13 +1,14 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-19 against remote main `7af0cd11176c220353c06545630edbe45c2127b6` (the merge
-of PR #47, the known-limitations register, onto the TOOLS-01 integration) and the K1.1-correction-03 branch
-`claude/k1.1-correction-03`. K1.1-correction-03's accepted H is
-`4b121d7ba665182b22857f049c05f019f25d0c65`, payload C is `2bf220e9e426c810f2505fa2d74d70197807e584`,
-independent review 03 is recorded at `06ec8f25025d1d7c8d4ad020644fd787c6f41d62`, and acceptance record A
-is `0137dc0df27824b9f821f92f2045a2f3126cd835`. Its [cleanup](work/K1.1-correction-03/cleanup-01.md) is
-complete; integration waits for the owner's merge. The [status ledger](007-work-packets.md) and linked
-records own exact acceptance, integration and release identities.
+Snapshot: checked 2026-10-19 against remote main `b976f3a3761e4f130aa1eb683cb3eb1799e3417a`, the merge of
+K1.1-correction-03 (PR #48) onto `7af0cd11` (PR #47, the known-limitations register). K1.1-correction-03's
+accepted H is `4b121d7ba665182b22857f049c05f019f25d0c65`, payload C is
+`2bf220e9e426c810f2505fa2d74d70197807e584`, independent review 03 is recorded at
+`06ec8f25025d1d7c8d4ad020644fd787c6f41d62`, and acceptance record A is
+`0137dc0df27824b9f821f92f2045a2f3126cd835`. Its [cleanup](work/K1.1-correction-03/cleanup-01.md) is
+complete and it is [integrated](work/K1.1-correction-03/integration-01.md). The
+[status ledger](007-work-packets.md) and linked records own exact acceptance, integration and release
+identities.
 
 | Area | Current position |
 |---|---|
@@ -21,7 +22,7 @@ records own exact acceptance, integration and release identities.
 | BINDING-01, COORD-REFACTOR-01 | Planned; not released |
 | TOOLS-01 | Independently accepted at H above; integrated at `8f829003` (PR #45) |
 | TOOLS-02 | Planned remaining corpus extraction; not released; acceptance and integration required before K1.4 acceptance |
-| K1.1-correction-03 | Independently accepted at H above; cleanup complete; integration pending the owner's merge |
+| K1.1-correction-03 | Independently accepted at H above; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-13) under 006 working principle 6 |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
@@ -166,8 +167,7 @@ then limited blocking findings to real production defects and false current clai
 deliberate limits in [017](017-known-limitations.md). That rule now applies to every packet (006
 working principle 6).
 
-Status: independently accepted at H `4b121d7b`; cleanup complete; integration pending the owner's
-merge. Limits:
+Status: independently accepted at H `4b121d7b` and integrated at `b976f3a3` (PR #48). Limits:
 - The bound is metered work, not wall-clock time. Four engine residuals (R1–R4), host interceptor
   objects and request-wide totals are stated limits (017 L-03–L-07, L-13).
 - Re-prototyped built-ins without a cheap engine predicate (WeakRef, Temporal, Intl, iterators and
@@ -204,15 +204,14 @@ All successors remain unreleased. The dependencies below come from 007 and becom
 owner release only after their prerequisites are accepted and integrated. Briefs follow 006 working
 principle 6: build right what later work builds on, and record the rest in [017](017-known-limitations.md).
 
-1. **Integrate K1.1-correction-03** by the owner's merge, then record its integration receipt.
-2. **BINDING-01** depends on TOOLS-01 and correction-03. It owns the canonical-bytes core, the
+1. **BINDING-01** depends on TOOLS-01 and correction-03, both accepted and integrated; it needs an owner release. It owns the canonical-bytes core, the
    8 MiB transport adapter and the capture wrapper moved into the SDK as an internal module, plus the
    V-ENV hold. Moving capture out of the Kernel also retires most of 017's L-04–L-09. It must classify
    the 853 rule-1 V-ENV entries. Runtime evidence, such as evaluating Node's `--frozen-intrinsics`, is a
    candidate approach for its brief, not an owner-selected design or evidence that the hold can be
    lifted. The supported SDK surface changes at K1.4, as
    [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies.
-3. **TOOLS-02** also depends on TOOLS-01. It owns the remaining extraction, mention triage and
+2. **TOOLS-02** also depends on TOOLS-01. It owns the remaining extraction, mention triage and
    mutation-family work, target-set assertion-provenance design, and the transferred origins.
    These include [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins, the limited member
    `kernel-landing-zone.test.ts:1200:9@deedd7950724`, the origins K1.1-correction-03 transferred, and
@@ -220,9 +219,9 @@ principle 6: build right what later work builds on, and record the rest in [017]
    first, because every packet runs it. Hold-register entries held under the now-released V-D1 and
    classification claims need revalidation. TOOLS-02 must be accepted and integrated before K1.4
    acceptance; 007 does not make it a prerequisite for BINDING-01 or K1.3.
-4. **COORD-REFACTOR-01**, after BINDING-01, then **K1.3** retain their planned sequence. They have no
+3. **COORD-REFACTOR-01**, after BINDING-01, then **K1.3** retain their planned sequence. They have no
    release from this cleanup.
-5. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:
+4. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:
    before K1.3 closes, the benchmark owner must confirm that E1 fixtures drive the new supported
    entry. An unavailable fixture makes K1.4 BLOCKED_EXTERNAL. Fixture preparation is not an E1
    result; no E1 gate result is recorded in the current ledger.
