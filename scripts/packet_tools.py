@@ -3314,9 +3314,44 @@ def area_gate(git, revision, verification_path, adoption_path=ADOPTION_MANIFEST)
                        'impact analysis', 'Origins that name no path are ungated and counted, not listed by area']}
 
 
+# Untracked names a pristine checkout may hold: installed dependencies and macOS folder metadata.
+PRISTINE_ALLOWED = frozenset({'node_modules', '.DS_Store'})
+
+
+def untracked_entries(git, rev):
+    """Filesystem entries that are not tracked at `rev`, including ignored files and directories git cannot
+    see (for example a directory holding only an ignored `node_modules`). Tests that walk the tree see them, so
+    they would make a local census differ from a fresh clone's (TOOLS-02A)."""
+    tracked = {path for path in git.run('ls-tree', '-r', '--name-only', '-z', rev).decode().split('\0') if path}
+    directories = {str(parent) for path in tracked for parent in PurePosixPath(path).parents if str(parent) != '.'}
+    extra = []
+    for current, dirnames, filenames in os.walk(git.repo):
+        relative_dir = Path(current).relative_to(git.repo).as_posix()
+        kept = []
+        for name in sorted(dirnames):
+            relative = name if relative_dir == '.' else relative_dir + '/' + name
+            if (relative_dir == '.' and name == '.git') or name in PRISTINE_ALLOWED:
+                continue
+            if relative in tracked:
+                continue  # a tracked symlink to a directory; os.walk does not follow it
+            if relative not in directories:
+                extra.append(relative + '/')
+                continue
+            kept.append(name)
+        dirnames[:] = kept
+        for name in sorted(filenames):
+            relative = name if relative_dir == '.' else relative_dir + '/' + name
+            if name not in PRISTINE_ALLOWED and relative not in tracked:
+                extra.append(relative)
+    return sorted(extra)
+
+
 def clean_payload(git, rev):
     require(git.run('rev-parse', 'HEAD').decode().strip() == rev, 'HEAD must be payload C')
     require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')
+    extra = untracked_entries(git, rev)
+    require(not extra, 'payload checkout must be clean: entries not tracked at C, including ignored ones '
+            f'(first: {extra[:5]}); run in a fresh clone or the Packet verify workflow')
 
 
 def verify(git, revision, spec_path, toolchain=None):
