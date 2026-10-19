@@ -1,5 +1,6 @@
 """TOOLS-01 implementer counterexamples for adoption, dependency and clean-C evidence."""
 import json
+import shutil
 import sys
 from unittest.mock import patch
 from test_packet_tools import RepositoryFixture, stub_area_gate, tool
@@ -252,6 +253,14 @@ class VerificationTests(RepositoryFixture):
         self.write('.DS_Store', 'metadata')
         self.assertEqual(tool.untracked_entries(self.reader, rev), [])
         self.assertEqual(tool.verify(self.reader, rev, 'verify.json')['result'], 'checks_passed')
+
+    def test_linked_worktree_accepted(self):
+        rev = self.fixture()
+        worktree = self.root.parent / (self.root.name + '-worktree')
+        self.git('worktree', 'add', '-q', '--detach', str(worktree), rev)
+        self.addCleanup(lambda: shutil.rmtree(worktree, ignore_errors=True))
+        self.assertTrue((worktree / '.git').is_file())
+        self.assertEqual(tool.untracked_entries(tool.Git(worktree), rev), [])
 
     def test_wrong_head_refused(self):
         self.fixture()

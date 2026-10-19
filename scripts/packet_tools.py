@@ -3341,6 +3341,8 @@ def untracked_entries(git, rev):
         dirnames[:] = kept
         for name in sorted(filenames):
             relative = name if relative_dir == '.' else relative_dir + '/' + name
+            if relative_dir == '.' and name == '.git':
+                continue  # a linked worktree's or submodule's .git is a file
             if name not in PRISTINE_ALLOWED and relative not in tracked:
                 extra.append(relative)
     return sorted(extra)
