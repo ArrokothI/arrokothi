@@ -1,0 +1,56 @@
+{
+  "repository": "/private/tmp/tools02a-review-01-c",
+  "revision": "504fa5fb23b681e2715fcba97b98bcb456e778ee",
+  "node": "v26.10.0",
+  "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 17.0.0 (clang-1700.6.4.2)]",
+  "mutation": {
+    "path": "scripts/packet_tools.py",
+    "before": "require(not extra, 'payload checkout must be clean: entries not tracked at C, including ignored ones '\n            f'(first: {extra[:5]}); run in a fresh clone or the Packet verify workflow')",
+    "after": "pass  # tools01-ablate:c88434fec112f9e4",
+    "operator": "remove-refusal-check",
+    "name": "guard.clean_payload.c88434fec112f9e4",
+    "id": "mutation-512508a486109c03f2299e890047354346031d71386ffc597cf45907d1ef8b35"
+  },
+  "results": [
+    {
+      "label": "guard-control-node26",
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.clean_payload.c88434fec112f9e4"
+      ],
+      "exit": 0,
+      "probe": {
+        "case": "guard.clean_payload.c88434fec112f9e4",
+        "assertion": "test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused",
+        "passed": true,
+        "reached": true,
+        "failures": [],
+        "tests": 1
+      }
+    },
+    {
+      "label": "guard-ablation",
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.clean_payload.c88434fec112f9e4"
+      ],
+      "exit": 17,
+      "probe": {
+        "case": "guard.clean_payload.c88434fec112f9e4",
+        "assertion": "test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused",
+        "passed": false,
+        "reached": true,
+        "failures": [
+          "test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused"
+        ],
+        "tests": 1
+      }
+    }
+  ],
+  "source_restored_sha256": "915ff816415f7e772d28ce4bff6613724428185233bf9903181dc225843411cc",
+  "final_git_status": ""
+}

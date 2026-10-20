@@ -1,0 +1,186 @@
+{
+  "source_run": 39349102418,
+  "artifact": "packet-verify-504fa5fb23b681e2715fcba97b98bcb456e778ee",
+  "verify_sha256": "b99ee6352a500f67c3ddd33c8e40d454f4231d337270fbb4c912af3dd068bdd5",
+  "revision": "504fa5fb23b681e2715fcba97b98bcb456e778ee",
+  "result": "checks_passed",
+  "checks": [
+    {
+      "id": "tool-tests",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {
+        "tests": 613
+      }
+    },
+    {
+      "id": "inventory",
+      "passed": true,
+      "result": "provenance_verified",
+      "exit": null,
+      "counts": null
+    },
+    {
+      "id": "adoption",
+      "passed": true,
+      "result": "revalidation_complete",
+      "exit": null,
+      "counts": null
+    },
+    {
+      "id": "dimensions",
+      "passed": true,
+      "result": "coverage_reported",
+      "exit": null,
+      "counts": null
+    },
+    {
+      "id": "registered-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "exit": null,
+      "counts": null
+    },
+    {
+      "id": "refusal-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "exit": null,
+      "counts": null
+    },
+    {
+      "id": "value-cost-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "exit": null,
+      "counts": null
+    },
+    {
+      "id": "refusal-census",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "oracle-census",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "typecheck",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "repository-tests",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {
+        "tests": 4123,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "kernel-sweeps",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "value-cost-dimensions",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "value-cost-continuations",
+      "passed": true,
+      "result": null,
+      "exit": 0,
+      "counts": {}
+    },
+    {
+      "id": "area-gate",
+      "passed": true,
+      "result": "reported",
+      "exit": null,
+      "counts": null
+    }
+  ],
+  "new_guard": {
+    "case": "guard.clean_payload.c88434fec112f9e4",
+    "content_key": "case-0da66b1eb17e86bcf8f691f7a4fce0adeaa27dfba5431a0282c8289c38330b50",
+    "claim": {
+      "kind": "test_assertion",
+      "semantic_credit": "not evaluated"
+    },
+    "kind": "probe",
+    "control": "passed",
+    "baseline": {
+      "status": "finished",
+      "exit": 0,
+      "output": "{\"case\": \"guard.clean_payload.c88434fec112f9e4\", \"assertion\": \"test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+    },
+    "mutations": [
+      {
+        "mutation": "mutation-512508a486109c03f2299e890047354346031d71386ffc597cf45907d1ef8b35",
+        "status": "killed",
+        "run": {
+          "status": "finished",
+          "exit": 17,
+          "output": "{\"case\": \"guard.clean_payload.c88434fec112f9e4\", \"assertion\": \"test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused\", \"passed\": false, \"reached\": true, \"failures\": [\"test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused\"], \"tests\": 1}\n"
+        },
+        "invalid": false,
+        "killed_by": "test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused",
+        "content_key": "mutation-512508a486109c03f2299e890047354346031d71386ffc597cf45907d1ef8b35"
+      }
+    ]
+  },
+  "raw_files": [
+    {
+      "name": "run.txt",
+      "bytes": 292,
+      "sha256": "392b133eb373eb56c2a50901c6328f0a6c4e2a3f3be3942ba3c6adb56c3fb99b"
+    },
+    {
+      "name": "summary.json",
+      "bytes": 2137,
+      "sha256": "f31fce5c22a2368f16c75f020855fe16d6b10c665f9393c9dc03cf6f1e6f0461"
+    },
+    {
+      "name": "verify.json",
+      "bytes": 12144297,
+      "sha256": "b99ee6352a500f67c3ddd33c8e40d454f4231d337270fbb4c912af3dd068bdd5"
+    },
+    {
+      "name": "verify.stderr.log",
+      "bytes": 18668,
+      "sha256": "6bf2efe4abe2603ed1bf5190d005e751d597fcfb522711367d1bf741e2bfc2f0"
+    }
+  ]
+}

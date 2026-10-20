@@ -1,0 +1,134 @@
+test_complete_mapping_is_not_execution (test_corpus_tools.CorpusTests.test_complete_mapping_is_not_execution) ... ok
+test_corpus_mutations_must_be_scheduled (test_corpus_tools.CorpusTests.test_corpus_mutations_must_be_scheduled) ... ok
+test_default_profile_cannot_be_unexecuted (test_corpus_tools.CorpusTests.test_default_profile_cannot_be_unexecuted) ... ok
+test_duplicate_cycle (test_corpus_tools.CorpusTests.test_duplicate_cycle) ... ok
+test_duplicate_execution_command (test_corpus_tools.CorpusTests.test_duplicate_execution_command) ... ok
+test_duplicate_origin (test_corpus_tools.CorpusTests.test_duplicate_origin) ... ok
+test_duplicate_pending_stays_pending (test_corpus_tools.CorpusTests.test_duplicate_pending_stays_pending) ... ok
+test_duplicate_profile (test_corpus_tools.CorpusTests.test_duplicate_profile) ... ok
+test_missing_origin_cannot_shrink_obligation (test_corpus_tools.CorpusTests.test_missing_origin_cannot_shrink_obligation) ... ok
+test_missing_suite_source (test_corpus_tools.CorpusTests.test_missing_suite_source) ... ok
+test_non_executable_requires_reason (test_corpus_tools.CorpusTests.test_non_executable_requires_reason) ... ok
+test_pending_is_not_complete (test_corpus_tools.CorpusTests.test_pending_is_not_complete) ... ok
+test_profile_argv_required (test_corpus_tools.CorpusTests.test_profile_argv_required) ... ok
+test_profile_commands_required (test_corpus_tools.CorpusTests.test_profile_commands_required) ... ok
+test_profile_reason_required (test_corpus_tools.CorpusTests.test_profile_reason_required) ... ok
+test_suite_cannot_claim_default_for_unexecuted_profile (test_corpus_tools.CorpusTests.test_suite_cannot_claim_default_for_unexecuted_profile) ... ok
+test_suite_command_must_be_scheduled (test_corpus_tools.CorpusTests.test_suite_command_must_be_scheduled) ... ok
+test_unavailable_case_is_not_coverage (test_corpus_tools.CorpusTests.test_unavailable_case_is_not_coverage) ... ok
+test_unexecuted_profile_mapping_is_visible (test_corpus_tools.CorpusTests.test_unexecuted_profile_mapping_is_visible) ... ok
+test_changed_bytes_same_version_refused (test_corpus_tools.DependencyTests.test_changed_bytes_same_version_refused) ... ok
+test_lock_version_mismatch (test_corpus_tools.DependencyTests.test_lock_version_mismatch) ... ok
+test_pinned_bytes_loaded (test_corpus_tools.DependencyTests.test_pinned_bytes_loaded) ... ok
+test_symlinked_dependency_refused (test_corpus_tools.DependencyTests.test_symlinked_dependency_refused) ... ok
+test_command_counts_and_versions (test_corpus_tools.VerificationTests.test_command_counts_and_versions) ... ERROR
+test_command_source_mutation_refused (test_corpus_tools.VerificationTests.test_command_source_mutation_refused) ... FAIL
+test_dependencies_and_folder_metadata_allowed (test_corpus_tools.VerificationTests.test_dependencies_and_folder_metadata_allowed) ... ERROR
+test_directory_invisible_to_git_refused (test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused) ... ok
+test_dirty_source_refused (test_corpus_tools.VerificationTests.test_dirty_source_refused) ... ok
+test_duplicate_counts_are_not_one_result (test_corpus_tools.VerificationTests.test_duplicate_counts_are_not_one_result) ... FAIL
+test_green_exit_with_no_tests_does_not_pass (test_corpus_tools.VerificationTests.test_green_exit_with_no_tests_does_not_pass) ... ERROR
+test_ignored_file_refused (test_corpus_tools.VerificationTests.test_ignored_file_refused) ... ok
+test_linked_worktree_accepted (test_corpus_tools.VerificationTests.test_linked_worktree_accepted) ... ok
+test_skipped_test_does_not_pass (test_corpus_tools.VerificationTests.test_skipped_test_does_not_pass) ... ERROR
+test_wrong_head_refused (test_corpus_tools.VerificationTests.test_wrong_head_refused) ... ok
+
+======================================================================
+ERROR: test_command_counts_and_versions (test_corpus_tools.VerificationTests.test_command_counts_and_versions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/tools02a-review-01-c/tests/tooling/test_corpus_tools.py", line 221, in test_command_counts_and_versions
+    result = tool.verify(self.reader, self.fixture(), 'verify.json')
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 3370, in verify
+    node = node_version(base_environment, git.repo)
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 1438, in node_version
+    require(tuple(int(part) for part in match.groups()) >= NODE_FLOOR,
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f'Node {version} is below the v26.10.0 floor')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 132, in require
+    raise CheckError(message)
+packet_tools.CheckError: Node v25.2.1 is below the v26.10.0 floor
+
+======================================================================
+ERROR: test_dependencies_and_folder_metadata_allowed (test_corpus_tools.VerificationTests.test_dependencies_and_folder_metadata_allowed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/tools02a-review-01-c/tests/tooling/test_corpus_tools.py", line 255, in test_dependencies_and_folder_metadata_allowed
+    self.assertEqual(tool.verify(self.reader, rev, 'verify.json')['result'], 'checks_passed')
+                     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 3370, in verify
+    node = node_version(base_environment, git.repo)
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 1438, in node_version
+    require(tuple(int(part) for part in match.groups()) >= NODE_FLOOR,
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f'Node {version} is below the v26.10.0 floor')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 132, in require
+    raise CheckError(message)
+packet_tools.CheckError: Node v25.2.1 is below the v26.10.0 floor
+
+======================================================================
+ERROR: test_green_exit_with_no_tests_does_not_pass (test_corpus_tools.VerificationTests.test_green_exit_with_no_tests_does_not_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/tools02a-review-01-c/tests/tooling/test_corpus_tools.py", line 271, in test_green_exit_with_no_tests_does_not_pass
+    result = tool.verify(self.reader, self.fixture('print("tests 0; skips 0")'), 'verify.json')
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 3370, in verify
+    node = node_version(base_environment, git.repo)
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 1438, in node_version
+    require(tuple(int(part) for part in match.groups()) >= NODE_FLOOR,
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f'Node {version} is below the v26.10.0 floor')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 132, in require
+    raise CheckError(message)
+packet_tools.CheckError: Node v25.2.1 is below the v26.10.0 floor
+
+======================================================================
+ERROR: test_skipped_test_does_not_pass (test_corpus_tools.VerificationTests.test_skipped_test_does_not_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/tools02a-review-01-c/tests/tooling/test_corpus_tools.py", line 275, in test_skipped_test_does_not_pass
+    result = tool.verify(self.reader, self.fixture('print("tests 3; skips 1")'), 'verify.json')
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 3370, in verify
+    node = node_version(base_environment, git.repo)
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 1438, in node_version
+    require(tuple(int(part) for part in match.groups()) >= NODE_FLOOR,
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f'Node {version} is below the v26.10.0 floor')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/tools02a-review-01-c/scripts/packet_tools.py", line 132, in require
+    raise CheckError(message)
+packet_tools.CheckError: Node v25.2.1 is below the v26.10.0 floor
+
+======================================================================
+FAIL: test_command_source_mutation_refused (test_corpus_tools.VerificationTests.test_command_source_mutation_refused)
+----------------------------------------------------------------------
+packet_tools.CheckError: Node v25.2.1 is below the v26.10.0 floor
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/private/tmp/tools02a-review-01-c/tests/tooling/test_corpus_tools.py", line 285, in test_command_source_mutation_refused
+    with self.assertRaisesRegex(tool.CheckError, 'must be clean'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "must be clean" does not match "Node v25.2.1 is below the v26.10.0 floor"
+
+======================================================================
+FAIL: test_duplicate_counts_are_not_one_result (test_corpus_tools.VerificationTests.test_duplicate_counts_are_not_one_result)
+----------------------------------------------------------------------
+packet_tools.CheckError: Node v25.2.1 is below the v26.10.0 floor
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/private/tmp/tools02a-review-01-c/tests/tooling/test_corpus_tools.py", line 280, in test_duplicate_counts_are_not_one_result
+    with self.assertRaisesRegex(tool.CheckError, 'ambiguous or missing'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "ambiguous or missing" does not match "Node v25.2.1 is below the v26.10.0 floor"
+
+----------------------------------------------------------------------
+Ran 34 tests in 15.034s
+
+FAILED (failures=2, errors=4)
