@@ -1,8 +1,7 @@
-# Brief 01 — BINDING-01 (DRAFT, not released)
+# Brief 01 — BINDING-01
 
 Planner: the owner's Claude Code desktop session (`claude-opus-5-5`), 2026-10-20, at the owner's request ("draft
-BINDING-01 here"). This is a draft. The packet is released only by an owner message, recorded in `release-01.md`.
-The owner may edit this brief before release.
+BINDING-01 here"). Released by the owner on 2026-10-20 ([release 01](release-01.md)), unchanged except for this header and the answer to question 1.
 
 It is written under [006 working principle 6](../../006-development-process.md#working-principles) and
 [017](../../017-known-limitations.md). Build right now what later work builds on. Everything else becomes a
@@ -60,8 +59,8 @@ These are expensive to change later. Every later packet builds on them, and pers
 
 ## Questions for the design note
 
-1. **Bytes type and ownership.** Should the input be a `Uint8Array` copied on entry (recommended), or a string?
-   Which output does each reader get, bytes or a frozen parsed value? This is an API shape, so get it right now.
+1. **Bytes type and ownership.** The owner decided: the input is a `Uint8Array`, copied on entry. Still to decide:
+   which output each reader gets, bytes or a frozen parsed value. This is an API shape, so get it right now.
 2. **Test migration.** 131 test files call the value APIs, and 43 build their coordinator through `harness.ts`.
    Recommended: wrap at the harness, using the wrapper through a test-only path, so most tests do not change.
    Name the files that cannot be migrated that way.
