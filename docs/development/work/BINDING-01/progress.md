@@ -13,7 +13,7 @@
 - Build WIP `825e7cd9`: initial core/transport, immediate root copying, primitive identity checks, unchanged SDK capture/helper copy and dependency move; no tests migrated.
 - Checks: targeted production TypeScript compile and ownership/freeze/strictness/transport/wrapper-cycle smoke checks passed; legacy suite not yet migrated.
 - Next step: finish split migration (legacy consumer failures remain), add core shadow/consumer witnesses and corpus comparison, update source inventories/tooling and Layer 3/BASELINE/017, then clean C and CI.
-- Build continued: lazy facade/SDK byte helper added; capture suites moved to SDK; shared corpus split approved; core strictness/limits and intrinsic guard added.
+- Build checkpoint `6aa27ffb`: lazy facade/SDK byte helper added; capture suites moved to SDK; shared corpus split approved; core strictness/limits and intrinsic guard added.
 - Targeted checks: wrapper refusal/meter guard 178 passed; new intrinsic guard 7 passed; core vectors passed except a test-helper type-fixture error, fixed pending rerun.
 - Open questions: none. Owner answered yes to migration-question-01; preserve generic oracle, byte-representable decisions, authority order and accepted equality/replay.
 - Last CI run: none for BINDING-01; no clean C yet. Do not run composed verify locally.
