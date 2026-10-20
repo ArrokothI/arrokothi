@@ -1,6 +1,7 @@
 // Maintained design-03 continuation search. Provenance: review-02/probe-continuations.{py,mjs}.
 // Emits plain observations; the maintained test asserts them after capture completes.
 import fs from 'node:fs';
+import os from 'node:os';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
@@ -10,7 +11,7 @@ const mode=process.argv[2]??'small';
 if(!['small','subset','full'].includes(mode))throw Error('unknown continuation search mode: '+mode);
 const inventory=JSON.parse(fs.readFileSync('tests/fixtures/packet-tools/capture-trace-sites.json','utf8'));
 const source=fs.readFileSync('packages/kernel/src/values.ts','utf8');
-const temp=fs.mkdtempSync('/private/tmp/kc3-continuations-');
+const temp=fs.mkdtempSync(resolve(fs.realpathSync(os.tmpdir()),'kc3-continuations-'));
 fs.cpSync('packages/kernel/src',temp+'/src',{recursive:true});
 fs.symlinkSync(resolve('node_modules'),temp+'/node_modules');
 const instrumented=instrumentCapture(source,inventory);

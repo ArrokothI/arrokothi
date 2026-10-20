@@ -65,8 +65,17 @@ walking or reading the tree can still observe:
   and `docs/development/work/K1.1/` files, and would be refused, correctly.
 - **Allowed names.** `node_modules` (installed dependencies, never part of the census) and `.DS_Store` (macOS
   folder metadata, which the census never reads).
-- **Not changed.** The census algorithm, every other recorded digest, production code, Layer 3 and every
-  other registry.
+- **Found by the first CI run of this packet (run `39340063198`).** Once the census passed, the run reached
+  further steps:
+  - Three K1.1-correction-03 tooling files hard-coded the macOS temporary directory `/private/tmp`:
+    `capture-continuations.mjs`, `capture-trace-controls.mjs` and `requalify-value-cost.py`. On Linux they
+    failed, breaking the repository tests, kernel sweeps, continuation search and one value-cost case. They
+    now use the system temporary directory, still resolved with `realpath`.
+  - The new `require` was missing its registered refusal guard. The refusal census requires one for every
+    check. It is now `guard.clean_payload.c88434fec112f9e4`, killed by
+    `test_directory_invisible_to_git_refused`.
+- **Not changed.** The census algorithm, every other recorded digest, production code, Layer 3, and every
+  registry other than the one added refusal guard.
 
 ## Limits
 

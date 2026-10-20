@@ -155,7 +155,7 @@ def main():
     if args.side == 'b' and revision != B:
         raise RuntimeError('B is fixed')
     args.output.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='kc3-requalification-', dir='/private/tmp') as tmp:
+    with tempfile.TemporaryDirectory(prefix='kc3-requalification-', dir=os.path.realpath(tempfile.gettempdir())) as tmp:
         tree = Path(tmp)
         archive = subprocess.check_output(['git', 'archive', revision], cwd=ROOT)
         with tarfile.open(fileobj=io.BytesIO(archive)) as tar:

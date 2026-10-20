@@ -387,6 +387,35 @@
       ]
     },
     {
+      "id": "guard.clean_payload.c88434fec112f9e4",
+      "assertion": "test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: clean_payload",
+      "input": {
+        "test": "test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.clean_payload.c88434fec112f9e4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(not extra, 'payload checkout must be clean: entries not tracked at C, including ignored ones '\n            f'(first: {extra[:5]}); run in a fresh clone or the Packet verify workflow')",
+          "after": "pass  # tools01-ablate:c88434fec112f9e4",
+          "operator": "remove-refusal-check",
+          "name": "guard.clean_payload.c88434fec112f9e4",
+          "id": "mutation-512508a486109c03f2299e890047354346031d71386ffc597cf45907d1ef8b35"
+        }
+      ]
+    },
+    {
       "id": "guard.command.1a8679b208fb7fb4",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_command_argv",
       "category": "tool-refusal",

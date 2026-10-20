@@ -1,5 +1,6 @@
 // Maintained adaptations of review-02 stop guard/forms probes; original artifacts are unchanged.
 import fs from 'node:fs';
+import os from 'node:os';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
@@ -15,7 +16,7 @@ for(const row of [{name:'correct-control',shape:'[null]',static:'pass',inventory
  const source=row.before?original.replace(row.before,row.after)+row.extra:original;
  const expected={...inventory};for(const[key,delta]of Object.entries(row.inventory_delta))expected[key]=(expected[key]??0)+delta;
  const traced=instrumentCapture(source,expected),observer=captureObserver();globalThis.__ARROKOTHI_CAPTURE_TRACE__=observer.trace;
- const temp=fs.mkdtempSync('/private/tmp/kc3-trace-control-');
+ const temp=fs.mkdtempSync(resolve(fs.realpathSync(os.tmpdir()),'kc3-trace-control-'));
  const saved=[];
  try {
   fs.cpSync('packages/kernel/src',temp+'/src',{recursive:true});fs.symlinkSync(resolve('node_modules'),temp+'/node_modules');

@@ -89,10 +89,6 @@
     },
     {
       "revision": "e391ceba26164d2b461dc4c374db65058903b23e",
-      "path": "tests/fixtures/packet-tools/refusal-guards.json"
-    },
-    {
-      "revision": "e391ceba26164d2b461dc4c374db65058903b23e",
       "path": "tests/fixtures/packet-tools/value-cost.json"
     }
   ],
@@ -527,7 +523,7 @@
     }
   ],
   "limits": [
-    "TOOLS-02A changes only the clean-checkout rule in scripts/packet_tools.py, its tool tests and the 21 preserved-table read digests that a dirty local checkout had recorded; it closes no other adoption origin and is not TOOLS-02.",
+    "TOOLS-02A changes the clean-checkout rule in scripts/packet_tools.py with its tool tests and registered refusal guard, the 21 preserved-table read digests that a dirty local checkout had recorded, and three tooling files that hard-coded the macOS temporary directory; it closes no other adoption origin and is not TOOLS-02.",
     "No prior results reused; acceptance is not evaluated."
   ]
 }
