@@ -137,7 +137,7 @@ import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts
 import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
 import { err, ok, type Result } from "./result.ts";
 import { refuseUnsupportedSurface } from "./unsupported.ts";
-import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
+import { acceptCanonicalBytes, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
 
 /**
  * Load-time references used on paths that run after caller-owned state has been observed.
@@ -217,7 +217,7 @@ const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
 /** The content of one input Event, independent of which boundary accepts it. */
 export interface InputContent {
   readonly kind: string;
-  readonly payload: BoundaryValue;
+  readonly payload: Uint8Array;
   /**
    * The declared input-subscription class, when the producer declares one. Matched by K1.3, not here.
    *
@@ -245,7 +245,7 @@ export interface CreateExecutionRequest {
   /** The progress codec pinned for this Execution's continuation data. */
   readonly progressCodec: string;
   /** Opaque application authority context, supplied to the Runtime as its execution view. */
-  readonly authorityContext: BoundaryValue;
+  readonly authorityContext: Uint8Array;
   readonly initialInput: InputContent;
 }
 
@@ -264,7 +264,7 @@ export interface SubmitInputRequest {
   /** The producer's request key: the third member of the Input ID triple. */
   readonly requestKey: string;
   readonly kind: string;
-  readonly payload: BoundaryValue;
+  readonly payload: Uint8Array;
   readonly subscriptionClass?: string;
 }
 
@@ -712,16 +712,15 @@ function acceptInputContent(content: InputContent, prefix: string): Result<Accep
   // and again for packing would let a shifting envelope validate as one kind and bind as another.
   const kindField = observeField(content, "kind", `${prefix}kind`, issues);
   const payloadField = observeField(content, "payload", `${prefix}payload`, issues);
+  const payload = payloadField.ok ? acceptCanonicalBytes(payloadField.observed) : null;
   const subscriptionField = observeField(content, "subscriptionClass", `${prefix}subscriptionClass`, issues);
-  if (!kindField.ok || !payloadField.ok || !subscriptionField.ok) return err(issues);
+  if (!kindField.ok || !payloadField.ok || payload === null || !subscriptionField.ok) return err(issues);
   const kindObserved: unknown = kindField.observed;
-  const payloadObserved: unknown = payloadField.observed;
   const subscriptionObserved: unknown = subscriptionField.observed;
   const hasSubscription = subscriptionObserved !== undefined;
   // `kind` and `subscriptionClass` are packed into this input's content identity, so they are held
   // to the identity-text rule rather than only to the boundary-value rules.
   const kindOk = acceptIdentityText(kindObserved, `${prefix}kind`, issues);
-  const payload = canonicalize(payloadObserved);
   if (!payload.ok) appendIssues(issues, located(payload.issues, `${prefix}payload`));
 
   let subscriptionClass: string | null = null;
@@ -786,11 +785,10 @@ function acceptCreationContent(
     if (!acceptIdentityText(scalar[1], scalar[0], issues)) scalarsOk = false;
   }
   const authorityField = observeField(request, "authorityContext", "authorityContext", issues);
+  const authorityContext = authorityField.ok ? acceptCanonicalBytes(authorityField.observed) : null;
   const initialField = observeField(request, "initialInput", "initialInput", issues);
-  if (!authorityField.ok || !initialField.ok) return err(issues);
-  const authorityObserved: unknown = authorityField.observed;
+  if (!authorityField.ok || authorityContext === null || !initialField.ok) return err(issues);
   const initialObserved: unknown = initialField.observed;
-  const authorityContext = canonicalize(authorityObserved);
   if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, "authorityContext"));
   const initialInput =
     initialObserved !== undefined && initialObserved !== null && typeof initialObserved === "object"

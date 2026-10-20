@@ -79,5 +79,5 @@ export type { RefusalClassification, RefusalRecord } from "./refusal.ts";
 export { err, ok } from "./result.ts";
 export type { Err, Ok, Result } from "./result.ts";
 
-export { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue } from "./values.ts";
-export type { BoundaryValue, CanonicalValue, ValueIssue, ValueIssueCode } from "./values.ts";
+export { BOUNDARY_LIMITS, validateCanonicalBytes } from "./values.ts";
+export type { BoundaryValue, ValueIssue, ValueIssueCode } from "./values.ts";

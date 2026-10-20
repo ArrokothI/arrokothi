@@ -14,7 +14,7 @@
  */
 
 import { appendAllOwn, appendOwn, descriptorGetter, descriptorValue, isDataDescriptor, readAt } from "./own-array.ts";
-import { canonicalize, isProxyValue, type ValueIssue } from "./values.ts";
+import { identityTextIssue, isProxyValue, type ValueIssue } from "./values.ts";
 
 const PrimordialArrayIsArray = Array.isArray;
 /**
@@ -197,9 +197,9 @@ export function acceptIdentityText(value: unknown, label: string, issues: Locate
     appendIssue(issues, { path: label, code: "unsupported_form", message: `expected text that can name a request, received ${received}` });
     return false;
   }
-  const checked = canonicalize(value);
-  if (!checked.ok) {
-    appendIssues(issues, located(checked.issues, label));
+  const problem = identityTextIssue(value);
+  if (problem !== null) {
+    appendIssue(issues, { ...problem, path: label });
     return false;
   }
   return true;

@@ -39,6 +39,7 @@ import {
   acceptActivationIdentity,
   diagnosticIdentity,
   appendRootIssues,
+  appendIssues,
   explainDiagnosticIssues,
   acceptIdentityText,
   appendIssue,
@@ -48,7 +49,7 @@ import {
 } from "./envelope.ts";
 import { packIdentity } from "./identity.ts";
 import { appendOwn, readAt } from "./own-array.ts";
-import { canonicalize, type BoundaryValue, type CanonicalValue } from "./values.ts";
+import { acceptCanonicalBytes, type BoundaryValue, type CanonicalValue } from "./values.ts";
 
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialNumberIsSafeInteger = Number.isSafeInteger;
@@ -65,7 +66,7 @@ const PrimordialReflectOwnKeys = Reflect.ownKeys;
 /** One output the Runtime produced, under its local name within this Outcome. */
 export interface EmissionProposal {
   readonly emissionKey: string;
-  readonly value: BoundaryValue;
+  readonly value: Uint8Array;
 }
 
 /** The one next step an Outcome proposes. */
@@ -73,8 +74,8 @@ export type OutcomeNext =
   | { readonly step: "continue" }
   /** Refused whole until K1.3 implements wait registration; the wait is never read here. */
   | { readonly step: "await"; readonly wait: unknown }
-  | { readonly step: "complete"; readonly result: BoundaryValue }
-  | { readonly step: "fail"; readonly error: BoundaryValue };
+  | { readonly step: "complete"; readonly result: Uint8Array }
+  | { readonly step: "fail"; readonly error: Uint8Array };
 
 /**
  * A Runtime's proposal ending one Activation.
@@ -90,7 +91,7 @@ export interface OutcomeEnvelope {
   readonly writerEpoch: number;
   readonly baseProgressRevision: number;
   /** The Runtime's new saved state, in inline form. Stored and handed back unchanged. */
-  readonly progress: BoundaryValue;
+  readonly progress: Uint8Array;
   /** Absent and empty mean the same thing. */
   readonly emissions?: readonly EmissionProposal[];
   /** Must be absent or empty before K2: any Effect refuses the whole Outcome (EF-2). */
@@ -193,7 +194,7 @@ function acceptRoot(observed: unknown, label: string, issues: LocatedIssue[]): C
     appendIssue(issues, { path: label, code: "missing_field", message: `${label} is required` });
     return null;
   }
-  const captured = canonicalize(observed);
+  const captured = acceptCanonicalBytes(observed);
   if (!captured.ok) {
     appendRootIssues(issues, captured.issues, label);
     return null;
@@ -313,10 +314,12 @@ function captureEmissions(
     }
     const keyField = observeField(element, "emissionKey", `${label}.emissionKey`, issues);
     const valueField = observeField(element, "value", `${label}.value`, issues);
+    const rootIssues: LocatedIssue[] = [];
+    const value = valueField.ok ? acceptRoot(valueField.observed, `${label}.value`, rootIssues) : null;
     refuseUnknownFields(element as object, EMISSION_FIELDS, label, issues);
     if (!keyField.ok || !valueField.ok) continue;
     const keyOk = acceptIdentityText(keyField.observed, `${label}.emissionKey`, issues);
-    const value = acceptRoot(valueField.observed, `${label}.value`, issues);
+    appendIssues(issues, rootIssues);
     if (!keyOk || value === null) continue;
     const emissionKey = keyField.observed as string;
     let duplicate = false;
@@ -369,16 +372,20 @@ function captureNext(observed: unknown, issues: LocatedIssue[]): CapturedNext | 
   }
   if (step === "complete") {
     const resultField = observeField(next, "result", "next.result", issues);
+    const rootIssues: LocatedIssue[] = [];
+    const result = resultField.ok ? acceptRoot(resultField.observed, "next.result", rootIssues) : null;
     refuseUnknownFields(next, COMPLETE_FIELDS, "next", issues);
     if (!resultField.ok) return null;
-    const result = acceptRoot(resultField.observed, "next.result", issues);
+    appendIssues(issues, rootIssues);
     return result === null ? null : PrimordialObjectFreeze({ step: "complete" as const, result });
   }
   if (step === "fail") {
     const errorField = observeField(next, "error", "next.error", issues);
+    const rootIssues: LocatedIssue[] = [];
+    const error = errorField.ok ? acceptRoot(errorField.observed, "next.error", rootIssues) : null;
     refuseUnknownFields(next, FAIL_FIELDS, "next", issues);
     if (!errorField.ok) return null;
-    const error = acceptRoot(errorField.observed, "next.error", issues);
+    appendIssues(issues, rootIssues);
     return error === null ? null : PrimordialObjectFreeze({ step: "fail" as const, error });
   }
   if (step === "await") {
@@ -480,9 +487,9 @@ export interface TakeoverRequest {
  * The Kernel compares the exchange's three pins against these lists; it never infers availability.
  */
 export interface CodeAvailability {
-  readonly definitionRevisions: readonly string[];
-  readonly runtimeContractRevisions: readonly string[];
-  readonly progressCodecs: readonly string[];
+  readonly definitionRevisions: Uint8Array;
+  readonly runtimeContractRevisions: Uint8Array;
+  readonly progressCodecs: Uint8Array;
 }
 
 export interface RecoveryRequest {
@@ -541,7 +548,11 @@ function captureTextList(holder: unknown, key: string, label: string, issues: Lo
 
 export interface CapturedRecovery {
   readonly activationId: string;
-  readonly available: CodeAvailability;
+  readonly available: {
+    readonly definitionRevisions: readonly string[];
+    readonly runtimeContractRevisions: readonly string[];
+    readonly progressCodecs: readonly string[];
+  };
 }
 
 /** Reads a recovery request: the exchange it names and the three availability lists. */

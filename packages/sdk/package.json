@@ -14,7 +14,8 @@
     "node": ">=22.9.0"
   },
   "dependencies": {
-    "@arrokothi/core": "0.8.1"
+    "@arrokothi/core": "0.8.1",
+    "canonicalize": "3.0.0"
   },
   "publishConfig": {
     "access": "public"
