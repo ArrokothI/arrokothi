@@ -27,12 +27,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import ts from "typescript";
-import { canonicalize, boundaryValueIssues, captureWithWork, isBoundaryValue, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/values.ts";
-import { captureOutcome } from "../src/outcome.ts";
-import { explainDiagnosticIssues, located, explain } from "../src/envelope.ts";
-import { ExecutionCoordinator } from "../src/index.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { canonicalize, boundaryValueIssues, captureWithWork, isBoundaryValue, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/internal/value-capture.ts";
+import { captureOutcome } from "../../kernel/src/outcome.ts";
+import { explainDiagnosticIssues, located, explain } from "../../kernel/src/envelope.ts";
+import { ExecutionCoordinator } from "../../kernel/tests/binding-facade.ts";
+import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 import { countingProxy, inWrappedChild, revokedCountingProxy, type OperationCounts } from "./capture-instruments.ts";
 
 const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
@@ -395,13 +395,13 @@ test("V-D1 suffix counts preserve late codes and first occurrence order across r
   assert.match(explainDiagnosticIssues(issues, true), /5 additional issues: undefined_member=2, non_finite_number=2, unsupported_form=1$/);
   assert.equal(total(boundaryValueIssues(root)), 13);
   assert.equal(isBoundaryValue(root), false);
-  assert.match(explain(located(issues, "payload")), /payload undefined_member \(2 additional occurrences; locations omitted\)/);
+  assert.match(explain(located(issues as never, "payload")), /payload undefined_member \(2 additional occurrences; locations omitted\)/);
 });
 
-const ENVELOPE_URL = new URL("../src/envelope.ts", import.meta.url).href;
-const HARNESS_URL = new URL("./harness.ts", import.meta.url).href;
-const FIXTURE_URL = new URL("./refusal-diagnostics-fixture.ts", import.meta.url).href;
-const OUTCOME_URL = new URL("../src/outcome.ts", import.meta.url).href;
+const ENVELOPE_URL = new URL("../../kernel/src/envelope.ts", import.meta.url).href;
+const HARNESS_URL = new URL("../../kernel/tests/harness.ts", import.meta.url).href;
+const FIXTURE_URL = new URL("../../kernel/tests/refusal-diagnostics-fixture.ts", import.meta.url).href;
+const OUTCOME_URL = new URL("../../kernel/src/outcome.ts", import.meta.url).href;
 
 test("V-D1 own-only multiplicity under ambient pollution and capture-time mutation", () => {
   // K1.1-correction-03: converted from a getPrototypeOf-trap Proxy that installed the pollution mid-capture
@@ -433,7 +433,7 @@ test("V-D1 own-only multiplicity under ambient pollution and capture-time mutati
     if (result.ok) throw Error("expected refusal");
     issues = result.issues;
     reason = explainDiagnosticIssues(issues, true);
-    const relocated = located(issues, "payload");
+    const relocated = located(issues as never, "payload");
     assert.match(explain(relocated), /56 additional occurrences/);
   } finally { unpollute(); }
   assert.equal(observed.reads, 0);
@@ -458,7 +458,7 @@ test("V-D1 own-only multiplicity under ambient pollution and capture-time mutati
       if (result.ok) throw Error("expected refusal");
       issues = result.issues;
       reason = explainDiagnosticIssues(issues, true);
-      relocated = explain(located(issues, "payload"));
+      relocated = explain(located(issues as never, "payload"));
     } finally { delete Object.prototype.occurrences; }
     emit({ installed, reads, issues, reason, relocated });
   `);
@@ -499,7 +499,7 @@ interface ContainerUses {
  * witness cannot see.
  */
 function helperContainerUses(helper: string): ContainerUses {
-  const source = ts.createSourceFile("values.ts", readFileSync(new URL("../src/values.ts", import.meta.url), "utf8"), ts.ScriptTarget.Latest, true);
+  const source = ts.createSourceFile("values.ts", readFileSync(new URL("../src/internal/value-capture.ts", import.meta.url), "utf8"), ts.ScriptTarget.Latest, true);
   let declared: ts.Expression | undefined;
   const find = (node: ts.Node): void => {
     if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === helper) declared = node.initializer;

@@ -1,7 +1,8 @@
 /** K1.2-correction-01: producer/consumer closure, not just a validator unit test. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ExecutionCoordinator, type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, revokedProxy, submissionFor } from "./harness.ts";
 
 const absent = undefined as unknown as SubmissionGrant;

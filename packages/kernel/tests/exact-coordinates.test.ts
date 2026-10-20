@@ -1,7 +1,8 @@
 /** Review-04 P4 port, with adjacent coordinates and both terminal forms (DEC-4 closure). */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ExecutionCoordinator, type Receipt, type ReceiptBoundary } from "../src/index.ts";
+import { type Receipt, type ReceiptBoundary } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { diagnosticIdentity } from "../src/envelope.ts";
 import { accepted, caller, createRequest, delayedDriver, outcomeFor, refused, submissionFor } from "./harness.ts";
 import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";

@@ -2,7 +2,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { ExecutionCoordinator, type SubmissionGrant } from "../src/index.ts";
+import { type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { captureOutcome } from "../src/outcome.ts";
 import { explainDiagnosticIssues } from "../src/envelope.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";

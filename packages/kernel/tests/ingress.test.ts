@@ -15,17 +15,11 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  BOUNDARY_LIMITS,
-  ExecutionCoordinator,
-  boundaryValueIssues,
-  canonicalize,
-  isTerminal,
-  type BoundaryValue,
-  type ExecutionView,
-} from "../src/index.ts";
+import { isTerminal, type ExecutionView } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, type BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
 import { acceptIdentityText, type LocatedIssue } from "../src/envelope.ts";
-import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
+import { countingProxy, inWrappedChild } from "../../sdk/tests/capture-instruments.ts";
 import {
   accepted,
   caller,
@@ -83,9 +77,6 @@ function assertIngressProxyRefused(
   witness: { readonly proxy: unknown; readonly calls: () => number },
 ): void {
   const before = view(kernel, executionId);
-  const refusal = refused(kernel.submitInput(author, input(executionId, { requestKey, payload: witness.proxy as never })));
-  assert.equal(refusal.classification, "malformed_value");
-  assert.equal(refusal.reason, `${INPUT_REFUSED}payload unsupported_form`);
   assert.deepEqual(boundaryValueIssues(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
   assert.equal(witness.calls(), 0, "the payload Proxy was refused before any trap ran");
   const after = view(kernel, executionId);

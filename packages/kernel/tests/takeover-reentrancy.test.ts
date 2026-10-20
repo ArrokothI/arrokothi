@@ -19,15 +19,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  ExecutionCoordinator,
-  type Activation,
-  type DeliverySettlement,
-  type ExecutionDriver,
-  type ExecutionView,
-  type SubmissionGrant,
-  type TakeoverAccepted,
-} from "../src/index.ts";
+import { type Activation, type DeliverySettlement, type ExecutionDriver, type ExecutionView, type SubmissionGrant, type TakeoverAccepted } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, outcomeFor, refused } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

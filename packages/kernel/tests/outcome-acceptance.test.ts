@@ -15,7 +15,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type ExecutionView, type OutcomeEnvelope, type SubmissionGrant } from "../src/index.ts";
+import { type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator, type OutcomeEnvelope } from "./binding-facade.ts";
 import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor, type RecordingDriver } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

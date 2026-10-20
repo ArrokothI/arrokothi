@@ -379,8 +379,8 @@ class RepositoryRegisterTests(unittest.TestCase):
         superseded, until that packet's acceptance. The creation case was retitled by its conversion."""
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         entries = {row['key']: row for row in manifest['holds']['register']['entries']}
-        expected = {'packages/kernel/tests/values.test.ts:1801:3': 'held',
-                    'packages/kernel/tests/values.test.ts:1824:3': 'held',
+        expected = {'packages/sdk/tests/value-capture.test.ts:1801:3': 'held',
+                    'packages/sdk/tests/value-capture.test.ts:1824:3': 'held',
                     'packages/kernel/tests/creation.test.ts:948:3': 'held',
                     'packages/kernel/tests/ingress.test.ts:1074:3': 'held'}
         self.assertEqual({key: entries[key]['classification'] for key in expected}, expected)

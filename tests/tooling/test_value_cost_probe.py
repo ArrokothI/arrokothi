@@ -91,7 +91,7 @@ class RepositoryControls(ProbeFixture):
         self.assertIsNone(tool.apply_edits(root, tool.mutation_edits(mutant)))
         run, outcome, observation = self.run_case(root, entry)
         self.assertEqual((observation['state'], outcome['status']), ('assertion_failed', 'killed'))
-        self.assertTrue(all(name.startswith('packages/kernel/tests/capture-work.test.ts > ') and name.endswith(']')
+        self.assertTrue(all(name.startswith('packages/sdk/tests/capture-work.test.ts > ') and name.endswith(']')
                             for name in observation['failures']))
 
     def test_repeated_runs_observe_the_same_structure(self):
@@ -110,8 +110,8 @@ class RepositoryControls(ProbeFixture):
             self.assertEqual(pair[0], pair[1])
             runs.append(pair[0])
         self.assertEqual([runs[0]['state'], runs[1]['state']], ['passed', 'assertion_failed'])
-        self.assertEqual({row['declaration']['file'] for row in runs[0]['observations']}, {'packages/kernel/tests/capture-work.test.ts'})
-        self.assertEqual({row['module'] for row in runs[1]['witnesses']}, {'packages/kernel/tests/capture-work.test.ts'})
+        self.assertEqual({row['declaration']['file'] for row in runs[0]['observations']}, {'packages/sdk/tests/capture-work.test.ts'})
+        self.assertEqual({row['module'] for row in runs[1]['witnesses']}, {'packages/sdk/tests/capture-work.test.ts'})
 
     def test_review_01_parse_failure_is_not_a_kill(self):
         root, entry = self.copy()

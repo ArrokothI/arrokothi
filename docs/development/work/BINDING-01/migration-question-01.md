@@ -1,6 +1,7 @@
 # Migration question 01 — wrapper refusals and N1
 
-Build stopped under the owner's design-check N1 before changing any test or oracle.
+Owner ruling, 2026-10-20: **approved** ("yes" to the proposed split). Build resumes.
+The implementer stopped under design-check N1 before changing any test or oracle.
 The approved design moves wrapper refusals to SDK tests with no core call; the maintained
 consumer corpus also treats these refusals as complete Kernel decisions.
 

@@ -5,7 +5,7 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {instrumentCapture,captureObserver} from './capture-trace.mjs';
-import {meteringViolations} from '../../packages/kernel/tests/capture-metering.ts';
+import {meteringViolations} from '../../packages/sdk/tests/capture-metering.ts';
 const original=fs.readFileSync('packages/kernel/src/values.ts','utf8');
 const inventory=JSON.parse(fs.readFileSync('tests/fixtures/packet-tools/capture-trace-sites.json','utf8'));
 const controls=JSON.parse(fs.readFileSync('tests/fixtures/packet-tools/capture-trace-controls.json','utf8'));

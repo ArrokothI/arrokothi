@@ -9,7 +9,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, UnsupportedKernelSurfaceError } from "../src/index.ts";
+import { UnsupportedKernelSurfaceError } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, recordingDriver } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

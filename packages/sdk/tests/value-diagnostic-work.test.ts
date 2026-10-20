@@ -27,10 +27,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { canonicalize, captureWithWork, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/values.ts";
-import { ExecutionCoordinator } from "../src/index.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { canonicalize, captureWithWork, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/internal/value-capture.ts";
+import { ExecutionCoordinator } from "../../kernel/tests/binding-facade.ts";
+import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 import { countingProxy, inWrappedChild, revokedCountingProxy, type OperationCounts } from "./capture-instruments.ts";
 
 type Counts = { structural: number; diagnostic: number };
@@ -129,8 +129,8 @@ function child(): string {
   const url = (path: string): string => JSON.stringify(new URL(path, import.meta.url).href);
   return `
 const { default: assert } = await import("node:assert/strict");
-const h = await import(${url("./harness.ts")});
-const { assertOnlyRefusal } = await import(${url("./refusal-diagnostics-fixture.ts")});
+const h = await import(${url("../../kernel/tests/harness.ts")});
+const { assertOnlyRefusal } = await import(${url("../../kernel/tests/refusal-diagnostics-fixture.ts")});
 const { countingProxy } = await import(${url("./capture-instruments.ts")});
 const answer = { descriptor: new Map(), names: new Map(), symbols: new Map(), prototype: new Map() };
 hooks.descriptor = (target, key, real) => answer.descriptor.has(target) ? answer.descriptor.get(target)(key, real) : real;
@@ -1191,10 +1191,10 @@ function stringWorkChild(body: string): void {
       if (this.length > 131072) oversizedReads++;
       return Reflect.apply(original, this, [index]);
     };
-    const { canonicalize } = await import(${JSON.stringify(new URL("../src/values.ts", import.meta.url).href)});
-    const { ExecutionCoordinator } = await import(${JSON.stringify(new URL("../src/index.ts", import.meta.url).href)});
-    const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
-    const { assertOnlyRefusal } = await import(${JSON.stringify(new URL("./refusal-diagnostics-fixture.ts", import.meta.url).href)});
+    const { canonicalize } = await import(${JSON.stringify(new URL("../src/internal/value-capture.ts", import.meta.url).href)});
+    const { ExecutionCoordinator } = await import(${JSON.stringify(new URL("../../kernel/src/index.ts", import.meta.url).href)});
+    const h = await import(${JSON.stringify(new URL("../../kernel/tests/harness.ts", import.meta.url).href)});
+    const { assertOnlyRefusal } = await import(${JSON.stringify(new URL("../../kernel/tests/refusal-diagnostics-fixture.ts", import.meta.url).href)});
     String.prototype.charCodeAt = original;
     const measure = value => {
       characterReads = oversizedReads = 0;

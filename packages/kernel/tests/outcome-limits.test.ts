@@ -16,7 +16,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { BOUNDARY_LIMITS, ExecutionCoordinator, canonicalize, type BoundaryValue, type OutcomeEnvelope } from "../src/index.ts";
+import { ExecutionCoordinator, type OutcomeEnvelope } from "./binding-facade.ts";
+import { BOUNDARY_LIMITS, canonicalize, type BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
 import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

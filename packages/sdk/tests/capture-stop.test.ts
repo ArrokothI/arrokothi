@@ -27,7 +27,7 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 
-import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork } from "../src/values.ts";
+import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork } from "../src/internal/value-capture.ts";
 import { inWrappedChild, REPO_ROOT, type OperationCounts } from "./capture-instruments.ts";
 
 const B = 3 * 1_048_576;
@@ -57,11 +57,11 @@ Object.getOwnPropertySymbols = function (target) {
   if (target === watched) listing.targetSymbols += 1;
   return result;
 };
-const values = await import(${url("../src/values.ts")});
-const kernel = await import(${url("../src/index.ts")});
+const values = await import(${url("../src/internal/value-capture.ts")});
+const kernel = await import(${url("../../kernel/src/index.ts")});
 Object.getOwnPropertyNames = realNames;
 Object.getOwnPropertySymbols = realSymbols;
-const h = await import(${url("./harness.ts")});
+const h = await import(${url("../../kernel/tests/harness.ts")});
 const watch = (target) => { watched = target; listing.units = 0; listing.targetNames = []; listing.targetSymbols = 0; };
 const B = values.CAPTURE_WORK_BUDGET;
 const foreign = Object.create(Object.create(null));

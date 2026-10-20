@@ -1,14 +1,8 @@
 /** K1.2-correction-01 round 2: diagnostic rendering never changes opaque identity semantics. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  ExecutionCoordinator,
-  type Activation,
-  type CodeAvailability,
-  type ExecutionView,
-  type RefusalRecord,
-  type SubmissionGrant,
-} from "../src/index.ts";
+import { type Activation, type ExecutionView, type RefusalRecord, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator, type CodeAvailability } from "./binding-facade.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 import { assertDiagnostic, assertOnlyRefusal, runBoundaryDiagnosticSchedule } from "./refusal-diagnostics-fixture.ts";
 

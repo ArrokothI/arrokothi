@@ -20,11 +20,11 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import { ExecutionCoordinator } from "../src/index.ts";
-import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork, type CaptureWork, type ValueIssue } from "../src/values.ts";
+import { ExecutionCoordinator } from "../../kernel/tests/binding-facade.ts";
+import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork, type CaptureWork, type ValueIssue } from "../src/internal/value-capture.ts";
 import { inWrappedChild, type OperationCounts } from "./capture-instruments.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 
 const B = 3 * BOUNDARY_LIMITS.canonicalBytes;
 const work = (value: unknown): CaptureWork => captureWithWork(value).work;
@@ -305,7 +305,7 @@ describe("KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on ne
     // over the envelope work of the same Outcome whose eight roots are a small refused value (one foreign
     // object in an array), measured the same way.
     const observed = inWrappedChild<{ direct: { units: number; stop: string; isProxy: number; prototype: number }; small: { isProxy: number; prototype: number }; outcome: { classification: string; isProxy: number; prototype: number }; control: { classification: string; isProxy: number; prototype: number } }>(`
-      const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
+      const h = await import(${JSON.stringify(new URL("../../kernel/tests/harness.ts", import.meta.url).href)});
       const foreign = Object.create(null);
       const row = Array.from({ length: 4096 }, () => Object.create(foreign));
       const root = Array(256).fill(row);

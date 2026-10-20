@@ -406,9 +406,9 @@ class RepositoryRuleOneTests(RepositoryFixture):
         entries = {row['key']: row for row in manifest['holds']['register']['entries']}
         # Declaration sites as of K1.1-correction-03, whose test conversions moved them; the leaves are unchanged.
         keys = ['packages/kernel/tests/creation.test.ts:408:3', 'packages/kernel/tests/dispatch.test.ts:760:3',
-                'packages/kernel/tests/values.test.ts:1246:3', 'packages/kernel/tests/values.test.ts:1263:3',
+                'packages/sdk/tests/value-capture.test.ts:1246:3', 'packages/sdk/tests/value-capture.test.ts:1263:3',
                 'packages/kernel/tests/host-members.test.ts:166:3', 'packages/kernel/tests/dispatch.test.ts:1535:3',
-                'packages/kernel/tests/values.test.ts:2371:3', 'packages/kernel/tests/values.test.ts:2109:3',
+                'packages/sdk/tests/value-capture.test.ts:2371:3', 'packages/sdk/tests/value-capture.test.ts:2109:3',
                 'packages/kernel/tests/creation.test.ts:653:3', 'packages/kernel/tests/ingress.test.ts:523:3']
         self.assertEqual({key: (entries[key]['classification'], entries[key]['claim'], entries[key]['decision'])
                           for key in keys}, dict.fromkeys(keys, ('held', 'V-ENV', tool.VENV_RECORD)))

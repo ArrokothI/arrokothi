@@ -30,7 +30,7 @@ try {
  const shapes=[];let forbidden=0;
  const add=(name,value)=>shapes.push({name,value});
  // Retain the original 21 shapes and threshold policy, supplied from the maintained test's literal.
- const oldTest=fs.readFileSync('packages/kernel/tests/capture-stop.test.ts','utf8');
+ const oldTest=fs.readFileSync('packages/sdk/tests/capture-stop.test.ts','utf8');
  const match=oldTest.match(/const SHAPES = (`[\s\S]*?`);/);
  if(!match)throw Error('missing original 21-shape inventory');
  // The literal is test-owned, never caller input; execute it only in this disposable test process.

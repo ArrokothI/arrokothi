@@ -26,15 +26,9 @@ import assert from "node:assert/strict";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
-import {
-  ExecutionCoordinator,
-  boundaryValueIssues,
-  canonicalize,
-  isBoundaryValue,
-  sameLogicalValue,
-  type DeliverySettlement,
-  type ExecutionDriver,
-} from "../src/index.ts";
+import { type DeliverySettlement, type ExecutionDriver } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue } from "../../sdk/src/internal/value-capture.ts";
 import { accepted, caller, createRequest, delayedDriver, observer, outcomeFor, recordingDriver, submissionFor, unsafeDriver } from "./harness.ts";
 import { createPoison, digest, type PoisonController, type PoisonMode } from "./sweep/poison.ts";
 import { DESCRIPTOR_FIELDS, zoneMemberNames } from "./sweep/zone-names.ts";

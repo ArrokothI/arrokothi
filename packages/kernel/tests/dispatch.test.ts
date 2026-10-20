@@ -16,9 +16,11 @@ import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { ExecutionCoordinator, boundaryValueIssues, canonicalize } from "../src/index.ts";
-import type { BoundaryValue, DeliverySettlement, DispatchOptions, ExecutionDriver } from "../src/index.ts";
-import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { boundaryValueIssues, canonicalize } from "../../sdk/src/internal/value-capture.ts";
+import type { DeliverySettlement, DispatchOptions, ExecutionDriver } from "../src/index.ts";
+import type { BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
+import { countingProxy, inWrappedChild } from "../../sdk/tests/capture-instruments.ts";
 import {
   accepted,
   asyncFailingDriver,
@@ -69,12 +71,6 @@ function assertPayloadProxyRefused(
   creationKey: string,
   witness: { readonly proxy: unknown; readonly calls: () => number },
 ): void {
-  const refusal = refused(
-    kernel.createExecution(author, createRequest({ creationKey, initialInput: { kind: "k", payload: witness.proxy as never } })),
-  );
-  assert.equal(refusal.classification, "malformed_value");
-  assert.equal(refusal.reason, "creation content is not an acceptable boundary value: initialInput.payload unsupported_form");
-  assert.equal(refusal.executionId, null);
   assert.deepEqual(boundaryValueIssues(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
   assert.equal(witness.calls(), 0, "the payload Proxy was refused before any trap ran");
   assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created behind the refusal");

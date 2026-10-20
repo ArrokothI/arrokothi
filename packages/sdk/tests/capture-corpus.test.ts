@@ -20,7 +20,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import { BOUNDARY_LIMITS, canonicalize, captureWithWork, type CaptureWork, type ValueIssue } from "../src/values.ts";
+import { BOUNDARY_LIMITS, canonicalize, captureWithWork, type CaptureWork, type ValueIssue } from "../src/internal/value-capture.ts";
 import { CONSUMERS, expectedCode, FAMILIES, wrapped, type Family } from "./capture-corpus.ts";
 
 const B = 3 * BOUNDARY_LIMITS.canonicalBytes;

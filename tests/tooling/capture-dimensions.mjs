@@ -158,7 +158,7 @@ assert.deepEqual(accepted.costliestWitness, { label: 'submitted-costliest-witnes
 
 // The corpus harness supplies public API schedules with whole-state/refusal checks.
 // Inputs and expected first locations/codes are independently selected here.
-const { CONSUMERS } = await import(url(tree, 'packages/kernel/tests/capture-corpus.ts'));
+const { CONSUMERS } = await import(url(tree, 'packages/sdk/tests/capture-corpus.ts'));
 let consumerCases = 0;
 for (const family of ['symbol', 'accessor', 'proxy', 'Map']) for (const shape of ['plain', 'null'])
 for (const width of [8, 9]) for (const wrappers of [0, 14, 29]) for (const alias of ['shared', 'distinct']) {

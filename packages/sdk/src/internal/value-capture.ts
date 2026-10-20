@@ -1975,3 +1975,16 @@ export function canonicalize(value: unknown): Acceptance {
  * semantic, array order is, and an absent member differs from an explicit null.
  */
 export const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;
+
+// Internal SDK bridge: encode the successful capture's canonical text without observing the caller
+// again. This is deliberately absent from the public SDK entry until K1.4.
+const PrimordialTextEncoder = TextEncoder;
+const PrimordialTextEncode = TextEncoder.prototype.encode;
+const byteEncoder = new PrimordialTextEncoder();
+export function captureCanonicalBytes(value: unknown):
+  { readonly ok: true; readonly value: Uint8Array } | { readonly ok: false; readonly issues: ValueIssue[] } {
+  const captured = canonicalize(value);
+  return captured.ok
+    ? { ok: true, value: PrimordialReflectApply(PrimordialTextEncode, byteEncoder, [captured.value.canonical]) as Uint8Array }
+    : captured;
+}

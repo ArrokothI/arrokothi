@@ -11,7 +11,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { packIdentity } from "../src/identity.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 

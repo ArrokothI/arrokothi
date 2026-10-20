@@ -14,8 +14,8 @@ import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
-import type { CaptureWork } from "../src/values.ts";
+import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/internal/value-capture.ts";
+import type { CaptureWork } from "../src/internal/value-capture.ts";
 import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
 import {
   arrayIteratorPrototype,
@@ -29,7 +29,7 @@ import {
   recordOwn,
   trapInheritedIndices,
   type DescriptorPollution,
-} from "./harness.ts";
+} from "../../kernel/tests/harness.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -89,7 +89,7 @@ const SUMMARIZE = `
 `;
 
 /** `harness.ts` for a child probe: it shares the child's Kernel modules, which the prelude loaded first. */
-const HARNESS_URL = new URL("./harness.ts", import.meta.url).href;
+const HARNESS_URL = new URL("../../kernel/tests/harness.ts", import.meta.url).href;
 
 /** A work record with every unit kind the case does not charge at zero; `units` is their sum. */
 const workOf = (parts: Partial<Omit<CaptureWork, "units">> & { readonly stop: CaptureWork["stop"] }): CaptureWork => {

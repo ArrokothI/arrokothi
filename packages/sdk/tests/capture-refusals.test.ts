@@ -18,12 +18,12 @@ import { describe, test } from "node:test";
 import { createSecretKey, webcrypto } from "node:crypto";
 import vm from "node:vm";
 
-import { acceptIdentityText, type LocatedIssue } from "../src/envelope.ts";
-import { boundaryValueIssues, canonicalize, captureWithWork, isBoundaryValue, type ValueIssue } from "../src/values.ts";
+import { acceptIdentityText, type LocatedIssue } from "../../kernel/src/envelope.ts";
+import { boundaryValueIssues, canonicalize, captureWithWork, isBoundaryValue, type ValueIssue } from "../src/internal/value-capture.ts";
 import { CONSUMERS as SHARED_CONSUMERS, openExecution, type Consumer } from "./capture-corpus.ts";
 import { countingProxy, inWrappedChild, revokedCountingProxy } from "./capture-instruments.ts";
-import { observer, outcomeFor, refused } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { observer, outcomeFor, refused } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 
 const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
 const BUILT_IN_MESSAGE = "expected a plain object, received a built-in object whose content is kept in internal slots";
@@ -392,7 +392,7 @@ describe("KC3-7 identity text: a Proxy is named as one before any other observat
 
   test("creation, ingress and Emission keys: a Proxy identity field is refused with no trap and no IsArray", () => {
     const observed = inWrappedChild<{ field: string; isArray: number; isProxy: number; classification: string; reason: string }[]>(`
-      const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
+      const h = await import(${JSON.stringify(new URL("../../kernel/tests/harness.ts", import.meta.url).href)});
       const out = [];
       const chain = () => { let value = []; for (let level = 0; level < 10_000; level += 1) value = new Proxy(value, {}); return value; };
       const run = (field, value) => {

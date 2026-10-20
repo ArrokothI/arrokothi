@@ -16,7 +16,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type DeliverySettlement, type ExecutionView } from "../src/index.ts";
+import { type DeliverySettlement, type ExecutionView } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, delayedDriver, outcomeFor, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

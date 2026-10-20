@@ -18,7 +18,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type CodeAvailability } from "../src/index.ts";
+import { ExecutionCoordinator, type CodeAvailability } from "./binding-facade.ts";
 import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

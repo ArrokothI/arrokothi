@@ -16,15 +16,8 @@
 
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  ExecutionCoordinator,
-  type Activation,
-  type AuthenticatedCaller,
-  type DeliverySettlement,
-  type ExecutionDriver,
-  type ExecutionView,
-  type SubmissionGrant,
-} from "../src/index.ts";
+import { type Activation, type AuthenticatedCaller, type DeliverySettlement, type ExecutionDriver, type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, refused } from "./harness.ts";
 
 const author = caller("host-members", "tenant-a");

@@ -24,7 +24,7 @@ import type * as KernelModule from "../../src/index.ts";
 import type * as HarnessModule from "../harness.ts";
 import type { Control, Expect, State } from "./fault-oracle.ts";
 
-type Kernel = InstanceType<typeof KernelModule.ExecutionCoordinator>;
+type Kernel = InstanceType<typeof HarnessModule.ExecutionCoordinator>;
 
 export interface Env {
   readonly kernel: Kernel;
@@ -69,7 +69,7 @@ const MISSING_CODEC = { ...AVAILABLE, progressCodecs: [] as string[] };
 const refused = (classification: string): Expect => ({ refused: classification });
 
 export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessModule, hooks: Hooks) {
-  const { ExecutionCoordinator } = kernel;
+  const { ExecutionCoordinator } = harness;
 
   const codeHold = (env: Env, available = MISSING_DEFINITION): void => {
     harness.accepted(env.kernel.recoverExecution(env.who, env.executionId, { activationId: env.open.activationId, available }));
@@ -211,7 +211,7 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "outcome: refused without the attempt's grant, identity unusable", control: "submitOutcome", expect: refused("unauthorized_submission"), exit: ["submitOutcome", `${UNUSABLE} the proposal presents no submission authority`], setup: nothing, call: submit({ activationId: 42 }, true) },
     { name: "outcome: refused over the Emission capacity", control: "submitOutcome", expect: refused("capacity_exhausted"), exit: ["submitOutcome", "`the Outcome for Activation ${diagnosticIdentity(activationId)} carries"], setup: nothing, emissionsPerOutcome: 1, call: submit({ emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 2 }] }) },
     { name: "outcome: refused over the Emission capacity, identity unusable", control: "submitOutcome", expect: refused("capacity_exhausted"), exit: ["submitOutcome", `${UNUSABLE} the Outcome carries`], setup: nothing, emissionsPerOutcome: 1, call: submit({ activationId: 42, emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 2 }] }) },
-    { name: "outcome: refused malformed content", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${USABLE} refused whole`], setup: nothing, call: submit({ progress: Number.NaN }) },
+    { name: "outcome: refused malformed content", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${USABLE} refused whole`], setup: nothing, call: submit({ progress: harness.rawBytes("1e400") }) },
     { name: "outcome: refused malformed content, identity unusable", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${UNUSABLE} the Outcome is refused whole`], setup: nothing, call: submit({ activationId: 42 }) },
   ];
 

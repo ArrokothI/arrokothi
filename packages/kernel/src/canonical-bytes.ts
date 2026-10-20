@@ -3,7 +3,7 @@
  * This file also supplies the separate transport adapter's parser; core admission is always strict.
  */
 import { types as UtilTypes } from "node:util";
-import { appendOwn, defineData, readAt } from "./own-array.ts";
+import { defineData, readAt } from "./own-array.ts";
 import { BOUNDARY_LIMITS, type BoundaryValue, type CanonicalValue, type ValueAcceptance, type ValueIssue, type ValueIssueCode } from "./value-types.ts";
 
 const PrimordialApply = Reflect.apply;
@@ -20,6 +20,7 @@ const PrimordialKeys = Object.keys;
 const PrimordialOwn = Object.prototype.hasOwnProperty;
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialSort = Array.prototype.sort;
+const PrimordialCharAt = String.prototype.charAt;
 const PrimordialCharCode = String.prototype.charCodeAt;
 const PrimordialFromCharCode = String.fromCharCode;
 const PrimordialSlice = String.prototype.slice;
@@ -28,6 +29,8 @@ const PrimordialFinite = Number.isFinite;
 const PrimordialNumberText = Number.prototype.toString;
 
 export const isProxyValue = PrimordialIsProxy;
+const at = (text: string, index: number): string => PrimordialApply(PrimordialCharAt, text, [index]) as string;
+const byteLength = (bytes: Uint8Array): number => PrimordialApply(PrimordialLength, bytes, []) as number;
 const unitAt = (text: string, index: number): number => PrimordialApply(PrimordialCharCode, text, [index]) as number;
 const slice = (text: string, start: number, end: number): string => PrimordialApply(PrimordialSlice, text, [start, end]) as string;
 const issue = (code: ValueIssueCode, message: string): ValueIssue => PrimordialFreeze({ path: "", code, message });
@@ -69,7 +72,7 @@ export function copyByteInput(input: unknown, limit: number, transport = false):
 /** UTF-8 is decoded explicitly: fatal, shortest forms only, no surrogate scalars or BOM removal. */
 function decodeUtf8(bytes: Uint8Array): ValueAcceptance<string> {
   let text = "";
-  for (let index = 0; index < bytes.length;) {
+  for (let index = 0; index < byteLength(bytes);) {
     const first = bytes[index++]!;
     let scalar: number;
     let continuation: number;
@@ -79,7 +82,7 @@ function decodeUtf8(bytes: Uint8Array): ValueAcceptance<string> {
     else if (first >= 0xe0 && first <= 0xef) { scalar = first & 0x0f; continuation = 2; minimum = 0x800; }
     else if (first >= 0xf0 && first <= 0xf4) { scalar = first & 7; continuation = 3; minimum = 0x10000; }
     else return refusal(issue("invalid_utf8", "expected well-formed UTF-8"));
-    if (index + continuation > bytes.length) return refusal(issue("invalid_utf8", "truncated UTF-8 sequence"));
+    if (index + continuation > byteLength(bytes)) return refusal(issue("invalid_utf8", "truncated UTF-8 sequence"));
     for (let count = 0; count < continuation; count += 1) {
       const next = bytes[index++]!;
       if (next < 0x80 || next > 0xbf) return refusal(issue("invalid_utf8", "expected UTF-8 continuation byte"));
@@ -123,13 +126,13 @@ const fail = (state: ParseState, code: ValueIssueCode, message: string): null =>
 };
 const space = (state: ParseState): void => {
   while (state.position < state.text.length) {
-    const ch = state.text[state.position];
+    const ch = at(state.text, state.position);
     if (ch !== " " && ch !== "\t" && ch !== "\r" && ch !== "\n") break;
     state.position += 1;
   }
 };
 const hex = (unit: number): number => unit >= 48 && unit <= 57 ? unit - 48 : unit >= 65 && unit <= 70 ? unit - 55 : unit >= 97 && unit <= 102 ? unit - 87 : -1;
-const digit = (ch: string | undefined): boolean => ch !== undefined && ch >= "0" && ch <= "9";
+const digit = (ch: string | undefined): boolean => ch !== undefined && ch !== "" && ch >= "0" && ch <= "9";
 
 function stringValue(state: ParseState): string | null {
   state.position += 1; // opening quote
@@ -146,7 +149,7 @@ function stringValue(state: ParseState): string | null {
     if (unit < 32) return fail(state, "invalid_json", "unescaped control character in string");
     if (unit === 92) {
       if (state.position >= state.text.length) return fail(state, "invalid_json", "truncated string escape");
-      const escape = state.text[state.position++];
+      const escape = at(state.text, state.position++);
       if (escape === '"') unit = 34;
       else if (escape === "\\") unit = 92;
       else if (escape === "/") unit = 47;
@@ -181,23 +184,23 @@ function stringValue(state: ParseState): string | null {
 
 function numberValue(state: ParseState): number | null {
   const start = state.position;
-  if (state.text[state.position] === "-") state.position += 1;
-  if (state.text[state.position] === "0") state.position += 1;
+  if (at(state.text, state.position) === "-") state.position += 1;
+  if (at(state.text, state.position) === "0") state.position += 1;
   else {
-    const first = state.text[state.position];
+    const first = at(state.text, state.position);
     if (first === undefined || first < "1" || first > "9") return fail(state, "invalid_json", "invalid number");
-    while (digit(state.text[state.position])) state.position += 1;
+    while (digit(at(state.text, state.position))) state.position += 1;
   }
-  if (state.text[state.position] === ".") {
+  if (at(state.text, state.position) === ".") {
     state.position += 1;
-    if (!digit(state.text[state.position])) return fail(state, "invalid_json", "missing fraction digits");
-    while (digit(state.text[state.position])) state.position += 1;
+    if (!digit(at(state.text, state.position))) return fail(state, "invalid_json", "missing fraction digits");
+    while (digit(at(state.text, state.position))) state.position += 1;
   }
-  if (state.text[state.position] === "e" || state.text[state.position] === "E") {
+  if (at(state.text, state.position) === "e" || at(state.text, state.position) === "E") {
     state.position += 1;
-    if (state.text[state.position] === "+" || state.text[state.position] === "-") state.position += 1;
-    if (!digit(state.text[state.position])) return fail(state, "invalid_json", "missing exponent digits");
-    while (digit(state.text[state.position])) state.position += 1;
+    if (at(state.text, state.position) === "+" || at(state.text, state.position) === "-") state.position += 1;
+    if (!digit(at(state.text, state.position))) return fail(state, "invalid_json", "missing exponent digits");
+    while (digit(at(state.text, state.position))) state.position += 1;
   }
   const value = PrimordialNumber(slice(state.text, start, state.position));
   if (!PrimordialFinite(value)) return fail(state, "non_finite_number", "expected a finite number, received a non-finite number");
@@ -206,7 +209,7 @@ function numberValue(state: ParseState): number | null {
 
 function parseValue(state: ParseState, level: number): BoundaryValue {
   space(state);
-  const ch = state.text[state.position];
+  const ch = at(state.text, state.position);
   if (ch === '"') return stringValue(state);
   if (ch === "-" || digit(ch)) return numberValue(state);
   if (ch === "t" && slice(state.text, state.position, state.position + 4) === "true") { state.position += 4; return true; }
@@ -219,26 +222,26 @@ function parseValue(state: ParseState, level: number): BoundaryValue {
   const closing = array ? "]" : "}";
   state.position += 1;
   space(state);
-  if (state.text[state.position] === closing) { state.position += 1; return PrimordialFreeze(value); }
+  if (at(state.text, state.position) === closing) { state.position += 1; return PrimordialFreeze(value); }
   let count = 0;
   while (state.problem === null) {
     if (count >= BOUNDARY_LIMITS.containerEntries) return fail(state, "too_many_entries", `container exceeds the limit of ${BOUNDARY_LIMITS.containerEntries} entries`);
     let key = `${count}`;
     if (!array) {
-      if (state.text[state.position] !== '"') return fail(state, "invalid_json", "expected an object member name");
+      if (at(state.text, state.position) !== '"') return fail(state, "invalid_json", "expected an object member name");
       const name = stringValue(state);
       if (name === null) return null;
       key = name;
       if (PrimordialApply(PrimordialOwn, value, [key])) return fail(state, "duplicate_key", "decoded object member name appears more than once");
       space(state);
-      if (state.text[state.position++] !== ":") return fail(state, "invalid_json", "expected a colon after member name");
+      if (at(state.text, state.position++) !== ":") return fail(state, "invalid_json", "expected a colon after member name");
     }
     const entry = parseValue(state, level + 1);
     if (state.problem !== null) return null;
     defineData(value, key, entry, false, true, false);
     count += 1;
     space(state);
-    const separator = state.text[state.position++];
+    const separator = at(state.text, state.position++);
     if (separator === closing) return PrimordialFreeze(value);
     if (separator !== ",") return fail(state, "invalid_json", "expected comma or closing delimiter");
     space(state);
@@ -258,8 +261,8 @@ function quote(text: string): string {
     else if (unit === 10) out += "\\n";
     else if (unit === 12) out += "\\f";
     else if (unit === 13) out += "\\r";
-    else if (unit < 32) out += `\\u00${HEX[unit >> 4]}${HEX[unit & 15]}`;
-    else out += text[index];
+    else if (unit < 32) out += `\\u00${at(HEX, unit >> 4)}${at(HEX, unit & 15)}`;
+    else out += at(text, index);
   }
   return out + '"';
 }
@@ -301,6 +304,6 @@ export function parseOwnedBytes(bytes: Uint8Array, strict: boolean): ValueAccept
   // A lenient JSON root can expand under canonical escaping; cap encoded size as well as wire size.
   if (canonical.length > BOUNDARY_LIMITS.canonicalBytes) return refusal(issue("too_many_bytes", `canonical form exceeds the limit of ${BOUNDARY_LIMITS.canonicalBytes} bytes`));
   const encoded = strict ? bytes : encodeUtf8(canonical);
-  if (encoded.length > BOUNDARY_LIMITS.canonicalBytes) return refusal(issue("too_many_bytes", `canonical form exceeds the limit of ${BOUNDARY_LIMITS.canonicalBytes} bytes`));
-  return PrimordialFreeze({ ok: true, value: PrimordialFreeze({ bytes: encoded, value, canonical, canonicalBytes: encoded.length }) });
+  if (byteLength(encoded) > BOUNDARY_LIMITS.canonicalBytes) return refusal(issue("too_many_bytes", `canonical form exceeds the limit of ${BOUNDARY_LIMITS.canonicalBytes} bytes`));
+  return PrimordialFreeze({ ok: true, value: PrimordialFreeze({ bytes: encoded, value, canonical, canonicalBytes: byteLength(encoded) }) });
 }

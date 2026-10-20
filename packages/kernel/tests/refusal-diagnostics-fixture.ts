@@ -1,6 +1,7 @@
 /** Shared observable boundary schedule for ordinary regression tests and the explicit engine-max probe. */
 import assert from "node:assert/strict";
-import { ExecutionCoordinator, type ExecutionView, type RefusalRecord, type SubmissionGrant } from "../src/index.ts";
+import { type ExecutionView, type RefusalRecord, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 
 const absent = undefined as unknown as SubmissionGrant;
