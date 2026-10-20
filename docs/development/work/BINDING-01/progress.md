@@ -6,11 +6,11 @@
 - Done: IN_PROGRESS/start checkpoint `ed45dabc3e21907d6f05ddc400b664fb895e1b53`, pushed.
 - Done: design/spec checkpoint `ec10c7537bcc341aa1c78b53e1b6612362a1a59c`, pushed and remote SHA verified; answers brief 1–5 and B1-1–B1-5; 17 required CI steps.
 - Checks: spec plan/environment/input validation, catalog script agreement, 19 preservation paths and 9 local design links passed; git diff --check passed.
-- Targeted baseline: builder-docs passed (74 Markdown files, 2,044 links/anchors, 38 public imports). No production code or composed verify run.
+- Pre-build targeted baseline: builder-docs passed (74 Markdown files, 2,044 links/anchors, 38 public imports).
 - Design check: owner’s independent Opus brain session approved `43f03d9a` with D01-CHK-01 (primitive identity strings); recorded in design-01-check.md and incorporated in design-01.md. L-09 core/wrapper qualification accepted; build authorized.
 - Harness plan (before migration): lazy accessor envelopes encode a root when the core observes that own field, forwarding each original getter once; no eager traversal or facade decisions.
 - Done: design approval/D01-CHK-01 recorded and pushed at `81df324d`.
-- Build WIP: initial core/transport, immediate root copying, primitive identity checks, unchanged SDK capture/helper copy and dependency move; no tests migrated.
+- Build WIP `825e7cd9`: initial core/transport, immediate root copying, primitive identity checks, unchanged SDK capture/helper copy and dependency move; no tests migrated.
 - Checks: targeted production TypeScript compile and ownership/freeze/strictness/transport/wrapper-cycle smoke checks passed; legacy suite not yet migrated.
 - Next step: owner resolves migration-question-01.md under N1; then finish wrapper bytes helper/facade, test migration, AST guard/shadow witnesses, Layer 3/BASELINE/017, clean C and CI.
 - Open question: wrapper-only cycle/unrepresentable-member cases require Kernel refusal records in the existing consumer oracle; splitting them into SDK no-core-call witnesses changes those case expectations. See migration-question-01.md. No oracle edited.
