@@ -1,0 +1,151 @@
+{
+  "B": "e391ceba26164d2b461dc4c374db65058903b23e",
+  "C": "504fa5fb23b681e2715fcba97b98bcb456e778ee",
+  "H": "6e0a9b3d901d46b921e5c6243c65df3bbac386e4",
+  "B_to_H": [
+    "M\tdocs/development/007-work-packets.md",
+    "A\tdocs/development/work/TOOLS-02A/implementation-01.md",
+    "A\tdocs/development/work/TOOLS-02A/release-01.md",
+    "A\tdocs/development/work/TOOLS-02A/verification.json",
+    "M\tscripts/packet_tools.py",
+    "M\ttests/fixtures/packet-tools/adoption.json",
+    "M\ttests/fixtures/packet-tools/refusal-guards.json",
+    "M\ttests/tooling/capture-continuations.mjs",
+    "M\ttests/tooling/capture-trace-controls.mjs",
+    "M\ttests/tooling/requalify-value-cost.py",
+    "M\ttests/tooling/test_corpus_tools.py"
+  ],
+  "C_to_H": [
+    "M\tdocs/development/007-work-packets.md",
+    "A\tdocs/development/work/TOOLS-02A/implementation-01.md"
+  ],
+  "H_parent": "504fa5fb23b681e2715fcba97b98bcb456e778ee",
+  "adoption_changes": [
+    {
+      "path": "/preserved/19/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:46:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/20/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:50:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/21/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:57:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/22/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:67:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/23/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:79:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/24/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:138:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/25/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:160:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/26/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:298:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/27/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:304:5@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/28/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:316:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/29/reads",
+      "before": "2bc880408a4cc7334ea81a421a0f356b55ac38d0601f7517a13eafb4c5f7053d",
+      "after": "d291ffa260606062720d5c8d9b376c9fe14cc5a4e641cea4de2994ac4de5f2d2",
+      "member": "packages/kernel/tests/ambient-reads.test.ts:323:3@4a94f4ea0361"
+    },
+    {
+      "path": "/preserved/53/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:81:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/54/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:93:5@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/55/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:100:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/56/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:117:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/57/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:123:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/58/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:128:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/59/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:135:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/60/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:145:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/61/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:226:3@1cc0368ebe2d"
+    },
+    {
+      "path": "/preserved/62/reads",
+      "before": "3078db03f8d97472bbe10daf5843cbf161477b411c50e7284004104ce7827b1f",
+      "after": "22e30b12812129a400136bb2e8430864ab6ad7186b82f37140a8c24c22ea23ab",
+      "member": "packages/kernel/tests/control-commits.test.ts:231:5@1cc0368ebe2d"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+test_complete_mapping_is_not_execution (test_corpus_tools.CorpusTests.test_complete_mapping_is_not_execution) ... ok
+test_corpus_mutations_must_be_scheduled (test_corpus_tools.CorpusTests.test_corpus_mutations_must_be_scheduled) ... ok
+test_default_profile_cannot_be_unexecuted (test_corpus_tools.CorpusTests.test_default_profile_cannot_be_unexecuted) ... ok
+test_duplicate_cycle (test_corpus_tools.CorpusTests.test_duplicate_cycle) ... ok
+test_duplicate_execution_command (test_corpus_tools.CorpusTests.test_duplicate_execution_command) ... ok
+test_duplicate_origin (test_corpus_tools.CorpusTests.test_duplicate_origin) ... ok
+test_duplicate_pending_stays_pending (test_corpus_tools.CorpusTests.test_duplicate_pending_stays_pending) ... ok
+test_duplicate_profile (test_corpus_tools.CorpusTests.test_duplicate_profile) ... ok
+test_missing_origin_cannot_shrink_obligation (test_corpus_tools.CorpusTests.test_missing_origin_cannot_shrink_obligation) ... ok
+test_missing_suite_source (test_corpus_tools.CorpusTests.test_missing_suite_source) ... ok
+test_non_executable_requires_reason (test_corpus_tools.CorpusTests.test_non_executable_requires_reason) ... ok
+test_pending_is_not_complete (test_corpus_tools.CorpusTests.test_pending_is_not_complete) ... ok
+test_profile_argv_required (test_corpus_tools.CorpusTests.test_profile_argv_required) ... ok
+test_profile_commands_required (test_corpus_tools.CorpusTests.test_profile_commands_required) ... ok
+test_profile_reason_required (test_corpus_tools.CorpusTests.test_profile_reason_required) ... ok
+test_suite_cannot_claim_default_for_unexecuted_profile (test_corpus_tools.CorpusTests.test_suite_cannot_claim_default_for_unexecuted_profile) ... ok
+test_suite_command_must_be_scheduled (test_corpus_tools.CorpusTests.test_suite_command_must_be_scheduled) ... ok
+test_unavailable_case_is_not_coverage (test_corpus_tools.CorpusTests.test_unavailable_case_is_not_coverage) ... ok
+test_unexecuted_profile_mapping_is_visible (test_corpus_tools.CorpusTests.test_unexecuted_profile_mapping_is_visible) ... ok
+test_changed_bytes_same_version_refused (test_corpus_tools.DependencyTests.test_changed_bytes_same_version_refused) ... ok
+test_lock_version_mismatch (test_corpus_tools.DependencyTests.test_lock_version_mismatch) ... ok
+test_pinned_bytes_loaded (test_corpus_tools.DependencyTests.test_pinned_bytes_loaded) ... ok
+test_symlinked_dependency_refused (test_corpus_tools.DependencyTests.test_symlinked_dependency_refused) ... ok
+test_command_counts_and_versions (test_corpus_tools.VerificationTests.test_command_counts_and_versions) ... Checking unit
+Checking area-gate
+ok
+test_command_source_mutation_refused (test_corpus_tools.VerificationTests.test_command_source_mutation_refused) ... Checking unit
+ok
+test_dependencies_and_folder_metadata_allowed (test_corpus_tools.VerificationTests.test_dependencies_and_folder_metadata_allowed) ... Checking unit
+Checking area-gate
+ok
+test_directory_invisible_to_git_refused (test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused) ... ok
+test_dirty_source_refused (test_corpus_tools.VerificationTests.test_dirty_source_refused) ... ok
+test_duplicate_counts_are_not_one_result (test_corpus_tools.VerificationTests.test_duplicate_counts_are_not_one_result) ... Checking unit
+ok
+test_green_exit_with_no_tests_does_not_pass (test_corpus_tools.VerificationTests.test_green_exit_with_no_tests_does_not_pass) ... Checking unit
+Checking area-gate
+ok
+test_ignored_file_refused (test_corpus_tools.VerificationTests.test_ignored_file_refused) ... ok
+test_linked_worktree_accepted (test_corpus_tools.VerificationTests.test_linked_worktree_accepted) ... ok
+test_skipped_test_does_not_pass (test_corpus_tools.VerificationTests.test_skipped_test_does_not_pass) ... Checking unit
+Checking area-gate
+ok
+test_wrong_head_refused (test_corpus_tools.VerificationTests.test_wrong_head_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 34 tests in 14.211s
+
+OK

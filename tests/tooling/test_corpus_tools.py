@@ -1,5 +1,6 @@
 """TOOLS-01 implementer counterexamples for adoption, dependency and clean-C evidence."""
 import json
+import shutil
 import sys
 from unittest.mock import patch
 from test_packet_tools import RepositoryFixture, stub_area_gate, tool
@@ -227,6 +228,39 @@ class VerificationTests(RepositoryFixture):
         self.write('check.py', 'print("tests 999; skips 0")\n')
         with self.assertRaisesRegex(tool.CheckError, 'must be clean'):
             tool.verify(self.reader, rev, 'verify.json')
+
+    def test_directory_invisible_to_git_refused(self):
+        # TOOLS-02A: a removed example left a directory holding only an ignored node_modules. git status
+        # is empty, but a test that walks the tree sees the directory, so a local census differed from CI's.
+        self.write('.gitignore', 'node_modules/\n')
+        rev = self.fixture()
+        self.write('examples/removed/node_modules/dep/index.js', 'module.exports = 1;\n')
+        self.assertEqual(self.git('status', '--porcelain', '--untracked-files=all'), '')
+        with self.assertRaisesRegex(tool.CheckError, r"must be clean: .*'examples/'"):
+            tool.verify(self.reader, rev, 'verify.json')
+
+    def test_ignored_file_refused(self):
+        self.write('.gitignore', '.env\n')
+        rev = self.fixture()
+        self.write('.env', 'TOKEN=fixture\n')
+        with self.assertRaisesRegex(tool.CheckError, r"must be clean: .*'\.env'"):
+            tool.verify(self.reader, rev, 'verify.json')
+
+    def test_dependencies_and_folder_metadata_allowed(self):
+        self.write('.gitignore', 'node_modules/\n.DS_Store\n')
+        rev = self.fixture()
+        self.write('node_modules/dep/index.js', 'module.exports = 1;\n')
+        self.write('.DS_Store', 'metadata')
+        self.assertEqual(tool.untracked_entries(self.reader, rev), [])
+        self.assertEqual(tool.verify(self.reader, rev, 'verify.json')['result'], 'checks_passed')
+
+    def test_linked_worktree_accepted(self):
+        rev = self.fixture()
+        worktree = self.root.parent / (self.root.name + '-worktree')
+        self.git('worktree', 'add', '-q', '--detach', str(worktree), rev)
+        self.addCleanup(lambda: shutil.rmtree(worktree, ignore_errors=True))
+        self.assertTrue((worktree / '.git').is_file())
+        self.assertEqual(tool.untracked_entries(tool.Git(worktree), rev), [])
 
     def test_wrong_head_refused(self):
         self.fixture()

@@ -1,0 +1,1 @@
+{"case": "guard.clean_payload.c88434fec112f9e4", "assertion": "test_corpus_tools.VerificationTests.test_directory_invisible_to_git_refused", "passed": true, "reached": true, "failures": [], "tests": 1}
