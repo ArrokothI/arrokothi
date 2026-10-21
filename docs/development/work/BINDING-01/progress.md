@@ -20,7 +20,7 @@
 - Checkpoint `e858b700`: diagnostic/work split and separate core/SDK static inventories. Work/stop/corpus 168/169 passed (old-path guard then fixed); static + codec + intrinsic batch 121 passed. No clean C.
 - Checkpoint `ffc80385`: accepted-byte differential 1,543/1,543 equal; surface/boundary 235 passed. Core fault oracle and all 24 pin forms pass after preparing fault fixtures outside injection; new bitwise guard control pending. No clean C.
 - Checkpoint `e918678a`: core/wrapper static inventories and Layer 3/BASELINE/017 payload updated; targeted poison 68 tests × 4 modes passed (408 calls, zero core firings); probe attribution controls 28 passed. Typecheck and builder-docs passed.
-- Targeted Kernel suite: all 1,788 passed; refusal registry 322/322; combined core/SDK poison catalog 6 passed. Adoption register mechanically follows moved witnesses; new matches remain held.
+- Checkpoint `6dda546c`: targeted Kernel suite: all 1,788 passed; refusal registry 322/322; combined core/SDK poison catalog 6 passed. Adoption register mechanically follows moved witnesses; new matches remain held.
 - Open questions: none. Owner answered yes to migration-question-01; preserve generic oracle, byte-representable decisions, authority order and accepted equality/replay.
 - Last CI run: none for BINDING-01; no clean C yet. Do not run composed verify locally.
 - Session: Codex desktop, GPT-6 per session instructions (exact serving variant unavailable); Mac arm64, 2026-10-19–21 America/New_York; no delegated sessions.
