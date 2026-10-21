@@ -206,3 +206,5 @@ wrapper. Before migrating tests, record the facade’s field-observation mechani
 Preserve whole-decision oracle issue codes, precedence and receipts; stop for the owner if any
 expectation would need to change. Decoder and identity validation join the AST guard and shadow
 witnesses. No remaining design question; build is authorized by the relayed check.
+
+Mechanical migration receipt: [reopened origins](design-01/revalidation-origins.json) remain assigned to TOOLS-02. Relocated hold entries keep their classifications; newly detected matches are conservatively held, never promoted. Semantic hold reclassification stays out of this packet.

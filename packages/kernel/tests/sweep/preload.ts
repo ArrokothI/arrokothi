@@ -8,7 +8,7 @@
  * 2. registers every Proxy handler the tests create (see `poison.ts`, "Proxy handler");
  * 3. turns every Kernel boundary call into a poison window: each public `ExecutionCoordinator`
  *    method and its constructor, and every function a test file imports from a zone module
- *    (`canonicalize`, `captureOutcome`, …), which a module hook routes through a wrapper;
+ *    (`validateCanonicalBytes`, `captureOutcome`, …), which a module hook routes through a wrapper;
  * 4. records, per call and in order, a digest of what the call returned or threw;
  * 5. writes the digests, the zone firings and the counters when the process exits.
  *
@@ -47,7 +47,7 @@ const testFile = process.argv[1] ?? "";
 const active = dirname(testFile) === TESTS_ROOT && testFile.endsWith(".test.ts") && process.env.KERNEL_POISON_MODE !== undefined;
 
 /** The zone modules whose function exports test files call directly. `own-array.ts` is test instrumentation's helper, not a boundary. */
-const WRAPPED_MODULES = ["index.ts", "values.ts", "envelope.ts", "outcome.ts", "identity.ts", "coordinator.ts"];
+const WRAPPED_MODULES = ["index.ts", "values.ts", "canonical-bytes.ts", "json-transport.ts", "envelope.ts", "outcome.ts", "identity.ts", "coordinator.ts"];
 const WINDOW_SCHEME = "kernel-poison-window:";
 const BRIDGE = Symbol.for("arrokothi.kernel.poison-window");
 
@@ -89,6 +89,8 @@ if (active) {
   };
   const coordinatorClass = coordinatorModule.ExecutionCoordinator;
   const prototype = coordinatorClass.prototype as Record<string, unknown>;
+  const coreSubmitInput = prototype.submitInput as (...args: unknown[]) => unknown;
+  const reentryPayload = new Uint8Array([110, 117, 108, 108]); // canonical null, prepared outside the window
   let reentryKey = 0;
   for (const method of Object.getOwnPropertyNames(prototype)) {
     if (method === "constructor") continue;
@@ -104,7 +106,7 @@ if (active) {
         ? (): void => {
             const visible = kernel.visibleExecutions!(caller) as readonly string[];
             for (let index = 0; index < visible.length; index += 1) {
-              kernel.submitInput!(caller, { destination: visible[index], requestKey: `poison-reentry-${(reentryKey += 1)}`, kind: "poison.reentry", payload: null });
+              ReflectApply(coreSubmitInput, kernel, [caller, { destination: visible[index], requestKey: `poison-reentry-${(reentryKey += 1)}`, kind: "poison.reentry", payload: reentryPayload }]);
             }
           }
         : undefined;

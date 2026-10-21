@@ -15,6 +15,7 @@ import { rawBytes } from "./binding-facade.ts";
  *   field that is not a list, an `available` that is not a record or holds a non-list, and lists whose
  *   `length` or elements cannot be observed.
  *
+ * SDK capture is a separately declared source zone; its findings retain wrapper attribution.
  * Every public boundary is called at least once, with accepted, idempotent and refused exits: the
  * constructor, the eight coordinator methods, the delivery-report capability, the unsupported
  * surface and the value functions. Each call is a poison window. The catalog runs four times —
@@ -35,7 +36,8 @@ import { createPoison, digest, type PoisonController, type PoisonMode } from "./
 import { DESCRIPTOR_FIELDS, zoneMemberNames } from "./sweep/zone-names.ts";
 
 const ZONE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../src");
-const NAMES = zoneMemberNames(ZONE_ROOT);
+const CAPTURE_ROOT = resolve(ZONE_ROOT, "../../sdk/src/internal");
+const NAMES = [...new Set([...zoneMemberNames(ZONE_ROOT), ...zoneMemberNames(CAPTURE_ROOT)])];
 const AVAILABLE = { definitionRevisions: ["weekly-report@3"], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] };
 const MISSING_DEFINITION = { ...AVAILABLE, definitionRevisions: [] as string[] };
 const MISSING_CODEC = { ...AVAILABLE, progressCodecs: [] as string[] };
@@ -283,7 +285,7 @@ describe("correction DEC-8: the catalog under poisoned prototypes behaves exactl
   const runs: { [mode in PoisonMode]?: { catalog: Catalog; poison: PoisonController } } = {};
   for (const mode of ["off", "count", "throw", "reenter"] as const) {
     test(`${mode}: no zone frame reaches a poisoned member; every window was live`, () => {
-      const poison = createPoison({ mode, names: NAMES, zoneRoot: ZONE_ROOT });
+      const poison = createPoison({ mode, names: NAMES, zoneRoot: ZONE_ROOT, captureRoot: CAPTURE_ROOT });
       const catalog = runCatalog(poison);
       runs[mode] = { catalog, poison };
       assert.deepEqual(poison.zoneFirings, [], "no Kernel read reached Object.prototype or Function.prototype");
