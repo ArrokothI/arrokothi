@@ -144,7 +144,7 @@ describe("K1.1-C2 accepting one input", () => {
     assert.equal(result.replayed, false);
   });
 
-  
+
 });
 
 describe("K1.1-C2 each field is measured as its own boundary-value root", () => {
@@ -520,7 +520,7 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
     assert.deepEqual((view(kernel, executionId).mailbox[1]?.payload as Record<string, unknown>)["__proto__"], { x: 1 });
   });
 
-  
+
 
   test("K11-R2-VAL-02 the accepted content, the replay decision and the exposed value are one structure", () => {
     const kernel = coordinator();
@@ -597,7 +597,7 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
     assert.equal(conflict.classification, "duplicate_conflict");
   });
 
-  
+
 });
 
 describe("K11-R6-STATE-02 accepted input is retained as own data", () => {

@@ -502,7 +502,7 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.equal(conflict.classification, "duplicate_conflict");
   });
 
-  
+
 
   test("K11-R5-STATE-01 a Map.prototype.set no-op installed in the same call cannot drop the creation commit", () => {
     // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
@@ -623,7 +623,7 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.deepEqual((after.mailbox[0]?.payload as Record<string, unknown>)["__proto__"], { admin: true });
   });
 
-  
+
 
   test("K11-R2-VAL-02 what creation retained is exactly what its canonical identity described", () => {
     const kernel = coordinator();
@@ -651,7 +651,7 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.equal(replay.executionId, created.executionId);
   });
 
-  
+
 });
 
 describe("K11-R6-VAL-04 the one observed value is what creation binds, retains and replays", () => {
@@ -887,7 +887,7 @@ describe("K11-R7-STATE-03 creation under inherited descriptor-field pollution", 
     assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
   });
 
-  
+
 });
 
 describe("K11-R16-VAL-01 creation replay and conflict are stable while the iterator next is hostile", () => {

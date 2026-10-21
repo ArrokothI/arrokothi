@@ -551,7 +551,7 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     assert.equal(contextAgain.value.canonical, boundContext.value.canonical);
   });
 
-  
+
 
   test("K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound", () => {
     // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).

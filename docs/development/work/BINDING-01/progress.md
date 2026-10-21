@@ -15,7 +15,7 @@
 - Next step: finish split migration (legacy consumer failures remain), add core shadow/consumer witnesses and corpus comparison, update source inventories/tooling and Layer 3/BASELINE/017, then clean C and CI.
 - Build checkpoint `6aa27ffb`: lazy facade/SDK byte helper added; capture suites moved to SDK; shared corpus split approved; core strictness/limits and intrinsic guard added.
 - Targeted checks: wrapper refusal/meter guard 178 passed; intrinsic guard 7 passed; core vectors 53 passed; creation/ingress/dispatch + wrapper split 121 passed; all 90 core shadow cases passed.
-- Build WIP: added raw-byte consumer/ownership/replay witnesses; migrated wrapper-only refusals per owner-approved split. Consumer/diagnostic suites still have migration failures; not a candidate.
+- Build checkpoint `3cd66a85`: added raw-byte consumer/ownership/replay witnesses; migrated wrapper-only refusals per owner-approved split. Consumer/diagnostic suites still have migration failures; not a candidate.
 - Current edit retains owned byte records privately across accepted state/history; targeted regression running.
 - Open questions: none. Owner answered yes to migration-question-01; preserve generic oracle, byte-representable decisions, authority order and accepted equality/replay.
 - Last CI run: none for BINDING-01; no clean C yet. Do not run composed verify locally.
