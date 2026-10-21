@@ -81,14 +81,11 @@ describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () =
     }
   });
 
-  test("the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)", async () => {
-    // values.md requires an unmodified conforming JCS implementation, not an almost-equivalent
-    // serializer. The owner approved exact `canonicalize@3.0.0`; this pins that decision
-    // structurally so a quiet swap of the substrate is a deliberate, reviewed change.
-    const manifest = JSON.parse(await readFile(resolve(SOURCE_ROOT, "../package.json"), "utf8")) as {
-      dependencies?: Record<string, string>;
-    };
-    assert.equal(manifest.dependencies?.["canonicalize"], "3.0.0", "exact pin, no range");
+  test("the SDK wrapper keeps the exact JCS dependency and the core has none", async () => {
+    const kernel = JSON.parse(await readFile(resolve(SOURCE_ROOT, "../package.json"), "utf8"));
+    const sdk = JSON.parse(await readFile(resolve(SOURCE_ROOT, "../../sdk/package.json"), "utf8"));
+    assert.equal(kernel.dependencies?.canonicalize, undefined);
+    assert.equal(sdk.dependencies?.canonicalize, "3.0.0", "unchanged exact wrapper pin");
   });
 
   test("which code can read progress is answered only by pinned revisions and a codec", async () => {
@@ -188,7 +185,7 @@ describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () =
     );
   });
 
-  test("every import in the zone is internal, a node: builtin, or the approved JCS dependency", async () => {
+  test("every import in the core zone is internal or a node: builtin", async () => {
     const files = await sourceFiles();
     const specifiers = files.flatMap((file) => [...file.text.matchAll(/from "([^"]+)"/g)].map((match) => match[1] as string));
     assert.ok(specifiers.length > 0, "the scan found real imports");
@@ -196,12 +193,11 @@ describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () =
       assert.ok(
         specifier.startsWith("./") ||
           specifier.startsWith("../") ||
-          specifier.startsWith("node:") ||
-          specifier === "canonicalize",
+          specifier.startsWith("node:"),
         `${specifier} is outside the zone; the transitive guard owns the full rule, this is its local twin`,
       );
     }
-    // The twin is not vacuous: the approved dependency is really imported exactly once, by values.ts.
-    assert.equal(specifiers.filter((specifier) => specifier === "canonicalize").length, 1);
+    // The dependency and capture implementation moved together to SDK internal code.
+    assert.equal(specifiers.filter((specifier) => specifier === "canonicalize").length, 0);
   });
 });

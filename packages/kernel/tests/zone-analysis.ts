@@ -195,6 +195,7 @@ const PERMITTED_KINDS: ReadonlySet<ts.SyntaxKind> = new Set([
 const PERMITTED_BINARY: ReadonlySet<ts.SyntaxKind> = new Set([
   K.AmpersandAmpersandToken, K.BarBarToken, K.QuestionQuestionToken, K.EqualsEqualsEqualsToken, K.ExclamationEqualsEqualsToken,
   K.LessThanToken, K.LessThanEqualsToken, K.GreaterThanToken, K.GreaterThanEqualsToken,
+  K.AmpersandToken, K.BarToken, K.LessThanLessThanToken, K.GreaterThanGreaterThanToken,
   K.PlusToken, K.MinusToken, K.AsteriskToken, K.EqualsToken, K.PlusEqualsToken, K.MinusEqualsToken,
 ]);
 
@@ -202,6 +203,7 @@ const PERMITTED_PREFIX: ReadonlySet<ts.SyntaxKind> = new Set([K.ExclamationToken
 
 /** Operators that convert an operand to a primitive, which reads `Symbol.toPrimitive`/`valueOf`/`toString`. */
 const COERCING_BINARY: ReadonlySet<ts.SyntaxKind> = new Set([
+  K.AmpersandToken, K.BarToken, K.LessThanLessThanToken, K.GreaterThanGreaterThanToken,
   K.PlusToken, K.MinusToken, K.AsteriskToken, K.PlusEqualsToken, K.MinusEqualsToken,
   K.LessThanToken, K.LessThanEqualsToken, K.GreaterThanToken, K.GreaterThanEqualsToken,
 ]);
@@ -565,12 +567,25 @@ const valueDeclaration = (checker: ts.TypeChecker, expression: ts.Expression): t
 };
 
 /** The load-time global expression a module-level `const Primordial… = <expr>` captured, normalized. */
-const primordialName = (declaration: ts.Declaration | undefined): string | undefined => {
+const primordialName = (checker: ts.TypeChecker, declaration: ts.Declaration | undefined, seen = new Set<ts.Declaration>()): string | undefined => {
+  if (declaration !== undefined && seen.has(declaration)) return undefined;
+  if (declaration !== undefined) seen.add(declaration);
   if (declaration === undefined || !ts.isVariableDeclaration(declaration) || declaration.initializer === undefined) return undefined;
   if (!ts.isSourceFile(declaration.parent.parent.parent)) return undefined;
   if ((declaration.parent.flags & ts.NodeFlags.Const) === 0) return undefined;
   const text = strip(declaration.initializer).getText().replace(/\s+/g, "");
-  return /^[A-Za-z]+(\.[A-Za-z]+)*(\[Symbol\.[A-Za-z]+\])?$/.test(text) ? text : undefined;
+  const initializer = strip(declaration.initializer);
+  if (ts.isIdentifier(initializer)) {
+    const alias = valueDeclaration(checker, initializer);
+    if (alias !== declaration && alias !== undefined && ts.isVariableDeclaration(alias) && alias.initializer !== undefined && !alias.getSourceFile().isDeclarationFile) return primordialName(checker, alias, seen);
+  }
+  // Native typed-array slot getters captured at module initialization, never caller properties.
+  const getter = /^Object\.getOwnPropertyDescriptor\(PrimordialTypedArrayPrototype,"(length|buffer)"\)!.get$/.exec(text);
+  if (getter !== null && ts.isPropertyAccessExpression(initializer)) {
+    const declarationText = declaration.getSourceFile().text;
+    if (declarationText.includes("const PrimordialTypedArrayPrototype = Object.getPrototypeOf(Uint8Array.prototype);")) return `%TypedArray%.prototype.${getter[1]}.get`;
+  }
+  return /^[A-Za-z_$][A-Za-z0-9_$]*(\.[A-Za-z_$][A-Za-z0-9_$]*)*(\[Symbol\.[A-Za-z]+\])?$/.test(text) ? text : undefined;
 };
 
 export function resolveCallee(checker: ts.TypeChecker, call: ts.CallExpression | ts.NewExpression): Callee {
@@ -579,13 +594,13 @@ export function resolveCallee(checker: ts.TypeChecker, call: ts.CallExpression |
   // An immediately invoked function expression is zone code in place.
   if (isFn(callee)) return { kind: "zone", fn: callee, receiver: undefined, args };
   const declaration = valueDeclaration(checker, callee);
-  const primordial = primordialName(declaration);
+  const primordial = primordialName(checker, declaration);
   if (primordial === "Reflect.apply" && ts.isCallExpression(call)) {
     const [fn, receiver, list] = args;
     const applied = list !== undefined && ts.isArrayLiteralExpression(strip(list)) ? [...(strip(list) as ts.ArrayLiteralExpression).elements] : undefined;
     if (fn === undefined || applied === undefined) return { kind: "unknown", args };
     const target = valueDeclaration(checker, fn);
-    const name = primordialName(target);
+    const name = primordialName(checker, target);
     if (name !== undefined) return { kind: "primordial", name, receiver, args: applied };
     if (target !== undefined && isFn(target)) return { kind: "zone", fn: target, receiver, args: applied };
     if (target !== undefined && ts.isVariableDeclaration(target) && target.initializer !== undefined && isFn(target.initializer)) {
@@ -712,6 +727,20 @@ export const PRIMORDIAL_EFFECTS: ReadonlyMap<string, { readonly mutates?: 0 | "t
     ["Object.prototype.hasOwnProperty", { returns: "none" }],
     ["Object.is", { returns: "none" }],
     ["Array.isArray", { returns: "none" }],
+    // BINDING-01: native operations on typed views/owned parse data. Caller graphs never reach encode.
+    ["Uint8Array", { returns: "fresh" }],
+    ["Uint8Array.prototype.set", { mutates: "this", returns: "none" }],
+    ["%TypedArray%.prototype.length.get", { returns: "none" }],
+    ["%TypedArray%.prototype.buffer.get", { returns: "other" }],
+    ["UtilTypes.isUint8Array", { returns: "none" }],
+    ["UtilTypes.isSharedArrayBuffer", { returns: "none" }],
+    ["Array.prototype.sort", { mutates: "this", returns: "receiver" }],
+    ["String.prototype.charAt", { returns: "none" }],
+    ["String.fromCharCode", { returns: "none" }],
+    ["Number", { returns: "none" }],
+    ["Number.prototype.toString", { returns: "none" }],
+    ["TextEncoder", { returns: "fresh" }],
+    ["TextEncoder.prototype.encode", { returns: "fresh" }],
     ["Number.isInteger", { returns: "none" }],
     ["Number.isSafeInteger", { returns: "none" }],
     ["Number.isFinite", { returns: "none" }],

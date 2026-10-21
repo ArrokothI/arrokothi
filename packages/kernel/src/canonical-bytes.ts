@@ -3,7 +3,7 @@
  * This file also supplies the separate transport adapter's parser; core admission is always strict.
  */
 import { types as UtilTypes } from "node:util";
-import { defineData, readAt } from "./own-array.ts";
+import { defineData, readAt, writeByte } from "./own-array.ts";
 import { BOUNDARY_LIMITS, type BoundaryValue, type CanonicalValue, type ValueAcceptance, type ValueIssue, type ValueIssueCode } from "./value-types.ts";
 
 const PrimordialApply = Reflect.apply;
@@ -73,7 +73,8 @@ export function copyByteInput(input: unknown, limit: number, transport = false):
 function decodeUtf8(bytes: Uint8Array): ValueAcceptance<string> {
   let text = "";
   for (let index = 0; index < byteLength(bytes);) {
-    const first = bytes[index++]!;
+    const first = bytes[index]!;
+    index += 1;
     let scalar: number;
     let continuation: number;
     let minimum: number;
@@ -84,7 +85,8 @@ function decodeUtf8(bytes: Uint8Array): ValueAcceptance<string> {
     else return refusal(issue("invalid_utf8", "expected well-formed UTF-8"));
     if (index + continuation > byteLength(bytes)) return refusal(issue("invalid_utf8", "truncated UTF-8 sequence"));
     for (let count = 0; count < continuation; count += 1) {
-      const next = bytes[index++]!;
+      const next = bytes[index]!;
+      index += 1;
       if (next < 0x80 || next > 0xbf) return refusal(issue("invalid_utf8", "expected UTF-8 continuation byte"));
       scalar = (scalar << 6) | (next & 0x3f);
     }
@@ -108,13 +110,14 @@ export function encodeUtf8(text: string): Uint8Array {
   let offset = 0;
   for (let index = 0; index < text.length; index += 1) {
     let unit = unitAt(text, index);
-    if (unit < 0x80) bytes[offset++] = unit;
-    else if (unit < 0x800) { bytes[offset++] = 0xc0 | (unit >> 6); bytes[offset++] = 0x80 | (unit & 63); }
+    if (unit < 0x80) { writeByte(bytes, offset, unit); offset += 1; }
+    else if (unit < 0x800) { writeByte(bytes, offset, 0xc0 | (unit >> 6)); offset += 1; writeByte(bytes, offset, 0x80 | (unit & 63)); offset += 1; }
     else if (unit >= 0xd800 && unit <= 0xdbff) {
-      unit = 0x10000 + ((unit - 0xd800) << 10) + unitAt(text, ++index) - 0xdc00;
-      bytes[offset++] = 0xf0 | (unit >> 18); bytes[offset++] = 0x80 | ((unit >> 12) & 63);
-      bytes[offset++] = 0x80 | ((unit >> 6) & 63); bytes[offset++] = 0x80 | (unit & 63);
-    } else { bytes[offset++] = 0xe0 | (unit >> 12); bytes[offset++] = 0x80 | ((unit >> 6) & 63); bytes[offset++] = 0x80 | (unit & 63); }
+      index += 1;
+      unit = 0x10000 + ((unit - 0xd800) << 10) + unitAt(text, index) - 0xdc00;
+      writeByte(bytes, offset, 0xf0 | (unit >> 18)); offset += 1; writeByte(bytes, offset, 0x80 | ((unit >> 12) & 63)); offset += 1;
+      writeByte(bytes, offset, 0x80 | ((unit >> 6) & 63)); offset += 1; writeByte(bytes, offset, 0x80 | (unit & 63)); offset += 1;
+    } else { writeByte(bytes, offset, 0xe0 | (unit >> 12)); offset += 1; writeByte(bytes, offset, 0x80 | ((unit >> 6) & 63)); offset += 1; writeByte(bytes, offset, 0x80 | (unit & 63)); offset += 1; }
   }
   return bytes;
 }
@@ -141,7 +144,7 @@ function stringValue(state: ParseState): string | null {
   let scalars = 0;
   let high = false;
   while (state.position < state.text.length) {
-    let unit = unitAt(state.text, state.position++);
+    let unit = unitAt(state.text, state.position); state.position += 1;
     if (unit === 34) {
       if (high) return fail(state, "lone_surrogate", "string contains an unpaired surrogate and has no UTF-8 encoding");
       return text;
@@ -149,7 +152,7 @@ function stringValue(state: ParseState): string | null {
     if (unit < 32) return fail(state, "invalid_json", "unescaped control character in string");
     if (unit === 92) {
       if (state.position >= state.text.length) return fail(state, "invalid_json", "truncated string escape");
-      const escape = at(state.text, state.position++);
+      const escape = at(state.text, state.position); state.position += 1;
       if (escape === '"') unit = 34;
       else if (escape === "\\") unit = 92;
       else if (escape === "/") unit = 47;
@@ -162,7 +165,7 @@ function stringValue(state: ParseState): string | null {
         unit = 0;
         for (let count = 0; count < 4; count += 1) {
           if (state.position >= state.text.length) return fail(state, "invalid_json", "truncated Unicode escape");
-          const nibble = hex(unitAt(state.text, state.position++));
+          const nibble = hex(unitAt(state.text, state.position)); state.position += 1;
           if (nibble < 0) return fail(state, "invalid_json", "invalid Unicode escape");
           unit = (unit << 4) | nibble;
         }
@@ -235,7 +238,8 @@ function parseValue(state: ParseState, level: number, path: string): BoundaryVal
       key = name;
       if (PrimordialApply(PrimordialOwn, value, [key])) return fail(state, "duplicate_key", "decoded object member name appears more than once");
       space(state);
-      if (at(state.text, state.position++) !== ":") return fail(state, "invalid_json", "expected a colon after member name");
+      if (at(state.text, state.position) !== ":") return fail(state, "invalid_json", "expected a colon after member name");
+      state.position += 1;
     }
     const suffix = array ? `[${count}]` : `${path === "" ? "" : "."}${key}`;
     const childPath = path === "<omitted>" || path.length + suffix.length > 128 ? "<omitted>" : path + suffix;
@@ -245,7 +249,7 @@ function parseValue(state: ParseState, level: number, path: string): BoundaryVal
     count += 1;
     state.path = path;
     space(state);
-    const separator = at(state.text, state.position++);
+    const separator = at(state.text, state.position); state.position += 1;
     if (separator === closing) return PrimordialFreeze(value);
     if (separator !== ",") return fail(state, "invalid_json", "expected comma or closing delimiter");
     space(state);

@@ -38,29 +38,33 @@ export function rawBytes(input: string | Uint8Array): never {
   return bytes as never;
 }
 
-function root(value: unknown): unknown {
+interface CaptureContext { failure: Error | null }
+function root(value: unknown, context: CaptureContext): unknown {
   if (value !== null && (typeof value === "object" || typeof value === "function") && apply(weakHas, raw, [value])) return value;
   // Preserve missing-field semantics; a missing root is an envelope error rather than a value.
   if (value === undefined) return undefined;
   const encoded = captureCanonicalBytes(value);
-  if (!encoded.ok) throw new Failure("Wrapper-only refusal fixture must be split from the core consumer: " + encoded.issues[0]?.code);
+  if (!encoded.ok) {
+    context.failure = new Failure("Wrapper-only refusal fixture must be split from the core consumer: " + encoded.issues[0]?.code);
+    throw context.failure;
+  }
   return encoded.value;
 }
 
 type Shape = "create" | "input" | "outcome" | "emissions" | "emission" | "next" | "recovery" | "available";
-function field(shape: Shape, key: PropertyKey, value: unknown): unknown {
+function field(shape: Shape, key: PropertyKey, value: unknown, context: CaptureContext): unknown {
   if ((shape === "create" && key === "authorityContext") || (shape === "input" && key === "payload") ||
       (shape === "outcome" && key === "progress") || (shape === "emission" && key === "value") ||
       (shape === "next" && (key === "result" || key === "error")) ||
-      (shape === "available" && (key === "definitionRevisions" || key === "runtimeContractRevisions" || key === "progressCodecs"))) return root(value);
-  if (shape === "create" && key === "initialInput") return envelope(value, "input");
-  if (shape === "outcome" && key === "emissions") return envelope(value, "emissions");
-  if (shape === "outcome" && key === "next") return envelope(value, "next");
-  if (shape === "recovery" && key === "available") return envelope(value, "available");
-  if (shape === "emissions" && key !== "length" && typeof key === "string") return envelope(value, "emission");
+      (shape === "available" && (key === "definitionRevisions" || key === "runtimeContractRevisions" || key === "progressCodecs"))) return root(value, context);
+  if (shape === "create" && key === "initialInput") return envelope(value, "input", context);
+  if (shape === "outcome" && key === "emissions") return envelope(value, "emissions", context);
+  if (shape === "outcome" && key === "next") return envelope(value, "next", context);
+  if (shape === "recovery" && key === "available") return envelope(value, "available", context);
+  if (shape === "emissions" && key !== "length" && typeof key === "string") return envelope(value, "emission", context);
   return value;
 }
-function envelope(original: unknown, shape: Shape): unknown {
+function envelope(original: unknown, shape: Shape, context: CaptureContext): unknown {
   if (original === null || typeof original !== "object") return original;
   let list: boolean;
   try { list = isArray(original); } catch { return original; }
@@ -76,23 +80,31 @@ function envelope(original: unknown, shape: Shape): unknown {
       forwarded.enumerable = true; forwarded.configurable = true;
       return forwarded;
     },
-    get(_target, key) { return field(shape, key, get(original, key)); },
+    get(_target, key) { return field(shape, key, get(original, key), context); },
     ownKeys() { return ownKeys(original); },
   });
 }
 
+/** Do not let observeField's catch hide an unmigrated wrapper refusal in a passing core test. */
+function invoke<T>(request: unknown, shape: Shape, submit: (envelope: unknown) => T): T {
+  const context: CaptureContext = { failure: null };
+  const answer = submit(envelope(request, shape, context));
+  if (context.failure !== null) throw context.failure;
+  return answer;
+}
+
 export class ExecutionCoordinator extends CoreCoordinator {
   override createExecution(caller: AuthenticatedCaller, request: unknown) {
-    return super.createExecution(caller, envelope(request, "create") as CoreCreate);
+    return invoke(request, "create", prepared => super.createExecution(caller, prepared as CoreCreate));
   }
   override submitInput(caller: AuthenticatedCaller, request: unknown) {
-    return super.submitInput(caller, envelope(request, "input") as CoreInput);
+    return invoke(request, "input", prepared => super.submitInput(caller, prepared as CoreInput));
   }
   override submitOutcome(caller: AuthenticatedCaller, proposal: unknown, submission: SubmissionGrant) {
-    return super.submitOutcome(caller, envelope(proposal, "outcome") as CoreOutcome, submission);
+    return invoke(proposal, "outcome", prepared => super.submitOutcome(caller, prepared as CoreOutcome, submission));
   }
   override recoverExecution(caller: AuthenticatedCaller, executionId: string, request: unknown) {
-    return super.recoverExecution(caller, executionId, envelope(request, "recovery") as CoreRecovery);
+    return invoke(request, "recovery", prepared => super.recoverExecution(caller, executionId, prepared as CoreRecovery));
   }
 }
 

@@ -836,14 +836,14 @@ function eagerRootsProbe(answerOf: (value: string) => string): EagerRow[] {
   return inWrappedChild<EagerRow[]>(`${child()}
     const { captureWrapperRoots } = await import(${JSON.stringify(new URL('./wrapper-roots.ts',import.meta.url).href)});
     const rows=[];
-    const run=(roots,arm,f)=>{
+    const captureArm=(roots,arm,f)=>{
       const result=captureWrapperRoots(Array.from({length:roots},(_,i)=>['root'+i,f.root]));
       rows.push({roots,arm,reason:result.diagnostic,observed:f.observed()});
     };
     for(const roots of [1,8]) {
-      for(const arm of ['none','grant']) run(roots,arm,rowFixture(undefined,${answerOf('undefined')}));
-      run(roots,'read witness',rowFixture(0,${answerOf('1')}));
-      run(roots,'length witness',rowFixture(0,disagreeingLength));
+      for(const arm of ['none','grant']) captureArm(roots,arm,rowFixture(undefined,${answerOf('undefined')}));
+      captureArm(roots,'read witness',rowFixture(0,${answerOf('1')}));
+      captureArm(roots,'length witness',rowFixture(0,disagreeingLength));
     }
     emit(rows);
   `);

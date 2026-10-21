@@ -1,3 +1,4 @@
+import { canonicalize } from "../../sdk/src/internal/value-capture.ts";
 /**
  * K1.2-C13 - one reading of a caller-owned Outcome envelope, and a decision nothing ambient can steer.
  *
@@ -219,11 +220,6 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
       ["a revoked next", { ...outcomeFor(executionId, dispatched), next: revokedProxy() }, /next unsupported_form/],
       ["a revoked Emission list", { ...outcomeFor(executionId, dispatched), emissions: revokedProxy() }, /emissions unsupported_form/],
       [
-        "a revoked progress value",
-        { ...outcomeFor(executionId, dispatched), progress: revokedProxy() },
-        /progress unsupported_form \(value is a Proxy; capture refuses every Proxy before observing it\)/,
-      ],
-      [
         "an envelope whose keys cannot be listed",
         new Proxy({ ...outcomeFor(executionId, dispatched) }, { ownKeys() { throw new Error("no keys"); } }),
         /envelope unstable_representation/,
@@ -243,65 +239,25 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
     assert.equal(refused(kernel.submitOutcome(author, null as unknown as OutcomeEnvelope, grant)).classification, "unknown_destination");
     assert.equal(view(kernel, executionId).progressRevision, 0);
 
-    // A genuine progress object whose one structural observation throws: the same located
-    // `unstable_representation` the revoked progress value used to produce, carrying only the thrown
-    // value's `typeof`, never its text, and no exception escaping the Outcome boundary.
-    const probe = inWrappedChild<{ escaped: string | null; refusal: unknown; observations: number; progressRevision: number }>(`
-      const submissions = [];
-      const driver = {
-        driverId: "fake-child",
-        deliver(activation, settlement, submission) { submissions.push(submission); settlement.delivered(); return undefined; },
-        isSafeToReplace() { return true; },
-      };
-      const author = { namespace: "app-a", scopes: ["tenant-a"], controlScopes: ["tenant-a"] };
-      const coordinator = new kernel.ExecutionCoordinator({ driver });
-      const created = coordinator.createExecution(author, {
-        creationKey: "report-17",
-        scope: "tenant-a",
-        definitionRevision: "weekly-report@3",
-        runtimeContractRevision: "runtime-contract@1",
-        progressCodec: "inline-json@1",
-        authorityContext: { tenant: "a" },
-        initialInput: { kind: "application.request", payload: { text: "report for week 37" } },
-      }).value;
-      const dispatched = coordinator.dispatch(author, created.executionId, { bound: 1 }).value;
+    // The revoked root and throwing structural observation are SDK-only refusals.
+    const revoked = canonicalize(revokedProxy());
+    assert.equal(revoked.ok, false);
+    if (!revoked.ok) assert.equal(revoked.issues[0]?.message, "value is a Proxy; capture refuses every Proxy before observing it");
+    const probe = inWrappedChild<{ result: ReturnType<typeof canonicalize>; observations: number }>(`
       const progress = track({ phase: "draft", draftRef: "draft-1" });
       let observations = 0;
       hooks.prototype = (target, real) => {
-        if (target === progress) {
-          observations += 1;
-          throw new Error("boom: secret progress text");
-        }
+        if (target === progress) { observations++; throw new Error("boom: secret progress text"); }
         return real;
       };
-      let refusal = null;
-      let escaped = null;
-      try {
-        refusal = coordinator.submitOutcome(author, {
-          executionId: created.executionId,
-          activationId: dispatched.activationId,
-          writerEpoch: dispatched.writerEpoch,
-          baseProgressRevision: dispatched.baseProgressRevision,
-          progress,
-          next: { step: "continue" },
-        }, submissions[0]);
-      } catch (error) {
-        escaped = error instanceof Error ? error.message : typeof error;
-      }
+      const result = values.canonicalize(progress);
       hooks.prototype = undefined;
-      emit({ escaped, refusal, observations, progressRevision: coordinator.inspect(author, created.executionId).value.progressRevision });
+      emit({ result, observations });
     `);
-    assert.equal(probe.escaped, null, "no exception escaped the Outcome boundary");
-    assert.equal(probe.observations, 1, "the progress object's structure was observed once, and threw");
-    const thrown = probe.refusal as { ok: boolean; error: { classification: string; reason: string } };
-    assert.equal(thrown.ok, false);
-    assert.equal(thrown.error.classification, "malformed_envelope");
-    assert.match(
-      thrown.error.reason,
-      /refused whole: progress unstable_representation \(observing this value's structure threw \(object\), so it presents no readable content\)$/,
-    );
-    assert.doesNotMatch(thrown.error.reason, /boom|secret/, "the thrown value's text never reaches the reason");
-    assert.equal(probe.progressRevision, 0);
+    assert.equal(probe.observations, 1);
+    assert.equal(probe.result.ok, false);
+    if (!probe.result.ok) assert.deepEqual(probe.result.issues, [{ path: "", code: "unstable_representation", message: "observing this value's structure threw (object), so it presents no readable content" }]);
+
   });
 });
 
