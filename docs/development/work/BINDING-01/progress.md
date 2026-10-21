@@ -17,7 +17,7 @@
 - Targeted checks: wrapper refusal/meter guard 178 passed; intrinsic guard 7 passed; core vectors 53 passed; creation/ingress/dispatch + wrapper split 121 passed; all 90 core shadow cases passed.
 - Build checkpoint `3cd66a85`: added raw-byte consumer/ownership/replay witnesses; migrated wrapper-only refusals per owner-approved split. Consumer/diagnostic suites still have migration failures; not a candidate.
 - Private owned records now retained; byte-consumer/intrinsic/Outcome-limit regression passed. SDK capture/diagnostic 137 passed; Outcome/recovery 299/300 then remaining wrapper-only case split; diagnostic 85/86 then code-census digit bug fixed.
-- Work/stop/corpus 168/169 passed; remaining old-path guard fixed. Core/SDK static inventories now split; current static checks in progress, no clean C.
+- Checkpoint `e858b700`: diagnostic/work split and separate core/SDK static inventories. Work/stop/corpus 168/169 passed (old-path guard then fixed); static + codec + intrinsic batch 121 passed. No clean C.
 - Open questions: none. Owner answered yes to migration-question-01; preserve generic oracle, byte-representable decisions, authority order and accepted equality/replay.
 - Last CI run: none for BINDING-01; no clean C yet. Do not run composed verify locally.
 - Session: Codex desktop, GPT-6 per session instructions (exact serving variant unavailable); Mac arm64, 2026-10-19–20 America/New_York; no delegated sessions.
