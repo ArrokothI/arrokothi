@@ -18,7 +18,7 @@
 - Build checkpoint `3cd66a85`: added raw-byte consumer/ownership/replay witnesses; migrated wrapper-only refusals per owner-approved split. Consumer/diagnostic suites still have migration failures; not a candidate.
 - Private owned records now retained; byte-consumer/intrinsic/Outcome-limit regression passed. SDK capture/diagnostic 137 passed; Outcome/recovery 299/300 then remaining wrapper-only case split; diagnostic 85/86 then code-census digit bug fixed.
 - Checkpoint `e858b700`: diagnostic/work split and separate core/SDK static inventories. Work/stop/corpus 168/169 passed (old-path guard then fixed); static + codec + intrinsic batch 121 passed. No clean C.
-- Current checkpoint: accepted-byte differential 1,543/1,543 equal; surface/boundary 235 passed. Core fault oracle and all 24 pin forms pass after preparing fault fixtures outside injection; new bitwise guard control pending. No clean C.
+- Checkpoint `ffc80385`: accepted-byte differential 1,543/1,543 equal; surface/boundary 235 passed. Core fault oracle and all 24 pin forms pass after preparing fault fixtures outside injection; new bitwise guard control pending. No clean C.
 - Open questions: none. Owner answered yes to migration-question-01; preserve generic oracle, byte-representable decisions, authority order and accepted equality/replay.
 - Last CI run: none for BINDING-01; no clean C yet. Do not run composed verify locally.
 - Session: Codex desktop, GPT-6 per session instructions (exact serving variant unavailable); Mac arm64, 2026-10-19–21 America/New_York; no delegated sessions.
