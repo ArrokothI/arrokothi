@@ -13,7 +13,7 @@ import assert from "node:assert/strict";
 
 import { ExecutionCoordinator } from "./binding-facade.ts";
 import { packIdentity } from "../src/identity.ts";
-import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
+import { accepted, caller, createRequest, recordingDriver, refused, jsonBytes } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 const coordinator = (): ExecutionCoordinator => new ExecutionCoordinator({ driver: recordingDriver() });
@@ -108,7 +108,7 @@ describe("K1.1-C6 one receipt per accepted boundary", () => {
     refused(kernel.createExecution(author, createRequest({ initialInput: { kind: "k", payload: { other: true } } })));
     refused(kernel.createExecution(caller("app-a", "tenant-b"), createRequest({ scope: "tenant-a" })));
     refused(kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 2 } }));
-    refused(kernel.submitInput(author, { destination: created.executionId, requestKey: "c2", kind: "k", payload: { n: Number.NaN } as never }));
+    refused(kernel.submitInput(author, { destination: created.executionId, requestKey: "c2", kind: "k", payload: jsonBytes({ n: Number.NaN }) }));
     refused(kernel.submitInput(author, { destination: "execution-404", requestKey: "c3", kind: "k", payload: null }));
     refused(kernel.dispatch(author, created.executionId, { bound: 0 }));
     refused(kernel.redeliver(author, created.executionId));

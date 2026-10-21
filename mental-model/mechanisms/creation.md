@@ -63,7 +63,7 @@ The caller chooses the key, and the choice carries meaning. Reusing `report-17` 
 
 The key is also only text. The Kernel compares requests by the complete [Creation request ID](../concepts/identity.md#request-key-and-input-id), which combines the key with the caller's context. In the in-process binding that context is the producer's authenticated namespace plus the selected authority scope. Step 2 is therefore identified as roughly (report application, `weekly-reports`, `report-17`). How another implementation spells the caller's context is its own choice. The identity page records where the in-process binding writes its answer down.
 
-With the identity found, the Kernel compares content. "The same content" means equal [canonical form](../concepts/values.md#canonical-form), not equal bytes: a gateway that reformats the JSON, reorders its keys or writes the number `37` as `37.0` has not changed the request. The possible outcomes:
+With the identity found, the Kernel compares content. "The same content" means equal [canonical form](../concepts/values.md#canonical-form), independent of transport spelling: a gateway that reformats the JSON, reorders its keys or writes the number `37` as `37.0` has not changed the request. Its adapter produces canonical bytes before the [core](../concepts/values.md#canonical-bytes-core) validates them. The possible outcomes:
 
 | The Kernel finds | Content | Answer |
 |---|---|---|

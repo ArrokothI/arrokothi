@@ -293,9 +293,9 @@ and [decision-02](work/DESIGN-AUDIT-01/decision-02.md) (wrapper owned by the SDK
 - Move the capture module, with its refusals and meter, into `packages/sdk` as an internal, unexported
   module (decision-02 stage 2).
 - Make the canonical-owner and decision amendments in CORE's table as reviewed payload. Its brief maps the
-  Layer-3 owners: there is no roadmap entry yet.
+  Layer-3 owners, maintained in the [roadmap mapping](../../mental-model/roadmap.md#binding-01).
 
-**Acceptance:** set by its brief and contract. Its acceptance releases
+**Acceptance:** set by its brief and approved design. Independent acceptance makes the narrowed core claim eligible for owner release of
 [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)'s V-ENV hold. The supported SDK surface is unchanged
 until K1.4.
 

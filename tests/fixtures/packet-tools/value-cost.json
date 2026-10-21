@@ -13,29 +13,33 @@
     "package.json",
     "tsconfig.json",
     "tests/fixtures/packet-tools/value-cost.json",
-    "packages/kernel/tests/capture-corpus.test.ts",
-    "packages/kernel/tests/capture-corpus.ts",
-    "packages/kernel/tests/capture-instruments.ts",
-    "packages/kernel/tests/capture-metering.test.ts",
-    "packages/kernel/tests/capture-metering.ts",
-    "packages/kernel/tests/capture-refusals.test.ts",
-    "packages/kernel/tests/capture-stop.test.ts",
-    "packages/kernel/tests/capture-work.test.ts",
+    "packages/sdk/tests/capture-corpus.test.ts",
+    "packages/sdk/tests/capture-corpus.ts",
+    "packages/sdk/tests/capture-instruments.ts",
+    "packages/sdk/tests/capture-metering.test.ts",
+    "packages/sdk/tests/capture-metering.ts",
+    "packages/sdk/tests/capture-refusals.test.ts",
+    "packages/sdk/tests/capture-stop.test.ts",
+    "packages/sdk/tests/capture-work.test.ts",
     "packages/kernel/tests/creation.test.ts",
     "packages/kernel/tests/dispatch.test.ts",
     "packages/kernel/tests/harness.ts",
     "packages/kernel/tests/ingress.test.ts",
     "packages/kernel/tests/outcome-hostile.test.ts",
     "packages/kernel/tests/refusal-diagnostics-fixture.ts",
-    "packages/kernel/tests/value-diagnostic-work.test.ts",
-    "packages/kernel/tests/value-refusal-cost.test.ts",
-    "packages/kernel/tests/values.test.ts",
+    "packages/sdk/tests/value-diagnostic-work.test.ts",
+    "packages/sdk/tests/value-refusal-cost.test.ts",
+    "packages/sdk/tests/value-capture.test.ts",
     "packages/kernel/tests/zone-analysis.ts",
     "tests/tooling/capture-trace.mjs",
     "tests/tooling/capture-continuations.mjs",
     "tests/tooling/capture-trace-controls.mjs",
     "tests/fixtures/packet-tools/capture-trace-sites.json",
-    "tests/fixtures/packet-tools/capture-trace-controls.json"
+    "tests/fixtures/packet-tools/capture-trace-controls.json",
+    "packages/kernel/tests/binding-facade.ts",
+    "packages/kernel/tests/zone-inventory.ts",
+    "packages/sdk/tests/wrapper-roots.ts",
+    "packages/sdk/tests/value-capture-inventory.ts"
   ],
   "dependencies": [
     {
@@ -244,9 +248,9 @@
       "id": "value-cost.unit-table",
       "category": "value-cost",
       "assertion": "value-cost.unit-table.selected-tests",
-      "source": "K1.1-correction-03: every unit kind is charged exactly (KC3-1, KC3-5); maintained tests packages/kernel/tests/capture-work.test.ts matching /KC3-1/KC3-5 every unit kind is charged exactly/",
+      "source": "K1.1-correction-03: every unit kind is charged exactly (KC3-1, KC3-5); maintained tests packages/sdk/tests/capture-work.test.ts matching /KC3-1/KC3-5 every unit kind is charged exactly/",
       "input": {
-        "file": "packages/kernel/tests/capture-work.test.ts",
+        "file": "packages/sdk/tests/capture-work.test.ts",
         "pattern": "KC3-1/KC3-5 every unit kind is charged exactly"
       },
       "files": [
@@ -268,80 +272,80 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-01432dd09be824762c9a2984a50e6fd59ee5e5fb5b633e1153c05b3dde68e25f",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-93dd4c744b1cf1060c0e97e2165c7edab5c6a15af9fc355c409a24ea55863209",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"visit\", 1) === STOPPED) return STOPPED;\n  if (value === null)",
           "after": "  if (value === null)",
           "operator": "remove-work-charge",
           "name": "visit unit uncharged"
         },
         {
-          "id": "mutation-4c9ded744fbd7e6a46ae482d65f19d642cec88e67d1106f43dbd0fe429d424ce",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-b895742728b1837d7c622cc3064c96c20f1efa96361e43eba77e268d1a3ec227",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"element\", 1) === STOPPED) return STOPPED;\n",
           "after": "",
           "operator": "remove-work-charge",
           "name": "element unit uncharged"
         },
         {
-          "id": "mutation-f0e6d53dd15474fa31a696bb101c95a25caf7abc82f64a22e156d947cae520cb",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8e2af812ff356fe2774d3d66ff0727b085ba3d65c754f4a5903d7d2e6085e71e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n",
           "after": "",
           "operator": "remove-work-charge",
           "name": "descriptor unit uncharged"
         },
         {
-          "id": "mutation-e68dfa0676baa6306210b620a8861b56f6b9cfc5a2b205189d48f0a711af61c6",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-561eee118a43784c7e8fb9fbe1ebca7f00c38fca89c36ac61b5ec4f9a5875170",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"read\", 1) === STOPPED) return STOPPED;\n",
           "after": "",
           "operator": "remove-work-charge",
           "name": "read unit uncharged"
         },
         {
-          "id": "mutation-82437f2d3d864820d1c75b09bca5f59f8d42c4402905d048afb1a02e0aac34cc",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-2d0d5180aa9fbc0223095f5e809cfd385173f0ef2a081b2f380469c6fbac77ce",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "if (spend(state, \"string\", units) === STOPPED) return STOPPED;",
           "after": "if (spend(state, \"string\", 1) === STOPPED) return STOPPED;",
           "operator": "weaken-work-charge",
           "name": "string units charged as one"
         },
         {
-          "id": "mutation-996989c28fd50c0e3df92d435d2b9441ade873a411c0eab3ce58a18fc1ca17ef",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-944a61462e9163c53a75c4e027c8afb66a34ffcf461e468df52469eec8cf2f5d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "return spend(state, \"listing\", 1 + names.length) === STOPPED ? STOPPED : names;",
           "after": "return spend(state, \"listing\", 1) === STOPPED ? STOPPED : names;",
           "operator": "weaken-work-charge",
           "name": "names listing charged as one"
         },
         {
-          "id": "mutation-1c1d9e945e98fb1c981a0c1637e9bf3448a63276d799820347b17873c8ebd973",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-bc60206e5bc1625e1b354fbe128a1d5d45756f352d14e527f2de21148eaa880c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "return spend(state, \"listing\", 1 + symbols.length) === STOPPED ? STOPPED : symbols.length;",
           "after": "return spend(state, \"listing\", 1) === STOPPED ? STOPPED : symbols.length;",
           "operator": "weaken-work-charge",
           "name": "symbols listing charged as one"
         },
         {
-          "id": "mutation-15807e9811bf472bd90d1b9c8e40de54e58d77c03563b7fdcfbff8368dd55186",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-27dc57b4893bee211b33738470be4f6a25fb66e2e03a8e3749e47590089bffe7",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"diagnostic\", 1) === STOPPED) return STOPPED;\n  pushIssue(state.issues, issue);",
           "after": "  pushIssue(state.issues, issue);",
           "operator": "remove-work-charge",
           "name": "diagnostic unit uncharged"
         },
         {
-          "id": "mutation-48a4efac5ad2f0c9b07ffdc3388a1304a34f5ef40edb85adb2592d6474a7896d",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-45bcec8b5910237d30332affa81f74d71785906ed27c3f65b23abba591b8ae0d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "else if (kind === \"read\") state.readUnits += units;",
           "after": "else if (kind === \"read\") state.descriptorUnits += units;",
           "operator": "misfile-work-charge",
           "name": "read units filed as descriptor units"
         },
         {
-          "id": "mutation-acf80342553ae87654f57ed23705b959b95abd8aeb1a692e9426077d3284be36",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c3ea993aad53fe5045952e0a6ed73c585d78e0d647abfe0757f59fe8e5aa1b69",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const listed = listOwnSymbols(state, container);\n  if (listed === STOPPED) return STOPPED;\n  const symbolCount = hasExtra ? 0 : listed;",
           "after": "  let symbolCount = 0;\n  if (!hasExtra) {\n    const listed = listOwnSymbols(state, container);\n    if (listed === STOPPED) return STOPPED;\n    symbolCount = listed;\n  }",
           "operator": "remove-work-charge",
@@ -353,9 +357,9 @@
       "id": "value-cost.budget",
       "category": "value-cost",
       "assertion": "value-cost.budget.selected-tests",
-      "source": "K1.1-correction-03: B is derived from the limits and the meter stops at B + 1 (KC3-2, KC3-4); maintained tests packages/kernel/tests/capture-work.test.ts matching /KC3-2|KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth$|refused at the meter/",
+      "source": "K1.1-correction-03: B is derived from the limits and the meter stops at B + 1 (KC3-2, KC3-4); maintained tests packages/sdk/tests/capture-work.test.ts matching /KC3-2|KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth$|refused at the meter/",
       "input": {
-        "file": "packages/kernel/tests/capture-work.test.ts",
+        "file": "packages/sdk/tests/capture-work.test.ts",
         "pattern": "KC3-2|KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth$|refused at the meter"
       },
       "files": [
@@ -377,40 +381,40 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-8387c6db5f878bda71eb74ff8720e7383ffa185c32ae086ceab690ba339731f2",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c188c84b10351f0cce03a8c94101868fb0bbc4ae4c913e44e62fe0c729456e0a",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "export const CAPTURE_WORK_BUDGET: number = 3 * BOUNDARY_LIMITS.canonicalBytes;",
           "after": "export const CAPTURE_WORK_BUDGET: number = 6 * BOUNDARY_LIMITS.canonicalBytes;",
           "operator": "raise-budget",
           "name": "budget doubled"
         },
         {
-          "id": "mutation-b90519d84da23119cb415b99c9271a039e1feefde53d0b1b2534e9a64f108616",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d722f7c55a43c4141e92015186db67cf4f185e7c73cf160a013976ddad1f6a45",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (state.units > CAPTURE_WORK_BUDGET) {",
           "after": "  if (state.units >= CAPTURE_WORK_BUDGET) {",
           "operator": "off-by-one",
           "name": "meter stops one unit early"
         },
         {
-          "id": "mutation-14b83f50a499150f922fef92c53f740a96111faf39ee45834032a0ba1aa2af36",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-45ec0943749cbb0e5eb6269b9c2d6f2b2a989f93fff0a770a5b04c9d64193d36",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (state.units > CAPTURE_WORK_BUDGET) {",
           "after": "  if (state.units > CAPTURE_WORK_BUDGET * 1_000) {",
           "operator": "remove-stop",
           "name": "meter never stops"
         },
         {
-          "id": "mutation-600f4dde8659f78d520757f9ba36ae2791dadbd98dbdcaf69da710bffce0fef3",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-953e405dfeb0ef4eeced525eec2c1786f807031bfc4bb307821f5b78b204614c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    pushIssue(state.issues, { path: \"\", code: \"too_much_work\", message: TOO_MUCH_WORK_MESSAGE });\n",
           "after": "",
           "operator": "remove-stop-issue",
           "name": "meter stop records no issue"
         },
         {
-          "id": "mutation-13189a67fbe3c100ce08f98911db0d7196ba3f489bb32cb5eea226bbad5c6d90",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-7ba02b54a514d63fec9e5a365d2b36556878cfeadb95b602651e036bf78b92f8",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    pushIssue(state.issues, { path: \"\", code: \"too_much_work\", message: TOO_MUCH_WORK_MESSAGE });",
           "after": "    pushIssue(state.issues, { path: \"[0]\", code: \"too_much_work\", message: TOO_MUCH_WORK_MESSAGE });",
           "operator": "mislocate-stop-issue",
@@ -422,9 +426,9 @@
       "id": "value-cost.depth",
       "category": "value-cost",
       "assertion": "value-cost.depth.selected-tests",
-      "source": "K1.1-correction-03: per-position Kernel work does not depend on nesting depth (KC3-4); maintained tests packages/kernel/tests/capture-work.test.ts matching /wrapped engine operations per refused position/",
+      "source": "K1.1-correction-03: per-position Kernel work does not depend on nesting depth (KC3-4); maintained tests packages/sdk/tests/capture-work.test.ts matching /wrapped engine operations per refused position/",
       "input": {
-        "file": "packages/kernel/tests/capture-work.test.ts",
+        "file": "packages/sdk/tests/capture-work.test.ts",
         "pattern": "wrapped engine operations per refused position"
       },
       "files": [
@@ -446,25 +450,25 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-8130a5034dba477bf56726a86289040ce9ed6082eaf8faed6e1073d1f41b8c3e",
+          "id": "mutation-873e4aa2b1cbd46905a7389d6433564263a8cdef7288b3a89cbc76ad4b25f11e",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "const isOpenContainer = (state: CaptureState, container: object): boolean =>\n  PrimordialReflectApply(PrimordialSetHas, state.open, [container]) as boolean;",
               "after": "const isOpenContainer = (state: CaptureState, container: object): boolean => {\n  const list = state.open as unknown as object[];\n  for (let index = 0; index < list.length; index += 1) if (readAt(list, index) === container) return true;\n  return false;\n};"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  PrimordialReflectApply(PrimordialSetAdd, state.open, [container]);",
               "after": "  appendOwn(state.open as unknown as object[], container);"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  PrimordialReflectApply(PrimordialSetDelete, state.open, [container]);",
               "after": "  const list = state.open as unknown as object[];\n  for (let index = 0; index < list.length; index += 1) {\n    if (readAt(list, index) === container) {\n      defineAt(list, index, readAt(list, list.length - 1) as object);\n      list.length = list.length - 1;\n      return;\n    }\n  }"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "    open: new PrimordialSet<object>(),",
               "after": "    open: [] as unknown as Set<object>,"
             }
@@ -478,9 +482,9 @@
       "id": "value-cost.oracle",
       "category": "value-cost",
       "assertion": "value-cost.oracle.selected-tests",
-      "source": "K1.1-correction-03: wrapped engine operations are accounted for by the units charged (KC3-1); maintained tests packages/kernel/tests/capture-work.test.ts matching /runtime oracle/",
+      "source": "K1.1-correction-03: wrapped engine operations are accounted for by the units charged (KC3-1); maintained tests packages/sdk/tests/capture-work.test.ts matching /runtime oracle/",
       "input": {
-        "file": "packages/kernel/tests/capture-work.test.ts",
+        "file": "packages/sdk/tests/capture-work.test.ts",
         "pattern": "runtime oracle"
       },
       "files": [
@@ -502,23 +506,23 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-53edb649b9d16bf8c51151a5c10835f811b6c817df86fbc32f7213acbd7c99c5",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-eceebf2949f7a3be19407807bac694a4974f4a6ff3675f9aeaf3108b24f885c2",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const symbolCount = listOwnSymbols(state, container);\n  if (symbolCount === STOPPED) return STOPPED;",
           "after": "  const symbolCount = listOwnSymbols(state, container);\n  PrimordialGetOwnPropertyNames(container);\n  if (symbolCount === STOPPED) return STOPPED;",
           "operator": "unmetered-observation",
           "name": "an uncharged extra names listing"
         },
         {
-          "id": "mutation-d4f4195d13d29dab4ffad9461a705e919f6909b447bd61d5c7acbb6b6b7ef5f3",
+          "id": "mutation-0cbeaa9081587ae9c512322ca1f53b0c2a883ddf330c1f7379c3c144b54b3065",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "const STRING_SCAN_LIMIT = 2 * BOUNDARY_LIMITS.stringScalarValues;",
               "after": "const STRING_SCAN_LIMIT = 2 * BOUNDARY_LIMITS.stringScalarValues;\nconst peekDescriptor = PrimordialGetOwnPropertyDescriptor;"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "    const where = element(path, index);\n    const member = checkMember(observed.descriptor, observed.read, where, state);",
               "after": "    const where = peekDescriptor(container, `${index}`) === undefined ? path : element(path, index);\n    const member = checkMember(observed.descriptor, observed.read, where, state);"
             }
@@ -532,9 +536,9 @@
       "id": "value-cost.static",
       "category": "value-cost",
       "assertion": "value-cost.static.selected-tests",
-      "source": "K1.1-correction-03: capture observes caller values only through metered helpers (KC3-1, static); maintained tests packages/kernel/tests/capture-metering.test.ts matching /the real values.ts passes every rule/",
+      "source": "K1.1-correction-03: capture observes caller values only through metered helpers (KC3-1, static); maintained tests packages/sdk/tests/capture-metering.test.ts matching /the real values.ts passes every rule/",
       "input": {
-        "file": "packages/kernel/tests/capture-metering.test.ts",
+        "file": "packages/sdk/tests/capture-metering.test.ts",
         "pattern": "the real values.ts passes every rule"
       },
       "files": [
@@ -556,160 +560,160 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-6955531df09922a60e5c24a295be7d6b26a9e343495a8ce306a7c1e02ab1f282",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-651a50afd7c56d8f8081271062808f6c4bb6c35ceec344c3ce4a3e45bc4f3dfc",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const observed = observeElement(state, container, `${index}`);\n    if (observed === STOPPED) return STOPPED;",
           "after": "    const raw = PrimordialGetOwnPropertyDescriptor(container, `${index}`);\n    const observed = { descriptor: raw, read: raw === undefined ? undefined : raw.value };",
           "operator": "bypass-helper",
           "name": "SC1 element observed by a direct descriptor call"
         },
         {
-          "id": "mutation-04adf5dba261f3b3110cce5a6c5e6742125dc313bf15cce0641ca0fe012c6a55",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-bfa919300e0ab3271f4362454feb940dfa6ac26a13b0bf299d53c906242103ee",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
           "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, name);\n  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return descriptor;",
           "operator": "charge-after-work",
           "name": "SC2 descriptor helper observes before charging"
         },
         {
-          "id": "mutation-63ad144c16f81bfec692e904d9374ca7dc2e194190153918103dcd81404f0e26",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-270bbd1ac896ec10dd6c76e4afcadb37a454288ea50edb89c61d25e99003b0b2",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  let refused = false;\n  const symbolCount = listOwnSymbols(state, container);",
           "after": "  let refused = (container as Record<string, unknown>)[\"x\"] === 1;\n  const symbolCount = listOwnSymbols(state, container);",
           "operator": "bypass-helper",
           "name": "SC3 member read through a cast in the traversal"
         },
         {
-          "id": "mutation-5b211256c7047577040c9604f1286451fda84bb106be9877eebaaca8e2b153c8",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a50c13578d91616ebe0d6b54ba824cfc3a87b56549331b421a5e56667e30df34",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  let refused = false;\n  const symbolCount = listOwnSymbols(state, container);",
           "after": "  let refused = Reflect.ownKeys(container).length > 4096;\n  const symbolCount = listOwnSymbols(state, container);",
           "operator": "bypass-helper",
           "name": "SC3 global built-in in the traversal"
         },
         {
-          "id": "mutation-a8bf8f3e96df4eb572f78a5ba9268af2aa698e659dc047587e18d7504420df06",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-99fd6973ff01ab7ba534b8b8abf3f9d653402e91093ddff8a6d2c0ff5929c8db",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (refused) return REFUSED;\n  return finishObject(prototype, captured);",
           "after": "  let scanned = 0;\n  for (let index = 0; index < captured.length; index += 1) scanned += index;\n  if (refused || scanned < 0) return REFUSED;\n  return finishObject(prototype, captured);",
           "operator": "unmetered-loop",
           "name": "SC4 unmetered loop in the traversal"
         },
         {
-          "id": "mutation-3427099bca017383c03bb0a882c7828dd57d03547f2b9efd6627d8b2f2efdd5b",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-f100cd770ceb8bf32a191aebb16369aa3093c30c86b60562855832071ab39934",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if ((typeof value === \"object\" || typeof value === \"function\") && isProxyValue(value)) {",
           "after": "  if (typeof value === \"object\" && value !== null && isOpenContainer(state, value)) return REFUSED;\n  if ((typeof value === \"object\" || typeof value === \"function\") && isProxyValue(value)) {",
           "operator": "reorder-proxy-test",
           "name": "SC5 cycle test before the Proxy test"
         },
         {
-          "id": "mutation-bf47542098ae54db05d4e7c6d259f5878f6e5d2b453e26d8608be7a782ed0906",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-e1820655d592dcfbbd0a0ef6e73eb8bed2d7f6a0c4e5d21bb87de75283e1430c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const where = element(path, index);\n    const member = checkMember(observed.descriptor, observed.read, where, state);",
           "after": "    const where = prototypeOf(container) === null ? path : element(path, index);\n    const member = checkMember(observed.descriptor, observed.read, where, state);",
           "operator": "helper-in-loop",
           "name": "SC6 visit-covered helper inside the element loop"
         },
         {
-          "id": "mutation-0d68278d040871c34124d65c4e4fef11b008af72e4ce5f51f214f273d7cd6729",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-9db4939d2294d1aabe1d4396f7348ac25c9fc21b4e7fe9f3905d0199d2b0f661",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const scan = scanText(state, value);\n    if (scan === STOPPED) return STOPPED;",
           "after": "    const scan = scanBoundaryString(value);",
           "operator": "bypass-helper",
           "name": "SC7 string scanned directly"
         },
         {
-          "id": "mutation-94a95ac554df26dd4285243e7d1774dbda3b99eb8907c0e493a8d422c6771de7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-573ae73e95a62cca16382dbbb965f96c4006915ec8e35aaef5949d2d22f3badc",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (refused) return REFUSED;\n  return finishObject(prototype, captured);",
           "after": "  if (refused || encode(null) === \"\") return REFUSED;\n  return finishObject(prototype, captured);",
           "operator": "bypass-helper",
           "name": "SC8 serializer reached from the traversal"
         },
         {
-          "id": "mutation-202853439a9677a62905337319225eea91d1790c2bcbc47da3098adee9c7e788",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d5fdb2b798c19295bd5be770895cb8984dee2963f2db0ecefad3b3bb00e7eae1",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  for (let index = 0; index < name.length && index < 10; index += 1) {\n    const unit = name[index] as string;",
           "after": "  for (let index = 0; index < name.length; index += 1) {\n    const unit = name[index] as string;",
           "operator": "remove-loop-cap",
           "name": "SC9 index-name loop bounded only by the guard (packet review MS-03)"
         },
         {
-          "id": "mutation-2694639f69feba8e4eef2e17a92704f2728ca4a7ce4646301351c5ba093079d7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-ca73c6adfee0c0f154dba4bc507a65ef80c23acd0020ca30d1b6f40233181140",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  for (let index = 8; index < issues.length && index < 8 + 12; index += 1) {",
           "after": "  for (let index = 8; index < issues.length; index += 1) {",
           "operator": "remove-loop-cap",
           "name": "SC9 suffix search without its code-count cap"
         },
         {
-          "id": "mutation-fdd0ac098b82b62bf4abbabc32abec647f9ab8ae750af2d0c25cfc274185d593",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c9a26ac5ebc73111c9f3ea04fa0ce1ddea48273431e79908d9bd6d275d88f00c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  for (let index = 0; index < text.length && index < 1_024; index += 1) {",
           "after": "  for (let index = 0; index < text.length; index += 1) {",
           "operator": "remove-loop-cap",
           "name": "SC9 diagnostic text loop without its cap"
         },
         {
-          "id": "mutation-3f5cf1bb10c7d4a7454265b4595a0c3a9ab4426bf05d519c00553472c8e399cf",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-aaf37ac6f6a770521937ab2ae87105d4559e2a6e9f42db0fa6060459488b8c4c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
           "after": "    record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" });",
           "operator": "drop-stop-propagation",
           "name": "SC10 symbol diagnostic whose stop is not propagated (review 01 KC3-R1-STOP-01 site, one layer)"
         },
         {
-          "id": "mutation-db66e794507d73bb1f88c8b9c5f06d72b7ed22a576cb6a862ebb02c848413ef8",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d28057d7f64011f967e022a0afe050cf016eac441ee4ee166c96d43f88e66e1c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
           "after": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return REFUSED;",
           "operator": "drop-stop-propagation",
           "name": "SC10 symbol diagnostic whose stop branch returns REFUSED"
         },
         {
-          "id": "mutation-ac78dd0f9a36a3a34e0b8ade621183f3797b101a1357ec09b119ef7cbe71f8b8",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-ba9f2cb82479d89ba34ba38c5774bb70b6b8e8e22a498ea481b7bff6f413a92f",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const item = capture(member.value, where, entered, state);\n    if (item === STOPPED) return STOPPED;\n    if (item === REFUSED) {\n      refused = true;\n      continue;\n    }\n    defineAt",
           "after": "    const item = capture(member.value, where, entered, state);\n    if (item === REFUSED || item === STOPPED) {\n      refused = true;\n      continue;\n    }\n    defineAt",
           "operator": "drop-stop-propagation",
           "name": "SC10 nested stop folded into a refused element"
         },
         {
-          "id": "mutation-cf9d870ccc6491bb5382cd1ebaf9bc40039e25ab31ecf88d26a1f4ad5aaf8928",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-ea3835a353c4d1eda65d4ddac3aed1030dcf67c206a0dbc9876e4e7d68de7515",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue) === STOPPED ? STOPPED : REFUSED);",
           "after": "const refuse = (state: CaptureState, issue: ValueIssue): typeof REFUSED | typeof STOPPED => (record(state, issue), REFUSED);",
           "operator": "drop-stop-propagation",
           "name": "SC10 terminal refusal that drops its diagnostic stop"
         },
         {
-          "id": "mutation-d5571a24a32cb37139bf9408147a6ee36a801cb9339cb2646e34c870fd57719f",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-1f585007807f646def86441a986fc4c17c99af242943abcb77e50b6cbe57cce3",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "after": "  charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount);",
           "operator": "drop-stop-propagation",
           "name": "SC10 failed array structure charge not propagated"
         },
         {
-          "id": "mutation-d664b207c4534e8b003a2e351ac975f75db46e0311569a699e9020245b68f8c9",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d13c0c48ff54d6e409d78e70a27be4803c1a457db6e80eafa30ece39f46a425a",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
           "after": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n",
           "operator": "remove-stop-gate",
           "name": "SC2 names listing not gated on the stop (one layer)"
         },
         {
-          "id": "mutation-9bbe53a1a7db12ad87ef1b39cd9e290c0a0cf3ee283897019dd0de5de8dd8fce",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-520f976d1ffdd988da53aa40e38377418b314a8de680e5a353aec154f004eaeb",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const listOwnSymbols = (state: CaptureState, container: object): number | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
           "after": "const listOwnSymbols = (state: CaptureState, container: object): number | typeof STOPPED => {\n",
           "operator": "remove-stop-gate",
           "name": "SC2 symbols listing not gated on the stop (one layer)"
         },
         {
-          "id": "mutation-a9c2861bb5528d8d5d9169c94451249c8199bede2da3cb5067ebc1fd3408edb5",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-455f20fb176ed1c4bd05c87616db7830e94869b85434fe8d30a8a7db36cb0edb",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  let refused = false;\n  const symbolCount = listOwnSymbols(state, container);",
           "after": "  let refused = false;\n  state.stopped = false;\n  const symbolCount = listOwnSymbols(state, container);",
           "operator": "stale-stop-state",
@@ -718,107 +722,107 @@
         {
           "operator": "design03-stop-analogue",
           "name": "review02-null-stop-substitution",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
           "after": "if (value === null) return charge(state, 4) === STOPPED ? null : null;",
-          "id": "mutation-11af9458ea7fafdfbc1795a6ed4e4c90791ba505ba7449f20b4ce46ef2028af6"
+          "id": "mutation-f57f50c092ad4aa7836ac2ba6144e6bbcd7d0273e6cc6e606cf26c47e144e980"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-false-stop-substitution",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
           "after": "if (value === null) return charge(state, 4) === STOPPED ? false : null;",
-          "id": "mutation-fe8e6d6b7da1c3a5d51ef4a12cdac63b984e07e1a6ce75d550c09a949da64006"
+          "id": "mutation-bddd78c3539fd64320a5a207e4d4239ce47fc267655d9b426237f37f26008cce"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-nested-return-ignored",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
           "after": "if (value === null) { const paid = (): true | typeof STOPPED => charge(state, 4); paid(); return null; }",
-          "id": "mutation-1973c25858596cb6d5e2082e469a446c526ec2924765dcedf90774b1789a353f"
+          "id": "mutation-936731e6d598615f72fba8442a4d187e6a7eb9c9c2b1fe030ffa70a927f47ec6"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-class-return-ignored",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
               "after": "if (value === null) { ReviewNullCharge.capture(state); return null; }"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "export const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;",
               "after": "\nclass ReviewNullCharge { static capture(state: CaptureState): Visited { return charge(state, 4) === STOPPED ? STOPPED : null; } }\n\nexport const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;"
             }
           ],
-          "id": "mutation-92a3e0048519428178a1a81a4b37a0d181e88ee108206e827d7082f082c7db4e"
+          "id": "mutation-f95a947f51dee19561950a966763ecd7c2a3095216cb1f2f0be6844562951cd0"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-boolean-stop-substitution",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? STOPPED : value;",
           "after": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? false : value;",
-          "id": "mutation-c8a1510276c8d0df885f633ea954a68c3ac588294fe7df98b5b0e3dfcb7f4880"
+          "id": "mutation-b216d7560eb26dc852347c7bfd9a4e7eebc5eee290cd21fd478f5fc7c60de528"
         },
         {
           "operator": "design03-callable-grammar",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "name": "a mutable stop-capable function binding",
           "before": "const charge = (state: CaptureState, bytes: number):",
           "after": "let charge = (state: CaptureState, bytes: number):",
-          "id": "mutation-852cf114966802654b43c429f0ebf64fc54b4cba8e58460dd2d980b0f79b0f3f"
+          "id": "mutation-714670991d0dae092c7f6cda50e93d5b2abf848d7aaccc0166000afb93f8a8ec"
         },
         {
           "operator": "design03-callable-grammar",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "name": "an async stop-capable wrapper",
           "before": "const charge = (state: CaptureState, bytes: number):",
           "after": "const asyncCharge = async (state: CaptureState): Promise<true | typeof STOPPED> => charge(state, 1);\nconst charge = (state: CaptureState, bytes: number):",
-          "id": "mutation-689263ab724d2f9df648cff62ca1a262da8964e0295ca8be9a44cc404962d7b4"
+          "id": "mutation-64763cd7fa944ce8d5884d68cee06caa11234b5d831dd22f8521a7131dc96b80"
         },
         {
           "operator": "design03-callable-grammar",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "name": "a generator stop-capable wrapper",
           "before": "const charge = (state: CaptureState, bytes: number):",
           "after": "function* generatorCharge(state: CaptureState): Generator<unknown, true | typeof STOPPED, unknown> { return charge(state, 1); }\nconst charge = (state: CaptureState, bytes: number):",
-          "id": "mutation-0a137ba652d88d94d3536f23e04db09232d8fb5915a22e1d5863df84c34e973f"
+          "id": "mutation-bdd56a0f5dc8fd5cd6f9fe1df9db469ab51c3bdcf486672bcbe884be03747eff"
         },
         {
           "operator": "design03-sentinel-declaration",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "name": "the stop declaration replaced by false",
           "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
           "after": "const STOPPED = false;",
-          "id": "mutation-eb58e4a043bba76d38f83f96ab3a9e1a01a70f8d5554acd78678df6ca9570a1a"
+          "id": "mutation-4dfe68cee7e6635045adb05c693c661a2aec6ee8adb219d6ee972cdff0b38349"
         },
         {
           "operator": "design03-sentinel-declaration",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "name": "the stop declaration replaced by null",
           "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
           "after": "const STOPPED = null;",
-          "id": "mutation-9757fd7814b5139a686d8aa66abec78f26567546f6ad592b4ba72de2322564b9"
+          "id": "mutation-532dd65c61b4781e09d3d4d40eb28cce5bc0cca946ea0b2b80f249316609309d"
         },
         {
           "operator": "design03-sentinel-declaration",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "name": "the stop declaration replaced by undefined",
           "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
           "after": "const STOPPED = undefined;",
-          "id": "mutation-04c5f8cb08f0aca87010ad4fd85ce68fa4b9a4a6b2a94a633f76ff3f6d899887"
+          "id": "mutation-032c988b84db84260e1dbd330d72672849ba57d108cd53792be42b7a74e25916"
         },
         {
           "operator": "design03-sentinel-declaration",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "name": "the stop declaration replaced by ordinary refusal sentinel",
           "before": "const STOPPED: unique symbol = Symbol(\"capture stopped\");",
           "after": "const STOPPED: unique symbol = REFUSED as any;",
-          "id": "mutation-92a694bd8b2bf0fcb1eedaffc461d8c611b40c2963d8281cf62dd03a4bff24fb"
+          "id": "mutation-b5a3991d4c41c7c6dd950b1cb04b7a0b0c42ca73be9c1b3e4b3ce846a987b5e8"
         }
       ]
     },
@@ -826,9 +830,9 @@
       "id": "value-cost.byte-charges",
       "category": "value-cost",
       "assertion": "value-cost.byte-charges.selected-tests",
-      "source": "K1.1-correction-03: every byte charge is pinned by its exact byte-stop position (KC3-5, K12C1-R8-EVID-01); maintained tests packages/kernel/tests/capture-work.test.ts matching /KC3-5 every byte charge/",
+      "source": "K1.1-correction-03: every byte charge is pinned by its exact byte-stop position (KC3-5, K12C1-R8-EVID-01); maintained tests packages/sdk/tests/capture-work.test.ts matching /KC3-5 every byte charge/",
       "input": {
-        "file": "packages/kernel/tests/capture-work.test.ts",
+        "file": "packages/sdk/tests/capture-work.test.ts",
         "pattern": "KC3-5 every byte charge"
       },
       "files": [
@@ -850,80 +854,80 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-c0830d226881a684d4582d951720ea6e6aab9e3fcee213b7b081722f362014c1",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a9023bcecafbb05b4b3acd48e0e4f2d9993114a088069c479fecef7ae5b84e17",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount",
           "after": "containerStructureBytes(length, false) + symbolCount",
           "operator": "remove-work-charge",
           "name": "N15 array surplus names uncharged"
         },
         {
-          "id": "mutation-4734e0ebecec453e2eef32ffb37709bfd6a31f449d14b10aea4057a161dd6273",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-ae27ee005562509445fe6745bc3a315338050a4442ff1ebb53c84dcf11607042",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount",
           "after": "containerStructureBytes(length, false) + (surplus > 0 ? 1 : 0) + symbolCount",
           "operator": "weaken-work-charge",
           "name": "N15 array surplus names charged as one"
         },
         {
-          "id": "mutation-215238bd607ee56496b1cfa3c7f9733c7538f036c75595aab15609d667da5f4b",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-9cb63234091248bbbf0177963f5e1aab6cf1703631a6fe8e1ead2f955a641108",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount",
           "after": "containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0)",
           "operator": "remove-work-charge",
           "name": "array symbols uncharged"
         },
         {
-          "id": "mutation-614aa8653b81d8ca3f35fd77f34f5fed05192ab4d317b6cec151566b1cf72199",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c46d46fd72e9e41e88bba4f1325fd44b86c725ad3f46abff3bbd1c8ab0e0d3e2",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "containerStructureBytes(names.length, true) + symbolCount",
           "after": "containerStructureBytes(enumerable.length, true) + symbolCount",
           "operator": "weaken-work-charge",
           "name": "N16 object structure charged by enumerable members"
         },
         {
-          "id": "mutation-c1e4ae9dfa4d99905cc1efb7d4cd27e1814d44dd854f7de40a06a1923f6c34ae",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-b785dc1965cc908750783e5332fd19bfb4be4b254157a6f0507df985033d40cc",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "containerStructureBytes(names.length, true) + symbolCount",
           "after": "containerStructureBytes(names.length, true)",
           "operator": "remove-work-charge",
           "name": "object symbols uncharged"
         },
         {
-          "id": "mutation-0a1b3e8d49f38620ceab9071fae3f50f6f79799469cf62ec1f3add845e11286d",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-751e9d096899f80b750b907a7a546c3fbe7c605d16c6dce11af04e7d69150291",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" }) === STOPPED) return STOPPED;\n      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;",
           "after": "\"string contains an unpaired surrogate and has no UTF-8 encoding\" }) === STOPPED) return STOPPED;\n      return REFUSED;",
           "operator": "remove-work-charge",
           "name": "lone-surrogate string uncharged"
         },
         {
-          "id": "mutation-30b14fab5f514513572177d5eeafb6bdf07fe7cbe6fb2eb85911c75fe891ba15",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-bb36055ead7671203ce412e22442b5e294276584c16b6d7f7322fd6f08260f69",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;",
           "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return REFUSED;",
           "operator": "remove-work-charge",
           "name": "overlong string uncharged"
         },
         {
-          "id": "mutation-bc4d1ac4528be780c38f439a17e7db30059eaf870296fb5cd09c911cd02e12c7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a052b0c2971df4e3b5d7467dff674193ab455c6e2f45fbcc828d2676448e82d8",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "message: \"member name contains an unpaired surrogate\" }) === STOPPED) return STOPPED;\n      refused = true;\n      if (charge(state, key.length) === STOPPED) return STOPPED;",
           "after": "message: \"member name contains an unpaired surrogate\" }) === STOPPED) return STOPPED;\n      refused = true;",
           "operator": "remove-work-charge",
           "name": "lone-surrogate member name uncharged"
         },
         {
-          "id": "mutation-54a190a0d784c0c00db0b525706b6db6aedbb30d1561e26eb4507c516e2106f5",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-275e48d95cf388c74dc6d53090480de3ff8ff3a735832e39329c9be0383abcb6",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      refused = true;\n      if (charge(state, key.length) === STOPPED) return STOPPED;\n      continue;\n    }\n    // The member name",
           "after": "      refused = true;\n      continue;\n    }\n    // The member name",
           "operator": "remove-work-charge",
           "name": "overlong member name uncharged"
         },
         {
-          "id": "mutation-dfaf00db54a392ac10944d8112d1f45266693fe4886cc8c25f03f9c391a29c41",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-cbf3a0f84ef27afce297ade653e64ead7fa3e740d8f4abf43a1a716a422a4289",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const symbolCount = hasExtra ? 0 : listed;",
           "after": "  const symbolCount = 0;",
           "operator": "c1-ablation",
@@ -935,9 +939,9 @@
       "id": "value-cost.proxy",
       "category": "value-cost",
       "assertion": "value-cost.proxy.selected-tests",
-      "source": "K1.1-correction-03: every Proxy is refused first with no trap run (KC3-7); maintained tests packages/kernel/tests/capture-refusals.test.ts matching /KC3-7/",
+      "source": "K1.1-correction-03: every Proxy is refused first with no trap run (KC3-7); maintained tests packages/sdk/tests/capture-refusals.test.ts matching /KC3-7/",
       "input": {
-        "file": "packages/kernel/tests/capture-refusals.test.ts",
+        "file": "packages/sdk/tests/capture-refusals.test.ts",
         "pattern": "KC3-7"
       },
       "files": [
@@ -959,8 +963,8 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-aa0f76532668f17299829c283c719be0a9af7119632b1453b013ca1a1d02371a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-6d28d265732a00e0eb2087278fb0f300810d5b4cbba590278d6caa685fcbf852",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "typeof value === \"function\") && isProxyValue(value)) {",
           "after": "typeof value === \"function\") && false && isProxyValue(value)) {",
           "operator": "remove-refusal-check",
@@ -975,15 +979,15 @@
           "name": "identity text classified by IsArray before the Proxy test (packet review PXS-2)"
         },
         {
-          "id": "mutation-82cca2664decbc5a2cd86effe568281a6a7f4879747cf8f04f0ed15cd63173fa",
+          "id": "mutation-7a6ed951363c06ad09d68b0cd1a6588b2471944e62cec4273d4e44725cb9dcf1",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "typeof value === \"function\") && isProxyValue(value)) {",
               "after": "typeof value === \"function\") && false && isProxyValue(value)) {"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  openContainer(state, value);\n  try {",
               "after": "  if (isProxyValue(value)) {\n    record(state, { path, code: \"unsupported_form\", message: PROXY_MESSAGE });\n    return REFUSED;\n  }\n  openContainer(state, value);\n  try {"
             }
@@ -992,15 +996,15 @@
           "name": "Proxy test after the cycle and depth tests"
         },
         {
-          "id": "mutation-5dcbc5a95e2ac4486e89d545e5ede7ff9726bdbbff028cbe475d04f9533832fa",
+          "id": "mutation-e343b67da946dcf629f1b5cc13f626d94e59061c2edc7f9020fb1b54ab85319a",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "typeof value === \"function\") && isProxyValue(value)) {",
               "after": "typeof value === \"function\") && false && isProxyValue(value)) {"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "    return isArrayValue(value) ? captureArray(value, path, entered, state) : captureObject(value, path, entered, state);",
               "after": "    const arrayLike = isArrayValue(value);\n    if (isProxyValue(value)) {\n      record(state, { path, code: \"unsupported_form\", message: PROXY_MESSAGE });\n      return REFUSED;\n    }\n    return arrayLike ? captureArray(value, path, entered, state) : captureObject(value, path, entered, state);"
             }
@@ -1009,20 +1013,20 @@
           "name": "Proxy test after IsArray"
         },
         {
-          "id": "mutation-22730af23155e97b8f0e743b05601cd5a071bee5dc2258f21ee81bbaeffda352",
+          "id": "mutation-531c1c435fb36631f910bf4941205d59540b37900c0ddd35bc17cf4522f3d43c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "typeof value === \"function\") && isProxyValue(value)) {",
               "after": "typeof value === \"function\") && false && isProxyValue(value)) {"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  const prototype = prototypeOf(container);\n  if (prototype !== PrimordialObjectPrototype",
               "after": "  const prototype = prototypeOf(container);\n  if (isProxyValue(container)) {\n    record(state, { path, code: \"unsupported_form\", message: PROXY_MESSAGE });\n    return REFUSED;\n  }\n  if (prototype !== PrimordialObjectPrototype"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  if (prototypeOf(container) !== PrimordialArrayPrototype) {",
               "after": "  if (prototypeOf(container) !== PrimordialArrayPrototype || isProxyValue(container)) {"
             }
@@ -1036,9 +1040,9 @@
       "id": "value-cost.brands",
       "category": "value-cost",
       "assertion": "value-cost.brands.selected-tests",
-      "source": "K1.1-correction-03: built-ins with internal slots are refused by internal-slot checks before any listing (KC3-8); maintained tests packages/kernel/tests/capture-refusals.test.ts matching /KC3-8/",
+      "source": "K1.1-correction-03: built-ins with internal slots are refused by internal-slot checks before any listing (KC3-8); maintained tests packages/sdk/tests/capture-refusals.test.ts matching /KC3-8/",
       "input": {
-        "file": "packages/kernel/tests/capture-refusals.test.ts",
+        "file": "packages/sdk/tests/capture-refusals.test.ts",
         "pattern": "KC3-8"
       },
       "files": [
@@ -1060,167 +1064,167 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-56a9bedb13b922532e651d84c13a444946c43ee71b2d5e089be7628311831cab",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-822e4ac85ff639c1f2027a229b206ec3e94975dfd29835cd96d510ad3a136b7c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsMap(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "Map predicate dropped"
         },
         {
-          "id": "mutation-474ff1af73124cbaf00c3121f41a91f20254aa6d0b1a6bbe39d09bf094f72d8d",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-751edc729e3c917000579ffa9b129694b3f484fcad523093d43559bfdaa9b117",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsSet(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "Set predicate dropped"
         },
         {
-          "id": "mutation-41f26296b27583ab4eae7c72e8f90afaca3beedff3a9da9495c52bbe72699477",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-f90e0b25b4df89572f9639630ba2c5c8c671d2fb54293619cf5a80ed8ce03224",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsWeakMap(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "WeakMap predicate dropped"
         },
         {
-          "id": "mutation-d2cc6cf4ff66710b29ae0987d0245994f7c3f35f329fabb93e523e048884be51",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-0373d9f50e69fe3892692e475cc3822fa1041b9f19d8d3e1733a0f7e8d6aae51",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsWeakSet(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "WeakSet predicate dropped"
         },
         {
-          "id": "mutation-49978d8d59f6701b94c3cb199d859d5f128286d9ece89d82f5d770814440b235",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c6d929079506341b0d3606848b811067cb6fb3e220dad78a260a1a83d4c996a1",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsDate(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "Date predicate dropped"
         },
         {
-          "id": "mutation-a0755748eed7f73fbf30d091173b83f92defafe7ee3bbefc6dbef3e86035f332",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-1b99bdfa30cd49630c776fab4e0285c7f11a11fe60d5bb0f362f5296d6fd4fc9",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsRegExp(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "RegExp predicate dropped"
         },
         {
-          "id": "mutation-cb50d2f1434904dafecaff5607b91de0374d1a06a91de1b808e2e252bb2f75f0",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-551c4bc7f8fe1b6b234b9fa7359518199be9078569be13b270cee2dfdd9ed4b3",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsAnyArrayBuffer(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "AnyArrayBuffer predicate dropped"
         },
         {
-          "id": "mutation-5677223c0fd9b7259e63fe8f868aaf7eea0e5185b180d9a3c6b0e936373291b4",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-3231c33df0856e5c21cefa8ae6992bc8821e6e479a7905896b89319f3cd71212",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsArrayBufferView(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "ArrayBufferView predicate dropped"
         },
         {
-          "id": "mutation-e16e07c874561d867dc7dd645c9e14c85535763e7c4b07e5148f665c80ffab01",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-1e53894dd74d9f4af78513965761b4ad2d7a23162474afdd973a56dda88b3be3",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsBoxedPrimitive(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "BoxedPrimitive predicate dropped"
         },
         {
-          "id": "mutation-d37fddd15448453ffefdead1421b3a56fba03d21a956b5d133527a638e9a7bfe",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-9c5ce46f9e85ec8a3b59e736f5c87ac9a040ba4b0aedb10f84743adfba08fec9",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsNativeError(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "NativeError predicate dropped"
         },
         {
-          "id": "mutation-18b5efa18463e9ca2cbac9704e4ad87fb67db30f085d6c496bcbb6304feb42e8",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c62a5458e55bbe2260b7a5469893f96507eb05a7cc7a097d8448714772c9eb5c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsPromise(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "Promise predicate dropped"
         },
         {
-          "id": "mutation-c4301baadd7aa210d2ecb31419ab10c731c53ceba6769142095e3c61f25e2f79",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-4a38bc22db6259b93d0bb09f312be1e033d2d76782f0fc66ed8fb04b7299c15b",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsGeneratorObject(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "GeneratorObject predicate dropped"
         },
         {
-          "id": "mutation-16b0bf3f5b22e3f03b925c4d8e2ab4e82756471e6d460646b10529579a6e12ee",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-e0a0f51b3ceb402573927779b09947e1c005351538bb8a5e0d4ddcafad10677c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsMapIterator(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "MapIterator predicate dropped"
         },
         {
-          "id": "mutation-fc560a21f8e2d8f85313578db617bcc8d34d036ddc097f63fc736d755e632665",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-4ef7f633c38668fe4d4757b53cf3d00c1e8c755d285f6178191b25745fc52936",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsSetIterator(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "SetIterator predicate dropped"
         },
         {
-          "id": "mutation-24121c6d42675e06f3fdeea2f94f7e3bb6c3e21e0dff22a6abcdebb213287237",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8723af424a40c6b4845ab2eee6b94fb0da999a95a6bceda53d4e5876f7a3aac8",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsArgumentsObject(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "ArgumentsObject predicate dropped"
         },
         {
-          "id": "mutation-8f7c34a04c12222584b0f126d4cf65724697876a64e4b36405f336c8bc3f396f",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a58f82a925a3b106dc9c05958f92cd08397feeb0d5c009baaf14f8b832eba1bf",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsModuleNamespaceObject(container) ||\n",
           "after": "",
           "operator": "remove-refusal-check",
           "name": "ModuleNamespaceObject predicate dropped"
         },
         {
-          "id": "mutation-89f2ca2bf777ff49658e22f9eeaffc873aaaab01293e28af6d9c45ee3eb41d56",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-dbce97c43d095506c39a36b0bba58419d83d15020b69bec54533db2a21a7f1df",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsExternal(container) ||\n  PrimordialIsRawJSON(container);",
           "after": "  PrimordialIsExternal(container) ||\n  UtilTypes.isKeyObject(container) ||\n  PrimordialIsRawJSON(container);",
           "operator": "ambient-predicate",
           "name": "JavaScript isKeyObject predicate reintroduced (packet review PXS-1)"
         },
         {
-          "id": "mutation-c3d8e7b695f6295656ab86065da8c87d00b42e6810d31f68ef8cf92374ef663d",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-262203596fc7c88e428b6bbc9e6df7ccf582f2752051e7326c53a4a2b4768de5",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  PrimordialIsExternal(container) ||\n  PrimordialIsRawJSON(container);",
           "after": "  PrimordialIsExternal(container);",
           "operator": "remove-refusal-check",
           "name": "RawJSON predicate dropped"
         },
         {
-          "id": "mutation-a3f05fc49514a5eb62265e92dcf27d73fd724d060bfacbcc7f4f6d1b7107985a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d93f5cde452e1e3850ffc7b74facc679ee8366c0a88f5c776e1168efe5f70f59",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (isBuiltInWithSlots(container)) {",
           "after": "  if (false && isBuiltInWithSlots(container)) {",
           "operator": "remove-refusal-check",
           "name": "internal-slot check removed"
         },
         {
-          "id": "mutation-205c1cec1e62262f341b7464656aec129488e59a017c009975a59de0dda044f5",
+          "id": "mutation-f0c45fe5377808ce576d1a4ebedc34fbfde70efbeab2be77265322c063bc824d",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  if (isBuiltInWithSlots(container)) {",
               "after": "  if (false && isBuiltInWithSlots(container)) {"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  if (symbolCount === STOPPED) return STOPPED;\n  if (symbolCount > 0) {",
               "after": "  if (symbolCount === STOPPED) return STOPPED;\n  if (isBuiltInWithSlots(container)) {\n    return refuse(state, { path, code: \"unsupported_form\", message: BUILT_IN_MESSAGE });\n  }\n  if (symbolCount > 0) {"
             }
@@ -1234,9 +1238,9 @@
       "id": "value-cost.order",
       "category": "value-cost",
       "assertion": "value-cost.order.selected-tests",
-      "source": "K1.1-correction-03: cycle, too_deep and foreign classification keep their order (KC3-9); maintained tests packages/kernel/tests/capture-corpus.test.ts matching /^cycle, /",
+      "source": "K1.1-correction-03: cycle, too_deep and foreign classification keep their order (KC3-9); maintained tests packages/sdk/tests/capture-corpus.test.ts matching /^cycle, /",
       "input": {
-        "file": "packages/kernel/tests/capture-corpus.test.ts",
+        "file": "packages/sdk/tests/capture-corpus.test.ts",
         "pattern": "^cycle, "
       },
       "files": [
@@ -1258,8 +1262,8 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-dceb130e6012ae09e57cbf6c07efbd28662073a35e3932ed0dc19a933716f0ec",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-fafb8edb8f388b55ec6e7d96d0c8e2075b28ecbe5228a1d745e9c7c1a593d8b7",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (isOpenContainer(state, value)) {\n    return refuse(state, { path, code: \"cycle\", message: \"value refers to itself and has no canonical form\" });\n  }\n\n  const entered = level + 1;\n  if (entered > BOUNDARY_LIMITS.containerDepth) {",
           "after": "  const entered = level + 1;\n  if (isOpenContainer(state, value) && entered <= BOUNDARY_LIMITS.containerDepth) {\n    return refuse(state, { path, code: \"cycle\", message: \"value refers to itself and has no canonical form\" });\n  }\n\n  if (entered > BOUNDARY_LIMITS.containerDepth) {",
           "operator": "reorder-refusal-check",
@@ -1271,9 +1275,9 @@
       "id": "value-cost.stop",
       "category": "value-cost",
       "assertion": "value-cost.stop.selected-tests",
-      "source": "K1.1-correction-03 review 01 KC3-R1-STOP-01: once a root stops nothing more is observed; maintained tests packages/kernel/tests/capture-stop.test.ts matching /KC3-R1-STOP-01/ (review 01 probe-stop-boundary.mjs family, its 14 consumers, and every stop position of the declared shapes)",
+      "source": "K1.1-correction-03 review 01 KC3-R1-STOP-01: once a root stops nothing more is observed; maintained tests packages/sdk/tests/capture-stop.test.ts matching /KC3-R1-STOP-01/ (review 01 probe-stop-boundary.mjs family, its 14 consumers, and every stop position of the declared shapes)",
       "input": {
-        "file": "packages/kernel/tests/capture-stop.test.ts",
+        "file": "packages/sdk/tests/capture-stop.test.ts",
         "pattern": "KC3-R1-STOP-01"
       },
       "files": [
@@ -1295,15 +1299,15 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-da2335586dd217d365a2be87c2024e416869e59eee812455a7434531d0d5613a",
+          "id": "mutation-3f759a25e719950d220bac79ed0827c82f46440dee3a127a28e1a8ff519d127e",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
               "after": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "    if (record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" }) === STOPPED) return STOPPED;",
               "after": "    record(state, { path, code: \"unrepresentable_member\", message: \"object has symbol-keyed members, which canonical form cannot represent\" });"
             }
@@ -1312,15 +1316,15 @@
           "name": "H's shape: an unpropagated symbol diagnostic and an ungated names listing (review 01 KC3-R1-STOP-01)"
         },
         {
-          "id": "mutation-44efa86cdfc0230e0b3cb68917f1d91c8cc78c02753401b0eb39c087b2a81c0a",
+          "id": "mutation-3e2c34bdbffdb7a21055a1e273d4bd88fba76c91f49f8d2f071e0445749e681d",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  if (spend(state, \"diagnostic\", 1) === STOPPED) return STOPPED;\n  pushIssue(state.issues, issue);\n  return true;",
               "after": "  if (spend(state, \"diagnostic\", 1)) pushIssue(state.issues, issue);\n  return true;"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n  if (state.stopped) return STOPPED;\n",
               "after": "const listOwnNames = (state: CaptureState, container: object): readonly string[] | typeof STOPPED => {\n"
             }
@@ -1329,16 +1333,16 @@
           "name": "a diagnostic that always reports success and an ungated names listing"
         },
         {
-          "id": "mutation-0d318c5b20e46d76f68363203630d030efa88e884a39a236596b656e96a605a4",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-dfe10c35ec714f6e5c4d8ea0dbabf342995fa102da286eab8cb96f660a402114",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"element\", 1) === STOPPED) return STOPPED;\n  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);",
           "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  if (spend(state, \"element\", 1) === STOPPED) return STOPPED;",
           "operator": "post-stop-observation",
           "name": "an element descriptor taken before its charge (late charge)"
         },
         {
-          "id": "mutation-f00e95167c4b271ffeae037a640cd3df050bd4fd12d666a53520a4f19b71eccf",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-f30e43ae92beb9d16c1b3e6e4d1c6d9ebfcd020f79899279bfd8a99fa9b69191",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return PrimordialGetOwnPropertyDescriptor(container, name);",
           "after": "  const observed = PrimordialGetOwnPropertyDescriptor(container, name);\n  if (spend(state, \"descriptor\", 1) === STOPPED) return STOPPED;\n  return observed;",
           "operator": "post-stop-observation",
@@ -1406,15 +1410,15 @@
           "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "id": "mutation-fa5d6e815020f7f0d8dd20827500591ce1df9619fae2b2c6057e5b437120001d",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: descriptor.value };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "      read = observed.read;",
               "after": "      read = descriptor.value;"
             }
@@ -1431,23 +1435,23 @@
           "name": "O-DEFINEDATA-LITERAL (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-20e19ef623d98c271519462db3300851d8d5fb6af49848f308c22b04db75acb9",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "id": "mutation-67598e7b97e00c3a134210920e8f76e007ff9bfc6082c87d86b7906b2a66719c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: undefined };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  return { read: undefined };"
             }
@@ -1456,48 +1460,48 @@
           "name": "RC-ELEMENT-READ (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-63d5e3642f1b439a89c8da8a0306a01b2ab2e9f28fe01631ef5ffb54be93857d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
           "name": "RC-MISMATCH-OFF (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-e115685c4b4e3fd9c8be61593a57dcbd01420577b3b6ecad25192eff7b34d7da",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "SER-keys-slot-dropped (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-11b2b53c0ec320d55495289df05fc4b24e7bdcf5c183734e1bffdd73a3f032cd",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
           "after": "      // slot not installed",
           "operator": "c1-ablation",
           "name": "SER-slots-not-installed (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-97df4d29da34b9fdcb0422789420bab0d54492ba1bf21560829120ce0ceb0efa",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {",
           "after": "  } catch (error) {\n    throw error;",
           "operator": "c1-ablation",
           "name": "V-CATCH (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d70ffb8832f24f5825ca02905bcb1b49612359a3bbbb907916f31aca9aefed6e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {\n    return refuse(state, {",
           "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
           "name": "VAL-catch-rethrows (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-7869302af27d7e4fecd42f48137028bab98f32d70a0feac0dee6759ecfc3032c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
           "operator": "c1-ablation",
@@ -1549,15 +1553,15 @@
           "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
         },
         {
-          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "id": "mutation-67598e7b97e00c3a134210920e8f76e007ff9bfc6082c87d86b7906b2a66719c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: undefined };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  return { read: undefined };"
             }
@@ -1611,15 +1615,15 @@
           "name": "C-MAILBOX-PUSH (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "id": "mutation-fa5d6e815020f7f0d8dd20827500591ce1df9619fae2b2c6057e5b437120001d",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: descriptor.value };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "      read = observed.read;",
               "after": "      read = descriptor.value;"
             }
@@ -1628,15 +1632,15 @@
           "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "id": "mutation-67598e7b97e00c3a134210920e8f76e007ff9bfc6082c87d86b7906b2a66719c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: undefined };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  return { read: undefined };"
             }
@@ -1645,72 +1649,72 @@
           "name": "RC-ELEMENT-READ (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-63d5e3642f1b439a89c8da8a0306a01b2ab2e9f28fe01631ef5ffb54be93857d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
           "name": "RC-MISMATCH-OFF (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-e115685c4b4e3fd9c8be61593a57dcbd01420577b3b6ecad25192eff7b34d7da",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "SER-keys-slot-dropped (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-11b2b53c0ec320d55495289df05fc4b24e7bdcf5c183734e1bffdd73a3f032cd",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
           "after": "      // slot not installed",
           "operator": "c1-ablation",
           "name": "SER-slots-not-installed (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-74dcc250bd9dc5167d1ecc08892b9f2c25882501b26029860c60847f2c4f6e88",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
           "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true };\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
           "operator": "c1-ablation",
           "name": "V-SYNTH-DESCRIPTOR (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-7869302af27d7e4fecd42f48137028bab98f32d70a0feac0dee6759ecfc3032c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
           "operator": "c1-ablation",
           "name": "VAL-disagree-check-removed (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c230269a124e8c485eaf89cfc2849c559d0cfd3ffc6cfb4a5743f56149035c03",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const where = element(path, index);",
           "after": "    const where = path;",
           "operator": "c1-ablation",
           "name": "VAL-element-path-dropped (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d72cd6c8554503f11b9ed2d34e0cbf9981d10afa273e50910c197c02fd786aef",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
           "after": "  if (false) {\n    // The structure said this member exists",
           "operator": "c1-ablation",
           "name": "VAL-missing-descriptor-branch-removed (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8326241e1a83d5154bddbc25c7c6a4cf30eceabf76dae3bce73b6394126b575c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  return finishObject(prototype, captured);\n}",
           "after": "  return container as unknown as BoundaryValue;\n}",
           "operator": "c1-ablation",
           "name": "VAL-snapshot-is-caller-object (C1: killed by the ingress converted tests at B and at C)"
         },
         {
-          "id": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-63877aee72c8003d2e36fc74d46a7a094a2150f0592894d3db448f4768d1cc34",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  return finishObject(prototype, captured);\n}",
           "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}",
           "operator": "c1-ablation",
@@ -1746,23 +1750,23 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-20e19ef623d98c271519462db3300851d8d5fb6af49848f308c22b04db75acb9",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the outcome-hostile converted tests at B and at C)"
         },
         {
-          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "id": "mutation-67598e7b97e00c3a134210920e8f76e007ff9bfc6082c87d86b7906b2a66719c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: undefined };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  return { read: undefined };"
             }
@@ -1771,24 +1775,24 @@
           "name": "RC-ELEMENT-READ (C1: killed by the outcome-hostile converted tests at B and at C)"
         },
         {
-          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-97df4d29da34b9fdcb0422789420bab0d54492ba1bf21560829120ce0ceb0efa",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {",
           "after": "  } catch (error) {\n    throw error;",
           "operator": "c1-ablation",
           "name": "V-CATCH (C1: killed by the outcome-hostile converted tests at B and at C)"
         },
         {
-          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-87647a690b786bd9b473fe475fd3d99d89bb2ec9cb349fdf6d46f55fcf54fbbf",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "VAL-catch-code-changed (C1: killed by the outcome-hostile converted tests at B and at C)"
         },
         {
-          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d70ffb8832f24f5825ca02905bcb1b49612359a3bbbb907916f31aca9aefed6e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {\n    return refuse(state, {",
           "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
@@ -1800,9 +1804,9 @@
       "id": "value-cost.c1.value-diagnostic-work",
       "category": "value-cost",
       "assertion": "value-cost.c1.value-diagnostic-work.converted-tests",
-      "source": "K1.1-correction-03 design check C1: the 17 converted Proxy-instrument tests of packages/kernel/tests/value-diagnostic-work.test.ts still kill the mutants their originals killed at B",
+      "source": "K1.1-correction-03 design check C1: the 17 converted Proxy-instrument tests of packages/sdk/tests/value-diagnostic-work.test.ts still kill the mutants their originals killed at B",
       "input": {
-        "file": "packages/kernel/tests/value-diagnostic-work.test.ts",
+        "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
         "pattern": "^(?:V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched|V-D1 own constructor, constructor\\.name, and thrown-value properties are never inspected|V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation|V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics|V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds observations before later rows|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): one and eight eager roots keep bounded observations before authority|decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds Kernel-selected observations|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): eager roots preserve selected counts and whole state before authority)$"
       },
       "files": [
@@ -1824,23 +1828,23 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-ff675ff92f19a46f20d7f2656e05b84b01af854c1191634301cd1c6b05b5e674",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c7c00efafa9b9c93826922380af8d716ad5c5bb4beb6f5127a1ce90430476d1f",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "after": "  if (charge(state, (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "operator": "c1-ablation",
           "name": "COST-array-structure-charge-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-664cd6978e87bdaf0fe707c41a19c6d0f1b516121492146663623f3476388047",
+          "id": "mutation-91f7c75c9d15921aeb06b55377f480bc2a9153977f162f0e15192deff2ccb4b8",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
               "after": "    state.stop = \"bytes\";"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return STOPPED;",
               "after": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return true;"
             }
@@ -1849,16 +1853,16 @@
           "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the value-diagnostic-work converted tests at B and at C); at this C both the stop flag and the charge's reported stop, because stop propagation (KC3-R1-STOP-01) makes the flag alone redundant"
         },
         {
-          "id": "mutation-c94bd37d059c3c18a0a698bc93f1f047459238941a449d73305b9a3c32b4a951",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-1db815f307b55e33d52d81eade583f0f01c98c259d7492a400e6ad48e64a78f9",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    return charge(state, scan.bytes) === STOPPED ? STOPPED : value;",
           "after": "    return value;",
           "operator": "c1-ablation",
           "name": "COST-string-bytes-uncharged (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-111e564407cb7dc85d993a6a325fc3b2e1d7e429b531ae466370177b68125f8c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
           "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);",
           "operator": "c1-ablation",
@@ -1873,56 +1877,56 @@
           "name": "MC1-creation-fails-fast-on-authority-context (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-902084284e8ea67c825e2aac619cbfe1a3821e3d3adde5019b8c4db251ace36e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;",
           "operator": "c1-ablation",
           "name": "MD1-describe-reads-constructor (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-ebebb55d55c5b38ed0e178c65a85c41b376ed8925009009d7925be15f9045564",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-5c5607d354fd433d041ea9e6d12ac301c67162e5536b154a7f67f05bb53b7e43",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" && PrimordialGetPrototypeOf(value) === null ? \"null-prototype object\" : typeof value;",
           "operator": "c1-ablation",
           "name": "MD2-describe-observes-prototype (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-70594894b2480e70e80cf7bdb7b453ef454edfac577afcedd2adfa1f2ec0f2c2",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "observing this value's structure threw (${describe(error)})",
           "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})",
           "operator": "c1-ablation",
           "name": "MD3-catch-label-reads-constructor-name (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-6b169eb2546bc88acfb1c33ef24122deccacbc74bec1efa66e404ccc7c33d3c4",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-95bfcd0eb95b23e93523449266def3e9185bc4e0daa80e11fad42fbb446ba338",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"function\" && typeof (value as { name?: unknown }).name === \"string\" ? \"function\" : typeof value;",
           "operator": "c1-ablation",
           "name": "MD4-describe-reads-function-name (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-389b656ca1a4020c9648e18d11628aba533c010aadcdd7bcfe9dab0e57290841",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-33dae446cf7136b4fbb85f0aa928ac5fedb213768cbcf67a3706633a7dc1732d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "observing this value's structure threw (${describe(error)})",
           "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { message?: unknown }).message === \"string\" ? (error as { message: string }).message : describe(error)})",
           "operator": "c1-ablation",
           "name": "MD6-catch-label-reads-message (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-98cee7b687732cf0b5bb48ebe57f874eb163eb25157b119bfa2f9bc8cf98331a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-cd9376bc622e3cc9c83b395d5089472429d7145dccb59695df8aa4ea5bf2384e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : PrimordialArrayIsArray(value) ? \"array\" : typeof value;",
           "operator": "c1-ablation",
           "name": "MD7-describe-classifies-arrays (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-36e50b3e02c880ac99e1832d2d59cad94dd93371ede148829e4e7b5d9fac1765",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-477dadf918e76649436f7bb20a24cfcfb18446fa0ae20b950f854969500e9df5",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "observing this value's structure threw (${describe(error)})",
           "after": "observing this value's structure threw (${describe(value)})",
           "operator": "c1-ablation",
@@ -1953,15 +1957,15 @@
           "name": "MR1-recovery-short-circuits-lists (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "id": "mutation-fa5d6e815020f7f0d8dd20827500591ce1df9619fae2b2c6057e5b437120001d",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: descriptor.value };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "      read = observed.read;",
               "after": "      read = descriptor.value;"
             }
@@ -1970,16 +1974,16 @@
           "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a3f015f562121868a7235f8493d6e6fdd0fe40a09f205e49aa8c13f911d6d127",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
           "after": "  const lengthRead: unknown = lengthDescriptor?.value;",
           "operator": "c1-ablation",
           "name": "MV2-length-read-replaced-by-descriptor-value (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-dd974fb1592fe6473868dab387940f023f376e78c6572e95d364c484982160b8",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "threw (${describe(error)})",
           "after": "threw (${(error as Error).constructor.name})",
           "operator": "c1-ablation",
@@ -1994,15 +1998,15 @@
           "name": "RC-EAGER-EMISSIONS (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "id": "mutation-67598e7b97e00c3a134210920e8f76e007ff9bfc6082c87d86b7906b2a66719c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: undefined };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  return { read: undefined };"
             }
@@ -2011,48 +2015,48 @@
           "name": "RC-ELEMENT-READ (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-b91a5f2e2504a61a09a32cf0c80ced5610f892e6770b88976a1cd4a0deb3cbd0",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
           "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);",
           "operator": "c1-ablation",
           "name": "RC-OWN-SUFFIX (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-207db89f4d776727361362b907362e699bf2ee710a7a147a9ea3da8a106fd61c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
           "name": "V-FOREIGN-PROTO (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-87647a690b786bd9b473fe475fd3d99d89bb2ec9cb349fdf6d46f55fcf54fbbf",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "VAL-catch-code-changed (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-0149a223080b01bf03cfed030cbf35ee6ef392c0cf5ddc9ed0fb4a0338841ee6",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;",
           "operator": "c1-ablation",
           "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c230269a124e8c485eaf89cfc2849c559d0cfd3ffc6cfb4a5743f56149035c03",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const where = element(path, index);",
           "after": "    const where = path;",
           "operator": "c1-ablation",
           "name": "VAL-element-path-dropped (C1: killed by the value-diagnostic-work converted tests at B and at C)"
         },
         {
-          "id": "mutation-e5108030a9ed4c737f138051eb6f8c0df616ab059fd060e964da8a0a09102f12",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-4769eaf8242441f04789788180b9dad19299090d4961183229fa0f047d91309e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    return refuse(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${describe(container)}` });",
           "after": "    return refuse(state, { path, code: \"unsupported_form\", message: `expected a plain object, received ${container instanceof PrimordialArray ? \"array\" : describe(container)}` });",
           "operator": "c1-ablation",
@@ -2064,9 +2068,9 @@
       "id": "value-cost.c1.value-refusal-cost",
       "category": "value-cost",
       "assertion": "value-cost.c1.value-refusal-cost.converted-tests",
-      "source": "K1.1-correction-03 design check C1: the 10 converted Proxy-instrument tests of packages/kernel/tests/value-refusal-cost.test.ts still kill the mutants their originals killed at B",
+      "source": "K1.1-correction-03 design check C1: the 10 converted Proxy-instrument tests of packages/sdk/tests/value-refusal-cost.test.ts still kill the mutants their originals killed at B",
       "input": {
-        "file": "packages/kernel/tests/value-refusal-cost.test.ts",
+        "file": "packages/sdk/tests/value-refusal-cost.test.ts",
         "pattern": "^(?:V-D1 every issue family: revoked structure|V-D1 every issue family: throwing structure|V-D1 every issue family: object ghost descriptor|V-D1 every issue family: array ghost index|V-D1 every issue family: array out-of-range index|V-D1 every issue family: array unstable length|V-D1 every issue family: descriptor\\/read mismatch|V-D1 bounded paths include phantom names, long ancestors, and literal omission text|V-D1 own-only multiplicity under ambient pollution and capture-time mutation|V-D1 eight eager roots before authority: every position once, no forbidden mutation)$"
       },
       "files": [
@@ -2104,15 +2108,15 @@
           "name": "MO2-emissions-skipped-after-refused-progress (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "id": "mutation-fa5d6e815020f7f0d8dd20827500591ce1df9619fae2b2c6057e5b437120001d",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: descriptor.value };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "      read = observed.read;",
               "after": "      read = descriptor.value;"
             }
@@ -2121,16 +2125,16 @@
           "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a3f015f562121868a7235f8493d6e6fdd0fe40a09f205e49aa8c13f911d6d127",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
           "after": "  const lengthRead: unknown = lengthDescriptor?.value;",
           "operator": "c1-ablation",
           "name": "MV2-length-read-replaced-by-descriptor-value (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-dd974fb1592fe6473868dab387940f023f376e78c6572e95d364c484982160b8",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "threw (${describe(error)})",
           "after": "threw (${(error as Error).constructor.name})",
           "operator": "c1-ablation",
@@ -2145,15 +2149,15 @@
           "name": "RC-EAGER-EMISSIONS (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "id": "mutation-67598e7b97e00c3a134210920e8f76e007ff9bfc6082c87d86b7906b2a66719c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: undefined };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  return { read: undefined };"
             }
@@ -2162,15 +2166,15 @@
           "name": "RC-ELEMENT-READ (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-c44f45c7614de66e128d96a2b66fc5d697341cbe5abcb4563b58428cc7ee3f62",
+          "id": "mutation-534742ae6a3647416f27a06f9996be9c66bea392c8916a9fa415d1329a918eda",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  (container as Record<string, unknown>)[key];\n  return { descriptor, read: (container as Record<string, unknown>)[key] };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  (container as Record<string, unknown>)[key];\n  return { read: (container as Record<string, unknown>)[key] };"
             }
@@ -2179,32 +2183,32 @@
           "name": "RC-ELEMENT-READ-TWICE (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-f50e298623b1c1b120707e888bb575ddd1fe93d3cb5043f9853f4e83a9b6ca74",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
           "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
           "operator": "c1-ablation",
           "name": "RC-GHOST-CONTINUE (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-29940f7da7279c2c784adfd031254b8ece0aee158432cacd1e4812b3768e17c2",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-95e2a0c7dcdb9d50ac86c24f73e9433faf708520d240b911990b7fdfedd11154",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (text.length > limit) return omitted;\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "RC-ISSUE-TEXT-BOUND (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-b1f05f6f5ef4d1fb45cbf84b89520b6c2f8d810ba3faf8565a38a59817266b72",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
           "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property",
           "operator": "c1-ablation",
           "name": "RC-LENGTH-CODE (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-63d5e3642f1b439a89c8da8a0306a01b2ab2e9f28fe01631ef5ffb54be93857d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
@@ -2227,120 +2231,120 @@
           "name": "RC-OWN-RENDER (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-4e3917f5ee013987dab021691c2608e067d4d16d379517a59643b4d8b89a77c6",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-b91a5f2e2504a61a09a32cf0c80ced5610f892e6770b88976a1cd4a0deb3cbd0",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "message: \"additional occurrences (locations omitted)\", occurrences: 1 });",
           "after": "message: \"additional occurrences (locations omitted)\" } as ValueIssue);",
           "operator": "c1-ablation",
           "name": "RC-OWN-SUFFIX (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-720becfd0f23008fb281e19ab1e5926f968e78b2ad45c59ef64f131c315b0a6d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      if (backing === undefined) {",
           "after": "      if (backing !== undefined) {",
           "operator": "c1-ablation",
           "name": "RC-PHANTOM-INDEX-SWAP (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-41e35f67761d98196cec9c2232d9413f3469e786c033e68b7a8edebc2e207000",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-e841052bfe456a9f1a55e18940590a01dd3ef72615a8289a269f8a69299e3ae3",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own.",
           "after": "    if (false) {\n      // The object listed an own name it does not own.",
           "operator": "c1-ablation",
           "name": "RC-PHANTOM-NAME-CHECK (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-d97be062e406a3aaa50fd70b927b4b23e9e2ba563f8efcfcaefd2bb9f1a59e37",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-1e60310cb4bdb35902ac86f33e8b86f040ea175bc2d1d07a39658977c4568e49",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "          path: child(path, name),\n          code: \"unstable_representation\",\n          message: \"object lists an own member",
           "after": "          path,\n          code: \"unstable_representation\",\n          message: \"object lists an own member",
           "operator": "c1-ablation",
           "name": "RC-PHANTOM-NAME-PATH (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-207db89f4d776727361362b907362e699bf2ee710a7a147a9ea3da8a106fd61c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
           "name": "V-FOREIGN-PROTO (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-87647a690b786bd9b473fe475fd3d99d89bb2ec9cb349fdf6d46f55fcf54fbbf",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "VAL-catch-code-changed (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-0149a223080b01bf03cfed030cbf35ee6ef392c0cf5ddc9ed0fb4a0338841ee6",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;",
           "operator": "c1-ablation",
           "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-7869302af27d7e4fecd42f48137028bab98f32d70a0feac0dee6759ecfc3032c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
           "operator": "c1-ablation",
           "name": "VAL-disagree-check-removed (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c230269a124e8c485eaf89cfc2849c559d0cfd3ffc6cfb4a5743f56149035c03",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const where = element(path, index);",
           "after": "    const where = path;",
           "operator": "c1-ablation",
           "name": "VAL-element-path-dropped (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8d2241dd02e3f46e876d0236fbbaef2ff37bff193c2373fdbaaaa9bc2c85d31f",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "VAL-length-agreement-removed (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-6f6572d981da18fb98eb82d9f978745ae091a0d914b819970966049437e577f2",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8118bbb7afbabaa84aa8b65a5cfa482ca520952fcaa0edb60366180deb935135",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "          code: \"unstable_representation\",\n          message: \"object lists an own member it does not own",
           "after": "          code: \"undefined_member\",\n          message: \"object lists an own member it does not own",
           "operator": "c1-ablation",
           "name": "VAL-listed-not-owned-misclassified (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-ab8af7a82debec186aed9b9718e77416419ab92fe62e0d2f9bf4078fd5f3662a",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
           "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
           "operator": "c1-ablation",
           "name": "VAL-listed-not-owned-skipped (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a290561dad96b83bbd29ae1828af3f3e6bce15617b6f3243611526c7d7d8c856",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const where = child(path, key);",
           "after": "    const where = key;",
           "operator": "c1-ablation",
           "name": "VAL-member-path-flattened (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c42b279faebd2abea7c1894b98e461752f599aa936aeb1a5c71a05482c2e6be4",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (numeric >= length) {",
           "after": "    if (false) {",
           "operator": "c1-ablation",
           "name": "VAL-phantom-index-check-removed (C1: killed by the value-refusal-cost converted tests at B and at C)"
         },
         {
-          "id": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-3cf45661f41fbd4a0cb620c2f0b01ac52fa8521f6d1ac19b461240177003fe3e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      if (backing === undefined) {",
           "after": "      if (backing === null) {",
           "operator": "c1-ablation",
@@ -2352,9 +2356,9 @@
       "id": "value-cost.c1.values",
       "category": "value-cost",
       "assertion": "value-cost.c1.values.converted-tests",
-      "source": "K1.1-correction-03 design check C1: the 26 converted Proxy-instrument tests of packages/kernel/tests/values.test.ts still kill the mutants their originals killed at B",
+      "source": "K1.1-correction-03 design check C1: the 26 converted Proxy-instrument tests of packages/sdk/tests/value-capture.test.ts still kill the mutants their originals killed at B",
       "input": {
-        "file": "packages/kernel/tests/values.test.ts",
+        "file": "packages/sdk/tests/value-capture.test.ts",
         "pattern": "^(?:an array position read differently than it is owned is refused, not silently picked|an object member read differently than it is owned is refused the same way|the disagreement is refused at depth and under a valid root|an array position supplied only by a dynamic read, owning nothing, is refused|a length that does not agree with itself cannot decide which positions exist|a structure that cannot be observed is refused rather than thrown out of the boundary|an object listing an own member it does not own is refused|a value that answers differently on each read is bound to the one reading that was taken|thirty-two arrays standing for four billion are refused after reading about a megabyte|one long string shared across shared arrays is refused before a second megabyte is read|a shared member refused for another reason is not re-read without bound either|an oversized own-names listing is classified after at most one descriptor past the entry limit|an array listing more names than any accepted array owns is refused without classifying each|a capture-time side effect installing Object\\.prototype\\.toJSON still binds the observed structure|an own-name listing reporting a canonical index outside length with no backing property is refused|a backed canonical index outside length is also refused rather than silently dropped|a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal|a deliberately huge sparse length refuses bounded without traversing its extent|K11-R2-VAL-02 round 6: a one-shot Object\\.keys replacement live across the call cannot change canonical bytes|K11-R2-VAL-02 round 6: an Object\\.keys replacement that throws, live across the call, neither leaks nor diverts bytes|K11-R2-VAL-02 round 6: an Array\\.prototype\\.join replacement live across the call cannot change canonical bytes either|K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain|the retained structure and the canonical bytes are exactly the one value observed|the index the accessor picks is not special: position zero and a nested array behave the same|a value the rules do refuse is still refused with the accessor live, not normalized|a capture-time observation that inserts the chain still binds the observed structure)$"
       },
       "files": [
@@ -2376,23 +2380,23 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-ff675ff92f19a46f20d7f2656e05b84b01af854c1191634301cd1c6b05b5e674",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c7c00efafa9b9c93826922380af8d716ad5c5bb4beb6f5127a1ce90430476d1f",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (charge(state, containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "after": "  if (charge(state, (surplus > 0 ? surplus : 0) + symbolCount) === STOPPED) return STOPPED;",
           "operator": "c1-ablation",
           "name": "COST-array-structure-charge-dropped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-664cd6978e87bdaf0fe707c41a19c6d0f1b516121492146663623f3476388047",
+          "id": "mutation-91f7c75c9d15921aeb06b55377f480bc2a9153977f162f0e15192deff2ccb4b8",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "    state.stopped = true;\n    state.stop = \"bytes\";",
               "after": "    state.stop = \"bytes\";"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return STOPPED;",
               "after": "above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}; the rest of the value was not read`,\n    });\n    return true;"
             }
@@ -2401,95 +2405,95 @@
           "name": "COST-byte-stop-not-sticky + MB1-byte-stop-does-not-stop (C1: killed by the values converted tests at B and at C); at this C both the stop flag and the charge's reported stop, because stop propagation (KC3-R1-STOP-01) makes the flag alone redundant"
         },
         {
-          "id": "mutation-ac35b6009c09d764bbb9d054f3af422ba9a38adbb4b5dcc64a8b1624663c0f5f",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-07d5699ff8bce81f3401bb85d6dc0ad851a4a651b009b5c2eedeb87e5a63af5d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
           "after": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries : names.length;",
           "operator": "c1-ablation",
           "name": "COST-descriptor-bound-off-by-one (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-12ccb7eebc398bc116159e6cc75d3e2887e8348ca2d982172d73da375e7b114c",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-9097ae0b495791809eaf9ac18d5790155dd8f2854864e3c9eb51bd0a35516b13",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const readable = names.length > BOUNDARY_LIMITS.containerEntries + 1 ? BOUNDARY_LIMITS.containerEntries + 1 : names.length;",
           "after": "  const readable = names.length;",
           "operator": "c1-ablation",
           "name": "COST-descriptor-reads-unbounded (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-2260b5eaec556d1b268396f04eedf6a9698cb4bfb06ccd2df4a48e9952e27d51",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-f7aafa174ed0fa6c20b534ae1bdff21ca2565530c9011549a2a0720459afa47a",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const overlong = names.length > BOUNDARY_LIMITS.containerEntries + 1;",
           "after": "  const overlong = false;",
           "operator": "c1-ablation",
           "name": "COST-overlong-guard-removed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-0bb7417db10ae24d04e255e2821b4133bfb27e18ccee91fb93f13ab3fe01fb19",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-84d93207287269e789eafded1ab957afd5e66a5d0e9987ff02551856c651ab73",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  for (let nameIndex = 0; !overlong && nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
           "after": "  for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {\n    const name = names[nameIndex]!;\n    if (name === \"length\" || !isArrayIndex(name)) continue;",
           "operator": "c1-ablation",
           "name": "COST-phantom-scan-not-bounded (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-a15a74f5b0eec46a5e283449c00c5c76ada5f0bbd1105bb52a560e2b531e948c",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-3f0b0082130c2870ad17e43221eea949492d5f348fb4aae871142a564afc0d4c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return charge(state, value.length) === STOPPED ? STOPPED : REFUSED;\n",
           "after": "      // did, so repeated occurrences of one refused string exhaust the size budget quickly.\n      return REFUSED;\n",
           "operator": "c1-ablation",
           "name": "COST-refused-string-uncharged (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-c94bd37d059c3c18a0a698bc93f1f047459238941a449d73305b9a3c32b4a951",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-1db815f307b55e33d52d81eade583f0f01c98c259d7492a400e6ad48e64a78f9",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    return charge(state, scan.bytes) === STOPPED ? STOPPED : value;",
           "after": "    return value;",
           "operator": "c1-ablation",
           "name": "COST-string-bytes-uncharged (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-47f46f8d435797f01e3d6853772c3f0b790562394ffb54d5f51f1307f9f01b67",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d4f95e19143b93338436b63b4c89a1091758b58d54297afc84d1e4aebb42edba",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (length > BOUNDARY_LIMITS.containerEntries) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
           "name": "LIMIT-early-entries-refusal-removed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-64038343422f8c727ed20948aedab1edd6bb7b3f55c3fd4645e746e48deaf619",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-111e564407cb7dc85d993a6a325fc3b2e1d7e429b531ae466370177b68125f8c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  entries === 0 ? 2 : 2 + (entries - 1) + (isObject ? entries : 0);",
           "after": "  entries === 0 ? 2 : 2 + (isObject ? entries : 0);",
           "operator": "c1-ablation",
           "name": "MB2-array-punctuation-undercharged (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-bd641e09388163fc591c3dd27008b1070a5bd0a31ad924ffa2bbe5727df766d6",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-902084284e8ea67c825e2aac619cbfe1a3821e3d3adde5019b8c4db251ace36e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : (typeof value === \"object\" || typeof value === \"function\") && typeof (value as { constructor?: unknown }).constructor === \"function\" ? typeof value : typeof value;",
           "operator": "c1-ablation",
           "name": "MD1-describe-reads-constructor (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-aacab384a12f49cb98dc22b1afb9404ec81a01ded596745de5349b704a3026bf",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-70594894b2480e70e80cf7bdb7b453ef454edfac577afcedd2adfa1f2ec0f2c2",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "observing this value's structure threw (${describe(error)})",
           "after": "observing this value's structure threw (${error !== null && typeof error === \"object\" && typeof (error as { constructor?: { name?: unknown } }).constructor?.name === \"string\" ? (error as { constructor: { name: string } }).constructor.name : describe(error)})",
           "operator": "c1-ablation",
           "name": "MD3-catch-label-reads-constructor-name (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-b0fe4c8c8260079f42dae6655f7886b1653e8e38824ed78fcc525d8f91433f78",
+          "id": "mutation-fa5d6e815020f7f0d8dd20827500591ce1df9619fae2b2c6057e5b437120001d",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: descriptor.value };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "      read = observed.read;",
               "after": "      read = descriptor.value;"
             }
@@ -2498,8 +2502,8 @@
           "name": "MV1-element-read-replaced-by-descriptor-value + VAL-object-read-from-descriptor (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-73f94aa8bd48e08246059cc3c09f330d5ed137e549b80a9063ebd018086dd025",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a3f015f562121868a7235f8493d6e6fdd0fe40a09f205e49aa8c13f911d6d127",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const lengthRead: unknown = (container as { length: unknown }).length;",
           "after": "  const lengthRead: unknown = lengthDescriptor?.value;",
           "operator": "c1-ablation",
@@ -2514,39 +2518,39 @@
           "name": "O-APPENDOWN-PUSH (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-ec96ec632ffbb962479e7a49f6405cf5e6e5702cc654787eeabffba7a553015c",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-946ca28949dcb1b77bb87555a97fde9353389135fd4376edf8a7cc26181441eb",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    defineAt(out, index, item);",
           "after": "    out[index] = item;",
           "operator": "c1-ablation",
           "name": "OWN-element-install-by-set (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-fe124d5405d2840d9b09c2ee6edfe0538a842545e6ff20e74740c1b3c21b346f",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-dd974fb1592fe6473868dab387940f023f376e78c6572e95d364c484982160b8",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "threw (${describe(error)})",
           "after": "threw (${(error as Error).constructor.name})",
           "operator": "c1-ablation",
           "name": "RC-CATCH-LABEL (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-b0b26cb5e6f36c16cf984c866ccbe93e04f0715575808ae6a4ee62373e2b33fc",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-20e19ef623d98c271519462db3300851d8d5fb6af49848f308c22b04db75acb9",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {\n      path,\n      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "RC-CATCH-RETHROW (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-300b2d64449be3b8ebf912069a0d2dc440a156f5e166d4a57ac8930f666b8672",
+          "id": "mutation-67598e7b97e00c3a134210920e8f76e007ff9bfc6082c87d86b7906b2a66719c",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { descriptor, read: (container as Record<string, unknown>)[key] };",
               "after": "  return { descriptor, read: undefined };"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "  return { read: (container as Record<string, unknown>)[key] };",
               "after": "  return { read: undefined };"
             }
@@ -2555,264 +2559,264 @@
           "name": "RC-ELEMENT-READ (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-fc36d65a9620c38ff9e2e8d46db7d76016f0f0b537d5787c3c6517f45ad8f43a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-f50e298623b1c1b120707e888bb575ddd1fe93d3cb5043f9853f4e83a9b6ca74",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      refused = true;\n      continue;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
           "after": "      refused = true;\n    }\n    if (descriptor.enumerable) appendOwn(enumerable, [name, descriptor] as const);",
           "operator": "c1-ablation",
           "name": "RC-GHOST-CONTINUE (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-c209e7e28ee0274abacc1adeead7a2f84524c5718c18bea609b5e79454218f97",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-b1f05f6f5ef4d1fb45cbf84b89520b6c2f8d810ba3faf8565a38a59817266b72",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      code: \"unstable_representation\",\n      message: \"array length is not one stable own data property",
           "after": "      code: \"unsupported_form\",\n      message: \"array length is not one stable own data property",
           "operator": "c1-ablation",
           "name": "RC-LENGTH-CODE (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-8e8cbee68b6a83967a32e28a3030bb5da5373e625038f40329e2e0c5d585113a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-63d5e3642f1b439a89c8da8a0306a01b2ab2e9f28fe01631ef5ffb54be93857d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
           "name": "RC-MISMATCH-OFF (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-8370d524efa75d95a857d4a1a831bba8302acdbca553e16f53a09bbd8e66f2d0",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-720becfd0f23008fb281e19ab1e5926f968e78b2ad45c59ef64f131c315b0a6d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      if (backing === undefined) {",
           "after": "      if (backing !== undefined) {",
           "operator": "c1-ablation",
           "name": "RC-PHANTOM-INDEX-SWAP (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-f0a07f1789af0a1616ee53afe4b7ea0b17199be8808b02a82bf632e3049f2315",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-b9c1feb319f5cf9719ad378e63e669f48b23215cc7794a0fe251a71132cff38d",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  link(PrimordialArrayPrototype, PrimordialArrayPrototypeProto);\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "SER-array-chain-link-dropped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-471c38e8974d4ddb066e7e5f24f16d75b5ef72532b9085c90ffed63540ad7b5d",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-efad1c5755336ea9c3625f2a17cfe019f4f105a361fe895af2640f06dc6f852b",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);",
           "after": "      void entry;",
           "operator": "c1-ablation",
           "name": "SER-chain-reset-skipped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-78877ac7d1bfe8b5369de406897aa80eabe8779a82e3412773dc04c89614d4df",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-7388aa5c742eadfdc6cd280530f8c01abeaa12da3dfaeec902ceafda93df1031",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(null);",
           "after": "  const out: Record<string, BoundaryValue> = PrimordialObjectCreate(PrimordialObjectPrototype);",
           "operator": "c1-ablation",
           "name": "SER-clone-inherits-object-prototype (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-ae83e7bb9b75bf0d47f07224927be770c7295b6ad9f69d21914851ad90653bc9",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-7db20e5eb5d4858b7899beb7165e46e3fbebeda326debb2ea4cf7976e506648c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      const entry = readAt(shadows, index) as SavedSlot;\n      delete (entry.holder as Record<string | symbol, unknown>)[entry.key];",
           "after": "      const entry = readAt(shadows, index) as SavedSlot;\n      void entry;",
           "operator": "c1-ablation",
           "name": "SER-index-shadows-kept (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-bf5bac39bb5893b2e06fe5c787152630df599057e045c84d3a1e18a719e09be0",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-0b825b0b11b4051099d0275852bdaca31860b44b922b33b9e5934fc827c3c807",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  slot(PrimordialArrayPrototype, \"join\", PrimordialArrayJoin);\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "SER-join-slot-dropped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-ca8a74223980cfc35a3b2b6943b4d78b6eeb78c70d99ebf7159787f6b577e7ec",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-e115685c4b4e3fd9c8be61593a57dcbd01420577b3b6ecad25192eff7b34d7da",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  slot(PrimordialObject, \"keys\", PrimordialObjectKeys);\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "SER-keys-slot-dropped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-c53171d42820ac2383f7c65dda01115ecff9a333c27818fb7206b3ea83d8628c",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-2ff845ed2a2eb339e91ba9816b41216628fd5625d65532487a5a4dc73cce9bbc",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      } else {\n        restoreDescriptor(entry.holder, entry.key, entry.descriptor);",
           "after": "      } else {\n        // not handed back",
           "operator": "c1-ablation",
           "name": "SER-slots-not-handed-back (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-5b133f80d67df7be97f99cf5d23b7b61f66a34522b802234e05752b2d8f26fc7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-11b2b53c0ec320d55495289df05fc4b24e7bdcf5c183734e1bffdd73a3f032cd",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      defineData(entry.holder, entry.key, entry.primordial, true, false, true);",
           "after": "      // slot not installed",
           "operator": "c1-ablation",
           "name": "SER-slots-not-installed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-8ba25905e7bc2cd5b64e5680ab5805e231043c9d0c4115007eb68cf6d99e6433",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-4926bd55afaacbc080afc560bc4ed14206b095ed530688f0faf28c482e2e6bcf",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(toSerializationSafe(value)) as string | undefined);",
           "after": "  const canonical = withSerializerEnvironment(() => canonicalizeJcs(value) as string | undefined);",
           "operator": "c1-ablation",
           "name": "SER-snapshot-handed-to-dependency (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-2a4abcecc038941dd10104e09d5d61f0190a3908b2207d2ae9fe9081038c865a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-6937316204de2960839404c324b44713daadd23f1899502d9db3b34c99f09e99",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    appendOwn(captured, [key, item] as const);",
           "after": "    captured.push([key, item] as const);",
           "operator": "c1-ablation",
           "name": "V-CAPTURED-PUSH (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-66a70b15d6d648d9c91bbe715310ae04e3b75848faa246eb9cd800044e831966",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-97df4d29da34b9fdcb0422789420bab0d54492ba1bf21560829120ce0ceb0efa",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {",
           "after": "  } catch (error) {\n    throw error;",
           "operator": "c1-ablation",
           "name": "V-CATCH (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-7ab35a0e29a3bae891fff5003f4f7bf129761edd05376252e106ea2b79b56e0b",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-207db89f4d776727361362b907362e699bf2ee710a7a147a9ea3da8a106fd61c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
           "after": "  if (false) {",
           "operator": "c1-ablation",
           "name": "V-FOREIGN-PROTO (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-c2e852267328af5b9e12f974d5501cea49daa3b5d0bd3983f4fdd6c3972238d1",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-74dcc250bd9dc5167d1ecc08892b9f2c25882501b26029860c60847f2c4f6e88",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key);\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
           "after": "  const descriptor = PrimordialGetOwnPropertyDescriptor(container, key) ?? { value: (container as Record<string, unknown>)[key], writable: true, enumerable: true, configurable: true };\n  // An accessor or a missing position is refused from its descriptor; it is never read, so no getter runs.",
           "operator": "c1-ablation",
           "name": "V-SYNTH-DESCRIPTOR (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-5364e5ea25d2caec9892bef88328122e4ad05cacc0e5e97057e2572c6f1ac2d7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-4522fa86f340174eda36a6619816dfd160fddba865d6ea9792cc6c3c3b8ae9d7",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "          path: element(path, numeric),\n          code: \"unrepresentable_member\",",
           "after": "          path,\n          code: \"unrepresentable_member\",",
           "operator": "c1-ablation",
           "name": "VAL-backed-outside-index-unlocated (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-99270fd7f6fcef28b2bb69bc74cec7704485d9bf6419593ecb192eff5dad3485",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-87647a690b786bd9b473fe475fd3d99d89bb2ec9cb349fdf6d46f55fcf54fbbf",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      code: \"unstable_representation\",\n      message: `observing this value's structure threw",
           "after": "      code: \"unsupported_form\",\n      message: `observing this value's structure threw",
           "operator": "c1-ablation",
           "name": "VAL-catch-code-changed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-bef4bea1f618254dfbbab96ea289c05e7924336dc85bae7923eab05682fadff7",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-0149a223080b01bf03cfed030cbf35ee6ef392c0cf5ddc9ed0fb4a0338841ee6",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
           "after": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value === \"object\" ? `${typeof value} ${String((value as { constructor?: { name?: unknown } }).constructor?.name)}` : typeof value;",
           "operator": "c1-ablation",
           "name": "VAL-catch-label-inspects-thrown-value (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-9a1b97931386f3a7a3966471fee2b2339127dc802f1f7504d1f74e6d2961ebe2",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d70ffb8832f24f5825ca02905bcb1b49612359a3bbbb907916f31aca9aefed6e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  } catch (error) {\n    return refuse(state, {",
           "after": "  } catch (error) {\n    throw error;\n    return refuse(state, {",
           "operator": "c1-ablation",
           "name": "VAL-catch-rethrows (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-e394025c9e46342c07fbb9af67e078fdc54bef9476a0bd1ec4d2524057527c60",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-7869302af27d7e4fecd42f48137028bab98f32d70a0feac0dee6759ecfc3032c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (!PrimordialObjectIs(descriptor.value, read)) {",
           "after": "  if (false && !PrimordialObjectIs(descriptor.value, read)) {",
           "operator": "c1-ablation",
           "name": "VAL-disagree-check-removed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-22ced4920f5b9da1cb866768ecbcd2ef1074b172abc6458427329d1ed4a82f4a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c230269a124e8c485eaf89cfc2849c559d0cfd3ffc6cfb4a5743f56149035c03",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const where = element(path, index);",
           "after": "    const where = path;",
           "operator": "c1-ablation",
           "name": "VAL-element-path-dropped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-d86353e3c2f737a2e32b18ae67719c3d9e79b9bec9c4f89fa6c9fae575d9cf62",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8d2241dd02e3f46e876d0236fbbaef2ff37bff193c2373fdbaaaa9bc2c85d31f",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    !PrimordialObjectIs(lengthDescriptor.value, lengthRead) ||\n",
           "after": "",
           "operator": "c1-ablation",
           "name": "VAL-length-agreement-removed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-6f6572d981da18fb98eb82d9f978745ae091a0d914b819970966049437e577f2",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8118bbb7afbabaa84aa8b65a5cfa482ca520952fcaa0edb60366180deb935135",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "          code: \"unstable_representation\",\n          message: \"object lists an own member it does not own",
           "after": "          code: \"undefined_member\",\n          message: \"object lists an own member it does not own",
           "operator": "c1-ablation",
           "name": "VAL-listed-not-owned-misclassified (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-d116929246170d2e6823937a057196f1db257e05ffb18a5eb713c0d2e8b20cf8",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-ab8af7a82debec186aed9b9718e77416419ab92fe62e0d2f9bf4078fd5f3662a",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
           "after": "    if (descriptor === undefined) continue;\n    if (descriptor === undefined) {\n      // The object listed an own name it does not own. There is no content behind it to accept.",
           "operator": "c1-ablation",
           "name": "VAL-listed-not-owned-skipped (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-23df74c847933ea6372d68265bf5cf6a7bab64fda2c986396be82178e03ff68e",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-a290561dad96b83bbd29ae1828af3f3e6bce15617b6f3243611526c7d7d8c856",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const where = child(path, key);",
           "after": "    const where = key;",
           "operator": "c1-ablation",
           "name": "VAL-member-path-flattened (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-5344e6b92f62f26f59bbfa4164a00b0918baf354dec6c95c103a255b28a9b61a",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-d72cd6c8554503f11b9ed2d34e0cbf9981d10afa273e50910c197c02fd786aef",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (descriptor === undefined) {\n    // The structure said this member exists",
           "after": "  if (false) {\n    // The structure said this member exists",
           "operator": "c1-ablation",
           "name": "VAL-missing-descriptor-branch-removed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-fab5a2809a9c74e5d01657042f8f99aebf9596cc830e9c1421b039c96eb611bb",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-c42b279faebd2abea7c1894b98e461752f599aa936aeb1a5c71a05482c2e6be4",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (numeric >= length) {",
           "after": "    if (false) {",
           "operator": "c1-ablation",
           "name": "VAL-phantom-index-check-removed (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-4d7aaa67e7c63f06f400499d8bad0711503cbcb0f78b97963d3bc47629f96465",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-3cf45661f41fbd4a0cb620c2f0b01ac52fa8521f6d1ac19b461240177003fe3e",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      if (backing === undefined) {",
           "after": "      if (backing === null) {",
           "operator": "c1-ablation",
           "name": "VAL-phantom-unbacked-misclassified (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-6be95be7ec8745d0ccbf9ba594c924023f39b215307bad9c3665fb996c4673f1",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-22f527fc3944cd6fe5744a7b9108c2cef1130e0b2849ef97d88689a642a3668a",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (prototype !== PrimordialObjectPrototype && prototype !== null) {",
           "after": "  if (prototype !== Object.prototype && prototype !== null) {",
           "operator": "c1-ablation",
           "name": "VAL-plain-prototype-live-global (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-841602fa5ce4b7b6778f215e2f7c0011723587077a097ada855dd7d7d9fb3358",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-8326241e1a83d5154bddbc25c7c6a4cf30eceabf76dae3bce73b6394126b575c",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  return finishObject(prototype, captured);\n}",
           "after": "  return container as unknown as BoundaryValue;\n}",
           "operator": "c1-ablation",
           "name": "VAL-snapshot-is-caller-object (C1: killed by the values converted tests at B and at C)"
         },
         {
-          "id": "mutation-7257f29c59ce0a5b7919bc4307305ed5501c79e1244035801e08029b47e272d5",
-          "path": "packages/kernel/src/values.ts",
+          "id": "mutation-63877aee72c8003d2e36fc74d46a7a094a2150f0592894d3db448f4768d1cc34",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  return finishObject(prototype, captured);\n}",
           "after": "  return finishObject(prototype, captured.map((pair) => [pair[0], (container as Record<string, BoundaryValue>)[pair[0]] as BoundaryValue] as const));\n}",
           "operator": "c1-ablation",
@@ -2826,7 +2830,7 @@
       "assertion": "value-cost.bookkeeping-trace.selected-tests",
       "source": "review-02 stop-corpus, stop-guard and stop-forms; design-03 single-sentinel analogues, unchanged-result continuations",
       "input": {
-        "file": "packages/kernel/tests/capture-stop.test.ts",
+        "file": "packages/sdk/tests/capture-stop.test.ts",
         "pattern": "the declared small continuation subset has no work after a stop"
       },
       "files": [
@@ -2850,68 +2854,68 @@
         {
           "operator": "design03-stop-analogue",
           "name": "review02-null-stop-substitution",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
           "after": "if (value === null) return charge(state, 4) === STOPPED ? null : null;",
-          "id": "mutation-11af9458ea7fafdfbc1795a6ed4e4c90791ba505ba7449f20b4ce46ef2028af6"
+          "id": "mutation-f57f50c092ad4aa7836ac2ba6144e6bbcd7d0273e6cc6e606cf26c47e144e980"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-false-stop-substitution",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
           "after": "if (value === null) return charge(state, 4) === STOPPED ? false : null;",
-          "id": "mutation-fe8e6d6b7da1c3a5d51ef4a12cdac63b984e07e1a6ce75d550c09a949da64006"
+          "id": "mutation-bddd78c3539fd64320a5a207e4d4239ce47fc267655d9b426237f37f26008cce"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-nested-return-ignored",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
           "after": "if (value === null) { const paid = (): true | typeof STOPPED => charge(state, 4); paid(); return null; }",
-          "id": "mutation-1973c25858596cb6d5e2082e469a446c526ec2924765dcedf90774b1789a353f"
+          "id": "mutation-936731e6d598615f72fba8442a4d187e6a7eb9c9c2b1fe030ffa70a927f47ec6"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-class-return-ignored",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
               "after": "if (value === null) { ReviewNullCharge.capture(state); return null; }"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "export const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;",
               "after": "\nclass ReviewNullCharge { static capture(state: CaptureState): Visited { return charge(state, 4) === STOPPED ? STOPPED : null; } }\n\nexport const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;"
             }
           ],
-          "id": "mutation-92a3e0048519428178a1a81a4b37a0d181e88ee108206e827d7082f082c7db4e"
+          "id": "mutation-f95a947f51dee19561950a966763ecd7c2a3095216cb1f2f0be6844562951cd0"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-alias-false",
           "edits": [
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "if (value === null) return charge(state, 4) === STOPPED ? STOPPED : null;",
               "after": "if (value === null) return reviewNullCharge(state, 4) === STOPPED ? false : null;"
             },
             {
-              "path": "packages/kernel/src/values.ts",
+              "path": "packages/sdk/src/internal/value-capture.ts",
               "before": "export const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;",
               "after": "\nconst reviewNullCharge = charge;\n\nexport const sameLogicalValue = (left: CanonicalValue, right: CanonicalValue): boolean => left.canonical === right.canonical;"
             }
           ],
-          "id": "mutation-b7db06af252ed24445f6db5dd066138c1cb0d8aabfb63050d349f353129a1ef9"
+          "id": "mutation-c091261d43e5531854b3c286b69e459ef3199bcabf02b65fdc114d2db5b09590"
         },
         {
           "operator": "design03-stop-analogue",
           "name": "review02-boolean-stop-substitution",
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? STOPPED : value;",
           "after": "  if (typeof value === \"boolean\") return charge(state, value ? 4 : 5) === STOPPED ? false : value;",
-          "id": "mutation-c8a1510276c8d0df885f633ea954a68c3ac588294fe7df98b5b0e3dfcb7f4880"
+          "id": "mutation-b216d7560eb26dc852347c7bfd9a4e7eebc5eee290cd21fd478f5fc7c60de528"
         }
       ]
     }

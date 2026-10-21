@@ -115,6 +115,16 @@ no such test detects are that section's declared limit, not a refusal.
 Inspect every value-root consumer: creation, ingress, recovery lists and eager Outcome roots.
 [Scope and dependencies](../docs/development/007-work-packets.md#k11-correction-03--metered-value-refusal-cost).
 
+## BINDING-01
+
+Canonical bytes owned and validated by the Kernel; live-object capture stays in an internal SDK
+wrapper. [Values](concepts/values.md#canonical-bytes-core) owns admission, readers, canonicality and
+trusted-initialization scope. Creation, ingress, Outcome and recovery tests preserve whole decisions;
+corpus/golden comparisons preserve exact bytes. Shadow/pin witnesses and dependency/type guards
+separate core guarantees from wrapper limits. The wrapper keeps its meter and R1–R4. Envelope
+own-getter/Proxy behavior remains L-09 in both layers; no hold is released by this mapping.
+[Scope and release](../docs/development/007-work-packets.md#binding-01--canonical-bytes-core-transport-adapter-and-sdk-wrapper).
+
 ## K1.3
 
 Wait and cancellation races. Expected Layer-3 owners:

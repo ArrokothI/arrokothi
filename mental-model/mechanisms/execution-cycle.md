@@ -86,6 +86,10 @@ Retrying delivery is not permission to repeat native work. [Recovery](recovery.m
 
 The Outcome is a proposal until this procedure accepts it. The order matters: authentication comes before anything is read so an unauthenticated caller learns nothing; the duplicate lookup comes before fresh validation so a retried Outcome gets the same answer it got the first time even if policy has since changed; exchange currency is checked before submission authority so a superseded attempt is refused as stale, which is what it is, rather than as unauthorized; submission authority is checked before content validation decides a refusal or discloses its diagnostics; and the commit is a single atomic step so no observer can ever see acknowledged Events without the progress that accounted for them, or progress without the intents it proposed.
 
+The byte binding copies and validates each value root at its own-field observation point, using
+[core admission](../concepts/values.md#canonical-bytes-core). This can compute diagnostics eagerly;
+it does not move content refusal or disclosure ahead of submission authority.
+
 Perform these steps in order:
 
 1. Authenticate and scope access to the Execution before inspecting or disclosing content. Every submission needs this; for a fresh proposal it is not enough (step 3).

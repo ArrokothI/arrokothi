@@ -131,6 +131,7 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 
 - [Codec](concepts/values.md#codec)
 - [Boundary value and root](concepts/values.md#boundary-value-and-root)
+- [Canonical-bytes core](concepts/values.md#canonical-bytes-core)
 - [In-process value capture](concepts/values.md#in-process-value-capture)
 - [Canonical form](concepts/values.md#canonical-form)
 - [Fixed semantic limits](concepts/values.md#fixed-semantic-limits)

@@ -43,7 +43,7 @@ describe("target Kernel scaffolding", () => {
     assert.match(error.message, /@arrokothi\/core, which is explicitly legacy/);
   });
 
-  test("the package exports exactly the K1.1 and K1.2 runtime surface and nothing that could look like a later packet's", async () => {
+  test("the package exports exactly the K1.1/K1.2 controls and BINDING-01 byte surface and nothing that could look like a later packet's", async () => {
     const surface = await import("../src/index.ts");
     assert.deepEqual(Object.keys(surface).sort(), [
       "BOUNDARY_LIMITS",
@@ -51,18 +51,15 @@ describe("target Kernel scaffolding", () => {
       "TERMINAL_STATES",
       "UNKNOWN_DESTINATION_REASON",
       "UnsupportedKernelSurfaceError",
-      "boundaryValueIssues",
-      "canonicalize",
       "creationRequestIdKey",
       "err",
       "inputIdKey",
-      "isBoundaryValue",
       "isTerminal",
       "mayReachScope",
       "mintReceipt",
       "ok",
       "refuseUnsupportedSurface",
-      "sameLogicalValue",
+      "validateCanonicalBytes",
     ]);
     // Nothing named for a boundary no packet has built yet. The list above is exact so adding one is a
     // deliberate, reviewed change rather than a drift. K1.2 adds only types and coordinator methods,

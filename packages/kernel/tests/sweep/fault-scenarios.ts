@@ -85,9 +85,10 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
   };
   const outcome = (env: Env, overrides: Record<string, unknown> = {}): KernelModule.OutcomeEnvelope => {
     const value = harness.outcomeFor(env.executionId, env.open, overrides);
+    const { emissions, ...base } = value;
     const next = value.next;
-    return { ...value, progress: bytes(value.progress),
-      ...(value.emissions === undefined ? {} : { emissions: value.emissions.map(item => ({ ...item, value: bytes(item.value) })) }),
+    return { ...base, progress: bytes(value.progress),
+      ...(emissions === undefined ? {} : { emissions: emissions.map(item => ({ ...item, value: bytes(item.value) })) }),
       next: next.step === "complete" ? { ...next, result: bytes(next.result) } : next.step === "fail" ? { ...next, error: bytes(next.error) } : next,
     };
   };

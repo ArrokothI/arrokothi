@@ -29,7 +29,8 @@ const WITNESS = Symbol.for('arrokothi.value-cost.witness');
 const MODULES = Symbol.for('arrokothi.value-cost.modules');
 globalThis[WITNESS] = witnessed;
 witnessed.sourceOffsets = new Map();
-const TEST_SIDE = pathToFileURL(resolve(realpathSync(process.cwd()), 'packages/kernel/tests') + sep).href;
+const TEST_SIDE = ['packages/kernel/tests', 'packages/sdk/tests'].map(path => pathToFileURL(resolve(realpathSync(process.cwd()), path) + sep).href);
+const testSide = url => typeof url === 'string' && TEST_SIDE.some(root => url.startsWith(root));
 const snapshots = [];
 const globals = ['Object','Array','RegExp','Function','String','Number','Boolean','Symbol','BigInt','Error','WeakMap','WeakSet','Reflect'];
 const globalDescriptors = globals.map(name => descriptor(globalThis, name));
@@ -206,13 +207,13 @@ function instrument(text, url) {
 registerHooks({
   resolve(specifier, context, next) {
     const target = specifiers.get(specifier);
-    if (target && context.parentURL?.startsWith(TEST_SIDE)) return { url:target,shortCircuit:true };
+    if (target && testSide(context.parentURL)) return { url:target,shortCircuit:true };
     return next(specifier,context);
   },
   load(url, context, next) {
     if (Object.hasOwn(modules,url)) return {format:'module',source:moduleSource(url),shortCircuit:true};
     const result = next(url,context);
-    if (url.startsWith(TEST_SIDE) && result.source !== null && result.source !== undefined)
+    if (testSide(url) && result.source !== null && result.source !== undefined)
       return {...result,source:instrument(typeof result.source === 'string' ? result.source : Buffer.from(result.source).toString('utf8'),url)};
     return result;
   },

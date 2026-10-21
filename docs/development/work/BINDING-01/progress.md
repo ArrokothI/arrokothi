@@ -12,13 +12,14 @@
 - Done: design approval/D01-CHK-01 recorded and pushed at `81df324d`.
 - Build WIP `825e7cd9`: initial core/transport, immediate root copying, primitive identity checks, unchanged SDK capture/helper copy and dependency move; no tests migrated.
 - Checks: targeted production TypeScript compile and ownership/freeze/strictness/transport/wrapper-cycle smoke checks passed; legacy suite not yet migrated.
-- Next step: finish core/SDK static inventories and remaining harness/sweep migration, add surface/host-precondition guards and golden corpus comparison; update Layer 3/BASELINE/017/ownership, prepare clean C, dispatch CI and end turn.
+- Next step: finish mechanical adoption/source census, run remaining targeted Kernel/registry checks and inspect payload diff; prepare clean C, dispatch CI and end turn.
 - Build checkpoint `6aa27ffb`: lazy facade/SDK byte helper added; capture suites moved to SDK; shared corpus split approved; core strictness/limits and intrinsic guard added.
 - Targeted checks: wrapper refusal/meter guard 178 passed; intrinsic guard 7 passed; core vectors 53 passed; creation/ingress/dispatch + wrapper split 121 passed; all 90 core shadow cases passed.
 - Build checkpoint `3cd66a85`: added raw-byte consumer/ownership/replay witnesses; migrated wrapper-only refusals per owner-approved split. Consumer/diagnostic suites still have migration failures; not a candidate.
 - Private owned records now retained; byte-consumer/intrinsic/Outcome-limit regression passed. SDK capture/diagnostic 137 passed; Outcome/recovery 299/300 then remaining wrapper-only case split; diagnostic 85/86 then code-census digit bug fixed.
 - Checkpoint `e858b700`: diagnostic/work split and separate core/SDK static inventories. Work/stop/corpus 168/169 passed (old-path guard then fixed); static + codec + intrinsic batch 121 passed. No clean C.
 - Checkpoint `ffc80385`: accepted-byte differential 1,543/1,543 equal; surface/boundary 235 passed. Core fault oracle and all 24 pin forms pass after preparing fault fixtures outside injection; new bitwise guard control pending. No clean C.
+- Current work: core/wrapper static inventories and Layer 3/BASELINE/017 payload updated; targeted poison 68 tests × 4 modes passed (408 calls, zero core firings); probe attribution controls 28 passed. Typecheck and builder-docs passed.
 - Open questions: none. Owner answered yes to migration-question-01; preserve generic oracle, byte-representable decisions, authority order and accepted equality/replay.
 - Last CI run: none for BINDING-01; no clean C yet. Do not run composed verify locally.
 - Session: Codex desktop, GPT-6 per session instructions (exact serving variant unavailable); Mac arm64, 2026-10-19–21 America/New_York; no delegated sessions.

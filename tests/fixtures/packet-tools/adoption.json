@@ -266,7 +266,7 @@
     },
     {
       "id": "artifact-ab4a0cceaeed3b426232f62f",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/boundary.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -4459,7 +4459,7 @@
     },
     {
       "id": "artifact-21fb34d9cd3ad15575371064",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/ambient-reads.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -4527,7 +4527,7 @@
     },
     {
       "id": "artifact-22cf4ca80f2139455173765a",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/boundary.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -4600,7 +4600,7 @@
     },
     {
       "id": "artifact-ada9f66cd74e3bc95eef93d6",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/control-commits.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -5267,7 +5267,7 @@
     },
     {
       "id": "artifact-a8dc74e516932f00626f70e1",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/sweep/fault-scenarios.ts is retained at the current profile; its executable consumer is kernel-sweeps. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -5383,7 +5383,7 @@
     },
     {
       "id": "artifact-e4b5e509ed4c9252343fc29c",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/unsupported.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -5455,7 +5455,7 @@
     },
     {
       "id": "artifact-b93fa92a81d4582fdc056ed6",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/zone-analysis.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -5561,7 +5561,7 @@
     },
     {
       "id": "artifact-933874e859e8d7b79504af10",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source packages/kernel/tests/zone-inventory.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -39173,6 +39173,46 @@
       "from": "tests/conformance/architecture/evidence-records.test.ts",
       "to": "tests/archive/evidence-records.test.ts",
       "reason": "Moved to tests/archive at 99e75608 when closed evidence left the active checkout (archive retention policy); it reads the sealed records through ARROKOTHI_EVIDENCE_ROOT under archive-tests."
+    },
+    {
+      "from": "packages/kernel/tests/values.test.ts",
+      "to": "packages/sdk/tests/value-capture.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
+    },
+    {
+      "from": "packages/kernel/tests/capture-corpus.test.ts",
+      "to": "packages/sdk/tests/capture-corpus.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
+    },
+    {
+      "from": "packages/kernel/tests/capture-metering.test.ts",
+      "to": "packages/sdk/tests/capture-metering.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
+    },
+    {
+      "from": "packages/kernel/tests/capture-refusals.test.ts",
+      "to": "packages/sdk/tests/capture-refusals.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
+    },
+    {
+      "from": "packages/kernel/tests/capture-stop.test.ts",
+      "to": "packages/sdk/tests/capture-stop.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
+    },
+    {
+      "from": "packages/kernel/tests/capture-work.test.ts",
+      "to": "packages/sdk/tests/capture-work.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
+    },
+    {
+      "from": "packages/kernel/tests/value-diagnostic-work.test.ts",
+      "to": "packages/sdk/tests/value-diagnostic-work.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
+    },
+    {
+      "from": "packages/kernel/tests/value-refusal-cost.test.ts",
+      "to": "packages/sdk/tests/value-refusal-cost.test.ts",
+      "reason": "BINDING-01 moves live-object capture witnesses with the unchanged SDK wrapper; no hold or preservation credit follows."
     }
   ],
   "floor": {
@@ -39206,9 +39246,22 @@
       "decision": "docs/development/work/K1.1-correction-03/owner-choice-02.md",
       "list": "docs/development/work/K1.1-correction-03/owner-choice-02/transferred-origins.json",
       "sha256": "9c5fb94116ce8c58ba6b90b6a0ab13f0489e447ce5bc82c6a3e83b73e4ee2179"
+    },
+    {
+      "decision": "docs/development/work/BINDING-01/design-01.md",
+      "list": "docs/development/work/BINDING-01/design-01/revalidation-origins.json",
+      "sha256": "fe07eaf27b6b94ecc2e6cd347f8d56621702e43cf8b703661c2d29d6d94430b6"
     }
   ],
   "transferred": [
+    {"origin": "artifact-ab4a0cceaeed3b426232f62f", "decision": "docs/development/work/BINDING-01/design-01.md"},
+    {"origin": "artifact-21fb34d9cd3ad15575371064", "decision": "docs/development/work/BINDING-01/design-01.md"},
+    {"origin": "artifact-22cf4ca80f2139455173765a", "decision": "docs/development/work/BINDING-01/design-01.md"},
+    {"origin": "artifact-ada9f66cd74e3bc95eef93d6", "decision": "docs/development/work/BINDING-01/design-01.md"},
+    {"origin": "artifact-a8dc74e516932f00626f70e1", "decision": "docs/development/work/BINDING-01/design-01.md"},
+    {"origin": "artifact-e4b5e509ed4c9252343fc29c", "decision": "docs/development/work/BINDING-01/design-01.md"},
+    {"origin": "artifact-b93fa92a81d4582fdc056ed6", "decision": "docs/development/work/BINDING-01/design-01.md"},
+    {"origin": "artifact-933874e859e8d7b79504af10", "decision": "docs/development/work/BINDING-01/design-01.md"},
     {
       "origin": "artifact-73555fe668cc180905b1e49a",
       "decision": "docs/development/work/TOOLS-01/owner-choice-04.md",

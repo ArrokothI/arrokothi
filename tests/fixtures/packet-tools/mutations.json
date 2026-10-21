@@ -4195,12 +4195,12 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "path": "packages/kernel/src/values.ts",
+          "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "containerStructureBytes(length, false) + (surplus > 0 ? surplus : 0) + symbolCount",
           "after": "containerStructureBytes(length, false) + symbolCount",
           "operator": "remove-work-charge",
           "name": "N15 array surplus names uncharged",
-          "id": "mutation-c0830d226881a684d4582d951720ea6e6aab9e3fcee213b7b081722f362014c1"
+          "id": "mutation-a9023bcecafbb05b4b3acd48e0e4f2d9993114a088069c479fecef7ae5b84e17"
         }
       ],
       "claim": {

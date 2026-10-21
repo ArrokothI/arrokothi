@@ -66,6 +66,8 @@ Reconstructing state is not the same as being able to use it. Progress is only m
 | Resource | Intended owner and backing state survive, or explicit loss |
 | Output/Event consumer | Supported schema and retained cursor window, or explicit gap/refusal |
 
+In the byte binding, availability lists use separate [canonical byte roots](../concepts/values.md#canonical-bytes-core), each required to decode to a string list. Copying those lists does not authorize replacement or change membership checks.
+
 Migrations are explicit, versioned and fenced from active writers. Preserve original accepted records/receipts; write a new migrated revision with provenance and validate before use. Test rollback/refusal without dispatching actions during migration. Quiesce incompatible writers before rollout. Old [approved](authority.md#exact-action-consent) requests require old compatible code or reapproval; migration cannot reinterpret their arguments. Rebind credentials through current secret services instead of storing them in checkpoints.
 
 Restart-from-input and intentional forks create new authorized Executions and action identities, with causation and source-artifact access. They do not copy old grants, consent, open reply permissions or action idempotency keys. Terminal work never reopens: a restart-from-input is a new Execution that points at the old one, not the old one resumed, and the distinction is what keeps a completed lifetime from acquiring new actions. Revocation cannot make an old host forget disclosed content; if current policy forbids redisclosing pinned input, hold/refuse or explicitly abandon it before a new exchange.
