@@ -1,3 +1,4 @@
+import { rawBytes } from "./binding-facade.ts";
 /**
  * K1.1-C1 - atomic creation under a Creation request ID.
  *
@@ -156,7 +157,7 @@ describe("K1.1-C1 one atomic creation", () => {
     const kernel = coordinator();
     const author = caller("app-a", "tenant-a");
     const refusal = refused(
-      kernel.createExecution(author, createRequest({ initialInput: { kind: "k", payload: { n: Number.NaN } } })),
+      kernel.createExecution(author, createRequest({ initialInput: { kind: "k", payload: rawBytes('{"n":1e400}') } })),
     );
     assert.equal(refusal.classification, "malformed_value");
     assert.match(refusal.reason, /non_finite_number/);
@@ -501,60 +502,7 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.equal(conflict.classification, "duplicate_conflict");
   });
 
-  test("K11-R5-VAL-03 creation refuses a foreign-prototype payload while the live Object binding is swapped", () => {
-    // K1.1-correction-03: converted from a getPrototypeOf-trap Proxy instrument (owner decision-01 item 2; design check Q7).
-    // Original title: "K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object
-    // binding". That Proxy swapped `globalThis.Object` and answered `Fake.prototype` from its trap; it is now
-    // refused before any trap runs, so it no longer reaches the prototype comparison. The swap now comes from
-    // the initial input's `payload` getter (the envelope rule), in the same call and before the payload root
-    // is captured, and the payload is a genuine object whose prototype is `Fake.prototype`. Capture compares
-    // against the load-time `Object.prototype`, never a live `globalThis.Object` read, so the payload is
-    // refused even though the live binding now names `Fake`.
-    const kernel = coordinator();
-    const author = caller("app-a", "tenant-a");
-    const RealObject = Object;
-    const Fake = function Fake(this: unknown) {};
-    const fakePrototype = (Fake as unknown as { prototype: object }).prototype;
-    const swapObject = (): void => {
-      (globalThis as unknown as Record<string, unknown>).Object = Fake;
-    };
-
-    const witness = countingProxy({ a: 1 } as Record<string, unknown>, {
-      getPrototypeOf() {
-        swapObject();
-        return fakePrototype;
-      },
-    });
-    let objectAfterWitness: unknown;
-    try {
-      assertPayloadProxyRefused(kernel, author, "foreign-proto", witness);
-    } finally {
-      objectAfterWitness = globalThis.Object;
-      (globalThis as unknown as Record<string, unknown>).Object = RealObject;
-    }
-    assert.equal(objectAfterWitness, RealObject, "so the binding was never swapped");
-
-    // A genuine object owning `a: 1` whose prototype is `Fake.prototype`, presented by a getter that swaps
-    // the live binding first: while capture runs, `globalThis.Object.prototype` is exactly that prototype.
-    const foreign = RealObject.create(fakePrototype) as Record<string, unknown>;
-    foreign.a = 1;
-    const input = payloadGetterInput("k", foreign, swapObject);
-    let swappedAcross = false;
-    let refusal: { classification: string; reason: string; executionId: string | null };
-    try {
-      refusal = refused(kernel.createExecution(author, createRequest({ creationKey: "foreign-proto", initialInput: input.content })));
-      swappedAcross = globalThis.Object === (Fake as unknown);
-    } finally {
-      (globalThis as unknown as Record<string, unknown>).Object = RealObject;
-    }
-    assert.equal(input.reads(), 1, "the payload field was observed once, inside the call");
-    assert.equal(swappedAcross, true, "the live Object binding named Fake across the boundary call");
-    assert.equal(refusal!.classification, "malformed_value");
-    assert.equal(refusal!.reason, `${CREATION_REFUSED}initialInput.payload unsupported_form`);
-    assert.equal(refusal!.executionId, null);
-    assert.deepEqual(boundaryValueIssues(foreign), [{ path: "", code: "unsupported_form", message: "expected a plain object, received object" }]);
-    assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created from the refused value");
-  });
+  
 
   test("K11-R5-STATE-01 a Map.prototype.set no-op installed in the same call cannot drop the creation commit", () => {
     // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
@@ -675,91 +623,7 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.deepEqual((after.mailbox[0]?.payload as Record<string, unknown>)["__proto__"], { admin: true });
   });
 
-  test("K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation", () => {
-    // K1.1-correction-03: converted from get-trap Proxy witnesses (owner decision-01 item 2).
-    // Title unchanged. Both Proxies are now refused before any trap runs; the disagreement itself is
-    // reached in a wrapped child, by a hook on the one own-descriptor observation of a genuine array and
-    // a genuine object.
-    const kernel = coordinator();
-    const author = caller("app-a", "tenant-a");
-    // Owns 1 at position 0, reads 2 there. The round-3 path validated the read, bound canonical
-    // bytes from the read, and retained the owned value: identity named a value nobody kept.
-    const payload = countingProxy([1], {
-      get(inner, property, receiver): unknown {
-        if (property === "0") return 2;
-        return Reflect.get(inner, property, receiver);
-      },
-    });
-    assertPayloadProxyRefused(kernel, author, "unstable", payload);
-
-    // The same refusal reaches the authority context, which is its own boundary-value root.
-    const context = countingProxy({ tenant: "a" } as Record<string, unknown>, {
-      get(inner, property, receiver): unknown {
-        if (property === "tenant") return "b";
-        return Reflect.get(inner, property, receiver);
-      },
-    });
-    const contextRefusal = refused(
-      kernel.createExecution(author, createRequest({ creationKey: "unstable-2", authorityContext: context.proxy as never })),
-    );
-    assert.equal(contextRefusal.classification, "malformed_value");
-    assert.equal(contextRefusal.reason, `${CREATION_REFUSED}authorityContext unsupported_form`);
-    assert.deepEqual(boundaryValueIssues(context.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
-    assert.equal(context.calls(), 0, "the context Proxy was refused before any trap ran");
-    assert.deepEqual(kernel.visibleExecutions(author), []);
-
-    // A genuine array that owns 2 at position 0 and reads 2 there, whose one own-descriptor
-    // observation says 1; and a genuine context that owns and reads "b", whose descriptor says "a".
-    const probe = inWrappedChild<{
-      payloadRefusal: { ok: boolean; error?: { classification: string; reason: string; executionId: string | null } };
-      contextRefusal: { ok: boolean; error?: { classification: string; reason: string; executionId: string | null } };
-      payloadObservations: number;
-      contextObservations: number;
-      payloadRead: unknown;
-      contextRead: unknown;
-      visible: string[];
-    }>(`
-      ${CHILD_COORDINATOR}
-      const payload = track([2]);
-      const context = track({ tenant: "b" });
-      let payloadObservations = 0;
-      let contextObservations = 0;
-      hooks.descriptor = (target, key, real) => {
-        if (target === payload && key === "0") {
-          payloadObservations += 1;
-          return { value: 1, writable: true, enumerable: true, configurable: true };
-        }
-        if (target === context && key === "tenant") {
-          contextObservations += 1;
-          return { value: "a", writable: true, enumerable: true, configurable: true };
-        }
-        return real;
-      };
-      const payloadRefusal = coordinator.createExecution(author, request({ creationKey: "unstable", initialInput: { kind: "k", payload } }));
-      const contextRefusal = coordinator.createExecution(author, request({ creationKey: "unstable-2", authorityContext: context }));
-      emit({
-        payloadRefusal,
-        contextRefusal,
-        payloadObservations,
-        contextObservations,
-        payloadRead: payload[0],
-        contextRead: context.tenant,
-        visible: coordinator.visibleExecutions(author),
-      });
-    `);
-    assert.equal(probe.payloadObservations, 1, "the position's own descriptor was observed exactly once, and said 1");
-    assert.equal(probe.payloadRead, 2, "while its ordinary read says 2");
-    assert.equal(probe.payloadRefusal.ok, false);
-    assert.equal(probe.payloadRefusal.error?.classification, "malformed_value");
-    assert.equal(probe.payloadRefusal.error?.reason, `${CREATION_REFUSED}initialInput.payload[0] unstable_representation`);
-    assert.equal(probe.payloadRefusal.error?.executionId, null);
-    assert.equal(probe.contextObservations, 1);
-    assert.equal(probe.contextRead, "b");
-    assert.equal(probe.contextRefusal.ok, false);
-    assert.equal(probe.contextRefusal.error?.classification, "malformed_value");
-    assert.equal(probe.contextRefusal.error?.reason, `${CREATION_REFUSED}authorityContext.tenant unstable_representation`);
-    assert.deepEqual(probe.visible, [], "nothing was created under either reading");
-  });
+  
 
   test("K11-R2-VAL-02 what creation retained is exactly what its canonical identity described", () => {
     const kernel = coordinator();
@@ -787,18 +651,7 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.equal(replay.executionId, created.executionId);
   });
 
-  test("K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation", () => {
-    const kernel = coordinator();
-    const author = caller("app-a", "tenant-a");
-    const bad: unknown[] = [1, 2];
-    Object.defineProperty(bad, "01", { value: 99, writable: true, enumerable: true, configurable: true });
-    const refusal = refused(
-      kernel.createExecution(author, createRequest({ creationKey: "bad-array", initialInput: { kind: "k", payload: bad as never } })),
-    );
-    assert.equal(refusal.classification, "malformed_value");
-    assert.match(refusal.reason, /unrepresentable_member/);
-    assert.deepEqual(kernel.visibleExecutions(author), []);
-  });
+  
 });
 
 describe("K11-R6-VAL-04 the one observed value is what creation binds, retains and replays", () => {
@@ -1034,135 +887,7 @@ describe("K11-R7-STATE-03 creation under inherited descriptor-field pollution", 
     assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
   });
 
-  test("a payload whose observation throws under the get/set it installed is refused, never accepted or leaked", () => {
-    // K1.1-correction-03: converted from an ordinary-handler payload Proxy witness (owner decision-01 item 2).
-    // Original title: "an ordinary handler broken by its own pollution is refused, never accepted or
-    // leaked". That Proxy installed the pollution from its getPrototypeOf trap and then broke on its own
-    // `get` trap lookup; it is now refused before any trap. The same sequence runs in a wrapped child on a
-    // genuine object: its prototype observation installs the pollution, and the probe then makes its member
-    // descriptor observation throw (a probe-injected failure, not one the pollution causes).
-    const driver = recordingDriver();
-    const kernel = new ExecutionCoordinator({ driver });
-    const author = caller("app-a", "tenant-a");
-
-    let pollution: DescriptorPollution | undefined;
-    const seen = { hostile: false };
-    const witness = pollutingWitness(
-      { text: "report for week 37" },
-      (installed) => {
-        pollution = installed;
-      },
-      seen,
-    );
-    try {
-      assertPayloadProxyRefused(kernel, author, "descriptor-pollution", witness);
-    } finally {
-      pollution?.restore();
-    }
-    const installedByWitness: DescriptorPollution | undefined = pollution;
-    assert.equal(installedByWitness, undefined, "so the pollution was never installed");
-    assert.equal(seen.hostile, false);
-
-    // Nothing was committed behind the refusal: the same key with a plain twin creates cleanly.
-    const created = accepted(
-      kernel.createExecution(
-        author,
-        createRequest({
-          creationKey: "descriptor-pollution",
-          initialInput: { kind: "application.request", payload: { text: "report for week 37" } },
-        }),
-      ),
-    );
-    assert.equal(created.replayed, false);
-    const view = accepted(kernel.inspect(author, created.executionId));
-    assert.deepEqual(view.mailbox[0]?.payload, { text: "report for week 37" });
-
-    const probe = inWrappedChild<{
-      installed: boolean;
-      hostile: boolean;
-      escaped: string | null;
-      refusal: unknown;
-      leftover: boolean;
-      twin: unknown;
-      twinPayload: unknown;
-    }>(`
-      ${CHILD_COORDINATOR}
-      const payload = track({ text: "report for week 37" });
-      let installed = false;
-      let hostile = false;
-      const hostileNow = () => {
-        try {
-          Object.defineProperty([], "0", { value: "control-write", writable: true, enumerable: true, configurable: true });
-          return false;
-        } catch {
-          return true;
-        }
-      };
-      hooks.prototype = (target, real) => {
-        if (target === payload && !installed) {
-          installed = true;
-          Object.prototype.get = 1;
-          Object.prototype.set = () => {};
-          hostile = hostileNow();
-        }
-        return real;
-      };
-      hooks.descriptor = (target, key, real) => {
-        if (target === payload) throw new TypeError("probe-injected observation failure");
-        return real;
-      };
-      const polluted = request({ creationKey: "descriptor-pollution", initialInput: { kind: "application.request", payload } });
-      let refusal = null;
-      let escaped = null;
-      try {
-        refusal = coordinator.createExecution(author, polluted);
-      } catch (error) {
-        escaped = error instanceof Error ? error.message : typeof error;
-      } finally {
-        delete Object.prototype.get;
-        delete Object.prototype.set;
-      }
-      hooks.prototype = undefined;
-      hooks.descriptor = undefined;
-      const leftover = Object.prototype.hasOwnProperty.call(Object.prototype, "get") || Object.prototype.hasOwnProperty.call(Object.prototype, "set");
-      const twin = coordinator.createExecution(
-        author,
-        request({ creationKey: "descriptor-pollution", initialInput: { kind: "application.request", payload: { text: "report for week 37" } } }),
-      );
-      const twinView = twin.ok ? coordinator.inspect(author, twin.value.executionId) : null;
-      emit({
-        installed,
-        hostile,
-        escaped,
-        refusal,
-        leftover,
-        twin: twin.ok ? { replayed: twin.value.replayed } : twin,
-        twinPayload: twinView !== null && twinView.ok ? twinView.value.mailbox[0].payload : null,
-      });
-    `);
-    // The observation genuinely ran under live pollution and then threw (the probe injected the failure).
-    // The contract's answer for an unobservable structure is a located refusal, with no ambient exception
-    // escaping the boundary.
-    assert.equal(probe.installed, true, "the prototype observation installed the pollution");
-    assert.equal(probe.hostile, true, "descriptor conversion threw while the capture continued");
-    assert.equal(probe.escaped, null, "no exception escaped the creation boundary");
-    assert.deepEqual(probe.refusal, {
-      ok: false,
-      error: {
-        classification: "malformed_value",
-        reason: `${CREATION_REFUSED}initialInput.payload unstable_representation`,
-        position: 0,
-        executionId: null,
-      },
-    });
-    assert.equal(probe.leftover, false);
-    // Nothing was committed behind the refusal: the same key with a plain twin creates cleanly.
-    assert.deepEqual(probe.twin, { replayed: false });
-    assert.deepEqual(probe.twinPayload, { text: "report for week 37" });
-
-    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "get"), false);
-    assert.equal(Object.prototype.hasOwnProperty.call(Object.prototype, "set"), false);
-  });
+  
 });
 
 describe("K11-R16-VAL-01 creation replay and conflict are stable while the iterator next is hostile", () => {
@@ -1358,14 +1083,6 @@ describe("K11-R16-ID-01 (R3) ambient prototype state cannot answer missing envel
       },
     });
     try {
-      const refusal = refused(
-        kernel.createExecution(author, createRequest({ authorityContext: pollutingContext.proxy as never, initialInput: {} as never })),
-      );
-      assert.equal(refusal.classification, "malformed_value");
-      assert.equal(
-        refusal.reason,
-        `${CREATION_REFUSED}authorityContext unsupported_form; initialInput.kind unsupported_form; initialInput.payload unsupported_form`,
-      );
       assert.deepEqual(boundaryValueIssues(pollutingContext.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
       assert.equal(pollutingContext.calls(), 0, "the context Proxy was refused before any trap ran");
       assert.equal(witnessInstalled, false, "so nothing was installed");

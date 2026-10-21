@@ -6,10 +6,10 @@ import {pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {instrumentCapture,captureObserver} from './capture-trace.mjs';
 import {meteringViolations} from '../../packages/sdk/tests/capture-metering.ts';
-const original=fs.readFileSync('packages/kernel/src/values.ts','utf8');
+const original=fs.readFileSync('packages/sdk/src/internal/value-capture.ts','utf8');
 const inventory=JSON.parse(fs.readFileSync('tests/fixtures/packet-tools/capture-trace-sites.json','utf8'));
 const controls=JSON.parse(fs.readFileSync('tests/fixtures/packet-tools/capture-trace-controls.json','utf8'));
-const pristine=await import('../../packages/kernel/src/values.ts');
+const pristine=await import('../../packages/sdk/src/internal/value-capture.ts');
 const rows=[];
 for(const row of [{name:'correct-control',shape:'[null]',static:'pass',inventory_delta:{}},...controls]) {
  if(row.before && original.split(row.before).length!==2)throw Error('control anchor must match exactly once: '+row.name);
@@ -19,7 +19,7 @@ for(const row of [{name:'correct-control',shape:'[null]',static:'pass',inventory
  const temp=fs.mkdtempSync(resolve(fs.realpathSync(os.tmpdir()),'kc3-trace-control-'));
  const saved=[];
  try {
-  fs.cpSync('packages/kernel/src',temp+'/src',{recursive:true});fs.symlinkSync(resolve('node_modules'),temp+'/node_modules');
+  fs.cpSync('packages/sdk/src/internal',temp+'/src',{recursive:true});fs.symlinkSync(resolve('node_modules'),temp+'/node_modules');
   fs.writeFileSync(temp+'/src/values.ts',traced.source);
   for(const name of ['getOwnPropertyNames','getOwnPropertySymbols','getOwnPropertyDescriptor','freeze','create','defineProperty']){
    const fn=Object[name];saved.push([name,fn]);Object[name]=function(...args){observer.native(name);return Reflect.apply(fn,this,args);};

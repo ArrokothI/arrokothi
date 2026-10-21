@@ -119,9 +119,9 @@ export function encodeUtf8(text: string): Uint8Array {
   return bytes;
 }
 
-interface ParseState { text: string; position: number; problem: ValueIssue | null }
+interface ParseState { text: string; position: number; path: string; problem: ValueIssue | null }
 const fail = (state: ParseState, code: ValueIssueCode, message: string): null => {
-  if (state.problem === null) state.problem = issue(code, message);
+  if (state.problem === null) state.problem = PrimordialFreeze({ path: state.path, code, message });
   return null;
 };
 const space = (state: ParseState): void => {
@@ -207,7 +207,8 @@ function numberValue(state: ParseState): number | null {
   return value;
 }
 
-function parseValue(state: ParseState, level: number): BoundaryValue {
+function parseValue(state: ParseState, level: number, path: string): BoundaryValue {
+  state.path = path;
   space(state);
   const ch = at(state.text, state.position);
   if (ch === '"') return stringValue(state);
@@ -236,10 +237,13 @@ function parseValue(state: ParseState, level: number): BoundaryValue {
       space(state);
       if (at(state.text, state.position++) !== ":") return fail(state, "invalid_json", "expected a colon after member name");
     }
-    const entry = parseValue(state, level + 1);
+    const suffix = array ? `[${count}]` : `${path === "" ? "" : "."}${key}`;
+    const childPath = path === "<omitted>" || path.length + suffix.length > 128 ? "<omitted>" : path + suffix;
+    const entry = parseValue(state, level + 1, childPath);
     if (state.problem !== null) return null;
     defineData(value, key, entry, false, true, false);
     count += 1;
+    state.path = path;
     space(state);
     const separator = at(state.text, state.position++);
     if (separator === closing) return PrimordialFreeze(value);
@@ -294,8 +298,8 @@ export function parseOwnedBytes(bytes: Uint8Array, strict: boolean): ValueAccept
   if (!decoded.ok) return decoded;
   const text = decoded.value;
   if (text.length > 0 && unitAt(text, 0) === 0xfeff) return refusal(issue("invalid_json", "a JSON root must not start with a byte order mark"));
-  const state: ParseState = { text, position: 0, problem: null };
-  const value = parseValue(state, 0);
+  const state: ParseState = { text, position: 0, path: "", problem: null };
+  const value = parseValue(state, 0, "");
   if (state.problem !== null) return refusal(state.problem);
   space(state);
   if (state.position !== text.length) return refusal(issue("invalid_json", "data follows the JSON root"));

@@ -395,7 +395,7 @@ test("V-D1 suffix counts preserve late codes and first occurrence order across r
   assert.match(explainDiagnosticIssues(issues, true), /5 additional issues: undefined_member=2, non_finite_number=2, unsupported_form=1$/);
   assert.equal(total(boundaryValueIssues(root)), 13);
   assert.equal(isBoundaryValue(root), false);
-  assert.match(explain(located(issues as never, "payload")), /payload undefined_member \(2 additional occurrences; locations omitted\)/);
+  assert.match(explain(located(issues, "payload")), /payload undefined_member \(2 additional occurrences; locations omitted\)/);
 });
 
 const ENVELOPE_URL = new URL("../../kernel/src/envelope.ts", import.meta.url).href;
@@ -433,7 +433,7 @@ test("V-D1 own-only multiplicity under ambient pollution and capture-time mutati
     if (result.ok) throw Error("expected refusal");
     issues = result.issues;
     reason = explainDiagnosticIssues(issues, true);
-    const relocated = located(issues as never, "payload");
+    const relocated = located(issues, "payload");
     assert.match(explain(relocated), /56 additional occurrences/);
   } finally { unpollute(); }
   assert.equal(observed.reads, 0);
@@ -458,7 +458,7 @@ test("V-D1 own-only multiplicity under ambient pollution and capture-time mutati
       if (result.ok) throw Error("expected refusal");
       issues = result.issues;
       reason = explainDiagnosticIssues(issues, true);
-      relocated = explain(located(issues as never, "payload"));
+      relocated = explain(located(issues, "payload"));
     } finally { delete Object.prototype.occurrences; }
     emit({ installed, reads, issues, reason, relocated });
   `);

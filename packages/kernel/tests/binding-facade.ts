@@ -95,3 +95,18 @@ export class ExecutionCoordinator extends CoreCoordinator {
     return super.recoverExecution(caller, executionId, envelope(request, "recovery") as CoreRecovery);
   }
 }
+
+/** Deliberately unvalidated JSON fixture for byte-representable semantic-limit/number refusals.
+ * It never normalizes non-finite numbers to null; 1e400 is valid JSON with a non-finite decode.
+ * Wrapper-only object forms must instead be tested directly in SDK tests.
+ */
+export function jsonBytes(value: unknown): never {
+  const encodeFixture = (item: unknown): string => {
+    if (typeof item === 'number') return Number.isFinite(item) ? `${item}` : item < 0 ? '-1e400' : '1e400';
+    if (item === null || typeof item === 'boolean' || typeof item === 'string') return JSON.stringify(item);
+    if (Array.isArray(item)) return '[' + item.map(encodeFixture).join(',') + ']';
+    if (typeof item === 'object') return '{' + Object.keys(item!).sort().map(key => JSON.stringify(key) + ':' + encodeFixture((item as Record<string,unknown>)[key])).join(',') + '}';
+    throw new Error('fixture is not byte-representable; test its SDK refusal directly');
+  };
+  return rawBytes(encodeFixture(value));
+}

@@ -11,7 +11,7 @@ Object.getOwnPropertyNames = function (value) {
   if (value === tracked) visits += 1;
   return names(value);
 };
-const { canonicalize } = await import('../../packages/kernel/src/values.ts');
+const { canonicalize } = await import('../../packages/sdk/src/internal/value-capture.ts');
 Object.getOwnPropertyNames = names;
 tracked = Array(recipe.array_length);
 for (let index = 0; index < recipe.extra_names; index += 1) tracked[recipe.name_prefix + index] = recipe.value;

@@ -551,76 +551,7 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     assert.equal(contextAgain.value.canonical, boundContext.value.canonical);
   });
 
-  test("K11-R2-VAL-02 a payload with no single reading never reaches a Driver", () => {
-    // K1.1-correction-03: converted from a get-trap Proxy witness (owner decision-01 item 2). Title unchanged.
-    // That Proxy owned 1 at position 0 and read 2 there; it is now refused before any trap runs, so it no
-    // longer reaches the comparison of the two readings. The Proxy stays as a witness of its own refusal, and
-    // the disagreement itself is reached in a wrapped child, by a hook on the one own-descriptor observation
-    // of a genuine array.
-    const driver = recordingDriver();
-    const kernel = new ExecutionCoordinator({ driver });
-    const witness = countingProxy([1], {
-      get(inner, property, receiver): unknown {
-        if (property === "0") return 2;
-        return Reflect.get(inner, property, receiver);
-      },
-    });
-    assertPayloadProxyRefused(kernel, driver, "report-17", witness);
-    assert.deepEqual(driver.seen, [], "no Activation was built from the refused Proxy");
-
-    // A genuine array that owns 2 at position 0 and reads 2 there, whose one own-descriptor observation
-    // says 1. Every Execution visible afterwards is dispatched, so a creation that accepted either reading
-    // would hand its Activation to the Driver.
-    const probe = inWrappedChild<{
-      refusal: { ok: boolean; error?: { classification: string; reason: string; executionId: string | null } };
-      observations: number;
-      read: unknown;
-      visible: string[];
-      delivered: number;
-    }>(`
-      const seen = [];
-      const driver = {
-        driverId: "fake-child",
-        deliver(activation, settlement) { seen.push(activation); settlement.delivered(); return undefined; },
-        isSafeToReplace() { return true; },
-      };
-      const author = { namespace: "app-a", scopes: ["tenant-a"], controlScopes: ["tenant-a"] };
-      const coordinator = new kernel.ExecutionCoordinator({ driver });
-      const payload = track([2]);
-      let observations = 0;
-      hooks.descriptor = (target, key, real) => {
-        if (target === payload && key === "0") {
-          observations += 1;
-          return { value: 1, writable: true, enumerable: true, configurable: true };
-        }
-        return real;
-      };
-      const refusal = coordinator.createExecution(author, {
-        creationKey: "report-17",
-        scope: "tenant-a",
-        definitionRevision: "weekly-report@3",
-        runtimeContractRevision: "runtime-contract@1",
-        progressCodec: "inline-json@1",
-        authorityContext: { tenant: "a" },
-        initialInput: { kind: "k", payload },
-      });
-      hooks.descriptor = undefined;
-      const visible = coordinator.visibleExecutions(author);
-      for (const executionId of visible) coordinator.dispatch(author, executionId, { bound: 1 });
-      emit({ refusal, observations, read: payload[0], visible, delivered: seen.length });
-    `);
-    assert.equal(probe.observations, 1, "the position's own descriptor was observed exactly once, and said 1");
-    assert.equal(probe.read, 2, "while its ordinary read says 2");
-    assert.equal(probe.refusal.ok, false);
-    assert.equal(probe.refusal.error?.classification, "malformed_value");
-    assert.equal(
-      probe.refusal.error?.reason,
-      "creation content is not an acceptable boundary value: initialInput.payload[0] unstable_representation",
-    );
-    assert.equal(probe.refusal.error?.executionId, null);
-    assert.deepEqual(probe.visible, [], "nothing was created under either reading");
-    assert.equal(probe.delivered, 0, "no Activation was built from a value with two readings");
-  });
+  
 
   test("K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound", () => {
     // K1.1-correction-03: converted from a payload get-trap Proxy instrument (owner decision-01 item 2; design check Q7).
@@ -1599,7 +1530,7 @@ describe("KC1-ARCH-1 Kernel-owned delivery reporting (decision-01)", () => {
 
   test("Driver-internal asynchronous failure reports with zero unhandled (strict subprocess)", async () => {
     const probe = `
-      const { ExecutionCoordinator } = await import("./packages/kernel/src/index.ts");
+      const { ExecutionCoordinator } = await import("./packages/kernel/tests/binding-facade.ts");
       const harness = await import("./packages/kernel/tests/harness.ts");
       const unhandled = [];
       process.on("unhandledRejection", (reason) => unhandled.push(String(reason?.message ?? reason)));

@@ -10,9 +10,9 @@ import {instrumentCapture,captureObserver} from './capture-trace.mjs';
 const mode=process.argv[2]??'small';
 if(!['small','subset','full'].includes(mode))throw Error('unknown continuation search mode: '+mode);
 const inventory=JSON.parse(fs.readFileSync('tests/fixtures/packet-tools/capture-trace-sites.json','utf8'));
-const source=fs.readFileSync('packages/kernel/src/values.ts','utf8');
+const source=fs.readFileSync('packages/sdk/src/internal/value-capture.ts','utf8');
 const temp=fs.mkdtempSync(resolve(fs.realpathSync(os.tmpdir()),'kc3-continuations-'));
-fs.cpSync('packages/kernel/src',temp+'/src',{recursive:true});
+fs.cpSync('packages/sdk/src/internal',temp+'/src',{recursive:true});
 fs.symlinkSync(resolve('node_modules'),temp+'/node_modules');
 const instrumented=instrumentCapture(source,inventory);
 fs.writeFileSync(temp+'/src/values.ts',instrumented.source);
@@ -25,7 +25,7 @@ for(const name of ['getOwnPropertyNames','getOwnPropertySymbols','getOwnProperty
 try {
  const v=await import(pathToFileURL(temp+'/src/values.ts'));
  for(const[name,fn]of saved)Object[name]=fn;
- const pristine=await import(pathToFileURL(resolve('packages/kernel/src/values.ts')));
+ const pristine=await import(pathToFileURL(resolve('packages/sdk/src/internal/value-capture.ts')));
  const B=v.CAPTURE_WORK_BUDGET,L=v.BOUNDARY_LIMITS.canonicalBytes;
  const shapes=[];let forbidden=0;
  const add=(name,value)=>shapes.push({name,value});

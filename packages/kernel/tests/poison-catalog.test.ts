@@ -1,3 +1,4 @@
+import { rawBytes } from "./binding-facade.ts";
 /**
  * The DEC-8 poisoned-prototype sweep over a catalog of boundary calls (contract revision 9).
  *
@@ -123,7 +124,7 @@ function runCatalog(poison: PoisonController): Catalog {
   call("submitInput: accepted", (k) => k.submitInput(who, { destination: id, requestKey: "first", kind: "update", payload: { n: 1 } }));
   call("submitInput: exact replay", (k) => k.submitInput(who, { destination: id, requestKey: "first", kind: "update", payload: { n: 1 } }));
   call("submitInput: conflicting content", (k) => k.submitInput(who, { destination: id, requestKey: "first", kind: "update", payload: { n: 2 } }));
-  call("submitInput: malformed payload", (k) => k.submitInput(who, { destination: id, requestKey: "bad", kind: "update", payload: Number.NaN as never }));
+  call("submitInput: malformed payload", (k) => k.submitInput(who, { destination: id, requestKey: "bad", kind: "update", payload: rawBytes("1e400") as never }));
   call("submitInput: unknown destination", (k) => k.submitInput(who, { destination: "no-such-execution", requestKey: "x", kind: "update", payload: null }));
   call("submitInput: an unobservable destination", (k) =>
     k.submitInput(who, proxy({ destination: id, requestKey: "x", kind: "update", payload: null }, { getOwnPropertyDescriptor: () => { throw new Error("unobservable"); } })),
@@ -197,7 +198,7 @@ function runCatalog(poison: PoisonController): Catalog {
   const outcome = (overrides: Record<string, unknown> = {}) => outcomeFor(id, exchange, overrides);
   call("submitOutcome: a superseded writer epoch", (k) => k.submitOutcome(who, outcome({ writerEpoch: 1 }), grant));
   call("submitOutcome: no submission grant", (k) => k.submitOutcome(who, outcome(), { ...grant }));
-  call("submitOutcome: malformed progress", (k) => k.submitOutcome(who, outcome({ progress: Number.NaN }), grant));
+  call("submitOutcome: malformed progress", (k) => k.submitOutcome(who, outcome({ progress: rawBytes("1e400") }), grant));
   call("submitOutcome: an Effect field that is not a list", (k) => k.submitOutcome(who, outcome({ effects: 3 }), grant));
   call("submitOutcome: proposed Effects", (k) => k.submitOutcome(who, outcome({ effects: [{ kind: "send" }] }), grant));
   call("submitOutcome: a wait", (k) => k.submitOutcome(who, outcome({ next: { step: "await", wait: {} } }), grant));

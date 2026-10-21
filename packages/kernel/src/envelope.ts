@@ -53,10 +53,10 @@ export const appendIssues = (target: LocatedIssue[], extra: readonly LocatedIssu
 };
 
 /** Re-locates a root's issues under the field name the caller used. */
-export const located = (issues: readonly ValueIssue[], label: string): ValueIssue[] => {
-  const out: ValueIssue[] = [];
+export const located = <T extends LocatedIssue>(issues: readonly T[], label: string): T[] => {
+  const out: T[] = [];
   for (let index = 0; index < issues.length; index += 1) {
-    const issue = readAt(issues, index) as ValueIssue;
+    const issue = readAt(issues, index) as T;
     // Index read, not `String.prototype.startsWith`: refusal formatting runs after caller
     // observation in the same tick, and the method is caller-replaceable. String indexing is a
     // read of the string's own character position, not an array position, so no prototype is

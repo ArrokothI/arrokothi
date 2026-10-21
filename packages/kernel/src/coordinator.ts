@@ -367,7 +367,7 @@ interface MailboxEntry {
   /** The injective packing of this input's content parts; equal identity means equal content. */
   readonly contentIdentity: string;
   readonly kind: string;
-  readonly payload: BoundaryValue;
+  readonly payload: CanonicalValue;
   readonly subscriptionClass: string | null;
   readonly acceptancePosition: number;
   readonly receipt: Receipt;
@@ -430,6 +430,8 @@ interface ResolvedExchange {
 
 /** The retained decision an exact replay answers from (OA-2). */
 interface AcceptedOutcomeRecord {
+  /** Owned bytes/text/count for every accepted root, retained privately for future byte readers. */
+  readonly content: CapturedOutcome;
   /** The captured content's identity; equality is an exact duplicate. */
   readonly identity: string;
   /** Frozen; everything a replay returns except the `replayed` flag. */
@@ -443,7 +445,7 @@ interface ExecutionRecord {
   readonly definitionRevision: string;
   readonly runtimeContractRevision: string;
   readonly progressCodec: string;
-  readonly authorityContext: BoundaryValue;
+  readonly authorityContext: CanonicalValue;
   /** The injective packing of the complete creation content this key is bound to. */
   readonly creationIdentity: string;
   readonly creationReceipt: Receipt;
@@ -461,7 +463,7 @@ interface ExecutionRecord {
   readonly refusals: RefusalRecord[];
   readonly receipts: Receipt[];
   state: ExecutionState;
-  acceptedProgress: BoundaryValue | null;
+  acceptedProgress: CanonicalValue | null;
   progressRevision: number;
   activation: ActivationRecord | null;
   /** Accepted Outcomes by Activation ID: at most one per exchange, and the replay/conflict index. */
@@ -982,7 +984,7 @@ export class ExecutionCoordinator {
       inputId: initialInputId,
       contentIdentity: initial.identity,
       kind: initial.kind,
-      payload: initial.payload.value,
+      payload: initial.payload,
       subscriptionClass: initial.subscriptionClass,
       acceptancePosition: 1,
       // The initial input is accepted by the creation boundary, in the same atomic decision, so it
@@ -1006,7 +1008,7 @@ export class ExecutionCoordinator {
       definitionRevision: content.value.definitionRevision,
       runtimeContractRevision: content.value.runtimeContractRevision,
       progressCodec: content.value.progressCodec,
-      authorityContext: content.value.authorityContext.value,
+      authorityContext: content.value.authorityContext,
       creationIdentity: content.value.identity,
       creationReceipt: receipt,
       initialEventId: eventId,
@@ -1135,7 +1137,7 @@ export class ExecutionCoordinator {
       inputId,
       contentIdentity: content.value.identity,
       kind: content.value.kind,
-      payload: content.value.payload.value,
+      payload: content.value.payload,
       subscriptionClass: content.value.subscriptionClass,
       // One accepted decision carries one acceptance number: the mailbox entry shares the
       // receipt's position rather than consuming a second one (`#mint` above already advanced
@@ -1265,9 +1267,9 @@ export class ExecutionCoordinator {
       runtimeContractRevision: record.runtimeContractRevision,
       definitionRevision: record.definitionRevision,
       progressCodec: record.progressCodec,
-      acceptedProgress: record.acceptedProgress,
+      acceptedProgress: record.acceptedProgress === null ? null : record.acceptedProgress.value,
       events: PrimordialObjectFreeze(carriedEvents),
-      executionView: record.authorityContext,
+      executionView: record.authorityContext.value,
     });
 
     const intent: ActivationRecord = {
@@ -2161,7 +2163,7 @@ export class ExecutionCoordinator {
     // The replay index entry is itself a retained decision record (OA-2: the exact replay answers
     // from it; K1.2-DEC-12 retains accepted-Outcome records): frozen here with the other decision
     // records, so the apply phase below only inserts the prebuilt wrapper.
-    const stored: AcceptedOutcomeRecord = PrimordialObjectFreeze({ identity: outcome.identity, decision });
+    const stored: AcceptedOutcomeRecord = PrimordialObjectFreeze({ identity: outcome.identity, decision, content: outcome });
 
     // -- The decision, applied. Nothing below can refuse, and nothing below reads caller state.
     // The acceptance index advances here, with the rest of the commit, not before building: a
@@ -2169,7 +2171,7 @@ export class ExecutionCoordinator {
     record.nextAcceptancePosition = acceptancePosition + 1;
     for (let index = 0; index < toAcknowledge.length; index += 1) (readAt(toAcknowledge, index) as MailboxEntry).disposition = acknowledgment;
     for (let index = 0; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;
-    record.acceptedProgress = outcome.progress.value;
+    record.acceptedProgress = outcome.progress;
     record.progressRevision = progressRevision;
     appendAllOwn(record.emissions, emissionRecords);
     if (result !== null) record.result = result;
@@ -2330,7 +2332,7 @@ const toActivationEvent = (entry: MailboxEntry): ActivationEvent => {
     eventId: entry.eventId,
     destination: entry.inputId.destination,
     kind: entry.kind,
-    payload: entry.payload,
+    payload: entry.payload.value,
     sourceCategory: "application_input",
     acceptancePosition: entry.acceptancePosition,
   } as const;
@@ -2406,7 +2408,7 @@ const toMailboxView = (entry: MailboxEntry, isReserved: (eventId: string) => boo
   eventId: entry.eventId,
   inputId: { ...entry.inputId },
   kind: entry.kind,
-  payload: entry.payload,
+  payload: entry.payload.value,
   subscriptionClass: entry.subscriptionClass,
   sourceCategory: "application_input",
   acceptancePosition: entry.acceptancePosition,
@@ -2449,9 +2451,9 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     definitionRevision: record.definitionRevision,
     runtimeContractRevision: record.runtimeContractRevision,
     progressCodec: record.progressCodec,
-    acceptedProgress: record.acceptedProgress,
+    acceptedProgress: record.acceptedProgress === null ? null : record.acceptedProgress.value,
     progressRevision: record.progressRevision,
-    authorityContext: record.authorityContext,
+    authorityContext: record.authorityContext.value,
     activation: record.activation === null ? null : toActivationView(record.activation),
     recoveryHolds: record.activation === null ? [] : holdsOf(record.activation),
     recoveryHistory: copyOwn(record.recoveryHistory),

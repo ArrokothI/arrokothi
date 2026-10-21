@@ -1,3 +1,4 @@
+import { jsonBytes } from "./binding-facade.ts";
 /**
  * K1.2-C3 - E-6's four limits, at the limit and one past, at the Outcome boundary.
  *
@@ -84,7 +85,7 @@ describe("K1.2-C3 E-6 at the limit and one past, for every Outcome root", () => 
       test(`${root}: ${limit} at the limit is accepted and retained exactly; one past refuses the whole Outcome`, () => {
         const refusing = openExchange();
         const before = accepted(refusing.kernel.inspect(author, refusing.executionId));
-        const refusal = refused(refusing.submit(place(onePast)));
+        const refusal = refused(refusing.submit(place(jsonBytes(onePast))));
         assert.equal(refusal.classification, "malformed_envelope");
         assert.match(refusal.reason, new RegExp(`${path}\\S* ${code}`), "located under the field that carried it");
         const after = accepted(refusing.kernel.inspect(author, refusing.executionId));

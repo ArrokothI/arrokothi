@@ -1,3 +1,4 @@
+import { rawBytes } from "./binding-facade.ts";
 /**
  * K1.2 - Outcome acceptance: scope, replay, whole-envelope validation and one atomic commit.
  *
@@ -171,7 +172,7 @@ describe("K1.2-C2 an exact duplicate replays; anything else under an accepted id
       ["a different epoch", { ...envelope, writerEpoch: 2 }],
       // Content that could not be accepted now cannot equal what was accepted: the lookup precedes
       // validation (OA-2), so this is a conflict, not a malformed envelope.
-      ["an invalid value", { ...envelope, progress: Number.NaN }],
+      ["an invalid value", { ...envelope, progress: rawBytes("1e400") }],
       ["a proposed Effect", { ...envelope, effects: [{ operation: "publish_report" }] }],
     ];
     for (const [label, variant] of variants) {

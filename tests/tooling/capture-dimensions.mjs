@@ -24,7 +24,7 @@ for (const [key, native] of [['getOwnPropertyNames', ownNames], ['getOwnProperty
   };
 }
 let v;
-try { v = await import(url(tree, 'packages/kernel/src/values.ts')); }
+try { v = await import(url(tree, 'packages/sdk/src/internal/value-capture.ts')); }
 finally { Object.getOwnPropertyNames = ownNames; Object.getOwnPropertySymbols = ownSymbols; }
 // The baseline is a read-only source snapshot (verify's declared input has no node_modules). Import a
 // temporary copy of its Kernel source that resolves its one package import through the candidate tree's.
@@ -33,6 +33,7 @@ process.on('exit', () => rmSync(baselineCopy, { recursive: true, force: true }))
 cpSync(resolve(baseline, 'packages/kernel/src'), join(baselineCopy, 'src'), { recursive: true });
 symlinkSync(resolve(tree, 'node_modules'), join(baselineCopy, 'node_modules'));
 const b = await import(pathToFileURL(join(baselineCopy, 'src/values.ts')).href);
+const core = await import(url(tree, 'packages/kernel/src/values.ts'));
 const reset = () => { tracked = new WeakSet(); listingUnits = 0; calls = 0; maxListing = 0; forbiddenCalls = 0; };
 const B = 3 * 1048576;
 let chain = Object.create(null);
@@ -127,7 +128,7 @@ function generate(depth) {
   for (let i = 0, n = random() % 5; i < n; i++) out[['', 'é', '😀', '__proto__'][i] + i] = generate(depth - 1);
   return out;
 }
-const accepted = { cases: 0, maxRatio: 0, maxUnits: 0, costliestWitness: null, baselineComparisons: 0 };
+const accepted = { cases: 0, maxRatio: 0, maxUnits: 0, costliestWitness: null, baselineComparisons: 0, coreComparisons: 0 };
 function acceptedCase(input, label) {
   reset(); markGraph(input);
   const { result, work } = v.captureWithWork(input);
@@ -140,6 +141,10 @@ function acceptedCase(input, label) {
   const old = b.canonicalize(input);
   assert.equal(old.ok, true, 'accepted at B');
   assert.equal(old.value.canonical, result.value.canonical, 'unchanged accepted bytes');
+  const admitted = core.acceptCanonicalBytes(Buffer.from(result.value.canonical, 'utf8'));
+  assert.equal(admitted.ok, true, label + ': core admits wrapper bytes');
+  assert.equal(admitted.value.canonical, old.value.canonical, 'core independent re-encoding equals baseline');
+  accepted.coreComparisons++;
   accepted.cases++; accepted.baselineComparisons++;
   accepted.maxRatio = Math.max(accepted.maxRatio, work.units / bytes);
   accepted.maxUnits = Math.max(accepted.maxUnits, work.units);
