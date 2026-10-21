@@ -73,7 +73,12 @@ function envelope(original: unknown, shape: Shape, context: CaptureContext): unk
     getOwnPropertyDescriptor(_target, key) {
       const descriptor = ownDescriptor(original, key);
       if (descriptor === undefined) return undefined;
-      if (list && key === "length") return ownDescriptor(target, key);
+      if (list && key === "length") {
+        const lengthDescriptor = create(null);
+        lengthDescriptor.value = 0; lengthDescriptor.writable = true;
+        lengthDescriptor.enumerable = false; lengthDescriptor.configurable = false;
+        return lengthDescriptor;
+      }
       // Descriptors only establish own-field presence in observeOwn. Reading is deferred to get.
       const forwarded = create(null);
       forwarded.value = undefined; forwarded.writable = true;

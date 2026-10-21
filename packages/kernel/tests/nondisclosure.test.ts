@@ -1,3 +1,4 @@
+import { jsonBytes } from "./binding-facade.ts";
 /**
  * K11-R12-ID-01 - scoped non-disclosure across the complete accepted-evidence path.
  *
@@ -234,7 +235,7 @@ describe("K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path"
       const conflict = refused(kernel.createExecution(authorB, bConflict(key)));
       void conflict;
       const badKind = refused(
-        kernel.submitInput(authorB, { destination: hidden.executionId, requestKey: "h-c1", kind: "k", payload: { h: Number.NaN } as never }),
+        kernel.submitInput(authorB, { destination: hidden.executionId, requestKey: "h-c1", kind: "k", payload: jsonBytes({ h: Number.NaN }) }),
       );
       void badKind;
       const overBound = refused(kernel.dispatch(authorB, hidden.executionId, { bound: 0 }));
@@ -254,7 +255,7 @@ describe("K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path"
       refused(kernel.dispatch(authorB, "execution-404", { bound: 1 }));
       refused(kernel.redeliver(authorB, "execution-404"));
       refused(
-        kernel.submitInput(authorB, { destination: "execution-404", requestKey: "k", kind: "k", payload: { h: Number.NaN } as never }),
+        kernel.submitInput(authorB, { destination: "execution-404", requestKey: "k", kind: "k", payload: jsonBytes({ h: Number.NaN }) }),
       );
       refused(kernel.createExecution(authorB, createRequest({ creationKey: "h-x", scope: scopeA })));
       refused(kernel.createExecution(authorB, { ...bCreate("h-y"), scope: 17 as unknown as string }));
@@ -312,7 +313,7 @@ describe("K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path"
         hiddenExecutions.push(hidden.executionId);
       }
       accepted(kernel.submitInput(authorB, { destination: ids[0] as string, requestKey: "s", kind: "k", payload: { n: 1 } }));
-      refused(kernel.submitInput(authorB, { destination: ids[1] as string, requestKey: "s", kind: "k", payload: { n: Number.NaN } as never }));
+      refused(kernel.submitInput(authorB, { destination: ids[1] as string, requestKey: "s", kind: "k", payload: jsonBytes({ n: Number.NaN }) }));
       accepted(kernel.submitInput(authorB, { destination: ids[1] as string, requestKey: "s", kind: "k", payload: { n: 2 } }));
       accepted(kernel.dispatch(authorB, ids[0] as string, { bound: 1 }));
       refused(kernel.dispatch(authorB, ids[1] as string, { bound: 0 }));

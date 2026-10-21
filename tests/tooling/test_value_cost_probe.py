@@ -69,6 +69,8 @@ class RepositoryControls(ProbeFixture):
         root = self.tree()
         shutil.copytree(REPO / 'packages/kernel/src', root / 'packages/kernel/src')
         shutil.copytree(REPO / 'packages/kernel/tests', root / 'packages/kernel/tests')
+        shutil.copytree(REPO / 'packages/sdk/src/internal', root / 'packages/sdk/src/internal')
+        shutil.copytree(REPO / 'packages/sdk/tests', root / 'packages/sdk/tests')
         for relative in ['package.json', 'tsconfig.json', REGISTRY]:
             (root / relative).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(REPO / relative, root / relative)
@@ -115,7 +117,7 @@ class RepositoryControls(ProbeFixture):
 
     def test_review_01_parse_failure_is_not_a_kill(self):
         root, entry = self.copy()
-        source = root / 'packages/kernel/src/values.ts'
+        source = root / 'packages/sdk/src/internal/value-capture.ts'
         source.write_text(source.read_text() + '\nconst = ;\n')
         run, outcome, observation = self.run_case(root, entry)
         self.assertEqual((run['exit'], observation['state'], observation['reached']), (3, 'parse_error', False))
@@ -124,7 +126,7 @@ class RepositoryControls(ProbeFixture):
 
     def test_review_01_module_load_throw_is_not_a_kill(self):
         root, entry = self.copy()
-        source = root / 'packages/kernel/src/values.ts'
+        source = root / 'packages/sdk/src/internal/value-capture.ts'
         source.write_text(source.read_text() + '\nthrow new Error("independent-review setup failure");\n')
         run, outcome, observation = self.run_case(root, entry)
         self.assertEqual((run['exit'], observation['state'], observation['reached']), (3, 'load_error', False))

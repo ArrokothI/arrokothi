@@ -1,3 +1,4 @@
+import { jsonBytes } from "./binding-facade.ts";
 /** K1.2-correction-01: producer/consumer closure, not just a validator unit test. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -151,7 +152,7 @@ for (const [label, text] of textEdges) {
           const envelope = outcomeFor(executionId, current, {
             activationId: text, writerEpoch: schedule === "stale epoch" ? 1 : 2,
             baseProgressRevision: schedule === "stale base" ? 7 : 0,
-            ...(invalidContent ? { progress: "\ud800", next: { step: "await", get wait() { throw Error("must not read wait"); } } } : {}),
+            ...(invalidContent ? { progress: jsonBytes("\ud800"), next: { step: "await", get wait() { throw Error("must not read wait"); } } } : {}),
           });
           const before = view(); const deliveries = driver.seen.length;
           const refusal = refused(kernel.submitOutcome(who, envelope, grant));
@@ -243,7 +244,7 @@ for (const namespace of ["n".repeat(65_537), "host-\ud800"]) {
           const proposal = outcomeFor(executionId, current, {
             writerEpoch: coordinate === "stale epoch" ? 1 : 2,
             baseProgressRevision: coordinate === "stale base" ? 1 : 0,
-            progress: invalidContent ? "\ud800" : 42,
+            progress: invalidContent ? jsonBytes("\ud800") : 42,
           });
           Object.defineProperty(proposal, "activationId", { enumerable: true, get() { identityReads++; return open.activationId; } });
           const before = view();

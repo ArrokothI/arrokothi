@@ -463,7 +463,7 @@ interface ExecutionRecord {
   readonly refusals: RefusalRecord[];
   readonly receipts: Receipt[];
   state: ExecutionState;
-  acceptedProgress: CanonicalValue | null;
+  acceptedProgress: BoundaryValue | null;
   progressRevision: number;
   activation: ActivationRecord | null;
   /** Accepted Outcomes by Activation ID: at most one per exchange, and the replay/conflict index. */
@@ -1267,7 +1267,7 @@ export class ExecutionCoordinator {
       runtimeContractRevision: record.runtimeContractRevision,
       definitionRevision: record.definitionRevision,
       progressCodec: record.progressCodec,
-      acceptedProgress: record.acceptedProgress === null ? null : record.acceptedProgress.value,
+      acceptedProgress: record.acceptedProgress,
       events: PrimordialObjectFreeze(carriedEvents),
       executionView: record.authorityContext.value,
     });
@@ -2171,7 +2171,7 @@ export class ExecutionCoordinator {
     record.nextAcceptancePosition = acceptancePosition + 1;
     for (let index = 0; index < toAcknowledge.length; index += 1) (readAt(toAcknowledge, index) as MailboxEntry).disposition = acknowledgment;
     for (let index = 0; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;
-    record.acceptedProgress = outcome.progress;
+    record.acceptedProgress = outcome.progress.value;
     record.progressRevision = progressRevision;
     appendAllOwn(record.emissions, emissionRecords);
     if (result !== null) record.result = result;
@@ -2451,7 +2451,7 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     definitionRevision: record.definitionRevision,
     runtimeContractRevision: record.runtimeContractRevision,
     progressCodec: record.progressCodec,
-    acceptedProgress: record.acceptedProgress === null ? null : record.acceptedProgress.value,
+    acceptedProgress: record.acceptedProgress,
     progressRevision: record.progressRevision,
     authorityContext: record.authorityContext.value,
     activation: record.activation === null ? null : toActivationView(record.activation),

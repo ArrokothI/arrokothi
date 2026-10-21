@@ -161,7 +161,11 @@ const wide = Array(4096).fill(chain30);
 accepted.costliestWitness = acceptedCase([...Array(4).fill(wide), Array(528).fill(chain30)], 'submitted-costliest-witness');
 assert.deepEqual(accepted.costliestWitness, { label: 'submitted-costliest-witness', bytes: 1048555, units: 3094930, gapToBudget: 50798 });
 
-// The corpus harness supplies public API schedules with whole-state/refusal checks.
+assert.equal(accepted.cases, 1543);
+assert.equal(accepted.baselineComparisons, 1543);
+assert.equal(accepted.coreComparisons, 1543);
+
+// The corpus harness supplies SDK-only root-position captures; core whole-state checks are separate.
 // Inputs and expected first locations/codes are independently selected here.
 const { CONSUMERS } = await import(url(tree, 'packages/sdk/tests/capture-corpus.ts'));
 let consumerCases = 0;
