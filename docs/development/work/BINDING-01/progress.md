@@ -21,6 +21,7 @@
 - Prior CI `39704481161`: adoption PASSED; INVALID at registered-mutants because array-surplus omitted SDK target files.
 - Last CI `39818820449` at C `8914175b`: 15/18 pass; registered-mutants 46 invalid, value-cost 24 survived/8 setup_error, tool-tests 4 failures/errors. Artifact downloaded; no polling. https://github.com/ArrokothI/arrokothi/actions/runs/39818820449
 - Sessions: Codex desktop, GPT-6 per session instructions (exact serving variant unavailable); Mac arm64, 2026-10-19–22 America/New_York; no delegated sessions.
+- Implementer switch, 2026-10-22: the owner moved implementation from the Codex GPT-6 session (quota exhausted) to Claude Code desktop, Claude Opus 5.5 (`claude-opus-5-5`), Mac arm64. Resumes at WIP `03e0569b`. Not the reviewer; the design check stays the separate Opus brain session's.
 - Setup: prepend `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin` to PATH; verified `v26.10.0`. Git metadata/network need reviewed escalation; normal pushes only.
 - Correction setup: fresh clone `/private/tmp/binding01-clean.UssU02/repo` at old C; scripts, logs and regenerated table are siblings outside it. Clone is disposable and reproducible with git clone/checkout/npm ci.
 - TOOLS-02 P3: protect census-regeneration entry points from unclean trees. The previous custom context bypassed target_context’s clean_payload check; corpus has no direct preflight. No tooling fix in BINDING-01.
