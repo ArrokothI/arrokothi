@@ -213,6 +213,19 @@ class SyntheticControls(ProbeFixture):
         observation = self.assertState('^a selected assertion fails$', 'assertion_failed', 'killed', 17)
         self.assertEqual(observation['failures'], ['packages/kernel/tests/synthetic.test.mjs > a selected assertion fails [assert.equal]'])
 
+    def test_a_moved_sdk_witness_is_selected_and_attributed_to_its_file(self):
+        moved = 'packages/sdk/tests/moved.test.mjs'
+        entry = case('split', 'packages/kernel/tests/synthetic.test.mjs',
+                     '^(control passes|moved assertion)$', additional_files=[moved])
+        root = self.synthetic(entry)
+        (root / moved).parent.mkdir(parents=True)
+        (root / moved).write_text("import {test} from 'node:test'; import assert from 'node:assert/strict';\n"
+                                 "test('moved assertion', () => assert.equal(1, 2));\n")
+        run, outcome, observation = self.run_case(root, entry)
+        self.assertEqual((run['exit'], outcome['status']), (17, 'killed'))
+        self.assertEqual(observation['failures'], [moved + ' > moved assertion [assert.equal]'])
+        self.assertEqual(observation['leaves'], 2)
+
     def test_a_helper_assertion_is_a_kill(self):
         observation = self.assertState('^a helper fails through assert.fail$', 'assertion_failed', 'killed', 17)
         self.assertTrue(observation['failures'][0].endswith('[assert.fail]'))

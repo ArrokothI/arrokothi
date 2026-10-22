@@ -1,6 +1,6 @@
 # BINDING-01 progress
 
-- Phase: verify; replacement C `8914175b223ad46f5b2ebae15010eb1a6bf4e657` pushed. Full mutation registry has additional invalid controls (below). Ledger stays IN_PROGRESS until H.
+- Phase: verify; fixture-migration repair in progress after C `8914175b223ad46f5b2ebae15010eb1a6bf4e657`. Ledger stays IN_PROGRESS until H.
 - Branch: `claude/binding-01`; B: `af9e3b0ece4786ec41940f1dfa5f0468d83ddd08`.
 - Start: fetched/switched/pulled at release `482802294e3077544bffed32393608bb06841a28`.
 - Design: `43f03d9a`, checked independently by the owner’s Opus brain session; APPROVED WITH D01-CHK-01 (primitive identity strings). Check recorded at `81df324d`; L-09 core/wrapper qualification accepted.
@@ -15,11 +15,11 @@
 - Other targeted checks: typecheck; builder-docs (74 files, 2,059 links, 38 imports); refusal registry 322/322; probe controls 28; wrapper work/stop 76 passed.
 - Tooling controls: V-ENV detector 16 passed after declaration relocation; preservation tests 19 passed plus the corrected declaration-link test passed separately. Generic oracle and all 19 preservation paths unchanged.
 - Verification plan/environment/source census passed: 17 required steps, 7 not-run profile commands, 457 source files. Composed verify has never run locally.
-- Next step (later session): `gh run download 39818820449 -R ArrokothI/arrokothi` outside the checkout; read artifact without polling. Address the recorded invalid controls before claiming verification passed or writing final H.
+- Next step: fresh-clone this WIP, npm ci, run tool-tests and both mutation registries; investigate remaining correctly routed controls. Stop/report any correctly targeted survivor. Full local verify is now explicitly owner-authorized, only after targeted checks pass; final C/CI dispatch only after all pass.
 - Open questions: none; do not change accepted bytes/equality/replay or public SDK surface without asking.
 - Prior CI `39699916222`: INVALID at adoption, 21 reads digests from the unclean regeneration; clean Mac clone reproduced it.
 - Prior CI `39704481161`: adoption PASSED; INVALID at registered-mutants because array-surplus omitted SDK target files.
-- Last CI run: `39818820449`, dispatched once for C `8914175b`; pending/unread. https://github.com/ArrokothI/arrokothi/actions/runs/39818820449 — no polling performed.
+- Last CI `39818820449` at C `8914175b`: 15/18 pass; registered-mutants 46 invalid, value-cost 24 survived/8 setup_error, tool-tests 4 failures/errors. Artifact downloaded; no polling. https://github.com/ArrokothI/arrokothi/actions/runs/39818820449
 - Sessions: Codex desktop, GPT-6 per session instructions (exact serving variant unavailable); Mac arm64, 2026-10-19–22 America/New_York; no delegated sessions.
 - Setup: prepend `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin` to PATH; verified `v26.10.0`. Git metadata/network need reviewed escalation; normal pushes only.
 - Correction setup: fresh clone `/private/tmp/binding01-clean.UssU02/repo` at old C; scripts, logs and regenerated table are siblings outside it. Clone is disposable and reproducible with git clone/checkout/npm ci.
@@ -28,3 +28,5 @@
 - Checkpoint `65f68728`: fresh clone + npm ci; exact packet_tools.py mutations command ran all 109 cases; clean_payload passed before/after. Result attention_required: 63 killed, 46 invalid_baseline. Array-surplus control/kill/control-and-mutant determinism PASS; later 25 cases: 14 pass, 11 invalid.
 - Remaining registry failures: 29 oracle controls; 6 realm controls call retired Kernel canonicalize; 11 capture controls omit SDK files. No oracle expectation changed. Full output: `/private/tmp/binding01-mutants.kVQOS7/mutations.json`; reproducible at the checkpoint.
 - Adoption follow-through: declaring SDK sources adds re-prototyped-built-in to the array-surplus detector matches. Updated only that matched list; existing held/V-D1 classification, decision and case binding unchanged.
+- Current repair: shared SDK/support packaging and adapter-input copies; moved/renamed C1 witness selection; SDK own-array target; maintained manifest expectations. No production or whole-decision oracle changes. Realm creation and remaining C1 routes still need validation.
+- Audit: grepped every fixture/probe for Kernel paths, imports and files; historical at-B/old-origin references and synthetic fixtures retained. Active stale routes: shared packaging, six sealed realm reproducers, C1 targets/selections. Logs/artifact: `/private/tmp/binding01-fixtures.9VtXVo`; grep `/private/tmp/binding01-fixture-audit.txt`.

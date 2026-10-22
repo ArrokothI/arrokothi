@@ -1557,7 +1557,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/own-array.ts",
+        "path": "packages/sdk/src/internal/own-array.ts",
         "before": "export const appendOwn = <T>(list: T[], value: T): void => {\n  defineAt(list, list.length, value);",
         "after": "export const appendOwn = <T>(list: T[], value: T): void => {\n  list.push(value);"
       }

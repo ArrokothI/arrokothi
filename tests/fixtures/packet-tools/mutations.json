@@ -4182,9 +4182,7 @@
       },
       "source": "66bc041175e6fc191c2e7cf88de198111e7d97c9:docs/development/work/K1.2-correction-01/review-08/n15-probe.mjs; N15 mutant; bounded implementer count witness",
       "files": [
-        "tests/tooling/work-charge-probe.mjs",
-        "packages/sdk/src/internal/value-capture.ts",
-        "packages/sdk/src/internal/own-array.ts"
+        "tests/tooling/work-charge-probe.mjs"
       ],
       "argv": [
         "node",
@@ -5221,6 +5219,7 @@
   ],
   "source_trees": [
     "packages/kernel/src",
+    "packages/sdk/src",
     "packages/kernel/tests/sweep",
     "docs/development/work/DESIGN-AUDIT-01/review-03/hop"
   ],
@@ -5247,7 +5246,9 @@
     "tests/tooling/catalog-reporter.mjs",
     "tests/tooling/reach-coverage.mjs",
     "tests/tooling/test_venv_detector.py",
-    "tests/tooling/source-facts.mjs"
+    "tests/tooling/source-facts.mjs",
+    "packages/kernel/tests/binding-facade.ts",
+    "packages/sdk/tests/wrapper-roots.ts"
   ],
   "dependencies": [
     {

@@ -28,7 +28,7 @@ import { createHash } from 'node:crypto';
 const NONQUALIFYING_EXIT = 3;
 const id = process.argv[2];
 const entry = JSON.parse(readFileSync('tests/fixtures/packet-tools/value-cost.json', 'utf8')).cases.find((row) => row.id === id);
-const { file, pattern } = entry.input;
+const { file, pattern, additional_files = [] } = entry.input;
 const certificate = sourcePolicy(process.cwd(), JSON.parse(readFileSync('tests/fixtures/packet-tools/value-cost-source-files.json', 'utf8')));
 const source = { ...certificate, sha256: createHash('sha256').update(JSON.stringify(certificate.files)).digest('hex') };
 if (!source.ok) {
@@ -46,7 +46,7 @@ const run = spawnSync(process.execPath, [
   '--experimental-strip-types', '--no-warnings',
   '--import', './tests/tooling/value-cost-witness.mjs',
   '--test-reporter=./tests/tooling/value-cost-reporter.mjs', `--test-reporter-destination=${events}`,
-  `--test-name-pattern=${pattern}`, file,
+  `--test-name-pattern=${pattern}`, ...(additional_files.length ? ['--test'] : []), file, ...additional_files,
 ], { encoding: 'utf8', maxBuffer: innerOutput, env: { ...process.env, ARROKOTHI_VALUE_COST_LOAD: load } });
 
 const readLines = (path) => {
@@ -108,7 +108,7 @@ const reached = state === 'passed' || state === 'assertion_failed';
 const passed = state === 'passed';
 const exit = state === 'passed' ? 0 : state === 'assertion_failed' || state === 'no_selection' ? entry.failure_exit : NONQUALIFYING_EXIT;
 const named = state === 'assertion_failed'
-  ? bounded(witnessed.map((line) => `${file} > ${line.name} [${line.witnessed.kind}]`))
+  ? bounded(witnessed.map((line) => `${relative(line.declaration?.file) ?? file} > ${line.name} [${line.witnessed.kind}]`))
   : state === 'passed' ? [] : [`${entry.assertion}: ${state}`];
 console.log(JSON.stringify({
   case: id, assertion: entry.assertion, reached, passed, state,
