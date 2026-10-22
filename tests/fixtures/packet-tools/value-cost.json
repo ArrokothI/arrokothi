@@ -40,7 +40,8 @@
     "packages/kernel/tests/zone-inventory.ts",
     "packages/sdk/tests/wrapper-roots.ts",
     "packages/sdk/tests/value-capture-inventory.ts",
-    "packages/sdk/tests/wrapper-boundary-split.test.ts"
+    "packages/sdk/tests/wrapper-boundary-split.test.ts",
+    "packages/sdk/tests/wrapper-snapshot.test.ts"
   ],
   "dependencies": [
     {
@@ -1582,9 +1583,10 @@
       "source": "K1.1-correction-03 design check C1: the 5 converted Proxy-instrument tests of packages/kernel/tests/ingress.test.ts still kill the mutants their originals killed at B",
       "input": {
         "file": "packages/kernel/tests/ingress.test.ts",
-        "pattern": "^(?:SDK split: )?(?:K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress|K11-R2-VAL-02 ingress identity and replay agree under an Object\\.keys replacement installed in the same call|an inherited setter at the next mailbox index cannot make an accepted Event go unretained|a creation whose initial-input payload field traps the first mailbox index still binds its initial Event|a payload field whose observation installs get\\/set still retains the accepted Event)$",
+        "pattern": "(?:^(?:SDK split: )?(?:K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress|K11-R2-VAL-02 ingress identity and replay agree under an Object\\.keys replacement installed in the same call|an inherited setter at the next mailbox index cannot make an accepted Event go unretained|a creation whose initial-input payload field traps the first mailbox index still binds its initial Event|a payload field whose observation installs get\\/set still retains the accepted Event)$|^C1 SDK wrapper snapshot owns and freezes every caller container$)",
         "additional_files": [
-          "packages/sdk/tests/wrapper-boundary-split.test.ts"
+          "packages/sdk/tests/wrapper-boundary-split.test.ts",
+          "packages/sdk/tests/wrapper-snapshot.test.ts"
         ]
       },
       "files": [

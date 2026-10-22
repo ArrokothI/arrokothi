@@ -544,9 +544,9 @@
     }
   ],
   "limits": [
-    "BINDING-01 payload plan; relocated source-path and environment censuses are maintained at C. Targeted local checks are supporting evidence; only the CI composed run establishes this spec result.",
+    "BINDING-01 payload plan; relocated source-path and environment censuses are maintained at C. Owner direction on fixture-migration-01 requires a fresh-clone local full verify before dispatching CI; the CI run remains the handoff evidence.",
     "New core bytes, ownership, canonicality, V-ENV and dependency witnesses belong to the required repository test catalog; wrapper value-cost and stop evidence stays required at its migrated path.",
     "The 853 rule-1 V-ENV hold-register entries and changed-witness adoption revalidation belong to TOOLS-02. Area-gate reports are advisory; no hold is lifted by this verifier.",
-    "No prior results reused; acceptance is not evaluated. Full composed verification runs only in Packet verify CI at the named C."
+    "No prior results reused; acceptance is not evaluated. Fresh-clone local composed verification is authorized by owner direction after CI 39818820449; dispatch Packet verify CI once only after local checks pass."
   ]
 }

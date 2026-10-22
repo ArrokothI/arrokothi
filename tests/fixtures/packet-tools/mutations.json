@@ -1198,7 +1198,9 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:1",
       "profile": "held-binding-witness",
       "assertion": "realm.kernel-lexical-shadow.control.observation",
-      "files": [],
+      "files": [
+        "tests/tooling/realm-byte-port.mjs"
+      ],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
@@ -1222,30 +1224,53 @@
         "argv": [
           "--no-warnings",
           "--experimental-strip-types",
-          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
-          "$ROOT",
+          "tests/tooling/realm-byte-port.mjs",
+          "shadow",
           "control"
         ],
         "recorded_observation": {
           "case": "control",
-          "shadow": "",
-          "trapCalls": 0,
+          "shadow": "declared",
           "globalBindingUnchanged": true,
-          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
-          "result": {
-            "ok": false,
-            "codes": [
-              "unsupported_form"
-            ]
+          "first": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
           },
-          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
+          "later": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
+          }
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
+        "reason": "Maintained canonical-byte core port authorized by BINDING-01 brief 01 and owner direction on fixture-migration-01. Correct acceptance/content, and creation replay/conflict, must survive the lexical hop. The historical live-object route is retired; its sealed evidence is unchanged. Mechanical attribution remains held for TOOLS-02; this port does not lift a hold."
+      },
+      "port": {
+        "retired_argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "control"
+        ],
+        "reason": "Owner direction on fixture-migration-01 (9bcb2527): retire the stale live-object Kernel registry route; the sealed historical reproducer stays unchanged. This maintained port submits canonical bytes and requires correct core acceptance under the lexical shadow."
       }
     },
     {
@@ -1253,7 +1278,9 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:2",
       "profile": "held-binding-witness",
       "assertion": "realm.kernel-lexical-shadow.JSON.observation",
-      "files": [],
+      "files": [
+        "tests/tooling/realm-byte-port.mjs"
+      ],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
@@ -1277,30 +1304,53 @@
         "argv": [
           "--no-warnings",
           "--experimental-strip-types",
-          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
-          "$ROOT",
+          "tests/tooling/realm-byte-port.mjs",
+          "shadow",
           "JSON"
         ],
         "recorded_observation": {
           "case": "JSON",
-          "shadow": "",
-          "trapCalls": 0,
+          "shadow": "declared",
           "globalBindingUnchanged": true,
-          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
-          "result": {
-            "ok": false,
-            "codes": [
-              "unsupported_form"
-            ]
+          "first": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
           },
-          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
+          "later": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
+          }
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
+        "reason": "Maintained canonical-byte core port authorized by BINDING-01 brief 01 and owner direction on fixture-migration-01. Correct acceptance/content, and creation replay/conflict, must survive the lexical hop. The historical live-object route is retired; its sealed evidence is unchanged. Mechanical attribution remains held for TOOLS-02; this port does not lift a hold."
+      },
+      "port": {
+        "retired_argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "JSON"
+        ],
+        "reason": "Owner direction on fixture-migration-01 (9bcb2527): retire the stale live-object Kernel registry route; the sealed historical reproducer stays unchanged. This maintained port submits canonical bytes and requires correct core acceptance under the lexical shadow."
       }
     },
     {
@@ -1308,7 +1358,9 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:3",
       "profile": "held-binding-witness",
       "assertion": "realm.kernel-lexical-shadow.Object.observation",
-      "files": [],
+      "files": [
+        "tests/tooling/realm-byte-port.mjs"
+      ],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
@@ -1332,30 +1384,53 @@
         "argv": [
           "--no-warnings",
           "--experimental-strip-types",
-          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
-          "$ROOT",
+          "tests/tooling/realm-byte-port.mjs",
+          "shadow",
           "Object"
         ],
         "recorded_observation": {
           "case": "Object",
-          "shadow": "",
-          "trapCalls": 0,
+          "shadow": "declared",
           "globalBindingUnchanged": true,
-          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
-          "result": {
-            "ok": false,
-            "codes": [
-              "unsupported_form"
-            ]
+          "first": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
           },
-          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
+          "later": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
+          }
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
+        "reason": "Maintained canonical-byte core port authorized by BINDING-01 brief 01 and owner direction on fixture-migration-01. Correct acceptance/content, and creation replay/conflict, must survive the lexical hop. The historical live-object route is retired; its sealed evidence is unchanged. Mechanical attribution remains held for TOOLS-02; this port does not lift a hold."
+      },
+      "port": {
+        "retired_argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "Object"
+        ],
+        "reason": "Owner direction on fixture-migration-01 (9bcb2527): retire the stale live-object Kernel registry route; the sealed historical reproducer stays unchanged. This maintained port submits canonical bytes and requires correct core acceptance under the lexical shadow."
       }
     },
     {
@@ -1363,7 +1438,9 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.jsonl:4",
       "profile": "held-binding-witness",
       "assertion": "realm.kernel-lexical-shadow.Array.observation",
-      "files": [],
+      "files": [
+        "tests/tooling/realm-byte-port.mjs"
+      ],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
@@ -1387,30 +1464,53 @@
         "argv": [
           "--no-warnings",
           "--experimental-strip-types",
-          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
-          "$ROOT",
+          "tests/tooling/realm-byte-port.mjs",
+          "shadow",
           "Array"
         ],
         "recorded_observation": {
           "case": "Array",
-          "shadow": "",
-          "trapCalls": 0,
+          "shadow": "declared",
           "globalBindingUnchanged": true,
-          "expected": "{\"a\":[1,\"x\"],\"b\":2}",
-          "result": {
-            "ok": false,
-            "codes": [
-              "unsupported_form"
-            ]
+          "first": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
           },
-          "laterPlainCall": "{\"a\":[1,\"x\"],\"b\":2}"
+          "later": {
+            "ok": true,
+            "canonical": "{\"a\":[1,\"x\"],\"b\":2}",
+            "value": {
+              "a": [
+                1,
+                "x"
+              ],
+              "b": 2
+            }
+          }
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
+        "reason": "Maintained canonical-byte core port authorized by BINDING-01 brief 01 and owner direction on fixture-migration-01. Correct acceptance/content, and creation replay/conflict, must survive the lexical hop. The historical live-object route is retired; its sealed evidence is unchanged. Mechanical attribution remains held for TOOLS-02; this port does not lift a hold."
+      },
+      "port": {
+        "retired_argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "$ROOT",
+          "Array"
+        ],
+        "reason": "Owner direction on fixture-migration-01 (9bcb2527): retire the stale live-object Kernel registry route; the sealed historical reproducer stays unchanged. This maintained port submits canonical bytes and requires correct core acceptance under the lexical shadow."
       }
     },
     {
@@ -1418,7 +1518,9 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:1",
       "profile": "held-binding-witness",
       "assertion": "realm.kernel-lexical-creation.control.observation",
-      "files": [],
+      "files": [
+        "tests/tooling/realm-byte-port.mjs"
+      ],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
@@ -1442,31 +1544,52 @@
         "argv": [
           "--no-warnings",
           "--experimental-strip-types",
-          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
-          "$ROOT",
+          "tests/tooling/realm-byte-port.mjs",
+          "creation",
           "control"
         ],
         "recorded_observation": {
           "mode": "control",
           "fired": false,
+          "globalBindingUnchanged": true,
           "first": {
-            "ok": false,
-            "reason": "creation content is not an acceptable boundary value: initialInput.payload unsupported_form"
-          },
-          "second": {
             "ok": true,
             "executionId": "execution-5:app-a8:tenant-a5:lex-1",
             "replayed": false
           },
-          "sameExecutionForDifferentContent": false,
-          "firstRetainedPayload": null
+          "second": {
+            "ok": false,
+            "classification": "duplicate_conflict"
+          },
+          "replay": {
+            "ok": true,
+            "executionId": "execution-5:app-a8:tenant-a5:lex-1",
+            "replayed": true
+          },
+          "firstRetainedPayload": {
+            "a": [
+              1,
+              "x"
+            ],
+            "b": 2
+          }
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
+        "reason": "Maintained canonical-byte core port authorized by BINDING-01 brief 01 and owner direction on fixture-migration-01. Correct acceptance/content, and creation replay/conflict, must survive the lexical hop. The historical live-object route is retired; its sealed evidence is unchanged. Mechanical attribution remains held for TOOLS-02; this port does not lift a hold."
+      },
+      "port": {
+        "retired_argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+          "$ROOT",
+          "control"
+        ],
+        "reason": "Owner direction on fixture-migration-01 (9bcb2527): retire the stale live-object Kernel registry route; the sealed historical reproducer stays unchanged. This maintained port submits canonical bytes and requires correct core acceptance under the lexical shadow."
       }
     },
     {
@@ -1474,7 +1597,9 @@
       "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.jsonl:2",
       "profile": "held-binding-witness",
       "assertion": "realm.kernel-lexical-creation.hop.observation",
-      "files": [],
+      "files": [
+        "tests/tooling/realm-byte-port.mjs"
+      ],
       "argv": [
         "node",
         "tests/tooling/realm-probe.mjs",
@@ -1498,31 +1623,52 @@
         "argv": [
           "--no-warnings",
           "--experimental-strip-types",
-          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
-          "$ROOT",
+          "tests/tooling/realm-byte-port.mjs",
+          "creation",
           "hop"
         ],
         "recorded_observation": {
           "mode": "hop",
-          "fired": false,
+          "fired": true,
+          "globalBindingUnchanged": true,
           "first": {
-            "ok": false,
-            "reason": "creation content is not an acceptable boundary value: initialInput.payload unsupported_form"
-          },
-          "second": {
             "ok": true,
             "executionId": "execution-5:app-a8:tenant-a5:lex-1",
             "replayed": false
           },
-          "sameExecutionForDifferentContent": false,
-          "firstRetainedPayload": null
+          "second": {
+            "ok": false,
+            "classification": "duplicate_conflict"
+          },
+          "replay": {
+            "ok": true,
+            "executionId": "execution-5:app-a8:tenant-a5:lex-1",
+            "replayed": true
+          },
+          "firstRetainedPayload": {
+            "a": [
+              1,
+              "x"
+            ],
+            "b": 2
+          }
         }
       },
       "claim": {
         "kind": "held_witness",
         "owner": "BINDING-01",
         "decision": "docs/development/work/DESIGN-AUDIT-01/decision-02.md",
-        "reason": "Current V-ENV observation retained for the binding correction. CORE/SDK staging supersedes reliance on the old binding; reproduction and controls earn no conformance or correction credit. K1.1-correction-03 candidate: this input's Proxy is refused before any trap runs (DESIGN-AUDIT-01 decision-01 item 2), so this route no longer reaches capture, and the observation records that refusal. Envelope accessors and Proxies can still run caller code in the Kernel between root captures; that gap stays BINDING-01's (K1.1-correction-03 design check Q7)."
+        "reason": "Maintained canonical-byte core port authorized by BINDING-01 brief 01 and owner direction on fixture-migration-01. Correct acceptance/content, and creation replay/conflict, must survive the lexical hop. The historical live-object route is retired; its sealed evidence is unchanged. Mechanical attribution remains held for TOOLS-02; this port does not lift a hold."
+      },
+      "port": {
+        "retired_argv": [
+          "--no-warnings",
+          "--experimental-strip-types",
+          "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+          "$ROOT",
+          "hop"
+        ],
+        "reason": "Owner direction on fixture-migration-01 (9bcb2527): retire the stale live-object Kernel registry route; the sealed historical reproducer stays unchanged. This maintained port submits canonical bytes and requires correct core acceptance under the lexical shadow."
       }
     },
     {
