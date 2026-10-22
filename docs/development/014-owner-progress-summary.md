@@ -22,7 +22,7 @@ identities.
 | BINDING-01, COORD-REFACTOR-01 | Planned; not released |
 | TOOLS-01 | Independently accepted at H above; integrated at `8f829003` (PR #45) |
 | TOOLS-02 | Planned remaining corpus extraction; not released; acceptance and integration required before K1.4 acceptance |
-| TOOLS-02A | Independently accepted; integration pending the owner's merge. The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
+| TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H above; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-13) under 006 working principle 6 |
 | K1.3 | Planned; not released |
