@@ -41,7 +41,8 @@
     "packages/sdk/tests/wrapper-roots.ts",
     "packages/sdk/tests/value-capture-inventory.ts",
     "packages/sdk/tests/wrapper-boundary-split.test.ts",
-    "packages/sdk/tests/wrapper-snapshot.test.ts"
+    "packages/sdk/tests/wrapper-snapshot.test.ts",
+    "packages/kernel/tests/byte-aggregation.test.ts"
   ],
   "dependencies": [
     {
@@ -1813,10 +1814,13 @@
       "id": "value-cost.c1.value-diagnostic-work",
       "category": "value-cost",
       "assertion": "value-cost.c1.value-diagnostic-work.converted-tests",
-      "source": "K1.1-correction-03 design check C1: the 17 converted Proxy-instrument tests of packages/sdk/tests/value-diagnostic-work.test.ts still kill the mutants their originals killed at B",
+      "source": "K1.1-correction-03 design check C1: the 17 converted Proxy-instrument tests of packages/sdk/tests/value-diagnostic-work.test.ts still kill the mutants their originals killed at B; BINDING-01 C1 port: the core half (whole-refusal order over byte roots, no read before visibility) in packages/kernel/tests/byte-aggregation.test.ts",
       "input": {
         "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
-        "pattern": "^(?:V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched|V-D1 own constructor, constructor\\.name, and thrown-value properties are never inspected|V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation|V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics|V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds observations before later rows|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): one and eight eager roots keep bounded observations before authority|decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds Kernel-selected observations|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): eager roots preserve selected counts and whole state before authority)$"
+        "pattern": "(?:^(?:V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight|V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched|V-D1 own constructor, constructor\\.name, and thrown-value properties are never inspected|V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation|V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics|V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state|V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds observations before later rows|decision-03 descriptor probe \\(item 5 superseded by decision-01 item 2\\): one and eight eager roots keep bounded observations before authority|decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): the byte stop bounds Kernel-selected observations|decision-04 handler probe \\(item 5 superseded by decision-01 item 2\\): eager roots preserve selected counts and whole state before authority)$|^C1 core port: (?:creation reports a malformed authorityContext and initial input together|an Outcome reports refused progress, every refused Emission and the result together|recovery reports every malformed availability list|an Outcome from a caller that cannot see the Execution has no other field read)$)",
+        "additional_files": [
+          "packages/kernel/tests/byte-aggregation.test.ts"
+        ]
       },
       "files": [
         "tests/tooling/value-cost-probe.mjs",
@@ -2077,10 +2081,13 @@
       "id": "value-cost.c1.value-refusal-cost",
       "category": "value-cost",
       "assertion": "value-cost.c1.value-refusal-cost.converted-tests",
-      "source": "K1.1-correction-03 design check C1: the 10 converted Proxy-instrument tests of packages/sdk/tests/value-refusal-cost.test.ts still kill the mutants their originals killed at B",
+      "source": "K1.1-correction-03 design check C1: the 10 converted Proxy-instrument tests of packages/sdk/tests/value-refusal-cost.test.ts still kill the mutants their originals killed at B; BINDING-01 C1 port: the core half (whole-refusal order over byte roots, no read before visibility) in packages/kernel/tests/byte-aggregation.test.ts",
       "input": {
         "file": "packages/sdk/tests/value-refusal-cost.test.ts",
-        "pattern": "^(?:V-D1 every issue family: revoked structure|V-D1 every issue family: throwing structure|V-D1 every issue family: object ghost descriptor|V-D1 every issue family: array ghost index|V-D1 every issue family: array out-of-range index|V-D1 every issue family: array unstable length|V-D1 every issue family: descriptor\\/read mismatch|V-D1 bounded paths include phantom names, long ancestors, and literal omission text|V-D1 own-only multiplicity under ambient pollution and capture-time mutation|V-D1 eight SDK roots: every position once, no core submission)$"
+        "pattern": "(?:^(?:V-D1 every issue family: revoked structure|V-D1 every issue family: throwing structure|V-D1 every issue family: object ghost descriptor|V-D1 every issue family: array ghost index|V-D1 every issue family: array out-of-range index|V-D1 every issue family: array unstable length|V-D1 every issue family: descriptor\\/read mismatch|V-D1 bounded paths include phantom names, long ancestors, and literal omission text|V-D1 own-only multiplicity under ambient pollution and capture-time mutation|V-D1 eight SDK roots: every position once, no core submission)$|^C1 core port: (?:creation reports a malformed authorityContext and initial input together|an Outcome reports refused progress, every refused Emission and the result together|recovery reports every malformed availability list|an Outcome from a caller that cannot see the Execution has no other field read)$)",
+        "additional_files": [
+          "packages/kernel/tests/byte-aggregation.test.ts"
+        ]
       },
       "files": [
         "tests/tooling/value-cost-probe.mjs",

@@ -2,6 +2,7 @@
  * Envelope proxies defer conversion until the core's own-field observation; each original getter
  * is forwarded once. Wrapper-only refusal witnesses call capture directly, before any core call.
  */
+import assert from "node:assert/strict";
 import { ExecutionCoordinator as CoreCoordinator } from "../src/index.ts";
 import type { AuthenticatedCaller, SubmissionGrant, CreateExecutionRequest as CoreCreate, SubmitInputRequest as CoreInput, OutcomeEnvelope as CoreOutcome, RecoveryRequest as CoreRecovery } from "../src/index.ts";
 import { captureCanonicalBytes, type BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
@@ -29,7 +30,6 @@ const raw = new WeakSet<object>();
 const Encoder = TextEncoder;
 const encoder = new Encoder();
 const encode = Encoder.prototype.encode;
-const Failure = Error;
 
 /** Explicit byte-domain fixture, including deliberately malformed UTF-8/JSON. */
 export function rawBytes(input: string | Uint8Array): never {
@@ -45,8 +45,10 @@ function root(value: unknown, context: CaptureContext): unknown {
   if (value === undefined) return undefined;
   const encoded = captureCanonicalBytes(value);
   if (!encoded.ok) {
-    context.failure = new Failure("Wrapper-only refusal fixture must be split from the core consumer: " + encoded.issues[0]?.code);
-    throw context.failure;
+    // The fixture's own precondition, like harness `accepted()`: a consumer value the wrapper refuses is
+    // an assertion failure of the consumer test, never a harness error.
+    try { assert.fail("Wrapper-only refusal fixture must be split from the core consumer: " + encoded.issues[0]?.code); }
+    catch (failure) { context.failure = failure as Error; throw failure; }
   }
   return encoded.value;
 }

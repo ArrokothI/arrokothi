@@ -243,21 +243,21 @@ describe("K1.2-C13 envelope fields are own data, observed once", () => {
     const revoked = canonicalize(revokedProxy());
     assert.equal(revoked.ok, false);
     if (!revoked.ok) assert.equal(revoked.issues[0]?.message, "value is a Proxy; capture refuses every Proxy before observing it");
-    const probe = inWrappedChild<{ result: ReturnType<typeof canonicalize>; observations: number }>(`
+    const probe = inWrappedChild<{ result: ReturnType<typeof canonicalize>; escaped: string | null; observations: number }>(`
       const progress = track({ phase: "draft", draftRef: "draft-1" });
       let observations = 0;
       hooks.prototype = (target, real) => {
         if (target === progress) { observations++; throw new Error("boom: secret progress text"); }
         return real;
       };
-      const result = values.canonicalize(progress);
+      let result = null, escaped = null; try { result = values.canonicalize(progress); } catch (error) { escaped = error instanceof Error ? error.message : typeof error; }
       hooks.prototype = undefined;
-      emit({ result, observations });
+      emit({ result, escaped, observations });
     `);
+    assert.equal(probe.escaped, null, "no exception escaped the capture boundary");
     assert.equal(probe.observations, 1);
     assert.equal(probe.result.ok, false);
     if (!probe.result.ok) assert.deepEqual(probe.result.issues, [{ path: "", code: "unstable_representation", message: "observing this value's structure threw (object), so it presents no readable content" }]);
-
   });
 });
 

@@ -830,14 +830,14 @@ describe("K11-R7-STATE-03 creation under inherited descriptor-field pollution", 
       seen,
     );
     let created: { executionId: string; receipt: { token: string; boundary: string }; replayed: boolean; initialEventId: string };
-    try {
+    let escaped: string | null = null; try {
       created = accepted(
         kernel.createExecution(author, createRequest({ creationKey: "descriptor-pollution", initialInput: input.content })),
       ) as { executionId: string; receipt: { token: string; boundary: string }; replayed: boolean; initialEventId: string };
-    } finally {
+    } catch (error) { escaped = error instanceof Error ? error.message : typeof error; } finally {
       pollution?.restore();
     }
-
+    assert.equal(escaped, null, "no ambient exception escaped the creation call");
     // Not vacuous: the observation really ran and conversion really was hostile for the call.
     assert.equal(input.reads(), 1, "the payload field was observed once, inside the call");
     assert.equal(seen.hostile, true, "descriptor conversion threw for the whole creation call");

@@ -51,9 +51,11 @@ test("SDK split: a payload whose observation throws under the get/set it install
     hooks.prototype = (target, real) => { if (target === value) { installed=true; Object.prototype.get=1; Object.prototype.set=()=>{};
       try { Object.defineProperty([], '0', {value:1}); } catch { hostile=true; } } return real; };
     hooks.descriptor = (target,key,real) => { if(target === value) throw new TypeError('injected'); return real; };
-    let result; try { result=values.canonicalize(value); } finally { delete Object.prototype.get; delete Object.prototype.set; }
-    emit({installed,hostile,result});
+    let result=null, escaped=null;
+    try { result=values.canonicalize(value); } catch (error) { escaped = error instanceof Error ? error.message : typeof error; } finally { delete Object.prototype.get; delete Object.prototype.set; }
+    emit({installed,hostile,escaped,result});
   `);
+  assert.equal(observed.escaped,null,'no exception escaped the capture boundary');
   assert.equal(observed.installed,true); assert.equal(observed.hostile,true);
   assert.equal(observed.result.ok,false); assert.equal(observed.result.issues[0].code,'unstable_representation');
  

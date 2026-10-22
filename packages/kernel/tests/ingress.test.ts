@@ -674,7 +674,7 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
 
     assert.equal(submitted!.replayed, false);
     assert.equal(submitted!.acceptancePosition, 2);
-    assert.deepEqual(trap!.swallowed, ["control-write"], "no Kernel element reached the setter");
+    assert.deepEqual(trap!.swallowed.map((value) => (typeof value === "string" ? value : "a Kernel element")), ["control-write"], "no Kernel element reached the setter");
 
     // The returned acceptance has a retained decision behind it, at every place that decision lives.
     const view = accepted(kernel.inspect(author, created.executionId));
