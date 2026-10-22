@@ -381,8 +381,8 @@ class RepositoryRegisterTests(unittest.TestCase):
         entries = {row['key']: row for row in manifest['holds']['register']['entries']}
         expected = {'packages/sdk/tests/value-capture.test.ts:1801:3': 'held',
                     'packages/sdk/tests/value-capture.test.ts:1824:3': 'held',
-                    'packages/kernel/tests/creation.test.ts:948:3': 'held',
-                    'packages/kernel/tests/ingress.test.ts:1074:3': 'held'}
+                    'packages/kernel/tests/creation.test.ts:796:3': 'held',
+                    'packages/kernel/tests/ingress.test.ts:922:3': 'held'}
         self.assertEqual({key: entries[key]['classification'] for key in expected}, expected)
         self.assertEqual(manifest['holds']['register']['recipes'], tool.REGISTER_MINIMUM)
 
