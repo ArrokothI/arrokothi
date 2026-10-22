@@ -1,6 +1,6 @@
 # BINDING-01 progress
 
-- Phase: verify; fixture-migration repair in progress after C `8914175b223ad46f5b2ebae15010eb1a6bf4e657`. Ledger stays IN_PROGRESS until H.
+- Phase: verify, STOPPED for owner direction: correctly routed C1 ingress mutant survives at WIP `c02c9e384ab5eff9979550b4937ba7c70a1b89f4`. No new C/CI; ledger IN_PROGRESS.
 - Branch: `claude/binding-01`; B: `af9e3b0ece4786ec41940f1dfa5f0468d83ddd08`.
 - Start: fetched/switched/pulled at release `482802294e3077544bffed32393608bb06841a28`.
 - Design: `43f03d9a`, checked independently by the owner’s Opus brain session; APPROVED WITH D01-CHK-01 (primitive identity strings). Check recorded at `81df324d`; L-09 core/wrapper qualification accepted.
@@ -15,8 +15,8 @@
 - Other targeted checks: typecheck; builder-docs (74 files, 2,059 links, 38 imports); refusal registry 322/322; probe controls 28; wrapper work/stop 76 passed.
 - Tooling controls: V-ENV detector 16 passed after declaration relocation; preservation tests 19 passed plus the corrected declaration-link test passed separately. Generic oracle and all 19 preservation paths unchanged.
 - Verification plan/environment/source census passed: 17 required steps, 7 not-run profile commands, 457 source files. Composed verify has never run locally.
-- Next step: fresh-clone this WIP, npm ci, run tool-tests and both mutation registries; investigate remaining correctly routed controls. Stop/report any correctly targeted survivor. Full local verify is now explicitly owner-authorized, only after targeted checks pass; final C/CI dispatch only after all pass.
-- Open questions: none; do not change accepted bytes/equality/replay or public SDK surface without asking.
+- Next step: owner resolves fixture-migration-01.md’s C1 survivor; then finish realm/C1 ports and fresh-clone tool-tests, both registries, full verify (now explicitly authorized locally). Create C/dispatch CI only after all pass.
+- Open question: how to restore the C1 ingress snapshot obligation after the approved split. Mutant retained. No byte/equality/replay, public SDK or whole-decision oracle change without owner direction.
 - Prior CI `39699916222`: INVALID at adoption, 21 reads digests from the unclean regeneration; clean Mac clone reproduced it.
 - Prior CI `39704481161`: adoption PASSED; INVALID at registered-mutants because array-surplus omitted SDK target files.
 - Last CI `39818820449` at C `8914175b`: 15/18 pass; registered-mutants 46 invalid, value-cost 24 survived/8 setup_error, tool-tests 4 failures/errors. Artifact downloaded; no polling. https://github.com/ArrokothI/arrokothi/actions/runs/39818820449
@@ -26,7 +26,9 @@
 - TOOLS-02 P3: protect census-regeneration entry points from unclean trees. The previous custom context bypassed target_context’s clean_payload check; corpus has no direct preflight. No tooling fix in BINDING-01.
 - Mutation correction: add only SDK value-capture.ts and own-array.ts to array-surplus files; case_key unchanged. Static scan: no undeclared targets in mutations/refusal-guards/value-cost. Fresh run folder `/private/tmp/binding01-mutants.kVQOS7` (clone in repo/, outputs outside it).
 - Checkpoint `65f68728`: fresh clone + npm ci; exact packet_tools.py mutations command ran all 109 cases; clean_payload passed before/after. Result attention_required: 63 killed, 46 invalid_baseline. Array-surplus control/kill/control-and-mutant determinism PASS; later 25 cases: 14 pass, 11 invalid.
-- Remaining registry failures: 29 oracle controls; 6 realm controls call retired Kernel canonicalize; 11 capture controls omit SDK files. No oracle expectation changed. Full output: `/private/tmp/binding01-mutants.kVQOS7/mutations.json`; reproducible at the checkpoint.
-- Adoption follow-through: declaring SDK sources adds re-prototyped-built-in to the array-surplus detector matches. Updated only that matched list; existing held/V-D1 classification, decision and case binding unchanged.
-- WIP `8494732c` (format-only follow-up restores the adoption file’s existing layout); current repair: shared SDK/support packaging and adapter-input copies; moved/renamed C1 witness selection; SDK own-array target; maintained manifest expectations. No production or whole-decision oracle changes. Realm creation and remaining C1 routes still need validation.
+- Prior checkpoint registry failures: 29 oracle controls; 6 realm controls call retired Kernel canonicalize; 11 capture controls omit SDK files. No oracle expectation changed. Full output: `/private/tmp/binding01-mutants.kVQOS7/mutations.json`; reproducible at the checkpoint.
+- Prior adoption follow-through (superseded by shared packaging): declaring SDK files added re-prototyped-built-in to the array-surplus detector matches. Updated only that matched list; existing held/V-D1 classification, decision and case binding unchanged.
+- Repair WIP `8494732c` / `c02c9e38`: shared SDK packaging, maintained manifest expectations, moved/renamed C1 selectors and SDK own-array target; no production/oracle edits. Fresh clone `/private/tmp/binding01-fixtures.9VtXVo/repo`, npm ci; preflight clean_payload PASS.
 - Audit: grepped every fixture/probe for Kernel paths, imports and files; historical at-B/old-origin references and synthetic fixtures retained. Active stale routes: shared packaging, six sealed realm reproducers, C1 targets/selections. Logs/artifact: `/private/tmp/binding01-fixtures.9VtXVo`; grep `/private/tmp/binding01-fixture-audit.txt`.
+- Fresh registered-mutants: 103 killed / 6 invalid_baseline (sealed realm routes). Adapter-input 11 and transfer-limit 52 passed. Full tool-tests and value-cost stopped at the owner-required survivor stop; neither has a complete result. Full verify not run; post-check clean_payload PASS.
+- Survivor: `VAL-snapshot-is-caller-object` in `value-cost.c1.ingress`; control/mutant each 5 passed, SDK mutated return reached 18 times in coverage repeat. See fixture-migration-01.md and portable reproduction/evidence attachment.
