@@ -1,6 +1,6 @@
 # BINDING-01 progress
 
-- Phase: verify; clean C `e7c51977ccb59a550ae5de6bbd9ad6b47985edbe` pushed. Ledger stays IN_PROGRESS until H.
+- Phase: verify; correcting C `e7c51977ccb59a550ae5de6bbd9ad6b47985edbe` adoption read digests from a fresh clone. Ledger stays IN_PROGRESS until H.
 - Branch: `claude/binding-01`; B: `af9e3b0ece4786ec41940f1dfa5f0468d83ddd08`.
 - Start: fetched/switched/pulled at release `482802294e3077544bffed32393608bb06841a28`.
 - Design: `43f03d9a`, checked independently by the owner’s Opus brain session; APPROVED WITH D01-CHK-01 (primitive identity strings). Check recorded at `81df324d`; L-09 core/wrapper qualification accepted.
@@ -15,8 +15,9 @@
 - Other targeted checks: typecheck; builder-docs (74 files, 2,059 links, 38 imports); refusal registry 322/322; probe controls 28; wrapper work/stop 76 passed.
 - Tooling controls: V-ENV detector 16 passed after declaration relocation; preservation tests 19 passed plus the corrected declaration-link test passed separately. Generic oracle and all 19 preservation paths unchanged.
 - Verification plan/environment/source census passed: 17 required steps, 7 not-run profile commands, 457 source files. Composed verify has never run locally.
-- Next step (later session): `gh run download 39699916222 -R ArrokothI/arrokothi` into a directory outside the checkout; read the artifact. Do not poll. Resolve failures if needed; then write H/implementation-01.md, set 007 WAITING_FOR_REVIEW, push and hand off B/C/H/run ID.
+- Next step: regenerate preserved table in a pristine clone at C with Node 26.10.0/npm ci; prove exactly 21 reads-only changes (ambient-reads 11, control-commits 10), commit/push new C and dispatch CI once, record ID, end without polling.
 - Open questions: none; do not change accepted bytes/equality/replay or public SDK surface without asking.
-- Last CI run: `39699916222`, dispatched successfully for C; result pending/unread. https://github.com/ArrokothI/arrokothi/actions/runs/39699916222 — no polling performed.
+- Last CI run: `39699916222`, INVALID at adoption: 21 preserved-member reads digests differ. Owner reproduced exactly on a clean Mac clone; prior regeneration used an unclean tree. No polling performed.
 - Sessions: Codex desktop, GPT-6 per session instructions (exact serving variant unavailable); Mac arm64, 2026-10-19–21 America/New_York; no delegated sessions.
 - Setup: prepend `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin` to PATH; verified `v26.10.0`. Git metadata/network need reviewed escalation; normal pushes only.
+- Correction setup: fresh clone `/private/tmp/binding01-clean.UssU02/repo` at old C; scripts, logs and regenerated table are siblings outside it. Clone is disposable and reproducible with git clone/checkout/npm ci.
