@@ -39217,7 +39217,8 @@
           "key": "case:work-charge.array-surplus",
           "matched": [
             "V-D1",
-            "V-ENV"
+            "V-ENV",
+            "re-prototyped-built-in"
           ],
           "classification": "held",
           "claim": "V-D1",

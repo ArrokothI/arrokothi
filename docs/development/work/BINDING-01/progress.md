@@ -1,6 +1,6 @@
 # BINDING-01 progress
 
-- Phase: verify; correcting the work-charge.array-surplus declared files after C `2f31e140e5e63d57ff33fe348d163a4f29a7ee5d`. Ledger stays IN_PROGRESS until H.
+- Phase: verify; array-surplus correction complete; preparing replacement C. Full mutation registry has additional invalid controls (below). Ledger stays IN_PROGRESS until H.
 - Branch: `claude/binding-01`; B: `af9e3b0ece4786ec41940f1dfa5f0468d83ddd08`.
 - Start: fetched/switched/pulled at release `482802294e3077544bffed32393608bb06841a28`.
 - Design: `43f03d9a`, checked independently by the owner’s Opus brain session; APPROVED WITH D01-CHK-01 (primitive identity strings). Check recorded at `81df324d`; L-09 core/wrapper qualification accepted.
@@ -15,7 +15,7 @@
 - Other targeted checks: typecheck; builder-docs (74 files, 2,059 links, 38 imports); refusal registry 322/322; probe controls 28; wrapper work/stop 76 passed.
 - Tooling controls: V-ENV detector 16 passed after declaration relocation; preservation tests 19 passed plus the corrected declaration-link test passed separately. Generic oracle and all 19 preservation paths unchanged.
 - Verification plan/environment/source census passed: 17 required steps, 7 not-run profile commands, 457 source files. Composed verify has never run locally.
-- Next step: run packet_tools.py mutations on mutations.json at this checkpoint in a fresh clone, Node 26.10.0/npm ci; require all 109 cases, including 25 after array-surplus, to pass. Then commit/push clean C, dispatch CI once, record ID and END TURN without polling.
+- Next step: commit/push new C, dispatch packet-verify.yml once as requested, record ID, END TURN without polling. Later read artifact; address the recorded invalid controls before claiming verification passed.
 - Open questions: none; do not change accepted bytes/equality/replay or public SDK surface without asking.
 - Prior CI `39699916222`: INVALID at adoption, 21 reads digests from the unclean regeneration; clean Mac clone reproduced it.
 - Last CI run: `39704481161`, adoption PASSED; INVALID at registered-mutants: array-surplus SDK target absent from declared files. Owner tested the two-file declaration fix in a fresh clone. No polling performed.
@@ -24,3 +24,6 @@
 - Correction setup: fresh clone `/private/tmp/binding01-clean.UssU02/repo` at old C; scripts, logs and regenerated table are siblings outside it. Clone is disposable and reproducible with git clone/checkout/npm ci.
 - TOOLS-02 P3: protect census-regeneration entry points from unclean trees. The previous custom context bypassed target_context’s clean_payload check; corpus has no direct preflight. No tooling fix in BINDING-01.
 - Mutation correction: add only SDK value-capture.ts and own-array.ts to array-surplus files; case_key unchanged. Static scan: no undeclared targets in mutations/refusal-guards/value-cost. Fresh run folder `/private/tmp/binding01-mutants.kVQOS7` (clone in repo/, outputs outside it).
+- Checkpoint `65f68728`: fresh clone + npm ci; exact packet_tools.py mutations command ran all 109 cases; clean_payload passed before/after. Result attention_required: 63 killed, 46 invalid_baseline. Array-surplus control/kill/control-and-mutant determinism PASS; later 25 cases: 14 pass, 11 invalid.
+- Remaining registry failures: 29 oracle controls; 6 realm controls call retired Kernel canonicalize; 11 capture controls omit SDK files. No oracle expectation changed. Full output: `/private/tmp/binding01-mutants.kVQOS7/mutations.json`; reproducible at the checkpoint.
+- Adoption follow-through: declaring SDK sources adds re-prototyped-built-in to the array-surplus detector matches. Updated only that matched list; existing held/V-D1 classification, decision and case binding unchanged.
