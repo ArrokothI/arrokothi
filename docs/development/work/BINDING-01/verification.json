@@ -544,7 +544,7 @@
     }
   ],
   "limits": [
-    "BINDING-01 design-stage command plan; implementation must migrate source-path and environment censuses before payload C. No check has run under this spec yet.",
+    "BINDING-01 payload plan; relocated source-path and environment censuses are maintained at C. Targeted local checks are supporting evidence; only the CI composed run establishes this spec result.",
     "New core bytes, ownership, canonicality, V-ENV and dependency witnesses belong to the required repository test catalog; wrapper value-cost and stop evidence stays required at its migrated path.",
     "The 853 rule-1 V-ENV hold-register entries and changed-witness adoption revalidation belong to TOOLS-02. Area-gate reports are advisory; no hold is lifted by this verifier.",
     "No prior results reused; acceptance is not evaluated. Full composed verification runs only in Packet verify CI at the named C."

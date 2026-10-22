@@ -1778,8 +1778,8 @@
     "at_c": [
       {
         "path": "packages/kernel/src/coordinator.ts",
-        "before": "    payload: entry.payload,",
-        "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+        "before": "    payload: entry.payload.value,",
+        "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,"
       }
     ],
     "original_at_c": {
@@ -1800,8 +1800,8 @@
     "at_c": [
       {
         "path": "packages/kernel/src/coordinator.ts",
-        "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
-        "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,"
+        "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
+        "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,"
       }
     ],
     "original_at_c": {

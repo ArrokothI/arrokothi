@@ -208,3 +208,7 @@ expectation would need to change. Decoder and identity validation join the AST g
 witnesses. No remaining design question; build is authorized by the relayed check.
 
 Mechanical migration receipt: [reopened origins](design-01/revalidation-origins.json) remain assigned to TOOLS-02. Relocated hold entries keep their classifications; newly detected matches are conservatively held, never promoted. Semantic hold reclassification stays out of this packet.
+The mechanical census retains [stale bindings](design-01/reopened-bindings.json) as history
+and lists [newly unbound members](design-01/limited-members.json) for the same TOOLS-02 revalidation.
+These are changed-source bindings, not new evidence or released holds; active suite targets keep
+their old input/assertion anchors, and stale refused-member links are marked historical.

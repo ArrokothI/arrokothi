@@ -1378,10 +1378,10 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8",
+          "id": "mutation-57c323583982e8e65bc36137185cc24408c5aa0a6ef846b76ebfd0156da1274e",
           "path": "packages/kernel/src/coordinator.ts",
-          "before": "    payload: entry.payload,",
-          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "before": "    payload: entry.payload.value,",
+          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
         },
@@ -1402,10 +1402,10 @@
           "name": "C-MAPSET-EXECUTIONS (C1: killed by the creation converted tests at B and at C)"
         },
         {
-          "id": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b",
+          "id": "mutation-7608de310b05f470a8e396b4f55a5e900dfcdf10e0c2b8a66d410ed3a61edccc",
           "path": "packages/kernel/src/coordinator.ts",
-          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
-          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
+          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
         },
@@ -1537,18 +1537,18 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-9e2110305443eb559ad95771a2bfe87d26b55cbc6f267ace62f1f2064dec0ea8",
+          "id": "mutation-57c323583982e8e65bc36137185cc24408c5aa0a6ef846b76ebfd0156da1274e",
           "path": "packages/kernel/src/coordinator.ts",
-          "before": "    payload: entry.payload,",
-          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "before": "    payload: entry.payload.value,",
+          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
         },
         {
-          "id": "mutation-40fda178c3f4ae224ee428d1fe610d1ba0019cd5130c2b4537cef7eb97186e5b",
+          "id": "mutation-7608de310b05f470a8e396b4f55a5e900dfcdf10e0c2b8a66d410ed3a61edccc",
           "path": "packages/kernel/src/coordinator.ts",
-          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload,",
-          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload as object) }) as BoundaryValue,",
+          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
+          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
         },
