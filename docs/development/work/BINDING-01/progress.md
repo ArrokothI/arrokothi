@@ -1,6 +1,6 @@
 # BINDING-01 progress
 
-- Phase: verify; owner direction on `9bcb2527` received: direct SDK snapshot witness plus six maintained byte-core realm ports authorized. Ledger IN_PROGRESS.
+- Phase: verify; owner direction on `9bcb2527` carried out (snapshot witness, six realm ports, remaining C1 ports). Fresh-clone checks run at the candidate before push/CI. Ledger IN_PROGRESS.
 - Branch: `claude/binding-01`; B: `af9e3b0ece4786ec41940f1dfa5f0468d83ddd08`.
 - Start: fetched/switched/pulled at release `482802294e3077544bffed32393608bb06841a28`.
 - Design: `43f03d9a`, checked independently by the owner’s Opus brain session; APPROVED WITH D01-CHK-01 (primitive identity strings). Check recorded at `81df324d`; L-09 core/wrapper qualification accepted.
@@ -15,7 +15,7 @@
 - Other targeted checks: typecheck; builder-docs (74 files, 2,059 links, 38 imports); refusal registry 322/322; probe controls 28; wrapper work/stop 76 passed.
 - Tooling controls: V-ENV detector 16 passed after declaration relocation; preservation tests 19 passed plus the corrected declaration-link test passed separately. Generic oracle and all 19 preservation paths unchanged.
 - Verification plan/environment/source census passed: 17 required steps, 7 not-run profile commands, 457 source files. Composed verify has never run locally.
-- Next step: full value-cost run in a fresh clone for the remaining C1 ports; then fresh-clone full tool-tests, both registries and full verify. Create C/dispatch CI only after all pass; end without polling.
+- Next step: fresh-clone full tool-tests, both registries and full verify at the candidate. Push C and dispatch CI only after all pass; end without polling.
 - Owner ruling: C1 snapshot core half closes with B1-1 buffer tests; wrapper half requires direct identity/deep-freeze/after-mutation checks. Keep mutant/key/kill requirement. Realm ports accept bytes; retire only stale routes, preserving sealed reproducers. Stop if the direct wrapper mutant survives.
 - Prior CI `39699916222`: INVALID at adoption, 21 reads digests from the unclean regeneration; clean Mac clone reproduced it.
 - Prior CI `39704481161`: adoption PASSED; INVALID at registered-mutants because array-surplus omitted SDK target files.
@@ -35,3 +35,5 @@
 - Survivor: `VAL-snapshot-is-caller-object` in `value-cost.c1.ingress`; control/mutant each 5 passed, SDK mutated return reached 18 times in coverage repeat. See fixture-migration-01.md and portable reproduction/evidence attachment.
 - Owner-directed ports: wrapper-snapshot test and all six realm controls passed targeted runs. Registry comparison mutant unchanged; snapshot mutant/key unchanged. Fresh validation folder `/private/tmp/binding01-ownerports.zfyuVt` (clone in repo/, outputs outside).
 - Probe mechanism (Claude, 2026-10-22): the snapshot witness failed the mutant at `assert.notStrictEqual`, but the probe reported `subject_exception`. Cause: `8494732c` ran multi-file cases with `node --test`, which runs each file in a child process. The witness map stays in the child, and the parent reporter could never credit it. That made every c1.creation/c1.ingress kill uncredited, dropped the instrumented line offset, and failed the maintained `test_a_moved_sdk_witness…` probe test. Fix: one probe process per selected file, same flags as a one-file case, merged. A process that does not load and complete decides the state. Probe tests 29/29 pass. The snapshot mutant is killed (`assert.notStrictEqual`). c1.ingress/c1.creation controls pass with 6/8 leaves. Mutant, key and kill requirement are unchanged.
+- Fresh registries at `a7440d52`: registered mutants `selected_cases_passed`, 109 killed (realm ports included). Value-cost 220 killed, 10 setup_error, 8 survived, all in C1 cases. Logs: `/private/tmp/binding01-registered.SFKvEK`, `/private/tmp/binding01-valuecost.5zVNAK`.
+- Remaining C1 ports (`32065d6a`; see fixture-migration-02.md): three migration mechanisms lost witnessed kills, and the core aggregation half had no witness. A targeted registry-runner pass at `32065d6a` kills all 19 pairs (18 plus the snapshot mutant) at witnessed assertions, and every C1 control passes. No mutant, key or kill requirement changed. No production code changed.
