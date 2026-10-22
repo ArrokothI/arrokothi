@@ -39,16 +39,6 @@ if (!source.ok) {
 }
 const innerOutput = entry.input.inner_output_bytes ?? 64 * 1024 * 1024;
 const side = mkdtempSync(join(tmpdir(), 'value-cost-probe-'));
-const events = join(side, 'events.jsonl');
-const load = join(side, 'load.json');
-
-const run = spawnSync(process.execPath, [
-  '--experimental-strip-types', '--no-warnings',
-  '--import', './tests/tooling/value-cost-witness.mjs',
-  '--test-reporter=./tests/tooling/value-cost-reporter.mjs', `--test-reporter-destination=${events}`,
-  `--test-name-pattern=${pattern}`, ...(additional_files.length ? ['--test'] : []), file, ...additional_files,
-], { encoding: 'utf8', maxBuffer: innerOutput, env: { ...process.env, ARROKOTHI_VALUE_COST_LOAD: load } });
-
 const readLines = (path) => {
   try {
     return readFileSync(path, 'utf8').split('\n').filter((line) => line !== '').map((line) => JSON.parse(line));
@@ -63,9 +53,35 @@ const readJson = (path) => {
     return null;
   }
 };
-const lines = readLines(events);
-const loadFailure = readJson(load);
+
+// One process per selected file, each loaded the way a one-file case is. The witness records an
+// assertion in the process that threw it and the reporter reads it there; `node --test` would run every
+// file in a child process the reporter cannot see, so none of their failures could be credited.
+const runs = [file, ...additional_files].map((path, index) => {
+  const events = join(side, `events-${index}.jsonl`);
+  const load = join(side, `load-${index}.json`);
+  const run = spawnSync(process.execPath, [
+    '--experimental-strip-types', '--no-warnings',
+    '--import', './tests/tooling/value-cost-witness.mjs',
+    '--test-reporter=./tests/tooling/value-cost-reporter.mjs', `--test-reporter-destination=${events}`,
+    `--test-name-pattern=${pattern}`, path,
+  ], { encoding: 'utf8', maxBuffer: innerOutput, env: { ...process.env, ARROKOTHI_VALUE_COST_LOAD: load } });
+  return { run, lines: readLines(events), loadFailure: readJson(load) };
+});
 rmSync(side, { recursive: true, force: true });
+
+// A process that did not load and complete decides the state, so no file's kill can hide another's failure.
+const halted = ({ run, lines, loadFailure }) => {
+  if (run.error !== undefined) return run.error.code === 'ENOBUFS' ? 'output_limit' : 'spawn_error';
+  if (run.signal !== null) return 'signal';
+  const summary = (lines ?? []).find((line) => line.event === 'summary');
+  const started = (lines ?? []).some((line) => line.event === 'start');
+  if (lines === null || summary === undefined) return started ? 'setup_error' : loadFailure?.syntax === true ? 'parse_error' : loadFailure !== null ? 'load_error' : 'setup_error';
+  return undefined;
+};
+const stopped = runs.find((row) => halted(row) !== undefined);
+const reported = stopped ?? runs.find(({ run }) => run.status !== 0) ?? runs[runs.length - 1];
+const lines = runs.flatMap((row) => row.lines ?? []);
 
 const bounded = (list) => list;
 // The runner executes each case in a fresh temporary tree. Report test and assertion locations relative
@@ -84,16 +100,12 @@ const witnessed = executed.filter((line) => line.event === 'fail' && line.failur
 // A suite (or a test with subtests) fails with `subtestsFailed` because a child did; that is not a failure of its own.
 const failures = (lines ?? []).filter((line) => line.event === 'fail' && line.failureType !== 'subtestsFailed');
 const nonqualifying = failures.filter((line) => !witnessed.includes(line));
-const summary = (lines ?? []).find((line) => line.event === 'summary');
-const started = (lines ?? []).some((line) => line.event === 'start');
 
 let state;
-if (run.error !== undefined) state = run.error.code === 'ENOBUFS' ? 'output_limit' : 'spawn_error';
-else if (run.signal !== null) state = 'signal';
-else if (lines === null || summary === undefined) state = started ? 'setup_error' : loadFailure?.syntax === true ? 'parse_error' : loadFailure !== null ? 'load_error' : 'setup_error';
+if (stopped !== undefined) state = halted(stopped);
 else if (witnessed.length > 0) state = 'assertion_failed';
 else if (executed.length === 0 && failures.length === 0) state = 'no_selection';
-else if (failures.length === 0 && run.status === 0 && run.signal === null) state = 'passed';
+else if (failures.length === 0 && runs.every(({ run }) => run.status === 0 && run.signal === null)) state = 'passed';
 else {
   const first = nonqualifying[0];
   state = first === undefined ? 'unattributed_failure'
@@ -118,6 +130,6 @@ console.log(JSON.stringify({
   witnesses: witnessed.map(({ name, path, declaration, witnessed }) => ({ name, path, declaration: at(declaration), ...site(witnessed) })),
   source,
   nonqualifying: bounded(nonqualifying.map((line) => ({ name: line.name, path: line.path, declaration: at(line.declaration), type: line.type, failureType: line.failureType, cause: line.cause }))),
-  load: loadFailure, status: run.status, signal: run.signal, claim: entry.claim,
+  load: reported.loadFailure, status: reported.run.status, signal: reported.run.signal, claim: entry.claim,
 }));
 process.exitCode = exit;
