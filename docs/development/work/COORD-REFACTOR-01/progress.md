@@ -59,3 +59,8 @@ The resume point for any session continuing this packet. Newest facts first with
   input, failed(), delivered()); each pins the fault fired once in the chosen build, the new outcome, the documented
   historical outcome, and equality of view, receipts, IDs and next decisions with the run without the faulting call.
   Poison sweep over the three new kernel test files passes in all four modes.
+- Item 5 done: `mutations.json` gains four CR1-4 cases (`state-owner.*`, in the determinism sample) run by
+  `tests/tooling/state-owner-probe.mjs` with `state-owner-controls.json`; the registry now copies TypeScript's lib
+  declarations and `@types/node`/`undici-types` (entries copied from `value-cost.json`) so the zone analysis
+  typechecks in its temporary copy. Fresh-clone run of the four cases: `selected_cases_passed`, 10/10 killed at the
+  named killers, determinism passed. Their V-ENV hold-register entries come with item 8.
