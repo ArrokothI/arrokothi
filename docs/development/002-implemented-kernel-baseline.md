@@ -378,7 +378,9 @@ These are this in-process binding's choices where the architecture leaves the re
   exception ([owner choice 01](work/COORD-REFACTOR-01/owner-choice-01.md)): a decision or report whose
   build faults commits nothing, so a faulting `dispatch` or `submitInput` consumes no acceptance position
   or Activation ID, and a faulting `failed(reason)` or `delivered()` leaves its row pending for a later
-  report; `fault-paths.test.ts` pins each path. Structural evidence: the module rules in
+  report; `fault-paths.test.ts` pins each path. A fault in a commit's own publications leaves what it left
+  before: the Execution map is also the listing, so an Execution is listed exactly when it can be found
+  (`creation-faults.test.ts`). Structural evidence: the module rules in
   `kernel-state-ownership.test.ts`, the planner, arm-commit and writer checks in `control-commits.test.ts`,
   the plan and view witnesses in `state-plans.test.ts`, the pinned type diagnostics in
   `state-types.test.ts`, and the registered bypass mutants (`state-owner.*`). Choosing the right plan

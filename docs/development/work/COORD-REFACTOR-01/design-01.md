@@ -76,7 +76,7 @@ code never trips it: no plan is formed before a callback.
   `viewOf` does today: fresh containers, shared frozen leaves.
 - `KernelState.executionCount`/`executionAt` replace `Map.forEach` in `visibleExecutions`. The owner keeps a
   creation-ordered list, so the live loop visits Executions created during the listing, exactly as
-  `Map.forEach` does.
+  `Map.forEach` does. (Superseded by revision 2: the owner lists with `Map.forEach` over the Execution map.)
 
 ### The coordinator, operation by operation
 
@@ -434,7 +434,7 @@ New negative controls in the ported `control-commits.test.ts` must fail for thei
 **Creation listing.** The creation-ordered list becomes a link on each record (`next`) with `#first`/`#last` on
 `KernelState`. Appending is three plain writes after the two `mapSet` publications, so it cannot fault, and
 no listing/lookup split appears that does not exist today. Readers expose `nextExecution`; `visibleExecutions`
-walks it live, as `Map.forEach` does.
+walks it live, as `Map.forEach` does. (Wrong, and superseded by revision 2.)
 
 Updated test-file list:
 - `control-commits.test.ts` is **ported**: same obligations, new shapes, with the controls above added.
@@ -448,3 +448,50 @@ no longer bind the source at C. They are retired to [reopened-bindings.json](des
 with no hold release or replacement credit. The one complete origin they closed, the fault-oracle suite, is reopened
 for revalidation and transferred to TOOLS-02 under this design, as pinned in
 [revalidation-origins.json](design-01/revalidation-origins.json).
+
+## Revision 2 — review 01 (CR1-R1-CREATION-01)
+
+[Review 01](review-01.md) found that a fault in the creation-key publication leaves an Execution that `inspect`
+finds but `visibleExecutions` omits. B lists it. The owner's direction: preserve B's behaviour, with no new
+exception.
+
+**Cause.** At B the Execution map was the listing (`Map.forEach`), so lookup and listing were one publication.
+Revision 1 kept a second structure, links on the records, and wrote them after both `mapSet` publications. The
+claim above that this adds no split was wrong. Moving the links up would not have been enough either. After
+that fault the creation key is not indexed, so a retry with the same key publishes the same Execution ID again.
+`Map.set` keeps that ID's place, but a link list would append it a second time. Running the new
+fault test against H showed the listing out of B's order after such a retry.
+
+**Fix.** The owner lists by walking the Execution map with the load-time `Map.forEach`, in
+`KernelState.visibleExecutionIds(caller)`, using B's own statement. `visibleExecutions` delegates to it. Records
+lose `next`, the owner loses `#first`/`#last`, and readers lose `nextExecution`. The creation arm's commits are
+B's two `mapSet` calls, in B's order. The walk is live, as at B.
+
+**The same pattern elsewhere.** Each arm's commit phase was compared with B's statements: input (index advance,
+mailbox, input index, receipts), dispatch, delivery, settlement (plain writes; owner choice 01 paths 2–3), the
+Outcome and takeover arms (byte-identical swept statements), control (append, then holds) and refusal (append,
+then index). Every fallible publication keeps B's order. No write follows one unless B had that write too. The
+one write the owner adds is `version`, first in each arm, before any fallible publication; it appears in no view
+or answer. Creation was the only instance.
+
+**Analysis precision.** With B's walk in the owner, the DEC-9 effect analysis reported the coordinator's
+delegating call as a change to accepted state. A captured binding was always taken with everything reachable
+from it. So the closure's append to the fresh `visible` list counted, at the owner's method, as a change to what
+the list holds: a string read from a record. Provenance now splits captured bindings the way it splits
+parameters. `capturedExact` is a binding's own object, translated at the enclosing function through the
+binding's identity. `captured` is anything reachable from it. New negative controls in
+`control-commits.test.ts`:
+- the creation-key index published before the Execution map;
+- an alias of a record list appended to inside a callback;
+- a record list held by a fresh container, appended to inside a callback;
+- the listing walk appending to a record list;
+- the listing walk writing the Execution map through a captured alias, which only the coordinator's call site
+  sees. This one fails if `capturedExact` is dropped. Restoring the old rule fails the clean control.
+
+**Tests.** `creation-faults.test.ts` and `creation-faults-child.ts` fault each creation publication in turn. They
+pin B's outcome: the thrown error, `inspect`, the listing, a retry with the same key, and a creation with a
+different key followed by the same-key retry. The same files pass at B, fail at H on the creation-key case, and
+pass at the fix.
+
+**Not fixed here.** CR1-R1-TOOLS-01 (P3), the dropped-field probe's missing resulting-state killers, goes to
+TOOLS-02.
