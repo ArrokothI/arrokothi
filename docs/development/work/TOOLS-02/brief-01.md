@@ -3,7 +3,7 @@
 Planner: the owner's Claude Code desktop session (`claude-opus-5-5`), 2026-10-22, at the owner's request
 ("draft the TOOLS-02 brief (not released)"). It is written under
 [006 working principle 6](../../006-development-process.md#working-principles) and
-[017](../../017-known-limitations.md). It needs an owner scope choice before release (see the end).
+[017](../../017-known-limitations.md). The owner chose scope B on 2026-10-23 (see the end). It is still not released.
 
 ## Goal
 
@@ -92,3 +92,8 @@ This brief therefore separates what to build right now from what a declared boun
    B amends owner choices 04–06 for the retired class only. It keeps owner choice 06's rule that TOOLS-02
    precedes K1.4's acceptance.
 2. **Implementer, design checker and reviewer.**
+
+**Owner answer to decision 1 (2026-10-23), verbatim:** "ok. pick B". Scope B applies: T2-1 to T2-4 are
+blocking, and T2-5 is settled by the declared triage with a sampled audit. Owner choices 04–06 are amended
+for the retired class only. Decision 2 and the release itself remain open, after COORD-REFACTOR-01 is
+integrated.
