@@ -1,6 +1,6 @@
 # BINDING-01 progress
 
-- Phase: verify; C `da945d3f8ba42f6d1ec6d5e3bcd74ae6a604502f` pushed, Packet verify CI `39868378094` dispatched once. Ledger IN_PROGRESS.
+- Phase: WAITING_FOR_REVIEW. C `da945d3f8ba42f6d1ec6d5e3bcd74ae6a604502f`; CI `39868378094` `checks_passed` 18/18 (the brain session read the artifact). H is the commit containing implementation-01.md. Ledger WAITING_FOR_REVIEW.
 - Branch: `claude/binding-01`; B: `af9e3b0ece4786ec41940f1dfa5f0468d83ddd08`.
 - Start: fetched/switched/pulled at release `482802294e3077544bffed32393608bb06841a28`.
 - Design: `43f03d9a`, checked independently by the owner’s Opus brain session; APPROVED WITH D01-CHK-01 (primitive identity strings). Check recorded at `81df324d`; L-09 core/wrapper qualification accepted.
@@ -15,7 +15,7 @@
 - Other targeted checks: typecheck; builder-docs (74 files, 2,059 links, 38 imports); refusal registry 322/322; probe controls 28; wrapper work/stop 76 passed.
 - Tooling controls: V-ENV detector 16 passed after declaration relocation; preservation tests 19 passed plus the corrected declaration-link test passed separately. Generic oracle and all 19 preservation paths unchanged.
 - Verification plan/environment/source census passed: 17 required steps, 7 not-run profile commands, 457 source files. Composed verify has never run locally.
-- Next step: read the artifact of CI `39868378094` (do not poll). If it passes, write H (implementation-01.md, 007 row) for review. If it fails, find the mechanism first.
+- Next step: independent review of H (owner selects the reviewer). The implementer makes no further payload changes.
 - Owner ruling: C1 snapshot core half closes with B1-1 buffer tests; wrapper half requires direct identity/deep-freeze/after-mutation checks. Keep mutant/key/kill requirement. Realm ports accept bytes; retire only stale routes, preserving sealed reproducers. Stop if the direct wrapper mutant survives.
 - Prior CI `39699916222`: INVALID at adoption, 21 reads digests from the unclean regeneration; clean Mac clone reproduced it.
 - Prior CI `39704481161`: adoption PASSED; INVALID at registered-mutants because array-surplus omitted SDK target files.
@@ -41,3 +41,4 @@
 - Census refresh: the 418 members are the repo-scanning import-scanner, kernel-landing-zone and mcp-boundaries tests. Only `reads` and `repository_read_changed` differ. They add the new `packages/sdk/tests/wrapper-snapshot.test.ts` (418, from `03e0569b`) and `packages/kernel/tests/byte-aggregation.test.ts` (40). Nothing is removed, and no status, reason or hold changes. The computed table at `4dcd0c01` replaced those two fields, one row per line, and the stored table equals the census in order. TOOLS-02 P3: scanner members store every repo read, so any new test file invalidates them.
 - C `da945d3f`: fresh clone `/private/tmp/binding01-candidate2.44kksR` (git clone --no-local, checkout, npm ci; no untracked files before or after). Tool-tests 614 OK. Registered mutants 109 killed. Value-cost 238 killed (`selected_cases_passed`; bookkeeping-trace 6/6 at normal load). Composed verify `checks_passed`, 18/18: refusal mutants 322, repository tests 4,345, archive 4, examples 18, adoption `revalidation_complete`, kernel sweeps, continuations, builder-docs and area-gate passed. Total 3,290 s.
 - CI: `gh workflow run packet-verify.yml -f revision=da945d3f8ba42f6d1ec6d5e3bcd74ae6a604502f -f spec=docs/development/work/BINDING-01/verification.json`, run `39868378094`, https://github.com/ArrokothI/arrokothi/actions/runs/39868378094. Not polled.
+- Owner answers 2026-10-22: the facade's `assert.fail` counts as kill evidence (pattern of harness `accepted()`). Scanner census rows invalidated by new test files go to TOOLS-02 as P3. The local 900 s bookkeeping-trace timeout is a known local flake, TOOLS-02 if it appears in CI.
