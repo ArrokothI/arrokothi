@@ -41,3 +41,8 @@ The resume point for any session continuing this packet. Newest facts first with
   value-cost mutant path re-pointing + `value-cost-source-files.json` +3, Layer 3 (rewrite-index §4, BASELINE
   incl. owner-choice exception, 017 limit), `verification.json`, adoption regeneration in a fresh clone, full
   fresh-clone verify, one CI dispatch.
+- Session change, 2026-10-23: the same Claude Code desktop session (`claude-opus-5-5`) resumed after a usage
+  limit stopped it at checkpoint 3 (`8eaef358`); the owner's resume prompt lists items 1–9 below.
+- Item 1 done: the landing-zone dependency-table controls derive the `target-kernel` row and its file count from
+  the inventory (`targetKernelDependencyRow`, `targetKernelFileCount`, appended at the file's end so no pinned
+  line moves) instead of restating `16`. Architecture conformance 367/367.
