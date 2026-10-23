@@ -100,3 +100,5 @@ The resume point for any session continuing this packet. Newest facts first with
   `value-cost.json` 238/238 and `refusal-guards.json` 322/322 killed (`selected_cases_passed`); full verify
   `checks_passed` (repository tests 4,405, archive 4, example 18; adoption `revalidation_complete`; sweeps,
   censuses, typecheck and builder docs finished).
+- CI dispatched once at C `71e2ddfe`: `packet-verify.yml` run `39932022363`
+  (https://github.com/ArrokothI/arrokothi/actions/runs/39932022363). Not polled; H waits for its result.
