@@ -87,5 +87,11 @@ The resume point for any session continuing this packet. Newest facts first with
   17 landing-zone suite-target declarations follow the +3 file-list shift. Fresh-clone `corpus` at `32a44c5c`:
   `revalidation_complete`; against BINDING-01's accepted CI run: suite credit 3 = 3, preserved 30 = 30, target
   counts equal; counterexamples 603 → 594 (the nine), origins complete 34 → 33 / pending_revalidation 120 → 121.
-- Item 9 in progress: C is the commit that records this line; fresh-clone tool-tests, both registries and the full
-  verify run at C before the one CI dispatch.
+- Item 9 in progress. Fresh clone at `758b5514`: tool-tests 614 OK (after `test_transfer_limits.py` named design
+  01's transfer list), `mutations.json` 119/119 and `value-cost.json` 238/238 killed; the full verify returned
+  `attention_required` with one failing check, `refusal-mutants` (255 killed, 67 `invalid_baseline`). Cause: item 5
+  enlarged the TypeScript subset `mutations.json` pins, which `pinned_toolchain()` and the source-facts toolchain
+  both read, but `refusal-guards.json` copied the old four-file subset into its mutant copies
+  (`lib.decorators.d.ts` missing). Fix: `refusal-guards.json` copies the pinned subset, and a tool test requires
+  every registry that copies TypeScript or runs the tool tests to copy exactly that subset (it fails on the old
+  registry).
