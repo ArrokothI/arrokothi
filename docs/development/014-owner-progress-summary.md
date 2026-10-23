@@ -1,7 +1,7 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-22 against remote main `cd8d92507851be502b7f802751bbc07a7db9a2cc`, the merge of
-BINDING-01 (PR #53). BINDING-01's accepted H is `b7a24c79d547958c419b01e615e859f94ca3132b` and its payload C is
+Snapshot: checked 2026-10-22 against remote main `3791ee6a`, after BINDING-01's merge (PR #53, `cd8d9250`)
+and its receipt (PR #54), plus the owner's V-ENV core [hold release](work/BINDING-01/hold-release-01.md). BINDING-01's accepted H is `b7a24c79d547958c419b01e615e859f94ca3132b` and its payload C is
 `da945d3f8ba42f6d1ec6d5e3bcd74ae6a604502f`. Its [cleanup](work/BINDING-01/cleanup-01.md) is complete and it is
 [integrated](work/BINDING-01/integration-01.md). The
 [status ledger](007-work-packets.md) and linked records own exact acceptance, integration and release
@@ -10,11 +10,11 @@ identities.
 | Area | Current position |
 |---|---|
 | K0 | Closed |
-| K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed; the V-ENV value-capture claim is held (below) |
+| K1.0 / earlier K1.1 work | Accepted, integrated and owner-closed; the V-ENV claim is released for the bytes core only (below) |
 | Repository cleanup and planning | DOCS-CLEANUP-01 and PLAN-01 accepted, integrated and owner-closed; the archive is kept locally only, by owner choice, and was re-verified on 2026-10-02 |
 | Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; K1.1-correction-03 restores its V-D1 claim as a metered bound |
 | K1.2 Outcome acceptance | K1.2 and its cumulative correction K1.2-correction-01 accepted, integrated and owner-closed; the earlier H14 integration hold is lifted |
-| Held value-capture claims | Environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)). BINDING-01's acceptance makes its narrowed core claim eligible for owner release; it is not released. The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
+| Value-capture claim holds | None remain. V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) was released for the bytes core on 2026-10-22 ([hold release](work/BINDING-01/hold-release-01.md)); the SDK wrapper makes no V-ENV claim (017 L-01). The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
 | BINDING-01 | Independently accepted at H above; integrated at `cd8d9250` (PR #53) |
 | COORD-REFACTOR-01 | Planned; not released |
@@ -173,7 +173,7 @@ Status: independently accepted at H `4b121d7b` and integrated at `b976f3a3` (PR 
   others) are still accepted as plain data (L-08). A Proxy request envelope can still run caller code
   between root captures (L-09).
 - The in-process binding has a cooperative contract; it is no defence against hostile code in the same
-  process (L-02). V-ENV stays held; BINDING-01 (below) makes its core claim eligible for release.
+  process (L-02). V-ENV is now claimed for the bytes core only; BINDING-01 (below) moved capture out of the Kernel.
 - The static checks are bounded syntactic guards, and mutation credit covers a declared assertion
   vocabulary only (L-11, L-12). The reviewer's run of the full verify failed on a census difference,
   which TOOLS-02 owns.
@@ -193,7 +193,7 @@ Live-value capture, with its Proxy and brand refusals and its work meter, moved 
 Status: independently accepted at H `b7a24c79` and integrated at `cd8d9250` (PR #53). Limits: the wrapper
 keeps K1.1-correction-03's cooperative limits (017 L-04–L-09) and is Node-only. Realm hardening is not done
 (L-01, narrowed to the wrapper). The decoder has no metered cost bound (L-14). The supported SDK surface is
-unchanged until K1.4. The V-ENV hold stays until the owner releases it.
+unchanged until K1.4. The owner released the V-ENV hold for the core on 2026-10-22; the wrapper makes no V-ENV claim (L-01), and K1.4 must add a startup check or state L-01 before a public bridge ships.
 
 **A smaller current documentation tree.** DOCS-CLEANUP-01 answered how to preserve closed evidence
 while making current guidance easier to find. The sealed archive and relocated active fixtures now
@@ -220,9 +220,9 @@ All successors remain unreleased. The dependencies below come from 007 and becom
 owner release only after their prerequisites are accepted and integrated. Briefs follow 006 working
 principle 6: build right what later work builds on, and record the rest in [017](017-known-limitations.md).
 
-1. **BINDING-01** is accepted and integrated. Releasing invalidation-03's V-ENV
-   hold for the narrowed core claim is a separate owner decision. The supported SDK surface changes at
-   K1.4, as [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies.
+1. **BINDING-01** is accepted and integrated, and its V-ENV core claim is released. The supported SDK
+   surface changes at K1.4, as [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies; K1.4 also
+   carries the wrapper's L-01 obligation.
 2. **TOOLS-02** also depends on TOOLS-01. It owns the remaining extraction, mention triage and
    mutation-family work, target-set assertion-provenance design, and the transferred origins.
    These include [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins, the limited member

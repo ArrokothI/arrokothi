@@ -1,12 +1,12 @@
-# BINDING-01 — owner hold release 01 (DRAFT, not adopted)
+# BINDING-01 — owner hold release 01
 
-**Record type:** owner decision, drafted for approval. It would release
+**Record type:** owner decision. It releases
 [invalidation-03](../DESIGN-AUDIT-01/invalidation-03.md)'s V-ENV hold for the canonical-bytes core. It is
 not a review, an acceptance or an integration record.
 
 **Provenance:** drafted on 2026-10-22 by the owner's Claude Code desktop session (`claude-opus-5-5`), the
-planning session that did BINDING-01's design check. It has no force until the owner's words are recorded
-below.
+planning session that did BINDING-01's design check. The owner adopted it on 2026-10-22; their words are
+recorded below.
 
 **Basis:**
 - [Review 01](review-01.md): ACCEPT of exact H `b7a24c79d547958c419b01e615e859f94ca3132b`.
@@ -64,4 +64,8 @@ These are administrative status edits, made in the same commit as the owner's wo
 
 ## Owner decision
 
-_Not yet given._
+The owner's reply to the draft, verbatim:
+
+```text
+Approve: release V-ENV for the core as drafted; record it, make the status edits, and push the branch.
+```
