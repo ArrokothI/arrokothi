@@ -67,3 +67,6 @@ The resume point for any session continuing this packet. Newest facts first with
 - Item 6 done: 8 `value-cost.json` mutant edits and 7 `value-cost-c1-ports.json` `at_c` edits re-pointed from
   `coordinator.ts` to `state.ts` (each anchor absent from the coordinator and unique in the owner; `before`/`after`,
   IDs, `at_b` and `original_at_c` unchanged); `value-cost-source-files.json` gains the three modules.
+- Item 7 done: rewrite-index §4 transaction-mechanism entry records the binding's plan/owner choice (no `OPEN(`
+  marker changes); BASELINE adds the "Plans and one state owner" bullet with the owner-choice-01 exception and
+  updates the static-guard sentence; 017 adds L-15 (plan selection stays semantic). Builder docs pass.
