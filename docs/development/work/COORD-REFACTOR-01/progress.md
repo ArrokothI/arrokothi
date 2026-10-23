@@ -81,3 +81,11 @@ The resume point for any session continuing this packet. Newest facts first with
   (reads, read/production change lists, current positions, reasons) and 9 rows move held → refused (7
   control-commits, 2 fault-oracle spans changed); no row gains `preserved`. Tool-tests 614 OK in a fresh clone;
   refusal census 322/322; oracle census 29/29.
+- Item 8 done. Two further mechanical relocations the adoption check required: nine held-witness counterexamples
+  whose spans changed are retired to `design-01/reopened-bindings.json`, and the fault-oracle origin is reopened and
+  transferred to TOOLS-02 under design 01 (`design-01/revalidation-origins.json`, `transfer_lists`, `transferred`);
+  17 landing-zone suite-target declarations follow the +3 file-list shift. Fresh-clone `corpus` at `32a44c5c`:
+  `revalidation_complete`; against BINDING-01's accepted CI run: suite credit 3 = 3, preserved 30 = 30, target
+  counts equal; counterexamples 603 → 594 (the nine), origins complete 34 → 33 / pending_revalidation 120 → 121.
+- Item 9 in progress: C is the commit that records this line; fresh-clone tool-tests, both registries and the full
+  verify run at C before the one CI dispatch.
