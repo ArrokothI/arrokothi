@@ -104,3 +104,12 @@ The resume point for any session continuing this packet. Newest facts first with
   (https://github.com/ArrokothI/arrokothi/actions/runs/39932022363). Not polled; H waits for its result.
 - CI run `39932022363` succeeded (owner-reported). H: [implementation report 01](implementation-01.md) and the 007 row
   WAITING_FOR_REVIEW. Next: independent review by Codex GPT-6.
+
+## Round 2 (review 01)
+
+- 2026-10-23: [review 01](review-01.md) (GPT-6, `7f9b89d1`, parent H `276cbea4`): CHANGES REQUIRED. CR1-R1-CREATION-01
+  (P2) blocks; CR1-R1-TOOLS-01 (P3) goes to TOOLS-02 and is listed, not fixed. The packet branch is fast-forwarded to
+  the review; 007 records CHANGES_REQUESTED. Owner direction: fix CREATION-01 preserving B's behaviour, no new
+  exception; check every arm for the same pattern; fault each creation publication in turn and pin B's outcome
+  (thrown error, inspect, listing, retry with the same and a different key). Same session continues (Claude Code
+  desktop, `claude-opus-5-5`).
